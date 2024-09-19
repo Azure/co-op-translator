@@ -1,0 +1,135 @@
+en:
+  name: "English"
+  font: "NotoSans-Medium.ttf"
+fr:
+  name: "French"
+  font: "NotoSans-Medium.ttf"
+es:
+  name: "Spanish"
+  font: "NotoSans-Medium.ttf"
+de:
+  name: "German"
+  font: "NotoSans-Medium.ttf"
+ru:
+  name: "Russian"
+  font: "NotoSans-Medium.ttf"
+ar:
+  name: "Arabic"
+  font: "NotoSansArabic-Medium.ttf"
+  rtl: true
+fa:
+  name: "Persian (Farsi)"
+  font: "NotoSansArabic-Medium.ttf"
+  rtl: true
+ur:
+  name: "Urdu"
+  font: "NotoSansArabic-Medium.ttf"
+  rtl: true
+zh:
+  name: "Chinese (Simplified)"
+  font: "NotoSansCJK-Medium.ttc"
+mo:
+  name: "Chinese (Traditional)"
+  font: "NotoSansCJK-Medium.ttc"
+hk:
+  name: "Chinese (Traditional)"
+  font: "NotoSansCJK-Medium.ttc"
+tw:
+  name: "Chinese (Traditional)"
+  font: "NotoSansCJK-Medium.ttc"
+ja:
+  name: "Japanese"
+  font: "NotoSansCJK-Medium.ttc"
+ko:
+  name: "Korean"
+  font: "NotoSansCJK-Medium.ttc"
+hi:
+  name: "Hindi"
+  font: "NotoSansDevanagari-Medium.ttf"
+bn:
+  name: "Bengali"
+  font: "NotoSansBengali-Medium.ttf"
+mr:
+  name: "Marathi"
+  font: "NotoSansDevanagari-Medium.ttf"
+ne:
+  name: "Nepali"
+  font: "NotoSansDevanagari-Medium.ttf"
+pa:
+  name: "Punjabi (Gurmukhi)"
+  font: "NotoSansGurmukhi-Medium.ttf"  
+pt:
+  name: "Portuguese"
+  font: "NotoSans-Medium.ttf"
+it:
+  name: "Italian"
+  font: "NotoSans-Medium.ttf"
+pl:
+  name: "Polish"
+  font: "NotoSans-Medium.ttf"
+tr:
+  name: "Turkish"
+  font: "NotoSans-Medium.ttf"
+el:
+  name: "Greek"
+  font: "NotoSans-Medium.ttf"  # This covers Greek
+th:
+  name: "Thai"
+  font: "NotoSansThai-Medium.ttf"  
+sv:
+  name: "Swedish"
+  font: "NotoSans-Medium.ttf"
+da:
+  name: "Danish"
+  font: "NotoSans-Medium.ttf"
+"no":
+  name: "Norwegian"
+  font: "NotoSans-Medium.ttf"
+fi:
+  name: "Finnish"
+  font: "NotoSans-Medium.ttf"
+nl:
+  name: "Dutch"
+  font: "NotoSans-Medium.ttf"
+he:
+  name: "Hebrew"
+  font: "NotoSansHebrew-Medium.ttf" 
+vi:
+  name: "Vietnamese"
+  font: "NotoSans-Medium.ttf"
+id:
+  name: "Indonesian"
+  font: "NotoSans-Medium.ttf"
+ms:
+  name: "Malay"
+  font: "NotoSans-Medium.ttf"
+tl:
+  name: "Tagalog (Filipino)"
+  font: "NotoSans-Medium.ttf"
+sw:
+  name: "Swahili"
+  font: "NotoSans-Medium.ttf"
+hu:
+  name: "Hungarian"
+  font: "NotoSans-Medium.ttf"
+cs:
+  name: "Czech"
+  font: "NotoSans-Medium.ttf"
+sk:
+  name: "Slovak"
+  font: "NotoSans-Medium.ttf"
+ro:
+  name: "Romanian"
+  font: "NotoSans-Medium.ttf"
+bg:
+  name: "Bulgarian"
+  font: "NotoSans-Medium.ttf"
+sr:
+  name: "Serbian (Cyrillic)"
+  font: "NotoSans-Medium.ttf"  # This covers Cyrillic script
+hr:
+  name: "Croatian"
+  font: "NotoSans-Medium.ttf"
+sl:
+  name: "Slovenian"
+  font: "NotoSans-Medium.ttf"

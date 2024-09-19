@@ -84,8 +84,8 @@ Here is an example of how Co Op Translator can be used to translate text in imag
      ```
 
 #### Sample Notebooks:
-- **Getting Started with notebook: basic version**
-- **Getting Started with notebook: module version**
+- [**Getting Started with notebook: basic version**](./notebooks/notebook_for_testing.ipynb)
+- [**Getting Started with notebook: module version**](./notebooks/notebook_for_library.ipynb)
 
 #### Repository Structure:
 - **data/**: Contains data files.

@@ -1,0 +1,156 @@
+[
+    {
+        "text": "Foundation Models (FMs)",
+        "bounding_box": [
+            113,
+            44,
+            346,
+            43,
+            347,
+            63,
+            113,
+            64
+        ],
+        "confidence": 0.994
+    },
+    {
+        "text": "* Pretrained",
+        "bounding_box": [
+            50,
+            109,
+            125,
+            108,
+            125,
+            119,
+            50,
+            120
+        ],
+        "confidence": 0.935
+    },
+    {
+        "text": "* Generalized",
+        "bounding_box": [
+            50,
+            122,
+            131,
+            122,
+            131,
+            132,
+            50,
+            132
+        ],
+        "confidence": 0.959
+    },
+    {
+        "text": "* Adaptable",
+        "bounding_box": [
+            50,
+            134,
+            120,
+            134,
+            120,
+            145,
+            50,
+            145
+        ],
+        "confidence": 0.989
+    },
+    {
+        "text": "Large Language Models (LLMs)",
+        "bounding_box": [
+            202,
+            126,
+            390,
+            124,
+            390,
+            138,
+            202,
+            139
+        ],
+        "confidence": 0.991
+    },
+    {
+        "text": "* Large",
+        "bounding_box": [
+            50,
+            147,
+            94,
+            147,
+            94,
+            157,
+            50,
+            157
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "ex : ChatGPT , Chinchilla, GPT-3",
+        "bounding_box": [
+            203,
+            139,
+            397,
+            138,
+            397,
+            151,
+            203,
+            153
+        ],
+        "confidence": 0.996
+    },
+    {
+        "text": "* Self-supervised",
+        "bounding_box": [
+            49,
+            158,
+            156,
+            158,
+            156,
+            170,
+            49,
+            170
+        ],
+        "confidence": 0.95
+    },
+    {
+        "text": "FMs are models trained on broad data (using self-supervision at scale)",
+        "bounding_box": [
+            80,
+            278,
+            397,
+            278,
+            397,
+            289,
+            80,
+            289
+        ],
+        "confidence": 0.975
+    },
+    {
+        "text": "that can be adapted to a wide range of downstream tasks.",
+        "bounding_box": [
+            115,
+            288,
+            366,
+            288,
+            366,
+            298,
+            115,
+            298
+        ],
+        "confidence": 0.992
+    },
+    {
+        "text": "https://hai.stanford.edu/news/reflections-foundation-models",
+        "bounding_box": [
+            109,
+            297,
+            374,
+            297,
+            374,
+            306,
+            109,
+            307
+        ],
+        "confidence": 0.708
+    }
+]

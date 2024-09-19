@@ -1,0 +1,730 @@
+[
+    {
+        "text": "A",
+        "bounding_box": [
+            70,
+            64,
+            106,
+            64,
+            106,
+            98,
+            70,
+            98
+        ],
+        "confidence": 0.99
+    },
+    {
+        "text": "B Google Fonts",
+        "bounding_box": [
+            301,
+            60,
+            692,
+            61,
+            692,
+            123,
+            300,
+            121
+        ],
+        "confidence": 0.262
+    },
+    {
+        "text": "Font",
+        "bounding_box": [
+            56,
+            134,
+            111,
+            135,
+            110,
+            155,
+            55,
+            155
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "1 font family selected",
+        "bounding_box": [
+            302,
+            141,
+            1160,
+            140,
+            1160,
+            230,
+            302,
+            232
+        ],
+        "confidence": 0.936
+    },
+    {
+        "text": "Noto",
+        "bounding_box": [
+            60,
+            263,
+            112,
+            264,
+            112,
+            285,
+            60,
+            285
+        ],
+        "confidence": 0.959
+    },
+    {
+        "text": "2º Share",
+        "bounding_box": [
+            1362,
+            343,
+            1503,
+            343,
+            1502,
+            380,
+            1362,
+            379
+        ],
+        "confidence": 0.01
+    },
+    {
+        "text": "Remove all",
+        "bounding_box": [
+            1621,
+            345,
+            1774,
+            345,
+            1774,
+            378,
+            1621,
+            378
+        ],
+        "confidence": 0.996
+    },
+    {
+        "text": "Icons",
+        "bounding_box": [
+            57,
+            388,
+            119,
+            389,
+            116,
+            413,
+            57,
+            415
+        ],
+        "confidence": 0.882
+    },
+    {
+        "text": "Get embed code",
+        "bounding_box": [
+            2111,
+            422,
+            2351,
+            422,
+            2351,
+            453,
+            2111,
+            453
+        ],
+        "confidence": 0.998
+    },
+    {
+        "text": "Noto Sans",
+        "bounding_box": [
+            352,
+            475,
+            513,
+            477,
+            512,
+            511,
+            352,
+            509
+        ],
+        "confidence": 0.992
+    },
+    {
+        "text": "Variable ®",
+        "bounding_box": [
+            553,
+            479,
+            717,
+            482,
+            716,
+            517,
+            553,
+            515
+        ],
+        "confidence": 0.994
+    },
+    {
+        "text": "4",
+        "bounding_box": [
+            1681,
+            481,
+            1702,
+            482,
+            1701,
+            512,
+            1679,
+            512
+        ],
+        "confidence": 0.508
+    },
+    {
+        "text": "Knowledge",
+        "bounding_box": [
+            21,
+            515,
+            154,
+            517,
+            154,
+            544,
+            21,
+            542
+        ],
+        "confidence": 0.995
+    },
+    {
+        "text": "£, Download all (1)",
+        "bounding_box": [
+            2077,
+            549,
+            2343,
+            549,
+            2343,
+            584,
+            2077,
+            586
+        ],
+        "confidence": 0.202
+    },
+    {
+        "text": "?",
+        "bounding_box": [
+            73,
+            577,
+            104,
+            578,
+            104,
+            607,
+            70,
+            607
+        ],
+        "confidence": 0.959
+    },
+    {
+        "text": "Everyone has the right to",
+        "bounding_box": [
+            352,
+            610,
+            1700,
+            611,
+            1699,
+            734,
+            352,
+            732
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "FAQ",
+        "bounding_box": [
+            62,
+            644,
+            112,
+            645,
+            110,
+            666,
+            62,
+            668
+        ],
+        "confidence": 0.998
+    },
+    {
+        "text": "See how to use",
+        "bounding_box": [
+            1915,
+            682,
+            2124,
+            683,
+            2124,
+            713,
+            1915,
+            712
+        ],
+        "confidence": 0.999
+    },
+    {
+        "text": "How to use",
+        "bounding_box": [
+            303,
+            1071,
+            672,
+            1073,
+            672,
+            1133,
+            302,
+            1131
+        ],
+        "confidence": 0.999
+    },
+    {
+        "text": "V",
+        "bounding_box": [
+            317,
+            1238,
+            362,
+            1238,
+            364,
+            1267,
+            317,
+            1267
+        ],
+        "confidence": 0.816
+    },
+    {
+        "text": "All",
+        "bounding_box": [
+            366,
+            1236,
+            406,
+            1236,
+            406,
+            1262,
+            366,
+            1264
+        ],
+        "confidence": 0.698
+    },
+    {
+        "text": "Design",
+        "bounding_box": [
+            485,
+            1237,
+            579,
+            1239,
+            578,
+            1267,
+            485,
+            1266
+        ],
+        "confidence": 0.994
+    },
+    {
+        "text": "Develop",
+        "bounding_box": [
+            658,
+            1236,
+            771,
+            1238,
+            771,
+            1267,
+            658,
+            1265
+        ],
+        "confidence": 0.994
+    },
+    {
+        "text": "Google products",
+        "bounding_box": [
+            847,
+            1235,
+            1079,
+            1235,
+            1079,
+            1267,
+            847,
+            1268
+        ],
+        "confidence": 0.994
+    },
+    {
+        "text": "FONTS",
+        "bounding_box": [
+            776,
+            1408,
+            845,
+            1408,
+            846,
+            1429,
+            776,
+            1429
+        ],
+        "confidence": 0.995
+    },
+    {
+        "text": "Recursive",
+        "bounding_box": [
+            1203,
+            1429,
+            1306,
+            1431,
+            1306,
+            1453,
+            1203,
+            1452
+        ],
+        "confidence": 0.994
+    },
+    {
+        "text": "<h1>The page heading</h1>",
+        "bounding_box": [
+            1942,
+            1448,
+            2359,
+            1447,
+            2359,
+            1480,
+            1942,
+            1481
+        ],
+        "confidence": 0.887
+    },
+    {
+        "text": "Raleway",
+        "bounding_box": [
+            779,
+            1476,
+            868,
+            1477,
+            868,
+            1501,
+            779,
+            1499
+        ],
+        "confidence": 0.995
+    },
+    {
+        "text": "Sans Linear Light",
+        "bounding_box": [
+            1202,
+            1474,
+            1386,
+            1476,
+            1385,
+            1503,
+            1201,
+            1501
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "Tt",
+        "bounding_box": [
+            609,
+            1498,
+            644,
+            1501,
+            641,
+            1522,
+            607,
+            1520
+        ],
+        "confidence": 0.985
+    },
+    {
+        "text": "Recursive",
+        "bounding_box": [
+            781,
+            1506,
+            882,
+            1508,
+            881,
+            1531,
+            781,
+            1530
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "<p>Pellentesque eget aliquet",
+        "bounding_box": [
+            1943,
+            1512,
+            2408,
+            1512,
+            2408,
+            1542,
+            1943,
+            1543
+        ],
+        "confidence": 0.897
+    },
+    {
+        "text": "Roboto",
+        "bounding_box": [
+            781,
+            1534,
+            854,
+            1538,
+            852,
+            1559,
+            779,
+            1559
+        ],
+        "confidence": 0.988
+    },
+    {
+        "text": "Monospace",
+        "bounding_box": [
+            1464,
+            1541,
+            1593,
+            1541,
+            1593,
+            1568,
+            1464,
+            1568
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "Roboto Condensed",
+        "bounding_box": [
+            778,
+            1566,
+            984,
+            1566,
+            984,
+            1592,
+            778,
+            1592
+        ],
+        "confidence": 0.997
+    },
+    {
+        "text": "nunc. Duis auctor suscipit augue",
+        "bounding_box": [
+            1939,
+            1545,
+            2480,
+            1545,
+            2480,
+            1576,
+            1939,
+            1577
+        ],
+        "confidence": 0.989
+    },
+    {
+        "text": "Casual",
+        "bounding_box": [
+            1465,
+            1589,
+            1541,
+            1589,
+            1541,
+            1613,
+            1465,
+            1613
+        ],
+        "confidence": 0.995
+    },
+    {
+        "text": "imperdiet viverra. < strong>Morbi",
+        "bounding_box": [
+            1937,
+            1576,
+            2476,
+            1577,
+            2476,
+            1607,
+            1937,
+            1606
+        ],
+        "confidence": 0.999
+    },
+    {
+        "text": "Roboto Flex",
+        "bounding_box": [
+            397,
+            1614,
+            663,
+            1614,
+            663,
+            1658,
+            397,
+            1658
+        ],
+        "confidence": 0.996
+    },
+    {
+        "text": "Roboto Flex",
+        "bounding_box": [
+            779,
+            1595,
+            915,
+            1595,
+            915,
+            1623,
+            779,
+            1622
+        ],
+        "confidence": 0.996
+    },
+    {
+        "text": "Roboto Slab",
+        "bounding_box": [
+            777,
+            1624,
+            913,
+            1625,
+            912,
+            1651,
+            776,
+            1651
+        ],
+        "confidence": 0.996
+    },
+    {
+        "text": "ullamcorper</strong> massa odio,",
+        "bounding_box": [
+            1940,
+            1608,
+            2475,
+            1611,
+            2475,
+            1641,
+            1940,
+            1639
+        ],
+        "confidence": 0.824
+    },
+    {
+        "text": "ACTIVATED",
+        "bounding_box": [
+            391,
+            1657,
+            508,
+            1658,
+            508,
+            1688,
+            391,
+            1687
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "Roboto Serif",
+        "bounding_box": [
+            779,
+            1655,
+            907,
+            1656,
+            907,
+            1682,
+            779,
+            1681
+        ],
+        "confidence": 0.994
+    },
+    {
+        "text": "Weight",
+        "bounding_box": [
+            1460,
+            1636,
+            1540,
+            1639,
+            1539,
+            1664,
+            1460,
+            1663
+        ],
+        "confidence": 0.995
+    },
+    {
+        "text": "aliquet rutrum ex pellentesque",
+        "bounding_box": [
+            1939,
+            1642,
+            2444,
+            1644,
+            2444,
+            1673,
+            1939,
+            1671
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "Roboto Mono",
+        "bounding_box": [
+            399,
+            1689,
+            694,
+            1686,
+            694,
+            1724,
+            399,
+            1727
+        ],
+        "confidence": 0.996
+    },
+    {
+        "text": "Rockwell",
+        "bounding_box": [
+            778,
+            1686,
+            873,
+            1687,
+            872,
+            1711,
+            777,
+            1710
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "Slant",
+        "bounding_box": [
+            1467,
+            1683,
+            1524,
+            1686,
+            1522,
+            1711,
+            1466,
+            1711
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "aliquet .< /p>",
+        "bounding_box": [
+            1940,
+            1671,
+            2148,
+            1672,
+            2147,
+            1706,
+            1940,
+            1705
+        ],
+        "confidence": 0.993
+    },
+    {
+        "text": "Rubik",
+        "bounding_box": [
+            781,
+            1716,
+            843,
+            1717,
+            840,
+            1744,
+            781,
+            1742
+        ],
+        "confidence": 0.995
+    },
+    {
+        "text": "-.",
+        "bounding_box": [
+            242,
+            1758,
+            243,
+            1786,
+            218,
+            1787,
+            218,
+            1758
+        ],
+        "confidence": 0.85
+    }
+]

@@ -6,7 +6,7 @@ authors = ["Minseok Song <skytin1004@gmail.com>"]
 maintainers = [
 
 ]
-repository = "https://github.com/Imperial-EE-Microsoft/microsoft_translation_public"
+repository = "https://github.com/azure/co_op_translator/microsoft_translation_public"
 license = "MIT"
 readme = "README.md"
 keywords = ["translator", "translation","azure", "openai", "gpt"]

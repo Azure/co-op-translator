@@ -15,6 +15,8 @@ _Easily automate multilingual translations for your projects powered by advanced
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
 [![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+
 ## Overview of Co Op Translator
 
 **Co Op Translator** is a tool designed to automate multilingual translations for various projects using advanced Large Language Model (LLM) technology. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.

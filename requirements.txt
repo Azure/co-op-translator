@@ -1,0 +1,12 @@
+azure-ai-inference
+azure-identity
+pandas
+numpy
+ipykernel
+jupyter
+python-dotenv
+azure-cognitiveservices-vision-computervision 
+matplotlib 
+pillow 
+openai
+co-op-translator

@@ -15,6 +15,8 @@ _Easily automate multilingual translations for your projects powered by advanced
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
 [![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+
 ## Overview of Co Op Translator
 
 **Co Op Translator** is a tool designed to automate multilingual translations for various projects using advanced Large Language Model (LLM) technology. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.
@@ -46,7 +48,31 @@ Here is an example of how Co Op Translator can be used to translate text in imag
 - **Integration**: Easily integrates with existing projects, providing a seamless translation experience.
 
 #### Getting Started:
-1. **Setting Up the Development Environment**:
+
+## Environment setup
+
+### GitHub Codespaces
+
+You can run this samples virtually by using GitHub Codespaces and no additional settings or setup are required. 
+
+The button will open a web-based VS Code instance in your browser:
+
+1. Open the template (this may take several minutes):
+
+    [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+
+### Running Locally using VS Code Dev Containers
+
+⚠️ This option will only work if your Docker Desktop is allocated at least 16 GB of RAM. If you have less than 16 GB of RAM, you can try the [GitHub Codespaces option](#github-codespaces) or [set it up locally](#local-environment).
+
+A related option is VS Code Dev Containers, which will open the project in your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+
+1. Start Docker Desktop (install it if not already installed)
+2. Open the project:
+
+    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+
+### Setting Up a Local Development Environment:
    - Create a virtual environment:
      ```bash
      python -m venv venv

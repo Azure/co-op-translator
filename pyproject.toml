@@ -115,7 +115,6 @@ skip_empty = true
 show_missing = false
 ignore_errors = true
 
-
 [tool.coverage.html]
 directory = "coverage"
 

@@ -396,3 +396,25 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Environments
+.env
+.venv
+env/
+venv/
+venv2/
+ENV/
+env.bak/
+venv.bak/
+
+# Generated output
+dist
+
+# PyCharm
+.idea/
+
+# pytest cache directory
+.pytest_cache/
+
+# Egg info
+co_op_translator.egg-info/

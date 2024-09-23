@@ -111,7 +111,7 @@ Here is an example of how Co Op Translator can be used to translate text in imag
 
 ## Supported Languages
 
-The following table lists the currently supported languages, their codes, and whether there are known issues for each language. If you would like to support a new language, please add the language code, name, and appropriate font in the `font_language_mappings.yml` file located at `src/co_op_translator/fonts/` and submit a pull request after testing.
+The table below lists the languages currently supported by **Co Op Translator**. It includes language codes, language names, and any known issues associated with each language. If you would like to add support for a new language, please add the corresponding language code, name, and appropriate font in the `font_language_mappings.yml` file located at `src/co_op_translator/fonts/` and submit a pull request after testing.
 
 | Language Code | Language Name        | Font                              | RTL Support | Known Issues |
 |---------------|----------------------|-----------------------------------|-------------|--------------|

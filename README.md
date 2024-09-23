@@ -120,9 +120,9 @@ The following table lists the currently supported languages, their codes, and wh
 | es            | Spanish              | NotoSans-Medium.ttf               | No          | No           |
 | de            | German               | NotoSans-Medium.ttf               | No          | No           |
 | ru            | Russian              | NotoSans-Medium.ttf               | No          | No           |
-| ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | Yes         | No           |
+| ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | Yes          |
+| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | Yes         | Yes          |
+| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | Yes         | Yes          |
 | zh            | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
 | mo            | Chinese (Traditional) | NotoSansCJK-Medium.ttc           | No          | No           |
 | hk            | Chinese (Traditional) | NotoSansCJK-Medium.ttc           | No          | No           |

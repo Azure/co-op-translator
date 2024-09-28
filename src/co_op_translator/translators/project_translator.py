@@ -5,10 +5,26 @@ import asyncio
 from tqdm.asyncio import tqdm
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
-from co_op_translator.translators import text_translator, image_translator, markdown_translator
+
+from co_op_translator.translators import (
+    text_translator,
+    image_translator,
+    markdown_translator,
+)
 from co_op_translator.config.base_config import Config
-from co_op_translator.config.constants import SUPPORTED_IMAGE_EXTENSIONS, EXCLUDED_DIRS
-from co_op_translator.utils.file_utils import read_input_file, handle_empty_document, get_filename_and_extension, filter_files, reset_translation_directories, generate_translated_filename, delete_translated_images_by_language_code, delete_translated_markdown_files_by_language_code
+from co_op_translator.config.constants import (
+    SUPPORTED_IMAGE_EXTENSIONS,
+    EXCLUDED_DIRS,
+)
+from co_op_translator.utils.file_utils import (
+    read_input_file,
+    handle_empty_document,
+    get_filename_and_extension,
+    filter_files,
+    generate_translated_filename,
+    delete_translated_images_by_language_code,
+    delete_translated_markdown_files_by_language_code,
+)
 from co_op_translator.utils.task_utils import worker
 from co_op_translator.utils.markdown_utils import compare_line_breaks
 
@@ -99,35 +115,9 @@ class ProjectTranslator:
         except Exception as e:
             logger.error(f"Failed to translate {file_path}: {e}")
 
-    async def process_api_requests(self, tasks, task_desc):
-        """
-        Process API requests using a queue system for better resource management.
-        """
-        if not tasks:  # No tasks to process
-            logger.warning("No tasks available for processing.")
-            return
-
-        task_queue = asyncio.Queue()
-
-        # Step 1: Populate the queue with tasks
-        for task in tasks:
-            task_queue.put_nowait(task)
-
-        # Step 2: Create a progress bar
-        with tqdm(total=len(tasks), desc=task_desc) as progress_bar:
-            # Step 3: Create worker tasks to process the queue
-            workers = [asyncio.create_task(worker(task_queue, progress_bar)) for _ in range(5)]
-
-            # Step 4: Wait until all tasks are processed
-            await task_queue.join()
-
-            # Ensure all workers have completed
-            for worker_task in workers:
-                worker_task.cancel()
-
     async def translate_all_markdown_files(self, update=False):
         """
-        Translate all markdown files, with optional update mode to refresh translations.
+        Translate all markdown files sequentially, with optional update mode to refresh translations.
         """
         logger.info("Starting markdown translation tasks...")
 
@@ -154,14 +144,15 @@ class ProjectTranslator:
                         continue
 
                     logger.info(f"Translating markdown file: {md_file_path} for language: {language_code}")
-                    tasks.append(self.translate_markdown(md_file_path, language_code))
+                    # Create a task for each markdown file translation
+                    tasks.append(lambda md_file_path=md_file_path, language_code=language_code: 
+                                self.translate_markdown(md_file_path, language_code))
 
         if tasks:  # Check if there are tasks to process
-            # Step 3: Process markdown translations using API request queue
-            await self.process_api_requests(tasks, "Translating markdown files")
+            # Step 3: Process markdown translations sequentially using the sequential API request queue
+            await self.process_api_requests_sequential(tasks, "Translating markdown files")
         else:
             logger.warning("No markdown files found for translation.")
-
 
     async def translate_all_image_files(self, update=False):
         """
@@ -195,7 +186,7 @@ class ProjectTranslator:
                     tasks.append(self.translate_image(image_file_path, language_code))
 
         # Step 3: Process image translations using API request queue
-        await self.process_api_requests(tasks, "Translating images")
+        await self.process_api_requests_parallel(tasks, "Translating images")
 
     async def translate_project_async(self, images=False, markdown=False, update=False):
         """
@@ -208,24 +199,17 @@ class ProjectTranslator:
         """
         logger.info("Starting project translation tasks...")
 
-        tasks = []
         if not images and not markdown:
             images = True
             markdown = True
         
         # Add tasks for image translation
         if images:
-            tasks.append(self.translate_all_image_files(update=update))
+            await self.translate_all_image_files(update=update)
 
         # Add tasks for markdown translation
         if markdown:
-            tasks.append(self.translate_all_markdown_files(update=update))
-
-        # Execute translation tasks
-        if tasks:
-            await asyncio.gather(*tasks)
-        else:
-            logger.warning("No tasks to run. Skipping translation.")
+            await self.translate_all_markdown_files(update=update)
 
     def translate_project(self, images=False, markdown=False, update=False):
         """
@@ -311,3 +295,44 @@ class ProjectTranslator:
             logger.info("No formatting issues found in the translated files.")
 
         logger.info(f"Total files checked: {total_files_checked}")
+
+    async def process_api_requests_parallel(self, tasks, task_desc):
+        """
+        Process API requests using a queue system for better resource management (Parallel).
+        """
+        if not tasks:  # No tasks to process
+            logger.warning("No tasks available for processing.")
+            return
+
+        task_queue = asyncio.Queue()
+
+        # Step 1: Populate the queue with tasks
+        for task in tasks:
+            task_queue.put_nowait(task)
+
+        # Step 2: Create a progress bar
+        with tqdm(total=len(tasks), desc=task_desc) as progress_bar:
+            # Step 3: Create worker tasks to process the queue
+            workers = [asyncio.create_task(worker(task_queue, progress_bar)) for _ in range(5)]
+
+            # Step 4: Wait until all tasks are processed
+            await task_queue.join()
+
+            # Ensure all workers have completed
+            for worker_task in workers:
+                worker_task.cancel()
+
+    async def process_api_requests_sequential(self, tasks, task_desc):
+        """
+        Process API requests sequentially, one after another (Sequential).
+        """
+        if not tasks:  # No tasks to process
+            logger.warning("No tasks available for processing.")
+            return
+
+        total_tasks = len(tasks)
+
+        with tqdm(total=total_tasks, desc=task_desc) as progress_bar:
+            for task in tasks:
+                await task()  # Execute each task sequentially
+                progress_bar.update(1)  # Update progress bar

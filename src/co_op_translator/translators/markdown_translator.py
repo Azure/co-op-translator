@@ -67,7 +67,7 @@ class MarkdownTranslator:
 
         prompts = [generate_prompt_template(language_code, chunk, self.font_config.is_rtl(language_code)) for chunk in document_chunks]
 
-        results = await self._run_prompts(prompts)
+        results = await self._run_prompts_sequentially(prompts)
         translated_content = "\n".join(results)
 
         updated_content = update_links(md_file_path, translated_content, language_code, self.root_dir)
@@ -77,9 +77,9 @@ class MarkdownTranslator:
 
         return updated_content
 
-    async def _run_prompts(self, prompts):
+    async def _run_prompts_sequentially(self, prompts):
         """
-        Run the translation prompts asynchronously.
+        Run the translation prompts sequentially with a timeout for each chunk.
 
         Args:
             prompts (list): List of translation prompts.
@@ -87,13 +87,21 @@ class MarkdownTranslator:
         Returns:
             list: List of translated text chunks.
         """
-        tasks = [self._run_prompt(prompt, i+1, len(prompts)) for i, prompt in enumerate(prompts)]
-        try:
-            results = await asyncio.gather(*tasks)
-            return results
-        except Exception as e:
-            logger.error(f"Error during prompt execution: {e}")
-            return []
+        results = []
+        for index, prompt in enumerate(prompts):
+            try:
+                result = await asyncio.wait_for(
+                    self._run_prompt(prompt, index + 1, len(prompts)),
+                    timeout=300
+                )
+                results.append(result)
+            except asyncio.TimeoutError:
+                logger.warning(f"Chunk {index + 1} translation timed out. Skipping...")
+                results.append(f"Translation for chunk {index + 1} skipped due to timeout.")
+            except Exception as e:
+                logger.error(f"Error during prompt execution for chunk {index + 1}: {e}")
+                results.append(f"Error during translation of chunk {index + 1}")
+        return results
 
     async def _run_prompt(self, prompt, index, total):
         """
@@ -152,8 +160,8 @@ class MarkdownTranslator:
 
         disclaimer_prompt = f""" Translate the following text to {output_lang}.
 
-        Disclaimer: The translation was translated from its original by an AI model and may not be perfect. 
-        Please review the output and make any necessary corrections."""
+        **Disclaimer**: 
+        This document has been translated using machine-based AI translation services. While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation."""
 
         disclaimer = await self._run_prompt(disclaimer_prompt, 'disclaimer prompt', 1)
         

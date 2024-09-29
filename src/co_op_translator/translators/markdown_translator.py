@@ -4,7 +4,15 @@ from pathlib import Path
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
 from semantic_kernel.prompt_template.prompt_template_config import PromptTemplateConfig
-from co_op_translator.utils.markdown_utils import process_markdown, update_links, generate_prompt_template, count_links_in_markdown, process_markdown_with_many_links
+from co_op_translator.utils.markdown_utils import (
+    process_markdown,
+    update_links,
+    generate_prompt_template,
+    count_links_in_markdown,
+    process_markdown_with_many_links,
+    replace_code_blocks_and_inline_code,
+    restore_code_blocks_and_inline_code
+)
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.font_config import FontConfig
 import time
@@ -56,22 +64,29 @@ class MarkdownTranslator:
             str: The translated content with updated links and a disclaimer appended.
         """
         md_file_path = Path(md_file_path)
-        link_limit = 30
 
-        if count_links_in_markdown(document) > link_limit:
+        # Step 1: Replace code blocks and inline code with placeholders
+        document_with_placeholders, placeholder_map = replace_code_blocks_and_inline_code(document)
+
+        # Step 2: Split the document into chunks and generate prompts
+        link_limit = 30
+        if count_links_in_markdown(document_with_placeholders) > link_limit:
             logger.info(f"Document contains more than {link_limit} links, splitting the document into chunks.")
-            document_chunks = process_markdown_with_many_links(document, link_limit)
+            document_chunks = process_markdown_with_many_links(document_with_placeholders, link_limit)
         else:
             logger.info(f"Document contains {link_limit} or fewer links, processing normally.")
-            document_chunks = process_markdown(document)
+            document_chunks = process_markdown(document_with_placeholders)
 
+        # Step 3: Generate translation prompts and translate each chunk
         prompts = [generate_prompt_template(language_code, chunk, self.font_config.is_rtl(language_code)) for chunk in document_chunks]
-
         results = await self._run_prompts_sequentially(prompts)
         translated_content = "\n".join(results)
 
-        updated_content = update_links(md_file_path, translated_content, language_code, self.root_dir)
+        # Step 4: Restore the code blocks and inline code from placeholders
+        translated_content = restore_code_blocks_and_inline_code(translated_content, placeholder_map)
 
+        # Step 5: Update links and add disclaimer
+        updated_content = update_links(md_file_path, translated_content, language_code, self.root_dir)
         disclaimer = await self.generate_disclaimer(language_code)
         updated_content += "\n\n" + disclaimer
 

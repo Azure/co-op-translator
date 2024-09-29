@@ -35,7 +35,7 @@ def generate_prompt_template(output_lang: str, document_chunk: str, is_rtl: bool
         Make sure the translation does not sound too literal. Make sure you translate comments as well.
         This file is written in Markdown format. Do not treat this as XML or HTML.
         Do not translate any [!NOTE], [!WARNING], [!TIP], [!IMPORTANT], or [!CAUTION].
-        Do not translate any entities, such as variable names, function names, or class names, but keep them in the file.
+        Do not translate any entities, such as variable names, function names, class names, or placeholders like @@INLINE_CODE_x@@ or @@CODE_BLOCK_x@@, but keep them in the file.
         Do not translate any urls or paths, but keep them in the file.
         """
 
@@ -328,3 +328,53 @@ def count_links_in_markdown(content: str) -> int:
 
     link_pattern = re.compile(r"\[.*?\]\(.*?\)")
     return len(link_pattern.findall(content))
+
+def replace_code_blocks_and_inline_code(document: str):
+    """
+    Replace code blocks and inline code in the document with placeholders.
+    
+    Args:
+        document (str): The markdown document to process.
+
+    Returns:
+        tuple: A tuple containing:
+            - The document with placeholders.
+            - A dictionary mapping placeholders to their original code.
+    """
+    code_block_pattern = r'```[\s\S]*?```'
+    inline_code_pattern = r'`[^`]+`'
+
+    # Replace code blocks
+    code_blocks = re.findall(code_block_pattern, document)
+    inline_codes = re.findall(inline_code_pattern, document)
+
+    placeholder_map = {}
+
+    # Replace code blocks with placeholders
+    for i, code_block in enumerate(code_blocks):
+        placeholder = f"@@CODE_BLOCK_{i}@@"
+        document = document.replace(code_block, placeholder)
+        placeholder_map[placeholder] = code_block
+
+    # Replace inline codes with placeholders
+    for i, inline_code in enumerate(inline_codes):
+        placeholder = f"@@INLINE_CODE_{i}@@"
+        document = document.replace(inline_code, placeholder)
+        placeholder_map[placeholder] = inline_code
+
+    return document, placeholder_map
+
+def restore_code_blocks_and_inline_code(translated_document: str, placeholder_map: dict):
+    """
+    Restore code blocks and inline code into the translated document from the placeholders.
+
+    Args:
+        translated_document (str): The translated document containing placeholders.
+        placeholder_map (dict): A dictionary mapping placeholders to their original code.
+
+    Returns:
+        str: The translated document with the original code blocks and inline code restored.
+    """
+    for placeholder, code in placeholder_map.items():
+        translated_document = translated_document.replace(placeholder, code)
+    return translated_document

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "co_op_translator"
-version = "0.2.1"
+version = "0.5.0"
 description = "Easily automate multilingual translations for your projects with co-op-translator, powered by advanced LLM technology."
 authors = ["Minseok Song <skytin1004@gmail.com>", "timothychungd <timothychungd@gmail.com>"]
 maintainers = []
@@ -10,7 +10,7 @@ readme = "README.md"
 keywords = ["translator", "translation","azure", "openai", "gpt"]
 packages = [{ include = "co_op_translator", from = "src" }]
 include = ["src/co_op_translator/fonts/*"]
-documentation = "https://techcommunity.microsoft.com/t5/educator-developer-blog/localizing-github-repositories-with-llms/ba-p/4216434"
+documentation = "https://github.com/Azure/co-op-translator/tree/main/getting_started"
 
 [tool.poetry.scripts]
 translate = "co_op_translator.__main__:main"

@@ -30,5 +30,5 @@ The Co-Op Translator is a command-line interface (CLI) tool designed to help you
 1. To install the package, type the following command inside your terminal:
 
     ```console
-    pip install co-op-translator==0.2.0
+    pip install co-op-translator
     ```

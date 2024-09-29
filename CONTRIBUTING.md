@@ -61,6 +61,33 @@ poetry install
 1. Create an `.env` file in the root directory by copying the provided `.env.template` file.
 1. Fill in the environment variables as guided.
 
+> [!TIP]
+>
+> ### Additional development environment options
+>
+> In addition to running the project locally, you can also use GitHub Codespaces or VS Code Dev Containers for an alternative development environment setup.
+>
+> #### GitHub Codespaces
+>
+> You can run this samples virtually by using GitHub Codespaces and no additional settings or setup are required. 
+>
+> The button will open a web-based VS Code instance in your browser:
+>
+> 1. Open the template (this may take several minutes):
+>
+>     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>
+> #### Running Locally using VS Code Dev Containers
+>
+> ⚠️ This option will only work if your Docker Desktop is allocated at least 16 GB of RAM. If you have less than 16 GB of RAM, you can try the [GitHub Codespaces option](#github-codespaces) or [set it up locally](#development-environment-setup).
+>
+> A related option is VS Code Dev Containers, which will open the project in your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+>
+> 1. Start Docker Desktop (install it if not already installed)
+> 2. Open the project:
+>
+>    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+
 ## Running Co Op Translator
 
 To run Co Op Translator using Poetry in your environment, follow these steps:
@@ -75,4 +102,3 @@ To run Co Op Translator using Poetry in your environment, follow these steps:
 
 > [!NOTE]
 > Ensure your Poetry environment is activated (poetry shell) before running the command.
-

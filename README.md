@@ -2,9 +2,6 @@
 
 _Easily automate multilingual translations for your projects with co-op-translator, powered by advanced LLM technology and Azure AI Services._
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
-[![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
-
 [![Python package](https://img.shields.io/pypi/v/co-op-translator)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
 [![GitHub contributors](https://img.shields.io/github/contributors/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/graphs/contributors/)
@@ -15,6 +12,9 @@ _Easily automate multilingual translations for your projects with co-op-translat
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
 [![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+[![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
 ## Overview
 
@@ -55,25 +55,39 @@ Here is an example of how Co Op Translator can be used to translate text in imag
 
 ## Getting started with Co Op Translator
 
+### Prerequisites
+
+- Azure Computer vision resource
+- Azure OpenAI resource
+- Python 3.10 or higher
+
+### Quick install
+
+#### Install Co Op Translator via pip
+
+```bash
+pip install co-op-translator
+```
+
+#### Install Co Op Translator via poetry
+
+```bash
+poetry add co-op-translator
+```
+
 ### How to use Co Op Translator
 
-1. [Set up Azure resources before starting](./docs/set-up-azure-resources.md)
-1. [Create an '.env' file in the root directory](./docs/create-env-file.md)
-1. [Install the Co Op translator package](./docs/install-package.md)
-1. [Use Co Op translator in your project](./docs/use-co-op-translator.md)
+1. [Set up Azure resources before starting](./getting_started/set-up-azure-resources.md)
+1. [Create an '.env' file in the root directory](./getting_started/create-env-file.md)
+1. [Install the Co Op translator package](./getting_started/install-package.md)
+1. [Use Co Op translator in your project](./getting_started/use-co-op-translator.md)
 
-### Sample Notebooks(Update in progress)
+### Sample notebooks (update in progress)
 
 - [**Getting Started with notebook: basic version**](./notebooks/notebook_for_testing.ipynb)
 - [**Getting Started with notebook: module version**](./notebooks/notebook_for_library.ipynb)
 
-### Prerequisites
-
-- Azure AI Services resource
-- Azure OpenAI resource
-- Python 3.10 or higher
-
-## Supported Languages
+## Supported languages
 
 The table below lists the languages currently supported by **Co Op Translator**. It includes language codes, language names, and any known issues associated with each language. If you would like to add support for a new language, please add the corresponding language code, name, and appropriate font in the `font_language_mappings.yml` file located at `src/co_op_translator/fonts/` and submit a pull request after testing.
 
@@ -124,7 +138,7 @@ The table below lists the languages currently supported by **Co Op Translator**.
 | hr            | Croatian             | NotoSans-Medium.ttf               | No          | No           |
 | sl            | Slovenian            | NotoSans-Medium.ttf               | No          | No           |
 
-### Adding a New Language
+### Adding a new language
 
 To add support for a new language:
 
@@ -143,6 +157,20 @@ new_lang:
   rtl: false
 ```
 
+## Contributing
+
+This project welcomes contributions and suggestions. Interested in contributing to Azure Co Op Translator? Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how you can help make Co Op Translator more accessible.
+
+## Contributors
+
+[![co-op-translator contributors](https://contrib.rocks/image?repo=Azure/co-op-translator)](https://github.com/Azure/co-op-translator/graphs/contributors)
+
+## Code of Conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 ## Responsible AI
 
 Microsoft is committed to helping our customers use our AI products responsibly, sharing our learnings, and building trust-based partnerships through tools like Transparency Notes and Impact Assessments. Many of these resources can be found at [https://aka.ms/RAI](https://aka.ms/RAI).
@@ -155,16 +183,6 @@ The recommended approach to mitigating these risks is to include a safety system
 Another aspect to take into account is the overall application performance. With multi-modal and multi-models applications, we consider performance to mean that the system performs as you and your users expect, including not generating harmful outputs. It's important to assess the performance of your overall application using [generation quality and risk and safety metrics](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in).
 
 You can evaluate your AI application in your development environment using the [prompt flow SDK](https://microsoft.github.io/promptflow/index.html). Given either a test dataset or a target, your generative AI application generations are quantitatively measured with built-in evaluators or custom evaluators of your choice. To get started with the prompt flow sdk to evaluate your system, you can follow the [quickstart guide](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). Once you execute an evaluation run, you can [visualize the results in Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
-
-## Contributing
-
-This project welcomes contributions and suggestions. Interested in contributing to Azure Co Op Translator? Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how you can help make Co Op Translator more accessible.
-
-## Code of Conduct
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Trademarks
 

@@ -119,7 +119,6 @@ If you want to translate the project into all supported languages, use the all k
 > [!WARNING]
 > Translating all languages at once can take a significant amount of time depending on the project size. For example, translating the Phi-3 CookBook into Spanish took about 1 hour and 25-30 minutes. Given the scale, it's not practical for one person to handle 20 languages. It's recommended to split the work among multiple contributors, each managing one or two languages, and update translations gradually.
 
-
 ```bash
 translate -l "all"
 ```

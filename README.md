@@ -20,23 +20,29 @@ _Easily automate multilingual translations for your projects with co-op-translat
 
 **Co Op Translator** is a tool designed to automate multilingual translations for various projects using advanced Large Language Model (LLM) technology and Azure AI Services. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.
 
+Here is an architecture of Co Op Translator.
+
+![Architecture](/imgs/Architecture.png)
+
+The process begins with markdown and image files from your project folder, which are then processed by **Azure AI Services**. **Azure OpenAI** handles text translations from the markdown files, while **Azure Computer Vision** extracts text from the images. Once the text is extracted, **Azure OpenAI** translates the text from the images. The final translated files—both markdown and images—are saved in the designated translation folder, ready for use in multiple languages.
+
 ### Python package
 
 **Co Op Translator** Python package designed to automate multilingual translations across all files in your project. Powered by advanced Language Learning Models (LLMs), it simplifies the localization process by providing accurate and efficient translations.
 
-Co Op Translator scans all your project files and translates all Markdown documents and even text within images found in your folders. This comprehensive approach ensures that every part of your project is accessible to a global audience.
+Co Op Translator scans all your project files and translates all markdown documents and even text within images found in your folders. This comprehensive approach ensures that every part of your project is accessible to a global audience.
 
 By integrating Co Op Translator into your workflow, you can:
 
 - **Automate Translations:** Easily translate text in your project files into multiple languages.
-- **Comprehensive Coverage:** Translate all Markdown files and text within images in your project directories.
+- **Comprehensive Coverage:** Translate all markdown files and text within images in your project directories.
 - **Advanced LLM Technology:** Utilize cutting-edge language models for high-quality translations.
 - **Simplify Localization:** Streamline the process of localizing your project for international markets.
 - **Easy Integration:** Seamlessly integrate with your existing project setup.
 
 Co Op Translator empowers developers to focus on core functionalities while effortlessly managing multilingual support.
 
-Here is an example of how Co Op Translator can be used to translate text in images and Markdown files in your project:
+Here is an example of how Co Op Translator can be used to translate text in images and markdown files in your project:
 
 ![Example](/imgs/ex.png)
 

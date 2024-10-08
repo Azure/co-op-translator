@@ -1,6 +1,6 @@
 # Set up Azure resources before starting
 
-This guide will walk you through the steps to set up the necessary Azure resources for using Co Op Translator. You'll create an Azure Computer Vision resource and Azure OpenAI resource which provides the translation capabilities required by the package.
+This guide will walk you through the steps to set up the necessary Azure resources for using Co-op Translator. You'll create an Azure Computer Vision resource and Azure OpenAI resource which provides the translation capabilities required by the package.
 
 ### Create an Azure Account
 
@@ -81,17 +81,18 @@ If you don't already have an Azure account, you'll need to create one.
     ![Select Go to Azure OpenAI Studio from the navigation menu.](../imgs/go-to-azureopenai-studio.png)
 
 1. Inside Azure OpenAI Studio, select **Deployments** from the left side tab.
+1. Select **+ Deploy model** from the navigation menu.
+1. Select **Deploy base model** from the navigation menu to create a new **gpt-4o** deployment.
 
-    ![Select Deployments.](../imgs/select-azureopenai-deployments.png)
-
-1. Select **+ Create new deployment** from the navigation menu to create a new **gpt-4o** deployment.
-
-    ![Create model.](../imgs/create-azureopenai-model.png)
+    ![Select Deployments.](../imgs/deploy-aoai.png)
 
 1. Perform the following tasks:
 
-    - For the model, select **gpt-4o**.
-    - For the **Model version**, select the version you'd like to use.
-    - For the **Deployment name**, add a name that's unique to this cloud instance. For example, **gpt-4o**.
+    - Inside **Select a model** page, select **gpt-4o**.
+    - Select **Confirm** to navigate to the **Deploy model gpt-4o** page.
+    - Inside **Deploy model gpt-4o** page, enter **Deployment name**. It must be a unique value. For example, **gpt-4o**.
+    - Inside **Deploy model gpt-4o** page, select the **Deployment type** you'd like to use.
 
-1. Select **Create**.
+    ![Create model.](../imgs/create-4o.png)
+
+1. Select **Deploy**.

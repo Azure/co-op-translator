@@ -1,4 +1,3 @@
-<!-- markdownlint-disable MD041 -->
 # Phi-3 Cookbook translation: A case study
 
 The **Phi-3 Cookbook** is an official open source guide that provides detailed instructions on Phi-3 and Phi-3.5 small language models. Given its technical nature and importance to the global AI community, translating it into multiple languages was a crucial step toward making this valuable resource accessible to non-English-speaking developers and researchers.

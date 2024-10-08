@@ -19,9 +19,9 @@ By using **Co-op Translator**, I was able to streamline the translation process,
 
 1. **Review**: After the translations were completed, I reviewed the output for accuracy. The automated process produced high-quality translations, significantly reducing the need for manual adjustments.
 
-   > [!NOTE]
-   > Once the translations are done, you'll find the `translations` and `translated_images` folders in the root directory. You can see an example of the folder structure in the **Phi-3 Cookbook**:
-   > ![Folders](../imgs/phi-3cookbook-folders.png)
+> [!NOTE]
+> Once the translations are done, you'll find the `translations` and `translated_images` folders in the root directory. You can see an example of the folder structure in the **Phi-3 Cookbook**:
+> ![Folders](../imgs/phi-3cookbook-folders.png)
 
 ## Challenges and Solutions
 

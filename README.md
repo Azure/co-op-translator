@@ -39,7 +39,7 @@ Here is an example of how Co-op Translator can be used to translate text in imag
 
 ### How it works
 
-![Architecture](/imgs/architecture.png)
+![Architecture](/imgs/Architecture.png)
 
 The process begins with markdown and image files from your project folder, which are processed by **Azure AI Services**:
 

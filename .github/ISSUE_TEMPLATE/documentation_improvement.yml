@@ -1,0 +1,48 @@
+---
+name: Co-op Translator Documentation Improvement
+description: Suggest improvements or changes to the documentation
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: "
+        Thank you for helping improve the documentation for Co-op Translator!
+
+        If you already have improvements ready, feel free to [submit a pull request](https://github.com/Azure/co-op-translator/pulls) instead.
+        <br clear='left'/>"
+      
+  - type: textarea
+    attributes:
+      label: Describe the issue or improvement
+      description: What part of the documentation needs improvement?
+      placeholder: >
+        Please specify the page or section that needs improvement, and describe why it is important. Include any links or screenshots as needed.
+      
+  - type: textarea
+    attributes:
+      label: Suggested changes
+      description: How do you think the documentation could be improved?
+      placeholder: >
+        Provide specific suggestions for what can be changed, added, or removed to improve the documentation.
+      
+  - type: checkboxes
+    attributes:
+      label: Are you willing to submit a pull request to improve the documentation?
+      description: >
+        While you are not required to implement the improvement yourself, contributions are always appreciated!
+        If you are able to make the improvements, we'd love to see your PR.
+      options:
+        - label: I am willing to submit a pull request
+      
+  - type: checkboxes
+    attributes:
+      label: Code of Conduct
+      description: >
+        To ensure a positive environment for all contributors, please agree to our [Code of Conduct](https://github.com/Azure/co-op-translator/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+      
+  - type: markdown
+    attributes:
+      value: "Thank you for helping us improve Co-op Translator's documentation!"

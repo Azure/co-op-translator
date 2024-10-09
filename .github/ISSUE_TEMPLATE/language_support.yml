@@ -1,0 +1,70 @@
+---
+name: Co-op Translator Language Support Request
+description: Request support for a new language in Co-op Translator
+labels: ["enhancement", "language-support"]
+body:
+  - type: markdown
+    attributes:
+      value: "
+        Thank you for requesting language support for Co-op Translator!
+
+        We appreciate your help in expanding the project's language capabilities. If you have the knowledge to implement the language support yourself, feel free to [submit a pull request](https://github.com/Azure/co-op-translator/pulls)!
+        <br clear='left'/>"
+      
+  - type: input
+    attributes:
+      label: Language code
+      description: Provide the language code (e.g., `fr` for French).
+      placeholder: >
+        Enter the language code here. Example: `es` for Spanish, `ko` for Korean, etc.
+      
+  - type: input
+    attributes:
+      label: Language name
+      description: What is the name of the language you are requesting support for?
+      placeholder: >
+        Provide the name of the language here. Example: French, Spanish, Korean, etc.
+      
+  - type: checkboxes
+    attributes:
+      label: Is RTL (Right-to-Left) support needed?
+      description: Is this a right-to-left language?
+      options:
+        - label: Yes
+        - label: No
+      
+  - type: textarea
+    attributes:
+      label: Font requirements
+      description: Does this language require any special fonts? Please specify, and ensure that the font is free to use in open-source projects.
+      placeholder: >
+        Specify if a particular font is required for this language. For example, some languages like Arabic may need RTL fonts. Please provide a link or documentation confirming that the font's license allows usage in this open-source project.
+      
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Provide any additional context or examples.
+      placeholder: >
+        Include any other relevant information about the language support request. For example, if there are specific challenges with the language, please mention them here.
+      
+  - type: checkboxes
+    attributes:
+      label: Are you willing to submit a pull request to add support for this language?
+      description: >
+        While you are not required to implement the language support yourself, contributions are always welcome!
+        If you have experience and are willing to add support for the requested language, we would love to see your contribution.
+      options:
+        - label: I am willing to submit a pull request
+      
+  - type: checkboxes
+    attributes:
+      label: Code of Conduct
+      description: >
+        To ensure a positive environment for all contributors, please agree to our [Code of Conduct](https://github.com/Azure/co-op-translator/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+      
+  - type: markdown
+    attributes:
+      value: "Thank you for helping us expand Co-op Translator's language support!"

@@ -1,0 +1,71 @@
+---
+name: Co-op Translator Bug Report
+description: Report problems and issues with the Co-op Translator functionality
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "
+        Thank you for taking the time to report an issue with Co-op Translator!
+
+        We appreciate your help in improving the project.
+
+        If you already have a fix ready, feel free to [submit a pull request](https://github.com/Azure/co-op-translator/pulls) instead!
+        <br clear='left'/>"
+      
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: What is the issue with the Co-op Translator?
+      placeholder: >
+        Please provide a detailed description of the problem, including any relevant steps to reproduce the issue, expected behavior, and actual behavior. If applicable, include logs, error messages, and screenshots.
+      
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Provide detailed steps to reproduce the issue.
+      placeholder: >
+        Example:
+        1. Set up the Azure environment.
+        2. Run `co-op-translator` with specific settings.
+        3. See the error.
+      
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+      placeholder: >
+        Describe the expected behavior or result when the issue does not occur.
+      
+  - type: textarea
+    attributes:
+      label: Logs and additional context
+      description: Include any relevant logs or context.
+      placeholder: >
+        If possible, include error logs, screenshots, or additional details. Use the fenced blocks (```) for logs or long code sections.
+        Example:
+        ```bash
+        error: something went wrong
+        ```
+      
+  - type: checkboxes
+    attributes:
+      label: Are you willing to submit a pull request to resolve the issue?
+      description: >
+        While you are not required to submit a fix, contributions are greatly appreciated!
+        If you have knowledge of the issue or the project, we would love to see your insights and a potential pull request.
+      options:
+        - label: I am willing to submit a pull request
+      
+  - type: checkboxes
+    attributes:
+      label: Code of Conduct
+      description: >
+        To ensure a positive environment for all contributors, please agree to our [Code of Conduct](https://github.com/Azure/co-op-translator/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+      
+  - type: markdown
+    attributes:
+      value: "Thank you for helping us improve Co-op Translator!"

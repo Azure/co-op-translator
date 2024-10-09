@@ -1,0 +1,62 @@
+---
+name: Co-op Translator Feature Request
+description: Suggest a new feature or improvement for Co-op Translator
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: "
+        Thank you for suggesting a feature for Co-op Translator!
+
+        We appreciate your help in improving the project. If you have a clear idea for a feature and are willing to implement it, feel free to [submit a pull request](https://github.com/Azure/co-op-translator/pulls)!
+        <br clear='left'/>"
+      
+  - type: textarea
+    attributes:
+      label: Describe the feature you'd like
+      description: What feature or improvement would you like to see?
+      placeholder: >
+        Please provide a clear and concise description of the feature or improvement you would like to see in Co-op Translator.
+      
+  - type: textarea
+    attributes:
+      label: Problem this feature solves
+      description: Describe the problem this feature would address.
+      placeholder: >
+        Explain the issue or problem that this feature would help solve. What gap does this feature fill, and why is it needed?
+      
+  - type: textarea
+    attributes:
+      label: Alternatives considered
+      description: Describe any alternative solutions you've considered.
+      placeholder: >
+        Are there any alternative approaches or workarounds that you considered before suggesting this feature? If so, please explain.
+      
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Provide any additional context or examples.
+      placeholder: >
+        Add any other relevant information or examples that would help explain your feature request.
+      
+  - type: checkboxes
+    attributes:
+      label: Are you willing to submit a pull request to implement this feature?
+      description: >
+        While you are not required to implement the feature yourself, contributions are always appreciated!
+        If you have experience and are willing to implement the feature, we would love to see your contribution.
+      options:
+        - label: I am willing to submit a pull request
+      
+  - type: checkboxes
+    attributes:
+      label: Code of Conduct
+      description: >
+        To ensure a positive environment for all contributors, please agree to our [Code of Conduct](https://github.com/Azure/co-op-translator/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+      
+  - type: markdown
+    attributes:
+      value: "Thank you for your feature suggestion!"

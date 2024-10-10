@@ -4,6 +4,7 @@ import click
 import importlib.resources
 import yaml
 from co_op_translator.translators.project_translator import ProjectTranslator
+from co_op_translator.config.base_config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,9 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
     Debug mode example:
     - translate -l "ko" -d: Enable debug logging.
     """
+
+    # Check that the required environment variables are set
+    Config.check_configuration()
 
     if debug:
         logging.basicConfig(level=logging.DEBUG)

@@ -1,4 +1,3 @@
-import os
 import importlib.resources
 import yaml
 

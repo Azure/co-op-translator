@@ -27,13 +27,13 @@ After creating the virtual environment, you'll need to activate it. The steps di
 - Windows:
 
     ```bash
-    venv\Scripts\activate.bat
+    .venv\Scripts\activate.bat
     ```
 
 - Mac/Linux:
 
     ```bash
-    source venv/bin/activate
+    source .venv/bin/activate
     ```
 
 #### Using Poetry
@@ -47,6 +47,14 @@ After creating the virtual environment, you'll need to activate it. The steps di
 ### Installing the Package and required Packages
 
 Once your virtual environment is set up and activated, the next step is to install the necessary dependencies.
+
+#### Using pip (from requirements.txt)
+
+1. If you're using pip, type the following command inside your terminal. It will automatically install the required packages specified in the `requirements.txt` file:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 #### Using Poetry (from pyproject.toml)
 

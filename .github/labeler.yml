@@ -1,0 +1,25 @@
+# Apply 'translator' label for any changes in the translation-related source files
+translator:
+  - src/co_op_translator/**/*
+
+# Apply 'language-support' label for changes related to font configurations or language support
+language-support:
+  - src/co_op_translator/fonts/**/*
+
+# Apply 'tests' label for any changes in the test files
+tests:
+  - tests/**/*
+
+# Apply 'documentation' label for any changes in the documentation files, markdown files, or GitHub issue/PR templates
+documentation:
+  - docs/**/*
+  - '**/*.md'
+  - .github/ISSUE_TEMPLATE/**
+  - .github/PULL_REQUEST_TEMPLATE.md
+
+# Apply 'build' label for any changes in the build configuration files, CI workflows, or Dockerfile
+build:
+  - pyproject.toml
+  - requirements.txt
+  - Dockerfile
+  - .github/workflows/**

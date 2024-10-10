@@ -42,8 +42,8 @@ class ImageTranslator:
         Returns:
             ImageAnalysisClient: The initialized client.
         """
-        endpoint = Config.AZURE_AI_SERVICE_ENDPOINT
-        subscription_key = Config.AZURE_SUBSCRIPTION_KEY
+        endpoint = Config.get_azure_ai_service_endpoint()
+        subscription_key = Config.get_azure_subscription_key()
         return ImageAnalysisClient(endpoint, AzureKeyCredential(subscription_key))
 
     def extract_line_bounding_boxes(self, image_path):

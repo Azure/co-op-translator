@@ -44,9 +44,9 @@ class MarkdownTranslator:
         kernel.add_service(
             AzureChatCompletion(
                 service_id=service_id,
-                deployment_name=Config.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME,
-                endpoint=Config.AZURE_OPENAI_ENDPOINT,
-                api_key=Config.AZURE_OPENAI_API_KEY,
+                deployment_name=Config.get_azure_openai_chat_deployment_name(),
+                endpoint=Config.get_azure_openai_endpoint(),
+                api_key=Config.get_azure_openai_api_key()
             )
         )
         return kernel

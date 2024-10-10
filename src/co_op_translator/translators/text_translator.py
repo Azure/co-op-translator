@@ -17,9 +17,9 @@ class TextTranslator:
             AzureOpenAI: The initialized OpenAI client.
         """
         return AzureOpenAI(
-            api_key=Config.AZURE_OPENAI_API_KEY,
-            api_version=Config.AZURE_OPENAI_API_VERSION,
-            base_url=f"{Config.AZURE_OPENAI_ENDPOINT}/openai/deployments/{Config.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME}"
+            api_key=Config.get_azure_openai_api_key(),
+            api_version=Config.get_azure_openai_api_version(),
+            base_url=f"{Config.get_azure_openai_endpoint()}/openai/deployments/{Config.get_azure_openai_chat_deployment_name()}"
         )
 
     def translate_image_text(self, text_data, target_language):
@@ -35,7 +35,7 @@ class TextTranslator:
         """
         prompt = gen_image_translation_prompt(text_data, target_language)
         response = self.client.chat.completions.create(
-            model=Config.AZURE_OPENAI_MODEL_NAME,
+            model=Config.get_azure_openai_model_name(),
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
@@ -57,7 +57,7 @@ class TextTranslator:
         """
         prompt = f"Translate the following text into {target_language}:\n\n{text}"
         response = self.client.chat.completions.create(
-            model=Config.AZURE_OPENAI_MODEL_NAME,
+            model=Config.get_azure_openai_model_name(),
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}

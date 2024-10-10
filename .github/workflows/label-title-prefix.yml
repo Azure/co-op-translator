@@ -21,9 +21,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prefixLabels = {
-              "Docs": "documentation",
-              "Build": "build",
-              "Translator": "translator"
+              "documentation": "Docs",
+              "build": "Build",
+              "translator": "Translator"
             };
 
             function addTitlePrefix(title, prefix) {

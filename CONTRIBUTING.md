@@ -17,7 +17,7 @@ To set up the development environment for this project, we recommend using Poetr
 #### Using pip
 
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
 #### Using Poetry
@@ -33,13 +33,13 @@ poetry init
 - Windows:
 
     ```bash
-    venv\Scripts\activate.bat
+    .venv\Scripts\activate.bat
     ```
 
 - Mac/Linux:
 
     ```bash
-    source venv/bin/activate
+    source .venv/bin/activate
     ```
 
 #### Using Poetry
@@ -102,3 +102,57 @@ To run Co Op Translator using Poetry in your environment, follow these steps:
 
 > [!NOTE]
 > Ensure your Poetry environment is activated (poetry shell) before running the command.
+
+## Maintainers
+
+### Commit message and Merge strategy
+
+To ensure consistency and clarity in our project's commit history, we follow a specific commit message format **for the final commit message** when using the **Squash and Merge** strategy.
+
+When a pull request (PR) is merged, the individual commits will be squashed into a single commit. The final commit message should follow the format below to maintain a clean and consistent history.
+
+#### Commit message format (for squash and merge)
+
+We use the following format for commit messages:
+
+```bash
+<type>: <description> (#<PR number>)
+```
+
+- **type**: Specifies the category of the commit. We use the following types:
+  - `Docs`: For documentation updates.
+  - `Build`: For changes to the build system or dependencies.
+  - `Translator`: For changes affecting the translation logic or features.
+
+- **description**: A concise summary of the change.
+- **PR number**: The number of the pull request associated with the commit.
+
+**Examples**:
+
+- `Docs: Update installation instructions for clarity (#50)`
+- `Translator: Improve handling of image translation (#60)`
+
+> [!NOTE]
+> Currently, the Docs, Translator, and Build prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+
+#### Merge strategy
+
+We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+
+**Reasons**:
+
+- A clean, linear project history.
+- Consistency in commit messages.
+- Reduced noise from minor commits (e.g., "fix typo").
+
+When merging, ensure the final commit message follows the commit message format described above.
+
+**Example of Squash and Merge**
+If a PR contains the following commits:
+
+- `fix typo`
+- `update README`
+- `adjust formatting`
+
+They should be squashed into:
+`Docs: Improve documentation clarity and formatting (#65)`

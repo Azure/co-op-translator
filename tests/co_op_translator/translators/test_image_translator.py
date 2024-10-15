@@ -47,7 +47,6 @@ def mock_line_bounding_boxes():
         }
     ]
 
-# Test the extract_line_bounding_boxes method
 @patch('builtins.open', new_callable=MagicMock)
 @patch('PIL.Image.open', return_value=MagicMock(spec=Image.Image))
 @patch('PIL.Image.Image.save')
@@ -81,7 +80,6 @@ def test_extract_line_bounding_boxes(mock_get_image_analysis_client, mock_image_
     assert bounding_boxes[0]['text'] == "LIFE IS LIKE"
     assert bounding_boxes[0]['bounding_box'] == [41, 111, 963, 77, 966, 147, 41, 185]
 
-# Test the translate_image method
 @patch('co_op_translator.translators.image_translator.ImageTranslator.plot_annotated_image')
 @patch('co_op_translator.translators.image_translator.TextTranslator.translate_image_text')
 @patch('co_op_translator.translators.image_translator.ImageTranslator.extract_line_bounding_boxes')

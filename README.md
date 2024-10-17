@@ -1,4 +1,4 @@
-# Co-op Translator
+# Co-op Translator: Effortless Multilingual Translation for Project Documentation
 
 _Easily automate multilingual translations for your projects with co-op-translator, powered by advanced LLM technology and Azure AI Services._
 
@@ -23,11 +23,11 @@ _Easily automate multilingual translations for your projects with co-op-translat
 
 **Co-op Translator** is a Python package designed to automate multilingual translations for your projects using advanced Large Language Model (LLM) technology and Azure AI Services. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.
 
-By integrating Co-op Translator into your workflow, you can effortlessly manage multilingual support while focusing on core functionalities.
+By integrating Co-op Translator into your workflow, you can automatically generate organized translation folders for different languages, and translate both Markdown files and images effortlessly.
 
-Here is an example of how Co-op Translator can be used to translate text in images and Markdown files in your project:
+Here is an example of how Co-op Translator structures the translations and translates both Markdown files and text within images in your project:
 
-![Example](/imgs/ex.png)
+![Example](/imgs/translation-folders-file-ex.png)
 
 ### Why choose Co-op Translator for Markdown translations?
 
@@ -90,6 +90,30 @@ poetry add co-op-translator
 These case studies show how Co-op Translator was applied to translate a real-world project. It highlights the translation process, the challenges encountered, and the results achieved, providing a useful reference for applying the tool to similar projects.
 
 1. [Phi-3 Cookbook translation: A case study](./getting_started/Phi-3Cookbook-translation-case.md)
+
+## 🌐 Multi-language support setup
+
+Before starting the translation process, you can add a table in the README that links to the translated versions of your document. Co-op Translator will automatically adjust these links during the translation process, allowing users to seamlessly switch between different language versions.
+
+For example, if a user navigates to the Korean README, they can easily switch to other translations like Spanish or Japanese without leaving the translated page.
+
+Here is an example of how the table should look before running the translation:
+
+```markdown
+## 🌐 Multi-Language Support
+
+> **Note:**
+> These translations were automatically generated using the open-source [co-op-translator](https://github.com/Azure/co-op-translator) and may contain errors or inaccuracies. For critical information, it is recommended to refer to the original or consult a professional human translation. If you'd like to add or update a translation, please refer to the [co-op-translator](https://github.com/Azure/co-op-translator) repository, where you can easily contribute using simple commands.
+
+| Language             | Code | Link to Translated README                               | Last Updated |
+|----------------------|------|---------------------------------------------------------|--------------|
+| Chinese (Simplified) | zh   | [Chinese Translation](./translations/zh/README.md)      | 2024-10-04   |
+| Chinese (Traditional)| tw   | [Chinese Translation](./translations/tw/README.md)      | 2024-10-04   |
+| French               | fr   | [French Translation](./translations/fr/README.md)       | 2024-10-04   |
+| Japanese             | ja   | [Japanese Translation](./translations/ja/README.md)     | 2024-10-04   |
+| Korean               | ko   | [Korean Translation](./translations/ko/README.md)       | 2024-10-04   |
+| Spanish              | es   | [Spanish Translation](./translations/es/README.md)      | 2024-10-04   |
+```
 
 ## Supported languages
 

@@ -6,17 +6,46 @@ By using **Co-op Translator**, I was able to streamline the translation process,
 
 ## The Translation Process
 
-1. **Preparation**: The first step was to organize the markdown files and image assets from the **Phi-3 Cookbook**. I removed the previously manually translated files to ensure a clean slate for the automated process, as leaving them would result in repeated translations. I also created an .env file in the root directory to securely store the necessary Azure API keys and configuration settings.
+1. **Preparation**: First, I organized the markdown files and image assets from the **Phi-3 Cookbook**. I removed any manually translated files from previous versions to ensure the automation process started from a clean slate. Leaving those files would have resulted in unnecessary duplicates. Additionally, I created an *.env* file in the root directory to securely store the Azure API keys and configuration settings required for the translation.
 
-1. **Azure Setup**: I configured **Azure OpenAI** to handle the markdown text translations and **Azure Computer Vision** for extracting and translating text from images. This setup allowed the tool to automatically detect and process both types of content seamlessly.
+1. **Azure setup**: I configured **Azure OpenAI** to handle the translation of the Markdown content and **Azure Computer Vision** to extract and translate text from images. This setup enabled Co-op Translator to automatically detect and process both text-based and image-based content seamlessly.
 
-1. **Installing Co-op Translator**: I installed the **Co-op Translator** package using `Poetry` to manage the dependencies. After installing, I ran the `translate` command with appropriate language codes to initiate the translation process.
+1. **Installing Co-op Translator**: I installed the **Co-op Translator** package using `Poetry` to manage dependencies.
 
-1. **Execution with Co-op Translator**: Using **Co-op Translator**, I initiated the translation process:
-   - The markdown files were processed through **Azure OpenAI** for translation.
-   - **Azure Computer Vision** was used to extract text from images, followed by **Azure OpenAI** for translating the extracted text.
-   - The translated markdown and image files were saved in dedicated language-specific folders.
-   - Additionally, I created a table in the README with links to the translated versions of the README. During the translation process, Co-op Translator automatically adjusted these links, allowing users to navigate between different language versions seamlessly.
+1. **Multi-language support setup**: Before starting the translation process, I created a table in the README linking to the translated versions of the document. During translation, Co-op Translator automatically adjusted the links, allowing users to switch between different language versions seamlessly. For example, if a user navigates to the Korean README, they can easily switch to other translations like Spanish or Japanese without leaving the translated page.
+
+    ```markdown
+    ## 🌐 Multi-Language Support
+    
+    > **Note:**
+    > These translations were automatically generated using the open-source [co-op-translator](https://github.com/Azure/co-op-translator) and may contain errors or inaccuracies. For critical information, it is recommended to refer to the original or consult a professional human translation. If you'd like to add or update a translation, please refer to the [co-op-translator](https://github.com/Azure/co-op-translator) repository, where you can easily contribute using simple commands.
+    
+    | Language             | Code | Link to Translated README                               | Last Updated |
+    |----------------------|------|---------------------------------------------------------|--------------|
+    | Chinese (Simplified) | zh   | [Chinese Translation](./translations/zh/README.md)      | 2024-10-04   |
+    | Chinese (Traditional)| tw   | [Chinese Translation](./translations/tw/README.md)      | 2024-10-04   |
+    | French               | fr   | [French Translation](./translations/fr/README.md)       | 2024-10-04   |
+    | Japanese             | ja   | [Japanese Translation](./translations/ja/README.md)     | 2024-10-04   |
+    | Korean               | ko   | [Korean Translation](./translations/ko/README.md)       | 2024-10-04   |
+    | Spanish              | es   | [Spanish Translation](./translations/es/README.md)      | 2024-10-04   |
+    ```
+
+    ![Add table.](../imgs/multi-language-support.png)
+
+1. **Execution with Co-op Translator**: Using **Co-op Translator**, I initiated the translation process by running the `translate` command with the appropriate language codes, such as Spanish (`es`), French (`fr`), Korean (`ko`), and others.
+
+   - The Markdown files were translated using **Azure OpenAI**.
+   - **Azure Computer Vision** was utilized to extract text from images, and **Azure OpenAI** handled the translation of the extracted text.
+   - The translated Markdown and image files were saved in dedicated, language-specific folders.
+   - Below is an example of how the Korean translation was generated for the Phi-3 Cookbook:
+
+    ```bash
+    (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko"
+    Translating images: 100%|███████████████████████████████████████████████████| 276/276 [1:09:56<00:00, 15.37s/it]
+    Translating markdown files: 100%|███████████████████████████████████████████| 153/153 [1:43:07<00:00, 241.31s/it]
+    ```
+
+   - In this example, **Co-op Translator** processed 276 images and 153 Markdown files for the Korean translation, automatically saving the results in the appropriate language folder.
 
 1. **Review**: After the translations were completed, I reviewed the output for accuracy. The automated process produced high-quality translations, significantly reducing the need for manual adjustments.
 

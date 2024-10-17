@@ -91,6 +91,30 @@ These case studies show how Co-op Translator was applied to translate a real-wor
 
 1. [Phi-3 Cookbook translation: A case study](./getting_started/Phi-3Cookbook-translation-case.md)
 
+## 🌐 Multi-language support setup
+
+Before starting the translation process, you can add a table in the README that links to the translated versions of your document. Co-op Translator will automatically adjust these links during the translation process, allowing users to seamlessly switch between different language versions.
+
+For example, if a user navigates to the Korean README, they can easily switch to other translations like Spanish or Japanese without leaving the translated page.
+
+Here is an example of how the table should look before running the translation:
+
+```markdown
+## 🌐 Multi-Language Support
+
+> **Note:**
+> These translations were automatically generated using the open-source [co-op-translator](https://github.com/Azure/co-op-translator) and may contain errors or inaccuracies. For critical information, it is recommended to refer to the original or consult a professional human translation. If you'd like to add or update a translation, please refer to the [co-op-translator](https://github.com/Azure/co-op-translator) repository, where you can easily contribute using simple commands.
+
+| Language             | Code | Link to Translated README                               | Last Updated |
+|----------------------|------|---------------------------------------------------------|--------------|
+| Chinese (Simplified) | zh   | [Chinese Translation](./translations/zh/README.md)      | 2024-10-04   |
+| Chinese (Traditional)| tw   | [Chinese Translation](./translations/tw/README.md)      | 2024-10-04   |
+| French               | fr   | [French Translation](./translations/fr/README.md)       | 2024-10-04   |
+| Japanese             | ja   | [Japanese Translation](./translations/ja/README.md)     | 2024-10-04   |
+| Korean               | ko   | [Korean Translation](./translations/ko/README.md)       | 2024-10-04   |
+| Spanish              | es   | [Spanish Translation](./translations/es/README.md)      | 2024-10-04   |
+```
+
 ## Supported languages
 
 The table below lists the languages currently supported by **Co-op Translator**. It includes language codes, language names, and any known issues associated with each language. If you would like to add support for a new language, please add the corresponding language code, name, and appropriate font in the `font_language_mappings.yml` file located at `src/co_op_translator/fonts/` and submit a pull request after testing.

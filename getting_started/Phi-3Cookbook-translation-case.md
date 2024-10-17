@@ -14,7 +14,7 @@ By using **Co-op Translator**, I was able to streamline the translation process,
 
 1. **Multi-language support setup**: Before starting the translation process, I created a table in the README linking to the translated versions of the document. During translation, Co-op Translator automatically adjusted the links, allowing users to switch between different language versions seamlessly. For example, if a user navigates to the Korean README, they can easily switch to other translations like Spanish or Japanese without leaving the translated page.
 
-    ```dotnetcli
+    ```markdown
     ## 🌐 Multi-Language Support
     
     > **Note:**

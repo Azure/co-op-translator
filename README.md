@@ -33,15 +33,9 @@ Here is an example of how Co-op Translator can be used to translate text in imag
 
 Have you struggled with traditional translation tools when working with Markdown files? Many translation engines fail to preserve Markdown syntax, forcing you to manually fix formatting issues after translation. Even advanced tools like ChatGPT can misinterpret code blocks, making it hard to copy and paste the translated content while maintaining the original structure.
 
-**Co-op Translator** is specifically designed to solve these problems. With a single command, you can translate all Markdown files and images in your project into any desired language while preserving the correct Markdown syntax. Although links to translated versions in the README need to be added manually, Co-op Translator ensures that users can easily switch between different language versions, providing a smooth and seamless multilingual experience for your project documentation.
+**Co-op Translator** is specifically designed to solve these problems. With a single command, you can translate all Markdown files and images in your project into any desired language while preserving the correct Markdown syntax.
 
-**Key benefits**:
-
-- No more broken Markdown syntax after translation.
-- Seamless translation of both text and images in your project.
-- Easy-to-navigate links to translated documentation for users.
-
-Translate your project effortlessly and maintain the integrity of your Markdown files with Co-op Translator!
+Translate your project's Markdown files effortlessly with Co-op Translator!
 
 ### Key features
 

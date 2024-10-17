@@ -16,6 +16,7 @@ By using **Co-op Translator**, I was able to streamline the translation process,
    - The markdown files were processed through **Azure OpenAI** for translation.
    - **Azure Computer Vision** was used to extract text from images, followed by **Azure OpenAI** for translating the extracted text.
    - The translated markdown and image files were saved in dedicated language-specific folders.
+   - Additionally, I created a table in the README with links to the translated versions of the README. During the translation process, Co-op Translator automatically adjusted these links, allowing users to navigate between different language versions seamlessly.
 
 1. **Review**: After the translations were completed, I reviewed the output for accuracy. The automated process produced high-quality translations, significantly reducing the need for manual adjustments.
 

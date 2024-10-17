@@ -1,4 +1,4 @@
-# Co-op Translator
+# Co-op Translator: Effortless Multilingual Translation for Project Documentation
 
 _Easily automate multilingual translations for your projects with co-op-translator, powered by advanced LLM technology and Azure AI Services._
 
@@ -23,11 +23,11 @@ _Easily automate multilingual translations for your projects with co-op-translat
 
 **Co-op Translator** is a Python package designed to automate multilingual translations for your projects using advanced Large Language Model (LLM) technology and Azure AI Services. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.
 
-By integrating Co-op Translator into your workflow, you can effortlessly manage multilingual support while focusing on core functionalities.
+By integrating Co-op Translator into your workflow, you can automatically generate organized translation folders for different languages, and translate both Markdown files and images effortlessly.
 
-Here is an example of how Co-op Translator can be used to translate text in images and Markdown files in your project:
+Here is an example of how Co-op Translator structures the translations and translates both Markdown files and text within images in your project:
 
-![Example](/imgs/ex.png)
+![Example](/imgs/translation-folders-file-ex.png)
 
 ### Why choose Co-op Translator for Markdown translations?
 

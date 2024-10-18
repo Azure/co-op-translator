@@ -21,6 +21,26 @@ _Easily automate multilingual translations for your projects with co-op-translat
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
+## Table of contents
+
+- [Overview](#overview)
+- [Why choose Co-op Translator for Markdown translations?](#why-choose-co-op-translator-for-markdown-translations)
+- [Key Features](#key-features)
+- [How it works](#how-it-works)
+- [Getting started with Co-op Translator](#getting-started-with-co-op-translator)
+  - [Prerequisites](#prerequisites)
+  - [Quick install](#quick-install)
+  - [How to use Co-op Translator](#how-to-use-co-op-translator)
+- [Case Studies: Applying Co-op Translator in real projects](#case-studies-applying-co-op-translator-in-real-projects)
+- [🌐Multi-language support setup](#🌐-multi-language-support-setup)
+- [Supported languages](#supported-languages)
+- [Adding a new language](#adding-a-new-language)
+- [Repository Structure](#repository-structure)
+- [Contributing](#contributing)
+- [Code of Conduct](#code-of-conduct)
+- [Responsible AI](#responsible-ai)
+- [Trademarks](#trademarks)
+
 ## Overview
 
 **Co-op Translator** is a Python package designed to automate multilingual translations for your projects using advanced Large Language Model (LLM) technology and Azure AI Services. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.
@@ -224,8 +244,8 @@ You can evaluate your AI application in your development environment using the [
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.

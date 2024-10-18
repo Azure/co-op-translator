@@ -49,7 +49,7 @@ By integrating Co-op Translator into your workflow, you can automatically genera
 
 Here is an example of how Co-op Translator structures the translations and translates both Markdown files and text within images in your project:
 
-![Example](/imgs/translation-folders-file-ex.png)
+![Example](/imgs/translation-ex.png)
 
 ### Why choose Co-op Translator for Markdown translations?
 

@@ -32,7 +32,7 @@ _Easily automate multilingual translations for your projects with co-op-translat
   - [Quick install](#quick-install)
   - [How to use Co-op Translator](#how-to-use-co-op-translator)
 - [Case Studies: Applying Co-op Translator in real projects](#case-studies-applying-co-op-translator-in-real-projects)
-- [🌐Multi-language support setup](#🌐-multi-language-support-setup)
+- [🌐Multi-language support setup](#-multi-language-support-setup)
 - [Supported languages](#supported-languages)
 - [Adding a new language](#adding-a-new-language)
 - [Repository Structure](#repository-structure)

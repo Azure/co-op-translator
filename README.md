@@ -1,6 +1,6 @@
-# Co-op Translator: Effortless Multilingual Translation for Project Documentation
-
 ![Logo](/imgs/logo.png)
+
+# Co-op Translator: Effortless Multilingual Translation Solution for Project Documentation
 
 _Easily automate multilingual translations for your projects with co-op-translator, powered by advanced LLM technology and Azure AI Services._
 

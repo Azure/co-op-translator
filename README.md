@@ -1,4 +1,6 @@
-# Co-op Translator: Effortless Multilingual Translation for Project Documentation
+![Logo](/imgs/logo.png)
+
+# Co-op Translator: Effortless Multilingual Translation Solution for Project Documentation
 
 _Easily automate multilingual translations for your projects with co-op-translator, powered by advanced LLM technology and Azure AI Services._
 
@@ -19,6 +21,26 @@ _Easily automate multilingual translations for your projects with co-op-translat
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
+## Table of contents
+
+- [Overview](#overview)
+- [Why choose Co-op Translator for Markdown translations?](#why-choose-co-op-translator-for-markdown-translations)
+- [Key Features](#key-features)
+- [How it works](#how-it-works)
+- [Getting started with Co-op Translator](#getting-started-with-co-op-translator)
+  - [Prerequisites](#prerequisites)
+  - [Quick install](#quick-install)
+  - [How to use Co-op Translator](#how-to-use-co-op-translator)
+- [Case Studies: Applying Co-op Translator in real projects](#case-studies-applying-co-op-translator-in-real-projects)
+- [🌐Multi-language support setup](#-multi-language-support-setup)
+- [Supported languages](#supported-languages)
+- [Adding a new language](#adding-a-new-language)
+- [Repository Structure](#repository-structure)
+- [Contributing](#contributing)
+- [Code of Conduct](#code-of-conduct)
+- [Responsible AI](#responsible-ai)
+- [Trademarks](#trademarks)
+
 ## Overview
 
 **Co-op Translator** is a Python package designed to automate multilingual translations for your projects using advanced Large Language Model (LLM) technology and Azure AI Services. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.
@@ -27,7 +49,7 @@ By integrating Co-op Translator into your workflow, you can automatically genera
 
 Here is an example of how Co-op Translator structures the translations and translates both Markdown files and text within images in your project:
 
-![Example](/imgs/translation-folders-file-ex.png)
+![Example](/imgs/translation-ex.png)
 
 ### Why choose Co-op Translator for Markdown translations?
 
@@ -99,7 +121,9 @@ For example, if a user navigates to the Korean README, they can easily switch to
 
 Here is an example of how the table should look before running the translation:
 
-```markdown
+### Example
+
+```md
 ## 🌐 Multi-Language Support
 
 > **Note:**
@@ -114,6 +138,16 @@ Here is an example of how the table should look before running the translation:
 | Korean               | ko   | [Korean Translation](./translations/ko/README.md)       | 2024-10-04   |
 | Spanish              | es   | [Spanish Translation](./translations/es/README.md)      | 2024-10-04   |
 ```
+
+### Simplified example
+
+```md
+| [Korean](./translations/ko/README.md) | [English](./translations/en/README.md) | [Japanese](./translations/ja/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Spanish](./translations/es/README.md) |
+
+> **Note:**
+> These translations were automatically generated using the open-source [co-op-translator](https://github.com/Azure/co-op-translator) and may contain errors or inaccuracies. For critical information, it is recommended to refer to the original or consult a professional human translation. If you'd like to add or update a translation, please refer to the [co-op-translator](https://github.com/Azure/co-op-translator) repository, where you can easily contribute using simple commands.
+```
+
 
 ## Supported languages
 
@@ -222,8 +256,8 @@ You can evaluate your AI application in your development environment using the [
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.

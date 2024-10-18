@@ -121,7 +121,9 @@ For example, if a user navigates to the Korean README, they can easily switch to
 
 Here is an example of how the table should look before running the translation:
 
-```markdown
+### Example
+
+```md
 ## 🌐 Multi-Language Support
 
 > **Note:**
@@ -136,6 +138,16 @@ Here is an example of how the table should look before running the translation:
 | Korean               | ko   | [Korean Translation](./translations/ko/README.md)       | 2024-10-04   |
 | Spanish              | es   | [Spanish Translation](./translations/es/README.md)      | 2024-10-04   |
 ```
+
+### Simplified example
+
+```md
+| [Korean](./translations/ko/README.md) | [English](./translations/en/README.md) | [Japanese](./translations/ja/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Spanish](./translations/es/README.md) |
+
+> **Note:**
+> These translations were automatically generated using the open-source [co-op-translator](https://github.com/Azure/co-op-translator) and may contain errors or inaccuracies. For critical information, it is recommended to refer to the original or consult a professional human translation. If you'd like to add or update a translation, please refer to the [co-op-translator](https://github.com/Azure/co-op-translator) repository, where you can easily contribute using simple commands.
+```
+
 
 ## Supported languages
 

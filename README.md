@@ -1,5 +1,7 @@
 # Co-op Translator: Effortless Multilingual Translation for Project Documentation
 
+![Logo](/imgs/logo1.png)
+
 _Easily automate multilingual translations for your projects with co-op-translator, powered by advanced LLM technology and Azure AI Services._
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)

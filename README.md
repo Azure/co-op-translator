@@ -69,7 +69,7 @@ Translate your project's Markdown files effortlessly with Co-op Translator!
 
 ### How it works
 
-![Architecture](/imgs/Architecture.png)
+![Architecture](/imgs/architecture_241019.png)
 
 The process begins with Markdown and image files from your project folder, which are processed by **Azure AI Services**:
 

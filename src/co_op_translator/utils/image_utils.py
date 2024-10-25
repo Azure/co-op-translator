@@ -109,7 +109,7 @@ def draw_text_on_image(text, font, text_color):
     Returns:
         PIL.Image.Image: The image with text.
     """
-    size = font.getbbox(text)[2:]  # width and height of the text
+    size = tuple(font.getbbox(text)[2:])  # width and height of the text
     text_image = Image.new('RGBA', size, (255, 255, 255, 0))
     draw = ImageDraw.Draw(text_image)
     draw.text((0, 0), text, font=font, fill=text_color)

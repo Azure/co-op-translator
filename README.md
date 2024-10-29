@@ -1,6 +1,6 @@
 ![Logo](/imgs/logo.png)
 
-# Co-op Translator: Co-op Translator: Localizing Project with a Single Command
+# Co-op Translator: Localize Your Project with a Single Command
 
 _Easily automate multilingual translations for your projects with co-op-translator, powered by advanced LLM technology and Azure AI Services._
 

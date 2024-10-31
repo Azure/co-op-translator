@@ -56,13 +56,12 @@ def test_extract_line_bounding_boxes(mock_get_image_analysis_client, mock_makedi
     """
     Test extract_line_bounding_boxes method to ensure it extracts text and bounding boxes correctly.
     """
-    # Mock Azure Image Analysis Client response
+
     mock_client = MagicMock()
     mock_result = MagicMock()
     mock_block = MagicMock()
     mock_line = MagicMock()
 
-    # Setting up the mock response from the Azure client
     mock_line.text = "LIFE IS LIKE"
     mock_line.bounding_polygon = [
         MagicMock(x=41, y=111),
@@ -76,10 +75,8 @@ def test_extract_line_bounding_boxes(mock_get_image_analysis_client, mock_makedi
     mock_client.analyze.return_value = mock_result
     mock_get_image_analysis_client.return_value = mock_client
 
-    # Call the method under test
     bounding_boxes = image_translator.extract_line_bounding_boxes(TEST_IMAGE_PATH)
 
-    # Validate the extracted bounding boxes
     assert len(bounding_boxes) == 1, f"Expected 1 bounding box, got {len(bounding_boxes)}"
     assert bounding_boxes[0]['text'] == "LIFE IS LIKE", f"Expected text 'LIFE IS LIKE', got {bounding_boxes[0]['text']}"
     assert bounding_boxes[0]['bounding_box'] == [41, 111, 963, 77, 966, 147, 41, 185], f"Bounding box mismatch: {bounding_boxes[0]['bounding_box']}"
@@ -92,7 +89,7 @@ def test_translate_image(mock_makedirs, mock_extract_boxes, mock_translate_text,
     """
     Test translate_image method to ensure the image is correctly translated and annotated.
     """
-    # Mock bounding box extraction and translation process
+
     mock_extract_boxes.return_value = mock_line_bounding_boxes
     mock_translate_text.return_value = [
         'LA VIDA ES COMO',
@@ -105,13 +102,10 @@ def test_translate_image(mock_makedirs, mock_extract_boxes, mock_translate_text,
 
     target_language = "es"
 
-    # Translate the image
     result_path = image_translator.translate_image(TEST_IMAGE_PATH, target_language)
 
-    # Ensure the result_path matches the expected output path
     assert result_path == "./test_translated_images/translated_image.png"
 
-    # Check that the methods were called with the expected arguments
     mock_extract_boxes.assert_called_once_with(TEST_IMAGE_PATH)
     mock_translate_text.assert_called_once_with(
         ['LIFE IS LIKE', 'RIDING A BICYCLE', 'TO', 'KEEP YOUR BALANCE', 'YOU MUST KEEP MOVING'], 

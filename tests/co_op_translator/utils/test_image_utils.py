@@ -12,7 +12,6 @@ from co_op_translator.utils.image_utils import (
     get_image_mode,
 )
 
-# Mock data for testing
 image_path = "tests/sample_image.jpg"
 bounding_boxes = [
     {
@@ -52,21 +51,16 @@ def test_save_and_load_bounding_boxes(mock_json_dump, mock_exists, mock_open, se
     """
     save_bounding_boxes(image_path, bounding_boxes)
 
-    # Normalize paths to make them platform-independent and consistent
     expected_path = os.path.normpath(os.path.join(".", json_file_path))
-    # Get the actual path used in the open call
     actual_path = mock_open.call_args[0][0]
     actual_path = os.path.normpath(actual_path)
 
-    # Assert that the open function was called with the expected path
     assert actual_path == expected_path, f"Expected open to be called with {expected_path}, got {actual_path}"
 
-    # Ensure json.dump was called with correct arguments
     mock_json_dump.assert_called_once()
     args, kwargs = mock_json_dump.call_args
     assert args[0] == bounding_boxes, "json.dump called with incorrect data."
 
-    # Test loading bounding boxes
     mock_open.reset_mock()
     mock_exists.reset_mock()
     with patch("json.load", return_value=bounding_boxes):
@@ -78,13 +72,12 @@ def test_get_average_color():
     """
     Test calculating the average color of an image's bounding box area.
     """
-    # Create a simple image for testing
+
     img = Image.new("RGB", (200, 200), color=(0, 0, 255))  # Blue image
     bounding_box = [50, 50, 150, 50, 150, 150, 50, 150]
 
     avg_color = get_average_color(img, bounding_box)
 
-    # Check that the average color is blue
     assert avg_color == (0, 0, 255), f"Expected (0, 0, 255), got {avg_color}"
 
 
@@ -92,13 +85,11 @@ def test_get_text_color():
     """
     Test calculating text color based on background luminance.
     """
-    # Test with dark background color (should return white text)
     bg_color = (0, 0, 50)  # Dark blue
     text_color = get_text_color(bg_color)
     assert text_color == (255, 255, 255), f"Expected (255, 255, 255), got {text_color}"
 
-    # Test with light background color (should return black text)
-    bg_color = (200, 200, 255)  # Light blue
+    bg_color = (200, 200, 255)
     text_color = get_text_color(bg_color)
     assert text_color == (0, 0, 0), f"Expected (0, 0, 0), got {text_color}"
 
@@ -121,11 +112,9 @@ def test_draw_text_on_image(mock_image_new, mock_image_draw, mock_truetype):
 
     text_image = draw_text_on_image("Test Text", font_mock, (0, 0, 0))
 
-    # Assert that the image mode is RGBA
     mock_image_new.assert_called_once_with('RGBA', (100, 30), (255, 255, 255, 0))
     assert text_image == text_image_mock, "Returned image does not match expected image."
 
-    # Assert that text was drawn on the image
     draw_mock.text.assert_called_once_with((0, 0), "Test Text", font=font_mock, fill=(0, 0, 0))
 
 
@@ -144,11 +133,9 @@ def test_create_filled_polygon_mask(mock_image_draw, mock_image_new):
 
     mask_image = create_filled_polygon_mask(bounding_box, (200, 200), (255, 0, 0, 255))
 
-    # Assert the size and mode of the image
     mock_image_new.assert_called_once_with('RGBA', (200, 200), (255, 255, 255, 0))
     assert mask_image == mask_image_mock, "Returned mask image does not match expected image."
 
-    # Assert that the polygon function was called with the bounding box
     expected_points = [(50, 50), (150, 50), (150, 150), (50, 150)]
     draw_mock.polygon.assert_called_once_with(expected_points, fill=(255, 0, 0, 255))
 

@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from co_op_translator.translators.text_translator import TextTranslator
-from co_op_translator.utils.text_utils import gen_image_translation_prompt
 
 @pytest.fixture
 def translator():

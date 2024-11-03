@@ -8,11 +8,11 @@ TEST_IMAGE_PATH = Path("test_image.png").resolve()
 ROOT_DIR = Path(".").resolve()
 
 @pytest.fixture
-def image_translator():
+def image_translator(tmp_path):
     """
-    Fixture to provide an instance of ImageTranslator for each test.
+    Fixture to provide an instance of ImageTranslator for each test, using a temporary directory for output.
     """
-    return ImageTranslator(default_output_dir="./test_translated_images", root_dir=ROOT_DIR)
+    return ImageTranslator(default_output_dir=tmp_path, root_dir=ROOT_DIR)
 
 @pytest.fixture
 def mock_line_bounding_boxes():
@@ -56,7 +56,6 @@ def test_extract_line_bounding_boxes(mock_get_image_analysis_client, mock_makedi
     """
     Test extract_line_bounding_boxes method to ensure it extracts text and bounding boxes correctly.
     """
-
     mock_client = MagicMock()
     mock_result = MagicMock()
     mock_block = MagicMock()
@@ -85,11 +84,10 @@ def test_extract_line_bounding_boxes(mock_get_image_analysis_client, mock_makedi
 @patch('co_op_translator.translators.image_translator.TextTranslator.translate_image_text')
 @patch('co_op_translator.translators.image_translator.ImageTranslator.extract_line_bounding_boxes')
 @patch('os.makedirs')
-def test_translate_image(mock_makedirs, mock_extract_boxes, mock_translate_text, mock_plot_annotated_image, image_translator, mock_line_bounding_boxes):
+def test_translate_image(mock_makedirs, mock_extract_boxes, mock_translate_text, mock_plot_annotated_image, image_translator, mock_line_bounding_boxes, tmp_path):
     """
     Test translate_image method to ensure the image is correctly translated and annotated.
     """
-
     mock_extract_boxes.return_value = mock_line_bounding_boxes
     mock_translate_text.return_value = [
         'LA VIDA ES COMO',
@@ -98,13 +96,12 @@ def test_translate_image(mock_makedirs, mock_extract_boxes, mock_translate_text,
         'MANTENER EL EQUILIBRIO',
         'DEBES SEGUIR MOVIÉNDOTE'
     ]
-    mock_plot_annotated_image.return_value = "./test_translated_images/translated_image.png"
+    mock_plot_annotated_image.return_value = tmp_path / "translated_image.png"
 
     target_language = "es"
-
     result_path = image_translator.translate_image(TEST_IMAGE_PATH, target_language)
 
-    assert result_path == "./test_translated_images/translated_image.png"
+    assert str(result_path) == str(tmp_path / "translated_image.png")
 
     mock_extract_boxes.assert_called_once_with(TEST_IMAGE_PATH)
     mock_translate_text.assert_called_once_with(

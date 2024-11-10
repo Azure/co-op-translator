@@ -5,7 +5,6 @@ import asyncio
 from tqdm.asyncio import tqdm
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
-
 from co_op_translator.translators import (
     text_translator,
     image_translator,
@@ -230,11 +229,9 @@ class ProjectTranslator:
         total_files_checked = 0
         mismatched_files = []
 
-        # Collect all markdown files for all language codes
-        all_markdown_files = []
-        for language_code in self.language_codes:
-            markdown_files = [file for file in filter_files(self.root_dir, EXCLUDED_DIRS) if file.suffix == '.md']
-            all_markdown_files.extend([(file, language_code) for file in markdown_files])
+        # Collect all markdown files
+        markdown_files = [file for file in filter_files(self.root_dir, EXCLUDED_DIRS) if file.suffix == '.md']
+        all_markdown_files = [(file, language_code) for file in markdown_files for language_code in self.language_codes]
 
         total_files = len(all_markdown_files)
         
@@ -245,7 +242,7 @@ class ProjectTranslator:
         logger.info("Checking translated files for errors...")
 
         # Step 1: Check all markdown files and collect mismatched files
-        with tqdm(total=total_files, desc=f"Checking files for {language_code}", unit="file") as progress_bar:
+        with tqdm(total=total_files, desc="Checking files", unit="file") as progress_bar:
             for md_file_path, language_code in all_markdown_files:
                 md_file_path = Path(md_file_path).resolve()
                 total_files_checked += 1
@@ -265,7 +262,7 @@ class ProjectTranslator:
 
                 # Check if line breaks are mismatched
                 if compare_line_breaks(original_content, translated_content):
-                    mismatched_files.append(md_file_path)
+                    mismatched_files.append((md_file_path, language_code))
                     logger.warning(f"Detected formatting issue in {translated_md_file_path}")
 
                 # Update the progress bar after each file is checked
@@ -275,20 +272,16 @@ class ProjectTranslator:
         if mismatched_files:
             logger.info(f"Retrying translation for {len(mismatched_files)} mismatched files...")
 
-            # Create a progress bar for retrying translations with dynamic file name display
+            # Create a progress bar for retrying translations
             with tqdm(total=len(mismatched_files), desc="Retrying translations", unit="file") as retry_progress_bar:
-                for md_file_path in mismatched_files:
-                    for language_code in self.language_codes:
-                        logger.warning(f"Retrying translation for {md_file_path} in {language_code}...")
+                for md_file_path, language_code in mismatched_files:
+                    logger.warning(f"Retrying translation for {md_file_path} in {language_code}...")
 
-                        # Set dynamic description to show which file is being retried
-                        retry_progress_bar.set_description(f"Retrying {md_file_path.name} for {language_code}")
+                    # Retry translation
+                    await self.translate_markdown(md_file_path, language_code)
 
-                        # Retry translation
-                        await self.translate_markdown(md_file_path, language_code)
-
-                        # Update the progress bar for retry process
-                        retry_progress_bar.update(1)
+                    # Update the progress bar for retry process
+                    retry_progress_bar.update(1)
 
             logger.info(f"Total mismatched files retried: {len(mismatched_files)}")
         else:

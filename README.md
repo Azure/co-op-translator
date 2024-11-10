@@ -68,7 +68,7 @@ Translate your project's Markdown files effortlessly with Co-op Translator!
 - **Easy integration**: Seamlessly integrate with your existing project setup.
 
 ### How it works
----
+
 ![Architecture](/imgs/architecture_241019.png)
 
 The process begins with Markdown and image files from your project folder, which are processed by **Azure AI Services**:

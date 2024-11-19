@@ -109,11 +109,12 @@ These case studies show how Co-op Translator was applied to translate a real-wor
 Learn more about Co-op Translator through our presentations:
 
 - **Open at Microsoft**: A brief 18-minute introduction and quick guide on how to use Co-op Translator.
-  - **YouTube**: [Unlocking Multilingual Accessibility with Co-op Translator](https://www.youtube.com/watch?v=jX_swfH_KNU)
-  - **Microsoft Channel**: [Unlocking Multilingual Accessibility with Co-op Translator - A Case Study on Phi-3 Cookbook](https://learn.microsoft.com/shows/open-at-microsoft/unlocking-multilingual-accessibility-with-co-op-translator-a-case-study-on-phi-3-cookbook)
 
-- **Microsoft Reactor**(December 2nd): A detailed step-by-step guide covering everything from understanding what Co-op Translator is, setting up the tool, and using it effectively, to a live demo showcasing its capabilities in action.
-  - **YouTube**: [Unlocking Multilingual Mastery: Dive into Co-op Translator with Azure](https://www.youtube.com/watch?v=boTtKVPBLAc)
+  [![Open at Microsoft](/imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
+
+- **Microsoft Reactor** (Scheduled for December 2, 2024): A one-hour detailed step-by-step guide covering everything from understanding what Co-op Translator is, setting up the tool, and using it effectively, to a live demo showcasing its capabilities in action.
+
+  [![Microsoft Reactor](/imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
 
 ## Contributing
 

@@ -46,7 +46,7 @@ English is often considered the universal language of technology, but many devel
 
 **Co-op Translator** aims to break down these language barriers by providing an easy-to-use tool for automating translations. By making technical documentation accessible in multiple languages, we empower developers, students, and researchers globally.
 
-## 💖 Support us
+## ⭐ Support us
 
 Join us in revolutionizing global communication! Give a ⭐ to [Co-op Translator](https://github.com/azure/co-op-translator) on GitHub and help us break down language barriers together. Your support makes a difference!
 

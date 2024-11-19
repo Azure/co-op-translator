@@ -1,4 +1,3 @@
-
 # Supported languages
 
 The table below lists the languages currently supported by **Co-op Translator**. It includes language codes, language names, and any known issues associated with each language. If you would like to add support for a new language, please add the corresponding language code, name, and appropriate font in the `font_language_mappings.yml` file located at `src/co_op_translator/fonts/` and submit a pull request after testing.

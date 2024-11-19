@@ -106,7 +106,7 @@ These case studies show how Co-op Translator was applied to translate a real-wor
 
 ## 🎥 Video presentations
 
-Learn more about Co-op Translator through our presentations:
+Learn more about Co-op Translator through our presentations _(Click the image below to watch on YouTube.)_:
 
 - **Open at Microsoft**: A brief 18-minute introduction and quick guide on how to use Co-op Translator.
 

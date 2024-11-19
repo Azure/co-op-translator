@@ -2,18 +2,8 @@
 
 The **Co-op Translator** is a command-line interface (CLI) tool that helps you translate markdown and image files in your project into multiple languages. This section explains how to use the tool, covers the various CLI options, and provides examples for different use cases.
 
-## CLI Options Overview
-
-The **Co-op Translator** CLI offers several options to customize the translation process:
-
-- **`-l` (or `--language-codes`)**: Space-separated list of language codes for translation (e.g., `"es fr de"` for Spanish, French, and German). Use `"all"` to translate into all supported languages.
-- **`-r` (or `--root-dir`)**: Specifies the root directory of the project (default is the current directory).
-- **`-a` (or `--add`)**: Adds new translations without deleting existing ones (default behavior).
-- **`-u` (or `--update`)**: Updates translations by deleting existing ones and re-creating them. **Warning**: This will delete all current translations.
-- **`-img` (or `--images`)**: Translates only image files.
-- **`-md` (or `--markdown`)**: Translates only markdown files.
-- **`-chk` (or `--check`)**: Checks translated files for errors and retries translation if needed.
-- **`-d` (or `--debug`)**: Enables debug mode for detailed logging.
+> [!NOTE]
+> For a complete list of commands and their detailed descriptions, please refer to the [Command reference](./command-reference.md).
 
 ---
 

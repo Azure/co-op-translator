@@ -24,7 +24,7 @@ Here is an example of how the table should look before running the translation:
 | Spanish              | es   | [Spanish Translation](./translations/es/README.md)      | 2024-10-04   |
 ```
 
-### Simplified example
+## Simplified example
 
 ```md
 ## 🌐 Multi-Language Support

@@ -31,6 +31,8 @@ Here is an example of how Co-op Translator structures the translations and trans
 
 ![Example](/imgs/translation-ex.png)
 
+**Ready to unlock multilingual accessibility? Get started with Co-op Translator today!**
+
 ## ✨ Key features
 
 - **Automated Translations**: Translate text into multiple languages effortlessly.

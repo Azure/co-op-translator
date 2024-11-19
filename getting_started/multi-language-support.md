@@ -6,7 +6,7 @@ For example, if a user navigates to the Korean README, they can easily switch to
 
 Here is an example of how the table should look before running the translation:
 
-### Example
+## Example
 
 ```md
 ## 🌐 Multi-Language Support

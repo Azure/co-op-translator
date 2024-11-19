@@ -1,4 +1,3 @@
-
 # 🌐 Multi-language support setup
 
 Before starting the translation process, you can add a table in the README that links to the translated versions of your document. Co-op Translator will automatically adjust these links during the translation process, allowing users to seamlessly switch between different language versions.

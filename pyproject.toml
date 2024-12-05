@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "co_op_translator"
-version = "0.5.1"
+version = "0.5.0"
 description = "Easily automate multilingual translations for your projects with co-op-translator, powered by advanced LLM technology."
 authors = ["Minseok Song <skytin1004@gmail.com>", "timothychungd <timothychungd@gmail.com>"]
 maintainers = []
@@ -58,7 +58,7 @@ prompt_toolkit = "^3.0.47"
 psutil = "^5.9.8"
 ptyprocess = "^0.7.0"
 pure-eval = "^0.2.2"
-pydantic = "^2.7.3"
+pydantic = ">=2.7.3,<2.10"
 pydantic_core = "^2.18.4"
 pyparsing = "^3.1.2"
 python-dateutil = "^2.9.0.post0"

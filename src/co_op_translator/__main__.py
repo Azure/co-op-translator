@@ -3,7 +3,7 @@ import logging
 import click
 import importlib.resources
 import yaml
-from co_op_translator.translators.project_translator import ProjectTranslator
+from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.config.base_config import Config
 
 logger = logging.getLogger(__name__)

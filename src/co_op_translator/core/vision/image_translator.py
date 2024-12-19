@@ -5,6 +5,7 @@ from PIL import Image, ImageFont
 from pathlib import Path
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.vision_config.config import VisionConfig
+from co_op_translator.config.vision_config.provider import VisionProvider
 from co_op_translator.utils.vision.image_utils import (
     get_average_color,
     get_text_color,
@@ -28,7 +29,7 @@ class ImageTranslator(ABC):
         Args:
             default_output_dir (str): The default directory where translated images will be saved.
         """
-        self.text_translator = TextTranslator()
+        self.text_translator = TextTranslator.create()
         self.font_config = FontConfig()
         self.root_dir = Path(root_dir)
         self.default_output_dir = default_output_dir
@@ -224,18 +225,21 @@ class ImageTranslator(ABC):
             return str(output_path)  # Return the path to the original image with the new name
     
     @classmethod
-    def create(cls) -> 'ImageTranslator':
+    def create(cls, default_output_dir='./translated_images', root_dir='.') -> 'ImageTranslator':
         """
         Factory method to create appropriate image translator based on available provider.
+
+        Args:
+            default_output_dir (str): The default directory where translated images will be saved.
+            root_dir (str): The root directory of the project.
 
         Returns:
             ImageTranslator: An instance of the appropriate image translator.
         """
         provider = VisionConfig.get_available_provider()
-        if provider == LLMProvider.AZURE_COMPUTER_VISION:
+        if provider == VisionProvider.AZURE_COMPUTER_VISION:
             from co_op_translator.core.vision.providers.azure.image_translator import AzureImageTranslator
-            return AzureImageTranslator()
-
+            return AzureImageTranslator(default_output_dir=default_output_dir, root_dir=root_dir)
         else:
             raise ValueError("No valid LLM provider configured")
 

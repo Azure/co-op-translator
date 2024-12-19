@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import asyncio
 import logging
 from pathlib import Path
+from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.utils.llm.markdown_utils import (
     process_markdown,
     update_links,
@@ -146,10 +147,10 @@ class MarkdownTranslator(ABC):
         if provider is None:
             raise ValueError("No valid LLM provider configured")
             
-        if provider == LLMConfig.AZURE_OPENAI:
+        if provider == LLMProvider.AZURE_OPENAI:
             from co_op_translator.core.llm.providers.azure.markdown_translator import AzureMarkdownTranslator
             return AzureMarkdownTranslator(root_dir)
-        elif provider == LLMConfig.OPENAI:
+        elif provider == LLMProvider.OPENAI:
             from co_op_translator.core.llm.providers.openai.markdown_translator import OpenAIMarkdownTranslator
             return OpenAIMarkdownTranslator(root_dir)
         else:

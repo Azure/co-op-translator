@@ -4,8 +4,8 @@ from pathlib import Path
 import asyncio
 from tqdm.asyncio import tqdm
 from co_op_translator.core.llm import (
-    text_translator,
     markdown_translator,
+    text_translator,
 )
 from co_op_translator.core.vision import (
     image_translator,
@@ -34,9 +34,11 @@ class ProjectTranslator:
         self.root_dir = Path(root_dir).resolve()
         self.translations_dir = self.root_dir / 'translations'
         self.image_dir = self.root_dir / 'translated_images'
-        self.text_translator = text_translator.TextTranslator()
-        self.image_translator = image_translator.ImageTranslator(default_output_dir=self.image_dir, root_dir=self.root_dir)
-        self.markdown_translator = markdown_translator.MarkdownTranslator(self.root_dir)
+
+        # Use factory methods to create appropriate translators
+        self.text_translator = text_translator.TextTranslator.create()
+        self.image_translator = image_translator.ImageTranslator.create(default_output_dir=self.image_dir, root_dir=self.root_dir)
+        self.markdown_translator = markdown_translator.MarkdownTranslator.create(self.root_dir)
 
     async def translate_image(self, image_path, language_code):
         """
@@ -77,20 +79,29 @@ class ProjectTranslator:
 
             # First attempt at translation
             translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path)
+            if not translated_content:
+                logger.error(f"Translation failed for {file_path}: Empty translation result")
+                return
 
             # Check if translation format is broken (e.g., line breaks mismatch)
             if compare_line_breaks(document, translated_content):
                 logger.warning(f"Translation failed for {file_path}. Retrying...")
                 # Retry translation
                 translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path)
+                if not translated_content:
+                    logger.error(f"Retry translation failed for {file_path}: Empty translation result")
+                    return
 
             relative_path = file_path.relative_to(self.root_dir)
             translated_path = self.translations_dir / language_code / relative_path
             translated_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(translated_path, "w", encoding='utf-8') as f:
-                f.write(translated_content)
-            logger.info(f"Translated {file_path} to {language_code} and saved to {translated_path}")
+            try:
+                with open(translated_path, "w", encoding='utf-8') as f:
+                    f.write(translated_content)
+                logger.info(f"Translated {file_path} to {language_code} and saved to {translated_path}")
+            except Exception as e:
+                logger.error(f"Failed to write translation to {translated_path}: {e}")
 
         except Exception as e:
             logger.error(f"Failed to translate {file_path}: {e}")
@@ -208,7 +219,7 @@ class ProjectTranslator:
         Display a single progress bar for both checking and retry processes.
         """
         total_files_checked = 0
-        mismatched_files = []
+        files_to_translate = []
 
         # Collect all markdown files
         markdown_files = [file for file in filter_files(self.root_dir, EXCLUDED_DIRS) if file.suffix == '.md']
@@ -222,7 +233,7 @@ class ProjectTranslator:
 
         logger.info("Checking translated files for errors...")
 
-        # Step 1: Check all markdown files and collect mismatched files
+        # Step 1: Check all markdown files and collect files that need translation
         with tqdm(total=total_files, desc="Checking files", unit="file") as progress_bar:
             for md_file_path, language_code in all_markdown_files:
                 md_file_path = Path(md_file_path).resolve()
@@ -234,6 +245,7 @@ class ProjectTranslator:
 
                 if not translated_md_file_path.exists():
                     logger.warning(f"Translated file does not exist: {translated_md_file_path}")
+                    files_to_translate.append((md_file_path, language_code))
                     progress_bar.update(1)
                     continue
 
@@ -243,28 +255,28 @@ class ProjectTranslator:
 
                 # Check if line breaks are mismatched
                 if compare_line_breaks(original_content, translated_content):
-                    mismatched_files.append((md_file_path, language_code))
+                    files_to_translate.append((md_file_path, language_code))
                     logger.warning(f"Detected formatting issue in {translated_md_file_path}")
 
                 # Update the progress bar after each file is checked
                 progress_bar.update(1)
 
-        # Step 2: Retry translation for mismatched files (if any)
-        if mismatched_files:
-            logger.info(f"Retrying translation for {len(mismatched_files)} mismatched files...")
+        # Step 2: Translate missing or mismatched files
+        if files_to_translate:
+            logger.info(f"Starting translation for {len(files_to_translate)} files...")
 
-            # Create a progress bar for retrying translations
-            with tqdm(total=len(mismatched_files), desc="Retrying translations", unit="file") as retry_progress_bar:
-                for md_file_path, language_code in mismatched_files:
-                    logger.warning(f"Retrying translation for {md_file_path} in {language_code}...")
+            # Create a progress bar for translations
+            with tqdm(total=len(files_to_translate), desc="Translating files", unit="file") as translation_progress_bar:
+                for md_file_path, language_code in files_to_translate:
+                    logger.info(f"Translating {md_file_path} to {language_code}...")
 
-                    # Retry translation
+                    # Translate the file
                     await self.translate_markdown(md_file_path, language_code)
 
-                    # Update the progress bar for retry process
-                    retry_progress_bar.update(1)
+                    # Update the progress bar for translation process
+                    translation_progress_bar.update(1)
 
-            logger.info(f"Total mismatched files retried: {len(mismatched_files)}")
+            logger.info(f"Total files translated: {len(files_to_translate)}")
         else:
             logger.info("No formatting issues found in the translated files.")
 

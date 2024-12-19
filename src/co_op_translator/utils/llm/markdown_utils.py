@@ -3,7 +3,6 @@ This module contains utility functions for handling Markdown content.
 Functions include loading language mappings, generating translation prompts,
 and processing specific Markdown structures such as comments and URLs.
 """
-
 import os
 import re
 import tiktoken
@@ -179,26 +178,14 @@ def process_markdown_with_many_links(content: str, max_links) -> list:
 
     return chunks
 
-def update_links(markdown_string: str, md_file_path: Path, language_code: str, root_dir: Path, vision_enabled: bool = True) -> str:
-    """
-    Update links in the markdown file.
-    If vision_enabled is False, only update non-image links.
-    """
+def update_links(md_file_path: Path, markdown_string: str, language_code: str, root_dir: Path) -> str:
     logger.info("Updating links in the markdown file")
 
     translations_dir = root_dir / 'translations'
     translated_images_dir = root_dir / 'translated_images'
 
-    # Update image links only if vision service is enabled
-    markdown_string = update_image_links(
-        markdown_string,
-        md_file_path,
-        language_code,
-        translations_dir,
-        translated_images_dir,
-        root_dir,
-        vision_enabled=vision_enabled
-    )
+    # Update image links
+    markdown_string = update_image_links(markdown_string, md_file_path, language_code, translations_dir, translated_images_dir, root_dir)
 
     # Update non-image file links
     markdown_string = update_file_links(markdown_string, md_file_path, language_code, translations_dir, root_dir)
@@ -208,12 +195,7 @@ def update_links(markdown_string: str, md_file_path: Path, language_code: str, r
 
     return markdown_string
 
-def update_image_links(markdown_string: str, md_file_path: Path, language_code: str, translations_dir: Path, translated_images_dir: Path, root_dir: Path, vision_enabled: bool = True) -> str:
-    """
-    Update image links in markdown content.
-    If vision_enabled is True, update links to translated images.
-    If vision_enabled is False, update image links like regular files (maintaining relative paths).
-    """
+def update_image_links(markdown_string: str, md_file_path: Path, language_code: str, translations_dir: Path, translated_images_dir: Path, root_dir: Path) -> str:
     image_pattern = r'!\[(.*?)\]\((.*?)\)'
     image_matches = re.findall(image_pattern, markdown_string)
 
@@ -232,15 +214,10 @@ def update_image_links(markdown_string: str, md_file_path: Path, language_code: 
             try:
                 actual_image_path = get_actual_image_path(link, md_file_path)
                 translated_md_dir = translations_dir / language_code / md_file_path.relative_to(root_dir).parent
+                rel_path = os.path.relpath(translated_images_dir, translated_md_dir)
 
-                if vision_enabled:
-                    # Use translated image path from translated_images_dir when vision service is enabled
-                    rel_path = os.path.relpath(translated_images_dir, translated_md_dir)
-                    new_filename = generate_translated_filename(actual_image_path, language_code, root_dir)
-                    updated_link = os.path.join(rel_path, new_filename).replace(os.path.sep, '/')
-                else:
-                    # When vision service is disabled, maintain original image path but update relative path
-                    updated_link = os.path.relpath(actual_image_path, translated_md_dir).replace(os.path.sep, '/')
+                new_filename = generate_translated_filename(actual_image_path, language_code, root_dir)
+                updated_link = os.path.join(rel_path, new_filename).replace(os.path.sep, '/')
 
                 old_image_markup = f'![{alt_text}]({link})'
                 new_image_markup = f'![{alt_text}]({updated_link})'
@@ -375,13 +352,13 @@ def replace_code_blocks_and_inline_code(document: str):
 
     # Replace code blocks with placeholders
     for i, code_block in enumerate(code_blocks):
-        placeholder = f"@@CODE_BLOCK_{i}@@" 
+        placeholder = f"@@CODE_BLOCK_{i}@@"
         document = document.replace(code_block, placeholder)
         placeholder_map[placeholder] = code_block
 
     # Replace inline codes with placeholders
     for i, inline_code in enumerate(inline_codes):
-        placeholder = f"@@INLINE_CODE_{i}@@" 
+        placeholder = f"@@INLINE_CODE_{i}@@"
         document = document.replace(inline_code, placeholder)
         placeholder_map[placeholder] = inline_code
 

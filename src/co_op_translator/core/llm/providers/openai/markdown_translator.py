@@ -44,14 +44,12 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
         )
         return kernel
 
-    async def _run_prompt(self, prompt: str, source_lang: str, target_lang: str, index: int, total: int) -> str:
+    async def _run_prompt(self, prompt: str, index: int, total: int) -> str:
         """
-        Execute a single translation prompt using Azure OpenAI.
+        Execute a single translation prompt using OpenAI.
         
         Args:
             prompt: The translation prompt
-            source_lang: Source language code
-            target_lang: Target language code
             index: Current chunk index
             total: Total number of chunks
             
@@ -59,50 +57,40 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
             str: Translated text
         """
         try:
-            # For disclaimer and other system prompts, use semantic kernel
+            # Initialize settings for all prompts
+            req_settings = self.kernel.get_prompt_execution_settings_from_service_id(LLMProvider.OPENAI.value)
+            req_settings.max_tokens = 4096
+            req_settings.temperature = 0.7
+            req_settings.top_p = 0.8
+
+            # Log appropriate message based on prompt type
             if index == 'disclaimer' or isinstance(index, str):
                 logger.info(f"Running system prompt: {index}")
-                start_time = time.time()
-
-                req_settings = self.kernel.get_prompt_execution_settings_from_service_id(LLMProvider.OPENAI.value)
-                req_settings.max_tokens = 4096
-                req_settings.temperature = 0.7
-                req_settings.top_p = 0.8
-
-                prompt_template_config = PromptTemplateConfig(
-                    template=prompt,
-                    name="translate",
-                    description="Translate a text to another language",
-                    template_format="semantic-kernel",
-                    execution_settings=req_settings,
-                )
-
-                function = self.kernel.add_function(
-                    function_name="translate_function",
-                    plugin_name="translate_plugin",
-                    prompt_template_config=prompt_template_config,
-                )
-
-                result = await self.kernel.invoke(function)
-                end_time = time.time()
-                logger.info(f"System prompt completed in {end_time - start_time} seconds")
-
-                await asyncio.sleep(1)
-                return str(result)
-            
-            # For regular markdown content, use the text translator
             else:
                 logger.info(f"Running translation prompt {index}/{total}")
-                start_time = time.time()
-                
-                result = await self.text_translator.translate_text(prompt, target_lang)
-                
-                end_time = time.time()
-                logger.info(f"Translation {index}/{total} completed in {end_time - start_time} seconds")
-                
-                await asyncio.sleep(1)
-                return result
-                
+            
+            start_time = time.time()
+
+            prompt_template_config = PromptTemplateConfig(
+                template=prompt,
+                name="translate",
+                description="Translate a text to another language",
+                template_format="semantic-kernel",
+                execution_settings=req_settings,
+            )
+
+            function = self.kernel.add_function(
+                function_name="translate_function",
+                plugin_name="translate_plugin",
+                prompt_template_config=prompt_template_config,
+            )
+
+            result = await self.kernel.invoke(function)
+            end_time = time.time()
+            logger.info(f"Prompt {index}/{total} completed in {end_time - start_time} seconds")
+
+            await asyncio.sleep(1)
+            return str(result)
         except Exception as e:
             logger.error(f"Error in prompt {index}/{total} - {prompt}: {e}")
-            raise  # Re-raise the exception to be handled by the base class
+            return ""

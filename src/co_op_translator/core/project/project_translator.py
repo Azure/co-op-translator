@@ -3,19 +3,18 @@ import os
 from pathlib import Path
 import asyncio
 from tqdm.asyncio import tqdm
-from semantic_kernel import Kernel
-from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
-from co_op_translator.translators import (
+from co_op_translator.core.llm import (
     text_translator,
-    image_translator,
     markdown_translator,
 )
-from co_op_translator.config.base_config import Config
+from co_op_translator.core.vision import (
+    image_translator,
+)
 from co_op_translator.config.constants import (
     SUPPORTED_IMAGE_EXTENSIONS,
     EXCLUDED_DIRS,
 )
-from co_op_translator.utils.file_utils import (
+from co_op_translator.utils.common.file_utils import (
     read_input_file,
     handle_empty_document,
     get_filename_and_extension,
@@ -24,8 +23,8 @@ from co_op_translator.utils.file_utils import (
     delete_translated_images_by_language_code,
     delete_translated_markdown_files_by_language_code,
 )
-from co_op_translator.utils.task_utils import worker
-from co_op_translator.utils.markdown_utils import compare_line_breaks
+from co_op_translator.utils.common.task_utils import worker
+from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
 
 logger = logging.getLogger(__name__)
 
@@ -38,24 +37,6 @@ class ProjectTranslator:
         self.text_translator = text_translator.TextTranslator()
         self.image_translator = image_translator.ImageTranslator(default_output_dir=self.image_dir, root_dir=self.root_dir)
         self.markdown_translator = markdown_translator.MarkdownTranslator(self.root_dir)
-        self.kernel = self._initialize_kernel()
-
-    def _initialize_kernel(self):
-        """
-        Initialize the kernel with Azure OpenAI service.
-        """
-        kernel = Kernel()
-        service_id = "chat-gpt"
-
-        kernel.add_service(
-            AzureChatCompletion(
-                service_id=service_id,
-                deployment_name=Config.get_azure_openai_chat_deployment_name(),
-                endpoint=Config.get_azure_openai_endpoint(),
-                api_key=Config.get_azure_openai_api_key(),
-            )
-        )
-        return kernel
 
     async def translate_image(self, image_path, language_code):
         """

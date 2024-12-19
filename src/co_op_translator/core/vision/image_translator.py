@@ -4,7 +4,8 @@ import numpy as np
 from PIL import Image, ImageFont
 from pathlib import Path
 from co_op_translator.config.font_config import FontConfig
-from co_op_translator.utils.image_utils import (
+from co_op_translator.config.vision_config.config import VisionConfig
+from co_op_translator.utils.vision.image_utils import (
     get_average_color,
     get_text_color,
     create_filled_polygon_mask,
@@ -12,16 +13,14 @@ from co_op_translator.utils.image_utils import (
     warp_image_to_bounding_box,
     get_image_mode
 )
-from azure.ai.vision.imageanalysis import ImageAnalysisClient
 from azure.ai.vision.imageanalysis.models import VisualFeatures
-from azure.core.credentials import AzureKeyCredential
-from co_op_translator.config.base_config import Config
-from co_op_translator.translators.text_translator import TextTranslator
-from co_op_translator.utils.file_utils import generate_translated_filename
+from co_op_translator.core.llm.text_translator import TextTranslator
+from co_op_translator.utils.common.file_utils import generate_translated_filename
+from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
-class ImageTranslator:
+class ImageTranslator(ABC):
     def __init__(self, default_output_dir='./translated_images', root_dir='.'):
         """
         Initialize the ImageTranslator with a default output directory.
@@ -35,6 +34,7 @@ class ImageTranslator:
         self.default_output_dir = default_output_dir
         os.makedirs(self.default_output_dir, exist_ok=True)
 
+    @abstractmethod
     def get_image_analysis_client(self):
         """
         Initialize and return an Image Analysis Client.
@@ -42,9 +42,7 @@ class ImageTranslator:
         Returns:
             ImageAnalysisClient: The initialized client.
         """
-        endpoint = Config.get_azure_ai_service_endpoint()
-        subscription_key = Config.get_azure_subscription_key()
-        return ImageAnalysisClient(endpoint, AzureKeyCredential(subscription_key))
+        pass
 
     def extract_line_bounding_boxes(self, image_path):
         """
@@ -224,3 +222,21 @@ class ImageTranslator:
             original_image.save(output_path)
             
             return str(output_path)  # Return the path to the original image with the new name
+    
+    @classmethod
+    def create(cls) -> 'ImageTranslator':
+        """
+        Factory method to create appropriate image translator based on available provider.
+
+        Returns:
+            ImageTranslator: An instance of the appropriate image translator.
+        """
+        provider = VisionConfig.get_available_provider()
+        if provider == LLMProvider.AZURE_COMPUTER_VISION:
+            from co_op_translator.core.vision.providers.azure.image_translator import AzureImageTranslator
+            return AzureImageTranslator()
+
+        else:
+            raise ValueError("No valid LLM provider configured")
+
+       

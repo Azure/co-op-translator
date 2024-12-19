@@ -3,19 +3,18 @@ import os
 from pathlib import Path
 import asyncio
 from tqdm.asyncio import tqdm
-from semantic_kernel import Kernel
-from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
-from co_op_translator.translators import (
-    text_translator,
-    image_translator,
+from co_op_translator.core.llm import (
     markdown_translator,
+    text_translator,
 )
-from co_op_translator.config.base_config import Config
+from co_op_translator.core.vision import (
+    image_translator,
+)
 from co_op_translator.config.constants import (
     SUPPORTED_IMAGE_EXTENSIONS,
     EXCLUDED_DIRS,
 )
-from co_op_translator.utils.file_utils import (
+from co_op_translator.utils.common.file_utils import (
     read_input_file,
     handle_empty_document,
     get_filename_and_extension,
@@ -24,44 +23,42 @@ from co_op_translator.utils.file_utils import (
     delete_translated_images_by_language_code,
     delete_translated_markdown_files_by_language_code,
 )
-from co_op_translator.utils.task_utils import worker
-from co_op_translator.utils.markdown_utils import compare_line_breaks
+from co_op_translator.utils.common.task_utils import worker
+from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
 
 logger = logging.getLogger(__name__)
 
 class ProjectTranslator:
-    def __init__(self, language_codes, root_dir='.'):
+    def __init__(self, language_codes, root_dir='.', markdown_only=False):
         self.language_codes = language_codes.split()
         self.root_dir = Path(root_dir).resolve()
         self.translations_dir = self.root_dir / 'translations'
         self.image_dir = self.root_dir / 'translated_images'
-        self.text_translator = text_translator.TextTranslator()
-        self.image_translator = image_translator.ImageTranslator(default_output_dir=self.image_dir, root_dir=self.root_dir)
-        self.markdown_translator = markdown_translator.MarkdownTranslator(self.root_dir)
-        self.kernel = self._initialize_kernel()
+        self.markdown_only = markdown_only
 
-    def _initialize_kernel(self):
-        """
-        Initialize the kernel with Azure OpenAI service.
-        """
-        kernel = Kernel()
-        service_id = "chat-gpt"
-
-        kernel.add_service(
-            AzureChatCompletion(
-                service_id=service_id,
-                deployment_name=Config.get_azure_openai_chat_deployment_name(),
-                endpoint=Config.get_azure_openai_endpoint(),
-                api_key=Config.get_azure_openai_api_key(),
-            )
-        )
-        return kernel
+        # Use factory methods to create appropriate translators
+        self.text_translator = text_translator.TextTranslator.create()
+        try:
+            if not markdown_only:  # Only create image translator if not in markdown-only mode
+                self.image_translator = image_translator.ImageTranslator.create(default_output_dir=self.image_dir, root_dir=self.root_dir)
+            else:
+                logger.info("Skipping image translator initialization in markdown-only mode")
+                self.image_translator = None
+        except ValueError as e:
+            logger.info("Switching to markdown-only mode due to missing Computer Vision configuration")
+            self.markdown_only = True  # Auto-switch to markdown-only mode
+            self.image_translator = None
+        self.markdown_translator = markdown_translator.MarkdownTranslator.create(self.root_dir)
 
     async def translate_image(self, image_path, language_code):
         """
         Translate an image and handle file permissions or path errors.
         """
         image_path = Path(image_path).resolve()
+        if not self.image_translator:
+            logger.info(f"Image translation skipped for {image_path} due to missing Computer Vision configuration")
+            return str(image_path)  # Return original image path when translation is not available
+            
         if image_path.exists() and image_path.is_file():
             logger.info(f"Image exists: {image_path}")
             if os.access(image_path, os.R_OK):
@@ -95,21 +92,30 @@ class ProjectTranslator:
                 return
 
             # First attempt at translation
-            translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path)
+            translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path, markdown_only=self.markdown_only)
+            if not translated_content:
+                logger.error(f"Translation failed for {file_path}: Empty translation result")
+                return
 
             # Check if translation format is broken (e.g., line breaks mismatch)
             if compare_line_breaks(document, translated_content):
                 logger.warning(f"Translation failed for {file_path}. Retrying...")
                 # Retry translation
-                translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path)
+                translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path, markdown_only=self.markdown_only)
+                if not translated_content:
+                    logger.error(f"Retry translation failed for {file_path}: Empty translation result")
+                    return
 
             relative_path = file_path.relative_to(self.root_dir)
             translated_path = self.translations_dir / language_code / relative_path
             translated_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(translated_path, "w", encoding='utf-8') as f:
-                f.write(translated_content)
-            logger.info(f"Translated {file_path} to {language_code} and saved to {translated_path}")
+            try:
+                with open(translated_path, "w", encoding='utf-8') as f:
+                    f.write(translated_content)
+                logger.info(f"Translated {file_path} to {language_code} and saved to {translated_path}")
+            except Exception as e:
+                logger.error(f"Failed to write translation to {translated_path}: {e}")
 
         except Exception as e:
             logger.error(f"Failed to translate {file_path}: {e}")
@@ -227,7 +233,7 @@ class ProjectTranslator:
         Display a single progress bar for both checking and retry processes.
         """
         total_files_checked = 0
-        mismatched_files = []
+        files_to_translate = []
 
         # Collect all markdown files
         markdown_files = [file for file in filter_files(self.root_dir, EXCLUDED_DIRS) if file.suffix == '.md']
@@ -241,7 +247,7 @@ class ProjectTranslator:
 
         logger.info("Checking translated files for errors...")
 
-        # Step 1: Check all markdown files and collect mismatched files
+        # Step 1: Check all markdown files and collect files that need translation
         with tqdm(total=total_files, desc="Checking files", unit="file") as progress_bar:
             for md_file_path, language_code in all_markdown_files:
                 md_file_path = Path(md_file_path).resolve()
@@ -253,6 +259,7 @@ class ProjectTranslator:
 
                 if not translated_md_file_path.exists():
                     logger.warning(f"Translated file does not exist: {translated_md_file_path}")
+                    files_to_translate.append((md_file_path, language_code))
                     progress_bar.update(1)
                     continue
 
@@ -262,28 +269,28 @@ class ProjectTranslator:
 
                 # Check if line breaks are mismatched
                 if compare_line_breaks(original_content, translated_content):
-                    mismatched_files.append((md_file_path, language_code))
+                    files_to_translate.append((md_file_path, language_code))
                     logger.warning(f"Detected formatting issue in {translated_md_file_path}")
 
                 # Update the progress bar after each file is checked
                 progress_bar.update(1)
 
-        # Step 2: Retry translation for mismatched files (if any)
-        if mismatched_files:
-            logger.info(f"Retrying translation for {len(mismatched_files)} mismatched files...")
+        # Step 2: Translate missing or mismatched files
+        if files_to_translate:
+            logger.info(f"Starting translation for {len(files_to_translate)} files...")
 
-            # Create a progress bar for retrying translations
-            with tqdm(total=len(mismatched_files), desc="Retrying translations", unit="file") as retry_progress_bar:
-                for md_file_path, language_code in mismatched_files:
-                    logger.warning(f"Retrying translation for {md_file_path} in {language_code}...")
+            # Create a progress bar for translations
+            with tqdm(total=len(files_to_translate), desc="Translating files", unit="file") as translation_progress_bar:
+                for md_file_path, language_code in files_to_translate:
+                    logger.info(f"Translating {md_file_path} to {language_code}...")
 
-                    # Retry translation
+                    # Translate the file
                     await self.translate_markdown(md_file_path, language_code)
 
-                    # Update the progress bar for retry process
-                    retry_progress_bar.update(1)
+                    # Update the progress bar for translation process
+                    translation_progress_bar.update(1)
 
-            logger.info(f"Total mismatched files retried: {len(mismatched_files)}")
+            logger.info(f"Total files translated: {len(files_to_translate)}")
         else:
             logger.info("No formatting issues found in the translated files.")
 

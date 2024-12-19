@@ -29,15 +29,25 @@ from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
 logger = logging.getLogger(__name__)
 
 class ProjectTranslator:
-    def __init__(self, language_codes, root_dir='.'):
+    def __init__(self, language_codes, root_dir='.', markdown_only=False):
         self.language_codes = language_codes.split()
         self.root_dir = Path(root_dir).resolve()
         self.translations_dir = self.root_dir / 'translations'
         self.image_dir = self.root_dir / 'translated_images'
+        self.markdown_only = markdown_only
 
         # Use factory methods to create appropriate translators
         self.text_translator = text_translator.TextTranslator.create()
-        self.image_translator = image_translator.ImageTranslator.create(default_output_dir=self.image_dir, root_dir=self.root_dir)
+        try:
+            if not markdown_only:  # Only create image translator if not in markdown-only mode
+                self.image_translator = image_translator.ImageTranslator.create(default_output_dir=self.image_dir, root_dir=self.root_dir)
+            else:
+                logger.info("Skipping image translator initialization in markdown-only mode")
+                self.image_translator = None
+        except ValueError as e:
+            logger.info("Switching to markdown-only mode due to missing Computer Vision configuration")
+            self.markdown_only = True  # Auto-switch to markdown-only mode
+            self.image_translator = None
         self.markdown_translator = markdown_translator.MarkdownTranslator.create(self.root_dir)
 
     async def translate_image(self, image_path, language_code):
@@ -45,6 +55,10 @@ class ProjectTranslator:
         Translate an image and handle file permissions or path errors.
         """
         image_path = Path(image_path).resolve()
+        if not self.image_translator:
+            logger.info(f"Image translation skipped for {image_path} due to missing Computer Vision configuration")
+            return str(image_path)  # Return original image path when translation is not available
+            
         if image_path.exists() and image_path.is_file():
             logger.info(f"Image exists: {image_path}")
             if os.access(image_path, os.R_OK):
@@ -78,7 +92,7 @@ class ProjectTranslator:
                 return
 
             # First attempt at translation
-            translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path)
+            translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path, markdown_only=self.markdown_only)
             if not translated_content:
                 logger.error(f"Translation failed for {file_path}: Empty translation result")
                 return
@@ -87,7 +101,7 @@ class ProjectTranslator:
             if compare_line_breaks(document, translated_content):
                 logger.warning(f"Translation failed for {file_path}. Retrying...")
                 # Retry translation
-                translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path)
+                translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path, markdown_only=self.markdown_only)
                 if not translated_content:
                     logger.error(f"Retry translation failed for {file_path}: Empty translation result")
                     return

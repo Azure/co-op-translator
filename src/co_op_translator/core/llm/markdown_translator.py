@@ -30,7 +30,7 @@ class MarkdownTranslator(ABC):
         self.root_dir = root_dir
         self.font_config = FontConfig()
 
-    async def translate_markdown(self, document: str, language_code: str, md_file_path: str | Path) -> str:
+    async def translate_markdown(self, document: str, language_code: str, md_file_path: str | Path, markdown_only: bool = False) -> str:
         """
         Translate the markdown document to the specified language, handling documents with more than 10 links by splitting them into chunks.
 
@@ -38,6 +38,7 @@ class MarkdownTranslator(ABC):
             document (str): The content of the markdown file.
             language_code (str): The target language code.
             md_file_path (str | Path): The file path of the markdown file.
+            markdown_only (bool): Whether we're in markdown-only mode.
 
         Returns:
             str: The translated content with updated links and a disclaimer appended.
@@ -65,7 +66,7 @@ class MarkdownTranslator(ABC):
         translated_content = restore_code_blocks_and_inline_code(translated_content, placeholder_map)
 
         # Step 5: Update links and add disclaimer
-        updated_content = update_links(md_file_path, translated_content, language_code, self.root_dir)
+        updated_content = update_links(md_file_path, translated_content, language_code, self.root_dir, markdown_only=markdown_only)
         disclaimer = await self.generate_disclaimer(language_code)
         updated_content += "\n\n" + disclaimer
 

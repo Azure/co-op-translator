@@ -227,7 +227,8 @@ class ImageTranslator(ABC):
     @classmethod
     def create(cls, default_output_dir='./translated_images', root_dir='.') -> 'ImageTranslator':
         """
-        Factory method to create appropriate image translator based on available provider.
+        Factory method to create appropriate ImageTranslator instance.
+        Currently only supports Azure Computer Vision.
 
         Args:
             default_output_dir (str): The default directory where translated images will be saved.
@@ -236,11 +237,14 @@ class ImageTranslator(ABC):
         Returns:
             ImageTranslator: An instance of the appropriate image translator.
         """
-        provider = VisionConfig.get_available_provider()
-        if provider == VisionProvider.AZURE_COMPUTER_VISION:
-            from co_op_translator.core.vision.providers.azure.image_translator import AzureImageTranslator
-            return AzureImageTranslator(default_output_dir=default_output_dir, root_dir=root_dir)
-        else:
-            raise ValueError("No valid LLM provider configured")
-
-       
+        try:
+            from co_op_translator.config.vision_config.config import VisionConfig
+            provider = VisionConfig.get_available_provider()
+            
+            if provider == VisionProvider.AZURE_COMPUTER_VISION:
+                from co_op_translator.core.vision.providers.azure.image_translator import AzureImageTranslator
+                return AzureImageTranslator(default_output_dir, root_dir)
+            
+        except (ImportError, ValueError) as e:
+            logger.warning(f"Computer Vision is not properly configured: {e}")
+            raise ValueError("Computer Vision environment variables are not properly configured")

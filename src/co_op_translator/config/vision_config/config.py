@@ -16,25 +16,21 @@ class VisionConfig:
     """Configuration for Vision-related services."""
     
     @classmethod
-    def get_available_provider(cls) -> VisionProvider:
+    def get_available_provider(cls) -> Optional[VisionProvider]:
         """
         Check environment variables and return the available Vision provider.
         Currently only supports Azure Computer Vision.
         
         Returns:
-            VisionProvider: The available provider to use
-            
-        Raises:
-            ValueError: If no provider is properly configured
+            Optional[VisionProvider]: The available provider to use, or None if no provider is configured
         """
         config = cls.get_service_config(VisionProvider.AZURE_COMPUTER_VISION)
-        if all(config.env_vars.values()):
+        if config and all(value and value.strip() for value in config.env_vars.values()):
             return VisionProvider.AZURE_COMPUTER_VISION
-            
-        raise ValueError("No Vision provider is properly configured. Please check your environment variables.")
+        return None
 
     @classmethod
-    def get_service_config(cls, provider: VisionProvider) -> VisionServiceConfig:
+    def get_service_config(cls, provider: VisionProvider) -> Optional[VisionServiceConfig]:
         """
         Get configuration for a specific Vision service.
         
@@ -42,10 +38,14 @@ class VisionConfig:
             provider: Vision provider to get configuration for.
             
         Returns:
-            VisionServiceConfig containing the service's configuration.
+            Optional[VisionServiceConfig]: Service configuration if available, None if not configured
         """
         if provider == VisionProvider.AZURE_COMPUTER_VISION:
             azure_config = AzureComputerVisionConfig()
+            # If any required environment variable is missing, return None
+            if not azure_config.get_subscription_key() or not azure_config.get_endpoint():
+                return None
+                
             return VisionServiceConfig(
                 required=True,
                 env_vars={
@@ -53,15 +53,14 @@ class VisionConfig:
                     "AZURE_AI_SERVICE_ENDPOINT": azure_config.get_endpoint(),
                 }
             )
-        raise ValueError(f"Unknown Vision provider: {provider}")
+        return None
 
-    @classmethod
-    def check_configuration(cls):
+    @staticmethod
+    def check_configuration() -> bool:
         """
-        Check if all required Vision environment variables are set.
-        Raises OSError if required variables are missing.
+        Check if Computer Vision service is available and properly configured.
+        
+        Returns:
+            bool: True if Computer Vision is available and configured, False otherwise
         """
-        try:
-            cls.get_available_provider()
-        except ValueError as e:
-            raise OSError(str(e))
+        return VisionConfig.get_available_provider() is not None

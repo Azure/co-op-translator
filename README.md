@@ -97,6 +97,7 @@ poetry add co-op-translator
 - [Command reference](./getting_started/command-reference.md): Learn about all available commands and their options in detail.
 - [Multi-language support setup](./getting_started/multi-language-support.md): Before starting the translation process, you can add a table in the README that links to the translated versions of your document.
 - [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions to add new languages.
+- [Markdown-Only Mode](./getting_started/markdown-only-mode.md): Learn how to use Co-op Translator in Markdown-only mode.
 
 ## 📚 Case Studies: Applying Co-op Translator in real projects
 

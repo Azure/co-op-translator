@@ -35,8 +35,7 @@ class MarkdownTranslator(ABC):
 
         Args:
             document (str): The content of the markdown file.
-            source_lang (str): The source language code.
-            target_lang (str): The target language code.
+            language_code (str): The target language code.
             md_file_path (str | Path): The file path of the markdown file.
 
         Returns:

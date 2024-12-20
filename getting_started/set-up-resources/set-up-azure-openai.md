@@ -6,11 +6,11 @@
 
 1. Type *azure openai* in the **search bar** at the top of the portal page and select **Azure OpenAI** from the options that appear.
 
-    ![Type Azure OpenAI.](../imgs/type-azure-openai.png)
+    ![Type Azure OpenAI.](../../imgs/type-azure-openai.png)
 
 1. Select **+ Create** from the navigation menu.
 
-    ![Create Azure OpenAI.](../imgs/create-azure-openai.png)
+    ![Create Azure OpenAI.](../../imgs/create-azure-openai.png)
 
 1. Perform the following tasks:
 
@@ -20,13 +20,13 @@
     - Enter **Name**. It must be a unique value.
     - Select the **Pricing tier** you'd like to use.
 
-    ![Fill Azure OpenAI.](../imgs/fill-azureopenai.png)
+    ![Fill Azure OpenAI.](../../imgs/fill-azureopenai.png)
 
 1. Select **Next** to move to the **Network** page.
 
 1. Select a network security **Type** you'd like to use.
 
-    ![Select a network security Type.](../imgs/select-azureopenai-security-type.png)
+    ![Select a network security Type.](../../imgs/select-azureopenai-security-type.png)
 
 1. Select **Next** to move to the **Tags** page.
 
@@ -34,7 +34,7 @@
 
 1. Select **Create**.
 
-    ![Select Create.](../imgs/create-azure-openai-complete.png)
+    ![Select Create.](../../imgs/create-azure-openai-complete.png)
 
 ### Deploy Azure OpenAI models
 
@@ -42,13 +42,13 @@
 
 1. Select **Go to Azure OpenAI Studio** from the navigation menu.
 
-    ![Select Go to Azure OpenAI Studio from the navigation menu.](../imgs/go-to-azureopenai-studio.png)
+    ![Select Go to Azure OpenAI Studio from the navigation menu.](../../imgs/go-to-azureopenai-studio.png)
 
 1. Inside Azure OpenAI Studio, select **Deployments** from the left side tab.
 1. Select **+ Deploy model** from the navigation menu.
 1. Select **Deploy base model** from the navigation menu to create a new **gpt-4o** deployment.
 
-    ![Select Deployments.](../imgs/deploy-aoai.png)
+    ![Select Deployments.](../../imgs/deploy-aoai.png)
 
 1. Perform the following tasks:
 
@@ -57,6 +57,6 @@
     - Inside **Deploy model gpt-4o** page, enter **Deployment name**. It must be a unique value. For example, **gpt-4o**.
     - Inside **Deploy model gpt-4o** page, select the **Deployment type** you'd like to use.
 
-    ![Create model.](../imgs/create-4o.png)
+    ![Create model.](../../imgs/create-4o.png)
 
 1. Select **Deploy**.

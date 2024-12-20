@@ -21,6 +21,16 @@ _Easily generate multilingual translations for your project with a single comman
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
+## 🤖 Supported models and services
+
+| Type                  | Name                           |
+|-----------------------|--------------------------------|
+| Language Model        | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
+| Computer Vision       | ![Azure Computer Vision](https://img.shields.io/badge/Azure_Computer_Vision-blue?style=flat-square) |
+
+> [!NOTE]
+> If a computer vision service is not available, the co-op translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
+
 ## 🌐 Overview
 
 **Co-op Translator** is a Python package designed to automate multilingual translations for your projects using advanced Large Language Model (LLM) technology and Azure AI Services. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.
@@ -56,10 +66,12 @@ Join us in revolutionizing global communication! Give a ⭐ to [Co-op Translator
 
 ![Architecture](/imgs/architecture_241019.png)
 
-The process begins with Markdown and image files from your project folder, which are processed by **Azure AI Services**:
+The process begins with Markdown and image files from your project folder, which are processed by various AI services:
 
-- **Azure OpenAI**: Translates text from Markdown files.
-- **Azure Computer Vision**: Extracts text from images, which are then translated by Azure OpenAI.
+- **Language Models**: 
+  - **Azure OpenAI** and other supported LLMs translate text from Markdown files. See the [supported models and services](#-supported-models-and-services) for more information.
+- **Computer Vision Services** (optional): 
+  - **Azure Computer Vision** extracts text from images, which are then translated by the selected language model. If a computer vision service is not available, the process defaults to [Markdown-only mode](./getting_started/markdown-only-mode.md).
 
 The final translated Markdown and image files are saved in the designated translation folder, ready to be used in multiple languages.
 
@@ -67,9 +79,12 @@ The final translated Markdown and image files are saved in the designated transl
 
 ### Prerequisites
 
-- Azure Computer vision resource
-- Azure OpenAI resource
-- Python 3.10 or higher
+- **Python 3.10 or higher**: Required for running the Co-op Translator.
+- **Language Model Resource**: 
+  - **Azure OpenAI** or other LLMs. Details can be found in the [supported models and services](#-supported-models-and-services).
+- **Computer Vision Resource** (optional):
+  - For image translation. If unavailable, the translator defaults to [Markdown-only mode](./getting_started/markdown-only-mode.md).
+  - **Azure Computer Vision**
 
 ### Quick install
 

@@ -107,6 +107,23 @@ poetry add co-op-translator
 1. [Install the Co-op translator package](./getting_started/install-package.md)
 1. [Translate your project using Co-op Translator](./getting_started/translator-your-project.md)
 
+
+
+### How to use Co-op Translator
+
+1. Set up resources
+   - [Set up Azure OpenAI](./getting_started/set-up-resources/set-up-azure-openai.md)
+   - [Set up Azure Computer Vision](./getting_started/set-up-resources/set-up-azure-computer-vision.md) (optional)
+
+   > [!NOTE]
+   > While this tutorial focuses on Azure resources setup, you can set up any supported language model from the [supported models and services](#-supported-models-and-services) list.
+
+2. [Create an '.env' file in the root directory](./getting_started/create-env-file.md)
+   - Include necessary keys for the chosen language model service.
+   - If Azure Computer Vision keys are omitted or `-md` is specified, the translator will operate in Markdown-only mode.
+3. [Install the Co-op translator package](./getting_started/install-package.md)
+4. [Translate your project using Co-op Translator](./getting_started/translator-your-project.md)
+
 ### Additional resources
 
 - [Command reference](./getting_started/command-reference.md): Learn about all available commands and their options in detail.

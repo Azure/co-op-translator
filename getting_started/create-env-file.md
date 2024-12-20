@@ -3,9 +3,8 @@
 In this tutorial, we will guide you through setting up your environment variables for Azure services using an *.env* file. Environment variables allow you to securely manage sensitive credentials, such as API keys, without hard-coding them into your codebase.
 
 > [!IMPORTANT]
-> - Only one language model service (Azure OpenAI or OpenAI) needs to be configured. Fill in the environment variables for your preferred service.
+> - Only one language model service (Azure OpenAI or OpenAI) needs to be configured. Fill in the environment variables for your preferred service. If environment variables for multiple language models are set, the co-op translator will select one based on priority.
 > - If Computer Vision environment variables are not set, the translator will automatically switch to [Markdown-only mode](./markdown-only-mode.md).
-
 
 > [!NOTE]
 > This guide primarily focuses on Azure services, but you can choose any supported language model from the [supported models and services list](../README.md#-supported-models-and-services).

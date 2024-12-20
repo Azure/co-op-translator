@@ -128,7 +128,7 @@ Learn more about Co-op Translator through our presentations _(Click the image be
 
   [![Open at Microsoft](/imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
-- **Microsoft Reactor** (Scheduled for December 2, 2024): A one-hour detailed step-by-step guide covering everything from understanding what Co-op Translator is, setting up the tool, and using it effectively, to a live demo showcasing its capabilities in action.
+- **Microsoft Reactor**: A one-hour detailed step-by-step guide covering everything from understanding what Co-op Translator is, setting up the tool, and using it effectively, to a live demo showcasing its capabilities in action.
 
   [![Microsoft Reactor](/imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
 

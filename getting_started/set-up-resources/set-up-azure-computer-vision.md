@@ -6,11 +6,11 @@
 
 1. Type *computer vision* in the **search bar** at the top of the portal page and select **Computer vision** from the options that appear.
 
-    ![Type computervision.](../imgs/type-computervision.png)
+    ![Type computervision.](../../imgs/type-computervision.png)
 
 1. Select **+ Create** from the navigation menu.
 
-    ![Select create.](../imgs/create-computervision.png)
+    ![Select create.](../../imgs/create-computervision.png)
 
 1. Perform the following tasks:
 
@@ -20,7 +20,7 @@
     - Enter **Name**. It must be a unique value.
     - Select the **Pricing tier** you'd like to use.
 
-    ![Fill computer vision.](../imgs/fill-computervision.png)
+    ![Fill computer vision.](../../imgs/fill-computervision.png)
 
 1. Select **Review + Create**.
 

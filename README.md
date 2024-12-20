@@ -21,6 +21,16 @@ _Easily generate multilingual translations for your project with a single comman
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
+## 🤖 Supported models and services
+
+| Type                  | Name                           |
+|-----------------------|--------------------------------|
+| Language Model        | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
+| Computer Vision       | ![Azure Computer Vision](https://img.shields.io/badge/Azure_Computer_Vision-blue?style=flat-square) |
+
+> [!NOTE]
+> If a computer vision service is not available, the co-op translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
+
 ## 🌐 Overview
 
 **Co-op Translator** is a Python package designed to automate multilingual translations for your projects using advanced Large Language Model (LLM) technology and Azure AI Services. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.
@@ -56,10 +66,12 @@ Join us in revolutionizing global communication! Give a ⭐ to [Co-op Translator
 
 ![Architecture](/imgs/architecture_241019.png)
 
-The process begins with Markdown and image files from your project folder, which are processed by **Azure AI Services**:
+The process begins with Markdown and image files from your project folder, which are processed by various AI services:
 
-- **Azure OpenAI**: Translates text from Markdown files.
-- **Azure Computer Vision**: Extracts text from images, which are then translated by Azure OpenAI.
+- **Language Models**: 
+  - **Azure OpenAI** and other supported LLMs translate text from Markdown files. See the [supported models and services](#-supported-models-and-services) for more information.
+- **Computer Vision Services** (optional): 
+  - **Azure Computer Vision** extracts text from images, which are then translated by the selected language model. If a computer vision service is not available, the process defaults to [Markdown-only mode](./getting_started/markdown-only-mode.md).
 
 The final translated Markdown and image files are saved in the designated translation folder, ready to be used in multiple languages.
 
@@ -67,9 +79,12 @@ The final translated Markdown and image files are saved in the designated transl
 
 ### Prerequisites
 
-- Azure Computer vision resource
-- Azure OpenAI resource
-- Python 3.10 or higher
+- **Python 3.10 or higher**: Required for running the Co-op Translator.
+- **Language Model Resource**: 
+  - **Azure OpenAI** or other LLMs. Details can be found in the [supported models and services](#-supported-models-and-services).
+- **Computer Vision Resource** (optional):
+  - For image translation. If unavailable, the translator defaults to [Markdown-only mode](./getting_started/markdown-only-mode.md).
+  - **Azure Computer Vision**
 
 ### Quick install
 
@@ -92,11 +107,29 @@ poetry add co-op-translator
 1. [Install the Co-op translator package](./getting_started/install-package.md)
 1. [Translate your project using Co-op Translator](./getting_started/translator-your-project.md)
 
+
+
+### How to use Co-op Translator
+
+1. Set up resources
+   - [Set up Azure OpenAI](./getting_started/set-up-resources/set-up-azure-openai.md)
+   - [Set up Azure Computer Vision](./getting_started/set-up-resources/set-up-azure-computer-vision.md) (optional)
+
+   > [!NOTE]
+   > While this tutorial focuses on Azure resources setup, you can set up any supported language model from the [supported models and services](#-supported-models-and-services) list.
+
+2. [Create an '.env' file in the root directory](./getting_started/create-env-file.md)
+   - Include necessary keys for the chosen language model service.
+   - If Azure Computer Vision keys are omitted or `-md` is specified, the translator will operate in Markdown-only mode.
+3. [Install the Co-op translator package](./getting_started/install-package.md)
+4. [Translate your project using Co-op Translator](./getting_started/translator-your-project.md)
+
 ### Additional resources
 
 - [Command reference](./getting_started/command-reference.md): Learn about all available commands and their options in detail.
 - [Multi-language support setup](./getting_started/multi-language-support.md): Before starting the translation process, you can add a table in the README that links to the translated versions of your document.
 - [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions to add new languages.
+- [Markdown-Only Mode](./getting_started/markdown-only-mode.md): Learn how to use Co-op Translator in Markdown-only mode.
 
 ## 📚 Case Studies: Applying Co-op Translator in real projects
 
@@ -112,7 +145,7 @@ Learn more about Co-op Translator through our presentations _(Click the image be
 
   [![Open at Microsoft](/imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
-- **Microsoft Reactor** (Scheduled for December 2, 2024): A one-hour detailed step-by-step guide covering everything from understanding what Co-op Translator is, setting up the tool, and using it effectively, to a live demo showcasing its capabilities in action.
+- **Microsoft Reactor**: A one-hour detailed step-by-step guide covering everything from understanding what Co-op Translator is, setting up the tool, and using it effectively, to a live demo showcasing its capabilities in action.
 
   [![Microsoft Reactor](/imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
 

@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 import logging
 from co_op_translator.config.constants import SUPPORTED_IMAGE_EXTENSIONS
-from co_op_translator.utils.file_utils import generate_translated_filename, get_actual_image_path, get_filename_and_extension
+from co_op_translator.utils.common.file_utils import generate_translated_filename, get_actual_image_path, get_filename_and_extension
 
 logger = logging.getLogger(__name__)
 
@@ -178,14 +178,14 @@ def process_markdown_with_many_links(content: str, max_links) -> list:
 
     return chunks
 
-def update_links(md_file_path: Path, markdown_string: str, language_code: str, root_dir: Path) -> str:
+def update_links(md_file_path: Path, markdown_string: str, language_code: str, root_dir: Path, markdown_only: bool = False) -> str:
     logger.info("Updating links in the markdown file")
 
     translations_dir = root_dir / 'translations'
     translated_images_dir = root_dir / 'translated_images'
 
     # Update image links
-    markdown_string = update_image_links(markdown_string, md_file_path, language_code, translations_dir, translated_images_dir, root_dir)
+    markdown_string = update_image_links(markdown_string, md_file_path, language_code, translations_dir, translated_images_dir, root_dir, markdown_only=markdown_only)
 
     # Update non-image file links
     markdown_string = update_file_links(markdown_string, md_file_path, language_code, translations_dir, root_dir)
@@ -195,9 +195,32 @@ def update_links(md_file_path: Path, markdown_string: str, language_code: str, r
 
     return markdown_string
 
-def update_image_links(markdown_string: str, md_file_path: Path, language_code: str, translations_dir: Path, translated_images_dir: Path, root_dir: Path) -> str:
+def update_image_links(markdown_string: str, md_file_path: Path, language_code: str, translations_dir: Path, translated_images_dir: Path, root_dir: Path, markdown_only: bool = False) -> str:
+    """
+    Update image links in markdown content based on mode and Azure Computer Vision availability.
+    
+    Args:
+        markdown_string (str): The markdown content to process
+        md_file_path (Path): Path to the markdown file being processed
+        language_code (str): Target language code
+        translations_dir (Path): Directory containing translations
+        translated_images_dir (Path): Directory containing translated images
+        root_dir (Path): Root directory of the project
+        markdown_only (bool): Whether we're in markdown-only mode
+        
+    Returns:
+        str: Updated markdown content with modified image links
+    """
     image_pattern = r'!\[(.*?)\]\((.*?)\)'
     image_matches = re.findall(image_pattern, markdown_string)
+
+    # Use original image links if in markdown-only mode
+    use_original_images = markdown_only
+    
+    if use_original_images:
+        logger.info("Using original image links (markdown-only mode)")
+    else:
+        logger.info("Using translated image links")
 
     for alt_text, link in image_matches:
         parsed_url = urlparse(link)
@@ -214,16 +237,22 @@ def update_image_links(markdown_string: str, md_file_path: Path, language_code: 
             try:
                 actual_image_path = get_actual_image_path(link, md_file_path)
                 translated_md_dir = translations_dir / language_code / md_file_path.relative_to(root_dir).parent
-                rel_path = os.path.relpath(translated_images_dir, translated_md_dir)
 
-                new_filename = generate_translated_filename(actual_image_path, language_code, root_dir)
-                updated_link = os.path.join(rel_path, new_filename).replace(os.path.sep, '/')
+                if use_original_images:
+                    # Link to original image when in markdown-only mode
+                    original_linked_file_path = (md_file_path.parent / path).resolve()
+                    updated_link = os.path.relpath(original_linked_file_path, translated_md_dir).replace(os.path.sep, '/')
+                    logger.info(f"Using original image link: {updated_link}")
+                else:
+                    # Link to translated image when not in markdown-only mode
+                    rel_path = os.path.relpath(translated_images_dir, translated_md_dir)
+                    new_filename = generate_translated_filename(actual_image_path, language_code, root_dir)
+                    updated_link = os.path.join(rel_path, new_filename).replace(os.path.sep, '/')
+                    logger.info(f"Using translated image link: {updated_link}")
 
                 old_image_markup = f'![{alt_text}]({link})'
                 new_image_markup = f'![{alt_text}]({updated_link})'
                 markdown_string = markdown_string.replace(old_image_markup, new_image_markup)
-
-                logger.info(f"Updated image markdown: {new_image_markup}")
 
             except Exception as e:
                 logger.error(f"Error processing image {link}: {e}")

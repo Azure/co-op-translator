@@ -3,8 +3,9 @@ import logging
 import click
 import importlib.resources
 import yaml
-from co_op_translator.translators.project_translator import ProjectTranslator
+from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.config.base_config import Config
+from co_op_translator.config.vision_config.config import VisionConfig
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,20 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
     # Check that the required environment variables are set
     Config.check_configuration()
 
+    # Check Computer Vision availability and set markdown mode
+    cv_available = VisionConfig.check_configuration()
+
+    # Set markdown-only mode if Computer Vision is not available
+    if not cv_available:
+        markdown = True
+        click.echo("Computer Vision is not configured: Automatically switching to markdown-only mode.")
+        click.echo("To enable image translation, please add Computer Vision credentials to your environment variables.")
+        click.echo("See the .env.template file for required variables.")
+    elif markdown:
+        click.echo("Starting in markdown-only mode: Image translation is disabled.")
+        click.echo("To enable image translation, run without the -md flag and ensure Computer Vision is configured.")
+
+
     if debug:
         logging.basicConfig(level=logging.DEBUG)
         logging.debug("Debug mode enabled.")
@@ -93,14 +108,24 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
                 language_codes = " ".join([lang_code for lang_code in font_mappings if isinstance(font_mappings[lang_code], dict)])
                 logging.debug(f"Loaded language codes from font mapping: {language_codes}")
 
-    # Initialize ProjectTranslator
-    translator = ProjectTranslator(language_codes, root_dir)
+    # Initialize ProjectTranslator with markdown_only flag
+    translator = ProjectTranslator(language_codes, root_dir, markdown_only=markdown)
 
     if check:
         # Call check_and_retry_translations if --check is passed
         click.echo(f"Checking translated files for errors in {language_codes}...")
         asyncio.run(translator.check_and_retry_translations())
     else:
+        # Set default values for images and markdown flags
+        if not images and not markdown:
+            markdown = True  # Always translate markdown by default
+            images = True   # Try to translate images by default
+            
+        # If CV is not available, disable image translation
+        if not cv_available:
+            click.echo("Skipping image translation due to missing Computer Vision configuration")
+            images = False
+        
         # Call translate_project
         translator.translate_project(images=images, markdown=markdown, update=update)
 

@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageStat
 import matplotlib.pyplot as plt
 from co_op_translator.config.font_config import FontConfig
-from co_op_translator.utils.file_utils import get_filename_and_extension
+from co_op_translator.utils.common.file_utils import get_filename_and_extension
 
 logger = logging.getLogger(__name__)
 

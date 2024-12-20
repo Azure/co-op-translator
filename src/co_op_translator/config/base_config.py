@@ -1,10 +1,8 @@
 import os
-from dotenv import load_dotenv
 import logging
+from pathlib import Path
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.vision_config.config import VisionConfig
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 

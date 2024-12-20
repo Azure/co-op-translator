@@ -3,9 +3,16 @@ import logging
 import click
 import importlib.resources
 import yaml
+from pathlib import Path
+from dotenv import load_dotenv
 from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
+
+# Load .env from the root directory
+root_dir = Path(__file__).resolve().parent.parent.parent
+env_path = root_dir / '.env'
+load_dotenv(dotenv_path=env_path)
 
 logger = logging.getLogger(__name__)
 

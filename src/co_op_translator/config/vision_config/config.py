@@ -24,8 +24,11 @@ class VisionConfig:
         Returns:
             Optional[VisionProvider]: The available provider to use, or None if no provider is configured
         """
-        config = cls.get_service_config(VisionProvider.AZURE_COMPUTER_VISION)
-        if config and all(value and value.strip() for value in config.env_vars.values()):
+        azure_config = AzureComputerVisionConfig()
+        subscription_key = azure_config.get_subscription_key()
+        endpoint = azure_config.get_endpoint()
+        
+        if subscription_key and endpoint and subscription_key.strip() and endpoint.strip():
             return VisionProvider.AZURE_COMPUTER_VISION
         return None
 

@@ -1,5 +1,8 @@
 import asyncio
 from tqdm.asyncio import tqdm_asyncio
+import logging
+
+logger = logging.getLogger(__name__)
 
 async def worker(task_queue: asyncio.Queue, progress_bar=None):
     """
@@ -25,7 +28,7 @@ async def worker(task_queue: asyncio.Queue, progress_bar=None):
                 progress_bar.update(1)
         except Exception as e:
             # Log the error but continue processing other tasks
-            print(f"Error processing task: {e}")
+            logger.error(f"Error processing task: {e}")
             task_queue.task_done()
 
 async def queue_tasks(tasks: list, max_concurrent_tasks: int, task_desc: str = "Processing tasks"):

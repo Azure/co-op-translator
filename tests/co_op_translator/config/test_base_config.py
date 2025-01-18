@@ -11,7 +11,7 @@ def azure_openai_env_vars():
     return {
         'AZURE_OPENAI_API_KEY': 'fake_openai_key',
         'AZURE_OPENAI_ENDPOINT': 'https://fake-openai-endpoint.com',
-        'AZURE_OPENAI_MODEL_NAME': 'gpt-3.5',
+        'AZURE_OPENAI_MODEL_NAME': 'gpt',
         'AZURE_OPENAI_CHAT_DEPLOYMENT_NAME': 'chat-deployment',
         'AZURE_OPENAI_API_VERSION': 'v1'
     }
@@ -60,7 +60,7 @@ def test_config_with_openai_only(openai_env_vars):
 def test_config_with_no_llm_service():
     """Test configuration with no LLM service available"""
     with patch.dict(os.environ, {}, clear=True):
-        with pytest.raises(OSError) as excinfo:
+        with pytest.raises(ValueError) as excinfo:
             Config.check_configuration()
         assert "No LLM service is properly configured" in str(excinfo.value)
 
@@ -71,6 +71,6 @@ def test_config_with_partial_azure_openai():
         'AZURE_OPENAI_ENDPOINT': 'https://fake-endpoint.com'
     }
     with patch.dict(os.environ, partial_vars, clear=True):
-        with pytest.raises(OSError) as excinfo:
+        with pytest.raises(ValueError) as excinfo:  # Changed to match ValueError
             Config.check_configuration()
         assert "No LLM service is properly configured" in str(excinfo.value)

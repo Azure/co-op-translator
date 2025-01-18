@@ -34,10 +34,8 @@ class Config:
         Raises:
             OSError: If no LLM service is properly configured
         """
-        try:
-            LLMConfig.get_available_provider()
-        except ValueError as e:
-            raise OSError("No LLM service is properly configured") from e
+
+        LLMConfig.check_configuration()
         
         # Vision configuration is optional
         VisionConfig.check_configuration()

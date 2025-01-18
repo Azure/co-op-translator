@@ -381,13 +381,13 @@ def replace_code_blocks_and_inline_code(document: str):
 
     # Replace code blocks with placeholders
     for i, code_block in enumerate(code_blocks):
-        placeholder = f"@@CODE_BLOCK_{i}@@"
+        placeholder = f"@@CODE_BLOCK_{i}@@" 
         document = document.replace(code_block, placeholder)
         placeholder_map[placeholder] = code_block
 
     # Replace inline codes with placeholders
     for i, inline_code in enumerate(inline_codes):
-        placeholder = f"@@INLINE_CODE_{i}@@"
+        placeholder = f"@@INLINE_CODE_{i}@@" 
         document = document.replace(inline_code, placeholder)
         placeholder_map[placeholder] = inline_code
 

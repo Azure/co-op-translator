@@ -11,12 +11,22 @@ async def worker(task_queue: asyncio.Queue, progress_bar=None):
     """
     while not task_queue.empty():
         task = await task_queue.get()  # Get the next task
-        await task  # Process the task
-        task_queue.task_done()  # Mark task as done
+        if task is None:  # Check for sentinel
+            break
+        try:
+            if asyncio.iscoroutinefunction(task):
+                await task()
+            elif callable(task):
+                await task
+            task_queue.task_done()  # Mark task as done
 
-        # If a progress bar is provided, update it after each task
-        if progress_bar:
-            progress_bar.update(1)
+            # If a progress bar is provided, update it after each task
+            if progress_bar:
+                progress_bar.update(1)
+        except Exception as e:
+            # Log the error but continue processing other tasks
+            print(f"Error processing task: {e}")
+            task_queue.task_done()
 
 async def queue_tasks(tasks: list, max_concurrent_tasks: int, task_desc: str = "Processing tasks"):
     """

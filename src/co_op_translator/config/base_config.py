@@ -32,7 +32,7 @@ class Config:
         Check if all required services are properly configured.
         
         Raises:
-            OSError: If no LLM service is properly configured
+            ValueError: If no LLM service is properly configured
         """
 
         LLMConfig.check_configuration()

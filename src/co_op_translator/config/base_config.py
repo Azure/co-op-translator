@@ -26,21 +26,16 @@ class Config:
         else:
             logger.debug(f"No .env file found in {env_path}")
     
-    @classmethod
-    def check_configuration(cls, root_dir='.'):
+    @staticmethod
+    def check_configuration():
         """
-        Load environment variables and check if all required variables are set across all services.
-        Raises an OSError if any required environment variables are missing.
+        Check if all required services are properly configured.
         
-        Args:
-            root_dir: Root directory of the target project (default is current directory).
+        Raises:
+            ValueError: If no LLM service is properly configured
         """
-        # Load environment variables first
-        cls.load_environment(root_dir)
-        
-        # Check LLM configurations
+
         LLMConfig.check_configuration()
         
-        # Check Vision configurations
-        VisionConfig.check_configuration()
+        # Vision configuration is optional
         VisionConfig.check_configuration()

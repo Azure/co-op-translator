@@ -1,6 +1,6 @@
-# Apply 'translator' label for any changes in the translation-related source files
-translator:
-  - src/co_op_translator/**/*
+# Apply 'core' label for any changes in the core source files
+core:
+  - src/co_op_translator/core/**/*
 
 # Apply 'language-support' label for changes related to font configurations or language support
 language-support:

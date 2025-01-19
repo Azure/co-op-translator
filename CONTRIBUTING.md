@@ -1,4 +1,4 @@
-# Contributing to Co Op Translator
+# Contributing to Co-op Trnslator
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
@@ -69,7 +69,7 @@ poetry install
 >
 > #### GitHub Codespaces
 >
-> You can run this samples virtually by using GitHub Codespaces and no additional settings or setup are required. 
+> You can run this samples virtually by using GitHub Codespaces and no additional settings or setup are required.
 >
 > The button will open a web-based VS Code instance in your browser:
 >
@@ -88,9 +88,9 @@ poetry install
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
-## Running Co Op Translator
+## Running Co-op Translator
 
-To run Co Op Translator using Poetry in your environment, follow these steps:
+To run Co-op Translator using Poetry in your environment, follow these steps:
 
 1. Navigate to the directory where you want to perform translation tests or create a temporary folder for testing purposes.
 
@@ -121,8 +121,8 @@ We use the following format for commit messages:
 
 - **type**: Specifies the category of the commit. We use the following types:
   - `Docs`: For documentation updates.
-  - `Build`: For changes to the build system or dependencies.
-  - `Translator`: For changes affecting the translation logic or features.
+  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
+  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
 
 - **description**: A concise summary of the change.
 - **PR number**: The number of the pull request associated with the commit.
@@ -130,10 +130,10 @@ We use the following format for commit messages:
 **Examples**:
 
 - `Docs: Update installation instructions for clarity (#50)`
-- `Translator: Improve handling of image translation (#60)`
+- `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Currently, the Docs, Translator, and Build prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
 
 #### Merge strategy
 

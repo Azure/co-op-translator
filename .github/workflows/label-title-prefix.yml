@@ -23,7 +23,7 @@ jobs:
             const prefixLabels = {
               "documentation": "Docs",
               "build": "Build",
-              "translator": "Translator"
+              "core": "Core"
             };
 
             function addTitlePrefix(title, prefix) {

@@ -69,7 +69,7 @@ poetry install
 >
 > #### GitHub Codespaces
 >
-> You can run this samples virtually by using GitHub Codespaces and no additional settings or setup are required. 
+> You can run this samples virtually by using GitHub Codespaces and no additional settings or setup are required.
 >
 > The button will open a web-based VS Code instance in your browser:
 >
@@ -122,7 +122,7 @@ We use the following format for commit messages:
 - **type**: Specifies the category of the commit. We use the following types:
   - `Docs`: For documentation updates.
   - `Build`: For changes to the build system or dependencies.
-  - `Translator`: For changes affecting the translation logic or features.
+  - `Core`: For changes that affect the core functionality or features of the project.
 
 - **description**: A concise summary of the change.
 - **PR number**: The number of the pull request associated with the commit.
@@ -130,10 +130,10 @@ We use the following format for commit messages:
 **Examples**:
 
 - `Docs: Update installation instructions for clarity (#50)`
-- `Translator: Improve handling of image translation (#60)`
+- `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Currently, the Docs, Translator, and Build prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
 
 #### Merge strategy
 

@@ -67,10 +67,22 @@ def test_config_with_no_llm_service():
 def test_config_with_partial_azure_openai():
     """Test configuration with incomplete Azure OpenAI setup"""
     partial_vars = {
-        'AZURE_OPENAI_API_KEY': 'fake_key',
-        'AZURE_OPENAI_ENDPOINT': 'https://fake-endpoint.com'
+        'AZURE_OPENAI_API_KEY': 'fake_key',  # Other required fields are missing
+        'AZURE_OPENAI_ENDPOINT': ''  # Missing required endpoint
     }
     with patch.dict(os.environ, partial_vars, clear=True):
-        with pytest.raises(ValueError) as excinfo:  # Changed to match ValueError
+        with pytest.raises(ValueError) as excinfo:
             Config.check_configuration()
-        assert "No LLM service is properly configured" in str(excinfo.value)
+        assert "Incomplete AZURE_OPENAI configuration. Ensure all required environment variables are set." in str(excinfo.value)
+
+
+def test_config_with_partial_openai():
+    """Test configuration with incomplete OpenAI setup"""
+    partial_vars = {
+        'OPENAI_API_KEY': '',  # Missing required API key
+        'OPENAI_ORG_ID': 'fake_org_id'
+    }
+    with patch.dict(os.environ, partial_vars, clear=True):
+        with pytest.raises(ValueError) as excinfo:
+            Config.check_configuration()
+        assert "Incomplete OpenAI configuration. The 'OPENAI_API_KEY' must be set." in str(excinfo.value)

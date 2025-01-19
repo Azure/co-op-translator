@@ -3,6 +3,7 @@ from pathlib import Path
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 from co_op_translator.core.project.project_translator import ProjectTranslator
+from unittest.mock import ANY
 
 @pytest.fixture
 def temp_project_dir(tmp_path):
@@ -91,18 +92,22 @@ async def test_translate_all_markdown_files(project_translator, temp_project_dir
 async def test_translate_all_image_files(project_translator, temp_project_dir):
     """Test translating all image files."""
     # Setup
+    (temp_project_dir / "images").mkdir(parents=True, exist_ok=True)
     image_file = temp_project_dir / "images" / "test.png"
-    
+    image_file.touch()  # Create a dummy file for testing
+
     async def mock_translate_image(path, lang, _):
         return str(temp_project_dir / "translated_images" / f"{lang}_test.png")
-    
-    project_translator.translate_image = AsyncMock(side_effect=mock_translate_image)
-    
+
+    project_translator.image_translator.translate_image = AsyncMock(side_effect=mock_translate_image)
+
     # Execute
-    await project_translator.translate_all_image_files()
-    
+    await asyncio.wait_for(project_translator.translate_all_image_files(), timeout=10)
+
     # Verify
-    assert project_translator.translate_image.call_count == 2  # ko and ja
+    assert project_translator.image_translator.translate_image.call_count == 2  # Called for "ko" and "ja"
+    project_translator.image_translator.translate_image.assert_any_call(image_file, "ko", ANY)
+    project_translator.image_translator.translate_image.assert_any_call(image_file, "ja", ANY)
 
 @pytest.mark.asyncio
 async def test_translate_project_async(project_translator):

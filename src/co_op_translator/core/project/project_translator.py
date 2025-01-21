@@ -28,27 +28,38 @@ from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
 
 logger = logging.getLogger(__name__)
 
+
 class ProjectTranslator:
-    def __init__(self, language_codes, root_dir='.', markdown_only=False):
+    def __init__(self, language_codes, root_dir=".", markdown_only=False):
         self.language_codes = language_codes.split()
         self.root_dir = Path(root_dir).resolve()
-        self.translations_dir = self.root_dir / 'translations'
-        self.image_dir = self.root_dir / 'translated_images'
+        self.translations_dir = self.root_dir / "translations"
+        self.image_dir = self.root_dir / "translated_images"
         self.markdown_only = markdown_only
 
         # Use factory methods to create appropriate translators
         self.text_translator = text_translator.TextTranslator.create()
         try:
-            if not markdown_only:  # Only create image translator if not in markdown-only mode
-                self.image_translator = image_translator.ImageTranslator.create(default_output_dir=self.image_dir, root_dir=self.root_dir)
+            if (
+                not markdown_only
+            ):  # Only create image translator if not in markdown-only mode
+                self.image_translator = image_translator.ImageTranslator.create(
+                    default_output_dir=self.image_dir, root_dir=self.root_dir
+                )
             else:
-                logger.info("Skipping image translator initialization in markdown-only mode")
+                logger.info(
+                    "Skipping image translator initialization in markdown-only mode"
+                )
                 self.image_translator = None
         except ValueError as e:
-            logger.info("Switching to markdown-only mode due to missing Computer Vision configuration")
+            logger.info(
+                "Switching to markdown-only mode due to missing Computer Vision configuration"
+            )
             self.markdown_only = True  # Auto-switch to markdown-only mode
             self.image_translator = None
-        self.markdown_translator = markdown_translator.MarkdownTranslator.create(self.root_dir)
+        self.markdown_translator = markdown_translator.MarkdownTranslator.create(
+            self.root_dir
+        )
 
     async def translate_image(self, image_path, language_code):
         """
@@ -56,9 +67,13 @@ class ProjectTranslator:
         """
         image_path = Path(image_path).resolve()
         if not self.image_translator:
-            logger.info(f"Image translation skipped for {image_path} due to missing Computer Vision configuration")
-            return str(image_path)  # Return original image path when translation is not available
-            
+            logger.info(
+                f"Image translation skipped for {image_path} due to missing Computer Vision configuration"
+            )
+            return str(
+                image_path
+            )  # Return original image path when translation is not available
+
         if image_path.exists() and image_path.is_file():
             logger.info(f"Image exists: {image_path}")
             if os.access(image_path, os.R_OK):
@@ -67,17 +82,21 @@ class ProjectTranslator:
                 logger.warning(f"Read permission denied for: {image_path}")
         else:
             logger.error(f"Image does not exist or is not a valid file: {image_path}")
-        
+
         try:
-            translated_image_path = self.image_translator.translate_image(image_path, language_code, self.image_dir)
-            logger.info(f"Translated image {image_path} to {language_code} and saved to {translated_image_path}")
+            translated_image_path = self.image_translator.translate_image(
+                image_path, language_code, self.image_dir
+            )
+            logger.info(
+                f"Translated image {image_path} to {language_code} and saved to {translated_image_path}"
+            )
         except Exception as e:
             logger.error(f"Failed to translate image {image_path}: {e}", exc_info=True)
 
     async def translate_markdown(self, file_path, language_code):
         """
         Translate a markdown file to the specified language.
-        
+
         Args:
             file_path (Path): Path to the markdown file.
             language_code (str): The target language code.
@@ -92,18 +111,26 @@ class ProjectTranslator:
                 return
 
             # First attempt at translation
-            translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path, markdown_only=self.markdown_only)
+            translated_content = await self.markdown_translator.translate_markdown(
+                document, language_code, file_path, markdown_only=self.markdown_only
+            )
             if not translated_content:
-                logger.error(f"Translation failed for {file_path}: Empty translation result")
+                logger.error(
+                    f"Translation failed for {file_path}: Empty translation result"
+                )
                 return
 
             # Check if translation format is broken (e.g., line breaks mismatch)
             if compare_line_breaks(document, translated_content):
                 logger.warning(f"Translation failed for {file_path}. Retrying...")
                 # Retry translation
-                translated_content = await self.markdown_translator.translate_markdown(document, language_code, file_path, markdown_only=self.markdown_only)
+                translated_content = await self.markdown_translator.translate_markdown(
+                    document, language_code, file_path, markdown_only=self.markdown_only
+                )
                 if not translated_content:
-                    logger.error(f"Retry translation failed for {file_path}: Empty translation result")
+                    logger.error(
+                        f"Retry translation failed for {file_path}: Empty translation result"
+                    )
                     return
 
             relative_path = file_path.relative_to(self.root_dir)
@@ -111,9 +138,11 @@ class ProjectTranslator:
             translated_path.parent.mkdir(parents=True, exist_ok=True)
 
             try:
-                with open(translated_path, "w", encoding='utf-8') as f:
+                with open(translated_path, "w", encoding="utf-8") as f:
                     f.write(translated_content)
-                logger.info(f"Translated {file_path} to {language_code} and saved to {translated_path}")
+                logger.info(
+                    f"Translated {file_path} to {language_code} and saved to {translated_path}"
+                )
             except Exception as e:
                 logger.error(f"Failed to write translation to {translated_path}: {e}")
 
@@ -129,8 +158,12 @@ class ProjectTranslator:
         # Step 1: If update is True, delete all existing translated markdown files
         if update:
             for language_code in self.language_codes:
-                delete_translated_markdown_files_by_language_code(language_code, self.translations_dir)
-                logger.info(f"Deleted all translated markdown files for language: {language_code}")
+                delete_translated_markdown_files_by_language_code(
+                    language_code, self.translations_dir
+                )
+                logger.info(
+                    f"Deleted all translated markdown files for language: {language_code}"
+                )
 
         # Step 2: Collect markdown files for translation
         markdown_files = filter_files(self.root_dir, EXCLUDED_DIRS)
@@ -139,23 +172,34 @@ class ProjectTranslator:
         for md_file_path in markdown_files:
             md_file_path = md_file_path.resolve()
 
-            if md_file_path.suffix == '.md':
+            if md_file_path.suffix == ".md":
                 for language_code in self.language_codes:
                     relative_path = md_file_path.relative_to(self.root_dir)
-                    translated_md_path = self.translations_dir / language_code / relative_path
+                    translated_md_path = (
+                        self.translations_dir / language_code / relative_path
+                    )
 
                     if not update and translated_md_path.exists():
-                        logger.info(f"Skipping already translated markdown file: {translated_md_path}")
+                        logger.info(
+                            f"Skipping already translated markdown file: {translated_md_path}"
+                        )
                         continue
 
-                    logger.info(f"Translating markdown file: {md_file_path} for language: {language_code}")
+                    logger.info(
+                        f"Translating markdown file: {md_file_path} for language: {language_code}"
+                    )
                     # Create a task for each markdown file translation
-                    tasks.append(lambda md_file_path=md_file_path, language_code=language_code: 
-                                self.translate_markdown(md_file_path, language_code))
+                    tasks.append(
+                        lambda md_file_path=md_file_path, language_code=language_code: self.translate_markdown(
+                            md_file_path, language_code
+                        )
+                    )
 
         if tasks:  # Check if there are tasks to process
             # Step 3: Process markdown translations sequentially using the sequential API request queue
-            await self.process_api_requests_sequential(tasks, "Translating markdown files")
+            await self.process_api_requests_sequential(
+                tasks, "Translating markdown files"
+            )
         else:
             logger.warning("No markdown files found for translation.")
 
@@ -169,7 +213,9 @@ class ProjectTranslator:
         if update:
             for language_code in self.language_codes:
                 delete_translated_images_by_language_code(language_code, self.image_dir)
-                logger.info(f"Deleted all translated images for language: {language_code}")
+                logger.info(
+                    f"Deleted all translated images for language: {language_code}"
+                )
 
         # Step 2: Collect image files for translation
         image_files = filter_files(self.root_dir, EXCLUDED_DIRS)
@@ -178,16 +224,25 @@ class ProjectTranslator:
         for image_file_path in image_files:
             image_file_path = image_file_path.resolve()
 
-            if get_filename_and_extension(image_file_path)[1] in SUPPORTED_IMAGE_EXTENSIONS:
+            if (
+                get_filename_and_extension(image_file_path)[1]
+                in SUPPORTED_IMAGE_EXTENSIONS
+            ):
                 for language_code in self.language_codes:
-                    translated_filename = generate_translated_filename(image_file_path, language_code, self.root_dir)
+                    translated_filename = generate_translated_filename(
+                        image_file_path, language_code, self.root_dir
+                    )
                     translated_image_path = Path(self.image_dir) / translated_filename
 
                     if not update and translated_image_path.exists():
-                        logger.info(f"Skipping already translated image: {translated_image_path}")
+                        logger.info(
+                            f"Skipping already translated image: {translated_image_path}"
+                        )
                         continue
 
-                    logger.info(f"Translating image: {image_file_path} for language: {language_code}")
+                    logger.info(
+                        f"Translating image: {image_file_path} for language: {language_code}"
+                    )
                     tasks.append(self.translate_image(image_file_path, language_code))
 
         # Step 3: Process image translations using API request queue
@@ -196,7 +251,7 @@ class ProjectTranslator:
     async def translate_project_async(self, images=False, markdown=False, update=False):
         """
         Translate the entire project, including both markdown and image files.
-        
+
         Args:
             images (bool): Flag to indicate if images should be translated.
             markdown (bool): Flag to indicate if markdown files should be translated.
@@ -207,7 +262,7 @@ class ProjectTranslator:
         if not images and not markdown:
             images = True
             markdown = True
-        
+
         # Add tasks for image translation
         if images:
             await self.translate_all_image_files(update=update)
@@ -225,7 +280,11 @@ class ProjectTranslator:
             markdown (bool): Whether to translate markdown files.
             update (bool): Whether to update existing translations.
         """
-        asyncio.run(self.translate_project_async(images=images, markdown=markdown, update=update))
+        asyncio.run(
+            self.translate_project_async(
+                images=images, markdown=markdown, update=update
+            )
+        )
 
     async def check_and_retry_translations(self):
         """
@@ -236,11 +295,19 @@ class ProjectTranslator:
         files_to_translate = []
 
         # Collect all markdown files
-        markdown_files = [file for file in filter_files(self.root_dir, EXCLUDED_DIRS) if file.suffix == '.md']
-        all_markdown_files = [(file, language_code) for file in markdown_files for language_code in self.language_codes]
+        markdown_files = [
+            file
+            for file in filter_files(self.root_dir, EXCLUDED_DIRS)
+            if file.suffix == ".md"
+        ]
+        all_markdown_files = [
+            (file, language_code)
+            for file in markdown_files
+            for language_code in self.language_codes
+        ]
 
         total_files = len(all_markdown_files)
-        
+
         if total_files == 0:
             logger.warning("No markdown files found for checking.")
             return
@@ -248,17 +315,23 @@ class ProjectTranslator:
         logger.info("Checking translated files for errors...")
 
         # Step 1: Check all markdown files and collect files that need translation
-        with tqdm(total=total_files, desc="Checking files", unit="file") as progress_bar:
+        with tqdm(
+            total=total_files, desc="Checking files", unit="file"
+        ) as progress_bar:
             for md_file_path, language_code in all_markdown_files:
                 md_file_path = Path(md_file_path).resolve()
                 total_files_checked += 1
 
                 # Find the path of the translated file
                 relative_path = md_file_path.relative_to(self.root_dir)
-                translated_md_file_path = self.translations_dir / language_code / relative_path
+                translated_md_file_path = (
+                    self.translations_dir / language_code / relative_path
+                )
 
                 if not translated_md_file_path.exists():
-                    logger.warning(f"Translated file does not exist: {translated_md_file_path}")
+                    logger.warning(
+                        f"Translated file does not exist: {translated_md_file_path}"
+                    )
                     files_to_translate.append((md_file_path, language_code))
                     progress_bar.update(1)
                     continue
@@ -270,7 +343,9 @@ class ProjectTranslator:
                 # Check if line breaks are mismatched
                 if compare_line_breaks(original_content, translated_content):
                     files_to_translate.append((md_file_path, language_code))
-                    logger.warning(f"Detected formatting issue in {translated_md_file_path}")
+                    logger.warning(
+                        f"Detected formatting issue in {translated_md_file_path}"
+                    )
 
                 # Update the progress bar after each file is checked
                 progress_bar.update(1)
@@ -280,7 +355,9 @@ class ProjectTranslator:
             logger.info(f"Starting translation for {len(files_to_translate)} files...")
 
             # Create a progress bar for translations
-            with tqdm(total=len(files_to_translate), desc="Translating files", unit="file") as translation_progress_bar:
+            with tqdm(
+                total=len(files_to_translate), desc="Translating files", unit="file"
+            ) as translation_progress_bar:
                 for md_file_path, language_code in files_to_translate:
                     logger.info(f"Translating {md_file_path} to {language_code}...")
 
@@ -313,7 +390,9 @@ class ProjectTranslator:
         # Step 2: Create a progress bar
         with tqdm(total=len(tasks), desc=task_desc) as progress_bar:
             # Step 3: Create worker tasks to process the queue
-            workers = [asyncio.create_task(worker(task_queue, progress_bar)) for _ in range(5)]
+            workers = [
+                asyncio.create_task(worker(task_queue, progress_bar)) for _ in range(5)
+            ]
 
             # Step 4: Wait until all tasks are processed
             await task_queue.join()

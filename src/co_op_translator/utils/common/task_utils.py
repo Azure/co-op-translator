@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 async def worker(task_queue: asyncio.Queue, progress_bar=None):
     """
     Worker function that processes tasks from the task queue, with optional progress bar updates.
@@ -41,7 +42,10 @@ async def worker(task_queue: asyncio.Queue, progress_bar=None):
             # No matter what happens, mark the task as done
             task_queue.task_done()
 
-async def queue_tasks(tasks: list, max_concurrent_tasks=4, task_desc: str = "Processing tasks"):
+
+async def queue_tasks(
+    tasks: list, max_concurrent_tasks=4, task_desc: str = "Processing tasks"
+):
     """
     Queue tasks into an asyncio.Queue and process them using a limited number of concurrent workers.
 
@@ -63,7 +67,10 @@ async def queue_tasks(tasks: list, max_concurrent_tasks=4, task_desc: str = "Pro
     # 3) Create a progress bar with total == number of real tasks
     with tqdm_asyncio.tqdm_asyncio(total=len(tasks), desc=task_desc) as progress_bar:
         # Start workers
-        workers = [asyncio.create_task(worker(task_queue, progress_bar)) for _ in range(max_concurrent_tasks)]
+        workers = [
+            asyncio.create_task(worker(task_queue, progress_bar))
+            for _ in range(max_concurrent_tasks)
+        ]
 
         # Wait for the queue to empty
         await task_queue.join()

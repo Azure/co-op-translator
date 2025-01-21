@@ -1,8 +1,9 @@
 import os
 
+
 class AzureOpenAIConfig:
     """Azure OpenAI specific configuration."""
-    
+
     @staticmethod
     def get_api_key():
         """Retrieve the Azure OpenAI API key from environment variables."""

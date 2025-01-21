@@ -1,8 +1,9 @@
 import os
 
+
 class OpenAIConfig:
     """OpenAI specific configuration."""
-    
+
     @staticmethod
     def get_api_key():
         """Retrieve the OpenAI API key from environment variables."""

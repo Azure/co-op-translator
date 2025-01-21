@@ -12,6 +12,7 @@ from co_op_translator.utils.vision.image_utils import (
     get_image_mode,
 )
 
+
 @pytest.fixture
 def setup_test_environment(tmp_path):
     """
@@ -23,6 +24,7 @@ def setup_test_environment(tmp_path):
     analyzed_images_dir.mkdir()
     return tmp_path
 
+
 def test_get_average_color():
     """
     Test calculating the average color of an image's bounding box area.
@@ -31,6 +33,7 @@ def test_get_average_color():
     bounding_box = [50, 50, 150, 50, 150, 150, 50, 150]
     avg_color = get_average_color(img, bounding_box)
     assert avg_color == (0, 0, 255), f"Expected (0, 0, 255), got {avg_color}"
+
 
 def test_get_text_color():
     """
@@ -45,6 +48,7 @@ def test_get_text_color():
     bg_color = (200, 200, 255)  # Light blue
     text_color = get_text_color(bg_color)
     assert text_color == (0, 0, 0), f"Expected black text for light background"
+
 
 @patch("PIL.ImageFont.truetype")
 @patch("PIL.ImageDraw.Draw")
@@ -64,9 +68,12 @@ def test_draw_text_on_image(mock_image_new, mock_image_draw, mock_truetype):
 
     text_image = draw_text_on_image("Test Text", font_mock, (0, 0, 0))
 
-    mock_image_new.assert_called_once_with('RGBA', (100, 30), (255, 255, 255, 0))
+    mock_image_new.assert_called_once_with("RGBA", (100, 30), (255, 255, 255, 0))
     assert text_image == text_image_mock
-    draw_mock.text.assert_called_once_with((0, 0), "Test Text", font=font_mock, fill=(0, 0, 0))
+    draw_mock.text.assert_called_once_with(
+        (0, 0), "Test Text", font=font_mock, fill=(0, 0, 0)
+    )
+
 
 @patch("PIL.Image.new")
 @patch("PIL.ImageDraw.Draw")
@@ -82,18 +89,19 @@ def test_create_filled_polygon_mask(mock_image_draw, mock_image_new):
 
     mask_image = create_filled_polygon_mask(bounding_box, (200, 200), (255, 0, 0, 255))
 
-    mock_image_new.assert_called_once_with('RGBA', (200, 200), (255, 255, 255, 0))
+    mock_image_new.assert_called_once_with("RGBA", (200, 200), (255, 255, 255, 0))
     assert mask_image == mask_image_mock
     expected_points = [(50, 50), (150, 50), (150, 150), (50, 150)]
     draw_mock.polygon.assert_called_once_with(expected_points, fill=(255, 0, 0, 255))
+
 
 def test_get_image_mode():
     """
     Test determining the appropriate image mode based on the file extension.
     """
-    assert get_image_mode("test.jpg") == 'RGB'
-    assert get_image_mode("test.jpeg") == 'RGB'
-    assert get_image_mode("test.png") == 'RGBA'
-    
+    assert get_image_mode("test.jpg") == "RGB"
+    assert get_image_mode("test.jpeg") == "RGB"
+    assert get_image_mode("test.png") == "RGBA"
+
     with pytest.raises(ValueError):
         get_image_mode("test.bmp")

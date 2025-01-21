@@ -1,10 +1,15 @@
 from abc import ABC, abstractmethod
 import logging
-from co_op_translator.utils.llm.text_utils import gen_image_translation_prompt, remove_code_backticks, extract_yaml_lines
+from co_op_translator.utils.llm.text_utils import (
+    gen_image_translation_prompt,
+    remove_code_backticks,
+    extract_yaml_lines,
+)
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.llm_config.provider import LLMProvider
 
 logger = logging.getLogger(__name__)
+
 
 class TextTranslator(ABC):
     def __init__(self):
@@ -41,11 +46,13 @@ class TextTranslator(ABC):
             model=self.get_model_name(),
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
             ],
-            max_tokens=2000
+            max_tokens=2000,
         )
-        return extract_yaml_lines(remove_code_backticks(response.choices[0].message.content))
+        return extract_yaml_lines(
+            remove_code_backticks(response.choices[0].message.content)
+        )
 
     def translate_text(self, text, target_language):
         """
@@ -63,9 +70,9 @@ class TextTranslator(ABC):
             model=self.get_model_name(),
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
             ],
-            max_tokens=2000
+            max_tokens=2000,
         )
         translated_text = remove_code_backticks(response.choices[0].message.content)
         return translated_text
@@ -75,10 +82,16 @@ class TextTranslator(ABC):
         """Factory method to create appropriate translator based on available provider."""
         provider = LLMConfig.get_available_provider()
         if provider == LLMProvider.AZURE_OPENAI:
-            from co_op_translator.core.llm.providers.azure.text_translator import AzureTextTranslator
+            from co_op_translator.core.llm.providers.azure.text_translator import (
+                AzureTextTranslator,
+            )
+
             return AzureTextTranslator()
         elif provider == LLMProvider.OPENAI:
-            from co_op_translator.core.llm.providers.openai.text_translator import OpenAITextTranslator
+            from co_op_translator.core.llm.providers.openai.text_translator import (
+                OpenAITextTranslator,
+            )
+
             return OpenAITextTranslator()
         else:
             raise ValueError("No valid LLM provider configured")

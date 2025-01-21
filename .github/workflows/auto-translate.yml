@@ -1,0 +1,154 @@
+name: Auto Translation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.md'
+      - '**.png'
+      - '**.jpg'
+      - '**.jpeg'
+      - '**.gif'
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '**.md'
+      - '**.png'
+      - '**.jpg'
+      - '**.jpeg'
+      - '**.gif'
+  workflow_dispatch:
+    inputs:
+      target_languages:
+        description: 'Target languages (space-separated, e.g., "ko ja")'
+        required: true
+        default: 'ko'
+      mode:
+        description: 'Translation mode'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - markdown
+          - images
+
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+  AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+  AZURE_OPENAI_MODEL_NAME: ${{ secrets.AZURE_OPENAI_MODEL_NAME }}
+  AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME }}
+  AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+  AZURE_COMPUTER_VISION_KEY: ${{ secrets.AZURE_COMPUTER_VISION_KEY }}
+  AZURE_COMPUTER_VISION_ENDPOINT: ${{ secrets.AZURE_COMPUTER_VISION_ENDPOINT }}
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install
+
+    - name: Get changed files
+      id: changed-files
+      run: |
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          BASE_SHA=${{ github.event.pull_request.base.sha }}
+          HEAD_SHA=${{ github.event.pull_request.head.sha }}
+        else
+          BASE_SHA=${{ github.event.before }}
+          HEAD_SHA=${{ github.sha }}
+        fi
+
+        # Get lists of changed files
+        MARKDOWN_CHANGES=$(git diff --name-only $BASE_SHA $HEAD_SHA -- '*.md' | tr '\n' ' ')
+        IMAGE_CHANGES=$(git diff --name-only $BASE_SHA $HEAD_SHA -- '*.png' '*.jpg' '*.jpeg' '*.gif' | tr '\n' ' ')
+        
+        # Save to outputs
+        echo "markdown_files=$MARKDOWN_CHANGES" >> $GITHUB_OUTPUT
+        echo "image_files=$IMAGE_CHANGES" >> $GITHUB_OUTPUT
+
+        # Set flags for changes
+        if [ ! -z "$MARKDOWN_CHANGES" ]; then
+          echo "has_markdown_changes=true" >> $GITHUB_OUTPUT
+        else
+          echo "has_markdown_changes=false" >> $GITHUB_OUTPUT
+        fi
+
+        if [ ! -z "$IMAGE_CHANGES" ]; then
+          echo "has_image_changes=true" >> $GITHUB_OUTPUT
+        else
+          echo "has_image_changes=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Translate markdown files
+      if: |
+        steps.changed-files.outputs.has_markdown_changes == 'true' &&
+        (github.event.inputs.mode == 'all' || github.event.inputs.mode == 'markdown' || github.event.inputs.mode == '')
+      run: |
+        # Set target languages
+        LANGUAGES="${{ github.event.inputs.target_languages || 'ko' }}"
+        
+        # Process markdown files
+        for file in ${{ steps.changed-files.outputs.markdown_files }}; do
+          poetry run co-op-translator translate-files "$file" -l "$LANGUAGES" -u
+        done
+
+    - name: Translate images
+      if: |
+        steps.changed-files.outputs.has_image_changes == 'true' &&
+        (github.event.inputs.mode == 'all' || github.event.inputs.mode == 'images' || github.event.inputs.mode == '')
+      run: |
+        # Set target languages
+        LANGUAGES="${{ github.event.inputs.target_languages || 'ko' }}"
+        
+        # Process image files
+        for file in ${{ steps.changed-files.outputs.image_files }}; do
+          poetry run co-op-translator translate-files "$file" -l "$LANGUAGES" -u
+        done
+
+    - name: Create Pull Request
+      if: |
+        github.event_name == 'push' ||
+        (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: '🤖 Update translations'
+        title: '🤖 Update translations'
+        body: |
+          This PR contains automatic translations for recent changes.
+          
+          **Changed Files:**
+          Markdown files:
+          ```
+          ${{ steps.changed-files.outputs.markdown_files }}
+          ```
+          
+          Image files:
+          ```
+          ${{ steps.changed-files.outputs.image_files }}
+          ```
+          
+          Please review the translations for accuracy.
+        branch: auto-translation/update-${{ github.sha }}
+        base: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || 'main' }}
+        labels: translation, automated-pr
+        delete-branch: true

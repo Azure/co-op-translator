@@ -415,3 +415,91 @@ class ProjectTranslator:
             for task in tasks:
                 await task()  # Execute each task sequentially
                 progress_bar.update(1)  # Update progress bar
+
+    async def translate_single_file(self, file_path: Path, language_code: str, update: bool = False):
+        """
+        Translate a single file (markdown or image) to the specified language.
+        
+        Args:
+            file_path (Path): Path to the file to translate
+            language_code (str): Target language code
+            update (bool): Whether to force update existing translations
+        """
+        file_path = Path(file_path).resolve()
+        if not file_path.exists():
+            logger.error(f"File does not exist: {file_path}")
+            return
+
+        # Check if file needs translation (either update mode or no existing translation)
+        needs_translation = update
+        if not needs_translation:
+            if file_path.suffix == '.md':
+                translated_path = self.translations_dir / language_code / file_path.relative_to(self.root_dir)
+                needs_translation = not translated_path.exists()
+            else:  # Image file
+                filename, ext = get_filename_and_extension(file_path)
+                translated_path = self.image_dir / language_code / f"{filename}_{language_code}{ext}"
+                needs_translation = not translated_path.exists()
+
+        if needs_translation:
+            if file_path.suffix == '.md':
+                await self.translate_markdown(file_path, language_code)
+            elif file_path.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
+                await self.translate_image(file_path, language_code)
+            else:
+                logger.error(f"Unsupported file type: {file_path}")
+        else:
+            logger.info(f"Skipping translation for {file_path} as it already exists")
+
+    def clean_translation(self, file_path: Path, language_code: str = None):
+        """
+        Remove translations for a specific file.
+        
+        Args:
+            file_path (Path): Path to the original file
+            language_code (str, optional): Specific language to clean. If None, clean all languages.
+        """
+        file_path = Path(file_path).resolve()
+        if not file_path.is_relative_to(self.root_dir):
+            logger.error(f"File {file_path} is not under root directory {self.root_dir}")
+            return
+
+        relative_path = file_path.relative_to(self.root_dir)
+        languages = [language_code] if language_code else self.language_codes
+        
+        for lang in languages:
+            if file_path.suffix == '.md':
+                translated_path = self.translations_dir / lang / relative_path
+            else:  # Image file
+                filename, ext = get_filename_and_extension(file_path)
+                translated_path = self.image_dir / lang / f"{filename}_{lang}{ext}"
+                
+            if translated_path.exists():
+                try:
+                    translated_path.unlink()
+                    logger.info(f"Deleted translation: {translated_path}")
+                except Exception as e:
+                    logger.error(f"Failed to delete translation {translated_path}: {e}")
+
+    async def process_changed_files(self, added_files: list[Path], modified_files: list[Path], deleted_files: list[Path], language_codes: list[str] = None):
+        """
+        Process changes in files by translating new/modified files and cleaning up deleted ones.
+        
+        Args:
+            added_files (list[Path]): List of newly added files
+            modified_files (list[Path]): List of modified files
+            deleted_files (list[Path]): List of deleted files
+            language_codes (list[str], optional): List of language codes to process. If None, uses all configured languages.
+        """
+        languages = language_codes if language_codes else self.language_codes
+        
+        # Handle deleted files first
+        for file_path in deleted_files:
+            self.clean_translation(file_path)
+            logger.info(f"Cleaned up translations for deleted file: {file_path}")
+        
+        # Process new and modified files
+        for file_path in added_files + modified_files:
+            for lang in languages:
+                await self.translate_single_file(file_path, lang, update=True)
+                logger.info(f"Processed translation for {file_path} in language {lang}")

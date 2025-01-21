@@ -6,6 +6,7 @@ import yaml
 from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -187,5 +188,71 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
     logger.info(f"Project translation completed for languages: {language_codes}")
 
 
+@click.command()
+@click.argument('files', nargs=-1, type=click.Path(exists=True))
+@click.option(
+    "--language-codes",
+    "-l",
+    required=True,
+    help='Space-separated language codes for translation (e.g., "es fr de" or "all").',
+)
+@click.option(
+    "--root-dir",
+    "-r",
+    default=".",
+    help="Root directory of the project (default is current directory).",
+)
+@click.option(
+    "--clean",
+    is_flag=True,
+    help="Clean translations for the specified files.",
+)
+@click.option(
+    "--update",
+    "-u",
+    is_flag=True,
+    help="Force update existing translations.",
+)
+def translate_files(files, language_codes, root_dir, clean, update):
+    """
+    Translate specific files to target languages.
+
+    Usage examples:
+
+    1. Translate specific files:
+       translate-files README.md docs/guide.md -l "ko"
+
+    2. Clean translations for specific files:
+       translate-files README.md --clean -l "ko"
+
+    3. Force update translations for specific files:
+       translate-files docs/*.md -l "ko" -u
+    """
+    # Check configuration
+    Config.check_configuration()
+    cv_available = VisionConfig.check_configuration()
+
+    # Initialize translator
+    translator = ProjectTranslator(language_codes, root_dir)
+
+    # Process each file
+    for file_path in files:
+        file_path = Path(file_path).resolve()
+        if clean:
+            translator.clean_translation(file_path)
+            click.echo(f"Cleaned translations for: {file_path}")
+        else:
+            asyncio.run(translator.translate_single_file(file_path, language_codes, update))
+            click.echo(f"Translated: {file_path}")
+
+
+def cli():
+    """Entry point for CLI commands."""
+    commands = click.Group()
+    commands.add_command(main, name="translate")
+    commands.add_command(translate_files, name="translate-files")
+    commands()
+
+
 if __name__ == "__main__":
-    main()
+    cli()

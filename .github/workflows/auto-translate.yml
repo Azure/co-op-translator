@@ -1,0 +1,133 @@
+name: Auto Translation
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
+      - 'LICENSE'
+  workflow_dispatch:
+    inputs:
+      target_languages:
+        description: 'Target languages (space-separated, e.g., "ko ja")'
+        required: true
+        default: 'ko'
+      mode:
+        description: 'Translation mode (all, markdown, images)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - markdown
+          - images
+
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+  AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+  AZURE_OPENAI_MODEL_NAME: ${{ secrets.AZURE_OPENAI_MODEL_NAME }}
+  AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME }}
+  AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+  AZURE_COMPUTER_VISION_KEY: ${{ secrets.AZURE_COMPUTER_VISION_KEY }}
+  AZURE_COMPUTER_VISION_ENDPOINT: ${{ secrets.AZURE_COMPUTER_VISION_ENDPOINT }}
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install
+
+    - name: Get changed files
+      id: changed-files
+      run: |
+        # Get lists of changed files
+        ADDED=$(git diff --diff-filter=A --name-only ${{ github.event.before }} ${{ github.sha }} | tr '\n' ' ')
+        DELETED=$(git diff --diff-filter=D --name-only ${{ github.event.before }} ${{ github.sha }} | tr '\n' ' ')
+        MODIFIED=$(git diff --diff-filter=M --name-only ${{ github.event.before }} ${{ github.sha }} | tr '\n' ' ')
+        
+        # Save to outputs
+        echo "added=$ADDED" >> $GITHUB_OUTPUT
+        echo "deleted=$DELETED" >> $GITHUB_OUTPUT
+        echo "modified=$MODIFIED" >> $GITHUB_OUTPUT
+        
+        # Check if there are any markdown or image files
+        if echo "$ADDED $MODIFIED $DELETED" | grep -qE '\.(md|png|jpg|jpeg|gif)$'; then
+          echo "has_translatable=true" >> $GITHUB_OUTPUT
+        else
+          echo "has_translatable=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Clean deleted files
+      if: steps.changed-files.outputs.deleted != ''
+      run: |
+        # Set target languages
+        LANGUAGES="${{ github.event.inputs.target_languages || 'ko' }}"
+        
+        # Clean up translations for deleted files
+        for file in ${{ steps.changed-files.outputs.deleted }}; do
+          poetry run translate-files "$file" -l "$LANGUAGES" --clean
+        done
+
+    - name: Translate new and modified files
+      if: steps.changed-files.outputs.added != '' || steps.changed-files.outputs.modified != ''
+      run: |
+        # Set target languages
+        LANGUAGES="${{ github.event.inputs.target_languages || 'ko' }}"
+        
+        # Process new files
+        for file in ${{ steps.changed-files.outputs.added }} ${{ steps.changed-files.outputs.modified }}; do
+          if [[ $file =~ \.(md|png|jpg|jpeg|gif)$ ]]; then
+            poetry run translate-files "$file" -l "$LANGUAGES" -u
+          fi
+        done
+
+    - name: Create Pull Request
+      if: steps.changed-files.outputs.has_translatable == 'true' || github.event_name == 'workflow_dispatch'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: '🤖 Update translations'
+        title: '🤖 Update translations for ${{ github.event.inputs.target_languages || "ko" }}'
+        body: |
+          This PR contains automatic translations for recent changes.
+          
+          **Changes:**
+          Added files:
+          ```
+          ${{ steps.changed-files.outputs.added }}
+          ```
+          
+          Modified files:
+          ```
+          ${{ steps.changed-files.outputs.modified }}
+          ```
+          
+          Deleted files:
+          ```
+          ${{ steps.changed-files.outputs.deleted }}
+          ```
+          
+          Please review the translations for accuracy.
+        branch: auto-translation/update-${{ github.sha }}
+        base: main
+        labels: translation, automated-pr
+        delete-branch: true

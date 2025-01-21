@@ -19,7 +19,8 @@ include = ["src/co_op_translator/fonts/*"]
 documentation = "https://github.com/Azure/co-op-translator/tree/main/getting_started"
 
 [tool.poetry.scripts]
-translate = "co_op_translator.__main__:main"
+co-op-translator = "co_op_translator.__main__:cli"
+translate-files = "co_op_translator.__main__:translate_files"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"

@@ -8,17 +8,22 @@ from co_op_translator.config.llm_config.openai import OpenAIConfig
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class LLMServiceConfig:
     """Configuration for a specific LLM service."""
+
     required: bool
     env_vars: Dict[str, Optional[str]]
+
 
 class LLMConfig:
     """Configuration for LLM-related services."""
 
     @classmethod
-    def validate_env_vars(cls, env_vars: Dict[str, Optional[str]], provider: LLMProvider):
+    def validate_env_vars(
+        cls, env_vars: Dict[str, Optional[str]], provider: LLMProvider
+    ):
         """
         Validate environment variables for a given provider.
         - For OpenAI, only 'OPENAI_API_KEY' is required.
@@ -37,7 +42,9 @@ class LLMConfig:
 
             # If OPENAI_API_KEY is missing or empty, it's incomplete
             if not env_vars.get("OPENAI_API_KEY"):
-                raise ValueError("Incomplete OpenAI configuration. The 'OPENAI_API_KEY' must be set.")
+                raise ValueError(
+                    "Incomplete OpenAI configuration. The 'OPENAI_API_KEY' must be set."
+                )
 
         elif provider == LLMProvider.AZURE_OPENAI:
             # If there's no environment variable filled at all

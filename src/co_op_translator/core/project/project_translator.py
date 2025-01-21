@@ -503,3 +503,19 @@ class ProjectTranslator:
             for lang in languages:
                 await self.translate_single_file(file_path, lang, update=True)
                 logger.info(f"Processed translation for {file_path} in language {lang}")
+
+    async def save_translation(self, file_path: Path, target_language: str, translated_content: str) -> None:
+        """Save translated content to a file."""
+        target_path = self.get_translation_path(file_path, target_language)
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(target_path, "w", encoding="utf-8") as f:
+            f.write(translated_content)
+
+    def get_translation_path(self, file_path: Path, target_language: str) -> Path:
+        """Get the path for the translated file."""
+        if file_path.suffix == '.md':
+            return self.translations_dir / target_language / file_path.relative_to(self.root_dir)
+        else:  # Image file
+            filename, ext = get_filename_and_extension(file_path)
+            return self.image_dir / target_language / f"{filename}_{target_language}{ext}"

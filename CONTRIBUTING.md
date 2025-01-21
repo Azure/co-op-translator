@@ -88,6 +88,69 @@ poetry install
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
+
+### Code Style
+
+We use [Black](https://github.com/psf/black) as our Python code formatter to maintain consistent code style across the project. Black is an uncompromising code formatter that automatically reformats Python code to conform to the Black code style.
+
+#### Configuration
+
+The Black configuration is specified in our `pyproject.toml`:
+
+```toml
+[tool.black]
+line-length = 88
+target-version = ['py310']
+include = '\.pyi?$'
+```
+
+#### Installing Black
+
+You can install Black using either Poetry (recommended) or pip:
+
+##### Using Poetry
+
+Black is automatically installed when you set up the development environment:
+```bash
+poetry install
+```
+
+##### Using pip
+
+If you're using pip, you can install Black directly:
+```bash
+pip install black
+```
+
+#### Using Black
+
+##### With Poetry
+
+1. Format all Python files in the project:
+    ```bash
+    poetry run black .
+    ```
+
+2. Format a specific file or directory:
+    ```bash
+    poetry run black path/to/file_or_directory
+    ```
+
+##### With pip
+
+1. Format all Python files in the project:
+    ```bash
+    black .
+    ```
+
+2. Format a specific file or directory:
+    ```bash
+    black path/to/file_or_directory
+    ```
+
+> [!TIP]
+> We recommend setting up your editor to automatically format code with Black on save. Most modern editors support this through extensions or plugins.
+
 ## Running Co-op Translator
 
 To run Co-op Translator using Poetry in your environment, follow these steps:

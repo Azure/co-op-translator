@@ -14,6 +14,16 @@ from co_op_translator.utils.llm.markdown_utils import (
 )
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.llm_config.config import LLMConfig
+from co_op_translator.utils.common.metadata_utils import calculate_file_hash, create_metadata, format_metadata_comment
+from co_op_translator.utils.llm.markdown_utils import (
+    process_markdown,
+    update_links,
+    generate_prompt_template,
+    count_links_in_markdown,
+    process_markdown_with_many_links,
+    replace_code_blocks_and_inline_code,
+    restore_code_blocks_and_inline_code,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +40,46 @@ class MarkdownTranslator(ABC):
         """
         self.root_dir = root_dir
         self.font_config = FontConfig()
+
+    def calculate_file_hash(self, file_path: Path) -> str:
+        """
+        Calculate MD5 hash of a file.
+
+        Args:
+            file_path (Path): Path to the file to calculate hash for.
+
+        Returns:
+            str: MD5 hash of the file content.
+        """
+        return calculate_file_hash(file_path)
+
+    def create_metadata(self, original_file: Path, language_code: str) -> dict:
+        """
+        Create metadata for a translated file.
+
+        Args:
+            original_file (Path): Path to the original file
+            language_code (str): Target language code
+
+        Returns:
+            dict: Metadata dictionary containing file information
+        """
+        return create_metadata(original_file, language_code, self.root_dir)
+
+    def format_metadata_comment(self, metadata: dict) -> str:
+        """
+        Convert a metadata dictionary into a formatted HTML comment.
+
+        This function serializes the metadata dictionary as a JSON string with indentation,
+        wraps it in a custom HTML comment format, and returns the resulting string.
+
+        Args:
+            metadata (dict): A dictionary containing metadata to be formatted.
+
+        Returns:
+            str: A string containing the metadata formatted as an HTML comment.
+        """
+        return format_metadata_comment(metadata)
 
     async def translate_markdown(
         self,
@@ -48,9 +98,13 @@ class MarkdownTranslator(ABC):
             markdown_only (bool): Whether we're in markdown-only mode.
 
         Returns:
-            str: The translated content with updated links and a disclaimer appended.
+            str: The translated content with metadata, updated links and a disclaimer.
         """
         md_file_path = Path(md_file_path)
+
+        # Create and format metadata
+        metadata = self.create_metadata(md_file_path, language_code)
+        metadata_comment = self.format_metadata_comment(metadata)
 
         # Step 1: Replace code blocks and inline code with placeholders
         document_with_placeholders, placeholder_map = (
@@ -96,7 +150,7 @@ class MarkdownTranslator(ABC):
             markdown_only=markdown_only,
         )
         disclaimer = await self.generate_disclaimer(language_code)
-        updated_content += "\n\n" + disclaimer
+        updated_content = metadata_comment + updated_content + "\n\n" + disclaimer
 
         return updated_content
 

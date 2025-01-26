@@ -61,14 +61,22 @@ def test_project_translator_init(project_translator, temp_project_dir):
     assert translator.translations_dir == temp_project_dir / "translations"
     assert translator.image_dir == temp_project_dir / "translated_images"
     assert not translator.markdown_only
-    
+
     # Test markdown-only mode
     with (
-        patch("co_op_translator.core.llm.text_translator.TextTranslator") as mock_text_translator,
-        patch("co_op_translator.core.llm.markdown_translator.MarkdownTranslator") as mock_markdown_translator,
-        patch("co_op_translator.core.vision.image_translator.ImageTranslator") as mock_image_translator,
+        patch(
+            "co_op_translator.core.llm.text_translator.TextTranslator"
+        ) as mock_text_translator,
+        patch(
+            "co_op_translator.core.llm.markdown_translator.MarkdownTranslator"
+        ) as mock_markdown_translator,
+        patch(
+            "co_op_translator.core.vision.image_translator.ImageTranslator"
+        ) as mock_image_translator,
     ):
-        translator = ProjectTranslator("ko", root_dir=temp_project_dir, markdown_only=True)
+        translator = ProjectTranslator(
+            "ko", root_dir=temp_project_dir, markdown_only=True
+        )
         assert translator.markdown_only
         assert translator.image_translator is None
 
@@ -90,9 +98,15 @@ def test_translate_project(project_translator):
 def test_markdown_only_mode(temp_project_dir):
     """Test ProjectTranslator in markdown-only mode."""
     with (
-        patch("co_op_translator.core.llm.text_translator.TextTranslator") as mock_text_translator,
-        patch("co_op_translator.core.llm.markdown_translator.MarkdownTranslator") as mock_markdown_translator,
-        patch("co_op_translator.core.vision.image_translator.ImageTranslator") as mock_image_translator,
+        patch(
+            "co_op_translator.core.llm.text_translator.TextTranslator"
+        ) as mock_text_translator,
+        patch(
+            "co_op_translator.core.llm.markdown_translator.MarkdownTranslator"
+        ) as mock_markdown_translator,
+        patch(
+            "co_op_translator.core.vision.image_translator.ImageTranslator"
+        ) as mock_image_translator,
     ):
         # Setup mocks
         mock_text_translator.create.return_value = MagicMock()
@@ -100,7 +114,9 @@ def test_markdown_only_mode(temp_project_dir):
         mock_image_translator.create.return_value = MagicMock()
 
         # Create translator in markdown-only mode
-        translator = ProjectTranslator("ko", root_dir=temp_project_dir, markdown_only=True)
+        translator = ProjectTranslator(
+            "ko", root_dir=temp_project_dir, markdown_only=True
+        )
 
         # Verify
         assert translator.markdown_only

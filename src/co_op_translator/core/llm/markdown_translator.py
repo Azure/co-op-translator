@@ -14,7 +14,11 @@ from co_op_translator.utils.llm.markdown_utils import (
 )
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.llm_config.config import LLMConfig
-from co_op_translator.utils.common.metadata_utils import calculate_file_hash, create_metadata, format_metadata_comment
+from co_op_translator.utils.common.metadata_utils import (
+    calculate_file_hash,
+    create_metadata,
+    format_metadata_comment,
+)
 from co_op_translator.utils.llm.markdown_utils import (
     process_markdown,
     update_links,

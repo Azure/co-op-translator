@@ -19,12 +19,15 @@ def calculate_file_hash(file_path: Path) -> str:
         str: MD5 hash of the file content.
     """
     hasher = hashlib.md5()
-    with open(file_path, 'rb') as f:
-        for chunk in iter(lambda: f.read(4096), b''):
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
             hasher.update(chunk)
     return hasher.hexdigest()
 
-def create_metadata(original_file: Path, language_code: str, root_dir: Path | None = None) -> dict:
+
+def create_metadata(
+    original_file: Path, language_code: str, root_dir: Path | None = None
+) -> dict:
     """
     Create metadata for a translated file.
 
@@ -41,9 +44,12 @@ def create_metadata(original_file: Path, language_code: str, root_dir: Path | No
     return {
         "original_hash": calculate_file_hash(original_file),
         "translation_date": formatted_time,
-        "source_file": str(original_file.relative_to(root_dir)) if root_dir else str(original_file),
-        "language_code": language_code
+        "source_file": (
+            str(original_file.relative_to(root_dir)) if root_dir else str(original_file)
+        ),
+        "language_code": language_code,
     }
+
 
 def format_metadata_comment(metadata: dict) -> str:
     """

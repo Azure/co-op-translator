@@ -13,20 +13,9 @@ from co_op_translator.core.vision import (
     image_translator,
 )
 from co_op_translator.config.constants import (
-    SUPPORTED_IMAGE_EXTENSIONS,
     EXCLUDED_DIRS,
 )
-from co_op_translator.utils.common.file_utils import (
-    read_input_file,
-    handle_empty_document,
-    get_filename_and_extension,
-    filter_files,
-    generate_translated_filename,
-    delete_translated_images_by_language_code,
-    delete_translated_markdown_files_by_language_code,
-)
-from co_op_translator.utils.common.task_utils import worker
-from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
+
 from .directory_manager import DirectoryManager
 from .translation_manager import TranslationManager
 
@@ -67,10 +56,7 @@ class ProjectTranslator:
 
         # Initialize managers
         self.directory_manager = DirectoryManager(
-            self.root_dir,
-            self.translations_dir,
-            self.language_codes,
-            EXCLUDED_DIRS
+            self.root_dir, self.translations_dir, self.language_codes, EXCLUDED_DIRS
         )
         self.translation_manager = TranslationManager(
             self.root_dir,
@@ -79,13 +65,13 @@ class ProjectTranslator:
             self.language_codes,
             EXCLUDED_DIRS,
             self.markdown_translator,
-            self.markdown_only
+            self.markdown_only,
         )
 
     def translate_project(self, images=False, markdown=False, update=False):
         """
         Public synchronous method to start the project translation.
-        
+
         Args:
             images: Whether to translate images
             markdown: Whether to translate markdown files

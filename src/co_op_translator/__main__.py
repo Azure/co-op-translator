@@ -165,9 +165,19 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
     translator = ProjectTranslator(language_codes, root_dir, markdown_only=markdown)
 
     if check:
-        # Call check_and_retry_translations if --check is passed
-        click.echo(f"Checking translated files for errors in {language_codes}...")
-        asyncio.run(translator.check_and_retry_translations())
+        # Call check_outdated_files if --check is passed
+        click.echo(f"Checking outdated translations in {language_codes}...")
+        modified_count, errors = asyncio.run(translator.translation_manager.check_outdated_files())
+        
+        if modified_count > 0:
+            click.echo(f"Retranslated {modified_count} files due to content changes")
+        else:
+            click.echo("No files needed retranslation")
+            
+        if errors:
+            click.echo(f"Encountered {len(errors)} errors during retranslation")
+            for error in errors:
+                click.echo(error)
     else:
         # Set default values for images and markdown flags
         if not images and not markdown:

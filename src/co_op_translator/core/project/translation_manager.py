@@ -2,6 +2,8 @@ from pathlib import Path
 import logging
 from typing import List
 from tqdm import tqdm
+import re
+import json
 
 from co_op_translator.utils.common.file_utils import filter_files
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
@@ -192,6 +194,104 @@ class TranslationManager:
 
                 except Exception as e:
                     error_msg = f"Error processing {img_file}: {str(e)}"
+                    logger.error(error_msg)
+                    errors.append(error_msg)
+                    pbar.update(len(self.language_codes))
+
+        return modified_count, errors
+
+    async def check_outdated_files(self, update: bool = False) -> tuple[int, List[str]]:
+        """
+        Check for outdated translated files by comparing metadata hash values and retranslate if needed.
+
+        Args:
+            update: Whether to update existing translations regardless of hash values
+
+        Returns:
+            tuple[int, List[str]]: Number of retranslated files and list of errors
+        """
+        modified_count = 0
+        errors = []
+
+        # Find all markdown files in root directory
+        markdown_files = [
+            f
+            for f in filter_files(self.root_dir, self.excluded_dirs)
+            if f.suffix.lower() == ".md"
+        ]
+
+        # Create progress bar
+        with tqdm(total=len(markdown_files) * len(self.language_codes)) as pbar:
+            # Process each markdown file
+            for md_file in markdown_files:
+                try:
+                    # Calculate relative path from root
+                    relative_path = md_file.relative_to(self.root_dir)
+
+                    # Translate to each language
+                    for lang_code in self.language_codes:
+                        try:
+                            # Calculate target path
+                            target_path = self.translations_dir / lang_code / relative_path
+
+                            # Skip if target doesn't exist
+                            if not target_path.exists():
+                                pbar.update(1)
+                                continue
+
+                            # Read target file content and extract metadata
+                            target_content = target_path.read_text(encoding="utf-8")
+                            
+                            # Create current metadata for comparison
+                            current_metadata = self.markdown_translator.create_metadata(md_file, lang_code)
+                            current_hash = current_metadata.get("file_hash")
+                            
+                            # Extract metadata from the target file using metadata_utils
+                            metadata_match = re.search(r"<!--\s*translation-metadata\s*(.*?)\s*-->", target_content, re.DOTALL)
+                            if not metadata_match:
+                                logger.warning(f"No metadata found in {target_path}")
+                                pbar.update(1)
+                                continue
+
+                            try:
+                                stored_metadata = json.loads(metadata_match.group(1))
+                            except json.JSONDecodeError:
+                                logger.warning(f"Invalid metadata in {target_path}")
+                                pbar.update(1)
+                                continue
+
+                            # Get stored hash from metadata
+                            stored_hash = stored_metadata.get("file_hash")
+                            if not stored_hash:
+                                logger.warning(f"No file hash in metadata of {target_path}")
+                                pbar.update(1)
+                                continue
+
+                            # Compare hashes and retranslate if different
+                            if update or stored_hash != current_hash:
+                                # Read original content
+                                content = md_file.read_text(encoding="utf-8")
+
+                                # Translate content
+                                translated_content = await self.markdown_translator.translate_markdown(
+                                    content, lang_code, md_file, self.markdown_only
+                                )
+
+                                # Write translated content
+                                target_path.write_text(translated_content, encoding="utf-8")
+                                modified_count += 1
+                                logger.info(f"Retranslated {md_file} to {lang_code} due to content changes")
+
+                        except Exception as e:
+                            error_msg = f"Error checking/retranslating {md_file} to {lang_code}: {str(e)}"
+                            logger.error(error_msg)
+                            errors.append(error_msg)
+
+                        finally:
+                            pbar.update(1)
+
+                except Exception as e:
+                    error_msg = f"Error processing {md_file}: {str(e)}"
                     logger.error(error_msg)
                     errors.append(error_msg)
                     pbar.update(len(self.language_codes))

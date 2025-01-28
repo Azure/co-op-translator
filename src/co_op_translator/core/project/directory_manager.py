@@ -1,7 +1,7 @@
 from pathlib import Path
 import logging
-
-from co_op_translator.utils.common.file_utils import filter_files
+import json
+from co_op_translator.utils.common.file_utils import get_unique_id
 
 logger = logging.getLogger(__name__)
 
@@ -141,41 +141,48 @@ class DirectoryManager:
         """
         removed_count = 0
 
-        # Iterate through each language directory
-        for lang_code in self.language_codes:
-            lang_dir = self.translations_dir / lang_code
-            if not lang_dir.exists():
-                continue
-
-            # Find all files in the language directory
-            for translated_file in filter_files(lang_dir, self.excluded_dirs):
-                file_ext = translated_file.suffix.lower()
-
-                # Skip files based on mode
-                if not markdown and file_ext == ".md":
-                    continue
-                if not images and file_ext in [".png", ".jpg"]:
+        # Handle markdown files
+        if markdown:
+            for lang_code in self.language_codes:
+                translation_dir = self.translations_dir / lang_code
+                if not translation_dir.exists():
                     continue
 
-                try:
-                    # Calculate original file path
-                    relative_path = translated_file.relative_to(lang_dir)
-                    original_file = self.root_dir / relative_path
+                for trans_file in translation_dir.rglob("*.md"):
+                    try:
+                        # Read translation file and find metadata comment
+                        content = trans_file.read_text(encoding="utf-8")
+                        metadata_start = content.find("<!--")
+                        if metadata_start == -1:
+                            continue
 
-                    # If original doesn't exist, remove the translation
-                    if not original_file.exists():
-                        logger.info(f"Removing orphaned translation: {translated_file}")
-                        try:
-                            translated_file.unlink()  # Delete the file
+                        metadata_end = content.find("-->", metadata_start)
+                        if metadata_end == -1:
+                            continue
+
+                        metadata_str = content[
+                            metadata_start + 4 : metadata_end
+                        ].strip()
+                        metadata = json.loads(metadata_str)
+
+                        # Check if original file exists
+                        source_file = metadata.get("source_file")
+                        if not source_file:
+                            continue
+
+                        original_file = self.root_dir / source_file
+                        if not original_file.exists():
+                            trans_file.unlink()
                             removed_count += 1
+                            logger.debug(f"Removed orphaned translation: {trans_file}")
 
                             # Try to remove empty parent directories
-                            parent = translated_file.parent
-                            while parent != lang_dir:
+                            parent = trans_file.parent
+                            while parent != translation_dir:
                                 if not any(parent.iterdir()):  # If directory is empty
                                     try:
                                         parent.rmdir()
-                                        logger.info(
+                                        logger.debug(
                                             f"Removed empty directory: {parent}"
                                         )
                                     except OSError:
@@ -184,11 +191,85 @@ class DirectoryManager:
                                     break  # Stop if directory is not empty
                                 parent = parent.parent
 
-                        except OSError as e:
-                            logger.error(f"Failed to remove {translated_file}: {e}")
+                    except (json.JSONDecodeError, KeyError, FileNotFoundError) as e:
+                        logger.warning(f"Error processing {trans_file}: {e}")
+                        continue
 
-                except Exception as e:
-                    logger.error(f"Error processing {translated_file}: {e}")
+        # Handle image files
+        if images:
+            # Collect all image files in the original directory
+            original_images = {}  # path_hash -> original_file_path
+            for image_file in self.root_dir.rglob("*"):
+                if not image_file.is_file():
                     continue
+
+                if image_file.suffix.lower() not in [".png", ".jpg", ".jpeg", ".gif"]:
+                    continue
+
+                try:
+                    path_hash = get_unique_id(image_file, self.root_dir)
+                    original_images[path_hash] = image_file
+                except ValueError:
+                    continue
+
+            # Check translated images in each language directory
+            for lang_code in self.language_codes:
+                translation_dir = self.translations_dir / lang_code
+                if not translation_dir.exists():
+                    continue
+
+                for image_file in translation_dir.rglob("*"):
+                    if not image_file.is_file():
+                        continue
+
+                    if image_file.suffix.lower() not in [
+                        ".png",
+                        ".jpg",
+                        ".jpeg",
+                        ".gif",
+                    ]:
+                        continue
+
+                    # Image files follow the pattern: [original_name].[path_hash].[lang_code].[ext]
+                    try:
+                        # Split filename into parts
+                        parts = image_file.name.split(".")
+                        if (
+                            len(parts) < 4
+                        ):  # Need at least name, hash, lang_code, and extension
+                            continue
+
+                        # Last part is extension, second to last is lang_code, third to last is path_hash
+                        extension = parts[-1]
+                        lang_code = parts[-2]
+                        path_hash = parts[-3]
+
+                        if lang_code not in self.language_codes:
+                            continue
+
+                        # Check if original file with matching path hash exists
+                        if path_hash not in original_images:
+                            image_file.unlink()
+                            removed_count += 1
+                            logger.debug(f"Removed orphaned image: {image_file}")
+
+                            # Try to remove empty parent directories
+                            parent = image_file.parent
+                            while parent != translation_dir:
+                                if not any(parent.iterdir()):  # If directory is empty
+                                    try:
+                                        parent.rmdir()
+                                        logger.debug(
+                                            f"Removed empty directory: {parent}"
+                                        )
+                                    except OSError:
+                                        break  # Stop if directory is not empty or can't be removed
+                                else:
+                                    break  # Stop if directory is not empty
+                                parent = parent.parent
+
+                    except Exception as e:
+                        logger.warning(f"Error processing image {image_file}: {e}")
+                        continue
 
         return removed_count

@@ -3,8 +3,7 @@ Tests for DirectoryManager class
 """
 
 import pytest
-from pathlib import Path
-from unittest.mock import patch
+import os
 
 from co_op_translator.core.project.directory_manager import DirectoryManager
 
@@ -59,31 +58,6 @@ class TestDirectoryManager:
     def test_cleanup_orphaned_translations(self, setup_test_dirs):
         """Test cleanup of orphaned translations"""
         root_dir = setup_test_dirs
-        translations_dir = root_dir / "translations"
-        language_codes = ["ko"]
-        excluded_dirs = []
-
-        # Create a translation without original file
-        translations_dir.mkdir()
-        ko_dir = translations_dir / "ko"
-        ko_dir.mkdir()
-        (ko_dir / "orphaned.md").write_text("# Orphaned content")
-
-        manager = DirectoryManager(
-            root_dir=root_dir,
-            translations_dir=translations_dir,
-            language_codes=language_codes,
-            excluded_dirs=excluded_dirs,
-        )
-        manager.cleanup_orphaned_translations()
-
-        # Orphaned file should be removed
-        assert not (ko_dir / "orphaned.md").exists()
-
-    @patch("co_op_translator.core.project.directory_manager.filter_files")
-    def test_filter_files_usage(self, mock_filter_files, setup_test_dirs):
-        """Test filter_files usage in DirectoryManager"""
-        root_dir = setup_test_dirs
         language_codes = ["ko"]
         excluded_dirs = ["node_modules", ".git"]
         translations_dir = root_dir / "translations"
@@ -93,13 +67,29 @@ class TestDirectoryManager:
         ko_dir = translations_dir / "ko"
         ko_dir.mkdir()
 
-        # Create both original and translated files
-        (root_dir / "test.md").write_text("# Original Test")
+        # Create test files
         test_file = ko_dir / "test.md"
-        test_file.write_text("# Test Translation")
+        test_file.write_text(
+            """<!--
+{
+    "source_file": "test.md"
+}
+-->
+# Test Translation"""
+        )
 
-        # Setup mock for filter_files to return our test file
-        mock_filter_files.return_value = [test_file]
+        orphaned_file = ko_dir / "orphaned.md"
+        orphaned_file.write_text(
+            """<!--
+{
+    "source_file": "nonexistent.md"
+}
+-->
+# Orphaned Translation"""
+        )
+
+        # Create original file only for test.md
+        (root_dir / "test.md").write_text("# Original Test")
 
         manager = DirectoryManager(
             root_dir=root_dir,
@@ -108,12 +98,60 @@ class TestDirectoryManager:
             excluded_dirs=excluded_dirs,
         )
 
-        # Call cleanup_orphaned_translations with markdown=True to ensure markdown files are processed
+        # Run cleanup
         manager.cleanup_orphaned_translations(markdown=True, images=False)
 
-        # Verify filter_files was called with correct arguments - only directory and excluded_dirs
-        mock_filter_files.assert_called_once_with(ko_dir, excluded_dirs)
-
-        # Verify files still exist since they have matching originals
-        assert (root_dir / "test.md").exists()
+        # Verify test.md translation still exists (has matching original)
         assert test_file.exists()
+        # Verify orphaned.md was removed (no matching original)
+        assert not orphaned_file.exists()
+
+    def test_cleanup_orphaned_image_translations(self, setup_test_dirs):
+        """Test cleanup of orphaned image translations"""
+        root_dir = setup_test_dirs
+        translations_dir = root_dir / "translations"
+        language_codes = ["ko"]
+        excluded_dirs = []
+
+        # Create original image
+        img_dir = root_dir / "img"
+        img_dir.mkdir(exist_ok=True)
+        original_img = img_dir / "test.png"
+        original_img.write_bytes(b"test image content")
+
+        # Create translated image with hash
+        translations_dir.mkdir(exist_ok=True)
+        ko_dir = translations_dir / "ko"
+        ko_dir.mkdir(exist_ok=True)
+        ko_img_dir = ko_dir / "img"
+        ko_img_dir.mkdir(exist_ok=True)
+
+        # Valid translated image (with correct hash)
+        from co_op_translator.utils.common.file_utils import get_unique_id
+
+        original_name, ext = os.path.splitext(original_img.name)
+        path_hash = get_unique_id(original_img, root_dir)
+        valid_trans_name = f"{original_name}.{path_hash}.ko{ext}"
+        valid_trans_img = ko_img_dir / valid_trans_name
+        valid_trans_img.write_bytes(b"translated content")
+
+        # Orphaned translated image (with incorrect hash)
+        orphaned_trans_img = ko_img_dir / "test.invalid_hash.ko.png"
+        orphaned_trans_img.write_bytes(b"orphaned content")
+
+        manager = DirectoryManager(
+            root_dir=root_dir,
+            translations_dir=translations_dir,
+            language_codes=language_codes,
+            excluded_dirs=excluded_dirs,
+        )
+
+        # Run cleanup
+        removed = manager.cleanup_orphaned_translations(markdown=False, images=True)
+
+        # Should have removed one file
+        assert removed == 1
+        # Valid translation should still exist
+        assert valid_trans_img.exists()
+        # Orphaned translation should be removed
+        assert not orphaned_trans_img.exists()

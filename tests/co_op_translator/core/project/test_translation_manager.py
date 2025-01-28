@@ -34,8 +34,18 @@ def setup_translation_dirs(tmp_path):
 def mock_markdown_translator():
     """Create a mock markdown translator"""
     translator = Mock()
-    translator.translate_markdown = Mock()
-    translator.translate_markdown.return_value = "# Translated content"
+
+    async def translate_markdown(content, lang_code, original_file, markdown_only):
+        from co_op_translator.utils.common.metadata_utils import (
+            create_metadata,
+            format_metadata_comment,
+        )
+
+        metadata = create_metadata(original_file, lang_code)
+        metadata_comment = format_metadata_comment(metadata)
+        return f"{metadata_comment}# Translated content"
+
+    translator.translate_markdown = Mock(side_effect=translate_markdown)
     return translator
 
 
@@ -125,3 +135,91 @@ async def test_translate_all_image_files(
     # Verify file was copied
     target_path = translations_dir / "ko/img/test.png"
     assert target_path.parent.exists()  # Directory should be created
+
+
+def test_metadata_handling(setup_translation_dirs, mock_markdown_translator):
+    """Test metadata handling in translations"""
+    root_dir = setup_translation_dirs
+    translations_dir = root_dir / "translations"
+    image_dir = root_dir / "translated_images"
+
+    # Create original file with content
+    original_file = root_dir / "test.md"
+    original_file.write_text("# Original content")
+
+    # Create translation file with old metadata
+    ko_dir = translations_dir / "ko"
+    ko_dir.mkdir(parents=True)
+    trans_file = ko_dir / "test.md"
+    old_metadata = """<!--
+TRANSLATOR_METADATA:
+{
+  "original_hash": "old_hash",
+  "translation_date": "2024-01-01T00:00:00+00:00",
+  "source_file": "test.md",
+  "language_code": "ko"
+}
+-->
+# Old translation"""
+    trans_file.write_text(old_metadata)
+
+    manager = TranslationManager(
+        root_dir=root_dir,
+        translations_dir=translations_dir,
+        image_dir=image_dir,
+        language_codes=["ko"],
+        excluded_dirs=[],
+        markdown_translator=mock_markdown_translator,
+        markdown_only=True,
+    )
+
+    # Check if file is detected as outdated
+    assert manager._is_translation_outdated(original_file, trans_file)
+
+    # Test translation update
+    asyncio.run(manager.translate_all_markdown_files(update=True))
+
+    # Verify new metadata is written
+    content = trans_file.read_text()
+    assert "TRANSLATOR_METADATA" in content
+    assert "old_hash" not in content  # Old hash should be replaced
+    assert "translation_date" in content
+
+
+def test_translation_without_metadata(setup_translation_dirs, mock_markdown_translator):
+    """Test handling of translations without metadata"""
+    root_dir = setup_translation_dirs
+    translations_dir = root_dir / "translations"
+    image_dir = root_dir / "translated_images"
+
+    # Create original file
+    original_file = root_dir / "test.md"
+    original_file.write_text("# Original content")
+
+    # Create translation without metadata
+    ko_dir = translations_dir / "ko"
+    ko_dir.mkdir(parents=True)
+    trans_file = ko_dir / "test.md"
+    trans_file.write_text("# Old translation without metadata")
+
+    manager = TranslationManager(
+        root_dir=root_dir,
+        translations_dir=translations_dir,
+        image_dir=image_dir,
+        language_codes=["ko"],
+        excluded_dirs=[],
+        markdown_translator=mock_markdown_translator,
+        markdown_only=True,
+    )
+
+    # File without metadata should be considered outdated
+    assert manager._is_translation_outdated(original_file, trans_file)
+
+    # Test translation update
+    asyncio.run(manager.translate_all_markdown_files(update=True))
+
+    # Verify metadata is added
+    content = trans_file.read_text()
+    assert "TRANSLATOR_METADATA" in content
+    assert "original_hash" in content
+    assert "translation_date" in content

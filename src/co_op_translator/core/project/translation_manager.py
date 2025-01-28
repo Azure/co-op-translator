@@ -6,7 +6,9 @@ import re
 import json
 
 from co_op_translator.utils.common.file_utils import filter_files
+from co_op_translator.utils.common.metadata_utils import calculate_file_hash
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
+from co_op_translator.core.project.directory_manager import DirectoryManager
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +47,9 @@ class TranslationManager:
         self.excluded_dirs = excluded_dirs
         self.markdown_translator = markdown_translator
         self.markdown_only = markdown_only
+        self.directory_manager = DirectoryManager(
+            root_dir, translations_dir, language_codes, excluded_dirs
+        )
 
     async def translate_all_markdown_files(
         self, update: bool = False
@@ -232,7 +237,9 @@ class TranslationManager:
                     for lang_code in self.language_codes:
                         try:
                             # Calculate target path
-                            target_path = self.translations_dir / lang_code / relative_path
+                            target_path = (
+                                self.translations_dir / lang_code / relative_path
+                            )
 
                             # Skip if target doesn't exist
                             if not target_path.exists():
@@ -241,13 +248,19 @@ class TranslationManager:
 
                             # Read target file content and extract metadata
                             target_content = target_path.read_text(encoding="utf-8")
-                            
+
                             # Create current metadata for comparison
-                            current_metadata = self.markdown_translator.create_metadata(md_file, lang_code)
+                            current_metadata = self.markdown_translator.create_metadata(
+                                md_file, lang_code
+                            )
                             current_hash = current_metadata.get("file_hash")
-                            
+
                             # Extract metadata from the target file using metadata_utils
-                            metadata_match = re.search(r"<!--\s*translation-metadata\s*(.*?)\s*-->", target_content, re.DOTALL)
+                            metadata_match = re.search(
+                                r"<!--\s*translation-metadata\s*(.*?)\s*-->",
+                                target_content,
+                                re.DOTALL,
+                            )
                             if not metadata_match:
                                 logger.warning(f"No metadata found in {target_path}")
                                 pbar.update(1)
@@ -263,7 +276,9 @@ class TranslationManager:
                             # Get stored hash from metadata
                             stored_hash = stored_metadata.get("file_hash")
                             if not stored_hash:
-                                logger.warning(f"No file hash in metadata of {target_path}")
+                                logger.warning(
+                                    f"No file hash in metadata of {target_path}"
+                                )
                                 pbar.update(1)
                                 continue
 
@@ -273,14 +288,20 @@ class TranslationManager:
                                 content = md_file.read_text(encoding="utf-8")
 
                                 # Translate content
-                                translated_content = await self.markdown_translator.translate_markdown(
-                                    content, lang_code, md_file, self.markdown_only
+                                translated_content = (
+                                    await self.markdown_translator.translate_markdown(
+                                        content, lang_code, md_file, self.markdown_only
+                                    )
                                 )
 
                                 # Write translated content
-                                target_path.write_text(translated_content, encoding="utf-8")
+                                target_path.write_text(
+                                    translated_content, encoding="utf-8"
+                                )
                                 modified_count += 1
-                                logger.info(f"Retranslated {md_file} to {lang_code} due to content changes")
+                                logger.info(
+                                    f"Retranslated {md_file} to {lang_code} due to content changes"
+                                )
 
                         except Exception as e:
                             error_msg = f"Error checking/retranslating {md_file} to {lang_code}: {str(e)}"
@@ -302,7 +323,13 @@ class TranslationManager:
         self, images: bool = False, markdown: bool = False, update: bool = False
     ) -> tuple[int, List[str]]:
         """
-        Translate project files asynchronously.
+        Asynchronously translate the project.
+
+        The translation process follows these steps:
+        1. Synchronize directory structure with source
+        2. Remove orphaned translation files
+        3. Identify outdated translations
+        4. Perform translation on required files
 
         Args:
             images: Whether to translate images
@@ -312,17 +339,115 @@ class TranslationManager:
         Returns:
             tuple[int, List[str]]: Total number of translated files and list of errors
         """
+        logger.info("Starting project translation...")
         total_modified = 0
         all_errors = []
 
-        if markdown:
-            modified, errors = await self.translate_all_markdown_files(update)
-            total_modified += modified
-            all_errors.extend(errors)
+        try:
+            # 1. Synchronize with source directory structure
+            logger.info("Synchronizing directory structure...")
+            created, removed, _ = self.directory_manager.sync_directory_structure()
+            if created > 0 or removed > 0:
+                logger.info(
+                    f"Directory structure updated: {created} created, {removed} removed"
+                )
 
-        if images and not self.markdown_only:
-            modified, errors = await self.translate_all_image_files(update)
-            total_modified += modified
-            all_errors.extend(errors)
+            # 2. Remove orphaned files
+            logger.info("Removing orphaned files...")
+            removed_count = self.directory_manager.cleanup_orphaned_translations(
+                markdown=markdown, images=images
+            )
+            if removed_count > 0:
+                logger.info(f"Removed {removed_count} orphaned files")
+
+            # 3. Identify files requiring updates
+            if markdown:
+                outdated_files = self.get_outdated_translations()
+                if outdated_files:
+                    logger.info(f"Found {len(outdated_files)} files requiring updates")
+
+            # 4. Perform translation
+            if markdown:
+                md_modified, md_errors = await self.translate_all_markdown_files(
+                    update=update
+                )
+                total_modified += md_modified
+                all_errors.extend(md_errors)
+
+            if images and not self.markdown_only:
+                img_modified, img_errors = await self.translate_all_image_files(
+                    update=update
+                )
+                total_modified += img_modified
+                all_errors.extend(img_errors)
+
+        except Exception as e:
+            logger.error(f"Error during translation: {e}")
+            all_errors.append(str(e))
+
+        logger.info(f"Translation completed. Modified {total_modified} files.")
+        if all_errors:
+            logger.warning(f"Encountered {len(all_errors)} errors during translation")
 
         return total_modified, all_errors
+
+    def get_outdated_translations(self) -> List[tuple[Path, Path]]:
+        """
+        Identify translations that need updates by comparing metadata.
+
+        Returns:
+            List[tuple[Path, Path]]: List of (original file, translation file) tuples that need updates
+        """
+        outdated_files = []
+        logger.info("Checking for outdated translations...")
+
+        for lang_code in self.language_codes:
+            translation_dir = self.translations_dir / lang_code
+            if not translation_dir.exists():
+                continue
+
+            for trans_file in translation_dir.rglob("*.md"):
+                relative_path = trans_file.relative_to(translation_dir)
+                original_file = self.root_dir / relative_path
+
+                if not original_file.exists():
+                    continue
+
+                # Compare metadata
+                if self._is_translation_outdated(original_file, trans_file):
+                    outdated_files.append((original_file, trans_file))
+                    logger.debug(f"Found outdated translation: {trans_file}")
+
+        if outdated_files:
+            logger.info(f"Found {len(outdated_files)} outdated translations")
+        return outdated_files
+
+    def _is_translation_outdated(
+        self, original_file: Path, translation_file: Path
+    ) -> bool:
+        """
+        Check if a translation needs to be updated by comparing original file's hash with the hash in translation metadata.
+        """
+        if not translation_file.exists():
+            return True
+
+        try:
+            # Read translation file and find metadata comment
+            content = translation_file.read_text(encoding="utf-8")
+            metadata_start = content.find("<!--")
+            if metadata_start == -1:
+                return True
+
+            metadata_end = content.find("-->", metadata_start)
+            if metadata_end == -1:
+                return True
+
+            metadata_str = content[metadata_start + 4 : metadata_end].strip()
+            metadata = json.loads(metadata_str)
+
+            # Compare original file's hash with metadata
+            original_hash = calculate_file_hash(original_file)
+            return metadata.get("original_hash", "") != original_hash
+
+        except (json.JSONDecodeError, KeyError, FileNotFoundError):
+            return True

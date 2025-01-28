@@ -53,15 +53,17 @@ class TranslationManager:
 
     async def translate_all_markdown_files(
         self, update: bool = False
-    ) -> tuple[int, List[str]]:
+    ) -> tuple[int, list[str]]:
         """
         Translate all markdown files in the project directory.
 
         Args:
-            update: Whether to update existing translations
+            update (bool): If True, update existing translations. Defaults to False.
 
         Returns:
-            tuple[int, List[str]]: Number of translated files and list of errors
+            tuple[int, list[str]]: A tuple containing:
+                - Number of files modified
+                - List of error messages
         """
         modified_count = 0
         errors = []
@@ -132,15 +134,17 @@ class TranslationManager:
 
     async def translate_all_image_files(
         self, update: bool = False
-    ) -> tuple[int, List[str]]:
+    ) -> tuple[int, list[str]]:
         """
         Translate all image files in the project directory.
 
         Args:
-            update: Whether to update existing translations
+            update (bool): If True, update existing translations. Defaults to False.
 
         Returns:
-            tuple[int, List[str]]: Number of translated files and list of errors
+            tuple[int, list[str]]: A tuple containing:
+                - Number of files modified
+                - List of error messages
         """
         if self.markdown_only:
             return 0, []
@@ -210,7 +214,7 @@ class TranslationManager:
         Check for outdated translated files by comparing metadata hash values and retranslate if needed.
 
         Args:
-            update: Whether to update existing translations regardless of hash values
+            update (bool): Whether to update existing translations regardless of hash values
 
         Returns:
             tuple[int, List[str]]: Number of retranslated files and list of errors
@@ -321,7 +325,7 @@ class TranslationManager:
 
     async def translate_project_async(
         self, images: bool = False, markdown: bool = False, update: bool = False
-    ) -> tuple[int, List[str]]:
+    ) -> tuple[int, list[str]]:
         """
         Asynchronously translate the project.
 
@@ -332,12 +336,14 @@ class TranslationManager:
         4. Perform translation on required files
 
         Args:
-            images: Whether to translate images
-            markdown: Whether to translate markdown files
-            update: Whether to update existing translations
+            images (bool): Whether to translate images. Defaults to False.
+            markdown (bool): Whether to translate markdown files. Defaults to False.
+            update (bool): Whether to update existing translations. Defaults to False.
 
         Returns:
-            tuple[int, List[str]]: Total number of translated files and list of errors
+            tuple[int, list[str]]: A tuple containing:
+                - Total number of files modified
+                - List of error messages
         """
         logger.info("Starting project translation...")
         total_modified = 0
@@ -427,6 +433,13 @@ class TranslationManager:
     ) -> bool:
         """
         Check if a translation needs to be updated by comparing original file's hash with the hash in translation metadata.
+
+        Args:
+            original_file (Path): Path to the original file
+            translation_file (Path): Path to the translation file
+
+        Returns:
+            bool: True if the translation needs to be updated, False otherwise
         """
         if not translation_file.exists():
             return True

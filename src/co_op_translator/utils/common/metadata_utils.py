@@ -63,7 +63,7 @@ def format_metadata_comment(metadata: dict) -> str:
 
     Returns:
         str: A string containing the metadata formatted as an HTML comment.
-    
+
     Example:
     <!--
     CO_OP_TRANSLATOR_METADATA:

@@ -61,25 +61,25 @@ poetry install
 Before submitting a PR, it's important to test the translation functionality with real documentation:
 
 1. Create a test directory in the root directory:
-```bash
-mkdir test_docs
-```
+    ```bash
+    mkdir test_docs
+    ```
 
 2. Copy some markdown documentation and images you want to translate into the test directory. For example:
-```bash
-cp /path/to/your/docs/*.md test_docs/
-cp /path/to/your/images/*.png test_docs/
-```
+    ```bash
+    cp /path/to/your/docs/*.md test_docs/
+    cp /path/to/your/images/*.png test_docs/
+    ```
 
 3. Install the package locally:
-```bash
-pip install -e .
-```
+    ```bash
+    pip install -e .
+    ```
 
 4. Run Co-op Translator on your test documents:
-```bash
-python -m co_op_translator --language-codes ko --root-dir test_docs
-```
+    ```bash
+    python -m co_op_translator --language-codes ko --root-dir test_docs
+    ```
 
 5. Check the translated files in `test_docs/translations` and `test_docs/translated_images` to verify:
    - The translation quality

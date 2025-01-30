@@ -63,7 +63,20 @@ def format_metadata_comment(metadata: dict) -> str:
 
     Returns:
         str: A string containing the metadata formatted as an HTML comment.
+    
+    Example:
+    <!--
+    CO_OP_TRANSLATOR_METADATA:
+    {
+      "original_hash": "sample_hash",
+      "translation_date": "2025-01-30T13:02:53+00:00",
+      "source_file": "test.md",
+      "language_code": "ko"
+    }
+    -->
+
+    Total lines: 9
     """
     metadata_json = json.dumps(metadata, indent=2)
-    formatted_comment = f"<!--\nTRANSLATOR_METADATA:\n{metadata_json}\n-->\n"
+    formatted_comment = f"<!--\nCO_OP_TRANSLATOR_METADATA:\n{metadata_json}\n-->\n"
     return formatted_comment

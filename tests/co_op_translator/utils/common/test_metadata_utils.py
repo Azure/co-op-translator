@@ -67,11 +67,11 @@ def test_format_metadata_comment():
     result = format_metadata_comment(test_metadata)
 
     # Verify the format
-    assert result.startswith("<!--\nTRANSLATOR_METADATA:\n")
+    assert result.startswith("<!--\nCO_OP_TRANSLATOR_METADATA:\n")
     assert result.endswith("\n-->\n")
 
     # Extract and parse the JSON content
-    json_content = result.replace("<!--\nTRANSLATOR_METADATA:\n", "").replace(
+    json_content = result.replace("<!--\nCO_OP_TRANSLATOR_METADATA:\n", "").replace(
         "\n-->\n", ""
     )
     parsed_metadata = json.loads(json_content)

@@ -1,10 +1,6 @@
 import logging
-import os
-import json
-import re
 from pathlib import Path
 import asyncio
-from tqdm.asyncio import tqdm
 from co_op_translator.core.llm import (
     markdown_translator,
     text_translator,
@@ -14,6 +10,7 @@ from co_op_translator.core.vision import (
 )
 from co_op_translator.config.constants import (
     EXCLUDED_DIRS,
+    SUPPORTED_IMAGE_EXTENSIONS,
 )
 
 from .directory_manager import DirectoryManager
@@ -64,6 +61,7 @@ class ProjectTranslator:
             self.image_dir,
             self.language_codes,
             EXCLUDED_DIRS,
+            SUPPORTED_IMAGE_EXTENSIONS,
             self.markdown_translator,
             self.markdown_only,
         )
@@ -82,3 +80,10 @@ class ProjectTranslator:
                 images=images, markdown=markdown, update=update
             )
         )
+
+    async def check_and_retry_translations(self):
+        """
+        Check translated files for errors and retry translation if needed.
+        This method delegates to the translation manager's implementation.
+        """
+        await self.translation_manager.check_and_retry_translations()

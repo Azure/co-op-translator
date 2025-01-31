@@ -108,7 +108,9 @@ async def test_process_api_requests_parallel(mock_translation_manager):
     mock_tasks = [AsyncMock() for _ in range(3)]
     mock_translation_manager.process_api_requests_parallel = AsyncMock()
 
-    await mock_translation_manager.process_api_requests_parallel(mock_tasks, "Test tasks")
+    await mock_translation_manager.process_api_requests_parallel(
+        mock_tasks, "Test tasks"
+    )
 
     mock_translation_manager.process_api_requests_parallel.assert_called_once_with(
         mock_tasks, "Test tasks"
@@ -121,7 +123,9 @@ async def test_process_api_requests_sequential(mock_translation_manager):
     mock_tasks = [AsyncMock() for _ in range(3)]
     mock_translation_manager.process_api_requests_sequential = AsyncMock()
 
-    await mock_translation_manager.process_api_requests_sequential(mock_tasks, "Test tasks")
+    await mock_translation_manager.process_api_requests_sequential(
+        mock_tasks, "Test tasks"
+    )
 
     mock_translation_manager.process_api_requests_sequential.assert_called_once_with(
         mock_tasks, "Test tasks"
@@ -142,7 +146,9 @@ async def test_get_outdated_translations(mock_translation_manager, temp_project_
 
     # Mock _is_translation_outdated to return True for our test file
     mock_translation_manager._is_translation_outdated = MagicMock(return_value=True)
-    mock_translation_manager.get_outdated_translations = TranslationManager.get_outdated_translations.__get__(mock_translation_manager)
+    mock_translation_manager.get_outdated_translations = (
+        TranslationManager.get_outdated_translations.__get__(mock_translation_manager)
+    )
     mock_translation_manager.root_dir = temp_project_dir
     mock_translation_manager.translations_dir = temp_project_dir / "translations"
     mock_translation_manager.language_codes = ["ko"]
@@ -170,36 +176,45 @@ async def test_retranslate_outdated_files(mock_translation_manager, temp_project
 
     # Mock translate_markdown
     mock_translation_manager.translate_markdown = AsyncMock()
-    mock_translation_manager.retranslate_outdated_files = TranslationManager.retranslate_outdated_files.__get__(mock_translation_manager)
+    mock_translation_manager.retranslate_outdated_files = (
+        TranslationManager.retranslate_outdated_files.__get__(mock_translation_manager)
+    )
 
     # Call retranslate_outdated_files
     await mock_translation_manager.retranslate_outdated_files(outdated_files)
 
     # Verify translate_markdown was called with correct parameters
     mock_translation_manager.translate_markdown.assert_called_once_with(
-        file_path=test_md,
-        language_code="ko"
+        file_path=test_md, language_code="ko"
     )
 
 
 @pytest.mark.asyncio
-async def test_translate_project_async_with_outdated(mock_translation_manager, temp_project_dir):
+async def test_translate_project_async_with_outdated(
+    mock_translation_manager, temp_project_dir
+):
     """Tests the full project translation process with outdated files."""
     # Setup test files
     test_md = temp_project_dir / "test.md"
     test_md.write_text("# Test Document\nThis is a test.", encoding="utf-8")
 
     # Mock necessary methods
-    mock_translation_manager.get_outdated_translations = MagicMock(return_value=[
-        (test_md, temp_project_dir / "translations" / "ko" / "test.md")
-    ])
+    mock_translation_manager.get_outdated_translations = MagicMock(
+        return_value=[(test_md, temp_project_dir / "translations" / "ko" / "test.md")]
+    )
     mock_translation_manager.retranslate_outdated_files = AsyncMock()
     mock_translation_manager.translate_all_markdown_files = AsyncMock()
     mock_translation_manager.translate_all_image_files = AsyncMock()
     mock_translation_manager.directory_manager = MagicMock()
-    mock_translation_manager.directory_manager.sync_directory_structure = MagicMock(return_value=(0, 0, []))
-    mock_translation_manager.directory_manager.cleanup_orphaned_translations = MagicMock(return_value=0)
-    mock_translation_manager.translate_project_async = TranslationManager.translate_project_async.__get__(mock_translation_manager)
+    mock_translation_manager.directory_manager.sync_directory_structure = MagicMock(
+        return_value=(0, 0, [])
+    )
+    mock_translation_manager.directory_manager.cleanup_orphaned_translations = (
+        MagicMock(return_value=0)
+    )
+    mock_translation_manager.translate_project_async = (
+        TranslationManager.translate_project_async.__get__(mock_translation_manager)
+    )
 
     # Call translate_project_async
     await mock_translation_manager.translate_project_async(markdown=True)

@@ -478,7 +478,9 @@ class TranslationManager:
             with tqdm(total=1, desc="Synchronizing directories") as sync_progress:
                 created, removed, _ = self.directory_manager.sync_directory_structure()
                 sync_progress.set_postfix_str(
-                    "None" if (created == 0 and removed == 0) else f"Created: {created}, Removed: {removed}"
+                    "None"
+                    if (created == 0 and removed == 0)
+                    else f"Created: {created}, Removed: {removed}"
                 )
                 sync_progress.update(1)
 
@@ -487,14 +489,20 @@ class TranslationManager:
                 with tqdm(total=1, desc="Checking translations") as check_progress:
                     outdated_files = self.get_outdated_translations()
                     check_progress.set_postfix_str(
-                        "None" if not outdated_files else f"Found: {len(outdated_files)}"
+                        "None"
+                        if not outdated_files
+                        else f"Found: {len(outdated_files)}"
                     )
                     check_progress.update(1)
 
                 if outdated_files:
-                    with tqdm(total=len(outdated_files), desc="Retranslating outdated files") as retrans_progress:
+                    with tqdm(
+                        total=len(outdated_files), desc="Retranslating outdated files"
+                    ) as retrans_progress:
                         await self.retranslate_outdated_files(outdated_files)
-                        retrans_progress.set_postfix_str(f"Completed: {len(outdated_files)}")
+                        retrans_progress.set_postfix_str(
+                            f"Completed: {len(outdated_files)}"
+                        )
                         retrans_progress.update(1)
 
             # 4. Perform translation

@@ -63,8 +63,8 @@ class ProjectTranslator:
             EXCLUDED_DIRS,
             SUPPORTED_IMAGE_EXTENSIONS,
             self.markdown_translator,
-            image_translator=self.image_translator,
-            markdown_only=self.markdown_only,
+            self.image_translator,
+            self.markdown_only,
         )
 
     def translate_project(self, images=False, markdown=False, update=False):

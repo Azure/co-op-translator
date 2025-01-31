@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, patch
 import re
+from pathlib import Path
 
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 
@@ -28,7 +29,7 @@ def real_markdown_translator(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_translate_markdown_partial_mock(real_markdown_translator):
+async def test_translate_markdown_partial_mock(real_markdown_translator, tmp_path):
     """Test the translation logic using the real code for:
     - replace_code_blocks_and_inline_code
     - restore_code_blocks_and_inline_code
@@ -38,6 +39,9 @@ async def test_translate_markdown_partial_mock(real_markdown_translator):
     This ensures we verify the actual internal workflow,
     while controlling the translation 'results' in _run_prompt.
     """
+    # Create test file
+    test_file = tmp_path / "example.md"
+    test_file.write_text(TEST_MD_CONTENT)
 
     async def fake_prompt(prompt, index, total):
         # Return a translation that preserves markdown structure and placeholders
@@ -59,7 +63,7 @@ async def test_translate_markdown_partial_mock(real_markdown_translator):
 
         # Execute the markdown translation
         result = await real_markdown_translator.translate_markdown(
-            document=TEST_MD_CONTENT, language_code="es", md_file_path="example.md"
+            document=TEST_MD_CONTENT, language_code="es", md_file_path=test_file
         )
 
         # Verify that the code block content is still present in the final output
@@ -79,13 +83,17 @@ async def test_translate_markdown_partial_mock(real_markdown_translator):
 
 
 @pytest.mark.asyncio
-async def test_translate_markdown_full_integration(real_markdown_translator):
+async def test_translate_markdown_full_integration(real_markdown_translator, tmp_path):
     """A full integration test that avoids mocking _run_prompt at all.
     This only works if the abstract _run_prompt has a default implementation
     or if real_markdown_translator is a fully realized subclass."""
+    # Create test file
+    test_file = tmp_path / "example_full.md"
+    test_file.write_text(TEST_MD_CONTENT)
+
     try:
         result = await real_markdown_translator.translate_markdown(
-            document=TEST_MD_CONTENT, language_code="es", md_file_path="example_full.md"
+            document=TEST_MD_CONTENT, language_code="es", md_file_path=test_file
         )
     except NotImplementedError:
         pytest.skip(

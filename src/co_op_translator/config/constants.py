@@ -20,4 +20,4 @@ EXCLUDED_DIRS = {
 
 # Maximum allowed difference in line breaks between original and translated text
 # A margin is needed to account for added disclaimer and metadata
-LINE_BREAK_MARGIN = 14
+LINE_BREAK_MARGIN = 15

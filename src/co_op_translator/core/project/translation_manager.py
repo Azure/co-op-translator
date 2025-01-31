@@ -476,9 +476,20 @@ class TranslationManager:
 
             # 3. Identify files requiring updates
             if markdown:
-                outdated_files = self.get_outdated_translations()
+                with tqdm(total=1, desc="Checking translations") as check_progress:
+                    outdated_files = self.get_outdated_translations()
+                    outdated_info = (
+                        [f"{f.name} ({t.parent.name})" for f, t in outdated_files]
+                        if outdated_files
+                        else "None"
+                    )
+                    check_progress.set_postfix_str(
+                        f"Found outdated: {', '.join(outdated_info)}"
+                    )
+                    check_progress.update(1)
+
                 if outdated_files:
-                    logger.info(f"Found {len(outdated_files)} files requiring updates")
+                    await self.retranslate_outdated_files(outdated_files)
 
             # 4. Perform translation
             if markdown:
@@ -513,65 +524,70 @@ class TranslationManager:
             List[tuple[Path, Path]]: List of (original file, translation file) tuples that need updates
         """
         outdated_files = []
-        logger.info("Checking for outdated translations...")
+        all_translation_files = []
 
+        # 모든 번역 파일 수집
         for lang_code in self.language_codes:
             translation_dir = self.translations_dir / lang_code
             if not translation_dir.exists():
                 continue
+            all_translation_files.extend(list(translation_dir.rglob("*.md")))
 
-            for trans_file in translation_dir.rglob("*.md"):
-                relative_path = trans_file.relative_to(translation_dir)
-                original_file = self.root_dir / relative_path
+        if not all_translation_files:
+            return []
 
-                if not original_file.exists():
-                    continue
+        # 모든 파일 한 번에 체크
+        for trans_file in all_translation_files:
+            lang_code = trans_file.parent.name
+            relative_path = trans_file.relative_to(self.translations_dir / lang_code)
+            original_file = self.root_dir / relative_path
 
-                # Compare metadata
-                if self._is_translation_outdated(original_file, trans_file):
-                    outdated_files.append((original_file, trans_file))
-                    logger.debug(f"Found outdated translation: {trans_file}")
+            if not original_file.exists():
+                continue
 
-        if outdated_files:
-            logger.info(f"Found {len(outdated_files)} outdated translations")
+            # Compare metadata
+            if self._is_translation_outdated(original_file, trans_file):
+                outdated_files.append((original_file, trans_file))
+
         return outdated_files
 
-    def _is_translation_outdated(
-        self, original_file: Path, translation_file: Path
-    ) -> bool:
+    async def retranslate_outdated_files(
+        self, outdated_files: List[tuple[Path, Path]]
+    ) -> None:
         """
-        Check if a translation needs to be updated by comparing original file's hash with the hash in translation metadata.
-
+        Retranslate the given outdated files.
         Args:
-            original_file (Path): Path to the original file
-            translation_file (Path): Path to the translation file
-
-        Returns:
-            bool: True if the translation needs to be updated, False otherwise
+            outdated_files: List of (original_file, translation_file) tuples to retranslate
         """
-        if not translation_file.exists():
-            return True
+        if not outdated_files:
+            return
 
-        try:
-            # Read translation file and find metadata comment
-            content = translation_file.read_text(encoding="utf-8")
-            metadata_start = content.find("<!--")
-            if metadata_start == -1:
-                return True
+        files_to_translate = []
+        for original_file, translation_file in outdated_files:
+            lang_code = translation_file.parent.name
+            files_to_translate.append((original_file, lang_code))
 
-            metadata_end = content.find("-->", metadata_start)
-            if metadata_end == -1:
-                return True
+        with tqdm(
+            total=len(files_to_translate), desc="Retranslating outdated translations"
+        ) as progress_bar:
+            for original_file, lang_code in files_to_translate:
+                try:
+                    progress_bar.set_postfix_str(
+                        f"Translating {original_file.name} ({lang_code})"
+                    )
+                    await self.translate_markdown(
+                        file_path=original_file,
+                        language_code=lang_code,
+                    )
+                    progress_bar.set_postfix_str(
+                        f"Completed {original_file.name} ({lang_code})"
+                    )
+                except Exception as e:
+                    logger.error(
+                        f"Failed to retranslate {original_file.name} ({lang_code}): {str(e)}"
+                    )
 
-            metadata_str = content[metadata_start + 4 : metadata_end].strip()
-            metadata = json.loads(metadata_str)
-
-            # Compare original file's hash with metadata
-            original_hash = calculate_file_hash(original_file)
-            return metadata.get("original_hash", "") != original_hash
-
-        except (json.JSONDecodeError, KeyError, FileNotFoundError):
-            return True
+                progress_bar.update(1)
 
     async def check_and_retry_translations(self):
         """
@@ -649,7 +665,10 @@ class TranslationManager:
                     logger.info(f"Translating {md_file_path} to {language_code}...")
 
                     # Translate the file
-                    await self.translate_markdown(md_file_path, language_code)
+                    await self.translate_markdown(
+                        file_path=md_file_path,
+                        language_code=language_code,
+                    )
 
                     # Update the progress bar for translation process
                     translation_progress_bar.update(1)
@@ -711,3 +730,47 @@ class TranslationManager:
                 progress_bar.update(1)  # Update progress bar
 
         return results
+
+    def _is_translation_outdated(
+        self, original_file: Path, translation_file: Path
+    ) -> bool:
+        """
+        Check if a translation needs to be updated by comparing original file's hash with the hash in translation metadata.
+
+        Args:
+            original_file (Path): Path to the original file
+            translation_file (Path): Path to the translation file
+
+        Returns:
+            bool: True if the translation needs to be updated, False otherwise
+        """
+        if not translation_file.exists():
+            return True
+
+        try:
+            # Read translation file and find metadata comment
+            content = translation_file.read_text(encoding="utf-8")
+            metadata_match = re.search(
+                r"<!--\s*CO_OP_TRANSLATOR_METADATA:\s*(.*?)\s*-->",
+                content,
+                re.DOTALL,
+            )
+            if not metadata_match:
+                return True
+
+            try:
+                metadata = json.loads(metadata_match.group(1))
+            except json.JSONDecodeError:
+                return True
+
+            # Compare original file's hash with metadata
+            original_hash = calculate_file_hash(original_file)
+            stored_hash = metadata.get("original_hash")
+
+            if not stored_hash:
+                return True
+
+            return stored_hash != original_hash
+
+        except Exception:
+            return True

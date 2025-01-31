@@ -10,7 +10,10 @@ import tiktoken
 from pathlib import Path
 from urllib.parse import urlparse
 import logging
-from co_op_translator.config.constants import SUPPORTED_IMAGE_EXTENSIONS
+from co_op_translator.config.constants import (
+    SUPPORTED_IMAGE_EXTENSIONS,
+    LINE_BREAK_MARGIN,
+)
 from co_op_translator.utils.common.file_utils import (
     generate_translated_filename,
     get_actual_image_path,
@@ -448,9 +451,7 @@ def compare_line_breaks(original_text, translated_text):
     original_line_breaks = original_text.count("\n")
     translated_line_breaks = translated_text.count("\n")
 
-    if (
-        abs(original_line_breaks - translated_line_breaks) > 5
-    ):  # Allow a margin for disclaimer
+    if abs(original_line_breaks - translated_line_breaks) > LINE_BREAK_MARGIN:
         return True
     return False
 

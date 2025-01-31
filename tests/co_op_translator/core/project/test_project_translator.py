@@ -48,11 +48,11 @@ def project_translator(temp_project_dir):
         mock_get_provider.return_value = "azure"  # Mock LLM provider
 
         translator = ProjectTranslator("ko ja", root_dir=temp_project_dir)
-        
+
         # Mock async methods
         translator.translate_all_markdown_files = AsyncMock(return_value=(2, []))
         translator.translate_all_image_files = AsyncMock(return_value=(2, []))
-        
+
         return translator
 
 

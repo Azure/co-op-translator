@@ -121,7 +121,9 @@ def main(language_codes, root_dir, update, images, markdown, debug, check):
         if not root_path.is_dir():
             raise click.ClickException(f"Root path is not a directory: {root_dir}")
         if not os.access(root_path, os.R_OK | os.W_OK):
-            raise click.ClickException(f"Insufficient permissions for directory: {root_dir}")
+            raise click.ClickException(
+                f"Insufficient permissions for directory: {root_dir}"
+            )
 
         # Show warning if 'all' is selected
         if language_codes == "all":
@@ -159,7 +161,9 @@ def main(language_codes, root_dir, update, images, markdown, debug, check):
                             ]
                         )
                         if not language_codes:
-                            raise click.ClickException("No valid language codes found in font mappings")
+                            raise click.ClickException(
+                                "No valid language codes found in font mappings"
+                            )
                         logging.debug(
                             f"Loaded language codes from font mapping: {language_codes}"
                         )
@@ -182,7 +186,9 @@ def main(language_codes, root_dir, update, images, markdown, debug, check):
                 click.echo("Proceeding with update...")
 
         # Initialize ProjectTranslator with determined settings
-        translator = ProjectTranslator(language_codes, root_dir, markdown_only=markdown and not images)
+        translator = ProjectTranslator(
+            language_codes, root_dir, markdown_only=markdown and not images
+        )
 
         if check:
             # Call check_and_retry_translations if --check is passed
@@ -190,7 +196,9 @@ def main(language_codes, root_dir, update, images, markdown, debug, check):
             asyncio.run(translator.check_and_retry_translations())
         else:
             # Call translate_project with determined settings
-            translator.translate_project(images=images, markdown=markdown, update=update)
+            translator.translate_project(
+                images=images, markdown=markdown, update=update
+            )
 
         logger.info(f"Project translation completed for languages: {language_codes}")
 

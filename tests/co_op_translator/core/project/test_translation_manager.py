@@ -44,62 +44,82 @@ def mock_translation_manager(temp_project_dir):
     return manager
 
 
-def test_translate_markdown(mock_translation_manager, temp_project_dir):
+@pytest.mark.asyncio
+async def test_translate_markdown(mock_translation_manager, temp_project_dir):
     """Tests the translation of a single markdown file."""
     md_file = temp_project_dir / "docs" / "test.md"
     translated_content = "# Test Document\nThis is a translated test."
 
     # Setup mock
-    mock_translation_manager.translate_markdown.return_value = translated_content
+    mock_translation_manager.markdown_translator = MagicMock()
+    mock_translation_manager.markdown_translator.translate_markdown = AsyncMock(
+        return_value=translated_content
+    )
+    mock_translation_manager.translate_markdown = AsyncMock(
+        return_value=translated_content
+    )
 
     # Call and verify
     mock_translation_manager.translate_markdown.assert_not_called()
-    mock_translation_manager.translate_markdown(md_file, "ko")
-    mock_translation_manager.translate_markdown.assert_called_once_with(md_file, "ko")
+    result = await mock_translation_manager.translate_markdown(md_file, "ko")
+    assert result == translated_content
+    mock_translation_manager.translate_markdown.assert_awaited_once_with(md_file, "ko")
 
 
-def test_translate_image(mock_translation_manager, temp_project_dir):
+@pytest.mark.asyncio
+async def test_translate_image(mock_translation_manager, temp_project_dir):
     """Tests the translation of a single image file."""
     image_file = temp_project_dir / "images" / "test.png"
     expected_translated_path = str(
-        temp_project_dir / "translated_images" / "ko_test.png"
+        temp_project_dir / "translated_images" / "ko" / "images" / "test.png"
     )
 
     # Setup mock
-    mock_translation_manager.translate_image.return_value = expected_translated_path
+    mock_translation_manager.image_translator = MagicMock()
+    mock_translation_manager.image_translator.translate_image = MagicMock(
+        return_value=expected_translated_path
+    )
+    mock_translation_manager.translate_image = AsyncMock(
+        return_value=expected_translated_path
+    )
 
     # Call and verify
     mock_translation_manager.translate_image.assert_not_called()
-    mock_translation_manager.translate_image(image_file, "ko")
-    mock_translation_manager.translate_image.assert_called_once_with(image_file, "ko")
+    result = await mock_translation_manager.translate_image(image_file, "ko")
+    assert result == expected_translated_path
+    mock_translation_manager.translate_image.assert_awaited_once_with(image_file, "ko")
 
 
-def test_translate_all_markdown_files(mock_translation_manager, temp_project_dir):
+@pytest.mark.asyncio
+async def test_translate_all_markdown_files(mock_translation_manager, temp_project_dir):
     """Tests the translation of all markdown files."""
     expected_count = 2  # One for each language
-    mock_translation_manager.translate_all_markdown_files.return_value = (
-        expected_count,
-        [],
+    mock_translation_manager.translate_all_markdown_files = AsyncMock(
+        return_value=(expected_count, [])
     )
 
     # Call and verify
     mock_translation_manager.translate_all_markdown_files.assert_not_called()
-    mock_translation_manager.translate_all_markdown_files()
-    mock_translation_manager.translate_all_markdown_files.assert_called_once()
+    count, errors = await mock_translation_manager.translate_all_markdown_files()
+    assert count == expected_count
+    assert not errors
+    mock_translation_manager.translate_all_markdown_files.assert_awaited_once()
 
 
-def test_translate_all_image_files(mock_translation_manager, temp_project_dir):
+@pytest.mark.asyncio
+async def test_translate_all_image_files(mock_translation_manager, temp_project_dir):
     """Tests the translation of all image files."""
     expected_count = 2  # One for each language
-    mock_translation_manager.translate_all_image_files.return_value = (
-        expected_count,
-        [],
+    mock_translation_manager.translate_all_image_files = AsyncMock(
+        return_value=(expected_count, [])
     )
 
     # Call and verify
     mock_translation_manager.translate_all_image_files.assert_not_called()
-    mock_translation_manager.translate_all_image_files()
-    mock_translation_manager.translate_all_image_files.assert_called_once()
+    count, errors = await mock_translation_manager.translate_all_image_files()
+    assert count == expected_count
+    assert not errors
+    mock_translation_manager.translate_all_image_files.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -165,28 +185,40 @@ async def test_get_outdated_translations(mock_translation_manager, temp_project_
 
 @pytest.mark.asyncio
 async def test_retranslate_outdated_files(mock_translation_manager, temp_project_dir):
-    """Tests the retranslation of outdated files."""
+    """Tests retranslation of outdated files."""
     # Setup test files
     test_md = temp_project_dir / "test.md"
+    test_md.write_text("# Test Document\nThis is a test.", encoding="utf-8")
+
     ko_dir = temp_project_dir / "translations" / "ko"
+    ko_dir.mkdir(parents=True, exist_ok=True)
     ko_test_md = ko_dir / "test.md"
+    ko_test_md.write_text("# 테스트 문서\n이것은 테스트입니다.", encoding="utf-8")
 
     # Create a list of outdated files
     outdated_files = [(test_md, ko_test_md)]
 
     # Mock translate_markdown
-    mock_translation_manager.translate_markdown = AsyncMock()
+    mock_translation_manager.markdown_translator = MagicMock()
+    mock_translation_manager.markdown_translator.translate_markdown = AsyncMock(
+        return_value="# 테스트 문서\n이것은 테스트입니다."
+    )
+    mock_translation_manager.markdown_translator.create_metadata = MagicMock(
+        return_value={"file_hash": "test_hash"}
+    )
+    mock_translation_manager.translate_markdown = AsyncMock(
+        return_value=str(ko_test_md)
+    )
     mock_translation_manager.retranslate_outdated_files = (
         TranslationManager.retranslate_outdated_files.__get__(mock_translation_manager)
     )
+    mock_translation_manager.translations_dir = ko_dir.parent
 
     # Call retranslate_outdated_files
     await mock_translation_manager.retranslate_outdated_files(outdated_files)
 
-    # Verify translate_markdown was called with correct parameters
-    mock_translation_manager.translate_markdown.assert_called_once_with(
-        file_path=test_md, language_code="ko"
-    )
+    # Verify results
+    mock_translation_manager.translate_markdown.assert_awaited_once_with(test_md, "ko")
 
 
 @pytest.mark.asyncio

@@ -83,8 +83,30 @@ class ProjectTranslator:
         )
 
     async def check_and_retry_translations(self):
-        """
-        Check translated files for errors and retry translation if needed.
-        This method delegates to the translation manager's implementation.
-        """
-        await self.translation_manager.check_and_retry_translations()
+        """Check and retry translations for all files."""
+        # Check outdated files first
+        modified_count, errors = await self.translation_manager.check_outdated_files()
+        logger.info(f"Found {modified_count} outdated files")
+        if errors:
+            logger.warning(f"Errors during checking outdated files: {errors}")
+
+        # Then translate all files
+        markdown_count, markdown_errors = (
+            await self.translation_manager.translate_all_markdown_files()
+        )
+        logger.info(f"Translated {markdown_count} markdown files")
+        if markdown_errors:
+            logger.warning(f"Errors during markdown translation: {markdown_errors}")
+
+        # Finally translate images if image translator is available
+        image_count, image_errors = (
+            await self.translation_manager.translate_all_image_files()
+        )
+        logger.info(f"Translated {image_count} image files")
+        if image_errors:
+            logger.warning(f"Errors during image translation: {image_errors}")
+
+        return (
+            modified_count + markdown_count + image_count,
+            errors + markdown_errors + image_errors,
+        )

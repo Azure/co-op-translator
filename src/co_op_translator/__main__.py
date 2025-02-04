@@ -6,6 +6,8 @@ import yaml
 from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
+import os
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -24,13 +26,6 @@ logger = logging.getLogger(__name__)
     help="Root directory of the project (default is current directory).",
 )
 @click.option(
-    "--add",
-    "-a",
-    is_flag=True,
-    default=True,
-    help="Add new translations without deleting existing ones (default behavior).",
-)
-@click.option(
     "--update",
     "-u",
     is_flag=True,
@@ -45,7 +40,7 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help="Check translated files for errors and retry translation if needed.",
 )
-def main(language_codes, root_dir, add, update, images, markdown, debug, check):
+def main(language_codes, root_dir, update, images, markdown, debug, check):
     """
     CLI for translating project files.
 
@@ -56,7 +51,7 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
        translate -l "es fr de" -r "./my_project"
 
     2. Add only new Korean image translations (no existing translations are deleted):
-       translate -l "ko" -img -a
+       translate -l "ko" -img
 
     3. Update all Korean translations (Warning: This deletes all existing Korean translations before re-translating):
        translate -l "ko" -u
@@ -65,7 +60,7 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
        translate -l "ko" -img -u
 
     5. Add new markdown translations for Korean without affecting other translations:
-       translate -l "ko" -md -a
+       translate -l "ko" -md
 
     6. Check translated files for errors and retry translations if necessary:
        translate -l "ko" -chk
@@ -80,111 +75,137 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
     - translate -l "ko" -d: Enable debug logging.
     """
 
-    # Check that the required environment variables are set
-    Config.check_configuration()
+    try:
+        # Check that the required environment variables are set
+        Config.check_configuration()
 
-    # Check Computer Vision availability and set markdown mode
-    cv_available = VisionConfig.check_configuration()
+        # Initialize translation mode
+        cv_available = VisionConfig.check_configuration()
 
-    # Set markdown-only mode if Computer Vision is not available
-    if not cv_available:
-        markdown = True
-        click.echo(
-            "Computer Vision is not configured: Automatically switching to markdown-only mode."
-        )
-        click.echo(
-            "To enable image translation, please add Computer Vision credentials to your environment variables."
-        )
-        click.echo("See the .env.template file for required variables.")
-    elif markdown:
-        click.echo("Starting in markdown-only mode: Image translation is disabled.")
-        click.echo(
-            "To enable image translation, run without the -md flag and ensure Computer Vision is configured."
-        )
-
-    if debug:
-        logging.basicConfig(level=logging.DEBUG)
-        logging.debug("Debug mode enabled.")
-    else:
-        logging.basicConfig(level=logging.CRITICAL)
-
-    # Show warning if 'all' is selected
-    if language_codes == "all":
-        click.echo(
-            "Warning: Translating all languages at once can take a significant amount of time, especially when dealing with large markdown-based open-source projects that have many documents."
-        )
-        click.echo(
-            "For better efficiency, it's recommended that contributors handle individual languages and upload their translations separately."
-        )
-        # Option to proceed or not
-        confirmation_all = click.prompt(
-            "Do you still want to proceed with translating all languages? Type 'yes' to continue",
-            type=str,
-        )
-
-        if confirmation_all.lower() != "yes":
-            click.echo("Translation for 'all' languages cancelled.")
-            return
-        else:
-            click.echo("Proceeding with translation for all languages...")
-
-    # Show warning and prompt if update is selected
-    if update:
-        click.echo(
-            f"Warning: The update command will delete all existing translations for '{language_codes}' and re-translate everything."
-        )
-        confirmation_update = click.prompt(
-            "Do you want to continue? Type 'yes' to proceed", type=str
-        )
-
-        if confirmation_update.lower() != "yes":
-            click.echo("Update cancelled by user.")
-            return
-        else:
-            click.echo("Proceeding with update...")
-
-    # Language code parsing logic
-    if language_codes == "all":
-        with importlib.resources.path(
-            "co_op_translator.fonts", "font_language_mappings.yml"
-        ) as mappings_path:
-            with open(mappings_path, "r", encoding="utf-8") as file:
-                font_mappings = yaml.safe_load(file)
-                language_codes = " ".join(
-                    [
-                        lang_code
-                        for lang_code in font_mappings
-                        if isinstance(font_mappings[lang_code], dict)
-                    ]
-                )
-                logging.debug(
-                    f"Loaded language codes from font mapping: {language_codes}"
-                )
-
-    # Initialize ProjectTranslator with markdown_only flag
-    translator = ProjectTranslator(language_codes, root_dir, markdown_only=markdown)
-
-    if check:
-        # Call check_and_retry_translations if --check is passed
-        click.echo(f"Checking translated files for errors in {language_codes}...")
-        asyncio.run(translator.check_and_retry_translations())
-    else:
-        # Set default values for images and markdown flags
+        # Determine translation mode based on flags and CV availability
         if not images and not markdown:
-            markdown = True  # Always translate markdown by default
-            images = True  # Try to translate images by default
-
-        # If CV is not available, disable image translation
-        if not cv_available:
-            click.echo(
-                "Skipping image translation due to missing Computer Vision configuration"
-            )
+            # Default: translate both if possible
+            markdown = True
+            images = cv_available
+        elif images and not cv_available:
+            # User requested images but CV not available
             images = False
+            click.echo(
+                "Computer Vision is not configured: Image translation will be disabled."
+            )
+            click.echo(
+                "To enable image translation, please add Computer Vision credentials to your environment variables."
+            )
+            click.echo("See the .env.template file for required variables.")
 
-        # Call translate_project
-        translator.translate_project(images=images, markdown=markdown, update=update)
+        # Log selected translation mode
+        mode_msg = "Translation mode: "
+        if markdown and images:
+            mode_msg += "markdown and images"
+        elif markdown:
+            mode_msg += "markdown only"
+        elif images:
+            mode_msg += "images only"
+        click.echo(mode_msg)
 
-    logger.info(f"Project translation completed for languages: {language_codes}")
+        if debug:
+            logging.basicConfig(level=logging.DEBUG)
+            logging.debug("Debug mode enabled.")
+        else:
+            logging.basicConfig(level=logging.CRITICAL)
+
+        # Validate root directory
+        root_path = Path(root_dir).resolve()
+        if not root_path.exists():
+            raise click.ClickException(f"Root directory does not exist: {root_dir}")
+        if not root_path.is_dir():
+            raise click.ClickException(f"Root path is not a directory: {root_dir}")
+        if not os.access(root_path, os.R_OK | os.W_OK):
+            raise click.ClickException(
+                f"Insufficient permissions for directory: {root_dir}"
+            )
+
+        # Show warning if 'all' is selected
+        if language_codes == "all":
+            click.echo(
+                "Warning: Translating all languages at once can take a significant amount of time, especially when dealing with large markdown-based open-source projects that have many documents."
+            )
+            click.echo(
+                "For better efficiency, it's recommended that contributors handle individual languages and upload their translations separately."
+            )
+            # Option to proceed or not
+            confirmation_all = click.prompt(
+                "Do you still want to proceed with translating all languages? Type 'yes' to continue",
+                type=str,
+            )
+
+            if confirmation_all.lower() != "yes":
+                click.echo("Translation for 'all' languages cancelled.")
+                return
+            else:
+                click.echo("Proceeding with translation for all languages...")
+
+            try:
+                with importlib.resources.path(
+                    "co_op_translator.fonts", "font_language_mappings.yml"
+                ) as mappings_path:
+                    with open(mappings_path, "r", encoding="utf-8") as file:
+                        font_mappings = yaml.safe_load(file)
+                        if not font_mappings:
+                            raise click.ClickException("Empty font mappings file")
+                        language_codes = " ".join(
+                            [
+                                lang_code
+                                for lang_code in font_mappings
+                                if isinstance(font_mappings[lang_code], dict)
+                            ]
+                        )
+                        if not language_codes:
+                            raise click.ClickException(
+                                "No valid language codes found in font mappings"
+                            )
+                        logging.debug(
+                            f"Loaded language codes from font mapping: {language_codes}"
+                        )
+            except (FileNotFoundError, yaml.YAMLError) as e:
+                raise click.ClickException(f"Failed to load font mappings: {str(e)}")
+
+        # Show warning and prompt if update is selected
+        if update:
+            click.echo(
+                f"Warning: The update command will delete all existing translations for '{language_codes}' and re-translate everything."
+            )
+            confirmation_update = click.prompt(
+                "Do you want to continue? Type 'yes' to proceed", type=str
+            )
+
+            if confirmation_update.lower() != "yes":
+                click.echo("Update cancelled by user.")
+                return
+            else:
+                click.echo("Proceeding with update...")
+
+        # Initialize ProjectTranslator with determined settings
+        translator = ProjectTranslator(
+            language_codes, root_dir, markdown_only=markdown and not images
+        )
+
+        if check:
+            # Call check_and_retry_translations if --check is passed
+            click.echo(f"Checking translated files for errors in {language_codes}...")
+            asyncio.run(translator.check_and_retry_translations())
+        else:
+            # Call translate_project with determined settings
+            translator.translate_project(
+                images=images, markdown=markdown, update=update
+            )
+
+        logger.info(f"Project translation completed for languages: {language_codes}")
+
+    except Exception as e:
+        if debug:
+            logger.exception("An error occurred during translation")
+        raise click.ClickException(str(e))
 
 
 if __name__ == "__main__":

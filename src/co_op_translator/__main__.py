@@ -9,15 +9,42 @@ from co_op_translator.config.vision_config.config import VisionConfig
 
 logger = logging.getLogger(__name__)
 
+
 @click.command()
-@click.option('--language-codes', '-l', required=True, help='Space-separated language codes for translation (e.g., "es fr de" or "all").')
-@click.option('--root-dir', '-r', default='.', help='Root directory of the project (default is current directory).')
-@click.option('--add', '-a', is_flag=True, default=True, help='Add new translations without deleting existing ones (default behavior).')
-@click.option('--update', '-u', is_flag=True, help='Update translations by deleting and recreating them (Warning: Existing translations will be lost).')
-@click.option('--images', '-img', is_flag=True, help='Only translate image files.')
-@click.option('--markdown', '-md', is_flag=True, help='Only translate markdown files.')
-@click.option('--debug', '-d', is_flag=True, help='Enable debug mode.')
-@click.option('--check', '-chk', is_flag=True, help='Check translated files for errors and retry translation if needed.')
+@click.option(
+    "--language-codes",
+    "-l",
+    required=True,
+    help='Space-separated language codes for translation (e.g., "es fr de" or "all").',
+)
+@click.option(
+    "--root-dir",
+    "-r",
+    default=".",
+    help="Root directory of the project (default is current directory).",
+)
+@click.option(
+    "--add",
+    "-a",
+    is_flag=True,
+    default=True,
+    help="Add new translations without deleting existing ones (default behavior).",
+)
+@click.option(
+    "--update",
+    "-u",
+    is_flag=True,
+    help="Update translations by deleting and recreating them (Warning: Existing translations will be lost).",
+)
+@click.option("--images", "-img", is_flag=True, help="Only translate image files.")
+@click.option("--markdown", "-md", is_flag=True, help="Only translate markdown files.")
+@click.option("--debug", "-d", is_flag=True, help="Enable debug mode.")
+@click.option(
+    "--check",
+    "-chk",
+    is_flag=True,
+    help="Check translated files for errors and retry translation if needed.",
+)
 def main(language_codes, root_dir, add, update, images, markdown, debug, check):
     """
     CLI for translating project files.
@@ -62,13 +89,18 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
     # Set markdown-only mode if Computer Vision is not available
     if not cv_available:
         markdown = True
-        click.echo("Computer Vision is not configured: Automatically switching to markdown-only mode.")
-        click.echo("To enable image translation, please add Computer Vision credentials to your environment variables.")
+        click.echo(
+            "Computer Vision is not configured: Automatically switching to markdown-only mode."
+        )
+        click.echo(
+            "To enable image translation, please add Computer Vision credentials to your environment variables."
+        )
         click.echo("See the .env.template file for required variables.")
     elif markdown:
         click.echo("Starting in markdown-only mode: Image translation is disabled.")
-        click.echo("To enable image translation, run without the -md flag and ensure Computer Vision is configured.")
-
+        click.echo(
+            "To enable image translation, run without the -md flag and ensure Computer Vision is configured."
+        )
 
     if debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -78,12 +110,19 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
 
     # Show warning if 'all' is selected
     if language_codes == "all":
-        click.echo("Warning: Translating all languages at once can take a significant amount of time, especially when dealing with large markdown-based open-source projects that have many documents.")
-        click.echo("For better efficiency, it's recommended that contributors handle individual languages and upload their translations separately.")
+        click.echo(
+            "Warning: Translating all languages at once can take a significant amount of time, especially when dealing with large markdown-based open-source projects that have many documents."
+        )
+        click.echo(
+            "For better efficiency, it's recommended that contributors handle individual languages and upload their translations separately."
+        )
         # Option to proceed or not
-        confirmation_all = click.prompt("Do you still want to proceed with translating all languages? Type 'yes' to continue", type=str)
-        
-        if confirmation_all.lower() != 'yes':
+        confirmation_all = click.prompt(
+            "Do you still want to proceed with translating all languages? Type 'yes' to continue",
+            type=str,
+        )
+
+        if confirmation_all.lower() != "yes":
             click.echo("Translation for 'all' languages cancelled.")
             return
         else:
@@ -91,10 +130,14 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
 
     # Show warning and prompt if update is selected
     if update:
-        click.echo(f"Warning: The update command will delete all existing translations for '{language_codes}' and re-translate everything.")
-        confirmation_update = click.prompt("Do you want to continue? Type 'yes' to proceed", type=str)
-        
-        if confirmation_update.lower() != 'yes':
+        click.echo(
+            f"Warning: The update command will delete all existing translations for '{language_codes}' and re-translate everything."
+        )
+        confirmation_update = click.prompt(
+            "Do you want to continue? Type 'yes' to proceed", type=str
+        )
+
+        if confirmation_update.lower() != "yes":
             click.echo("Update cancelled by user.")
             return
         else:
@@ -102,11 +145,21 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
 
     # Language code parsing logic
     if language_codes == "all":
-        with importlib.resources.path('co_op_translator.fonts', 'font_language_mappings.yml') as mappings_path:
-            with open(mappings_path, 'r', encoding='utf-8') as file:
+        with importlib.resources.path(
+            "co_op_translator.fonts", "font_language_mappings.yml"
+        ) as mappings_path:
+            with open(mappings_path, "r", encoding="utf-8") as file:
                 font_mappings = yaml.safe_load(file)
-                language_codes = " ".join([lang_code for lang_code in font_mappings if isinstance(font_mappings[lang_code], dict)])
-                logging.debug(f"Loaded language codes from font mapping: {language_codes}")
+                language_codes = " ".join(
+                    [
+                        lang_code
+                        for lang_code in font_mappings
+                        if isinstance(font_mappings[lang_code], dict)
+                    ]
+                )
+                logging.debug(
+                    f"Loaded language codes from font mapping: {language_codes}"
+                )
 
     # Initialize ProjectTranslator with markdown_only flag
     translator = ProjectTranslator(language_codes, root_dir, markdown_only=markdown)
@@ -119,17 +172,20 @@ def main(language_codes, root_dir, add, update, images, markdown, debug, check):
         # Set default values for images and markdown flags
         if not images and not markdown:
             markdown = True  # Always translate markdown by default
-            images = True   # Try to translate images by default
-            
+            images = True  # Try to translate images by default
+
         # If CV is not available, disable image translation
         if not cv_available:
-            click.echo("Skipping image translation due to missing Computer Vision configuration")
+            click.echo(
+                "Skipping image translation due to missing Computer Vision configuration"
+            )
             images = False
-        
+
         # Call translate_project
         translator.translate_project(images=images, markdown=markdown, update=update)
 
     logger.info(f"Project translation completed for languages: {language_codes}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

@@ -11,6 +11,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def read_input_file(input_file: str | Path) -> str:
     """
     Read the content of an input file and return it as a stripped string.
@@ -22,8 +23,9 @@ def read_input_file(input_file: str | Path) -> str:
         str: The stripped content of the file.
     """
     input_file = Path(input_file)
-    with input_file.open('r', encoding='utf-8') as file:
+    with input_file.open("r", encoding="utf-8") as file:
         return file.read().strip()
+
 
 def handle_empty_document(input_file: str | Path, output_file: str | Path) -> None:
     """
@@ -37,6 +39,7 @@ def handle_empty_document(input_file: str | Path, output_file: str | Path) -> No
     output_file = Path(output_file)
     shutil.copyfile(input_file, output_file)
 
+
 def write_output_file(output_file: str | Path, results: list) -> None:
     """
     Write a list of results to the output file, each on a new line.
@@ -46,12 +49,15 @@ def write_output_file(output_file: str | Path, results: list) -> None:
         results (list): A list of strings to write to the file.
     """
     output_file = Path(output_file)
-    with output_file.open('w', encoding='utf-8') as text_file:
+    with output_file.open("w", encoding="utf-8") as text_file:
         for result in results:
             text_file.write(result)
             text_file.write("\n")
 
-def get_actual_image_path(image_relative_path: str | Path, markdown_file_path: str | Path) -> Path:
+
+def get_actual_image_path(
+    image_relative_path: str | Path, markdown_file_path: str | Path
+) -> Path:
     """
     Given an image's relative path from the markdown file, return the actual file path
     by resolving the relative path against the markdown file's location.
@@ -71,14 +77,15 @@ def get_actual_image_path(image_relative_path: str | Path, markdown_file_path: s
 
     return actual_image_path
 
+
 def get_unique_id(file_path: str | Path, root_dir: Path) -> str:
     """
     Generate a unique identifier (hash) for the given file path, based on the relative path to the root directory.
-    
+
     Args:
         file_path (str | Path): The file path to hash.
         root_dir (Path): The root directory to which the file path should be relative.
-    
+
     Returns:
         str: A SHA-256 hash of the relative file path.
     """
@@ -86,15 +93,20 @@ def get_unique_id(file_path: str | Path, root_dir: Path) -> str:
     relative_path = file_path.relative_to(root_dir)
 
     # Convert the relative path to bytes and hash it
-    relative_path_bytes = str(relative_path).encode('utf-8')
+    relative_path_bytes = str(relative_path).encode("utf-8")
     hash_object = hashlib.sha256(relative_path_bytes)
     unique_identifier = hash_object.hexdigest()
 
-    logger.info(f"HASH for relative file path: {relative_path} HASH={unique_identifier}")
+    logger.info(
+        f"HASH for relative file path: {relative_path} HASH={unique_identifier}"
+    )
 
     return unique_identifier
 
-def generate_translated_filename(original_filepath: str | Path, language_code: str, root_dir: Path) -> str:
+
+def generate_translated_filename(
+    original_filepath: str | Path, language_code: str, root_dir: Path
+) -> str:
     """
     Generate a filename for a translated file, including a unique hash and language code.
 
@@ -123,6 +135,7 @@ def generate_translated_filename(original_filepath: str | Path, language_code: s
 
     return new_filename
 
+
 def get_filename_and_extension(file_path: str | Path) -> tuple[str, str]:
     """
     Extract the filename without extension and the file extension from the given file path.
@@ -142,6 +155,7 @@ def get_filename_and_extension(file_path: str | Path) -> tuple[str, str]:
     # Return the filename without extension and the file extension in lowercase
     return original_filename, file_ext.lower()
 
+
 def filter_files(directory: str | Path, excluded_dirs) -> list:
     """
     Filter and return only the files in the given directory, excluding specified directories.
@@ -157,18 +171,23 @@ def filter_files(directory: str | Path, excluded_dirs) -> list:
     files = []
 
     # Recursively traverse the directory
-    for path in directory.rglob('*'):
+    for path in directory.rglob("*"):
         # Check if the path is a file and does not contain any excluded directories
-        if path.is_file() and not any(excluded_dir in path.parts for excluded_dir in excluded_dirs):
+        if path.is_file() and not any(
+            excluded_dir in path.parts for excluded_dir in excluded_dirs
+        ):
             files.append(path)
 
     return files
 
-def reset_translation_directories(translations_dir: Path, image_dir: Path, language_codes: list):
+
+def reset_translation_directories(
+    translations_dir: Path, image_dir: Path, language_codes: list
+):
     """
     Remove existing translation and translated_images directories if they exist,
     and then create new ones.
-    
+
     Args:
         translations_dir (Path): The directory where translations are stored.
         image_dir (Path): The directory where translated images are stored.
@@ -178,7 +197,7 @@ def reset_translation_directories(translations_dir: Path, image_dir: Path, langu
     if translations_dir.exists():
         shutil.rmtree(translations_dir)
         logger.info(f"Removed existing translations directory: {translations_dir}")
-    
+
     if image_dir.exists():
         shutil.rmtree(image_dir)
         logger.info(f"Removed existing translated_images directory: {image_dir}")
@@ -188,9 +207,10 @@ def reset_translation_directories(translations_dir: Path, image_dir: Path, langu
         lang_dir = translations_dir / lang_code
         lang_dir.mkdir(parents=True, exist_ok=True)
         logger.info(f"Created directory for {lang_code}: {lang_dir}")
-    
+
     image_dir.mkdir(parents=True, exist_ok=True)
     logger.info(f"Created translated_images directory: {image_dir}")
+
 
 def delete_translated_images_by_language_code(language_code: str, image_dir: Path):
     """
@@ -201,11 +221,11 @@ def delete_translated_images_by_language_code(language_code: str, image_dir: Pat
         image_dir (Path): The directory where translated images are stored (e.g., './translated_images').
     """
     image_dir = Path(image_dir)
-    
+
     if not image_dir.exists():
         logger.warning(f"Directory {image_dir} does not exist. No images to delete.")
         return
-    
+
     # Iterate through all files in the directory
     for image_file in image_dir.iterdir():
         # Check if the language code is part of the filename
@@ -213,7 +233,10 @@ def delete_translated_images_by_language_code(language_code: str, image_dir: Pat
             logger.info(f"Deleting image file: {image_file}")
             image_file.unlink()
 
-def delete_translated_markdown_files_by_language_code(language_code: str, translations_dir: Path):
+
+def delete_translated_markdown_files_by_language_code(
+    language_code: str, translations_dir: Path
+):
     """
     Delete the entire directory for the specified language code, including all its contents.
 
@@ -225,7 +248,9 @@ def delete_translated_markdown_files_by_language_code(language_code: str, transl
     language_dir = translations_dir / language_code
 
     if not language_dir.exists():
-        logger.warning(f"Directory {language_dir} does not exist. No markdown files to delete.")
+        logger.warning(
+            f"Directory {language_dir} does not exist. No markdown files to delete."
+        )
         return
 
     # Remove the entire directory and its contents

@@ -1,8 +1,13 @@
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 
 class AzureOpenAIConfig:
     """Azure OpenAI specific configuration."""
-    
+
     @staticmethod
     def get_api_key():
         """Retrieve the Azure OpenAI API key from environment variables."""

@@ -48,7 +48,23 @@ After creating the virtual environment, you'll need to activate it. The steps di
 
 Once your virtual environment is set up and activated, the next step is to install the necessary dependencies.
 
-#### Using pip (from requirements.txt)
+### Quick install
+
+Install via Co-Op Translator via pip
+
+```
+pip install co-op-translator
+```
+Or 
+
+Install via poetry
+```
+poetry add co-op-translator
+```
+
+#### Using pip (from requirements.txt) if you clone this repo 
+
+![NOTE] Please do NOT do this if you install co-op translator via the quick install.
 
 1. If you're using pip, type the following command inside your terminal. It will automatically install the required packages specified in the `requirements.txt` file:
 

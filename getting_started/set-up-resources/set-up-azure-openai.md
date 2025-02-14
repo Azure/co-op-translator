@@ -1,62 +1,48 @@
 # Set up Azure OpenAI for language translation
 
-### Create an Azure OpenAI resource
+## Create an Azure OpenAI resource in Azure AI Foundry
 
-1. Sign in to the [Azure Portal](https://portal.azure.com/).
+To set up Azure OpenAI in Azure AI Foundry, follow these steps:
 
-1. Type *azure openai* in the **search bar** at the top of the portal page and select **Azure OpenAI** from the options that appear.
+### Creating a Hub
 
-    ![Type Azure OpenAI.](../../imgs/type-azure-openai.png)
+1. Sign in to the [Azure AI Foundry portal](https://ai.azure.com): Make sure you're signed in with your Azure account.
 
-1. Select **+ Create** from the navigation menu.
+2. Navigate to the Management Center: From the home page, select "Management Center" from the left menu.
 
-    ![Create Azure OpenAI.](../../imgs/create-azure-openai.png)
+3. Create a New Hub: Click on "+ New hub" and enter the necessary details such as Subscription, Resource Group, and Hub Name, we recomend deploying the hub to East US as this region support Cognitive vision and GPT models.
 
-1. Perform the following tasks:
+4. Review and Create: Review the details and click "Create" to set up your hub.
 
-    - Select your Azure **Subscription**.
-    - Select the **Resource group** to use (create a new one if needed).
-    - Select the **Region** you'd like to use.
-    - Enter **Name**. It must be a unique value.
-    - Select the **Pricing tier** you'd like to use.
+### Creating a Project
 
-    ![Fill Azure OpenAI.](../../imgs/fill-azureopenai.png)
+1. Go to the Home Page: If you're not already there, select "Azure AI Foundry" at the top left of the page to go to the home page.
 
-1. Select **Next** to move to the **Network** page.
+2. Create a Project: Click on "+ Create project" and enter a name for your project.
 
-1. Select a network security **Type** you'd like to use.
+3. Select a Hub: If you have multiple hubs, select the one you want to use. If you want to create a new hub, you can do so during this step3.
 
-    ![Select a network security Type.](../../imgs/select-azureopenai-security-type.png)
+4. Configure the Project: Follow the prompts to configure your project according to your needs.
 
-1. Select **Next** to move to the **Tags** page.
+5. Create the Project: Click "Create" to finalize the setup.
 
-1. Select **Next** to move to the **Review + submit** page.
+### Deploying a Model and Endpoint for OpenAI model
 
-1. Select **Create**.
+1. Sign in to the [Azure AI Foundry portal](https://ai.azure.com): Make sure you're signed in with the Azure subscription that has your Azure OpenAI Service resource.
 
-    ![Select Create.](../../imgs/create-azure-openai-complete.png)
+2.Navigate to Models and Endpount: From the Azure AI Foundry home page, find the tile that says " and select "Let's go." or Model and Endpoints in the left hand menu.
 
-### Deploy Azure OpenAI models
+3. If you dont already have a GPT Model deployed select deploy model: select a GPT model we recommend GPT-4o, GPT-4o-mini or o3-mini 
 
-1. Navigate to the Azure OpenAI resource that you created.
+4. Access your resources: You should see your existing Azure OpenAI Service resources. If you have multiple resources, use the selector to choose the one you want to work with.
 
-1. Select **Go to Azure OpenAI Studio** from the navigation menu.
 
-    ![Select Go to Azure OpenAI Studio from the navigation menu.](../../imgs/go-to-azureopenai-studio.png)
+For more detailed instructions, you can refer to the official Azure AI Foundry documentation.
 
-1. Inside Azure OpenAI Studio, select **Deployments** from the left side tab.
-1. Select **+ Deploy model** from the navigation menu.
-1. Select **Deploy base model** from the navigation menu to create a new **gpt-4o** deployment.
+[How to Create a project](https://learn.microsoft.com/en-us/azure/ai-studio/how-to/create-project)
 
-    ![Select Deployments.](../../imgs/deploy-aoai.png)
+[How to Create resources](https://learn.microsoft.com/azure/ai-studio/how-to/create-azure-ai-resource)
 
-1. Perform the following tasks:
+[How to use OpenAI Model in AI Foundry](https://learn.microsoft.com/azure/ai-studio/ai-services/how-to/connect-azure-openai)
 
-    - Inside **Select a model** page, select **gpt-4o**.
-    - Select **Confirm** to navigate to the **Deploy model gpt-4o** page.
-    - Inside **Deploy model gpt-4o** page, enter **Deployment name**. It must be a unique value. For example, **gpt-4o**.
-    - Inside **Deploy model gpt-4o** page, select the **Deployment type** you'd like to use.
-
-    ![Create model.](../../imgs/create-4o.png)
-
-1. Select **Deploy**.
+[OpenAI Services in Azure AI Foundry](https://learn.microsoft.com/azure/ai-studio/azure-openai-in-ai-studio)

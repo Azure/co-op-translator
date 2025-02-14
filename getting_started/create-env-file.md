@@ -26,7 +26,7 @@ In the root directory of your project, create a file named *.env*. This file wil
 
     ```plaintext
     # Azure Credentials
-    AZURE_SUBSCRIPTION_KEY="your_azure_subscription_key"
+    AZURE_SUBSCRIPTION_KEY="your_azure_AIServices_api_key"
     AZURE_AI_SERVICE_ENDPOINT="https://your_azure_ai_service_endpoint"
 
     # Azure OpenAI Credentials
@@ -47,48 +47,47 @@ In the root directory of your project, create a file named *.env*. This file wil
 
 You will need the following Azure credentials on hand to configure the environment:
 
-1. For Azure AI Service:
+You can get all the details from the project overview page within [AI Foundry](https://ai.azure.com/build/overview)
 
-    - Azure Subscription Key: Your Azure subscription key, which allows you to access the Azure AI services.
+![Foundry-overview](../imgs/foundry-overview.png)
+
+
+### For Azure AI Service:
+
+    - Azure Subscription Key: Your Azure AI Services API Key, which allows you to access the Azure AI services.
     - Azure AI Service Endpoint: The endpoint URL for your specific Azure AI service.
 
-1. For Azure OpenAI Service:
+### For Azure OpenAI Service:
 
     - Azure OpenAI API Key: The API key for accessing Azure OpenAI services.
     - Azure OpenAI Endpoint: The endpoint URL for your Azure OpenAI service.
+
+
+1. Copy and paste your AI Services key and Endpoint into the *.env* file.
+2. Copy and paste your Azure OpenAI API Key and Endpoint into the *.env* file.
+
+### Model Details 
+
+Select Model and Endpoints from the left hand menu 
+
+![FoundryModels](../imgs/gpt-models.png)
+
+You now need to select the model which you wish to utilise to get the model details 
+
+![ModelDetails](../imgs/model-deployment-name.png)
+
+For the .env file we need the following details 
+
     - Azure OpenAI Model Name: The name of the model you will be interacting with.
-    - Azure OpenAI Deployment Name: The name of your deployment for Azure OpenAI models.
-    - Azure OpenAI API Version: The version of the Azure OpenAI API you are using.
+    - Azure OpenAI Name: The name of your deployment for Azure OpenAI models.
+    - Azure OpenAI API Version: The version of the Azure OpenAI API you are using found at the end of the url string.
+
+To get these details select the model deployment 
+
+![FoundryModelinfo](../imgs/foundry-model-info.png)
 
 ### Add Azure environment variables
 
-1. Perform the following tasks to add the  Azure Subscription key and Azure AI Services Endpoint:
-
-    - Type *computer vision* in the **search bar** at the top of the portal page and select **Computer vision** from the options that appear.
-        ![Type computervision.](../imgs/type-computervision.png)
-    - Navigate the Azure Computer Vision resource that you are currently using.
-    - Copy and paste your Subscription key and Endpoint into the *.env* file.
-        ![Copy subscription key, endpoint.](../imgs/copy-sid-endpoint.png)
-
-1. Perform the following tasks to add the Azure OpenAI API Key and Endpoint:
-
-    - Type *azure openai* in the **search bar** at the top of the portal page and select **Azure OpenAI** from the options that appear.
-        ![Type azure openai.](../imgs/type-azure-openai.png)
-    - Navigate the Azure OpenAI resource that you are currently using.
-    - Select **Keys and Endpoint** from the left side tab.
-    - Copy and paste your Azure OpenAI API Key and Endpoint into the *.env* file.
-        ![Copy OpenAI key, endpoint.](../imgs/copy-aoai-key-endpoint.png)
-
-1. Perform the following tasks to add the Azure OpenAI Deployment Name and Version:
-    - Navigate to the Azure OpenAI resource that you created.
-    - Select **Go to Azure OpenAI Studio** from the navigation menu.
-        ![Select Go to Azure OpenAI Studio from the navigation menu.](../imgs/go-to-azureopenai-studio.png)
-
-    - Inside Azure OpenAI Studio, select **Deployments** from the left side tab.
-    - Copy and paste your Azure OpenAI **Name** and model **Version** into the *.env* file.
-
-        ![Copy OpenAI name, version.](../imgs/model-deployment-name.png)
-
-1. Save the *.env* file.
-
-1. Now, you can access these environment variables to use **Co-op Translator** with your Azure services.
+3. Copy and paste your Azure OpenAI **Name** and model **Version** into the *.env* file.
+4. Save the *.env* file.
+5. Now, you can access these environment variables to use **Co-op Translator** with your Azure services.

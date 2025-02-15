@@ -39,7 +39,7 @@ To set up Azure OpenAI in Azure AI Foundry, follow these steps:
 
 For more detailed instructions, you can refer to the official Azure AI Foundry documentation.
 
-[How to Create a project](https://learn.microsoft.com/en-us/azure/ai-studio/how-to/create-project)
+[How to Create a project](https://learn.microsoft.com/azure/ai-studio/how-to/create-project)
 
 [How to Create resources](https://learn.microsoft.com/azure/ai-studio/how-to/create-azure-ai-resource)
 

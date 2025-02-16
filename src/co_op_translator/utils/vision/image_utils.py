@@ -48,6 +48,114 @@ def load_bounding_boxes(json_path):
         return json.load(json_file)
 
 
+
+def group_bounding_boxes(original_boxes):
+    """
+    Group bounding boxes into paragraphs based on x-coordinate proximity.
+
+    Args:
+        original_boxes (list): Flat list of bounding box dictionaries
+
+    Returns:
+        list: List of grouped bounding boxes (list of lists)
+    """
+    if not original_boxes:
+        return []
+
+    grouped = []
+    current_group = [original_boxes[0]]
+
+    for box in original_boxes[1:]:
+        prev_x = current_group[-1]["bounding_box"][0]
+        curr_x = box["bounding_box"][0]
+
+        if abs(curr_x - prev_x) <= 5:
+            current_group.append(box)
+        else:
+            grouped.append(current_group)
+            current_group = [box]
+
+    grouped.append(current_group)
+    return grouped
+
+
+def adjust_bg_color(bg_color, factor=0.05):
+    avg = sum(bg_color) / 3
+    if avg >= 128:
+        # For bright colors, reduce each channel by a percentage.
+        return tuple(max(int(c * (1 - factor)), 0) for c in bg_color)
+    else:
+        # For dark colors, increase each channel towards 255 by a percentage.
+        return tuple(min(int(c + (255 - c) * factor), 255) for c in bg_color)
+
+
+    
+def pad_text_image_to_target_aspect(text_img, target_aspect, alignment):
+    """
+    Pad the text image to approach the target aspect ratio.
+
+    If the text image is too wide (current_aspect > target_aspect), vertical
+    padding is added. If it is too narrow, horizontal padding is added according
+    to the effective alignment.
+    """
+    h, w = text_img.shape[:2]
+    current_aspect = w / h if h > 0 else 1
+    if abs(current_aspect - target_aspect) < 1e-2:
+        return text_img
+
+    if current_aspect > target_aspect:
+        # Text is too wide: add vertical padding.
+        desired_height = int(round(w / target_aspect))
+        pad_total = desired_height - h
+        pad_top = pad_total // 2
+        pad_bottom = pad_total - pad_top
+        padded = cv2.copyMakeBorder(
+            text_img, pad_top, pad_bottom, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0, 0]
+        )
+    else:
+        # Text is too narrow: add horizontal padding.
+        desired_width = int(round(h * target_aspect))
+        pad_total = desired_width - w
+        if alignment == "left":
+            pad_left = 0
+            pad_right = pad_total
+        elif alignment == "right":
+            pad_left = pad_total
+            pad_right = 0
+        else:  # center
+            pad_left = pad_total // 2
+            pad_right = pad_total - pad_left
+        padded = cv2.copyMakeBorder(
+            text_img, 0, 0, pad_left, pad_right, cv2.BORDER_CONSTANT, value=[0, 0, 0, 0]
+        )
+    return padded
+
+def get_dominant_color(image, bounding_box, palette_size=16):
+    """
+    Get the dominant (colour occurring with the highest pixel frequency) of a bounding box area in the image.
+    
+    Args:
+        image (PIL.Image.Image): The image object.
+        bounding_box (list): The bounding box coordinates.
+        palette_size (int): The size of the color palette to reduce the image to.
+    
+    Returns:
+        tuple: The dominant color (R, G, B).
+    """
+    cropped_image = image.crop((min(bounding_box[::2]), min(bounding_box[1::2]), max(bounding_box[::2]), max(bounding_box[1::2])))
+    
+    # Crop, resize and use the palette to identify the dominant colour
+    cropped_image.thumbnail((400, 400))
+    paletted = cropped_image.convert('P', palette=Image.ADAPTIVE, colors=palette_size)
+    palette = paletted.getpalette()
+    color_counts = sorted(paletted.getcolors(), reverse=True)
+    palette_index = color_counts[0][1]
+    dominant_color = palette[palette_index*3:palette_index*3+3]
+    
+    return tuple(dominant_color),cropped_image
+
+
+
 def get_average_color(image, bounding_box):
     """
     Get the average color of a bounding box area in the image.
@@ -84,26 +192,27 @@ def get_text_color(bg_color):
     return (0, 0, 0) if luminance > 0.5 else (255, 255, 255)
 
 
-def warp_image_to_bounding_box(image, bounding_box, image_width, image_height):
+def warp_image_to_bounding_box(text_img_array, bounding_box, image_width, image_height):
     """
-    Apply perspective warp to a text image to fit the bounding box.
-
-    Args:
-        image (numpy.ndarray): The text image array.
-        bounding_box (list): The bounding box coordinates.
-        image_width (int): The width of the output image.
-        image_height (int): The height of the output image.
-
-    Returns:
-        numpy.ndarray: The warped image array.
+    Apply a perspective warp to a text image so it fits a (possibly rotated)
+    bounding box. The text image is first resized to the rectangle defined by
+    the bounding box geometry, then warped.
     """
-    h, w = image.shape[:2]
-    src_pts = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
-    dst_pts = np.float32(
-        [(bounding_box[i], bounding_box[i + 1]) for i in range(0, len(bounding_box), 2)]
+    pts = np.array(bounding_box, dtype=np.float32).reshape(4, 2)
+    # Compute destination width and height.
+    widthA = np.linalg.norm(pts[0] - pts[1])
+    widthB = np.linalg.norm(pts[2] - pts[3])
+    maxWidth = max(int(widthA), int(widthB))
+    heightA = np.linalg.norm(pts[0] - pts[3])
+    heightB = np.linalg.norm(pts[1] - pts[2])
+    maxHeight = max(int(heightA), int(heightB))
+    src_pts = np.float32([[0, 0], [maxWidth, 0], [maxWidth, maxHeight], [0, maxHeight]])
+    # Resize the padded text image to the computed rectangle.
+    resized_text = cv2.resize(text_img_array, (maxWidth, maxHeight))
+    matrix = cv2.getPerspectiveTransform(src_pts, pts)
+    warped = cv2.warpPerspective(
+        resized_text, matrix, (image_width, image_height), flags=cv2.INTER_LINEAR
     )
-    matrix = cv2.getPerspectiveTransform(src_pts, dst_pts)
-    warped = cv2.warpPerspective(image, matrix, (image_width, image_height))
     return warped
 
 

@@ -3,16 +3,31 @@ import logging
 import numpy as np
 from PIL import Image, ImageFont
 from pathlib import Path
+
+import cv2
+import math
+from math import hypot
+from tqdm import tqdm
+import time
+from PIL import Image, ImageFont, ImageDraw
+import numpy as np
+from pathlib import Path
+
+
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.config.vision_config.provider import VisionProvider
 from co_op_translator.utils.vision.image_utils import (
     get_average_color,
+    get_dominant_color,
     get_text_color,
     create_filled_polygon_mask,
     draw_text_on_image,
     warp_image_to_bounding_box,
     get_image_mode,
+    group_bounding_boxes,
+    pad_text_image_to_target_aspect,
+    adjust_bg_color,
 )
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from co_op_translator.core.llm.text_translator import TextTranslator
@@ -92,89 +107,266 @@ class ImageTranslator(ABC):
         translated_text_list,
         target_language_code,
         destination_path=None,
+        verbose=False,
+        RTL=False,
+        fast_mode=False,
     ):
         """
-        Plot annotated image with translated text.
+        Plot an annotated image with translated text using a perspective warp.
+        When fast_mode is True, a faster (though less neat) variant is used.
 
         Args:
             image_path (str): Path to the image file.
-            line_bounding_boxes (list): List of bounding boxes and text data.
-            translated_text_list (list): List of translated texts.
-            destination_path (str, optional): The path to save the translated image.
-                                            If None, save in default location (./translated_images/).
+            line_bounding_boxes (list): Flat list of bounding box dictionaries.
+            translated_text_list (list): List of translated texts corresponding to each bounding box.
+            target_language_code (str): Target language code.
+            destination_path (str, optional): Directory to save the output image.
+            verbose (bool, optional): If True, display processing progress.
+            RTL (bool, optional): If True, text is treated as right-to-left.
+            fast_mode (bool, optional): If True, the fast method is used.
 
         Returns:
             str: The path to the annotated image.
         """
-        # Load the image with the appropriate mode
-        mode = get_image_mode(image_path)
-        image = Image.open(image_path).convert(mode)
+        # Group bounding boxes into paragraphs.
+        grouped_boxes = group_bounding_boxes(line_bounding_boxes)
+        # Group translations to match the paragraph groups.
+        grouped_translations = []
+        text_index = 0
+        for group in grouped_boxes:
+            group_size = len(group)
+            grouped_translations.append(
+                translated_text_list[text_index : text_index + group_size]
+            )
+            text_index += group_size
 
-        font_size = 40
-        font_path = self.font_config.get_font_path(target_language_code)
-        font = ImageFont.truetype(font_path, font_size)
+        if fast_mode:
+            # Fast method variant.
+            mode = "RGBA"
+            image = Image.open(image_path).convert("RGBA")
 
-        # Annotate the image with translated text
-        for line_info, translated_text in zip(
-            line_bounding_boxes, translated_text_list
-        ):
-            bounding_box = line_info["bounding_box"]
+            font_size = 40
+            font_path = FontConfig.get_font_path(target_language_code)
+            base_font = ImageFont.truetype(font_path, font_size)
 
-            # Get the average color of the bounding box area
-            bg_color = get_average_color(image, bounding_box)
-            text_color = get_text_color(bg_color)
+            iterator = zip(grouped_boxes, grouped_translations)
+            if verbose:
+                iterator = tqdm(
+                    iterator, total=len(grouped_boxes), desc="Processing groups (fast)"
+                )
 
-            # Create a mask to fill the bounding box area with the background color
-            mask_image = create_filled_polygon_mask(bounding_box, image.size, bg_color)
+            start_time = time.time()
+            for group_info, group_translated in iterator:
+                group_length = len(group_info)
+                for line_info, translated_text in zip(group_info, group_translated):
+                    bounding_box_flat = line_info.get("bounding_box", [])
+                    if len(bounding_box_flat) != 8:
+                        logger.error(
+                            f"Invalid bounding_box length: {bounding_box_flat}"
+                        )
+                        continue
+
+                    bounding_box_tuples = list(
+                        zip(bounding_box_flat[::2], bounding_box_flat[1::2])
+                    )
+                    if len(bounding_box_tuples) < 4:
+                        logger.error("Bounding box does not have enough points.")
+                        continue
+
+                    try:
+                        p0, p1, p2, p3 = bounding_box_tuples[:4]
+                        box_width = hypot(p1[0] - p0[0], p1[1] - p0[1])
+                        box_height = hypot(p2[0] - p1[0], p2[1] - p1[1])
+                        angle = math.degrees(math.atan2(p1[1] - p0[1], p1[0] - p0[0]))
+                        angle = -angle  # Invert angle for proper rotation.
+                    except ValueError:
+                        logger.error("Invalid bounding_box points for quadrilateral.")
+                        continue
+
+                    bg_color, _ = get_dominant_color(image, bounding_box_flat)
+                    final_bg_color = adjust_bg_color(bg_color)
+                    draw = ImageDraw.Draw(image)
+                    draw.polygon(bounding_box_tuples, fill=final_bg_color)
+
+                    text_color = get_text_color(final_bg_color)
+
+                    max_allowed_width = box_width * 0.90
+                    max_allowed_height = box_height * 0.90
+
+                    initial_font = base_font
+                    bbox = draw.textbbox((0, 0), translated_text, font=initial_font)
+                    text_width = bbox[2] - bbox[0]
+                    text_height = bbox[3] - bbox[1]
+
+                    if text_width <= 0 or text_height <= 0:
+                        font = initial_font
+                    else:
+                        width_ratio = max_allowed_width / text_width
+                        height_ratio = max_allowed_height / text_height
+                        scaling_factor = min(width_ratio, height_ratio)
+                        optimal_font_size = max(
+                            int(initial_font.size * scaling_factor), 1
+                        )
+                        try:
+                            font = ImageFont.truetype(font_path, optimal_font_size)
+                        except IOError:
+                            logger.error(
+                                f"Font file not found at {font_path}. Using default font."
+                            )
+                            font = ImageFont.load_default()
+
+                    bbox = draw.textbbox((0, 0), translated_text, font=font)
+                    text_width = bbox[2] - bbox[0]
+                    text_height = bbox[3] - bbox[1]
+
+                    xs, ys = zip(*bounding_box_tuples)
+                    box_width = max(xs) - min(xs)
+                    box_height_val = max(ys) - min(ys)
+
+                    # Create a temporary square image for the text with a transparent background.
+                    square_side = max(text_width, text_height)
+                    text_img = Image.new(
+                        "RGBA", (square_side, square_side), (255, 255, 255, 0)
+                    )
+                    offset_y = (square_side - text_height) // 2
+                    if group_length <= 1:
+                        # Centre alignment.
+                        offset_x = 0
+                    elif RTL:
+                        # Right alignment.
+                        offset_x = square_side - text_width
+                    else:
+                        # Left alignment.
+                        offset_x = -(square_side - text_width)
+
+                    temp_draw = ImageDraw.Draw(text_img)
+                    temp_draw.text(
+                        (offset_x, offset_y),
+                        translated_text,
+                        font=font,
+                        fill=text_color,
+                    )
+
+                    rotated_text_img = text_img.rotate(angle, expand=1)
+                    center_x = min(xs) + box_width / 2
+                    center_y = min(ys) + box_height_val / 2
+                    rotated_w, rotated_h = rotated_text_img.size
+                    paste_x = int(center_x - rotated_w / 2)
+                    paste_y = int(center_y - rotated_h / 2)
+
+                    image.alpha_composite(rotated_text_img, (paste_x, paste_y))
+
+            actual_image_path = Path(image_path).resolve()
+            new_filename = generate_translated_filename(
+                actual_image_path, target_language_code, self.root_dir
+            )
+            dest = (
+                Path(destination_path)
+                if destination_path
+                else Path("./translated_images_fast/")
+            )
+            dest.mkdir(parents=True, exist_ok=True)
+            output_path = dest / new_filename
 
             if mode == "RGBA":
-                # Composite the mask onto the image to fill the bounding box (for PNG images)
-                image = Image.alpha_composite(image, mask_image)
+                image.save(output_path)
             else:
-                # Convert image to RGBA (if it's not already in RGBA mode)
-                image = image.convert("RGBA")
-                mask_image = mask_image.convert("RGBA")
+                image = image.convert("RGB")
+                image.save(output_path, format="JPEG")
 
-                # Use alpha_composite to overlay mask_image onto the original image
-                image = Image.alpha_composite(image, mask_image)
+            if verbose:
+                elapsed_time = time.time() - start_time
+                print(
+                    f"Fast method: Total time taken to plot the annotated image: {elapsed_time:.4f} seconds for {image_path}"
+                )
 
-            # Draw the translated text onto a temporary image
-            text_image = draw_text_on_image(translated_text, font, text_color)
+            return str(output_path)
 
-            # Convert the text image to an array and warp it to fit the bounding box
-            text_image_array = np.array(text_image)
-            warped_text_image = warp_image_to_bounding_box(
-                text_image_array, bounding_box, image.width, image.height
+        else:
+            # Regular (neat) method.
+            mode = get_image_mode(image_path)
+            image = Image.open(image_path).convert(mode)
+
+            font_size = 40
+            font_path = FontConfig.get_font_path(target_language_code)
+            font = ImageFont.truetype(font_path, font_size)
+
+            iterator = zip(grouped_boxes, grouped_translations)
+            if verbose:
+                iterator = tqdm(
+                    iterator, total=len(grouped_boxes), desc="Processing paragraphs"
+                )
+
+            start_time = time.time()
+            for group_info, group_translated in iterator:
+                if len(group_info) == 1:
+                    effective_alignment_group = "center"
+                else:
+                    effective_alignment_group = "right" if RTL else "left"
+
+                for line_info, translated_text in zip(group_info, group_translated):
+                    bounding_box = line_info["bounding_box"]
+
+                    bg_color, _ = get_dominant_color(image, bounding_box)
+                    final_bg_color = adjust_bg_color(bg_color)
+                    mask_image = create_filled_polygon_mask(
+                        bounding_box, image.size, final_bg_color
+                    )
+                    if mode == "RGBA":
+                        image = Image.alpha_composite(image, mask_image)
+                    else:
+                        image = image.convert("RGBA")
+                        mask_image = mask_image.convert("RGBA")
+                        image = Image.alpha_composite(image, mask_image)
+
+                    text_image = draw_text_on_image(
+                        translated_text, font, get_text_color(final_bg_color)
+                    )
+                    text_image_array = np.array(text_image)
+
+                    pts = np.array(bounding_box, dtype=np.float32).reshape(4, 2)
+                    widthA = np.linalg.norm(pts[0] - pts[1])
+                    widthB = np.linalg.norm(pts[2] - pts[3])
+                    maxWidth = max(widthA, widthB)
+                    heightA = np.linalg.norm(pts[0] - pts[3])
+                    heightB = np.linalg.norm(pts[1] - pts[2])
+                    maxHeight = max(heightA, heightB)
+                    target_aspect = maxWidth / maxHeight if maxHeight != 0 else 1
+
+                    padded_text_image = pad_text_image_to_target_aspect(
+                        text_image_array, target_aspect, effective_alignment_group
+                    )
+                    warped_text_image = warp_image_to_bounding_box(
+                        padded_text_image, bounding_box, image.width, image.height
+                    )
+                    warped_text_image_pil = Image.fromarray(warped_text_image)
+                    image = Image.alpha_composite(image, warped_text_image_pil)
+
+            actual_image_path = Path(image_path).resolve()
+            new_filename = generate_translated_filename(
+                actual_image_path, target_language_code, self.root_dir
             )
+            dest = (
+                Path(destination_path)
+                if destination_path
+                else Path("./translated_images/")
+            )
+            dest.mkdir(parents=True, exist_ok=True)
+            output_path = dest / new_filename
 
-            # Convert the warped text image back to PIL format and paste it onto the original image
-            warped_text_image_pil = Image.fromarray(warped_text_image)
-            image = Image.alpha_composite(image, warped_text_image_pil)
+            if mode == "RGBA":
+                image.save(output_path)
+            else:
+                image = image.convert("RGB")
+                image.save(output_path, format="JPEG")
 
-        actual_image_path = Path(image_path).resolve()
+            if verbose:
+                elapsed_time = time.time() - start_time
+                print(
+                    f"Total time taken to plot the annotated image: {elapsed_time:.4f} seconds for {image_path}"
+                )
 
-        # Generate the new filename based on the original file name, hash, and language code
-        new_filename = generate_translated_filename(
-            actual_image_path, target_language_code, self.root_dir
-        )
-
-        logger.info(f"Resolved image path in plot_annotated_image: {actual_image_path}")
-
-        # Determine the output path using pathlib
-        if destination_path is None:
-            output_path = Path(self.default_output_dir) / new_filename
-        else:
-            output_path = Path(destination_path) / new_filename
-
-        # Save the annotated image to the determined output path
-        if mode == "RGBA":
-            image.save(output_path)
-        else:
-            image = image.convert("RGB")  # Ensure JPG compatibility
-            image.save(output_path, format="JPEG")
-
-        # Return the path to the annotated image
-        return str(output_path)
+            return str(output_path)
 
     def translate_image(self, image_path, target_language_code, destination_path=None):
         """

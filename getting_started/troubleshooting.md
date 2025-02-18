@@ -1,4 +1,5 @@
-# Microsoft Co-Op Translator Troubleshooting Guide
+# Microsoft Co-op Translator Troubleshooting Guide
+
 
 ## Overview
 The Microsoft Co-Op Translator is a powerful tool for translating Markdown documents seamlessly. This guide will help you troubleshoot common issues encountered when using the tool.

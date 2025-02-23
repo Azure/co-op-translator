@@ -39,15 +39,22 @@ def generate_prompt_template(
     """
 
     if len(document_chunk.split("\n")) == 1:
-        prompt = f"Translate the following text to {output_lang}. NEVER ADD ANY EXTRA CONTENT OUTSIDE THE TRANSLATION. TRANSLATE ONLY WHAT IS GIVEN TO YOU.. MAINTAIN MARKDOWN FORMAT\n\n{document_chunk}"
+        prompt = f"Translate the following text to {output_lang}. NEVER ADD ANY EXTRA CONTENT OR TAGS OUTSIDE THE TRANSLATION. DO NOT ADD '''markdown OR ANY OTHER TAGS. TRANSLATE ONLY WHAT IS GIVEN TO YOU. MAINTAIN MARKDOWN FORMAT.\n\n{document_chunk}"
     else:
         prompt = f"""
         Translate the following markdown file to {output_lang}.
-        Make sure the translation does not sound too literal. Make sure you translate comments as well.
-        This file is written in Markdown format. Do not treat this as XML or HTML.
-        Do not translate any [!NOTE], [!WARNING], [!TIP], [!IMPORTANT], or [!CAUTION].
-        Do not translate any entities, such as variable names, function names, class names, or placeholders like @@INLINE_CODE_x@@ or @@CODE_BLOCK_x@@, but keep them in the file.
-        Do not translate any urls or paths, but keep them in the file.
+        IMPORTANT RULES:
+        1. DO NOT add '''markdown or any other tags around the translation
+        2. Make sure the translation does not sound too literal
+        3. Translate comments as well
+        4. This file is written in Markdown format - do not treat it as XML or HTML
+        5. Do not translate:
+           - [!NOTE], [!WARNING], [!TIP], [!IMPORTANT], [!CAUTION]
+           - Variable names, function names, class names
+           - Placeholders like @@INLINE_CODE_x@@ or @@CODE_BLOCK_x@@
+           - URLs or paths
+        6. Keep all original markdown formatting intact
+        7. Return ONLY the translated content without any additional tags or markup
         """
 
     if is_rtl:

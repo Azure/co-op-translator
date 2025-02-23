@@ -572,7 +572,9 @@ class TranslationManager:
             lang_code = translation_file.parent.name
             files_to_translate.append((original_file, lang_code))
 
-        with tqdm(total=len(files_to_translate), desc="🔄 Retranslating outdated files") as progress_bar:
+        with tqdm(
+            total=len(files_to_translate), desc="🔄 Retranslating outdated files"
+        ) as progress_bar:
             for original_file, language_code in files_to_translate:
                 await self.translate_markdown(original_file, language_code)
                 progress_bar.update(1)

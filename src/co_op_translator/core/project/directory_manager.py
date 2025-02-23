@@ -147,7 +147,9 @@ class DirectoryManager:
             for lang_code in self.language_codes:
                 translation_dir = self.translations_dir / lang_code
                 if not translation_dir.exists():
-                    logger.info(f"Translation directory does not exist: {translation_dir}")
+                    logger.info(
+                        f"Translation directory does not exist: {translation_dir}"
+                    )
                     continue
 
                 logger.info(f"Checking translations in: {translation_dir}")
@@ -171,7 +173,9 @@ class DirectoryManager:
                         ].strip()
                         if "CO_OP_TRANSLATOR_METADATA:" in metadata_str:
                             # Remove the prefix and get the actual JSON part
-                            _, json_str = metadata_str.split("CO_OP_TRANSLATOR_METADATA:", 1)
+                            _, json_str = metadata_str.split(
+                                "CO_OP_TRANSLATOR_METADATA:", 1
+                            )
                             metadata = json.loads(json_str.strip())
                         else:
                             # Try parsing the whole string as JSON for backward compatibility
@@ -186,7 +190,9 @@ class DirectoryManager:
                         original_file = self.root_dir / source_file
                         logger.info(f"Checking original file: {original_file}")
                         if not original_file.exists():
-                            logger.info(f"Original file not found, deleting: {trans_file}")
+                            logger.info(
+                                f"Original file not found, deleting: {trans_file}"
+                            )
                             trans_file.unlink()
                             removed_count += 1
                             logger.info(f"Successfully deleted: {trans_file}")

@@ -77,16 +77,22 @@ async def test_check_and_retry_translations(project_translator, temp_project_dir
         "# Test\nBroken translation"
     )  # Create a "broken" translation
 
-    project_translator.markdown_translator.translate_markdown = AsyncMock(
-        return_value="# 테스트 문서\n이것은 테스트입니다."
-    )
+    # Mock the async translation method
+    async def mock_translate(*args, **kwargs):
+        return "# 테스트 문서\n이것은 테스트입니다."
 
-    # Execute
-    await project_translator.check_and_retry_translations()
+    project_translator.markdown_translator.translate_markdown = AsyncMock(side_effect=mock_translate)
 
-    # Verify
-    project_translator.markdown_translator.translate_markdown.assert_called()
-    assert translated_file.exists()
+    try:
+        # Execute
+        result = await project_translator.check_and_retry_translations()
+        
+        # Verify
+        assert project_translator.markdown_translator.translate_markdown.called
+        assert translated_file.exists()
+        assert result is not None  # Ensure we have a result
+    except Exception as e:
+        pytest.fail(f"Test failed with exception: {str(e)}")
 
 
 def test_markdown_only_mode(temp_project_dir):

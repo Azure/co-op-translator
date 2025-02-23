@@ -1,11 +1,8 @@
 import pytest
-from pathlib import Path
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 from co_op_translator.core.project.project_translator import ProjectTranslator
-from unittest.mock import ANY
 
-# 비동기 테스트만 asyncio 마커 적용
 @pytest.fixture
 async def temp_project_dir(tmp_path):
     """Create a temporary project directory structure."""

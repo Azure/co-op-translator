@@ -1,27 +1,20 @@
 # Set up Azure Computer Vision for image translation
 
-### Create an Azure Computer Vision resource
+### Create an Azure AI Services using Microsoft AI Foundry
 
-1. Sign in to the [Azure Portal](https://portal.azure.com/).
+To create AI Services computer vision services with AI Foundry, follow these steps:
 
-1. Type *computer vision* in the **search bar** at the top of the portal page and select **Computer vision** from the options that appear.
+1. **Sign in to the Azure AI Foundry portal**: Make sure you have an Azure account with the necessary permissions.
+2. **Create a new project**: Go to the "Projects" section and click on "Create a project." Follow the prompts to set up your project.
+3. **Connect to Azure AI Services**: In your project, go to the "Management center" and select "Connected resources." Click on "+ New connection" and choose the AI service you want to connect.
 
-    ![Type computervision.](../../imgs/type-computervision.png)
+![Foundry-resources](../../imgs/foundry-resources.png)
 
-1. Select **+ Create** from the navigation menu.
+4. **Select Computer Vision**: Choose the Computer Vision service from the list of available AI services.
+5. **Configure the service**: Follow the instructions to configure the Computer Vision service according to your needs.
+6. **Deploy the service**: Once configured, deploy the service to start using it in your project.
 
-    ![Select create.](../../imgs/create-computervision.png)
+For more detailed instructions, you can refer to the official documentation. 
 
-1. Perform the following tasks:
+[Azure AI Foundry documentation](https://learn.microsoft.com/azure/ai-studio/ai-services/how-to/connect-ai-services).
 
-    - Select your Azure **Subscription**.
-    - Select the **Resource group** to use (create a new one if needed).
-    - Select the **Region** you'd like to use.
-    - Enter **Name**. It must be a unique value.
-    - Select the **Pricing tier** you'd like to use.
-
-    ![Fill computer vision.](../../imgs/fill-computervision.png)
-
-1. Select **Review + Create**.
-
-1. Select **Create**.

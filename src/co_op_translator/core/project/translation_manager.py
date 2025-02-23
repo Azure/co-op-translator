@@ -464,7 +464,7 @@ class TranslationManager:
         try:
             # 1. Remove orphaned files first
             logger.info("Removing orphaned files...")
-            with tqdm(total=1, desc="Cleaning orphaned files") as cleanup_progress:
+            with tqdm(total=1, desc="🧹 Cleaning orphaned files") as cleanup_progress:
                 removed_count = self.directory_manager.cleanup_orphaned_translations(
                     markdown=markdown, images=images
                 )
@@ -475,7 +475,7 @@ class TranslationManager:
 
             # 2. Then synchronize directory structure
             logger.info("Synchronizing directory structure...")
-            with tqdm(total=1, desc="Synchronizing directories") as sync_progress:
+            with tqdm(total=1, desc="📁 Synchronizing directories") as sync_progress:
                 created, removed, _ = self.directory_manager.sync_directory_structure()
                 sync_progress.set_postfix_str(
                     "None"
@@ -486,7 +486,7 @@ class TranslationManager:
 
             # 3. Identify files requiring updates
             if markdown:
-                with tqdm(total=1, desc="Checking translations") as check_progress:
+                with tqdm(total=1, desc="🔍 Checking translations") as check_progress:
                     outdated_files = self.get_outdated_translations()
                     check_progress.set_postfix_str(
                         "None"
@@ -496,14 +496,7 @@ class TranslationManager:
                     check_progress.update(1)
 
                 if outdated_files:
-                    with tqdm(
-                        total=len(outdated_files), desc="Retranslating outdated files"
-                    ) as retrans_progress:
-                        await self.retranslate_outdated_files(outdated_files)
-                        retrans_progress.set_postfix_str(
-                            f"Completed: {len(outdated_files)}"
-                        )
-                        retrans_progress.update(1)
+                    await self.retranslate_outdated_files(outdated_files)
 
             # 4. Perform translation
             if markdown:
@@ -579,11 +572,11 @@ class TranslationManager:
             lang_code = translation_file.parent.name
             files_to_translate.append((original_file, lang_code))
 
-        with tqdm(total=len(files_to_translate), desc="Retranslating") as progress:
+        with tqdm(total=len(files_to_translate), desc="🔄 Retranslating outdated files") as progress_bar:
             for original_file, language_code in files_to_translate:
                 await self.translate_markdown(original_file, language_code)
-                progress.update(1)
-                progress.set_postfix_str(f"Current: {original_file.name}")
+                progress_bar.update(1)
+                progress_bar.set_postfix_str(f"Current: {original_file.name}")
 
     async def check_and_retry_translations(self):
         """

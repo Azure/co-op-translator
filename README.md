@@ -116,6 +116,10 @@ poetry add co-op-translator
 3. [Install the Co-op translator package](./getting_started/install-package.md)
 4. [Translate your project using Co-op Translator](./getting_started/translator-your-project.md)
 
+### Troubleshooting, Tips and Tricks
+
+- [Troubleshooting Guide](./getting_started/troubleshooting.md)
+
 ### Additional resources
 
 - [Command reference](./getting_started/command-reference.md): Learn about all available commands and their options in detail.

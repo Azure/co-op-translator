@@ -11,7 +11,6 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-
 @click.command()
 @click.option(
     "--language-codes",
@@ -99,7 +98,7 @@ def main(language_codes, root_dir, update, images, markdown, debug, check):
             click.echo("See the .env.template file for required variables.")
 
         # Log selected translation mode
-        mode_msg = "Translation mode: "
+        mode_msg = "🚀 Translation mode: "
         if markdown and images:
             mode_msg += "markdown and images"
         elif markdown:

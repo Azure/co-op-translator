@@ -5,9 +5,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from co_op_translator.core.project.project_translator import ProjectTranslator
 from unittest.mock import ANY
 
+pytestmark = pytest.mark.asyncio
 
 @pytest.fixture
-def temp_project_dir(tmp_path):
+async def temp_project_dir(tmp_path):
     """Create a temporary project directory structure."""
     # Create project structure
     docs_dir = tmp_path / "docs"
@@ -23,9 +24,8 @@ def temp_project_dir(tmp_path):
 
     return tmp_path
 
-
 @pytest.fixture
-def project_translator(temp_project_dir):
+async def project_translator(temp_project_dir):
     """Create a ProjectTranslator instance with mocked dependencies."""
     with (
         patch(
@@ -48,25 +48,11 @@ def project_translator(temp_project_dir):
         mock_get_provider.return_value = "azure"  # Mock LLM provider
 
         translator = ProjectTranslator("ko ja", root_dir=temp_project_dir)
+        translator.translation_manager.translate_all_markdown_files = AsyncMock(return_value=(2, []))
+        translator.translation_manager.translate_all_image_files = AsyncMock(return_value=(0, []))
 
-        # Mock async methods
-        translator.translate_all_markdown_files = AsyncMock(return_value=(2, []))
-        translator.translate_all_image_files = AsyncMock(return_value=(2, []))
+        yield translator
 
-        return translator
-
-
-def test_translate_project(project_translator):
-    """Test the synchronous translate_project method."""
-    # Setup
-    with patch.object(asyncio, "run", side_effect=lambda x: None) as mock_run:
-        # Execute
-        project_translator.translate_project(images=True, markdown=True)
-        # Verify
-        mock_run.assert_called_once()
-
-
-@pytest.mark.asyncio
 async def test_check_and_retry_translations(project_translator, temp_project_dir):
     """Test checking and retrying translations."""
     # Setup
@@ -77,23 +63,29 @@ async def test_check_and_retry_translations(project_translator, temp_project_dir
         "# Test\nBroken translation"
     )  # Create a "broken" translation
 
-    # Mock the async translation method
-    async def mock_translate(*args, **kwargs):
-        return "# 테스트 문서\n이것은 테스트입니다."
+    # Mock translation methods with proper async behavior
+    project_translator.translation_manager.check_outdated_files = AsyncMock(return_value=(1, []))
+    project_translator.translation_manager.translate_all_markdown_files = AsyncMock(return_value=(2, []))
+    project_translator.translation_manager.translate_all_image_files = AsyncMock(return_value=(0, []))
 
-    project_translator.markdown_translator.translate_markdown = AsyncMock(side_effect=mock_translate)
+    # Execute and verify
+    total_count, errors = await project_translator.check_and_retry_translations()
+    
+    # Verify results
+    assert total_count == 3  # 1 (outdated) + 2 (markdown) + 0 (images)
+    assert errors == []  # No errors expected
+    assert project_translator.translation_manager.check_outdated_files.called
+    assert project_translator.translation_manager.translate_all_markdown_files.called
+    assert project_translator.translation_manager.translate_all_image_files.called
 
-    try:
+def test_translate_project(project_translator):
+    """Test the synchronous translate_project method."""
+    # Setup
+    with patch.object(asyncio, "run", side_effect=lambda x: None) as mock_run:
         # Execute
-        result = await project_translator.check_and_retry_translations()
-        
+        project_translator.translate_project(images=True, markdown=True)
         # Verify
-        assert project_translator.markdown_translator.translate_markdown.called
-        assert translated_file.exists()
-        assert result is not None  # Ensure we have a result
-    except Exception as e:
-        pytest.fail(f"Test failed with exception: {str(e)}")
-
+        mock_run.assert_called_once()
 
 def test_markdown_only_mode(temp_project_dir):
     """Test ProjectTranslator in markdown-only mode."""

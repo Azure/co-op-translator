@@ -140,41 +140,56 @@ class DirectoryManager:
             int: Number of removed translation files
         """
         removed_count = 0
+        logger.info(f"Starting cleanup with markdown={markdown}, images={images}")
 
         # Handle markdown files
         if markdown:
             for lang_code in self.language_codes:
                 translation_dir = self.translations_dir / lang_code
                 if not translation_dir.exists():
+                    logger.info(f"Translation directory does not exist: {translation_dir}")
                     continue
 
+                logger.info(f"Checking translations in: {translation_dir}")
                 for trans_file in translation_dir.rglob("*.md"):
                     try:
+                        logger.info(f"Processing translation file: {trans_file}")
                         # Read translation file and find metadata comment
                         content = trans_file.read_text(encoding="utf-8")
                         metadata_start = content.find("<!--")
                         if metadata_start == -1:
+                            logger.warning(f"No metadata found in: {trans_file}")
                             continue
 
                         metadata_end = content.find("-->", metadata_start)
                         if metadata_end == -1:
+                            logger.warning(f"Incomplete metadata in: {trans_file}")
                             continue
 
                         metadata_str = content[
                             metadata_start + 4 : metadata_end
                         ].strip()
-                        metadata = json.loads(metadata_str)
+                        if "CO_OP_TRANSLATOR_METADATA:" in metadata_str:
+                            # Remove the prefix and get the actual JSON part
+                            _, json_str = metadata_str.split("CO_OP_TRANSLATOR_METADATA:", 1)
+                            metadata = json.loads(json_str.strip())
+                        else:
+                            # Try parsing the whole string as JSON for backward compatibility
+                            metadata = json.loads(metadata_str)
 
                         # Check if original file exists
                         source_file = metadata.get("source_file")
                         if not source_file:
+                            logger.warning(f"No source_file in metadata: {trans_file}")
                             continue
 
                         original_file = self.root_dir / source_file
+                        logger.info(f"Checking original file: {original_file}")
                         if not original_file.exists():
+                            logger.info(f"Original file not found, deleting: {trans_file}")
                             trans_file.unlink()
                             removed_count += 1
-                            logger.debug(f"Removed orphaned translation: {trans_file}")
+                            logger.info(f"Successfully deleted: {trans_file}")
 
                             # Try to remove empty parent directories
                             parent = trans_file.parent
@@ -182,7 +197,7 @@ class DirectoryManager:
                                 if not any(parent.iterdir()):  # If directory is empty
                                     try:
                                         parent.rmdir()
-                                        logger.debug(
+                                        logger.info(
                                             f"Removed empty directory: {parent}"
                                         )
                                     except OSError:
@@ -190,6 +205,8 @@ class DirectoryManager:
                                 else:
                                     break  # Stop if directory is not empty
                                 parent = parent.parent
+                        else:
+                            logger.info(f"Original file exists, keeping: {trans_file}")
 
                     except (json.JSONDecodeError, KeyError, FileNotFoundError) as e:
                         logger.warning(f"Error processing {trans_file}: {e}")

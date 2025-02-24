@@ -13,7 +13,6 @@ from PIL import Image, ImageFont, ImageDraw
 import numpy as np
 from pathlib import Path
 
-
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.config.vision_config.provider import VisionProvider
@@ -96,6 +95,9 @@ class ImageTranslator(ABC):
                         "confidence": line.words[0].confidence if line.words else None,
                     }
                 )
+            logger.info(
+                f"Extracted {len(line_bounding_boxes)} bounding boxes from {image_path}"
+            )
             return line_bounding_boxes
         else:
             raise Exception("No text was recognized in the image.")
@@ -108,7 +110,6 @@ class ImageTranslator(ABC):
         target_language_code,
         destination_path=None,
         verbose=False,
-        RTL=False,
         fast_mode=False,
     ):
         """
@@ -122,12 +123,16 @@ class ImageTranslator(ABC):
             target_language_code (str): Target language code.
             destination_path (str, optional): Directory to save the output image.
             verbose (bool, optional): If True, display processing progress.
-            RTL (bool, optional): If True, text is treated as right-to-left.
-            fast_mode (bool, optional): If True, the fast method is used.
+            fast_mode (bool, optional): Quality and alignment are reduced but images generate up to x5 faster. If True, the fast method is used. 
 
         Returns:
             str: The path to the annotated image.
         """
+        logger.info(f"Starting annotation for image: {image_path}")
+        rtl = self.font_config.is_rtl(target_language_code)
+        
+        logger.debug(f"Translated text: {translated_text_list}")
+    
         # Group bounding boxes into paragraphs.
         grouped_boxes = group_bounding_boxes(line_bounding_boxes)
         # Group translations to match the paragraph groups.
@@ -146,8 +151,13 @@ class ImageTranslator(ABC):
             image = Image.open(image_path).convert("RGBA")
 
             font_size = 40
-            font_path = FontConfig.get_font_path(target_language_code)
-            base_font = ImageFont.truetype(font_path, font_size)
+            # Use instance variable for font config
+            font_path = self.font_config.get_font_path(target_language_code)
+            try:
+                base_font = ImageFont.truetype(font_path, font_size)
+            except IOError:
+                logger.error(f"Font file not found at {font_path}. Using default font.")
+                base_font = ImageFont.load_default()
 
             iterator = zip(grouped_boxes, grouped_translations)
             if verbose:
@@ -158,6 +168,14 @@ class ImageTranslator(ABC):
             start_time = time.time()
             for group_info, group_translated in iterator:
                 group_length = len(group_info)
+                # Determine alignment for the group.
+                if group_length == 1:
+                    alignment = "center"
+                elif rtl:
+                    alignment = "right"
+                else:
+                    alignment = "left"
+
                 for line_info, translated_text in zip(group_info, group_translated):
                     bounding_box_flat = line_info.get("bounding_box", [])
                     if len(bounding_box_flat) != 8:
@@ -194,7 +212,11 @@ class ImageTranslator(ABC):
                     max_allowed_height = box_height * 0.90
 
                     initial_font = base_font
-                    bbox = draw.textbbox((0, 0), translated_text, font=initial_font)
+                    # Measure text dimensions
+                    dummy_draw = ImageDraw.Draw(image)
+                    bbox = dummy_draw.textbbox(
+                        (0, 0), translated_text, font=initial_font
+                    )
                     text_width = bbox[2] - bbox[0]
                     text_height = bbox[3] - bbox[1]
 
@@ -215,7 +237,8 @@ class ImageTranslator(ABC):
                             )
                             font = ImageFont.load_default()
 
-                    bbox = draw.textbbox((0, 0), translated_text, font=font)
+                    # Recalculate text dimensions with new font
+                    bbox = dummy_draw.textbbox((0, 0), translated_text, font=font)
                     text_width = bbox[2] - bbox[0]
                     text_height = bbox[3] - bbox[1]
 
@@ -229,15 +252,13 @@ class ImageTranslator(ABC):
                         "RGBA", (square_side, square_side), (255, 255, 255, 0)
                     )
                     offset_y = (square_side - text_height) // 2
-                    if group_length <= 1:
-                        # Centre alignment.
-                        offset_x = 0
-                    elif RTL:
-                        # Right alignment.
+
+                    if alignment == "center":
+                        offset_x = (square_side - text_width) // 2
+                    elif alignment == "right":
                         offset_x = square_side - text_width
                     else:
-                        # Left alignment.
-                        offset_x = -(square_side - text_width)
+                        offset_x = 0
 
                     temp_draw = ImageDraw.Draw(text_img)
                     temp_draw.text(
@@ -250,11 +271,16 @@ class ImageTranslator(ABC):
                     rotated_text_img = text_img.rotate(angle, expand=1)
                     center_x = min(xs) + box_width / 2
                     center_y = min(ys) + box_height_val / 2
-                    rotated_w, rotated_h = rotated_text_img.size
-                    paste_x = int(center_x - rotated_w / 2)
-                    paste_y = int(center_y - rotated_h / 2)
+                    paste_x = int(center_x - rotated_text_img.width / 2)
+                    paste_y = int(center_y - rotated_text_img.height / 2)
 
-                    image.alpha_composite(rotated_text_img, (paste_x, paste_y))
+                    # Paste rotated text using its own alpha channel as mask.
+                    image.paste(rotated_text_img, (paste_x, paste_y), rotated_text_img)
+
+            elapsed_time = time.time() - start_time
+            logger.info(
+                f"Fast method: Total time taken to plot annotated image: {elapsed_time:.4f} seconds for {image_path}"
+            )
 
             actual_image_path = Path(image_path).resolve()
             new_filename = generate_translated_filename(
@@ -274,12 +300,7 @@ class ImageTranslator(ABC):
                 image = image.convert("RGB")
                 image.save(output_path, format="JPEG")
 
-            if verbose:
-                elapsed_time = time.time() - start_time
-                print(
-                    f"Fast method: Total time taken to plot the annotated image: {elapsed_time:.4f} seconds for {image_path}"
-                )
-
+            logger.info(f"Annotated image saved to {output_path}")
             return str(output_path)
 
         else:
@@ -288,8 +309,12 @@ class ImageTranslator(ABC):
             image = Image.open(image_path).convert(mode)
 
             font_size = 40
-            font_path = FontConfig.get_font_path(target_language_code)
-            font = ImageFont.truetype(font_path, font_size)
+            font_path = self.font_config.get_font_path(target_language_code)
+            try:
+                font = ImageFont.truetype(font_path, font_size)
+            except IOError:
+                logger.error(f"Font file not found at {font_path}. Using default font.")
+                font = ImageFont.load_default()
 
             iterator = zip(grouped_boxes, grouped_translations)
             if verbose:
@@ -302,7 +327,7 @@ class ImageTranslator(ABC):
                 if len(group_info) == 1:
                     effective_alignment_group = "center"
                 else:
-                    effective_alignment_group = "right" if RTL else "left"
+                    effective_alignment_group = "right" if rtl else "left"
 
                 for line_info, translated_text in zip(group_info, group_translated):
                     bounding_box = line_info["bounding_box"]
@@ -342,6 +367,11 @@ class ImageTranslator(ABC):
                     warped_text_image_pil = Image.fromarray(warped_text_image)
                     image = Image.alpha_composite(image, warped_text_image_pil)
 
+            elapsed_time = time.time() - start_time
+            logger.info(
+                f"Total time taken to plot annotated image: {elapsed_time:.4f} seconds for {image_path}"
+            )
+
             actual_image_path = Path(image_path).resolve()
             new_filename = generate_translated_filename(
                 actual_image_path, target_language_code, self.root_dir
@@ -360,15 +390,10 @@ class ImageTranslator(ABC):
                 image = image.convert("RGB")
                 image.save(output_path, format="JPEG")
 
-            if verbose:
-                elapsed_time = time.time() - start_time
-                print(
-                    f"Total time taken to plot the annotated image: {elapsed_time:.4f} seconds for {image_path}"
-                )
-
+            logger.info(f"Annotated image saved to {output_path}")
             return str(output_path)
 
-    def translate_image(self, image_path, target_language_code, destination_path=None):
+    def translate_image(self, image_path, target_language_code, destination_path=None, fast_mode=False):
         """
         Translate text in an image and return the image annotated with the translated text.
 
@@ -433,6 +458,7 @@ class ImageTranslator(ABC):
                 translated_text_list,
                 target_language_code,
                 destination_path,
+                fast_mode=fast_mode  # Add this parameter
             )
 
         except Exception as e:

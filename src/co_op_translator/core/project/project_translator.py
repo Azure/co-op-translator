@@ -67,7 +67,7 @@ class ProjectTranslator:
             self.markdown_only,
         )
 
-    def translate_project(self, images=False, markdown=False, update=False):
+    def translate_project(self, images=False, markdown=False, update=False, fast_mode=False):
         """
         Public synchronous method to start the project translation.
 
@@ -75,10 +75,11 @@ class ProjectTranslator:
             images: Whether to translate images
             markdown: Whether to translate markdown files
             update: Whether to update existing translations
+            fast_mode: Whether to use faster translation method
         """
         asyncio.run(
             self.translation_manager.translate_project_async(
-                images=images, markdown=markdown, update=update
+                images=images, markdown=markdown, update=update, fast_mode=fast_mode
             )
         )
 
@@ -91,17 +92,19 @@ class ProjectTranslator:
             logger.warning(f"Errors during checking outdated files: {errors}")
 
         # Then translate all files
-        markdown_count, markdown_errors = (
-            await self.translation_manager.translate_all_markdown_files()
-        )
+        (
+            markdown_count,
+            markdown_errors,
+        ) = await self.translation_manager.translate_all_markdown_files()
         logger.info(f"Translated {markdown_count} markdown files")
         if markdown_errors:
             logger.warning(f"Errors during markdown translation: {markdown_errors}")
 
         # Finally translate images if image translator is available
-        image_count, image_errors = (
-            await self.translation_manager.translate_all_image_files()
-        )
+        (
+            image_count,
+            image_errors,
+        ) = await self.translation_manager.translate_all_image_files()
         logger.info(f"Translated {image_count} image files")
         if image_errors:
             logger.warning(f"Errors during image translation: {image_errors}")

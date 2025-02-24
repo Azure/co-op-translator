@@ -419,8 +419,9 @@ dist
 # Egg info
 co_op_translator.egg-info/
 
-# test repo
-test_repo
+# test folders
+test_repo/
+test_docs/
 
 # .DS Store
 .DS_Store

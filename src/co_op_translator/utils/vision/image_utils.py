@@ -48,7 +48,6 @@ def load_bounding_boxes(json_path):
         return json.load(json_file)
 
 
-
 def group_bounding_boxes(original_boxes):
     """
     Group bounding boxes into paragraphs based on x-coordinate proximity.
@@ -89,7 +88,6 @@ def adjust_bg_color(bg_color, factor=0.05):
         return tuple(min(int(c + (255 - c) * factor), 255) for c in bg_color)
 
 
-    
 def pad_text_image_to_target_aspect(text_img, target_aspect, alignment):
     """
     Pad the text image to approach the target aspect ratio.
@@ -130,30 +128,37 @@ def pad_text_image_to_target_aspect(text_img, target_aspect, alignment):
         )
     return padded
 
+
 def get_dominant_color(image, bounding_box, palette_size=16):
     """
     Get the dominant (colour occurring with the highest pixel frequency) of a bounding box area in the image.
-    
+
     Args:
         image (PIL.Image.Image): The image object.
         bounding_box (list): The bounding box coordinates.
         palette_size (int): The size of the color palette to reduce the image to.
-    
+
     Returns:
         tuple: The dominant color (R, G, B).
     """
-    cropped_image = image.crop((min(bounding_box[::2]), min(bounding_box[1::2]), max(bounding_box[::2]), max(bounding_box[1::2])))
-    
+    cropped_image = image.crop(
+        (
+            min(bounding_box[::2]),
+            min(bounding_box[1::2]),
+            max(bounding_box[::2]),
+            max(bounding_box[1::2]),
+        )
+    )
+
     # Crop, resize and use the palette to identify the dominant colour
     cropped_image.thumbnail((400, 400))
-    paletted = cropped_image.convert('P', palette=Image.ADAPTIVE, colors=palette_size)
+    paletted = cropped_image.convert("P", palette=Image.ADAPTIVE, colors=palette_size)
     palette = paletted.getpalette()
     color_counts = sorted(paletted.getcolors(), reverse=True)
     palette_index = color_counts[0][1]
-    dominant_color = palette[palette_index*3:palette_index*3+3]
-    
-    return tuple(dominant_color),cropped_image
+    dominant_color = palette[palette_index * 3 : palette_index * 3 + 3]
 
+    return tuple(dominant_color), cropped_image
 
 
 def get_average_color(image, bounding_box):

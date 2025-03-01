@@ -2,7 +2,7 @@
 
 # Co-op Translator: Localize Your Project with a Single Command
 
-_Easily generate multilingual translations for your project with a single command, powered by Azure AI Services._
+Easily generate translations into multiple languages for your project with a single command, powered by Azure AI Services
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
@@ -38,7 +38,8 @@ _Easily generate multilingual translations for your project with a single comman
 
 **Co-op Translator** is a Python package designed to automate multilingual translations for your projects using advanced Large Language Model (LLM) technology and Azure AI Services. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.
 
-By integrating Co-op Translator into your workflow, you can automatically generate organized translation folders for different languages, and translate both Markdown files and images effortlessly.
+
+By integrating Co-op Translator into your workflow, you can automatically generate structured translations for multiple languages and translate Markdown files and images with ease.
 
 Here is an example of how Co-op Translator structures the translations and translates both Markdown files and text within images in your project:
 
@@ -51,7 +52,7 @@ Here is an example of how Co-op Translator structures the translations and trans
 - **Automated Translations**: Translate text into multiple languages effortlessly.
 - **Markdown Preservation**: Maintain correct Markdown syntax during translation.
 - **Image Text Translation**: Extract and translate text within images.
-- **Advanced LLM Technology**: Utilize cutting-edge language models for high-quality translations.
+- **Advanced LLM Technology**: Use cutting-edge language models for high-quality translations.
 - **Easy Integration**: Seamlessly integrate with your existing project setup.
 - **Simplify Localization**: Streamline the process of localizing your project for international markets.
 

@@ -2,7 +2,7 @@
 
 # Co-op Translator: Localize Your Project with a Single Command
 
-Easily generate translations into multiple languages for your project with a single command, powered by Azure AI Services
+_Easily generate translations into multiple languages for your project with a single command, powered by Azure AI Services_
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)

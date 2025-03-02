@@ -36,21 +36,57 @@ jobs:
           pip install co-op-translator
           
       - name: Set up environment variables
-        env:
-          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
-          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
-          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
-          AZURE_COMPUTER_VISION_KEY: ${{ secrets.AZURE_COMPUTER_VISION_KEY }}
-          AZURE_COMPUTER_VISION_ENDPOINT: ${{ secrets.AZURE_COMPUTER_VISION_ENDPOINT }}
         run: |
-          # Create .env file with secrets
-          echo "AZURE_OPENAI_API_KEY=$AZURE_OPENAI_API_KEY" > .env
-          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT" >> .env
-          echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION" >> .env
-          echo "AZURE_OPENAI_DEPLOYMENT_NAME=$AZURE_OPENAI_DEPLOYMENT_NAME" >> .env
-          echo "AZURE_COMPUTER_VISION_KEY=$AZURE_COMPUTER_VISION_KEY" >> .env
-          echo "AZURE_COMPUTER_VISION_ENDPOINT=$AZURE_COMPUTER_VISION_ENDPOINT" >> .env
+          # Create .env file
+          touch .env
+          
+          # Azure AI Service Credentials (if provided)
+          if [ -n "${{ secrets.AZURE_SUBSCRIPTION_KEY }}" ]; then
+            echo "AZURE_SUBSCRIPTION_KEY=${{ secrets.AZURE_SUBSCRIPTION_KEY }}" >> .env
+          fi
+          if [ -n "${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}" ]; then
+            echo "AZURE_AI_SERVICE_ENDPOINT=${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}" >> .env
+          fi
+          
+          # Azure OpenAI Credentials (if provided)
+          if [ -n "${{ secrets.AZURE_OPENAI_API_KEY }}" ]; then
+            echo "AZURE_OPENAI_API_KEY=${{ secrets.AZURE_OPENAI_API_KEY }}" >> .env
+          fi
+          if [ -n "${{ secrets.AZURE_OPENAI_ENDPOINT }}" ]; then
+            echo "AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }}" >> .env
+          fi
+          if [ -n "${{ secrets.AZURE_OPENAI_MODEL_NAME }}" ]; then
+            echo "AZURE_OPENAI_MODEL_NAME=${{ secrets.AZURE_OPENAI_MODEL_NAME }}" >> .env
+          fi
+          if [ -n "${{ secrets.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME }}" ]; then
+            echo "AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=${{ secrets.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME }}" >> .env
+          fi
+          if [ -n "${{ secrets.AZURE_OPENAI_API_VERSION }}" ]; then
+            echo "AZURE_OPENAI_API_VERSION=${{ secrets.AZURE_OPENAI_API_VERSION }}" >> .env
+          fi
+          
+          # OpenAI Credentials (if provided)
+          if [ -n "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+          fi
+          if [ -n "${{ secrets.OPENAI_ORG_ID }}" ]; then
+            echo "OPENAI_ORG_ID=${{ secrets.OPENAI_ORG_ID }}" >> .env
+          fi
+          if [ -n "${{ secrets.OPENAI_CHAT_MODEL_ID }}" ]; then
+            echo "OPENAI_CHAT_MODEL_ID=${{ secrets.OPENAI_CHAT_MODEL_ID }}" >> .env
+          fi
+          if [ -n "${{ secrets.OPENAI_BASE_URL }}" ]; then
+            echo "OPENAI_BASE_URL=${{ secrets.OPENAI_BASE_URL }}" >> .env
+          fi
+          
+          # Display configured providers (for debugging)
+          echo "Configured providers:"
+          if [ -n "${{ secrets.AZURE_OPENAI_API_KEY }}" ]; then
+            echo "- Azure OpenAI"
+          fi
+          if [ -n "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "- OpenAI"
+          fi
           
       - name: Run Co-op Translator
         run: |

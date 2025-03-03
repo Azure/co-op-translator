@@ -12,7 +12,7 @@ on:
 
 
 jobs:
-  translate:
+  co-op-translate:
     runs-on: ubuntu-latest
     
     permissions:
@@ -35,60 +35,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install co-op-translator==0.7.2b1
           
-      - name: Set up environment variables
-        run: |
-          # Create .env file
-          touch .env
-          
-          # Azure AI Service Credentials (if provided)
-          if [ -n "${{ secrets.AZURE_SUBSCRIPTION_KEY }}" ]; then
-            echo "AZURE_SUBSCRIPTION_KEY=${{ secrets.AZURE_SUBSCRIPTION_KEY }}" >> .env
-          fi
-          if [ -n "${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}" ]; then
-            echo "AZURE_AI_SERVICE_ENDPOINT=${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}" >> .env
-          fi
-          
-          # Azure OpenAI Credentials (if provided)
-          if [ -n "${{ secrets.AZURE_OPENAI_API_KEY }}" ]; then
-            echo "AZURE_OPENAI_API_KEY=${{ secrets.AZURE_OPENAI_API_KEY }}" >> .env
-          fi
-          if [ -n "${{ secrets.AZURE_OPENAI_ENDPOINT }}" ]; then
-            echo "AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }}" >> .env
-          fi
-          if [ -n "${{ secrets.AZURE_OPENAI_MODEL_NAME }}" ]; then
-            echo "AZURE_OPENAI_MODEL_NAME=${{ secrets.AZURE_OPENAI_MODEL_NAME }}" >> .env
-          fi
-          if [ -n "${{ secrets.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME }}" ]; then
-            echo "AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=${{ secrets.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME }}" >> .env
-          fi
-          if [ -n "${{ secrets.AZURE_OPENAI_API_VERSION }}" ]; then
-            echo "AZURE_OPENAI_API_VERSION=${{ secrets.AZURE_OPENAI_API_VERSION }}" >> .env
-          fi
-          
-          # OpenAI Credentials (if provided)
-          if [ -n "${{ secrets.OPENAI_API_KEY }}" ]; then
-            echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
-          fi
-          if [ -n "${{ secrets.OPENAI_ORG_ID }}" ]; then
-            echo "OPENAI_ORG_ID=${{ secrets.OPENAI_ORG_ID }}" >> .env
-          fi
-          if [ -n "${{ secrets.OPENAI_CHAT_MODEL_ID }}" ]; then
-            echo "OPENAI_CHAT_MODEL_ID=${{ secrets.OPENAI_CHAT_MODEL_ID }}" >> .env
-          fi
-          if [ -n "${{ secrets.OPENAI_BASE_URL }}" ]; then
-            echo "OPENAI_BASE_URL=${{ secrets.OPENAI_BASE_URL }}" >> .env
-          fi
-          
-          # Display configured providers (for debugging)
-          echo "Configured providers:"
-          if [ -n "${{ secrets.AZURE_OPENAI_API_KEY }}" ]; then
-            echo "- Azure OpenAI"
-          fi
-          if [ -n "${{ secrets.OPENAI_API_KEY }}" ]; then
-            echo "- OpenAI"
-          fi
-          
       - name: Run Co-op Translator
+        env:
+          # Azure AI Service Credentials
+          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
+          
+          # Azure OpenAI Credentials
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_MODEL_NAME: ${{ secrets.AZURE_OPENAI_MODEL_NAME }}
+          AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          
+          # OpenAI Credentials
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
+          OPENAI_CHAT_MODEL_ID: ${{ secrets.OPENAI_CHAT_MODEL_ID }}
+          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
         run: |
           # =====================================================================
           # IMPORTANT: Set your target languages here (REQUIRED CONFIGURATION)

@@ -68,61 +68,7 @@ translate -l "es fr de" -r "./my_project"
 
 This command translates the files in `./my_project` into Spanish, French, and German.
 
-### 4. Add New Translations Without Deleting Existing Ones
-
-The default behavior is to add new translations without deleting existing ones. You can explicitly specify this by using the `-a` option:
-
-```bash
-translate -l "ko" -a
-```
-
-This command will add new translations in Korean without affecting the existing translations.
-
-#### Example on Phi-3 CookBook
-
-In the **Phi-3 CookBook**, to update the *README.md* translations, I first deleted the existing *README.md* translations and then used the following method to translate the updated content.
-
-### Deleting files which need to be updated 
-To update files recently changed in Pull Request the first step is to delete all the existing versions of the specific file located in the different language translation folders. You can do this in bulk by using the following command to delete all the files with a specific name within the translation folders.
-
-### On Windows:
-1. **Using Command Prompt**:
-   - Open Command Prompt.
-   - Navigate to the folder where the files are located using the `cd` command.
-   - Use the following command to delete files:
-     ```
-     del /s *filename*
-     ```
-     Replace `filename` with the specific part of the file name you're looking for. The `/s` option searches subdirectories as well.
-
-2. **Using PowerShell**:
-   - Open PowerShell.
-   - Run this command:
-     ```powershell
-     Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
-     ```
-     Replace `"C:\YourPath"` with the folder path and `filename` with the specific name.
-
-### On macOS/Linux:
-1. **Using Terminal**:
-   - Open Terminal.
-   - Navigate to the directory with `cd`.
-   - Use the `find` command:
-     ```bash
-     find . -type f -name "*filename*" -delete
-     ```
-     Replace `filename` with the specific name.
-
-Always double-check the files before deleting to avoid accidental loss. 
-
-Once you have deleted the files which need to be replace simply rerun your `translate -l` command to update the most recent file changes.
-
-```bash
-(.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
-Translating markdown files: 100%|████████████████████████████████████████████████| 6/6 [24:07<00:00, 241.31s/it]
-```
-
-### 5. Updating Translations (Deletes Existing Translations)
+### 4. Updating Translations (Deletes Existing Translations)
 
 To update existing translations (i.e., delete the current translations and replace them with new ones), use the `-u` option. This will delete all existing translations for the specified languages and re-translate them.
 
@@ -222,3 +168,40 @@ translate -l "all"
 ```
 
 This command will translate the project into all available languages. If you proceed, the translation may take a significant amount of time depending on the size of the project.
+
+> [!TIP]
+>
+> ### Deleting files which need to be updated 
+> To update files recently changed in Pull Request the first step is to delete all the existing versions of the specific file located in the different language translation folders. You can do this in bulk by using the following command to delete all the files with a specific name within the translation folders.
+>
+> ### On Windows:
+> 1. **Using Command Prompt**:
+>    - Open Command Prompt.
+>    - Navigate to the folder where the files are located using the `cd` command.
+>    - Use the following command to delete files:
+>      ```
+>      del /s *filename*
+>      ```
+>      Replace `filename` with the specific part of the file name you're looking for. The `/s` option searches subdirectories as well.
+>
+> 2. **Using PowerShell**:
+>    - Open PowerShell.
+>    - Run this command:
+>      ```powershell
+>      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
+>      ```
+>      Replace `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>
+> ### On macOS/Linux:
+> 1. **Using Terminal**:
+>   - Open Terminal.
+>   - Navigate to the directory with `cd`.
+>   - Use the `find` command:
+>     ```bash
+>     find . -type f -name "*filename*" -delete
+>     ```
+>     Replace `filename` with the specific name.
+>
+> Always double-check the files before deleting to avoid accidental loss. 
+>
+> Once you have deleted the files which need to be replace simply rerun your `translate -l` command to update the most recent file changes.

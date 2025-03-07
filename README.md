@@ -2,7 +2,7 @@
 
 # Co-op Translator: Break Language Barriers Effortlessly
 
-_Easily automate translation into multiple languages for your project_
+_Easily automate the translation of your documentation into multiple languages_
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)

@@ -2,7 +2,7 @@
 
 # Co-op Translator: Break Language Barriers Effortlessly
 
-_Easily automate translations into multiple languages for your project_
+_Easily automate the translation of your documentation into multiple languages_
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
@@ -66,7 +66,7 @@ Here is an example of how Co-op Translator structures the translations and trans
 
 ## 🌉 Bridging the language gap in tech
 
-English is often considered the universal language of technology, but many developers worldwide are non-native English speakers. This can create barriers in accessing and contributing to technical projects.
+English is often considered the universal language of technology, but many developers worldwide are not native English speakers. This can create barriers in accessing and contributing to technical projects.
 
 **Co-op Translator** aims to break down these language barriers by providing an easy-to-use tool for automating translations. By making technical documentation accessible in multiple languages, we empower developers, students, and researchers globally.
 
@@ -78,7 +78,7 @@ Join us in revolutionizing global communication! Give a ⭐ to [Co-op Translator
 
 ![Architecture](/imgs/architecture_241019.png)
 
-The process begins with Markdown and image files from your project folder, which are processed by various AI services:
+The process begins with Markdown and image files from your project folder, which are then processed by various AI services:
 
 - **Language Models**: 
   - **Azure OpenAI** and other supported LLMs translate text from Markdown files. See the [supported models and services](#-supported-models-and-services) for more information.
@@ -106,7 +106,7 @@ The final translated Markdown and image files are saved in the designated transl
 ### Additional resources
 
 - [Command reference](./getting_started/command-reference.md): Learn about all available commands and their options in detail.
-- [Multi-language support setup](./getting_started/multi-language-support.md): Before starting the translation process, you can add a table in the README that links to the translated versions of your document.
+- [Multi-language support setup](./getting_started/multi-language-support.md): Before starting the translation process, you can add a table in the README linking to the translated versions of your document.
 - [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions to add new languages.
 - [Markdown-Only Mode](./getting_started/markdown-only-mode.md): Learn how to use Co-op Translator in Markdown-only mode.
 

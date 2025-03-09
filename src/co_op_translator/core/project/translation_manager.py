@@ -238,7 +238,7 @@ class TranslationManager:
         if tasks:  # Check if there are tasks to process
             # Step 3: Process markdown translations sequentially using the sequential API request queue
             results = await self.process_api_requests_sequential(
-                tasks, "Translating markdown files"
+                tasks, "🛠️  Translating markdown files"
             )
             modified_count = sum(
                 1 for r in results if r
@@ -315,7 +315,7 @@ class TranslationManager:
         if tasks:
             # Step 3: Process image translations using API request queue
             results = await self.process_api_requests_parallel(
-                tasks, f"{'⚡ (fast mode)' if fast_mode else '🖼️'} Translating images"
+                tasks, f"{'🏎️  (fast mode)' if fast_mode else '🖼️'} Translating images"
             )
             modified_count = sum(
                 1 for r in results if r != str(image_file_path)

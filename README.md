@@ -1,8 +1,8 @@
 ![Logo](/imgs/logo.png)
 
-# Co-op Translator: Localize Your Project with a Single Command
+# Co-op Translator: Break Language Barriers Effortlessly
 
-_Easily generate multilingual translations for your project with a single command, powered by Azure AI Services._
+_Easily automate the translation of your documentation into multiple languages_
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
@@ -19,8 +19,14 @@ _Easily generate multilingual translations for your project with a single comman
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
 [![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
 
+[![Azure AI Community Discord](https://dcbadge.vercel.app/api/server/ByRwuEEgH4)](https://discord.com/invite/ByRwuEEgH4)
+
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+
+> [!TIP]
+>
+> **NEW**: Now with GitHub Actions support! Automatically translate your documentation when changes are made to your repository. [Learn more](#-getting-started-with-co-op-translator).
 
 ## 🤖 Supported models and services
 
@@ -34,9 +40,13 @@ _Easily generate multilingual translations for your project with a single comman
 
 ## 🌐 Overview
 
-**Co-op Translator** is a Python package designed to automate multilingual translations for your projects using advanced Large Language Model (LLM) technology and Azure AI Services. This project aims to simplify the process of translating content into multiple languages, making it accessible and efficient for developers.
+**Co-op Translator** breaks language barriers by automating multilingual translations for your projects using advanced Large Language Model (LLM) technology and Azure AI Services. Whether through command line or GitHub Actions, it transforms your content to reach global audiences with minimal effort.
 
-By integrating Co-op Translator into your workflow, you can automatically generate organized translation folders for different languages, and translate both Markdown files and images effortlessly.
+With Co-op Translator, you can:
+- **Command Line**: Quickly translate your documentation on-demand
+- **GitHub Actions**: Automatically translate when your repository changes
+- **Preserve Formatting**: Maintain Markdown syntax and structure across languages
+- **Translate Images**: Extract and translate text embedded in images
 
 Here is an example of how Co-op Translator structures the translations and translates both Markdown files and text within images in your project:
 
@@ -47,15 +57,16 @@ Here is an example of how Co-op Translator structures the translations and trans
 ## ✨ Key features
 
 - **Automated Translations**: Translate text into multiple languages effortlessly.
+- **GitHub Actions Integration**: Automate translations as part of your CI/CD pipeline.
 - **Markdown Preservation**: Maintain correct Markdown syntax during translation.
 - **Image Text Translation**: Extract and translate text within images.
-- **Advanced LLM Technology**: Utilize cutting-edge language models for high-quality translations.
+- **Advanced LLM Technology**: Use cutting-edge language models for high-quality translations.
 - **Easy Integration**: Seamlessly integrate with your existing project setup.
 - **Simplify Localization**: Streamline the process of localizing your project for international markets.
 
 ## 🌉 Bridging the language gap in tech
 
-English is often considered the universal language of technology, but many developers worldwide are non-native English speakers. This can create barriers in accessing and contributing to technical projects.
+English is often considered the universal language of technology, but many developers worldwide are not native English speakers. This can create barriers in accessing and contributing to technical projects.
 
 **Co-op Translator** aims to break down these language barriers by providing an easy-to-use tool for automating translations. By making technical documentation accessible in multiple languages, we empower developers, students, and researchers globally.
 
@@ -67,7 +78,7 @@ Join us in revolutionizing global communication! Give a ⭐ to [Co-op Translator
 
 ![Architecture](/imgs/architecture_241019.png)
 
-The process begins with Markdown and image files from your project folder, which are processed by various AI services:
+The process begins with Markdown and image files from your project folder, which are then processed by various AI services:
 
 - **Language Models**: 
   - **Azure OpenAI** and other supported LLMs translate text from Markdown files. See the [supported models and services](#-supported-models-and-services) for more information.
@@ -78,43 +89,15 @@ The final translated Markdown and image files are saved in the designated transl
 
 ## 🚀 Getting started with Co-op Translator
 
-### Prerequisites
-
-- **Python 3.10 or higher**: Required for running the Co-op Translator.
-- **Language Model Resource**: 
-  - **Azure OpenAI** or other LLMs. Details can be found in the [supported models and services](#-supported-models-and-services).
-- **Computer Vision Resource** (optional):
-  - For image translation. If unavailable, the translator defaults to [Markdown-only mode](./getting_started/markdown-only-mode.md).
-  - **Azure Computer Vision**
-
-### Quick install
-
-#### Install via pip
-
-```bash
-pip install co-op-translator
-```
-
-#### Install via poetry
-
-```bash
-poetry add co-op-translator
-```
-
-### How to use Co-op Translator
+| **Approach**        | **Command Line**                           | **GitHub Actions**                          |
+|---------------------|---------------------------------------|--------------------------------------|
+| **Best for**       | One-time, manual execution           | Automated execution on repository changes |
+| **Automation**     | Manual trigger                        | Automatic on repository events      |
+| **Setup**          | Requires local installation     | No local setup needed            |
+| **Guide**         | [Command Line Guide](./getting_started/command-line-guide/command-line-guide.md) | [GitHub Actions Guide](./getting_started/github-actions-guide/github-actions-guide.md) |
 
 > [!NOTE]
 > While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](#-supported-models-and-services) list.
-
-1. Set up resources
-   - [Set up Azure OpenAI](./getting_started/set-up-resources/set-up-azure-openai.md)
-   - [Set up Azure Computer Vision](./getting_started/set-up-resources/set-up-azure-computer-vision.md) (optional)
-
-2. [Create an '.env' file in the root directory](./getting_started/create-env-file.md)
-   - Include necessary keys for the chosen language model service.
-   - If Azure Computer Vision keys are omitted or `-md` is specified, the translator will operate in Markdown-only mode.
-3. [Install the Co-op translator package](./getting_started/install-package.md)
-4. [Translate your project using Co-op Translator](./getting_started/translator-your-project.md)
 
 ### Troubleshooting, Tips and Tricks
 
@@ -123,7 +106,7 @@ poetry add co-op-translator
 ### Additional resources
 
 - [Command reference](./getting_started/command-reference.md): Learn about all available commands and their options in detail.
-- [Multi-language support setup](./getting_started/multi-language-support.md): Before starting the translation process, you can add a table in the README that links to the translated versions of your document.
+- [Multi-language support setup](./getting_started/multi-language-support.md): Before starting the translation process, you can add a table in the README linking to the translated versions of your document.
 - [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions to add new languages.
 - [Markdown-Only Mode](./getting_started/markdown-only-mode.md): Learn how to use Co-op Translator in Markdown-only mode.
 

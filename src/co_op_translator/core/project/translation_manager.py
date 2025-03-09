@@ -70,7 +70,9 @@ class TranslationManager:
             root_dir, translations_dir, language_codes, excluded_dirs
         )
 
-    async def translate_image(self, image_path: Path, language_code: str, fast_mode: bool = False) -> str:
+    async def translate_image(
+        self, image_path: Path, language_code: str, fast_mode: bool = False
+    ) -> str:
         """
         Translate an image and handle file permissions or path errors.
 
@@ -251,7 +253,9 @@ class TranslationManager:
 
         return modified_count, errors
 
-    async def translate_all_image_files(self, update: bool = False, fast_mode: bool = False) -> tuple[int, list[str]]:
+    async def translate_all_image_files(
+        self, update: bool = False, fast_mode: bool = False
+    ) -> tuple[int, list[str]]:
         """
         Translate all image files, with optional update mode to refresh translations.
 
@@ -302,13 +306,16 @@ class TranslationManager:
                     logger.info(
                         f"Translating image: {image_file_path} for language: {language_code}"
                     )
-                    tasks.append(self.translate_image(image_file_path, language_code, fast_mode=fast_mode))
+                    tasks.append(
+                        self.translate_image(
+                            image_file_path, language_code, fast_mode=fast_mode
+                        )
+                    )
 
         if tasks:
             # Step 3: Process image translations using API request queue
             results = await self.process_api_requests_parallel(
-                tasks, 
-                f"{'⚡ (fast mode)' if fast_mode else '🖼️'} Translating images"
+                tasks, f"{'⚡ (fast mode)' if fast_mode else '🖼️'} Translating images"
             )
             modified_count = sum(
                 1 for r in results if r != str(image_file_path)
@@ -438,7 +445,11 @@ class TranslationManager:
         return modified_count, errors
 
     async def translate_project_async(
-        self, images: bool = False, markdown: bool = False, update: bool = False, fast_mode: bool = False
+        self,
+        images: bool = False,
+        markdown: bool = False,
+        update: bool = False,
+        fast_mode: bool = False,
     ) -> tuple[int, list[str]]:
         """
         Asynchronously translate the project.

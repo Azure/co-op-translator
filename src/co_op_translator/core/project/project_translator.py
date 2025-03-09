@@ -67,7 +67,9 @@ class ProjectTranslator:
             self.markdown_only,
         )
 
-    def translate_project(self, images=False, markdown=False, update=False, fast_mode=False):
+    def translate_project(
+        self, images=False, markdown=False, update=False, fast_mode=False
+    ):
         """
         Public synchronous method to start the project translation.
 

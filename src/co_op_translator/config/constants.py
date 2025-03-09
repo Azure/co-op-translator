@@ -1,4 +1,8 @@
-SUPPORTED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
+# Different approaches are used for RGB and RGBA images
+RGBA_IMAGE_EXTENSIONS = {".png"}
+RGB_IMAGE_EXTENSIONS = {".jpg", ".jpeg"}
+SUPPORTED_IMAGE_EXTENSIONS = RGBA_IMAGE_EXTENSIONS.union(RGB_IMAGE_EXTENSIONS)
+
 EXCLUDED_DIRS = {
     "translations",
     "translated_images",

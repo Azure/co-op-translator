@@ -14,6 +14,7 @@ import numpy as np
 from pathlib import Path
 
 from co_op_translator.config.font_config import FontConfig
+from co_op_translator.config.constants import RGB_IMAGE_EXTENSIONS
 from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.config.vision_config.provider import VisionProvider
 from co_op_translator.utils.vision.image_utils import (
@@ -123,16 +124,18 @@ class ImageTranslator(ABC):
             target_language_code (str): Target language code.
             destination_path (str, optional): Directory to save the output image.
             verbose (bool, optional): If True, display processing progress.
-            fast_mode (bool, optional): Quality and alignment are reduced but images generate up to x5 faster. If True, the fast method is used. 
+            fast_mode (bool, optional): Translations are up to 3x faster, at a slight cost to quality and alignment precision. If True, the fast method is used.
 
         Returns:
             str: The path to the annotated image.
         """
-        logger.info(f"Starting annotation for image: {image_path}")
+        style = "fast" if fast_mode else "neat"
+        logger.info("=" * 50)
+        logger.info(f"Starting annotation ({style} mode) for image: {image_path} ")
         rtl = self.font_config.is_rtl(target_language_code)
-        
+
         logger.debug(f"Translated text: {translated_text_list}")
-    
+
         # Group bounding boxes into paragraphs.
         grouped_boxes = group_bounding_boxes(line_bounding_boxes)
         # Group translations to match the paragraph groups.
@@ -145,9 +148,18 @@ class ImageTranslator(ABC):
             )
             text_index += group_size
 
+        # Generate output path
+        actual_image_path = Path(image_path).resolve()
+        new_filename = generate_translated_filename(
+            actual_image_path, target_language_code, self.root_dir
+        )
+        base_dir = "./translated_images_fast/" if fast_mode else "./translated_images/"
+        dest = Path(destination_path) if destination_path else Path(base_dir)
+        dest.mkdir(parents=True, exist_ok=True)
+        output_path = dest / new_filename
+
         if fast_mode:
             # Fast method variant.
-            mode = "RGBA"
             image = Image.open(image_path).convert("RGBA")
 
             font_size = 40
@@ -209,13 +221,15 @@ class ImageTranslator(ABC):
                     text_color = get_text_color(final_bg_color)
 
                     max_allowed_width = box_width * 0.90
-                    max_allowed_height = box_height * 0.90
+                    max_allowed_height = box_height * 0.95
 
                     initial_font = base_font
                     # Measure text dimensions
                     dummy_draw = ImageDraw.Draw(image)
                     bbox = dummy_draw.textbbox(
-                        (0, 0), translated_text, font=initial_font
+                        (0, 0),
+                        translated_text,
+                        font=initial_font,
                     )
                     text_width = bbox[2] - bbox[0]
                     text_height = bbox[3] - bbox[1]
@@ -238,7 +252,11 @@ class ImageTranslator(ABC):
                             font = ImageFont.load_default()
 
                     # Recalculate text dimensions with new font
-                    bbox = dummy_draw.textbbox((0, 0), translated_text, font=font)
+                    bbox = dummy_draw.textbbox(
+                        (0, 0),
+                        translated_text,
+                        font=font,
+                    )
                     text_width = bbox[2] - bbox[0]
                     text_height = bbox[3] - bbox[1]
 
@@ -247,18 +265,17 @@ class ImageTranslator(ABC):
                     box_height_val = max(ys) - min(ys)
 
                     # Create a temporary square image for the text with a transparent background.
-                    square_side = max(text_width, text_height)
+                    square_side = max(box_width, box_height_val)
                     text_img = Image.new(
                         "RGBA", (square_side, square_side), (255, 255, 255, 0)
                     )
                     offset_y = (square_side - text_height) // 2
-
                     if alignment == "center":
                         offset_x = (square_side - text_width) // 2
                     elif alignment == "right":
-                        offset_x = square_side - text_width
+                        offset_x = square_side - text_width - 10
                     else:
-                        offset_x = 0
+                        offset_x = 10
 
                     temp_draw = ImageDraw.Draw(text_img)
                     temp_draw.text(
@@ -266,9 +283,10 @@ class ImageTranslator(ABC):
                         translated_text,
                         font=font,
                         fill=text_color,
+                        anchor="la",
                     )
 
-                    rotated_text_img = text_img.rotate(angle, expand=1)
+                    rotated_text_img = text_img.rotate(angle, expand=True)
                     center_x = min(xs) + box_width / 2
                     center_y = min(ys) + box_height_val / 2
                     paste_x = int(center_x - rotated_text_img.width / 2)
@@ -279,29 +297,8 @@ class ImageTranslator(ABC):
 
             elapsed_time = time.time() - start_time
             logger.info(
-                f"Fast method: Total time taken to plot annotated image: {elapsed_time:.4f} seconds for {image_path}"
+                f"Total time taken to plot annotated image (Fast Mode): {elapsed_time:.4f} seconds for {image_path}"
             )
-
-            actual_image_path = Path(image_path).resolve()
-            new_filename = generate_translated_filename(
-                actual_image_path, target_language_code, self.root_dir
-            )
-            dest = (
-                Path(destination_path)
-                if destination_path
-                else Path("./translated_images_fast/")
-            )
-            dest.mkdir(parents=True, exist_ok=True)
-            output_path = dest / new_filename
-
-            if mode == "RGBA":
-                image.save(output_path)
-            else:
-                image = image.convert("RGB")
-                image.save(output_path, format="JPEG")
-
-            logger.info(f"Annotated image saved to {output_path}")
-            return str(output_path)
 
         else:
             # Regular (neat) method.
@@ -369,31 +366,22 @@ class ImageTranslator(ABC):
 
             elapsed_time = time.time() - start_time
             logger.info(
-                f"Total time taken to plot annotated image: {elapsed_time:.4f} seconds for {image_path}"
+                f"Total time taken to plot annotated image (Neat Mode): {elapsed_time:.4f} seconds for {image_path}"
             )
 
-            actual_image_path = Path(image_path).resolve()
-            new_filename = generate_translated_filename(
-                actual_image_path, target_language_code, self.root_dir
-            )
-            dest = (
-                Path(destination_path)
-                if destination_path
-                else Path("./translated_images/")
-            )
-            dest.mkdir(parents=True, exist_ok=True)
-            output_path = dest / new_filename
+        # Handle RGB conversion to RGBA if needed before saving - common for both methods
+        if output_path.suffix.lower() in RGB_IMAGE_EXTENSIONS:
+            image = image.convert("RGB")
 
-            if mode == "RGBA":
-                image.save(output_path)
-            else:
-                image = image.convert("RGB")
-                image.save(output_path, format="JPEG")
+        # Save the image
+        image.save(output_path)
 
-            logger.info(f"Annotated image saved to {output_path}")
-            return str(output_path)
+        logger.info(f"Annotated image saved to {output_path}")
+        return str(output_path)
 
-    def translate_image(self, image_path, target_language_code, destination_path=None, fast_mode=False):
+    def translate_image(
+        self, image_path, target_language_code, destination_path=None, fast_mode=False
+    ):
         """
         Translate text in an image and return the image annotated with the translated text.
 
@@ -458,7 +446,7 @@ class ImageTranslator(ABC):
                 translated_text_list,
                 target_language_code,
                 destination_path,
-                fast_mode=fast_mode  # Add this parameter
+                fast_mode=fast_mode,  # Add this parameter
             )
 
         except Exception as e:

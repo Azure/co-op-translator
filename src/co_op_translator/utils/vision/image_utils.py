@@ -12,6 +12,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageStat
 import matplotlib.pyplot as plt
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.utils.common.file_utils import get_filename_and_extension
+from co_op_translator.config.constants import RGB_IMAGE_EXTENSIONS, RGBA_IMAGE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
 
@@ -382,9 +383,9 @@ def get_image_mode(image_path):
         str: 'RGBA' for PNG files, 'RGB' for JPG/JPEG files.
     """
     extension = get_filename_and_extension(image_path)[1]
-    if extension in [".png"]:
+    if extension in RGBA_IMAGE_EXTENSIONS:
         return "RGBA"
-    elif extension in [".jpg", ".jpeg"]:
+    elif extension in RGB_IMAGE_EXTENSIONS:
         return "RGB"
     else:
         raise ValueError(f"Unsupported image format: {extension}")

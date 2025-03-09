@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
     "--fast",
     "-f",
     is_flag=True,
-    help="Use fast mode for image translation (up to 5x faster at a slight cost to quality and alignment).",
+    help="Use fast mode for image translation (up to 3x faster at a slight cost to quality and alignment).",
 )
 def main(language_codes, root_dir, update, images, markdown, debug, check, fast):
     """

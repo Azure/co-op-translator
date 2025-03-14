@@ -13,9 +13,9 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | Yes         | Yes          |
 | ur            | Urdu                 | NotoSansArabic-Medium.ttf         | Yes         | Yes          |
 | zh            | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
-| mo            | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc           | No          | No           |
-| hk            | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc           | No          | No           |
-| tw            | Chinese (Traditional, Taiwan) | NotoSansCJK-Medium.ttc           | No          | No           |
+| mo            | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc    | No          | No           |
+| hk            | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc| No          | No           |
+| tw            | Chinese (Traditional, Taiwan) | NotoSansCJK-Medium.ttc   | No          | No           |
 | ja            | Japanese             | NotoSansCJK-Medium.ttc            | No          | No           |
 | ko            | Korean               | NotoSansCJK-Medium.ttc            | No          | No           |
 | hi            | Hindi                | NotoSansDevanagari-Medium.ttf     | No          | No           |

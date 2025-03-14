@@ -10,6 +10,7 @@ translate -l "language_codes" -md             | Translates only Markdown files.
 translate -l "language_codes" -chk            | Checks translated files for errors and retries translation if needed.
 translate -l "language_codes" -d              | Enables debug mode for detailed logging.
 translate -l "language_codes" -r "root_dir"   | Specifies the root directory of the project
+translate -l "language_codes" -f              | Uses fast mode for image translation (up to 3x faster plotting at a slight cost to quality and alignment).
 
 ## CLI options explanation
 
@@ -23,3 +24,4 @@ The **Co-op Translator** CLI offers several options to customize the translation
 - **`-md` (or `--markdown`)**: Translates only markdown files.
 - **`-chk` (or `--check`)**: Checks translated files for errors and retries translation if needed.
 - **`-d` (or `--debug`)**: Enables debug mode for detailed logging.
+- **`-f` (or `--fast`)**: Enables fast mode for image translation. Translations are up to 3x faster plotting, at a slight cost to quality and alignment precision.

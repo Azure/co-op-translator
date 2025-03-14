@@ -50,9 +50,11 @@ class TextTranslator(ABC):
             ],
             max_tokens=2000,
         )
-        return extract_yaml_lines(
-            remove_code_backticks(response.choices[0].message.content)
-        )
+        translated_text = remove_code_backticks(response.choices[0].message.content)
+        logger.debug(f"Raw translation response: {translated_text}")
+        result = extract_yaml_lines(translated_text)
+        logger.debug(f"Extracted translation lines: {result}")
+        return result
 
     def translate_text(self, text, target_language):
         """

@@ -84,6 +84,8 @@ traitlets = "^5.14.3"
 typing_extensions = "^4.12.2"
 urllib3 = "^2.2.1"
 wcwidth = "^0.2.13"
+arabic-reshaper = "^3.0.0"
+python-bidi = "^0.6.6"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"

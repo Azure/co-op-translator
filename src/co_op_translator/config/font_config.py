@@ -3,7 +3,6 @@ import yaml
 
 
 class FontConfig:
-
     def __init__(self):
         """
         Initialize the FontConfig class by loading the font mappings from a YAML file.

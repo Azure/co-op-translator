@@ -189,7 +189,6 @@ def process_markdown_with_many_links(content: str, max_links) -> list:
     current_links = 0
 
     for line in lines:
-
         line_links = count_links_in_markdown(line)
 
         if current_links + line_links > max_links:

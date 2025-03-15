@@ -112,9 +112,14 @@ The final translated Markdown and image files are saved in the designated transl
 
 ## 📚 Case Studies: Applying Co-op Translator in real projects
 
-These case studies show how Co-op Translator was applied to translate a real-world project. It highlights the translation process, the challenges encountered, and the results achieved, providing a useful reference for applying the tool to similar projects.
+ ## 📚 Real-World Applications of Co-op Translator  
 
-1. [Phi-3 Cookbook translation: A case study](./getting_started/Phi-3Cookbook-translation-case.md)
+Below are some officially managed Microsoft projects that utilize the Co-op Translator:  
+| Project Name                           | Description                                        | Repository Link  |
+|----------------------------------------|--------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| Generative AI Agent for Beginners     | Learn to build AI agents with real-world examples | [GitHub](https://github.com/microsoft/ai-agents-for-beginners)  |
+| .NET for Beginners - Generative AI     | Explore Generative AI concepts in .NET           | [GitHub](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)  |
+
 
 ## 🎥 Video presentations
 

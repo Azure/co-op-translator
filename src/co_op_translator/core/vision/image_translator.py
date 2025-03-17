@@ -13,6 +13,8 @@ from PIL import Image, ImageFont, ImageDraw
 import numpy as np
 from pathlib import Path
 
+import arabic_reshaper
+from bidi.algorithm import get_display
 
 
 from co_op_translator.config.font_config import FontConfig
@@ -20,7 +22,6 @@ from co_op_translator.config.constants import RGB_IMAGE_EXTENSIONS
 from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.config.vision_config.provider import VisionProvider
 from co_op_translator.utils.vision.image_utils import (
-    get_average_color,
     get_dominant_color,
     get_text_color,
     create_filled_polygon_mask,
@@ -135,31 +136,31 @@ class ImageTranslator(ABC):
         logger.info("=" * 50)
         logger.info(f"Starting annotation ({style} mode) for image: {image_path} ")
         rtl = self.font_config.is_rtl(target_language_code)
-        
+
         # Process text for specific languages that need special handling
         processed_text_list = []
         try:
             # Import these libraries only when needed
-            if target_language_code in ['ar', 'fa', 'ur', 'he']:
-                import arabic_reshaper
-                from bidi.algorithm import get_display
-                
+            if target_language_code in ["ar", "fa", "ur", "he"]:
                 for text in translated_text_list:
                     # Reshape Arabic text
                     reshaped_text = arabic_reshaper.reshape(text)
                     # Handle bidirectional text
                     bidi_text = get_display(reshaped_text)
                     processed_text_list.append(bidi_text)
-                
-                logger.info(f"Applied Arabic reshaping and bidirectional processing for {target_language_code}")
+
+                logger.info(
+                    f"Applied Arabic reshaping and bidirectional processing for {target_language_code}"
+                )
             else:
                 processed_text_list = translated_text_list
         except ImportError:
-            logger.warning("Arabic reshaper or python-bidi not installed. Using original text.")
+            logger.warning(
+                "Arabic reshaper or python-bidi not installed. Using original text."
+            )
             processed_text_list = translated_text_list
 
         logger.debug(f"Translated text: {processed_text_list}")
-
 
         # Group bounding boxes into paragraphs.
         grouped_boxes = group_bounding_boxes(line_bounding_boxes)
@@ -183,7 +184,7 @@ class ImageTranslator(ABC):
         dest.mkdir(parents=True, exist_ok=True)
         output_path = dest / new_filename
 
-        #------------------------------------- Fast Mode -------------------------------------#
+        # ------------------------------------- Fast Mode -------------------------------------#
         if fast_mode:
             # Fast method variant.
             image = Image.open(image_path).convert("RGBA")
@@ -326,7 +327,7 @@ class ImageTranslator(ABC):
                 f"Total time taken to plot annotated image (Fast Mode): {elapsed_time:.4f} seconds for {image_path}"
             )
 
-        #------------------------------------- Neat Mode -------------------------------------#
+        # ------------------------------------- Neat Mode -------------------------------------#
         else:
             # Regular (neat) method.
             mode = get_image_mode(image_path)

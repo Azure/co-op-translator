@@ -13,6 +13,8 @@ from PIL import Image, ImageFont, ImageDraw
 import numpy as np
 from pathlib import Path
 
+
+
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.constants import RGB_IMAGE_EXTENSIONS
 from co_op_translator.config.vision_config.config import VisionConfig
@@ -133,8 +135,31 @@ class ImageTranslator(ABC):
         logger.info("=" * 50)
         logger.info(f"Starting annotation ({style} mode) for image: {image_path} ")
         rtl = self.font_config.is_rtl(target_language_code)
+        
+        # Process text for specific languages that need special handling
+        processed_text_list = []
+        try:
+            # Import these libraries only when needed
+            if target_language_code in ['ar', 'fa', 'ur', 'he']:
+                import arabic_reshaper
+                from bidi.algorithm import get_display
+                
+                for text in translated_text_list:
+                    # Reshape Arabic text
+                    reshaped_text = arabic_reshaper.reshape(text)
+                    # Handle bidirectional text
+                    bidi_text = get_display(reshaped_text)
+                    processed_text_list.append(bidi_text)
+                
+                logger.info(f"Applied Arabic reshaping and bidirectional processing for {target_language_code}")
+            else:
+                processed_text_list = translated_text_list
+        except ImportError:
+            logger.warning("Arabic reshaper or python-bidi not installed. Using original text.")
+            processed_text_list = translated_text_list
 
-        logger.debug(f"Translated text: {translated_text_list}")
+        logger.debug(f"Translated text: {processed_text_list}")
+
 
         # Group bounding boxes into paragraphs.
         grouped_boxes = group_bounding_boxes(line_bounding_boxes)
@@ -144,7 +169,7 @@ class ImageTranslator(ABC):
         for group in grouped_boxes:
             group_size = len(group)
             grouped_translations.append(
-                translated_text_list[text_index : text_index + group_size]
+                processed_text_list[text_index : text_index + group_size]
             )
             text_index += group_size
 
@@ -158,6 +183,7 @@ class ImageTranslator(ABC):
         dest.mkdir(parents=True, exist_ok=True)
         output_path = dest / new_filename
 
+        #------------------------------------- Fast Mode -------------------------------------#
         if fast_mode:
             # Fast method variant.
             image = Image.open(image_path).convert("RGBA")
@@ -300,6 +326,7 @@ class ImageTranslator(ABC):
                 f"Total time taken to plot annotated image (Fast Mode): {elapsed_time:.4f} seconds for {image_path}"
             )
 
+        #------------------------------------- Neat Mode -------------------------------------#
         else:
             # Regular (neat) method.
             mode = get_image_mode(image_path)

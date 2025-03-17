@@ -70,13 +70,16 @@ class TranslationManager:
             root_dir, translations_dir, language_codes, excluded_dirs
         )
 
-    async def translate_image(self, image_path: Path, language_code: str) -> str:
+    async def translate_image(
+        self, image_path: Path, language_code: str, fast_mode: bool = False
+    ) -> str:
         """
         Translate an image and handle file permissions or path errors.
 
         Args:
             image_path (Path): Path to the image file
             language_code (str): Target language code
+            fast_mode (bool): Whether to use faster translation method
 
         Returns:
             str: The translated image path if successful, otherwise the original path
@@ -103,7 +106,7 @@ class TranslationManager:
 
         try:
             translated_image_path = self.image_translator.translate_image(
-                image_path, language_code, self.image_dir
+                image_path, language_code, self.image_dir, fast_mode=fast_mode
             )
             logger.info(
                 f"Translated image {image_path} to {language_code} and saved to {translated_image_path}"
@@ -235,7 +238,7 @@ class TranslationManager:
         if tasks:  # Check if there are tasks to process
             # Step 3: Process markdown translations sequentially using the sequential API request queue
             results = await self.process_api_requests_sequential(
-                tasks, "Translating markdown files"
+                tasks, "🛠️  Translating markdown files"
             )
             modified_count = sum(
                 1 for r in results if r
@@ -250,7 +253,9 @@ class TranslationManager:
 
         return modified_count, errors
 
-    async def translate_all_image_files(self, update=False) -> tuple[int, list[str]]:
+    async def translate_all_image_files(
+        self, update: bool = False, fast_mode: bool = False
+    ) -> tuple[int, list[str]]:
         """
         Translate all image files, with optional update mode to refresh translations.
 
@@ -301,12 +306,16 @@ class TranslationManager:
                     logger.info(
                         f"Translating image: {image_file_path} for language: {language_code}"
                     )
-                    tasks.append(self.translate_image(image_file_path, language_code))
+                    tasks.append(
+                        self.translate_image(
+                            image_file_path, language_code, fast_mode=fast_mode
+                        )
+                    )
 
         if tasks:
             # Step 3: Process image translations using API request queue
             results = await self.process_api_requests_parallel(
-                tasks, "Translating images"
+                tasks, f"{'🏎️  (fast mode)' if fast_mode else '🖼️ '} Translating images"
             )
             modified_count = sum(
                 1 for r in results if r != str(image_file_path)
@@ -436,7 +445,11 @@ class TranslationManager:
         return modified_count, errors
 
     async def translate_project_async(
-        self, images: bool = False, markdown: bool = False, update: bool = False
+        self,
+        images: bool = False,
+        markdown: bool = False,
+        update: bool = False,
+        fast_mode: bool = False,
     ) -> tuple[int, list[str]]:
         """
         Asynchronously translate the project.
@@ -451,6 +464,7 @@ class TranslationManager:
             images (bool): Whether to translate images. Defaults to False.
             markdown (bool): Whether to translate markdown files. Defaults to False.
             update (bool): Whether to update existing translations. Defaults to False.
+            fast_mode (bool): Whether to use faster translation method. Defaults to False.
 
         Returns:
             tuple[int, list[str]]: A tuple containing:
@@ -508,7 +522,7 @@ class TranslationManager:
 
             if images and not self.markdown_only:
                 img_modified, img_errors = await self.translate_all_image_files(
-                    update=update
+                    update=update, fast_mode=fast_mode
                 )
                 total_modified += img_modified
                 all_errors.extend(img_errors)

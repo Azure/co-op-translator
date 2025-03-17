@@ -93,7 +93,8 @@ nl:
   font: "NotoSans-Medium.ttf"
 he:
   name: "Hebrew"
-  font: "NotoSansHebrew-Medium.ttf" 
+  font: "NotoSansHebrew-Medium.ttf"
+  rtl: true
 vi:
   name: "Vietnamese"
   font: "NotoSans-Medium.ttf"

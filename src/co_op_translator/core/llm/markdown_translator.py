@@ -111,9 +111,10 @@ class MarkdownTranslator(ABC):
         metadata_comment = self.format_metadata_comment(metadata)
 
         # Step 1: Replace code blocks and inline code with placeholders
-        document_with_placeholders, placeholder_map = (
-            replace_code_blocks_and_inline_code(document)
-        )
+        (
+            document_with_placeholders,
+            placeholder_map,
+        ) = replace_code_blocks_and_inline_code(document)
 
         # Step 2: Split the document into chunks and generate prompts
         link_limit = 30

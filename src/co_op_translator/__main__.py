@@ -40,7 +40,13 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help="Check translated files for errors and retry translation if needed.",
 )
-def main(language_codes, root_dir, update, images, markdown, debug, check):
+@click.option(
+    "--fast",
+    "-f",
+    is_flag=True,
+    help="Use fast mode for image translation (up to 3x faster at a slight cost to quality and alignment).",
+)
+def main(language_codes, root_dir, update, images, markdown, debug, check, fast):
     """
     CLI for translating project files.
 
@@ -70,6 +76,9 @@ def main(language_codes, root_dir, update, images, markdown, debug, check):
 
     8. Check translated files for errors and retry translations (only images):
        translate -l "ko" -chk -img
+
+    9. Use fast mode for image translation:
+       translate -l "ko" -img -f
 
     Debug mode example:
     - translate -l "ko" -d: Enable debug logging.
@@ -197,7 +206,7 @@ def main(language_codes, root_dir, update, images, markdown, debug, check):
         else:
             # Call translate_project with determined settings
             translator.translate_project(
-                images=images, markdown=markdown, update=update
+                images=images, markdown=markdown, update=update, fast_mode=fast
             )
 
         logger.info(f"Project translation completed for languages: {language_codes}")

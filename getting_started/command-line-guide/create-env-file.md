@@ -49,7 +49,7 @@ You will need the following Azure credentials on hand to configure the environme
 
 You can get all the details from the project overview page within [AI Foundry](https://ai.azure.com/build/overview)
 
-![Foundry-overview](../imgs/foundry-overview.png)
+![Foundry-overview](../../imgs/foundry-overview.png)
 
 
 ### For Azure AI Service:
@@ -70,11 +70,11 @@ You can get all the details from the project overview page within [AI Foundry](h
 
 Select Model and Endpoints from the left hand menu 
 
-![FoundryModels](../imgs/gpt-models.png)
+![FoundryModels](../../imgs/gpt-models.png)
 
 You now need to select the model which you wish to utilise to get the model details 
 
-![ModelDetails](../imgs/model-deployment-name.png)
+![ModelDetails](../../imgs/model-deployment-name.png)
 
 For the .env file we need the following details 
 
@@ -84,7 +84,7 @@ For the .env file we need the following details
 
 To get these details select the model deployment 
 
-![FoundryModelinfo](../imgs/foundry-model-info.png)
+![FoundryModelinfo](../../imgs/foundry-model-info.png)
 
 ### Add Azure environment variables
 

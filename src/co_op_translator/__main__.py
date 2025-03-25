@@ -46,7 +46,13 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help="Use fast mode for image translation (up to 3x faster at a slight cost to quality and alignment).",
 )
-def main(language_codes, root_dir, update, images, markdown, debug, check, fast):
+@click.option(
+    "--yes",
+    "-y",
+    is_flag=True,
+    help="Automatically confirm all prompts (useful for CI/CD pipelines).",
+)
+def main(language_codes, root_dir, update, images, markdown, debug, check, fast, yes):
     """
     CLI for translating project files.
 
@@ -143,16 +149,19 @@ def main(language_codes, root_dir, update, images, markdown, debug, check, fast)
                 "For better efficiency, it's recommended that contributors handle individual languages and upload their translations separately."
             )
             # Option to proceed or not
-            confirmation_all = click.prompt(
-                "Do you still want to proceed with translating all languages? Type 'yes' to continue",
-                type=str,
-            )
+            if not yes:
+                confirmation_all = click.prompt(
+                    "Do you still want to proceed with translating all languages? Type 'yes' to continue",
+                    type=str,
+                )
 
-            if confirmation_all.lower() != "yes":
-                click.echo("Translation for 'all' languages cancelled.")
-                return
+                if confirmation_all.lower() != "yes":
+                    click.echo("Translation for 'all' languages cancelled.")
+                    return
+                else:
+                    click.echo("Proceeding with translation for all languages...")
             else:
-                click.echo("Proceeding with translation for all languages...")
+                click.echo("Auto-confirming translation for all languages...")
 
             try:
                 with importlib.resources.path(
@@ -184,15 +193,18 @@ def main(language_codes, root_dir, update, images, markdown, debug, check, fast)
             click.echo(
                 f"Warning: The update command will delete all existing translations for '{language_codes}' and re-translate everything."
             )
-            confirmation_update = click.prompt(
-                "Do you want to continue? Type 'yes' to proceed", type=str
-            )
+            if not yes:
+                confirmation_update = click.prompt(
+                    "Do you want to continue? Type 'yes' to proceed", type=str
+                )
 
-            if confirmation_update.lower() != "yes":
-                click.echo("Update cancelled by user.")
-                return
+                if confirmation_update.lower() != "yes":
+                    click.echo("Update cancelled by user.")
+                    return
+                else:
+                    click.echo("Proceeding with update...")
             else:
-                click.echo("Proceeding with update...")
+                click.echo("Auto-confirming update operation...")
 
         # Initialize ProjectTranslator with determined settings
         translator = ProjectTranslator(

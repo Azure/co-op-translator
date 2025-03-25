@@ -9,9 +9,9 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | es            | Spanish              | NotoSans-Medium.ttf               | No          | No           |
 | de            | German               | NotoSans-Medium.ttf               | No          | No           |
 | ru            | Russian              | NotoSans-Medium.ttf               | No          | No           |
-| ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | Yes          |
-| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | Yes         | Yes          |
-| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | Yes         | Yes          |
+| ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | No           |
+| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | Yes         | No           |
+| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | Yes         | No           |
 | zh            | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
 | mo            | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc    | No          | No           |
 | hk            | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc| No          | No           |
@@ -23,7 +23,8 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | mr            | Marathi              | NotoSansDevanagari-Medium.ttf     | No          | No           |
 | ne            | Nepali               | NotoSansDevanagari-Medium.ttf     | No          | No           |
 | pa            | Punjabi (Gurmukhi)   | NotoSansGurmukhi-Medium.ttf       | No          | No           |
-| pt            | Portuguese           | NotoSans-Medium.ttf               | No          | No           |
+| pt            | Portuguese (Portugal)| NotoSans-Medium.ttf               | No          | No           |
+| br            | Portuguese (Brazil)  | NotoSans-Medium.ttf               | No          | No           |
 | it            | Italian              | NotoSans-Medium.ttf               | No          | No           |
 | pl            | Polish               | NotoSans-Medium.ttf               | No          | No           |
 | tr            | Turkish              | NotoSans-Medium.ttf               | No          | No           |

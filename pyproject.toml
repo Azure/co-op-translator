@@ -1,6 +1,8 @@
 [tool.poetry]
 name = "co_op_translator"
+
 version = "0.8.0.dev0"
+
 description = "Easily automate multilingual translations for your projects with co-op-translator, powered by advanced LLM technology."
 authors = [
     "Minseok Song <skytin1004@gmail.com>",

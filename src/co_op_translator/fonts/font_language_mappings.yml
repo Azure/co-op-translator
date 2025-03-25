@@ -59,8 +59,13 @@ pa:
   name: "Punjabi (Gurmukhi)"
   font: "NotoSansGurmukhi-Medium.ttf"  
 pt:
-  name: "Portuguese"
+  name: "Portuguese (Portugal)"
   font: "NotoSans-Medium.ttf"
+
+br:
+  name: "Portuguese (Brazil)"
+  font: "NotoSans-Medium.ttf"
+
 it:
   name: "Italian"
   font: "NotoSans-Medium.ttf"

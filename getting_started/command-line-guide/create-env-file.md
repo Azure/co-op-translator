@@ -20,7 +20,7 @@ In the root directory of your project, create a file named *.env*. This file wil
 
 1. Create an *.env* file in the root directory of your project.
 
-    ![Create *.env* file.](../imgs/create-env.png)
+    ![Create *.env* file.](../../imgs/create-env.png)
 
 1. Open the *.env* file and paste the following template:
 

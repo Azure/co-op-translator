@@ -54,7 +54,7 @@ Here is an example of how Co-op Translator structures the translations and trans
 
 **Ready to unlock multilingual accessibility? Get started with Co-op Translator today!**
 
-## 📚 Real-world applications powered by Co-op Translator in Microsoft projects
+## 📚 Microsoft projects using Co-op Translator
 
 Official Microsoft learning repositories powered by Co-op Translator:
 

@@ -27,7 +27,7 @@ After creating the virtual environment, you'll need to activate it. The steps di
 - Windows:
 
     ```bash
-    .venv\Scripts\activate.bat
+    .venv\Scripts\activate
     ```
 
 - Mac/Linux:

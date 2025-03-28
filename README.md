@@ -28,6 +28,16 @@ _Easily automate the translation of your documentation into multiple languages_
 >
 > **NEW**: Now with GitHub Actions support! Automatically translate your documentation when changes are made to your repository. [Learn more](#-getting-started-with-co-op-translator).
 
+## 📚 Real-world applications powered by Co-op Translator in Microsoft projects
+
+Official Microsoft learning repositories powered by Co-op Translator:
+
+[![ML-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ML-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ML-For-Beginners)
+[![AI-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=AI-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/AI-For-Beginners)
+[![ai-agents-for-beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ai-agents-for-beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ai-agents-for-beginners)
+[![PhiCookBook](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=PhiCookBook&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/PhiCookBook)
+[![Generative-AI-for-beginners-dotnet](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=Generative-AI-for-beginners-dotnet&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
+
 ## 🤖 Supported models and services
 
 | Type                  | Name                           |
@@ -109,15 +119,6 @@ The final translated Markdown and image files are saved in the designated transl
 - [Multi-language support setup](./getting_started/multi-language-support.md): Before starting the translation process, you can add a table in the README linking to the translated versions of your document.
 - [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions to add new languages.
 - [Markdown-Only Mode](./getting_started/markdown-only-mode.md): Learn how to use Co-op Translator in Markdown-only mode.
-
- ## 📚 Real-world applications of Co-op Translator  
-
-Below are some officially managed Microsoft projects that utilize the Co-op Translator:
-| Project Name                           | Repository Link  |
-|----------------------------------------|----------------------------------------------------------------------------|
-| Generative AI Agent for Beginners      | [GitHub](https://github.com/microsoft/ai-agents-for-beginners)             |
-| Generative AI for Beginners .NET       | [GitHub](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)  |
-
 
 ## 🎥 Video presentations
 

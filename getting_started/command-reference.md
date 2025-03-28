@@ -1,4 +1,5 @@
 # Command reference
+The **Co-op Translator** CLI offers several options to customize the translation process:
 
 Command                                       | Description
 ----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -10,30 +11,8 @@ translate -l "language_codes" -chk            | Checks translated files for erro
 translate -l "language_codes" -d              | Enables debug mode for detailed logging.
 translate -l "language_codes" -r "root_dir"   | Specifies the root directory of the project
 translate -l "language_codes" -f              | Uses fast mode for image translation (up to 3x faster plotting at a slight cost to quality and alignment).
-
-## CLI options explanation
-
-The **Co-op Translator** CLI offers several options to customize the translation process:
-
-  -l, --language-codes TEXT  Space-separated language codes for translation
-                             (e.g., "es fr de" or "all").  [required]
-  -r, --root-dir TEXT        Root directory of the project (default is current
-                             directory).
-  -u, --update               Update translations by deleting and recreating
-                             them (Warning: Existing translations will be
-                             lost).
-  -img, --images             Only translate image files.
-  -md, --markdown            Only translate markdown files.
-  -d, --debug                Enable debug mode.
-  -chk, --check              Check translated files for errors and retry
-                             translation if needed.
-  -f, --fast                 Use fast mode for image translation (up to 3x
-                             faster at a slight cost to quality and
-                             alignment).
-  -y, --yes                  Automatically confirm all prompts (useful for
-                             CI/CD pipelines).
-  --help                     Show this message and exit.
-
+translate -l "language_codes" -y              | Automatically confirm all prompts (useful for CI/CD pipelines)
+translate -l "language_codes" --help          | help details within the CLI showing available commands
 
 ### Usage examples:
 

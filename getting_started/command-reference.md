@@ -16,31 +16,23 @@ translate -l "language_codes" --help          | help details within the CLI show
 
 ### Usage examples:
 
-  1. Default behavior (add new translations without deleting existing ones):
-  translate -l "ko"    translate -l "es fr de" -r "./my_project"
+  1. Default behavior (add new translations without deleting existing ones):   translate -l "ko"    translate -l "es fr de" -r "./my_project"
 
-  2. Add only new Korean image translations (no existing translations are
-  deleted):    translate -l "ko" -img
+  2. Add only new Korean image translations (no existing translations are deleted):    translate -l "ko" -img
 
-  3. Update all Korean translations (Warning: This deletes all existing Korean
-  translations before re-translating):    translate -l "ko" -u
+  3. Update all Korean translations (Warning: This deletes all existing Korean translations before re-translating):    translate -l "ko" -u
 
-  4. Update only Korean images (Warning: This deletes all existing Korean
-  images before re-translating):    translate -l "ko" -img -u
+  4. Update only Korean images (Warning: This deletes all existing Korean images before re-translating):    translate -l "ko" -img -u
 
-  5. Add new markdown translations for Korean without affecting other
-  translations:    translate -l "ko" -md
+  5. Add new markdown translations for Korean without affecting other translations:    translate -l "ko" -md
 
-  6. Check translated files for errors and retry translations if necessary:
-  translate -l "ko" -chk
+  6. Check translated files for errors and retry translations if necessary: translate -l "ko" -chk
 
-  7. Check translated files for errors and retry translations (only markdown):
-  translate -l "ko" -chk -md
+  7. Check translated files for errors and retry translations (only markdown): translate -l "ko" -chk -md
 
-  8. Check translated files for errors and retry translations (only images):
-  translate -l "ko" -chk -img
+  8. Check translated files for errors and retry translations (only images): translate -l "ko" -chk -img
 
   9. Use fast mode for image translation:    translate -l "ko" -img -f
 
-  Debug mode example: - translate -l "ko" -d: Enable debug logging.
+  10. Debug mode example: - translate -l "ko" -d: Enable debug logging.
 

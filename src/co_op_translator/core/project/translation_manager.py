@@ -551,22 +551,26 @@ class TranslationManager:
             translation_dir = self.translations_dir / lang_code
             if not translation_dir.exists():
                 continue
-            all_translation_files.extend(list(translation_dir.rglob("*.md")))
+            for md_file in translation_dir.rglob("*.md"):
+                all_translation_files.append((lang_code, md_file))
 
         if not all_translation_files:
             return []
 
-        for trans_file in all_translation_files:
-            lang_code = trans_file.parent.name
-            relative_path = trans_file.relative_to(self.translations_dir / lang_code)
-            original_file = self.root_dir / relative_path
+        for lang_code, trans_file in all_translation_files:
+            try:
+                relative_path = trans_file.relative_to(self.translations_dir / lang_code)
+                original_file = self.root_dir / relative_path
 
-            if not original_file.exists():
+                if not original_file.exists():
+                    continue
+
+                # Compare metadata
+                if self._is_translation_outdated(original_file, trans_file):
+                    outdated_files.append((original_file, trans_file))
+            except ValueError:
+                logger.warning(f"Error calculating relative path for {trans_file}")
                 continue
-
-            # Compare metadata
-            if self._is_translation_outdated(original_file, trans_file):
-                outdated_files.append((original_file, trans_file))
 
         return outdated_files
 

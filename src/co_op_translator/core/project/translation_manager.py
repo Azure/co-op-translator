@@ -559,7 +559,9 @@ class TranslationManager:
 
         for lang_code, trans_file in all_translation_files:
             try:
-                relative_path = trans_file.relative_to(self.translations_dir / lang_code)
+                relative_path = trans_file.relative_to(
+                    self.translations_dir / lang_code
+                )
                 original_file = self.root_dir / relative_path
 
                 if not original_file.exists():

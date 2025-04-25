@@ -5,7 +5,7 @@ This module contains utility functions for handling file metadata and hashing op
 import hashlib
 import json
 from datetime import datetime
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 
 def calculate_file_hash(file_path: Path) -> str:
@@ -48,7 +48,7 @@ def create_metadata(
     else:
         rel_path = original_file
 
-    normalized_path = str(PurePosixPath(rel_path))
+    normalized_path = str(rel_path).replace('\\', '/')
 
     return {
         "original_hash": calculate_file_hash(original_file),

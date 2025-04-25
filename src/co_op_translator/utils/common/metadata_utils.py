@@ -5,7 +5,7 @@ This module contains utility functions for handling file metadata and hashing op
 import hashlib
 import json
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 def calculate_file_hash(file_path: Path) -> str:
@@ -41,12 +41,19 @@ def create_metadata(
     """
     utc_time = datetime.utcnow()
     formatted_time = utc_time.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+
+    # Calculate relative path if root_dir is provided
+    if root_dir:
+        rel_path = original_file.relative_to(root_dir)
+    else:
+        rel_path = original_file
+
+    normalized_path = str(PurePosixPath(rel_path))
+
     return {
         "original_hash": calculate_file_hash(original_file),
         "translation_date": formatted_time,
-        "source_file": (
-            str(original_file.relative_to(root_dir)) if root_dir else str(original_file)
-        ),
+        "source_file": normalized_path,
         "language_code": language_code,
     }
 

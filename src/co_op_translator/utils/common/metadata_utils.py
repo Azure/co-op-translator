@@ -41,12 +41,19 @@ def create_metadata(
     """
     utc_time = datetime.utcnow()
     formatted_time = utc_time.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+
+    # Calculate relative path if root_dir is provided
+    if root_dir:
+        rel_path = original_file.relative_to(root_dir)
+    else:
+        rel_path = original_file
+
+    normalized_path = str(rel_path).replace('\\', '/')
+
     return {
         "original_hash": calculate_file_hash(original_file),
         "translation_date": formatted_time,
-        "source_file": (
-            str(original_file.relative_to(root_dir)) if root_dir else str(original_file)
-        ),
+        "source_file": normalized_path,
         "language_code": language_code,
     }
 

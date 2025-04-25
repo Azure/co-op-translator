@@ -155,3 +155,105 @@ class TestDirectoryManager:
         assert valid_trans_img.exists()
         # Orphaned translation should be removed
         assert not orphaned_trans_img.exists()
+
+    def test_cross_platform_path_handling(self, setup_test_dirs):
+        """Test handling of cross-platform path separators in metadata."""
+        import json
+        from pathlib import PurePosixPath
+
+        root_dir = setup_test_dirs
+        translations_dir = root_dir / "translations"
+        language_codes = ["ko"]
+        excluded_dirs = []
+
+        # Create translations directory and files
+        translations_dir.mkdir(exist_ok=True)
+        ko_dir = translations_dir / "ko"
+        ko_dir.mkdir(exist_ok=True)
+
+        # Create a nested directory structure to test path handling
+        nested_dir = root_dir / "nested" / "path" / "to"
+        nested_dir.mkdir(parents=True)
+        original_file = nested_dir / "test.md"
+        original_file.write_text("# Original Content")
+
+        # 1. Test with Windows-style backslash paths
+        windows_style_path = str(original_file.relative_to(root_dir)).replace("/", "\\")
+        windows_trans_file = ko_dir / "windows_style.md"
+
+        # Create a translation file with Windows-style path in metadata
+        windows_metadata = {
+            "source_file": windows_style_path,
+            "original_hash": "test_hash",
+            "translation_date": "2025-01-26T14:30:00+00:00",
+            "language_code": "ko",
+        }
+
+        windows_content = f"""<!--
+{json.dumps(windows_metadata, indent=2)}
+-->
+# Windows Style Path Test"""
+
+        windows_trans_file.write_text(windows_content)
+
+        # 2. Test with POSIX-style forward slash paths
+        posix_style_path = str(PurePosixPath(original_file.relative_to(root_dir)))
+        posix_trans_file = ko_dir / "posix_style.md"
+
+        # Create a translation file with POSIX-style path in metadata
+        posix_metadata = {
+            "source_file": posix_style_path,
+            "original_hash": "test_hash",
+            "translation_date": "2025-01-26T14:30:00+00:00",
+            "language_code": "ko",
+        }
+
+        posix_content = f"""<!--
+{json.dumps(posix_metadata, indent=2)}
+-->
+# POSIX Style Path Test"""
+
+        posix_trans_file.write_text(posix_content)
+
+        # 3. Test with a nonexistent file path
+        nonexistent_trans_file = ko_dir / "nonexistent.md"
+        nonexistent_metadata = {
+            "source_file": "nonexistent/file.md",
+            "original_hash": "test_hash",
+            "translation_date": "2025-01-26T14:30:00+00:00",
+            "language_code": "ko",
+        }
+
+        nonexistent_content = f"""<!--
+{json.dumps(nonexistent_metadata, indent=2)}
+-->
+# Nonexistent File Test"""
+
+        nonexistent_trans_file.write_text(nonexistent_content)
+
+        # Run the directory manager's cleanup function
+        manager = DirectoryManager(
+            root_dir=root_dir,
+            translations_dir=translations_dir,
+            language_codes=language_codes,
+            excluded_dirs=excluded_dirs,
+        )
+
+        removed = manager.cleanup_orphaned_translations(markdown=True, images=False)
+
+        # Verify results:
+        # 1. Both Windows and POSIX style paths should be resolved correctly
+        assert (
+            windows_trans_file.exists()
+        ), "Windows-style path translation was incorrectly removed"
+        assert (
+            posix_trans_file.exists()
+        ), "POSIX-style path translation was incorrectly removed"
+
+        # 2. Nonexistent file should be removed
+        assert (
+            not nonexistent_trans_file.exists()
+        ), "Nonexistent file translation was not removed"
+
+        # 3. Only the nonexistent file should be removed
+        assert removed == 1, f"Expected 1 file to be removed, but got {removed}"

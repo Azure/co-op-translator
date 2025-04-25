@@ -2,6 +2,7 @@ from pathlib import Path
 import logging
 import json
 from co_op_translator.utils.common.file_utils import get_unique_id
+from pathlib import PurePosixPath
 
 logger = logging.getLogger(__name__)
 
@@ -187,7 +188,9 @@ class DirectoryManager:
                             logger.warning(f"No source_file in metadata: {trans_file}")
                             continue
 
-                        original_file = self.root_dir / source_file
+                        normalized_path = str(PurePosixPath(source_file))
+                        original_file = self.root_dir / normalized_path
+
                         logger.info(f"Checking original file: {original_file}")
                         if not original_file.exists():
                             logger.info(

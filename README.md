@@ -1,8 +1,8 @@
 ![Logo](/imgs/logo.png)
 
-# Co-op Translator: Break Language Barriers Effortlessly
+# Co-op Translator: Automate the Translation of Educational Documentation Effortlessly
 
-_Easily automate the translation of your documentation into multiple languages_
+_Easily automate the translation of your documentation into multiple languages to reach a global audience._
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
@@ -26,9 +26,9 @@ _Easily automate the translation of your documentation into multiple languages_
 
 > [!TIP]
 >
-> **NEW**: Now with GitHub Actions support! Automatically translate your documentation when changes are made to your repository. [Learn more](#-getting-started-with-co-op-translator).
+> **Powerful Automation**: Now with GitHub Actions support! Automatically translate your documentation when changes are made to your repository, keeping everything up-to-date effortlessly. [Learn more](#-getting-started-with-co-op-translator).
 
-## 🤖 Supported models and services
+## Supported Models and Services
 
 | Type                  | Name                           |
 |-----------------------|--------------------------------|
@@ -38,23 +38,21 @@ _Easily automate the translation of your documentation into multiple languages_
 > [!NOTE]
 > If a computer vision service is not available, the co-op translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
 
-## 🌐 Overview
+## Overview: Streamline Your Educational Content Translation
 
-**Co-op Translator** breaks language barriers by automating multilingual translations for your projects using advanced Large Language Model (LLM) technology and Azure AI Services. Whether through command line or GitHub Actions, it transforms your content to reach global audiences with minimal effort.
+Language barriers significantly hinder access to valuable educational resources and technical knowledge for learners and developers worldwide. This limits participation and slows down the pace of global innovation and learning.
 
-With Co-op Translator, you can:
-- **Command Line**: Quickly translate your documentation on-demand
-- **GitHub Actions**: Automatically translate when your repository changes
-- **Preserve Formatting**: Maintain Markdown syntax and structure across languages
-- **Translate Images**: Extract and translate text embedded in images
+**Co-op Translator** was born from the need to address the inefficient manual translation process for Microsoft's own large-scale educational series (like the "For Beginners" guides). It has evolved into an easy-to-use, powerful tool designed to break down these barriers for everyone. By providing high-quality automated translations via CLI and GitHub Actions, Co-op Translator empowers educators, students, researchers, and developers globally to share and access knowledge without language constraints.
 
-Here is an example of how Co-op Translator structures the translations and translates both Markdown files and text within images in your project:
+See how Co-op Translator organizes translated educational content:
 
 ![Example](/imgs/translation-ex.png)
 
-**Ready to unlock multilingual accessibility? Get started with Co-op Translator today!**
+Markdown files and image text are automatically translated and neatly organized into language-specific folders.
 
-## 📚 Microsoft projects using Co-op Translator
+**Unlock global access to your educational content with Co-op Translator today!**
+
+## Powering Microsoft's Learning Repositories
 
 Official Microsoft learning repositories powered by Co-op Translator:
 
@@ -64,7 +62,7 @@ Official Microsoft learning repositories powered by Co-op Translator:
 [![ai-agents-for-beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ai-agents-for-beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ai-agents-for-beginners)
 [![PhiCookBook](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=PhiCookBook&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/PhiCookBook)
 
-## ✨ Key features
+## Key Features
 
 - **Automated Translations**: Translate text into multiple languages effortlessly.
 - **GitHub Actions Integration**: Automate translations as part of your CI/CD pipeline.
@@ -74,30 +72,27 @@ Official Microsoft learning repositories powered by Co-op Translator:
 - **Easy Integration**: Seamlessly integrate with your existing project setup.
 - **Simplify Localization**: Streamline the process of localizing your project for international markets.
 
-## 🌉 Bridging the language gap in tech
+## Bridging the Language Gap in Education and Tech
 
-English is often considered the universal language of technology, but many developers worldwide are not native English speakers. This can create barriers in accessing and contributing to technical projects.
+Language barriers significantly hinder access to **valuable educational resources** and technical knowledge for learners and developers worldwide. This limits participation and slows down the pace of global innovation and learning.
 
-**Co-op Translator** aims to break down these language barriers by providing an easy-to-use tool for automating translations. By making technical documentation accessible in multiple languages, we empower developers, students, and researchers globally.
+**Co-op Translator** was born from the need to address the inefficient manual translation process for Microsoft's own large-scale **educational series** (like the "For Beginners" guides). It has evolved into an easy-to-use, powerful tool designed to break down these barriers for everyone. By providing high-quality automated translations via CLI and GitHub Actions, Co-op Translator empowers educators, students, researchers, and developers globally to share and access knowledge without language constraints.
 
-## ⭐ Support us
+## Support Us and Foster Global Learning
 
-Join us in revolutionizing global communication! Give a ⭐ to [Co-op Translator](https://github.com/azure/co-op-translator) on GitHub and help us break down language barriers together. Your support makes a difference!
+Join us in revolutionizing how educational content is shared globally! Give [Co-op Translator](https://github.com/azure/co-op-translator) a ⭐ on GitHub and support our mission to break down language barriers in learning and technology. Your interest and contributions make a significant impact! Code contributions and feature suggestions are always welcome.
 
-## ⚙️ How it works
+## How it works
 
 ![Architecture](/imgs/architecture_241019.png)
 
-The process begins with Markdown and image files from your project folder, which are then processed by various AI services:
+Co-op Translator takes Markdown files and images from your project folder and processes them as follows:
 
-- **Language Models**: 
-  - **Azure OpenAI** and other supported LLMs translate text from Markdown files. See the [supported models and services](#-supported-models-and-services) for more information.
-- **Computer Vision Services** (optional): 
-  - **Azure Computer Vision** extracts text from images, which are then translated by the selected language model. If a computer vision service is not available, the process defaults to [Markdown-only mode](./getting_started/markdown-only-mode.md).
+1. **Text Extraction**: Extracts text from Markdown files and, if configured (e.g., with Azure Computer Vision), text embedded within images.
+1. **AI Translation**: Sends the extracted text to the configured LLM (Azure OpenAI, OpenAI, etc.) for translation.
+1. **Result Saving**: Saves the translated Markdown files and images (with translated text) into language-specific folders, preserving the original formatting.
 
-The final translated Markdown and image files are saved in the designated translation folder, ready to be used in multiple languages.
-
-## 🚀 Getting started with Co-op Translator
+## Getting Started
 
 | **Approach**        | **Command Line**                           | **GitHub Actions**                          |
 |---------------------|---------------------------------------|--------------------------------------|
@@ -109,18 +104,18 @@ The final translated Markdown and image files are saved in the designated transl
 > [!NOTE]
 > While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](#-supported-models-and-services) list.
 
-### Troubleshooting, Tips and Tricks
+### Troubleshooting and Tips
 
 - [Troubleshooting Guide](./getting_started/troubleshooting.md)
 
-### Additional resources
+### Additional Resources
 
-- [Command reference](./getting_started/command-reference.md): Learn about all available commands and their options in detail.
-- [Multi-language support setup](./getting_started/multi-language-support.md): Before starting the translation process, you can add a table in the README linking to the translated versions of your document.
-- [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions to add new languages.
-- [Markdown-Only Mode](./getting_started/markdown-only-mode.md): Learn how to use Co-op Translator in Markdown-only mode.
+- [Command Reference](./getting_started/command-reference.md): Detailed guide to all available commands and options.
+- [Multi-language Support Setup](./getting_started/multi-language-support.md): How to add a table linking to translated versions in your README.
+- [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions for adding new ones.
+- [Markdown-Only Mode](./getting_started/markdown-only-mode.md): How to translate text only, without image translation.
 
-## 🎥 Video presentations
+## Video Presentations
 
 Learn more about Co-op Translator through our presentations _(Click the image below to watch on YouTube.)_:
 

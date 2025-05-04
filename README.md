@@ -52,9 +52,9 @@ Markdown files and image text are automatically translated and neatly organized 
 
 **Unlock global access to your educational content with Co-op Translator today!**
 
-## Powering Microsoft's Learning Repositories
+## Supporting Global Access for Microsoft's Learning Resources
 
-Official Microsoft learning repositories powered by Co-op Translator:
+Co-op Translator helps bridge the language gap for key Microsoft educational initiatives, automating the translation process for repositories that serve a global developer community. Examples currently using Co-op Translator include:
 
 [![ML-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ML-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ML-For-Beginners)
 [![Generative-AI-for-beginners-dotnet](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=Generative-AI-for-beginners-dotnet&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)

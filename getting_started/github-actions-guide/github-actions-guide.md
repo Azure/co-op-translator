@@ -206,14 +206,14 @@ jobs:
 ```
 
 4.  **Customize the Workflow:**
-    *   **Target Languages:** In the `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted. The `-y` flag automatically confirms actions during the translation process; understand its implications or remove it if manual confirmation is desired via logs (though that's difficult in Actions).
-    *   **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-    *   **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+  - **[!IMPORTANT] Target Languages:** In the `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted. The `-y` flag automatically confirms actions during the translation process; understand its implications or remove it if manual confirmation is desired via logs (though that's difficult in Actions).
+  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
+  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
 
 ## Credential Management and Renewal
 
-*   **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-*   **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure service principals or keys used within Microsoft might have a mandatory renewal policy (e.g., every 6 months). Ensure you update the corresponding GitHub secrets (`AZURE_...` keys) **before they expire** to prevent workflow failures. Check your internal team or Azure subscription policies for specific renewal requirements. Regularly rotating external keys (like OpenAI) is also a good security practice.
+- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
+- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure service principals or keys used within Microsoft might have a mandatory renewal policy (e.g., every 6 months). Ensure you update the corresponding GitHub secrets (`AZURE_...` keys) **before they expire** to prevent workflow failures. Check your internal team or Azure subscription policies for specific renewal requirements. Regularly rotating external keys (like OpenAI) is also a good security practice.
 
 ## Running the Workflow
 

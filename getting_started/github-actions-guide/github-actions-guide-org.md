@@ -4,6 +4,14 @@
 
 Automate the translation of your repository's documentation effortlessly using the Co-op Translator GitHub Action. This guide walks you through setting up the action to automatically create pull requests with updated translations whenever your source Markdown files or images change.
 
+> [!IMPORTANT] Choosing the Right Guide:
+>
+> This guide details setup using a **GitHub App ID and a Private Key**. You typically need this "Organization Guide" method if: **`GITHUB_TOKEN` Permissions are Restricted:** Your organization or repository settings restrict the default permissions granted to the standard `GITHUB_TOKEN`. Specifically, if the `GITHUB_TOKEN` is not allowed necessary `write` permissions (like `contents: write` or `pull-requests: write`), the workflow in the [Public Setup Guide](./github-actions-guide-public.md) will fail due to insufficient permissions. Using a dedicated GitHub App with explicitly granted permissions bypasses this limitation.
+>
+> **If the above does not apply to you:**
+>
+> If the standard `GITHUB_TOKEN` has sufficient permissions in your repository (i.e., you are not blocked by organizational restrictions), please use the **[Public Setup Guide using GITHUB_TOKEN](./github-actions-guide-public.md)**. The public guide does not require obtaining or managing App IDs or Private Keys and relies solely on the standard `GITHUB_TOKEN` and repository permissions.
+
 ## Prerequisites
 
 Before configuring the GitHub Action, ensure you have the necessary AI service credentials ready.
@@ -29,7 +37,7 @@ Follow these steps to configure the Co-op Translator GitHub Action in your repos
 
 ### Step 1: Install and Configure GitHub App Authentication
 
-The workflow uses GitHub App authentication to securely interact with your repository (e.g., create pull requests) on your behalf.
+The workflow uses GitHub App authentication to securely interact with your repository (e.g., create pull requests) on your behalf. Choose one option:
 
 #### **Option A: Install the Pre-built Co-op Translator GitHub App (for Microsoft Internal Use)**
 
@@ -39,13 +47,13 @@ The workflow uses GitHub App authentication to securely interact with your repos
 
     ![Install app](./imgs/install-app.png)
 
-1. Choose to install it on **Only select repositories** and select your target repository such as **PhiCookBook**.
+1. Choose **Only select repositories** and select your target repository (e.g., `PhiCookBook`). Click **Install**. You may be asked to authenticate.
 
     ![Install authorize](./imgs/install-authorize.png)
 
-1.  **Obtain App Credentials (Internal Process Required):** To allow the workflow to authenticate as the app, you need two pieces of information provided by the Co-op Translator team:
+1. **Obtain App Credentials (Internal Process Required):** To allow the workflow to authenticate as the app, you need two pieces of information provided by the Co-op Translator team:
   - **App ID:** The unique identifier for the Co-op Translator app. The App ID is: `1164076`.
-  - **Private Key:** You need a private key generated specifically for the Co-op Translator app. You must obtain the **entire content** of the `.pem` private key file from the maintainer contact. **Treat this key like a password and keep it secure.**
+  - **Private Key:** You must obtain the **entire content** of the `.pem` private key file from the maintainer contact. **Treat this key like a password and keep it secure.**
 
 1. Proceed to Step 2.
 
@@ -57,7 +65,7 @@ The workflow uses GitHub App authentication to securely interact with your repos
 
 You need to add the GitHub App credentials and your AI service credentials as encrypted secrets in your repository settings.
 
-1. Navigate to your target GitHub repository such as **PhiCookBook**.
+1. Navigate to your target GitHub repository (e.g., `PhiCookBook`).
 
 1. Go to **Settings** > **Secrets and variables** > **Actions**.
 
@@ -65,7 +73,7 @@ You need to add the GitHub App credentials and your AI service credentials as en
 
    ![Select setting action](./imgs/select-setting-action.png)
 
-**Required Secrets:**
+**Required Secrets (for GitHub App Authentication):**
 
 | Secret Name          | Description                                      | Value Source                                     |
 | :------------------- | :----------------------------------------------- | :----------------------------------------------- |

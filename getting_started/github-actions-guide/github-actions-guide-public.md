@@ -53,7 +53,7 @@ You only need to add your **AI service credentials** as encrypted secrets in you
 | Secret Name                         | Description                               | Value Source                     |
 | :---------------------------------- | :---------------------------------------- | :------------------------------- |
 | `AZURE_SUBSCRIPTION_KEY`            | Key for Azure AI Service (Computer Vision)  | Your Azure Account               |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint for Azure AI Service (Comp. Vision) | Your Azure Account               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint for Azure AI Service (Computer Vision) | Your Azure Account               |
 | `AZURE_OPENAI_API_KEY`              | Key for Azure OpenAI service              | Your Azure Account               |
 | `AZURE_OPENAI_ENDPOINT`             | Endpoint for Azure OpenAI service         | Your Azure Account               |
 | `AZURE_OPENAI_MODEL_NAME`           | Your Azure OpenAI Model Name              | Your Azure Account               |

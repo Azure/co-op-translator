@@ -1,4 +1,6 @@
-# Using the Co-op Translator GitHub Action
+# Using the Co-op Translator GitHub Action (Organization Guide)
+
+**Target Audience:** This guide is intended for Microsoft internal users or teams who have access to the necessary credentials for the pre-built Co-op Translator GitHub App or can create their own custom GitHub App.
 
 Automate the translation of your repository's documentation effortlessly using the Co-op Translator GitHub Action. This guide walks you through setting up the action to automatically create pull requests with updated translations whenever your source Markdown files or images change.
 
@@ -29,17 +31,21 @@ Follow these steps to configure the Co-op Translator GitHub Action in your repos
 
 The workflow uses GitHub App authentication to securely interact with your repository (e.g., create pull requests) on your behalf.
 
-#### **Option A: Install the Pre-built Co-op Translator GitHub App (Recommended)**
+#### **Option A: Install the Pre-built Co-op Translator GitHub App (for Microsoft Internal Use)**
 
 1. Navigate to the [Co-op Translator GitHub App](https://github.com/apps/co-op-translator) page.
 
-1. Click **Install** and select the account or organization where your target repository resides. Choose to install it on **All repositories** or **Only select repositories**.
+1. Select **Install** and select the account or organization where your target repository resides.
 
     ![Install app](./imgs/install-app.png)
 
-3.  **Obtain App Credentials:** To allow the workflow to authenticate as the app, you need two pieces of information provided by the Co-op Translator team:
-    *   **App ID:** The unique identifier for the Co-op Translator app. The App ID is: `[ 여기에 실제 App ID를 명시적으로 적어주세요 ]`. You can also usually find it on the [App's public page](https://github.com/apps/co-op-translator).
-    *   **Private Key:** You need a private key generated specifically for the Co-op Translator app. **Important:** You cannot generate this key yourself after installation. You must obtain the **entire content** of the `.pem` private key file from the [Provide source, e.g., documentation link, maintainer contact, secure portal where the key can be downloaded]. **Treat this key like a password and keep it secure.**
+1. Choose to install it on **Only select repositories** and select your target repository such as **PhiCookBook**.
+
+    ![Install authorize](./imgs/install-authorize.png)
+
+1.  **Obtain App Credentials (Internal Process Required):** To allow the workflow to authenticate as the app, you need two pieces of information provided by the Co-op Translator team:
+  - **App ID:** The unique identifier for the Co-op Translator app. The App ID is: `1164076`.
+  - **Private Key:** You need a private key generated specifically for the Co-op Translator app. You must obtain the **entire content** of the `.pem` private key file from the maintainer contact. **Treat this key like a password and keep it secure.**
 
 1. Proceed to Step 2.
 
@@ -49,15 +55,15 @@ The workflow uses GitHub App authentication to securely interact with your repos
 
 ### Step 2: Configure Repository Secrets
 
-You need to add the GitHub App credentials and your AI service credentials as encrypted secrets in your repository settings. This prevents exposing sensitive keys directly in your workflow file.
+You need to add the GitHub App credentials and your AI service credentials as encrypted secrets in your repository settings.
 
-1. Navigate to your target GitHub repository.
+1. Navigate to your target GitHub repository such as **PhiCookBook**.
 
 1. Go to **Settings** > **Secrets and variables** > **Actions**.
 
 1. Under **Repository secrets**, click **New repository secret** for each secret listed below.
 
-   ![Select setting action](../../imgs/select-setting-action.png)
+   ![Select setting action](./imgs/select-setting-action.png)
 
 **Required Secrets:**
 
@@ -82,8 +88,7 @@ You need to add the GitHub App credentials and your AI service credentials as en
 | `OPENAI_CHAT_MODEL_ID`              | Specific OpenAI model ID                  | OpenAI Platform                    |
 | `OPENAI_BASE_URL`                   | Custom OpenAI API Base URL                | OpenAI Platform                    |
 
-![Enter environment variable name](../../imgs/add-secrets-done.png)
-
+![Enter environment variable name](./imgs/add-secrets-done.png)
 
 ### Step 3: Configure Workflow Permissions
 
@@ -95,11 +100,11 @@ The GitHub Action needs permissions to check out code and create pull requests.
 
 1. Select **Read and write permissions**.
 
-1. Ensure the checkbox for **Allow GitHub Actions to create and approve pull requests** is **checked**.
+1. Ensure the checkbox for **Allow GitHub Actions to create and approve pull requests** is checked.
 
 1. Select **Save**.
 
-![Permission setting](../../imgs/permission-setting.png)
+![Permission setting](./imgs/permission-setting.png)
 
 ### Step 4: Create the Workflow File
 
@@ -109,7 +114,7 @@ Finally, create the YAML file that defines the automated workflow.
 
 1. Inside `.github/workflows/`, create a file named `co-op-translator.yml`.
 
-1. Paste the following content into co-op-translator.yml. You can also start from the example file [co-op-translator.yml](../../examples/github-actions/co-op-translator.yml).
+1. Paste the following content into co-op-translator.yml. You can also start from the example file [co-op-translator.yml](./examples/github-actions/co-op-translator.yml).
 
 ```
 name: Co-op Translator

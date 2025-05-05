@@ -98,23 +98,7 @@ You need to add the GitHub App credentials and your AI service credentials as en
 
 ![Enter environment variable name](./imgs/add-secrets-done.png)
 
-### Step 3: Configure Workflow Permissions
-
-The GitHub Action needs permissions to check out code and create pull requests.
-
-1. In your repository, go to **Settings** > **Actions** > **General**.
-
-1. Scroll down to the **Workflow permissions** section.
-
-1. Select **Read and write permissions**.
-
-1. Ensure the checkbox for **Allow GitHub Actions to create and approve pull requests** is checked.
-
-1. Select **Save**.
-
-![Permission setting](./imgs/permission-setting.png)
-
-### Step 4: Create the Workflow File
+### Step 3: Create the Workflow File
 
 Finally, create the YAML file that defines the automated workflow.
 
@@ -215,14 +199,14 @@ jobs:
 ```
 
 4.  **Customize the Workflow:**
-  - **[!IMPORTANT] Target Languages:** In the `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted. The `-y` flag automatically confirms actions during the translation process; understand its implications or remove it if manual confirmation is desired via logs (though that's difficult in Actions).
+  - **[!IMPORTANT] Target Languages:** In the `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
   - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
   - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
 
 ## Credential Management and Renewal
 
 - **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure service principals or keys used within Microsoft might have a mandatory renewal policy (e.g., every 6 months). Ensure you update the corresponding GitHub secrets (`AZURE_...` keys) **before they expire** to prevent workflow failures. Check your internal team or Azure subscription policies for specific renewal requirements. Regularly rotating external keys (like OpenAI) is also a good security practice.
+- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` keys) **before they expire** to prevent workflow failures.
 
 ## Running the Workflow
 

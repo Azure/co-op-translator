@@ -8,9 +8,6 @@ Automate the translation of your repository's documentation effortlessly using t
 >
 > This guide details the **simpler setup using the standard `GITHUB_TOKEN`**. This is the recommended method for most users as it doesn't require managing sensitive GitHub App Private Keys.
 >
-> **When to use the other guide?**
->
-> You might need the **[Organization Setup Guide using GitHub App](./github-actions-guide-org.md)** only if your organization/repository **restricts the necessary `write` permissions for the `GITHUB_TOKEN`**. In such restricted environments, using a dedicated GitHub App (as described in the Organization Guide) might be the only way to grant the required permissions. If you are unsure, try this simpler public setup first.
 
 ## Prerequisites
 

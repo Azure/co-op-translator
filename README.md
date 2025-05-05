@@ -72,17 +72,7 @@ Co-op Translator helps bridge the language gap for key Microsoft educational ini
 - **Easy Integration**: Seamlessly integrate with your existing project setup.
 - **Simplify Localization**: Streamline the process of localizing your project for international markets.
 
-## Bridging the Language Gap in Education and Tech
-
-Language barriers significantly hinder access to **valuable educational resources** and technical knowledge for learners and developers worldwide. This limits participation and slows down the pace of global innovation and learning.
-
-**Co-op Translator** was born from the need to address the inefficient manual translation process for Microsoft's own large-scale **educational series** (like the "For Beginners" guides). It has evolved into an easy-to-use, powerful tool designed to break down these barriers for everyone. By providing high-quality automated translations via CLI and GitHub Actions, Co-op Translator empowers educators, students, researchers, and developers globally to share and access knowledge without language constraints.
-
-## Support Us and Foster Global Learning
-
-Join us in revolutionizing how educational content is shared globally! Give [Co-op Translator](https://github.com/azure/co-op-translator) a ⭐ on GitHub and support our mission to break down language barriers in learning and technology. Your interest and contributions make a significant impact! Code contributions and feature suggestions are always welcome.
-
-## How it works
+## How It Works
 
 ![Architecture](/imgs/architecture_241019.png)
 
@@ -94,12 +84,45 @@ Co-op Translator takes Markdown files and images from your project folder and pr
 
 ## Getting Started
 
-| **Approach**        | **Command Line**                           | **GitHub Actions**                          |
-|---------------------|---------------------------------------|--------------------------------------|
-| **Best for**       | One-time, manual execution           | Automated execution on repository changes |
-| **Automation**     | Manual trigger                        | Automatic on repository events      |
-| **Setup**          | Requires local installation     | No local setup needed            |
-| **Guide**         | [Command Line Guide](./getting_started/command-line-guide/command-line-guide.md) | [GitHub Actions Guide](./getting_started/github-actions-guide/github-actions-guide.md) |
+Get started quickly with the CLI or set up full automation with GitHub Actions.
+
+### Quick Start: Command Line
+
+For a fast start using the command line:
+
+1. Install the package:
+    ```bash
+    pip install co-op-translator
+    ```
+2. Configure Credentials:
+  - Create a `.env` file in your project's root directory.
+  - Copy the contents from the [.env.template](./.env.template) file into your new `.env` file.
+  - Fill in the required API keys and endpoint information in your `.env` file.
+3. Run Translation:
+  - Navigate to your project's root directory in your terminal.
+  - Execute the translate command, specifying target languages with the `-l` flag:
+    ```bash
+    translate -l "ko ja fr"
+    ```
+    *(Replace `"ko ja fr"` with your desired space-separated language codes)*
+
+### Detailed Usage Guides
+
+Choose the approach that best fits your workflow:
+
+#### 1. Using the Command Line (CLI)
+
+- Best for: One-time translations, manual control, or integration into custom scripts.
+- Requires: Local installation of Python and the `co-op-translator` package.
+- Guide: [Command Line Guide](./getting_started/command-line-guide/command-line-guide.md)
+
+#### 2. Using GitHub Actions (Automation)
+
+- Best for: Automatically translating content whenever changes are pushed to your repository. Keeps translations consistently up-to-date.
+- Requires: Setting up a workflow file (`.github/workflows`) in your repository. No local installation needed.
+- Guides:
+  - [GitHub Actions Guide (Public Repositories & Standard Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) - Use this for most public or personal repositories relying on standard repository secrets.
+  - [GitHub Actions Guide (Microsoft Organization Repos & Org-Level Setups)](./getting_started/github-actions-guide/github-actions-guide-org.md) - Use this guide if you are working within the Microsoft GitHub organization or need to leverage organization-level secrets or runners.
 
 > [!NOTE]
 > While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](#-supported-models-and-services) list.
@@ -126,6 +149,11 @@ Learn more about Co-op Translator through our presentations _(Click the image be
 - **Microsoft Reactor**: A one-hour detailed step-by-step guide covering everything from understanding what Co-op Translator is, setting up the tool, and using it effectively, to a live demo showcasing its capabilities in action.
 
   [![Microsoft Reactor](/imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
+
+## Support Us and Foster Global Learning
+
+Join us in revolutionizing how educational content is shared globally! Give [Co-op Translator](https://github.com/azure/co-op-translator) a ⭐ on GitHub and support our mission to break down language barriers in learning and technology. Your interest and contributions make a significant impact! Code contributions and feature suggestions are always welcome.
+
 
 ## Contributing
 

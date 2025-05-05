@@ -82,7 +82,7 @@ Finally, create the YAML file that defines the automated workflow using `GITHUB_
 
 1.  In the root directory of your repository, create the `.github/workflows/` directory if it doesn't exist.
 2.  Inside `.github/workflows/`, create a file named `co-op-translator.yml`.
-3.  Paste the following content into `co-op-translator.yml`. Note the changes in the authentication and pull request steps compared to the Organization Guide.
+3.  Paste the following content into `co-op-translator.yml`.
 
 ```yaml
 name: Co-op Translator
@@ -161,3 +161,7 @@ jobs:
             translations/
             translated_images/
 ```
+4.  **Customize the Workflow:**
+  - **[!IMPORTANT] Target Languages:** In the `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
+  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
+  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.

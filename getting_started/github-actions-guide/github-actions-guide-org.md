@@ -108,7 +108,7 @@ Finally, create the YAML file that defines the automated workflow.
 
 1. Inside `.github/workflows/`, create a file named `co-op-translator.yml`.
 
-1. Paste the following content into co-op-translator.yml. You can also start from the example file [co-op-translator.yml](./examples/github-actions/co-op-translator.yml).
+1. Paste the following content into co-op-translator.yml.
 
 ```
 name: Co-op Translator

@@ -4,7 +4,9 @@
 
 Automate the translation of your repository's documentation effortlessly using the Co-op Translator GitHub Action. This guide walks you through setting up the action to automatically create pull requests with updated translations whenever your source Markdown files or images change.
 
-> [!IMPORTANT] Choosing the Right Guide:
+> [!IMPORTANT]
+>
+> **Choosing the Right Guide:**
 >
 > This guide details the **simpler setup using the standard `GITHUB_TOKEN`**. This is the recommended method for most users as it doesn't require managing sensitive GitHub App Private Keys.
 >

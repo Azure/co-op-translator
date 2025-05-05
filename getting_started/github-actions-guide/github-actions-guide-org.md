@@ -1,10 +1,12 @@
 # Using the Co-op Translator GitHub Action (Organization Guide)
 
-**Target Audience:** This guide is intended for Microsoft internal users or teams who have access to the necessary credentials for the pre-built Co-op Translator GitHub App or can create their own custom GitHub App.
+**Target Audience:** This guide is intended for **Microsoft internal users** or **teams who have access to the necessary credentials for the pre-built Co-op Translator GitHub App** or can create their own custom GitHub App.
 
 Automate the translation of your repository's documentation effortlessly using the Co-op Translator GitHub Action. This guide walks you through setting up the action to automatically create pull requests with updated translations whenever your source Markdown files or images change.
 
-> [!IMPORTANT] Choosing the Right Guide:
+> [!IMPORTANT]
+> 
+> **Choosing the Right Guide:**
 >
 > This guide details setup using a **GitHub App ID and a Private Key**. You typically need this "Organization Guide" method if: **`GITHUB_TOKEN` Permissions are Restricted:** Your organization or repository settings restrict the default permissions granted to the standard `GITHUB_TOKEN`. Specifically, if the `GITHUB_TOKEN` is not allowed necessary `write` permissions (like `contents: write` or `pull-requests: write`), the workflow in the [Public Setup Guide](./github-actions-guide-public.md) will fail due to insufficient permissions. Using a dedicated GitHub App with explicitly granted permissions bypasses this limitation.
 >

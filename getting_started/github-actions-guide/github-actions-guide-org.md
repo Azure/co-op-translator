@@ -165,8 +165,8 @@ jobs:
           # =====================================================================
           # IMPORTANT: Set your target languages here (REQUIRED CONFIGURATION)
           # =====================================================================
-
-          translate -l "ar de es fa fr ru ur zh mo hk ja tw ko hi" -y  # <--- MODIFY THIS LINE with your desired languages
+          # Example: Translate to Spanish, French, German. Add -y to auto-confirm.
+          translate -l "es fr de" -y  # <--- MODIFY THIS LINE with your desired languages
 
       - name: Authenticate GitHub App
         id: generate_token

@@ -1,2 +1,4 @@
 # Exclude Jupyter Notebook files from language statistics
 *.ipynb linguist-vendored
+
+* text=auto eol=lf

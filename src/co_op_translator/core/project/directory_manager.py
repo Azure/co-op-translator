@@ -3,6 +3,7 @@ import logging
 import json
 from co_op_translator.utils.common.file_utils import get_unique_id
 from pathlib import PurePosixPath
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -154,8 +155,18 @@ class DirectoryManager:
                     continue
 
                 logger.info(f"Checking translations in: {translation_dir}")
-                for trans_file in translation_dir.rglob("*.md"):
+
+                md_files = []
+                try:
+                    md_files = list(translation_dir.rglob("*.md"))
+                except Exception as e:
+                    logger.warning(f"Error scanning for MD files: {e}")
+
+                for trans_file in md_files:
                     try:
+                        if not trans_file.exists():
+                            continue
+
                         logger.info(f"Processing translation file: {trans_file}")
                         # Read translation file and find metadata comment
                         content = trans_file.read_text(encoding="utf-8")
@@ -173,16 +184,13 @@ class DirectoryManager:
                             metadata_start + 4 : metadata_end
                         ].strip()
                         if "CO_OP_TRANSLATOR_METADATA:" in metadata_str:
-                            # Remove the prefix and get the actual JSON part
                             _, json_str = metadata_str.split(
                                 "CO_OP_TRANSLATOR_METADATA:", 1
                             )
                             metadata = json.loads(json_str.strip())
                         else:
-                            # Try parsing the whole string as JSON for backward compatibility
                             metadata = json.loads(metadata_str)
 
-                        # Check if original file exists
                         source_file = metadata.get("source_file")
                         if not source_file:
                             logger.warning(f"No source_file in metadata: {trans_file}")
@@ -200,19 +208,21 @@ class DirectoryManager:
                             removed_count += 1
                             logger.info(f"Successfully deleted: {trans_file}")
 
-                            # Try to remove empty parent directories
                             parent = trans_file.parent
                             while parent != translation_dir:
-                                if not any(parent.iterdir()):  # If directory is empty
+                                if parent.exists() and not any(parent.iterdir()):
                                     try:
                                         parent.rmdir()
                                         logger.info(
                                             f"Removed empty directory: {parent}"
                                         )
-                                    except OSError:
-                                        break  # Stop if directory is not empty or can't be removed
+                                    except OSError as e:
+                                        logger.warning(
+                                            f"Could not remove directory {parent}: {e}"
+                                        )
+                                        break
                                 else:
-                                    break  # Stop if directory is not empty
+                                    break
                                 parent = parent.parent
                         else:
                             logger.info(f"Original file exists, keeping: {trans_file}")
@@ -225,26 +235,44 @@ class DirectoryManager:
         if images:
             # Collect all image files in the original directory
             original_images = {}  # path_hash -> original_file_path
-            for image_file in self.root_dir.rglob("*"):
-                if not image_file.is_file():
-                    continue
+            try:
+                for original_img_file in self.root_dir.rglob("*"):
+                    if not original_img_file.is_file():
+                        continue
 
-                if image_file.suffix.lower() not in [".png", ".jpg", ".jpeg", ".gif"]:
-                    continue
+                    if original_img_file.suffix.lower() not in [
+                        ".png",
+                        ".jpg",
+                        ".jpeg",
+                        ".gif",
+                    ]:
+                        continue
 
-                try:
-                    path_hash = get_unique_id(image_file, self.root_dir)
-                    original_images[path_hash] = image_file
-                except ValueError:
-                    continue
+                    try:
+                        path_hash = get_unique_id(original_img_file, self.root_dir)
+                        original_images[path_hash] = original_img_file
+                    except ValueError:
+                        continue
+            except Exception as e:
+                logger.warning(f"Error scanning for original images: {e}")
 
-            # Check translated images in each language directory
             for lang_code in self.language_codes:
                 translation_dir = self.translations_dir / lang_code
                 if not translation_dir.exists():
+                    logger.info(
+                        f"Image translation directory does not exist: {translation_dir}"
+                    )
                     continue
 
-                for image_file in translation_dir.rglob("*"):
+                logger.info(f"Checking translated images in: {translation_dir}")
+
+                image_files = []
+                try:
+                    image_files = list(translation_dir.rglob("*"))
+                except Exception as e:
+                    logger.warning(f"Error scanning for image files: {e}")
+
+                for image_file in image_files:
                     if not image_file.is_file():
                         continue
 
@@ -256,9 +284,7 @@ class DirectoryManager:
                     ]:
                         continue
 
-                    # Image files follow the pattern: [original_name].[path_hash].[lang_code].[ext]
                     try:
-                        # Split filename into parts
                         parts = image_file.name.split(".")
                         if (
                             len(parts) < 4
@@ -279,19 +305,21 @@ class DirectoryManager:
                             removed_count += 1
                             logger.debug(f"Removed orphaned image: {image_file}")
 
-                            # Try to remove empty parent directories
                             parent = image_file.parent
                             while parent != translation_dir:
-                                if not any(parent.iterdir()):  # If directory is empty
+                                if parent.exists() and not any(parent.iterdir()):
                                     try:
                                         parent.rmdir()
                                         logger.debug(
                                             f"Removed empty directory: {parent}"
                                         )
-                                    except OSError:
-                                        break  # Stop if directory is not empty or can't be removed
+                                    except OSError as e:
+                                        logger.warning(
+                                            f"Could not remove directory {parent}: {e}"
+                                        )
+                                        break
                                 else:
-                                    break  # Stop if directory is not empty
+                                    break
                                 parent = parent.parent
 
                     except Exception as e:

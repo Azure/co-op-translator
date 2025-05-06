@@ -120,7 +120,7 @@ on:
 
 jobs:
   co-op-translator:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     permissions:
       contents: write

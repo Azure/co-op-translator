@@ -52,17 +52,17 @@ You only need to add your **AI service credentials** as encrypted secrets in you
 
 | Secret Name                         | Description                               | Value Source                     |
 | :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Key for Azure AI Service (Computer Vision)  | Your Azure Account               |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint for Azure AI Service (Computer Vision) | Your Azure Account               |
-| `AZURE_OPENAI_API_KEY`              | Key for Azure OpenAI service              | Your Azure Account               |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint for Azure OpenAI service         | Your Azure Account               |
-| `AZURE_OPENAI_MODEL_NAME`           | Your Azure OpenAI Model Name              | Your Azure Account               |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Your Azure OpenAI Deployment Name         | Your Azure Account               |
-| `AZURE_OPENAI_API_VERSION`          | API Version for Azure OpenAI              | Your Azure Account               |
-| `OPENAI_API_KEY`                    | API Key for OpenAI                        | Your OpenAI Account              |
-| `OPENAI_ORG_ID`                     | OpenAI Organization ID (Optional)         | Your OpenAI Account              |
-| `OPENAI_CHAT_MODEL_ID`              | Specific OpenAI model ID (Optional)       | Your OpenAI Account              |
-| `OPENAI_BASE_URL`                   | Custom OpenAI API Base URL (Optional)     | Your OpenAI Account              |
+| `AZURE_SUBSCRIPTION_KEY`            | Key for Azure AI Service (Computer Vision)  | Your Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint for Azure AI Service (Computer Vision) | Your Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`              | Key for Azure OpenAI service              | Your Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint for Azure OpenAI service         | Your Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`           | Your Azure OpenAI Model Name              | Your Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Your Azure OpenAI Deployment Name         | Your Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`          | API Version for Azure OpenAI              | Your Azure AI Foundry               |
+| `OPENAI_API_KEY`                    | API Key for OpenAI                        | Your OpenAI Platform              |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID (Optional)         | Your OpenAI Platform              |
+| `OPENAI_CHAT_MODEL_ID`              | Specific OpenAI model ID (Optional)       | Your OpenAI Platform              |
+| `OPENAI_BASE_URL`                   | Custom OpenAI API Base URL (Optional)     | Your OpenAI Platform              |
 
 ### Step 3: Configure Workflow Permissions
 
@@ -94,7 +94,7 @@ on:
 
 jobs:
   co-op-translator:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     permissions:
       contents: write

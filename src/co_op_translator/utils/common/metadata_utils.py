@@ -48,7 +48,7 @@ def create_metadata(
     else:
         rel_path = original_file
 
-    normalized_path = str(rel_path).replace('\\', '/')
+    normalized_path = str(rel_path).replace("\\", "/")
 
     return {
         "original_hash": calculate_file_hash(original_file),

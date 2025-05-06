@@ -3,6 +3,7 @@ import logging
 import json
 from co_op_translator.utils.common.file_utils import get_unique_id
 from pathlib import PurePosixPath
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -154,8 +155,23 @@ class DirectoryManager:
                     continue
 
                 logger.info(f"Checking translations in: {translation_dir}")
-                for trans_file in translation_dir.rglob("*.md"):
+
+                md_files_to_process = []
+                for root, dirs, files in os.walk(str(translation_dir), topdown=True):
+                    md_files = [
+                        Path(os.path.join(root, f))
+                        for f in files
+                        if f.lower().endswith(".md")
+                    ]
+                    md_files_to_process.extend(md_files)
+
+                md_files_to_process.sort(key=lambda x: str(x), reverse=True)
+
+                for trans_file in md_files_to_process:
                     try:
+                        if not trans_file.exists():
+                            continue
+
                         logger.info(f"Processing translation file: {trans_file}")
                         # Read translation file and find metadata comment
                         content = trans_file.read_text(encoding="utf-8")
@@ -173,16 +189,13 @@ class DirectoryManager:
                             metadata_start + 4 : metadata_end
                         ].strip()
                         if "CO_OP_TRANSLATOR_METADATA:" in metadata_str:
-                            # Remove the prefix and get the actual JSON part
                             _, json_str = metadata_str.split(
                                 "CO_OP_TRANSLATOR_METADATA:", 1
                             )
                             metadata = json.loads(json_str.strip())
                         else:
-                            # Try parsing the whole string as JSON for backward compatibility
                             metadata = json.loads(metadata_str)
 
-                        # Check if original file exists
                         source_file = metadata.get("source_file")
                         if not source_file:
                             logger.warning(f"No source_file in metadata: {trans_file}")
@@ -200,19 +213,21 @@ class DirectoryManager:
                             removed_count += 1
                             logger.info(f"Successfully deleted: {trans_file}")
 
-                            # Try to remove empty parent directories
                             parent = trans_file.parent
                             while parent != translation_dir:
-                                if not any(parent.iterdir()):  # If directory is empty
+                                if parent.exists() and not any(parent.iterdir()):
                                     try:
                                         parent.rmdir()
                                         logger.info(
                                             f"Removed empty directory: {parent}"
                                         )
-                                    except OSError:
-                                        break  # Stop if directory is not empty or can't be removed
+                                    except OSError as e:
+                                        logger.warning(
+                                            f"Could not remove directory {parent}: {e}"
+                                        )
+                                        break
                                 else:
-                                    break  # Stop if directory is not empty
+                                    break
                                 parent = parent.parent
                         else:
                             logger.info(f"Original file exists, keeping: {trans_file}")
@@ -256,9 +271,7 @@ class DirectoryManager:
                     ]:
                         continue
 
-                    # Image files follow the pattern: [original_name].[path_hash].[lang_code].[ext]
                     try:
-                        # Split filename into parts
                         parts = image_file.name.split(".")
                         if (
                             len(parts) < 4
@@ -279,19 +292,21 @@ class DirectoryManager:
                             removed_count += 1
                             logger.debug(f"Removed orphaned image: {image_file}")
 
-                            # Try to remove empty parent directories
                             parent = image_file.parent
                             while parent != translation_dir:
-                                if not any(parent.iterdir()):  # If directory is empty
+                                if parent.exists() and not any(parent.iterdir()):
                                     try:
                                         parent.rmdir()
                                         logger.debug(
                                             f"Removed empty directory: {parent}"
                                         )
-                                    except OSError:
-                                        break  # Stop if directory is not empty or can't be removed
+                                    except OSError as e:
+                                        logger.warning(
+                                            f"Could not remove directory {parent}: {e}"
+                                        )
+                                        break
                                 else:
-                                    break  # Stop if directory is not empty
+                                    break
                                 parent = parent.parent
 
                     except Exception as e:

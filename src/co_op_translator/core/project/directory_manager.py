@@ -156,18 +156,13 @@ class DirectoryManager:
 
                 logger.info(f"Checking translations in: {translation_dir}")
 
-                md_files_to_process = []
-                for root, dirs, files in os.walk(str(translation_dir), topdown=True):
-                    md_files = [
-                        Path(os.path.join(root, f))
-                        for f in files
-                        if f.lower().endswith(".md")
-                    ]
-                    md_files_to_process.extend(md_files)
+                md_files = []
+                try:
+                    md_files = list(translation_dir.rglob("*.md"))
+                except Exception as e:
+                    logger.warning(f"Error scanning for MD files: {e}")
 
-                md_files_to_process.sort(key=lambda x: str(x), reverse=True)
-
-                for trans_file in md_files_to_process:
+                for trans_file in md_files:
                     try:
                         if not trans_file.exists():
                             continue
@@ -240,26 +235,44 @@ class DirectoryManager:
         if images:
             # Collect all image files in the original directory
             original_images = {}  # path_hash -> original_file_path
-            for image_file in self.root_dir.rglob("*"):
-                if not image_file.is_file():
-                    continue
+            try:
+                for original_img_file in self.root_dir.rglob("*"):
+                    if not original_img_file.is_file():
+                        continue
 
-                if image_file.suffix.lower() not in [".png", ".jpg", ".jpeg", ".gif"]:
-                    continue
+                    if original_img_file.suffix.lower() not in [
+                        ".png",
+                        ".jpg",
+                        ".jpeg",
+                        ".gif",
+                    ]:
+                        continue
 
-                try:
-                    path_hash = get_unique_id(image_file, self.root_dir)
-                    original_images[path_hash] = image_file
-                except ValueError:
-                    continue
+                    try:
+                        path_hash = get_unique_id(original_img_file, self.root_dir)
+                        original_images[path_hash] = original_img_file
+                    except ValueError:
+                        continue
+            except Exception as e:
+                logger.warning(f"Error scanning for original images: {e}")
 
-            # Check translated images in each language directory
             for lang_code in self.language_codes:
                 translation_dir = self.translations_dir / lang_code
                 if not translation_dir.exists():
+                    logger.info(
+                        f"Image translation directory does not exist: {translation_dir}"
+                    )
                     continue
 
-                for image_file in translation_dir.rglob("*"):
+                logger.info(f"Checking translated images in: {translation_dir}")
+
+                image_files = []
+                try:
+                    image_files = list(translation_dir.rglob("*"))
+                except Exception as e:
+                    logger.warning(f"Error scanning for image files: {e}")
+
+                for image_file in image_files:
                     if not image_file.is_file():
                         continue
 

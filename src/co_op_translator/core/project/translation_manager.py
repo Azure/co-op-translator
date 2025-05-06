@@ -589,8 +589,22 @@ class TranslationManager:
 
         files_to_translate = []
         for original_file, translation_file in outdated_files:
-            lang_code = translation_file.parent.name
-            files_to_translate.append((original_file, lang_code))
+            try:
+                relative_path = translation_file.relative_to(self.translations_dir)
+                lang_code = relative_path.parts[0]
+
+                if lang_code not in self.language_codes:
+                    logger.warning(
+                        f"Unknown language code in path: {lang_code}, skipping {translation_file}"
+                    )
+                    continue
+
+                files_to_translate.append((original_file, lang_code))
+            except (ValueError, IndexError) as e:
+                logger.error(
+                    f"Failed to extract language code from {translation_file}: {e}"
+                )
+                continue
 
         with tqdm(
             total=len(files_to_translate), desc="🔄 Retranslating outdated files"

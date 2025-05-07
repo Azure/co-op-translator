@@ -1,97 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "87bf95d45e684475ef1e67d8dae5f6eb",
-  "translation_date": "2025-05-06T18:11:41+00:00",
+  "original_hash": "a52587a512e667f70d92db853d3c61d5",
+  "translation_date": "2025-05-07T14:08:36+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "br"
 }
 -->
-# Utilizando a GitHub Action Co-op Translator (Configuração Pública)
+# Oberer ar Co-op Translator GitHub Action (Setu Public)
 
-**Público-alvo:** Este guia é destinado a usuários na maioria dos repositórios públicos ou privados onde as permissões padrão do GitHub Actions são suficientes. Ele utiliza o `GITHUB_TOKEN` embutido.
+**Kiberoù Cible:** Ar roll-mañ zo bet graet evit implijerien er meur a repositorioù publik pe prevez ma vez mat an aotreadennoù standard GitHub Actions. E implij ar token en-dro `GITHUB_TOKEN`.
 
-Automatize a tradução da documentação do seu repositório de forma simples usando a GitHub Action Co-op Translator. Este guia explica como configurar a action para criar automaticamente pull requests com traduções atualizadas sempre que seus arquivos Markdown ou imagens de origem forem alterados.
+Automatize an treuzskrivadur eus ho restradur er repo dreist-holl gant ar Co-op Translator GitHub Action. Ar roll-mañ a zispleg penaos lakaat ar workflow da grouiñ pull requests gant treuzskrivadurioù hizivaet pa vez kemmoù er restroù Markdown pe skeudennoù.
 
 > [!IMPORTANT]
 >
-> **Escolhendo o Guia Certo:**
+> **Dibab ar Roll Sevel Mat:**
 >
-> Este guia detalha a **configuração mais simples usando o `GITHUB_TOKEN` padrão**. Este é o método recomendado para a maioria dos usuários, pois não exige gerenciar chaves privadas sensíveis do GitHub App.
+> Ar roll-mañ a zispleg ar **stumm aes gant ar token en-dro `GITHUB_TOKEN`**. Se eo ar mod en em vodañ evit ar muiañ a implijerien abalamour ma n’eo ket ret merañ klemmioù prevez GitHub App.
 >
 
-## Pré-requisitos
+## Palioù Goude
 
-Antes de configurar a GitHub Action, certifique-se de ter as credenciais necessárias dos serviços de IA.
+A-raok krouiñ ar GitHub Action, gwiriit ez eus an titouroù rekis evit ar servij AI prest.
 
-**1. Obrigatório: Credenciais do Modelo de Linguagem de IA**  
-Você precisa das credenciais de pelo menos um Modelo de Linguagem suportado:
+**1. Rekis: Titouroù kredadoù Model Yezh AI**  
+Ret eo bezañ kredadoù evit un nebeud modeloù yezh a zo bet degemeret:
 
-- **Azure OpenAI**: Requer Endpoint, Chave da API, Nomes do Modelo/Deployment, Versão da API.  
-- **OpenAI**: Requer Chave da API, (Opcional: ID da Organização, URL Base, ID do Modelo).  
-- Consulte [Supported Models and Services](../../../../README.md) para detalhes.  
-- Guia de Configuração: [Set up Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
+- **Azure OpenAI**: Ret eo Endpoint, API Key, anvioù Model/Deployment, hag API Version.
+- **OpenAI**: Ret eo API Key, (Dibarzh: Org ID, Base URL, Model ID).
+- Gwiriañ [Supported Models and Services](../../../../README.md) evit muioc’h a ditouroù.
 
-**2. Opcional: Credenciais de Computer Vision (para Tradução de Imagens)**
+**2. Dibab: Kredadoù AI Vision (evit Treuzskrivadur Skeudennoù)**
 
-- Necessário apenas se você precisar traduzir texto dentro de imagens.  
-- **Azure Computer Vision**: Requer Endpoint e Chave de Assinatura.  
-- Se não fornecido, a action usa o [modo somente Markdown](../markdown-only-mode.md) por padrão.  
-- Guia de Configuração: [Set up Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
+- Ret eo nemet ma fell deoc’h treuzskrivañ destenn e skeudennoù.
+- **Azure AI Vision**: Ret eo Endpoint hag Subscription Key.
+- Ma n’int ket kinniget, e vo implijet ar [Markdown-only mode](../markdown-only-mode.md).
 
-## Configuração e Ajustes
+## Sevel ha Krouiñ
 
-Siga estes passos para configurar a GitHub Action Co-op Translator no seu repositório usando o `GITHUB_TOKEN` padrão.
+Heuliañ an hentenn-mañ evit krouiñ ar Co-op Translator GitHub Action er repo gant ar token en-dro `GITHUB_TOKEN`.
 
-### Passo 1: Entenda a Autenticação (Usando `GITHUB_TOKEN`)
+### Pleg 1: Kompren an Aozañ (Implij ar `GITHUB_TOKEN`)
 
-Este fluxo usa o `GITHUB_TOKEN` embutido fornecido pelo GitHub Actions. Esse token concede automaticamente permissões ao workflow para interagir com seu repositório conforme as configurações definidas no **Passo 3**.
+Ar workflow-mañ a implij ar token en-dro `GITHUB_TOKEN` savet gant GitHub Actions. Ar token-mañ a ro aotreetoù d’ar workflow da labourat war ho repo hervez ar mouezhioù aozet er **Pleg 3**.
 
-### Passo 2: Configure os Segredos do Repositório
+### Pleg 2: Krouiñ ar Sekredoù Repository
 
-Você só precisa adicionar suas **credenciais dos serviços de IA** como segredos criptografados nas configurações do seu repositório.
+Ret eo ouzhpennañ ho **titouroù kredadoù servij AI** evel sekredoù krouet en aozadurioù ho repo.
 
-1.  Acesse o repositório alvo no GitHub.  
-2.  Vá para **Settings** > **Secrets and variables** > **Actions**.  
-3.  Em **Repository secrets**, clique em **New repository secret** para cada segredo necessário listado abaixo.
+1. Mont d’an repo GitHub a fell deoc’h implijout.
+2. Mont da **Settings** > **Secrets and variables** > **Actions**.
+3. E-barzh **Repository secrets**, klikit war **New repository secret** evit pep sekred AI rekis anezhañ.
 
-    ![Select setting action](../../../../getting_started/github-actions-guide/imgs/select-setting-action.png) *(Referência de imagem: mostra onde adicionar segredos)*
+![Select setting action](../../../../getting_started/github-actions-guide/imgs/select-setting-action.png) *(Skeudenn evit diskouez pelec’h ouzhpennañ sekredoù)*
 
-**Segredos Obrigatórios dos Serviços de IA (Adicione TODOS que se aplicam conforme seus Pré-requisitos):**
+**Sekredoù AI Rekis (Ouzhpennit AN HOLL hervez ho Palioù Goude):**
 
-| Nome do Segredo                     | Descrição                                  | Origem do Valor                  |
-| :---------------------------------- | :----------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Chave para Azure AI Service (Computer Vision)  | Sua Azure AI Foundry               |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint para Azure AI Service (Computer Vision) | Sua Azure AI Foundry               |
-| `AZURE_OPENAI_API_KEY`              | Chave para o serviço Azure OpenAI              | Sua Azure AI Foundry               |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint para o serviço Azure OpenAI             | Sua Azure AI Foundry               |
-| `AZURE_OPENAI_MODEL_NAME`           | Nome do Modelo Azure OpenAI                    | Sua Azure AI Foundry               |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Nome do Deployment Azure OpenAI                | Sua Azure AI Foundry               |
-| `AZURE_OPENAI_API_VERSION`          | Versão da API para Azure OpenAI                 | Sua Azure AI Foundry               |
-| `OPENAI_API_KEY`                    | Chave da API para OpenAI                      | Sua OpenAI Platform              |
-| `OPENAI_ORG_ID`                     | ID da Organização OpenAI (Opcional)             | Sua OpenAI Platform              |
-| `OPENAI_CHAT_MODEL_ID`              | ID específico do modelo OpenAI (Opcional)         | Sua OpenAI Platform              |
-| `OPENAI_BASE_URL`                   | URL Base customizada da API OpenAI (Opcional)     | Sua OpenAI Platform              |
+| Secret Name                         | Deskrivadur                             | Mamenn ar Valuer                |
+| :---------------------------------- | :------------------------------------- | :------------------------------ |
+| `AZURE_SUBSCRIPTION_KEY`            | Klenn Azure AI Service (Computer Vision) | Ho Azure AI Foundry             |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint Azure AI Service (Computer Vision) | Ho Azure AI Foundry             |
+| `AZURE_OPENAI_API_KEY`              | Klenn servij Azure OpenAI              | Ho Azure AI Foundry             |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint servij Azure OpenAI           | Ho Azure AI Foundry             |
+| `AZURE_OPENAI_MODEL_NAME`           | Anv Model Azure OpenAI                  | Ho Azure AI Foundry             |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Anv Deployment Azure OpenAI             | Ho Azure AI Foundry             |
+| `AZURE_OPENAI_API_VERSION`          | API Version Azure OpenAI                | Ho Azure AI Foundry             |
+| `OPENAI_API_KEY`                    | API Key OpenAI                         | Ho OpenAI Platform             |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID (Dibarzh)       | Ho OpenAI Platform             |
+| `OPENAI_CHAT_MODEL_ID`              | Model ID resis OpenAI (Dibarzh)         | Ho OpenAI Platform             |
+| `OPENAI_BASE_URL`                   | URL Diazez API OpenAI kevrinus (Dibarzh) | Ho OpenAI Platform             |
 
-### Passo 3: Configure as Permissões do Workflow
+### Pleg 3: Krouiñ Aotreoù Workflow
 
-A GitHub Action precisa de permissões concedidas via `GITHUB_TOKEN` para fazer checkout do código e criar pull requests.
+Ret eo reiñ aotreoù d’ar GitHub Action dre ar token en-dro `GITHUB_TOKEN` evit gallout tapout an kod ha krouiñ pull requests.
 
-1.  No seu repositório, vá para **Settings** > **Actions** > **General**.  
-2.  Role até a seção **Workflow permissions**.  
-3.  Selecione **Read and write permissions**. Isso concede ao `GITHUB_TOKEN` as permissões `contents: write` e `pull-requests: write` necessárias para este workflow.  
-4.  Certifique-se de que a caixa **Allow GitHub Actions to create and approve pull requests** esteja marcada.  
-5.  Clique em **Save**.
+1. Er repo, mont da **Settings** > **Actions** > **General**.
+2. Skrola da benn da **Workflow permissions**.
+3. Dibabit **Read and write permissions**. Se a ro d’ar token en-dro `GITHUB_TOKEN` an aotreoù rekis evit `contents: write` ha `pull-requests: write` evit ar workflow-mañ.
+4. Gwiriit e vez lakaet ar marc’henn war **Allow GitHub Actions to create and approve pull requests**.
+5. Klikit **Save**.
 
 ![Permission setting](../../../../getting_started/github-actions-guide/imgs/permission-setting.png)
 
-### Passo 4: Crie o Arquivo do Workflow
+### Pleg 4: Krouiñ ar Restr Workflow
 
-Por fim, crie o arquivo YAML que define o workflow automatizado usando `GITHUB_TOKEN`.
+En diwezhañ, krouit ar restr YAML a zispleg ar workflow awtomatek gant ar token en-dro `GITHUB_TOKEN`.
 
-1.  No diretório raiz do seu repositório, crie o diretório `.github/workflows/` se ele ainda não existir.  
-2.  Dentro de `.github/workflows/`, crie um arquivo chamado `co-op-translator.yml`.  
-3.  Cole o conteúdo a seguir dentro de `co-op-translator.yml`.
+1. Er rouedad micherel eus ho repo, krouit an dir `.github/workflows/` ma ne vo ket bet savet c’hoazh.
+2. E-barzh `.github/workflows/`, krouit un restr anvet `co-op-translator.yml`.
+3. Lakait ar mennozhioù da-heul e-barzh `co-op-translator.yml`.
 
 ```yaml
 name: Co-op Translator
@@ -170,10 +168,10 @@ jobs:
             translations/
             translated_images/
 ```  
-4.  **Personalize o Workflow:**  
-  - **[!IMPORTANT] Idiomas-alvo:** No passo `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
+4. **Personalisit ar Workflow:**  
+  - **[!IMPORTANT] Yezhoù Cible:** Er pal `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
   - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request`, ajuste os idiomas se necessário.
+  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` ma vez ezhomm.
 
 **Aviso Legal**:  
-Este documento foi traduzido utilizando o serviço de tradução automática [Co-op Translator](https://github.com/Azure/co-op-translator). Embora nos esforcemos para garantir a precisão, esteja ciente de que traduções automáticas podem conter erros ou imprecisões. O documento original em seu idioma nativo deve ser considerado a fonte oficial. Para informações críticas, recomenda-se a tradução profissional feita por humanos. Não nos responsabilizamos por quaisquer mal-entendidos ou interpretações incorretas decorrentes do uso desta tradução.
+Este documento foi traduzido usando o serviço de tradução por IA [Co-op Translator](https://github.com/Azure/co-op-translator). Embora nos esforcemos para garantir a precisão, esteja ciente de que traduções automáticas podem conter erros ou imprecisões. O documento original em seu idioma nativo deve ser considerado a fonte autorizada. Para informações críticas, recomenda-se tradução profissional feita por humanos. Não nos responsabilizamos por quaisquer mal-entendidos ou interpretações equivocadas decorrentes do uso desta tradução.

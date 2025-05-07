@@ -1,23 +1,23 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "87bf95d45e684475ef1e67d8dae5f6eb",
-  "translation_date": "2025-05-06T18:11:18+00:00",
+  "original_hash": "a52587a512e667f70d92db853d3c61d5",
+  "translation_date": "2025-05-07T14:06:07+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "fr"
 }
 -->
-# Utilisation de l’action GitHub Co-op Translator (Configuration publique)
+# Utilisation de l'action GitHub Co-op Translator (Configuration publique)
 
-**Public visé :** Ce guide s’adresse aux utilisateurs de la plupart des dépôts publics ou privés où les permissions standard de GitHub Actions sont suffisantes. Il utilise le `GITHUB_TOKEN` intégré.
+**Public cible :** Ce guide s'adresse aux utilisateurs de la plupart des dépôts publics ou privés où les autorisations standard des GitHub Actions sont suffisantes. Il utilise le `GITHUB_TOKEN` intégré.
 
-Automatisez facilement la traduction de la documentation de votre dépôt grâce à l’action GitHub Co-op Translator. Ce guide vous explique comment configurer l’action pour créer automatiquement des pull requests avec des traductions mises à jour dès que vos fichiers Markdown sources ou images changent.
+Automatisez facilement la traduction de la documentation de votre dépôt grâce à l'action GitHub Co-op Translator. Ce guide vous accompagne dans la configuration de l'action pour créer automatiquement des pull requests avec des traductions mises à jour dès que vos fichiers source Markdown ou images changent.
 
 > [!IMPORTANT]
 >
 > **Choisir le bon guide :**
 >
-> Ce guide décrit la **configuration la plus simple avec le `GITHUB_TOKEN` standard**. C’est la méthode recommandée pour la plupart des utilisateurs car elle ne nécessite pas de gérer des clés privées sensibles d’application GitHub.
+> Ce guide décrit la **configuration la plus simple utilisant le `GITHUB_TOKEN` standard**. C’est la méthode recommandée pour la plupart des utilisateurs car elle ne nécessite pas de gérer des clés privées sensibles d’application GitHub.
 >
 
 ## Prérequis
@@ -25,73 +25,71 @@ Automatisez facilement la traduction de la documentation de votre dépôt grâce
 Avant de configurer l’action GitHub, assurez-vous de disposer des identifiants nécessaires pour les services d’IA.
 
 **1. Obligatoire : Identifiants du modèle de langue IA**  
-Vous devez avoir des identifiants pour au moins un modèle de langue supporté :
+Vous devez avoir les identifiants pour au moins un modèle de langue pris en charge :
 
-- **Azure OpenAI** : nécessite Endpoint, clé API, noms du modèle/déploiement, version de l’API.  
+- **Azure OpenAI** : nécessite Endpoint, clé API, noms de modèle/déploiement, version API.  
 - **OpenAI** : nécessite clé API, (optionnel : ID organisation, URL de base, ID modèle).  
-- Consultez [Modèles et services supportés](../../../../README.md) pour plus de détails.  
-- Guide d’installation : [Configurer Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
+- Consultez [Supported Models and Services](../../../../README.md) pour plus de détails.
 
-**2. Optionnel : Identifiants Computer Vision (pour la traduction d’images)**
+**2. Optionnel : Identifiants AI Vision (pour la traduction d’images)**
 
-- Nécessaire uniquement si vous devez traduire du texte dans des images.  
-- **Azure Computer Vision** : nécessite Endpoint et clé d’abonnement.  
-- Si non fournis, l’action utilisera par défaut le [mode Markdown uniquement](../markdown-only-mode.md).  
-- Guide d’installation : [Configurer Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
+- Nécessaire uniquement si vous souhaitez traduire du texte dans des images.  
+- **Azure AI Vision** : nécessite Endpoint et clé d’abonnement.  
+- Si non fournis, l’action passe en [mode Markdown uniquement](../markdown-only-mode.md).
 
-## Configuration et installation
+## Installation et configuration
 
 Suivez ces étapes pour configurer l’action GitHub Co-op Translator dans votre dépôt en utilisant le `GITHUB_TOKEN` standard.
 
-### Étape 1 : Comprendre l’authentification (utilisation du `GITHUB_TOKEN`)
+### Étape 1 : Comprendre l’authentification (utilisation de `GITHUB_TOKEN`)
 
-Ce workflow utilise le `GITHUB_TOKEN` intégré fourni par GitHub Actions. Ce jeton donne automatiquement les permissions nécessaires au workflow pour interagir avec votre dépôt selon les réglages définis à l’**Étape 3**.
+Ce workflow utilise le `GITHUB_TOKEN` intégré fourni par GitHub Actions. Ce token accorde automatiquement au workflow les permissions nécessaires pour interagir avec votre dépôt, selon les paramètres définis à l’**Étape 3**.
 
 ### Étape 2 : Configurer les secrets du dépôt
 
-Vous devez uniquement ajouter vos **identifiants des services IA** en tant que secrets chiffrés dans les paramètres de votre dépôt.
+Vous devez uniquement ajouter vos **identifiants de service IA** comme secrets chiffrés dans les paramètres de votre dépôt.
 
-1.  Accédez au dépôt GitHub cible.  
-2.  Allez dans **Settings** > **Secrets and variables** > **Actions**.  
-3.  Sous **Repository secrets**, cliquez sur **New repository secret** pour chaque secret requis listé ci-dessous.
+1. Rendez-vous dans le dépôt GitHub cible.  
+2. Allez dans **Settings** > **Secrets and variables** > **Actions**.  
+3. Sous **Repository secrets**, cliquez sur **New repository secret** pour chaque secret IA requis listé ci-dessous.
 
-    ![Select setting action](../../../../getting_started/github-actions-guide/imgs/select-setting-action.png) *(Référence image : montre où ajouter les secrets)*
+![Select setting action](../../../../getting_started/github-actions-guide/imgs/select-setting-action.png) *(Référence image : indique où ajouter les secrets)*
 
 **Secrets requis pour les services IA (ajoutez TOUS ceux qui s’appliquent selon vos prérequis) :**
 
-| Nom du secret                      | Description                                | Source de la valeur              |
-| :-------------------------------- | :---------------------------------------- | :------------------------------ |
-| `AZURE_SUBSCRIPTION_KEY`            | Clé pour Azure AI Service (Computer Vision)  | Votre instance Azure AI          |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint pour Azure AI Service (Computer Vision) | Votre instance Azure AI          |
-| `AZURE_OPENAI_API_KEY`              | Clé pour le service Azure OpenAI           | Votre instance Azure AI          |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint pour le service Azure OpenAI      | Votre instance Azure AI          |
-| `AZURE_OPENAI_MODEL_NAME`           | Nom du modèle Azure OpenAI                   | Votre instance Azure AI          |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Nom du déploiement Azure OpenAI              | Votre instance Azure AI          |
-| `AZURE_OPENAI_API_VERSION`          | Version API pour Azure OpenAI                | Votre instance Azure AI          |
-| `OPENAI_API_KEY`                    | Clé API pour OpenAI                         | Votre plateforme OpenAI          |
-| `OPENAI_ORG_ID`                     | ID organisation OpenAI (optionnel)          | Votre plateforme OpenAI          |
-| `OPENAI_CHAT_MODEL_ID`              | ID modèle OpenAI spécifique (optionnel)      | Votre plateforme OpenAI          |
-| `OPENAI_BASE_URL`                   | URL de base API OpenAI personnalisée (optionnel) | Votre plateforme OpenAI          |
+| Nom du secret                       | Description                             | Source de la valeur               |
+| :--------------------------------- | :------------------------------------ | :------------------------------- |
+| `AZURE_SUBSCRIPTION_KEY`            | Clé pour Azure AI Service (Computer Vision) | Votre Azure AI Foundry            |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint pour Azure AI Service (Computer Vision) | Votre Azure AI Foundry            |
+| `AZURE_OPENAI_API_KEY`              | Clé pour Azure OpenAI service          | Votre Azure AI Foundry            |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint pour Azure OpenAI service     | Votre Azure AI Foundry            |
+| `AZURE_OPENAI_MODEL_NAME`           | Nom de votre modèle Azure OpenAI       | Votre Azure AI Foundry            |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Nom de votre déploiement Azure OpenAI  | Votre Azure AI Foundry            |
+| `AZURE_OPENAI_API_VERSION`          | Version API pour Azure OpenAI           | Votre Azure AI Foundry            |
+| `OPENAI_API_KEY`                    | Clé API pour OpenAI                     | Votre plateforme OpenAI           |
+| `OPENAI_ORG_ID`                     | ID organisation OpenAI (optionnel)     | Votre plateforme OpenAI           |
+| `OPENAI_CHAT_MODEL_ID`              | ID modèle OpenAI spécifique (optionnel) | Votre plateforme OpenAI           |
+| `OPENAI_BASE_URL`                   | URL base API OpenAI personnalisée (optionnel) | Votre plateforme OpenAI           |
 
 ### Étape 3 : Configurer les permissions du workflow
 
-L’action GitHub a besoin des permissions accordées via le `GITHUB_TOKEN` pour récupérer le code et créer des pull requests.
+L’action GitHub nécessite que le `GITHUB_TOKEN` ait les permissions pour récupérer le code et créer des pull requests.
 
-1.  Dans votre dépôt, allez dans **Settings** > **Actions** > **General**.  
-2.  Descendez jusqu’à la section **Workflow permissions**.  
-3.  Sélectionnez **Read and write permissions**. Cela donne au `GITHUB_TOKEN` les permissions `contents: write` et `pull-requests: write` nécessaires pour ce workflow.  
-4.  Vérifiez que la case **Allow GitHub Actions to create and approve pull requests** est cochée.  
-5.  Cliquez sur **Save**.
+1. Dans votre dépôt, allez dans **Settings** > **Actions** > **General**.  
+2. Descendez à la section **Workflow permissions**.  
+3. Sélectionnez **Read and write permissions**. Cela donne au `GITHUB_TOKEN` les permissions `contents: write` et `pull-requests: write` nécessaires pour ce workflow.  
+4. Vérifiez que la case **Allow GitHub Actions to create and approve pull requests** est cochée.  
+5. Cliquez sur **Save**.
 
 ![Permission setting](../../../../getting_started/github-actions-guide/imgs/permission-setting.png)
 
 ### Étape 4 : Créer le fichier de workflow
 
-Enfin, créez le fichier YAML qui définit le workflow automatisé utilisant le `GITHUB_TOKEN`.
+Enfin, créez le fichier YAML qui définit le workflow automatisé utilisant `GITHUB_TOKEN`.
 
-1.  À la racine de votre dépôt, créez le répertoire `.github/workflows/` s’il n’existe pas.  
-2.  Dans `.github/workflows/`, créez un fichier nommé `co-op-translator.yml`.  
-3.  Collez le contenu suivant dans `co-op-translator.yml`.
+1. À la racine de votre dépôt, créez le répertoire `.github/workflows/` s’il n’existe pas.  
+2. Dans `.github/workflows/`, créez un fichier nommé `co-op-translator.yml`.  
+3. Collez le contenu suivant dans `co-op-translator.yml`.
 
 ```yaml
 name: Co-op Translator
@@ -170,10 +168,10 @@ jobs:
             translations/
             translated_images/
 ```  
-4.  **Personnalisez le workflow :**  
+4. **Personnalisez le workflow :**  
   - **[!IMPORTANT] Langues cibles :** dans l’étape `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
   - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
   - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` si nécessaire.
 
 **Avertissement** :  
-Ce document a été traduit à l’aide du service de traduction automatique [Co-op Translator](https://github.com/Azure/co-op-translator). Bien que nous nous efforçons d’assurer l’exactitude, veuillez noter que les traductions automatiques peuvent contenir des erreurs ou des inexactitudes. Le document original dans sa langue d’origine doit être considéré comme la source faisant foi. Pour les informations critiques, il est recommandé de recourir à une traduction professionnelle réalisée par un humain. Nous ne saurions être tenus responsables des malentendus ou des mauvaises interprétations résultant de l’utilisation de cette traduction.
+Ce document a été traduit à l’aide du service de traduction automatique [Co-op Translator](https://github.com/Azure/co-op-translator). Bien que nous nous efforçons d’assurer l’exactitude, veuillez noter que les traductions automatiques peuvent contenir des erreurs ou des inexactitudes. Le document original dans sa langue d’origine doit être considéré comme la source faisant foi. Pour les informations critiques, il est recommandé de recourir à une traduction professionnelle réalisée par un humain. Nous déclinons toute responsabilité en cas de malentendus ou de mauvaises interprétations résultant de l’utilisation de cette traduction.

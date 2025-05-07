@@ -1,15 +1,15 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "6bbc19abb46abfba90855f2b7bd01767",
-  "translation_date": "2025-05-06T17:30:21+00:00",
+  "original_hash": "329abbc9354793ea422f7e7ebf66be2c",
+  "translation_date": "2025-05-07T01:56:20+00:00",
   "source_file": "README.md",
   "language_code": "tr"
 }
 -->
-![Logo](../../../../../../imgs/logo.png)
+![Logo](../../imgs/logo.png)
 
-# Co-op Translator: Eğitim Dokümantasyonunun Çevirisini Kolayca Otomatikleştirin
+# Co-op Translator: Eğitim Dokümantasyonunu Kolayca Otomatik Olarak Çevirin
 
 _Dokümantasyonunuzu birden fazla dile kolayca otomatik çevirerek küresel bir kitleye ulaşın._
 
@@ -24,10 +24,9 @@ _Dokümantasyonunuzu birden fazla dile kolayca otomatik çevirerek küresel bir 
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-### Co-op Translator ile Desteklenen Diller
+### Co-op Translator tarafından Desteklenen Diller
 
 [Korean](../ko/README.md) | [Japanese](../ja/README.md) | [Chinese (Simplified)](../zh/README.md) | [Chinese (Traditional, Taiwan)](../tw/README.md) | [Spanish](../es/README.md) | [French](../fr/README.md) | [German](../de/README.md) | [Portuguese (Brazil)](../br/README.md) | [Hindi](../hi/README.md) | [Russian](../ru/README.md) | [Turkish](./README.md) | [Arabic](../ar/README.md) | [Indonesian](../id/README.md) | [Vietnamese](../vi/README.md)
-
 
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
@@ -39,36 +38,35 @@ _Dokümantasyonunuzu birden fazla dile kolayca otomatik çevirerek küresel bir 
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
 > [!TIP]
->
-> **Güçlü Otomasyon**: Artık GitHub Actions desteğiyle! Depo değişiklikleri yapıldığında belgelerinizi otomatik olarak çevirin ve her şeyi zahmetsizce güncel tutun. [Daha fazlasını öğrenin](../..).
+> **Güçlü Otomasyon**: Artık GitHub Actions desteği ile! Depo değişiklikleriniz yapıldığında belgelerinizi otomatik olarak çevirin ve her şeyi zahmetsizce güncel tutun. [Daha fazla bilgi](../..).
 
 ## Desteklenen Modeller ve Servisler
 
-| Tür                    | İsim                           |
-|------------------------|--------------------------------|
-| Dil Modeli             | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
-| Bilgisayarlı Görü      | ![Azure Computer Vision](https://img.shields.io/badge/Azure_Computer_Vision-blue?style=flat-square) |
+| Tür                   | İsim                           |
+|-----------------------|--------------------------------|
+| Dil Modeli            | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
+| Bilgisayarlı Görü     | ![Azure Computer Vision](https://img.shields.io/badge/Azure_Computer_Vision-blue?style=flat-square) |
 
 > [!NOTE]
-> Eğer bilgisayarlı görü servisi mevcut değilse, co-op translator [Markdown-only mode](./getting_started/markdown-only-mode.md) moduna geçecektir.
+> Eğer bilgisayarlı görü servisi kullanılamıyorsa, co-op translator [Markdown-only mode](./getting_started/markdown-only-mode.md) moduna geçecektir.
 
-## Genel Bakış: Eğitim İçeriği Çevirinizi Kolaylaştırın
+## Genel Bakış: Eğitim İçeriğinizin Çevirisini Kolaylaştırın
 
-Dil engelleri, dünya çapındaki öğrenenler ve geliştiriciler için değerli eğitim kaynaklarına ve teknik bilgilere erişimi önemli ölçüde zorlaştırır. Bu durum katılımı sınırlar ve küresel inovasyon ile öğrenme hızını yavaşlatır.
+Dil engelleri, dünya genelindeki öğrenciler ve geliştiriciler için değerli eğitim kaynaklarına ve teknik bilgilere erişimi önemli ölçüde zorlaştırır. Bu durum katılımı sınırlar ve küresel yenilik ve öğrenme hızını yavaşlatır.
 
-**Co-op Translator**, Microsoft’un kendi büyük ölçekli eğitim serileri (örneğin "For Beginners" rehberleri) için verimsiz olan manuel çeviri sürecini çözmek amacıyla ortaya çıktı. Herkes için bu engelleri kaldırmayı hedefleyen, kullanımı kolay ve güçlü bir araca dönüştü. CLI ve GitHub Actions aracılığıyla yüksek kaliteli otomatik çeviriler sunarak, Co-op Translator eğitimcilerin, öğrencilerin, araştırmacıların ve geliştiricilerin dil bariyerleri olmadan bilgi paylaşmasını ve erişmesini sağlar.
+**Co-op Translator**, Microsoft’un kendi büyük ölçekli eğitim serileri (örneğin "Yeni Başlayanlar İçin" rehberleri) için manuel çeviri sürecinin verimsizliğini gidermek amacıyla ortaya çıktı. Herkes için bu engelleri kaldırmak üzere kullanımı kolay, güçlü bir araca dönüştü. CLI ve GitHub Actions üzerinden yüksek kaliteli otomatik çeviriler sunarak, Co-op Translator dünya çapında eğitimcilerin, öğrencilerin, araştırmacıların ve geliştiricilerin dil bariyerleri olmadan bilgi paylaşmasını ve erişmesini sağlar.
 
-Co-op Translator’ın çevrilmiş eğitim içeriklerini nasıl düzenlediğine göz atın:
+Co-op Translator’ın çevrilmiş eğitim içeriğini nasıl düzenlediğine göz atın:
 
-![Örnek](../../../../../../imgs/translation-ex.png)
+![Example](../../imgs/translation-ex.png)
 
-Markdown dosyaları ve görsel metinler otomatik olarak çevrilir ve dil bazlı klasörlerde düzenli şekilde saklanır.
+Markdown dosyaları ve resim metinleri otomatik olarak çevrilir ve dil bazlı klasörlerde düzenli bir şekilde saklanır.
 
-**Co-op Translator ile eğitim içeriğinize küresel erişim sağlayın!**
+**Co-op Translator ile eğitim içeriğinize küresel erişimi bugün açın!**
 
 ## Microsoft’un Öğrenme Kaynakları için Küresel Erişimi Destekleme
 
-Co-op Translator, küresel geliştirici topluluğuna hizmet eden depoların çeviri sürecini otomatikleştirerek Microsoft’un önemli eğitim girişimlerinde dil engelini azaltmaya yardımcı olur. Şu anda Co-op Translator kullanan örnekler:
+Co-op Translator, Microsoft’un önemli eğitim girişimleri için dil engelini aşmaya yardımcı olur ve küresel geliştirici topluluğuna hizmet veren depoların çeviri sürecini otomatikleştirir. Şu anda Co-op Translator kullanan örnekler şunlardır:
 
 [![ML-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ML-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ML-For-Beginners)
 [![Generative-AI-for-beginners-dotnet](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=Generative-AI-for-beginners-dotnet&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
@@ -78,27 +76,27 @@ Co-op Translator, küresel geliştirici topluluğuna hizmet eden depoların çev
 
 ## Temel Özellikler
 
-- **Otomatik Çeviriler**: Metinleri zahmetsizce birden fazla dile çevirin.
-- **GitHub Actions Entegrasyonu**: Çevirileri CI/CD hattınızın bir parçası olarak otomatikleştirin.
+- **Otomatik Çeviriler**: Metni birden fazla dile zahmetsizce çevirin.
+- **GitHub Actions Entegrasyonu**: Çevirileri CI/CD sürecinizin bir parçası olarak otomatikleştirin.
 - **Markdown Koruması**: Çeviri sırasında doğru Markdown sözdizimini koruyun.
-- **Görsel Metin Çevirisi**: Görsellerdeki metinleri çıkarıp çevirin.
+- **Resim Metni Çevirisi**: Resim içindeki metni çıkarın ve çevirin.
 - **Gelişmiş LLM Teknolojisi**: Yüksek kaliteli çeviriler için son teknoloji dil modellerini kullanın.
 - **Kolay Entegrasyon**: Mevcut proje yapınıza sorunsuzca entegre edin.
-- **Yerelleştirmeyi Basitleştirin**: Projenizi uluslararası pazarlara kolayca uyarlayın.
+- **Yerelleştirmeyi Basitleştirin**: Projenizi uluslararası pazarlara uyarlama sürecini kolaylaştırın.
 
 ## Nasıl Çalışır
 
-![Mimari](../../../../../../imgs/architecture_241019.png)
+![Architecture](../../imgs/architecture_241019.png)
 
-Co-op Translator, proje klasörünüzden Markdown dosyaları ve görselleri alır ve şu şekilde işler:
+Co-op Translator, proje klasörünüzden Markdown dosyalarını ve resimleri alır ve şu şekilde işler:
 
-1. **Metin Çıkarımı**: Markdown dosyalarından ve yapılandırılmışsa (örneğin Azure Computer Vision ile) görsellerde gömülü metinlerden metni çıkarır.
+1. **Metin Çıkarımı**: Markdown dosyalarından ve yapılandırılmışsa (örneğin Azure Computer Vision ile) resim içindeki gömülü metinden metin çıkarır.
 1. **Yapay Zeka Çevirisi**: Çıkarılan metni yapılandırılmış LLM’ye (Azure OpenAI, OpenAI vb.) çeviri için gönderir.
-1. **Sonuç Kaydetme**: Çevrilmiş Markdown dosyalarını ve görselleri (çevirilmiş metinle) dil bazlı klasörlere orijinal formatı koruyarak kaydeder.
+1. **Sonuç Kaydetme**: Çevrilmiş Markdown dosyalarını ve (çevirisi yapılmış metin içeren) resimleri dil bazlı klasörlere orijinal formatı koruyarak kaydeder.
 
 ## Başlarken
 
-CLI ile hızlıca başlayın veya GitHub Actions ile tam otomasyonu kurun.
+CLI ile hızlıca başlayın veya GitHub Actions ile tam otomasyon kurun.
 
 ### Hızlı Başlangıç: Komut Satırı
 
@@ -133,44 +131,44 @@ Choose the approach that best fits your workflow:
 #### 2. Using GitHub Actions (Automation)
 
 - Best for: Automatically translating content whenever changes are pushed to your repository. Keeps translations consistently up-to-date.
-- Requires: Setting up a workflow file (`.github/workflows`) değiştirin. Yerel kurulum gerekmez.
-- Kılavuzlar:
-  - [GitHub Actions Kılavuzu (Açık Depolar ve Standart Gizli Anahtarlar)](./getting_started/github-actions-guide/github-actions-guide-public.md) - Çoğu açık veya kişisel depo için standart depo gizli anahtarlarıyla kullanın.
-  - [GitHub Actions Kılavuzu (Microsoft Organizasyon Depoları ve Organizasyon Seviyesi Kurulumlar)](./getting_started/github-actions-guide/github-actions-guide-org.md) - Microsoft GitHub organizasyonu içindeyseniz veya organizasyon seviyesinde gizli anahtarlar ya da runner’lar kullanmanız gerekiyorsa bu kılavuzu takip edin.
+- Requires: Setting up a workflow file (`.github/workflows` değiştirin). Yerel kurulum gerekmez.
+- Rehberler:
+  - [GitHub Actions Rehberi (Açık Depolar & Standart Sırlar)](./getting_started/github-actions-guide/github-actions-guide-public.md) - Çoğu açık veya kişisel depo için standart depo sırlarıyla kullanın.
+  - [GitHub Actions Rehberi (Microsoft Organizasyon Depoları & Organizasyon Seviyesi Ayarlar)](./getting_started/github-actions-guide/github-actions-guide-org.md) - Microsoft GitHub organizasyonu içinde çalışıyorsanız veya organizasyon seviyesinde sırlar veya koşucular kullanmanız gerekiyorsa bu rehberi kullanın.
 
 > [!NOTE]
-> Bu öğretici Azure kaynaklarına odaklansa da, [desteklenen modeller ve servisler](../..) listesindeki herhangi bir dil modelini kullanabilirsiniz.
+> Bu eğitim Azure kaynaklarına odaklansa da, [desteklenen modeller ve servisler](../..) listesindeki herhangi bir dil modelini kullanabilirsiniz.
 
 ### Sorun Giderme ve İpuçları
 
-- [Sorun Giderme Kılavuzu](./getting_started/troubleshooting.md)
+- [Sorun Giderme Rehberi](./getting_started/troubleshooting.md)
 
 ### Ek Kaynaklar
 
-- [Komut Referansı](./getting_started/command-reference.md): Tüm komutlar ve seçenekler için detaylı rehber.
-- [Çok Dilli Destek Kurulumu](./getting_started/multi-language-support.md): README dosyanıza çevrilmiş sürümlere bağlantı ekleme tablosu nasıl eklenir.
+- [Komut Referansı](./getting_started/command-reference.md): Mevcut tüm komutlar ve seçenekler için detaylı rehber.
+- [Çok Dilli Destek Kurulumu](./getting_started/multi-language-support.md): README içinde çevrilmiş sürümlere bağlantı ekleme tablosu nasıl oluşturulur.
 - [Desteklenen Diller](./getting_started/supported-languages.md): Desteklenen diller listesi ve yeni dil ekleme talimatları.
-- [Sadece Markdown Modu](./getting_started/markdown-only-mode.md): Sadece metni çevirme, görsel çevirisi olmadan nasıl yapılır.
+- [Sadece Markdown Modu](./getting_started/markdown-only-mode.md): Sadece metni çevirme, resim çevirisi olmadan nasıl yapılır.
 
 ## Video Sunumları
 
-Co-op Translator hakkında daha fazla bilgi edinmek için sunumlarımızı izleyin _(Aşağıdaki görsele tıklayarak YouTube’da izleyebilirsiniz.)_:
+Co-op Translator hakkında daha fazla bilgi edinmek için sunumlarımızı izleyin _(Aşağıdaki resme tıklayarak YouTube’da izleyebilirsiniz.)_:
 
-- **Open at Microsoft**: Co-op Translator’ı kullanmaya dair 18 dakikalık kısa tanıtım ve hızlı rehber.
+- **Open at Microsoft**: Co-op Translator’ı kullanmaya yönelik 18 dakikalık kısa tanıtım ve hızlı rehber.
 
-  [![Open at Microsoft](../../../../../../imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
+  [![Open at Microsoft](../../imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
-- **Microsoft Reactor**: Co-op Translator’ın ne olduğu, kurulumu ve etkili kullanımı ile canlı demo dahil bir saatlik ayrıntılı adım adım rehber.
+- **Microsoft Reactor**: Co-op Translator’ın ne olduğu, kurulumu, etkili kullanımı ve canlı demo dahil her şeyi adım adım anlatan bir saatlik detaylı rehber.
 
-  [![Microsoft Reactor](../../../../../../imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
+  [![Microsoft Reactor](../../imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
 
 ## Bizi Destekleyin ve Küresel Öğrenmeyi Teşvik Edin
 
-Eğitim içeriğinin dünya çapında paylaşımını dönüştürmek için bize katılın! [Co-op Translator](https://github.com/azure/co-op-translator)’a GitHub’da ⭐ verin ve öğrenme ile teknolojide dil engellerini kaldırma misyonumuza destek olun. İlginiz ve katkılarınız büyük fark yaratır! Kod katkıları ve özellik önerileri her zaman memnuniyetle karşılanır.
+Eğitim içeriğinin dünya çapında paylaşımını devrim niteliğinde değiştirmemize katılın! [Co-op Translator](https://github.com/azure/co-op-translator)’a GitHub’da ⭐ verin ve öğrenme ile teknolojideki dil engellerini kaldırma misyonumuzu destekleyin. İlginiz ve katkılarınız büyük fark yaratır! Kod katkıları ve özellik önerileri her zaman hoş karşılanır.
 
 ## Katkıda Bulunma
 
-Bu proje katkı ve önerilere açıktır. Azure Co-op Translator’a katkıda bulunmak ister misiniz? Katkı sağlama rehberimiz için lütfen [CONTRIBUTING.md](./CONTRIBUTING.md) dosyasına bakın.
+Bu proje katkı ve önerilere açıktır. Azure Co-op Translator’a katkıda bulunmak ister misiniz? Lütfen Co-op Translator’ı daha erişilebilir kılmak için nasıl yardımcı olabileceğinizi öğrenmek üzere [CONTRIBUTING.md](./CONTRIBUTING.md) dosyasına bakın.
 
 ## Katkıda Bulunanlar
 
@@ -178,25 +176,23 @@ Bu proje katkı ve önerilere açıktır. Azure Co-op Translator’a katkıda bu
 
 ## Davranış Kuralları
 
-Bu proje [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/)’u benimsemiştir.
-Daha fazla bilgi için [Code of Conduct SSS](https://opensource.microsoft.com/codeofconduct/faq/) sayfasına bakabilir veya
-herhangi bir soru veya yorum için [opencode@microsoft.com](mailto:opencode@microsoft.com) adresiyle iletişime geçebilirsiniz.
+Bu proje [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/) kurallarını benimsemiştir. Daha fazla bilgi için [Davranış Kuralları SSS](https://opensource.microsoft.com/codeofconduct/faq/) sayfasına bakabilir veya ek sorularınız için [opencode@microsoft.com](mailto:opencode@microsoft.com) adresiyle iletişime geçebilirsiniz.
 
 ## Sorumlu Yapay Zeka
 
-Microsoft, müşterilerimizin yapay zeka ürünlerimizi sorumlu şekilde kullanmalarına yardımcı olmaya, öğrendiklerimizi paylaşmaya ve Transparency Notes ile Impact Assessments gibi araçlarla güvene dayalı ortaklıklar kurmaya kararlıdır. Bu kaynakların çoğuna [https://aka.ms/RAI](https://aka.ms/RAI) adresinden ulaşabilirsiniz.
-Microsoft’un sorumlu yapay zeka yaklaşımı, adalet, güvenilirlik ve güvenlik, gizlilik ve güvenlik, kapsayıcılık, şeffaflık ve hesap verebilirlik gibi AI ilkelerimize dayanır.
+Microsoft, müşterilerimizin yapay zeka ürünlerimizi sorumlu şekilde kullanmalarına yardımcı olmaya, deneyimlerimizi paylaşmaya ve Transparency Notes ile Etki Değerlendirmeleri gibi araçlarla güvene dayalı ortaklıklar kurmaya kararlıdır. Bu kaynakların çoğuna [https://aka.ms/RAI](https://aka.ms/RAI) adresinden ulaşabilirsiniz.  
+Microsoft’un sorumlu yapay zeka yaklaşımı, adalet, güvenilirlik ve güvenlik, gizlilik ve güvenlik, kapsayıcılık, şeffaflık ve hesap verebilirlik gibi AI ilkelerine dayanmaktadır.
 
-Bu örnekte kullanılanlar gibi büyük ölçekli doğal dil, görüntü ve konuşma modelleri, haksız, güvenilmez veya rahatsız edici davranışlar sergileyerek zarar verebilir. Riskler ve sınırlamalar hakkında bilgi sahibi olmak için lütfen [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) sayfasını inceleyin.
-Bu riskleri azaltmak için önerilen yaklaşım, mimarinizde zararlı davranışları tespit edip önleyebilen bir güvenlik sistemi dahil etmektir. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview), uygulamalarda ve servislerde kullanıcı tarafından oluşturulan ve yapay zeka tarafından üretilen zararlı içeriği tespit edebilen bağımsız bir koruma katmanı sağlar. Azure AI Content Safety, zararlı materyali tespit etmenizi sağlayan metin ve görüntü API'lerini içerir. Ayrıca, farklı modlarda zararlı içeriği tespit etmek için örnek kodları inceleyip deneyebileceğiniz etkileşimli bir Content Safety Studio sunuyoruz. Aşağıdaki [hızlı başlangıç dokümantasyonu](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) servise istek yapma sürecinde size rehberlik eder.
+Bu örnekte kullanılan büyük ölçekli doğal dil, görüntü ve konuşma modelleri, haksız, güvenilmez veya saldırgan davranışlar sergileyerek zararlara yol açabilir. Riskler ve sınırlamalar hakkında bilgi sahibi olmak için lütfen [Azure OpenAI servisi Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) sayfasını inceleyin.
+Riskleri azaltmak için önerilen yaklaşım, mimarinizde zararlı davranışları tespit edip engelleyebilen bir güvenlik sistemi dahil etmektir. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview), uygulamalarda ve servislerde kullanıcı tarafından oluşturulan ve yapay zeka tarafından oluşturulan zararlı içerikleri tespit edebilen bağımsız bir koruma katmanı sağlar. Azure AI Content Safety, zararlı materyalleri tespit etmenizi sağlayan metin ve görsel API’lerini içerir. Ayrıca, farklı modalitelerde zararlı içeriği tespit etmek için örnek kodları görüntüleyip inceleyebileceğiniz ve deneyebileceğiniz etkileşimli bir Content Safety Studio’muz bulunmaktadır. Aşağıdaki [quickstart dokümantasyonu](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) servise istek yapma sürecinde size rehberlik eder.
 
-Dikkate alınması gereken bir diğer konu ise genel uygulama performansıdır. Çok modlu ve çok model uygulamalarda performans, sistemin sizin ve kullanıcılarınızın beklentileri doğrultusunda çalışması, zararlı çıktı üretmemesi anlamına gelir. Genel uygulamanızın performansını [üretim kalitesi ve risk ile güvenlik metrikleri](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in) kullanarak değerlendirmek önemlidir.
+Dikkate alınması gereken bir diğer husus ise genel uygulama performansıdır. Çok modlu ve çok modelleri olan uygulamalarda, performans derken sistemin sizin ve kullanıcılarınızın beklentileri doğrultusunda çalışması, zararlı çıktılar üretmemesi kastedilir. Genel uygulamanızın performansını [üretim kalitesi ile risk ve güvenlik metrikleri](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in) kullanarak değerlendirmek önemlidir.
 
-AI uygulamanızı geliştirme ortamınızda [prompt flow SDK](https://microsoft.github.io/promptflow/index.html) ile değerlendirebilirsiniz. Bir test veri seti veya hedef verildiğinde, üretken AI uygulamanızın çıktıları, yerleşik veya sizin seçtiğiniz özel değerlendiricilerle nicel olarak ölçülür. Sisteminizin değerlendirilmesine başlamak için [hızlı başlangıç kılavuzunu](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk) takip edebilirsiniz. Bir değerlendirme çalıştırması yaptıktan sonra, sonuçları [Azure AI Studio'da görselleştirebilirsiniz](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
+Yapay zeka uygulamanızı geliştirme ortamınızda [prompt flow SDK](https://microsoft.github.io/promptflow/index.html) ile değerlendirebilirsiniz. Test veri seti veya hedef verildiğinde, üretken yapay zeka uygulamanızın çıktıları yerleşik değerlendiriciler veya seçtiğiniz özel değerlendiricilerle niceliksel olarak ölçülür. Sisteminizin değerlendirmesine başlamak için [quickstart rehberini](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk) takip edebilirsiniz. Değerlendirme çalışmasını yürüttükten sonra, sonuçları [Azure AI Studio’da görselleştirebilirsiniz](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
 
-## Tescilli Markalar
+## Trademarks
 
-Bu proje, projeler, ürünler veya servisler için tescilli markalar veya logolar içerebilir. Microsoft tescilli marka veya logolarının yetkili kullanımı, [Microsoft'un Marka ve Marka Yönergeleri](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general) doğrultusunda olmalı ve bu kurallara uymalıdır. Bu projenin değiştirilmiş versiyonlarında Microsoft tescilli marka veya logolarının kullanımı, karışıklık yaratmamalı veya Microsoft sponsorluğunu ima etmemelidir. Üçüncü taraf tescilli marka veya logolarının kullanımı ise ilgili üçüncü tarafın politikalarına tabidir.
+Bu proje, projeler, ürünler veya servisler için ticari markalar veya logolar içerebilir. Microsoft ticari markalarının veya logolarının yetkili kullanımı, [Microsoft'un Ticari Marka ve Marka Rehberleri](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general) doğrultusunda ve kurallarına uygun olmalıdır. Microsoft ticari markalarının veya logolarının bu projenin değiştirilmiş versiyonlarında kullanımı karışıklık yaratmamalı veya Microsoft sponsorluğunu ima etmemelidir. Üçüncü taraf ticari marka veya logolarının kullanımı ise ilgili üçüncü taraf politikalarına tabidir.
 
 **Feragatname**:  
-Bu belge, AI çeviri servisi [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba sarf etsek de, otomatik çevirilerin hata veya yanlışlık içerebileceğini lütfen unutmayınız. Orijinal belge, kendi dilinde yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımı sonucu oluşabilecek yanlış anlamalar veya yorum hatalarından sorumlu değiliz.
+Bu belge, AI çeviri servisi [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba göstersek de, otomatik çevirilerin hatalar veya yanlışlıklar içerebileceğini lütfen unutmayınız. Orijinal belge, kendi dilinde yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımı sonucu ortaya çıkabilecek yanlış anlamalar veya yorum farklılıklarından dolayı sorumluluk kabul edilmemektedir.

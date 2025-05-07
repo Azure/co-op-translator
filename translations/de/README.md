@@ -1,17 +1,17 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "329abbc9354793ea422f7e7ebf66be2c",
-  "translation_date": "2025-05-07T01:54:10+00:00",
+  "original_hash": "18318279bb851dc2c709bfc6a26f6e1d",
+  "translation_date": "2025-05-07T14:06:21+00:00",
   "source_file": "README.md",
   "language_code": "de"
 }
 -->
 ![Logo](../../imgs/logo.png)
 
-# Co-op Translator: Automatisiere mühelos die Übersetzung von Bildungsdokumentationen
+# Co-op Translator: Automatisieren Sie mühelos die Übersetzung von Bildungsdokumentationen
 
-_Erfasse spielend leicht die automatische Übersetzung deiner Dokumentation in mehrere Sprachen, um ein globales Publikum zu erreichen._
+_Automatisieren Sie ganz einfach die Übersetzung Ihrer Dokumentation in mehrere Sprachen, um ein globales Publikum zu erreichen._
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
@@ -38,28 +38,27 @@ _Erfasse spielend leicht die automatische Übersetzung deiner Dokumentation in m
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
 > [!TIP]
->
 > **Leistungsstarke Automatisierung**: Jetzt mit Unterstützung für GitHub Actions! Übersetzen Sie Ihre Dokumentation automatisch, sobald Änderungen in Ihrem Repository vorgenommen werden, und halten Sie alles mühelos auf dem neuesten Stand. [Mehr erfahren](../..).
 
 ## Unterstützte Modelle und Dienste
 
 | Typ                   | Name                           |
 |-----------------------|--------------------------------|
-| Sprachmodell          | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
+| Language Model        | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
 | Computer Vision       | ![Azure Computer Vision](https://img.shields.io/badge/Azure_Computer_Vision-blue?style=flat-square) |
 
 > [!NOTE]
-> Falls ein Computer-Vision-Dienst nicht verfügbar ist, wechselt der co-op translator in den [Markdown-Only-Modus](./getting_started/markdown-only-mode.md).
+> Wenn ein Computer-Vision-Dienst nicht verfügbar ist, wechselt der co-op translator in den [Markdown-Only-Modus](./getting_started/markdown-only-mode.md).
 
-## Überblick: Vereinfachen Sie die Übersetzung Ihrer Bildungsinhalte
+## Überblick: Optimieren Sie die Übersetzung Ihrer Bildungsinhalte
 
-Sprachbarrieren erschweren den Zugang zu wertvollen Bildungsressourcen und technischem Wissen für Lernende und Entwickler weltweit erheblich. Das begrenzt die Teilnahme und verlangsamt den globalen Innovations- und Lernprozess.
+Sprachbarrieren erschweren den Zugang zu wertvollen Bildungsressourcen und technischem Wissen für Lernende und Entwickler weltweit erheblich. Das schränkt die Teilnahme ein und verlangsamt den globalen Innovations- und Lernprozess.
 
-**Co-op Translator** entstand aus dem Bedarf, den ineffizienten manuellen Übersetzungsprozess für Microsofts eigene groß angelegte Bildungserien (wie die "For Beginners"-Anleitungen) zu verbessern. Es hat sich zu einem benutzerfreundlichen, leistungsstarken Werkzeug entwickelt, das diese Barrieren für alle abbaut. Durch hochwertige automatisierte Übersetzungen via CLI und GitHub Actions ermöglicht Co-op Translator Lehrenden, Studierenden, Forschenden und Entwicklern weltweit, Wissen ohne Sprachgrenzen zu teilen und zu nutzen.
+**Co-op Translator** entstand aus dem Bedarf, den ineffizienten manuellen Übersetzungsprozess für Microsofts eigene umfangreiche Bildungsreihe (wie die "For Beginners"-Anleitungen) zu verbessern. Daraus entwickelte sich ein benutzerfreundliches, leistungsstarkes Tool, das diese Barrieren für alle abbaut. Durch hochwertige automatisierte Übersetzungen per CLI und GitHub Actions ermöglicht Co-op Translator Lehrkräften, Studierenden, Forschern und Entwicklern weltweit den Austausch und Zugriff auf Wissen ohne Sprachhürden.
 
 So organisiert Co-op Translator übersetzte Bildungsinhalte:
 
-![Beispiel](../../imgs/translation-ex.png)
+![Example](../../imgs/translation-ex.png)
 
 Markdown-Dateien und Bildtexte werden automatisch übersetzt und übersichtlich in sprachspezifischen Ordnern abgelegt.
 
@@ -67,7 +66,7 @@ Markdown-Dateien und Bildtexte werden automatisch übersetzt und übersichtlich 
 
 ## Unterstützung des globalen Zugangs zu Microsofts Lernressourcen
 
-Co-op Translator hilft, die Sprachbarriere für wichtige Microsoft-Bildungsinitiativen zu überwinden, indem der Übersetzungsprozess für Repositories automatisiert wird, die eine globale Entwicklergemeinschaft bedienen. Beispiele, die derzeit Co-op Translator nutzen, sind:
+Co-op Translator hilft, die Sprachbarriere bei wichtigen Microsoft-Bildungsinitiativen zu überbrücken, indem er den Übersetzungsprozess für Repositories automatisiert, die eine globale Entwickler-Community bedienen. Beispiele für Projekte, die derzeit Co-op Translator nutzen:
 
 [![ML-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ML-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ML-For-Beginners)
 [![Generative-AI-for-beginners-dotnet](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=Generative-AI-for-beginners-dotnet&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
@@ -77,43 +76,50 @@ Co-op Translator hilft, die Sprachbarriere für wichtige Microsoft-Bildungsiniti
 
 ## Hauptfunktionen
 
-- **Automatisierte Übersetzungen**: Übersetzen Sie Texte mühelos in mehrere Sprachen.
-- **GitHub Actions Integration**: Automatisieren Sie Übersetzungen als Teil Ihrer CI/CD-Pipeline.
-- **Markdown-Erhaltung**: Bewahren Sie die korrekte Markdown-Syntax während der Übersetzung.
-- **Bildtextübersetzung**: Extrahieren und übersetzen Sie Texte in Bildern.
-- **Fortschrittliche LLM-Technologie**: Nutzen Sie modernste Sprachmodelle für hochwertige Übersetzungen.
+- **Automatisierte Übersetzungen**: Texte mühelos in mehrere Sprachen übersetzen.
+- **GitHub Actions Integration**: Übersetzungen als Teil Ihrer CI/CD-Pipeline automatisieren.
+- **Markdown-Erhaltung**: Korrekte Markdown-Syntax während der Übersetzung beibehalten.
+- **Bildtextübersetzung**: Text in Bildern extrahieren und übersetzen.
+- **Fortschrittliche LLM-Technologie**: Modernste Sprachmodelle für hochwertige Übersetzungen nutzen.
 - **Einfache Integration**: Nahtlose Einbindung in Ihre bestehende Projektstruktur.
-- **Lokalisierung vereinfachen**: Optimieren Sie den Prozess der Internationalisierung Ihres Projekts.
+- **Lokalisierung vereinfachen**: Den Prozess der Internationalisierung Ihres Projekts optimieren.
 
 ## Funktionsweise
 
-![Architektur](../../imgs/architecture_241019.png)
+![Architecture](../../imgs/architecture_241019.png)
 
-Co-op Translator nimmt Markdown-Dateien und Bilder aus Ihrem Projektordner und verarbeitet sie wie folgt:
+Co-op Translator nimmt Markdown-Dateien und Bilder aus Ihrem Projektordner und verarbeitet sie folgendermaßen:
 
-1. **Textextraktion**: Extrahiert Text aus Markdown-Dateien und – falls konfiguriert (z.B. mit Azure Computer Vision) – auch Text aus Bildern.
-1. **KI-Übersetzung**: Sendet den extrahierten Text an das konfigurierte LLM (Azure OpenAI, OpenAI etc.) zur Übersetzung.
+1. **Textextraktion**: Extrahiert Text aus Markdown-Dateien und, falls konfiguriert (z. B. mit Azure Computer Vision), auch aus Bildern.
+1. **KI-Übersetzung**: Sendet den extrahierten Text an das konfigurierte LLM (Azure OpenAI, OpenAI usw.) zur Übersetzung.
 1. **Speicherung der Ergebnisse**: Speichert die übersetzten Markdown-Dateien und Bilder (mit übersetztem Text) in sprachspezifischen Ordnern und bewahrt dabei das ursprüngliche Format.
 
 ## Erste Schritte
 
+> [!NOTE]
+> Während dieses Tutorial sich auf Azure-Ressourcen konzentriert, können Sie jedes unterstützte Sprachmodell aus der Liste der [supported models and services](../..) verwenden.
+
 Starten Sie schnell mit der CLI oder richten Sie eine vollständige Automatisierung mit GitHub Actions ein.
+
+### Erste Einrichtung
+
+- [Azure AI einrichten](./getting_started/set-up-azure-ai.md)
 
 ### Schnellstart: Kommandozeile
 
 Für einen schnellen Einstieg über die Kommandozeile:
 
-1. Installieren Sie das Paket:
+1. Paket installieren:
     ```bash
     pip install co-op-translator
     ```
-2. Konfigurieren Sie die Zugangsdaten:
+2. Anmeldedaten konfigurieren:
   - Erstellen Sie eine `.env` file in your project's root directory.
   - Copy the contents from the [.env.template](../../.env.template) file into your new `.env` file.
   - Fill in the required API keys and endpoint information in your `.env` file.
 3. Run Translation:
   - Navigate to your project's root directory in your terminal.
-  - Execute the translate command, specifying target languages with the `-l`-Option:
+  - Execute the translate command, specifying target languages with the `-l`-Datei:
     ```bash
     translate -l "ko ja fr"
     ```
@@ -134,11 +140,8 @@ Choose the approach that best fits your workflow:
 - Best for: Automatically translating content whenever changes are pushed to your repository. Keeps translations consistently up-to-date.
 - Requires: Setting up a workflow file (`.github/workflows`) in Ihrem Repository. Keine lokale Installation erforderlich.
 - Anleitungen:
-  - [GitHub Actions Guide (Public Repositories & Standard Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) – Für die meisten öffentlichen oder persönlichen Repositories, die Standard-Repository-Geheimnisse verwenden.
-  - [GitHub Actions Guide (Microsoft Organization Repos & Org-Level Setups)](./getting_started/github-actions-guide/github-actions-guide-org.md) – Für die Arbeit innerhalb der Microsoft GitHub-Organisation oder wenn Organisationsebenen-Geheimnisse oder -Runner genutzt werden sollen.
-
-> [!NOTE]
-> Obwohl dieses Tutorial den Fokus auf Azure-Ressourcen legt, können Sie jedes unterstützte Sprachmodell aus der Liste der [unterstützten Modelle und Dienste](../..) verwenden.
+  - [GitHub Actions Guide (öffentliche Repositories & Standard-Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) - Für die meisten öffentlichen oder persönlichen Repositories, die auf Standard-Repository-Geheimnisse angewiesen sind.
+  - [GitHub Actions Guide (Microsoft Organization Repos & Organisationsebene)](./getting_started/github-actions-guide/github-actions-guide-org.md) - Für die Arbeit innerhalb der Microsoft GitHub-Organisation oder wenn organisationseigene Secrets oder Runner genutzt werden sollen.
 
 ### Fehlerbehebung und Tipps
 
@@ -147,29 +150,29 @@ Choose the approach that best fits your workflow:
 ### Weitere Ressourcen
 
 - [Befehlsreferenz](./getting_started/command-reference.md): Ausführliche Anleitung zu allen verfügbaren Befehlen und Optionen.
-- [Multi-Sprachunterstützung einrichten](./getting_started/multi-language-support.md): Wie Sie eine Tabelle mit Links zu übersetzten Versionen in Ihrem README hinzufügen.
-- [Unterstützte Sprachen](./getting_started/supported-languages.md): Übersicht der unterstützten Sprachen und Anleitungen zum Hinzufügen neuer Sprachen.
+- [Mehrsprachige Unterstützung einrichten](./getting_started/multi-language-support.md): So fügen Sie eine Tabelle mit Links zu den übersetzten Versionen in Ihrer README hinzu.
+- [Unterstützte Sprachen](./getting_started/supported-languages.md): Liste der unterstützten Sprachen und Anleitungen zum Hinzufügen neuer Sprachen.
 - [Markdown-Only-Modus](./getting_started/markdown-only-mode.md): Wie Sie nur Text übersetzen, ohne Bildübersetzung.
 
 ## Video-Präsentationen
 
-Erfahren Sie mehr über Co-op Translator durch unsere Präsentationen _(Klicken Sie auf das Bild, um es auf YouTube anzusehen.)_:
+Erfahren Sie mehr über Co-op Translator in unseren Präsentationen _(Klicken Sie auf das Bild unten, um das Video auf YouTube anzusehen.)_:
 
-- **Open at Microsoft**: Eine kurze 18-minütige Einführung und schnelle Anleitung zur Nutzung von Co-op Translator.
+- **Open at Microsoft**: Eine kurze 18-minütige Einführung und Schnellstart-Anleitung zur Nutzung von Co-op Translator.
 
   [![Open at Microsoft](../../imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
-- **Microsoft Reactor**: Eine einstündige, detaillierte Schritt-für-Schritt-Anleitung, die alles von der Erklärung, was Co-op Translator ist, über die Einrichtung bis hin zur effektiven Nutzung und einer Live-Demo zeigt.
+- **Microsoft Reactor**: Eine einstündige, detaillierte Schritt-für-Schritt-Anleitung, die alles abdeckt – von der Erklärung, was Co-op Translator ist, über die Einrichtung und effektive Nutzung bis hin zu einer Live-Demo, die die Funktionen in Aktion zeigt.
 
   [![Microsoft Reactor](../../imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
 
 ## Unterstützen Sie uns und fördern Sie globales Lernen
 
-Begleiten Sie uns dabei, die Art und Weise zu revolutionieren, wie Bildungsinhalte weltweit geteilt werden! Geben Sie [Co-op Translator](https://github.com/azure/co-op-translator) einen ⭐ auf GitHub und unterstützen Sie unsere Mission, Sprachbarrieren im Lernen und in der Technologie abzubauen. Ihr Interesse und Ihre Beiträge haben einen großen Einfluss! Code-Beiträge und Feature-Vorschläge sind jederzeit willkommen.
+Seien Sie Teil der Revolution, wie Bildungsinhalte weltweit geteilt werden! Geben Sie [Co-op Translator](https://github.com/azure/co-op-translator) einen ⭐ auf GitHub und unterstützen Sie unsere Mission, Sprachbarrieren im Lernen und in der Technologie abzubauen. Ihr Interesse und Ihre Beiträge bewirken viel! Code-Beiträge und Feature-Vorschläge sind jederzeit willkommen.
 
 ## Mitwirken
 
-Dieses Projekt freut sich über Beiträge und Vorschläge. Interessiert an einer Mitarbeit bei Azure Co-op Translator? Bitte lesen Sie unsere [CONTRIBUTING.md](./CONTRIBUTING.md) für Richtlinien, wie Sie dazu beitragen können, Co-op Translator zugänglicher zu machen.
+Dieses Projekt freut sich über Beiträge und Vorschläge. Möchten Sie Azure Co-op Translator unterstützen? Bitte lesen Sie unsere [CONTRIBUTING.md](./CONTRIBUTING.md) für Richtlinien, wie Sie helfen können, Co-op Translator zugänglicher zu machen.
 
 ## Mitwirkende
 
@@ -180,21 +183,21 @@ Dieses Projekt freut sich über Beiträge und Vorschläge. Interessiert an einer
 Dieses Projekt hat den [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/) übernommen.
 Weitere Informationen finden Sie in den [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) oder kontaktieren Sie [opencode@microsoft.com](mailto:opencode@microsoft.com) bei weiteren Fragen oder Anmerkungen.
 
-## Verantwortungsbewusste KI
+## Verantwortungsvolle KI
 
-Microsoft verpflichtet sich, unsere Kunden bei der verantwortungsvollen Nutzung unserer KI-Produkte zu unterstützen, unsere Erkenntnisse zu teilen und vertrauensbasierte Partnerschaften durch Werkzeuge wie Transparency Notes und Impact Assessments aufzubauen. Viele dieser Ressourcen finden Sie unter [https://aka.ms/RAI](https://aka.ms/RAI).
-Der Ansatz von Microsoft für verantwortungsbewusste KI basiert auf unseren KI-Prinzipien: Fairness, Zuverlässigkeit und Sicherheit, Datenschutz und Sicherheit, Inklusivität, Transparenz und Verantwortlichkeit.
+Microsoft verpflichtet sich, Kunden bei der verantwortungsvollen Nutzung unserer KI-Produkte zu unterstützen, unsere Erkenntnisse zu teilen und vertrauensbasierte Partnerschaften durch Tools wie Transparency Notes und Impact Assessments aufzubauen. Viele dieser Ressourcen finden Sie unter [https://aka.ms/RAI](https://aka.ms/RAI).
+Der Ansatz von Microsoft für verantwortungsvolle KI basiert auf unseren KI-Prinzipien zu Fairness, Zuverlässigkeit und Sicherheit, Datenschutz und Sicherheit, Inklusivität, Transparenz und Verantwortlichkeit.
+Groß angelegte Modelle für natürliche Sprache, Bilder und Sprache – wie die in diesem Beispiel verwendeten – können sich potenziell unfair, unzuverlässig oder anstößig verhalten und dadurch Schäden verursachen. Bitte konsultieren Sie die [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text), um über Risiken und Einschränkungen informiert zu sein.
 
-Groß angelegte Modelle für natürliche Sprache, Bilder und Sprache – wie die in diesem Beispiel verwendeten – können potenziell unfair, unzuverlässig oder anstößig reagieren und dadurch Schaden verursachen. Bitte konsultieren Sie die [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text), um über Risiken und Einschränkungen informiert zu sein.
-Der empfohlene Ansatz zur Minderung dieser Risiken besteht darin, ein Sicherheitssystem in Ihre Architektur zu integrieren, das schädliches Verhalten erkennen und verhindern kann. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) bietet eine unabhängige Schutzschicht, die in der Lage ist, schädliche von Nutzern und KI generierte Inhalte in Anwendungen und Diensten zu erkennen. Azure AI Content Safety umfasst Text- und Bild-APIs, mit denen Sie schädliches Material erkennen können. Außerdem gibt es ein interaktives Content Safety Studio, mit dem Sie Beispielcode zur Erkennung schädlicher Inhalte in verschiedenen Modalitäten ansehen, erkunden und ausprobieren können. Die folgende [Quickstart-Dokumentation](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) führt Sie durch das Senden von Anfragen an den Dienst.
+Der empfohlene Ansatz zur Minderung dieser Risiken besteht darin, ein Sicherheitssystem in Ihre Architektur zu integrieren, das schädliches Verhalten erkennen und verhindern kann. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) bietet eine unabhängige Schutzschicht, die in der Lage ist, schädliche nutzergenerierte und KI-generierte Inhalte in Anwendungen und Diensten zu erkennen. Azure AI Content Safety umfasst Text- und Bild-APIs, mit denen Sie schädliches Material identifizieren können. Außerdem steht ein interaktives Content Safety Studio zur Verfügung, mit dem Sie Beispielcode zur Erkennung schädlicher Inhalte in verschiedenen Modalitäten ansehen, erkunden und ausprobieren können. Die folgende [Quickstart-Dokumentation](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) führt Sie durch das Stellen von Anfragen an den Dienst.
 
-Ein weiterer Aspekt, der berücksichtigt werden sollte, ist die Gesamtleistung der Anwendung. Bei multimodalen und multivarianten Anwendungen verstehen wir unter Leistung, dass das System so funktioniert, wie Sie und Ihre Nutzer es erwarten, einschließlich der Vermeidung der Erzeugung schädlicher Ausgaben. Es ist wichtig, die Leistung Ihrer gesamten Anwendung mithilfe von [Generierungsqualität sowie Risiko- und Sicherheitsmetriken](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in) zu bewerten.
+Ein weiterer Aspekt, der berücksichtigt werden sollte, ist die Gesamtleistung der Anwendung. Bei multimodalen und multimodellbasierten Anwendungen verstehen wir unter Leistung, dass das System so funktioniert, wie Sie und Ihre Nutzer es erwarten, einschließlich der Vermeidung schädlicher Ausgaben. Es ist wichtig, die Leistung Ihrer gesamten Anwendung anhand von [Qualitäts- sowie Risiko- und Sicherheitsmetriken für die Generierung](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in) zu bewerten.
 
-Sie können Ihre KI-Anwendung in Ihrer Entwicklungsumgebung mit dem [prompt flow SDK](https://microsoft.github.io/promptflow/index.html) evaluieren. Anhand eines Testdatensatzes oder eines Ziels werden die Generierungen Ihrer generativen KI-Anwendung quantitativ mit integrierten oder benutzerdefinierten Evaluatoren Ihrer Wahl gemessen. Um mit dem prompt flow sdk zur Bewertung Ihres Systems zu beginnen, können Sie der [Quickstart-Anleitung](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk) folgen. Sobald Sie einen Evaluierungslauf durchgeführt haben, können Sie die Ergebnisse im [Azure AI Studio visualisieren](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
+Sie können Ihre KI-Anwendung in Ihrer Entwicklungsumgebung mit dem [prompt flow SDK](https://microsoft.github.io/promptflow/index.html) evaluieren. Anhand eines Testdatensatzes oder eines Ziels werden die Generierungen Ihrer generativen KI-Anwendung quantitativ mit integrierten oder benutzerdefinierten Evaluatoren Ihrer Wahl gemessen. Um mit dem prompt flow sdk zur Bewertung Ihres Systems zu beginnen, können Sie der [Quickstart-Anleitung](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk) folgen. Nach der Ausführung eines Evaluierungslaufs können Sie die Ergebnisse [im Azure AI Studio visualisieren](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
 
-## Marken
+## Trademarks
 
-Dieses Projekt kann Marken oder Logos von Projekten, Produkten oder Diensten enthalten. Die autorisierte Verwendung von Microsoft-Marken oder -Logos unterliegt den [Microsoft Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general) und muss diesen folgen. Die Verwendung von Microsoft-Marken oder -Logos in modifizierten Versionen dieses Projekts darf keine Verwirrung stiften oder eine Microsoft-Unterstützung suggerieren. Jede Verwendung von Marken oder Logos Dritter unterliegt den Richtlinien der jeweiligen Dritten.
+Dieses Projekt kann Marken oder Logos von Projekten, Produkten oder Diensten enthalten. Die autorisierte Nutzung von Microsoft-Marken oder -Logos unterliegt den [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general) und muss diesen entsprechen. Die Verwendung von Microsoft-Marken oder -Logos in modifizierten Versionen dieses Projekts darf nicht zu Verwechslungen führen oder eine Microsoft-Unterstützung suggerieren. Die Nutzung von Marken oder Logos Dritter unterliegt den jeweiligen Richtlinien dieser Dritten.
 
 **Haftungsausschluss**:  
-Dieses Dokument wurde mit dem KI-Übersetzungsdienst [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir auf Genauigkeit achten, beachten Sie bitte, dass automatisierte Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner Ursprungssprache gilt als maßgebliche Quelle. Für wichtige Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die aus der Verwendung dieser Übersetzung entstehen.
+Dieses Dokument wurde mit dem KI-Übersetzungsdienst [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir uns um Genauigkeit bemühen, beachten Sie bitte, dass automatisierte Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner ursprünglichen Sprache gilt als maßgebliche Quelle. Für wichtige Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die aus der Nutzung dieser Übersetzung entstehen.

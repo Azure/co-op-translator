@@ -1,97 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "87bf95d45e684475ef1e67d8dae5f6eb",
-  "translation_date": "2025-05-06T18:11:53+00:00",
+  "original_hash": "a52587a512e667f70d92db853d3c61d5",
+  "translation_date": "2025-05-07T14:10:04+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "hi"
 }
 -->
 # Co-op Translator GitHub Action का उपयोग करना (सार्वजनिक सेटअप)
 
-**लक्षित उपयोगकर्ता:** यह मार्गदर्शिका उन उपयोगकर्ताओं के लिए है जो अधिकांश सार्वजनिक या निजी रिपॉजिटरी में हैं जहाँ मानक GitHub Actions अनुमतियाँ पर्याप्त होती हैं। यह अंतर्निर्मित `GITHUB_TOKEN` का उपयोग करता है।
+**लक्षित दर्शक:** यह गाइड उन उपयोगकर्ताओं के लिए है जो अधिकांश सार्वजनिक या निजी रिपॉजिटरी में हैं जहाँ मानक GitHub Actions अनुमतियाँ पर्याप्त होती हैं। यह अंतर्निहित `GITHUB_TOKEN` का उपयोग करता है।
 
-अपने रिपॉजिटरी के दस्तावेज़ीकरण का अनुवाद आसानी से स्वचालित करें Co-op Translator GitHub Action के जरिए। यह मार्गदर्शिका आपको यह बताती है कि जब भी आपके स्रोत Markdown फ़ाइलें या चित्र बदलें, तो यह क्रिया स्वचालित रूप से अनुवाद अपडेट के साथ पुल रिक्वेस्ट कैसे बनाए।
+अपने रिपॉजिटरी के दस्तावेज़ों का अनुवाद आसानी से स्वचालित करने के लिए Co-op Translator GitHub Action का उपयोग करें। यह गाइड आपको यह दिखाता है कि जब भी आपके स्रोत Markdown फ़ाइलें या छवियाँ बदलती हैं, तो अपडेटेड अनुवादों के साथ ऑटोमेटिक पुल रिक्वेस्ट कैसे बनाएं।
 
 > [!IMPORTANT]
 >
-> **सही मार्गदर्शिका चुनना:**
+> **सही गाइड चुनना:**
 >
-> यह मार्गदर्शिका **मानक `GITHUB_TOKEN` का उपयोग करते हुए सरल सेटअप** को विस्तार से बताती है। यह अधिकांश उपयोगकर्ताओं के लिए अनुशंसित तरीका है क्योंकि इसमें संवेदनशील GitHub App Private Keys का प्रबंधन करने की आवश्यकता नहीं होती।
+> यह गाइड **मानक `GITHUB_TOKEN` का उपयोग करके सरल सेटअप** के बारे में है। यह अधिकांश उपयोगकर्ताओं के लिए अनुशंसित तरीका है क्योंकि इसमें संवेदनशील GitHub App Private Keys को प्रबंधित करने की आवश्यकता नहीं होती।
 >
 
 ## आवश्यकताएँ
 
-GitHub Action कॉन्फ़िगर करने से पहले, सुनिश्चित करें कि आपके पास आवश्यक AI सेवा क्रेडेंशियल्स तैयार हैं।
+GitHub Action को कॉन्फ़िगर करने से पहले, सुनिश्चित करें कि आपके पास आवश्यक AI सेवा क्रेडेंशियल्स तैयार हैं।
 
 **1. आवश्यक: AI भाषा मॉडल क्रेडेंशियल्स**  
 आपको कम से कम एक समर्थित भाषा मॉडल के लिए क्रेडेंशियल्स चाहिए:
 
 - **Azure OpenAI**: Endpoint, API Key, Model/Deployment नाम, API Version की आवश्यकता होती है।  
-- **OpenAI**: API Key, (वैकल्पिक: Org ID, Base URL, Model ID) चाहिए।  
-- विवरण के लिए देखें [Supported Models and Services](../../../../README.md)।  
-- सेटअप गाइड: [Set up Azure OpenAI](../set-up-resources/set-up-azure-openai.md)।
+- **OpenAI**: API Key, (वैकल्पिक: Org ID, Base URL, Model ID) की आवश्यकता होती है।  
+- विवरण के लिए [Supported Models and Services](../../../../README.md) देखें।
 
-**2. वैकल्पिक: कंप्यूटर विज़न क्रेडेंशियल्स (छवि अनुवाद के लिए)**
+**2. वैकल्पिक: AI Vision क्रेडेंशियल्स (छवि अनुवाद के लिए)**
 
-- केवल तब आवश्यक जब आपको छवियों के भीतर टेक्स्ट का अनुवाद करना हो।  
-- **Azure Computer Vision**: Endpoint और Subscription Key चाहिए।  
-- यदि नहीं दिया गया, तो यह क्रिया [Markdown-only mode](../markdown-only-mode.md) में काम करेगी।  
-- सेटअप गाइड: [Set up Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md)।
+- केवल तब आवश्यक जब आपको छवियों में टेक्स्ट का अनुवाद करना हो।  
+- **Azure AI Vision**: Endpoint और Subscription Key चाहिए।  
+- यदि नहीं दिया गया, तो यह एक्शन [Markdown-only mode](../markdown-only-mode.md) में चलेगा।
 
 ## सेटअप और कॉन्फ़िगरेशन
 
-मानक `GITHUB_TOKEN` का उपयोग करते हुए अपने रिपॉजिटरी में Co-op Translator GitHub Action कॉन्फ़िगर करने के लिए ये चरण अपनाएं।
+मानक `GITHUB_TOKEN` का उपयोग करते हुए अपने रिपॉजिटरी में Co-op Translator GitHub Action को कॉन्फ़िगर करने के लिए नीचे दिए गए चरणों का पालन करें।
 
 ### चरण 1: प्रमाणीकरण को समझें (`GITHUB_TOKEN` का उपयोग)
 
-यह वर्कफ़्लो GitHub Actions द्वारा प्रदान किए गए अंतर्निर्मित `GITHUB_TOKEN` का उपयोग करता है। यह टोकन स्वचालित रूप से वर्कफ़्लो को आपके रिपॉजिटरी के साथ इंटरैक्ट करने की अनुमति देता है, जो **चरण 3** में सेटिंग्स के अनुसार कॉन्फ़िगर होती है।
+यह वर्कफ़्लो GitHub Actions द्वारा प्रदान किए गए अंतर्निहित `GITHUB_TOKEN` का उपयोग करता है। यह टोकन स्वचालित रूप से वर्कफ़्लो को आपके रिपॉजिटरी के साथ इंटरैक्ट करने की अनुमति देता है, जैसा कि **चरण 3** में कॉन्फ़िगर किया गया है।
 
 ### चरण 2: रिपॉजिटरी सीक्रेट्स कॉन्फ़िगर करें
 
 आपको केवल अपनी **AI सेवा क्रेडेंशियल्स** को अपने रिपॉजिटरी सेटिंग्स में एन्क्रिप्टेड सीक्रेट्स के रूप में जोड़ना होगा।
 
-1. अपने लक्षित GitHub रिपॉजिटरी पर जाएं।  
-2. **Settings** > **Secrets and variables** > **Actions** पर जाएं।  
-3. **Repository secrets** के अंतर्गत, हर आवश्यक AI सेवा सीक्रेट के लिए **New repository secret** पर क्लिक करें।
+1.  अपने लक्षित GitHub रिपॉजिटरी पर जाएं।  
+2.  **Settings** > **Secrets and variables** > **Actions** पर जाएं।  
+3.  **Repository secrets** के तहत, प्रत्येक आवश्यक AI सेवा सीक्रेट के लिए **New repository secret** पर क्लिक करें।
 
-    ![Select setting action](../../../../getting_started/github-actions-guide/imgs/select-setting-action.png) *(छवि संदर्भ: सीक्रेट्स जोड़ने का स्थान दिखाता है)*
+    ![Select setting action](../../../../getting_started/github-actions-guide/imgs/select-setting-action.png) *(छवि संदर्भ: जहाँ सीक्रेट्स जोड़ने हैं)*
 
-**आवश्यक AI सेवा सीक्रेट्स (अपने आवश्यकताओं के अनुसार सभी जोड़ें):**
+**आवश्यक AI सेवा सीक्रेट्स (अपने आवश्यकतानुसार सभी जोड़ें):**
 
 | Secret Name                         | विवरण                                   | मान स्रोत                         |
 | :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Azure AI सेवा (Computer Vision) के लिए Key | आपका Azure AI Foundry             |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI सेवा (Computer Vision) के लिए Endpoint | आपका Azure AI Foundry             |
-| `AZURE_OPENAI_API_KEY`              | Azure OpenAI सेवा के लिए Key              | आपका Azure AI Foundry             |
-| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI सेवा के लिए Endpoint         | आपका Azure AI Foundry             |
-| `AZURE_OPENAI_MODEL_NAME`           | आपका Azure OpenAI मॉडल नाम                | आपका Azure AI Foundry             |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | आपका Azure OpenAI Deployment नाम         | आपका Azure AI Foundry             |
-| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI के लिए API Version            | आपका Azure AI Foundry             |
-| `OPENAI_API_KEY`                    | OpenAI के लिए API Key                     | आपका OpenAI Platform              |
+| `AZURE_SUBSCRIPTION_KEY`            | Azure AI Service (Computer Vision) के लिए Key  | आपका Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI Service (Computer Vision) के लिए Endpoint | आपका Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`              | Azure OpenAI सेवा के लिए Key              | आपका Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI सेवा के लिए Endpoint         | आपका Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`           | आपका Azure OpenAI मॉडल नाम              | आपका Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | आपका Azure OpenAI Deployment नाम         | आपका Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI के लिए API Version              | आपका Azure AI Foundry               |
+| `OPENAI_API_KEY`                    | OpenAI के लिए API Key                        | आपका OpenAI Platform              |
 | `OPENAI_ORG_ID`                     | OpenAI Organization ID (वैकल्पिक)         | आपका OpenAI Platform              |
-| `OPENAI_CHAT_MODEL_ID`              | विशिष्ट OpenAI मॉडल ID (वैकल्पिक)          | आपका OpenAI Platform              |
-| `OPENAI_BASE_URL`                   | कस्टम OpenAI API Base URL (वैकल्पिक)       | आपका OpenAI Platform              |
+| `OPENAI_CHAT_MODEL_ID`              | विशिष्ट OpenAI मॉडल ID (वैकल्पिक)       | आपका OpenAI Platform              |
+| `OPENAI_BASE_URL`                   | कस्टम OpenAI API Base URL (वैकल्पिक)     | आपका OpenAI Platform              |
 
 ### चरण 3: वर्कफ़्लो अनुमतियाँ कॉन्फ़िगर करें
 
-GitHub Action को कोड चेकआउट और पुल रिक्वेस्ट बनाने के लिए `GITHUB_TOKEN` के माध्यम से अनुमतियाँ चाहिए।
+GitHub Action को कोड चेकआउट करने और पुल रिक्वेस्ट बनाने के लिए `GITHUB_TOKEN` के माध्यम से अनुमतियाँ चाहिए।
 
-1. अपने रिपॉजिटरी में **Settings** > **Actions** > **General** पर जाएं।  
-2. नीचे स्क्रॉल करके **Workflow permissions** सेक्शन तक जाएं।  
-3. **Read and write permissions** चुनें। इससे `GITHUB_TOKEN` को इस वर्कफ़्लो के लिए आवश्यक `contents: write` और `pull-requests: write` अनुमतियाँ मिलती हैं।  
-4. सुनिश्चित करें कि **Allow GitHub Actions to create and approve pull requests** का चेकबॉक्स चुना हुआ हो।  
-5. **Save** चुनें।
+1.  अपने रिपॉजिटरी में, **Settings** > **Actions** > **General** पर जाएं।  
+2.  नीचे स्क्रॉल करें और **Workflow permissions** सेक्शन देखें।  
+3.  **Read and write permissions** चुनें। इससे `GITHUB_TOKEN` को इस वर्कफ़्लो के लिए आवश्यक `contents: write` और `pull-requests: write` अनुमतियाँ मिलेंगी।  
+4.  सुनिश्चित करें कि **Allow GitHub Actions to create and approve pull requests** का चेकबॉक्स चुना हुआ हो।  
+5.  **Save** पर क्लिक करें।
 
 ![Permission setting](../../../../getting_started/github-actions-guide/imgs/permission-setting.png)
 
-### चरण 4: वर्कफ़्लो फ़ाइल बनाएँ
+### चरण 4: वर्कफ़्लो फ़ाइल बनाएं
 
-अंत में, YAML फ़ाइल बनाएँ जो `GITHUB_TOKEN` का उपयोग करते हुए स्वचालित वर्कफ़्लो को परिभाषित करती है।
+अंत में, `GITHUB_TOKEN` का उपयोग करते हुए स्वचालित वर्कफ़्लो को परिभाषित करने वाली YAML फ़ाइल बनाएं।
 
-1. अपने रिपॉजिटरी की रूट डायरेक्टरी में `.github/workflows/` डायरेक्टरी बनाएँ यदि वह पहले से मौजूद नहीं है।  
-2. `.github/workflows/` के अंदर `co-op-translator.yml` नामक फ़ाइल बनाएँ।  
-3. नीचे दिया गया कंटेंट `co-op-translator.yml` में पेस्ट करें।
+1.  अपने रिपॉजिटरी की रूट डायरेक्टरी में, यदि मौजूद नहीं है तो `.github/workflows/` डायरेक्टरी बनाएं।  
+2.  `.github/workflows/` के अंदर, `co-op-translator.yml` नाम की एक फ़ाइल बनाएं।  
+3.  नीचे दिया गया कंटेंट `co-op-translator.yml` में पेस्ट करें।
 
 ```yaml
 name: Co-op Translator
@@ -169,11 +167,11 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4. **वर्कफ़्लो को अनुकूलित करें:**  
-  - **[!IMPORTANT] लक्षित भाषाएँ:** यदि आवश्यक हो, तो `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
+```
+4.  **वर्कफ़्लो को अनुकूलित करें:**  
+  - **[!IMPORTANT] लक्षित भाषाएँ:** `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
   - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` चरण में लक्षित भाषाएँ सेट करें।
+  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` चरण में आवश्यकतानुसार सेट करें।
 
 **अस्वीकरण**:  
-इस दस्तावेज़ का अनुवाद AI अनुवाद सेवा [Co-op Translator](https://github.com/Azure/co-op-translator) का उपयोग करके किया गया है। जबकि हम सटीकता के लिए प्रयासरत हैं, कृपया ध्यान दें कि स्वचालित अनुवादों में त्रुटियाँ या गलतियाँ हो सकती हैं। मूल दस्तावेज़ अपनी मूल भाषा में ही प्रामाणिक स्रोत माना जाना चाहिए। महत्वपूर्ण जानकारी के लिए, पेशेवर मानव अनुवाद की सलाह दी जाती है। इस अनुवाद के उपयोग से उत्पन्न किसी भी गलतफहमी या गलत व्याख्या के लिए हम जिम्मेदार नहीं हैं।
+यह दस्तावेज़ AI अनुवाद सेवा [Co-op Translator](https://github.com/Azure/co-op-translator) का उपयोग करके अनुवादित किया गया है। जबकि हम सटीकता के लिए प्रयासरत हैं, कृपया ध्यान दें कि स्वचालित अनुवादों में त्रुटियाँ या अशुद्धियाँ हो सकती हैं। मूल दस्तावेज़ को उसकी मूल भाषा में ही अधिकारिक स्रोत माना जाना चाहिए। महत्वपूर्ण जानकारी के लिए पेशेवर मानव अनुवाद की सलाह दी जाती है। इस अनुवाद के उपयोग से उत्पन्न किसी भी गलतफहमी या गलत व्याख्या के लिए हम जिम्मेदार नहीं हैं।

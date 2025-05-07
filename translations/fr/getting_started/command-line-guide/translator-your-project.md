@@ -1,24 +1,24 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "33db54f4f3ca9f0321be05374b591f2b",
-  "translation_date": "2025-05-06T17:59:33+00:00",
+  "original_hash": "d238206c3503631e32774716d11d1868",
+  "translation_date": "2025-05-07T14:05:53+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "fr"
 }
 -->
 # Traduisez votre projet avec Co-op Translator
 
-Le **Co-op Translator** est un outil en ligne de commande (CLI) qui vous aide à traduire les fichiers markdown et images de votre projet dans plusieurs langues. Cette section explique comment utiliser l’outil, présente les différentes options de la CLI et fournit des exemples pour divers cas d’utilisation.
+Le **Co-op Translator** est un outil en ligne de commande (CLI) qui vous aide à traduire les fichiers markdown et images de votre projet dans plusieurs langues. Cette section explique comment utiliser l’outil, présente les différentes options de la CLI et fournit des exemples pour divers cas d’usage.
 
 > [!NOTE]
-> Pour une liste complète des commandes et leurs descriptions détaillées, veuillez consulter la [référence des commandes](./command-reference.md).
+> Pour une liste complète des commandes et leurs descriptions détaillées, veuillez consulter la [Référence des commandes](./command-reference.md).
 
 ---
 
 ## Scénarios et commandes exemples
 
-Voici quelques cas d’utilisation courants pour le **Co-op Translator**, ainsi que les commandes appropriées à exécuter.
+Voici quelques cas d’usage courants pour le **Co-op Translator**, ainsi que les commandes appropriées à exécuter.
 
 ### 1. Traduction basique (une seule langue)
 
@@ -28,11 +28,11 @@ Pour traduire l’ensemble de votre projet (fichiers markdown et images) dans un
 translate -l "ko"
 ```
 
-Cette commande traduira tous les fichiers markdown et images en coréen, en ajoutant les nouvelles traductions sans supprimer celles existantes.
+Cette commande traduira tous les fichiers markdown et images en coréen, en ajoutant les nouvelles traductions sans supprimer celles déjà existantes.
 
 > [!TIP]
 >
-> Vous souhaitez connaître les codes de langues disponibles dans **Co-op Translator** ? Rendez-vous dans la section [Langues supportées](https://github.com/Azure/co-op-translator#supported-languages) du dépôt pour plus de détails.
+> Vous voulez savoir quels codes de langue sont disponibles dans **Co-op Translator** ? Rendez-vous dans la section [Langues supportées](https://github.com/Azure/co-op-translator#supported-languages) du dépôt pour plus d’informations.
 
 #### Exemple sur Phi-3 CookBook
 
@@ -46,17 +46,17 @@ Translating markdown files: 100%|███████████████�
 
 ### 2. Traduction en plusieurs langues
 
-Pour traduire votre projet dans plusieurs langues (par exemple, espagnol, français et allemand), utilisez cette commande :
+Pour traduire votre projet dans plusieurs langues (par exemple espagnol, français et allemand), utilisez cette commande :
 
 ```bash
 translate -l "es fr de"
 ```
 
-Cette commande traduira le projet en espagnol, français et allemand, en ajoutant les nouvelles traductions sans écraser les existantes.
+Cette commande traduira le projet en espagnol, français et allemand, en ajoutant les nouvelles traductions sans écraser les anciennes.
 
 #### Exemple sur Phi-3 CookBook
 
-Dans le **Phi-3 CookBook**, après avoir récupéré les dernières modifications pour refléter les commits les plus récents, j’ai utilisé la méthode suivante pour traduire les nouveaux fichiers markdown et images ajoutés.
+Dans le **Phi-3 CookBook**, après avoir récupéré les derniers changements pour refléter les commits les plus récents, j’ai utilisé la méthode suivante pour traduire les fichiers markdown et images nouvellement ajoutés.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,21 +65,11 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Bien qu’il soit généralement recommandé de traduire une langue à la fois, dans des situations comme celle-ci où des modifications spécifiques doivent être ajoutées, traduire plusieurs langues en une seule fois peut être efficace.
+> Bien qu’il soit généralement recommandé de traduire une langue à la fois, dans des cas comme celui-ci où des modifications spécifiques doivent être ajoutées, traduire plusieurs langues simultanément peut être efficace.
 
-### 3. Spécifier le répertoire racine
+### 3. Mise à jour des traductions (suppression des traductions existantes)
 
-Par défaut, le traducteur utilise le répertoire de travail courant. Si votre projet se trouve ailleurs, spécifiez le répertoire racine avec l’option -r :
-
-```bash
-translate -l "es fr de" -r "./my_project"
-```
-
-Cette commande traduit les fichiers dans `./my_project` into Spanish, French, and German.
-
-### 4. Updating Translations (Deletes Existing Translations)
-
-To update existing translations (i.e., delete the current translations and replace them with new ones), use the `-u` option. Cela supprimera toutes les traductions existantes pour les langues spécifiées et les retraduira.
+Pour mettre à jour les traductions existantes (c’est-à-dire supprimer les traductions actuelles et les remplacer par de nouvelles), utilisez l’option `-u`. Cela supprimera toutes les traductions existantes pour les langues spécifiées et les retraduira.
 
 ```bash
 translate -l "ko" -u
@@ -89,7 +79,7 @@ Attention : cette commande vous demandera une confirmation avant de procéder à
 
 #### Exemple sur Phi-3 CookBook
 
-Dans le **Phi-3 CookBook**, j’ai utilisé la méthode suivante pour mettre à jour tous les fichiers traduits en espagnol. Je recommande d’utiliser cette méthode lorsqu’il y a des changements importants dans le contenu original à travers plusieurs documents markdown. S’il n’y a que quelques fichiers markdown traduits à mettre à jour, il est plus efficace de supprimer manuellement ces fichiers spécifiques puis d’utiliser la méthode `-a` pour ajouter les traductions mises à jour.
+Dans le **Phi-3 CookBook**, j’ai utilisé la méthode suivante pour mettre à jour tous les fichiers traduits en espagnol. Je recommande cette méthode lorsqu’il y a des changements importants dans le contenu original sur plusieurs documents markdown. S’il n’y a que quelques fichiers markdown traduits à mettre à jour, il est plus efficace de supprimer manuellement ces fichiers spécifiques, puis d’utiliser la méthode `-a` pour ajouter les traductions mises à jour.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -100,7 +90,7 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|███████████████████████████████████| 95/95 [1:40:27<00:00, 125.62s/it]
 ```
 
-### 6. Traduire uniquement les images
+### 5. Traduire uniquement les images
 
 Pour ne traduire que les fichiers images de votre projet, utilisez l’option `-img` :
 
@@ -108,9 +98,9 @@ Pour ne traduire que les fichiers images de votre projet, utilisez l’option `-
 translate -l "ko" -img
 ```
 
-Cette commande traduira uniquement les images en coréen, sans affecter les fichiers markdown.
+Cette commande traduira uniquement les images en coréen, sans toucher aux fichiers markdown.
 
-### 7. Traduire uniquement les fichiers Markdown
+### 6. Traduire uniquement les fichiers markdown
 
 Pour ne traduire que les fichiers markdown de votre projet, utilisez l’option `-md` :
 
@@ -118,7 +108,7 @@ Pour ne traduire que les fichiers markdown de votre projet, utilisez l’option 
 translate -l "ko" -md
 ```
 
-### 8. Vérifier les erreurs dans les fichiers traduits
+### 7. Vérifier les erreurs dans les fichiers traduits
 
 Si vous souhaitez vérifier les fichiers traduits pour détecter des erreurs et relancer la traduction si nécessaire, utilisez l’option `-chk` :
 
@@ -126,11 +116,11 @@ Si vous souhaitez vérifier les fichiers traduits pour détecter des erreurs et 
 translate -l "ko" -chk
 ```
 
-Cette commande analysera les fichiers markdown traduits et relancera la traduction pour tous les fichiers contenant des erreurs.
+Cette commande analysera les fichiers markdown traduits et relancera la traduction pour ceux présentant des erreurs.
 
 #### Exemple sur Phi-3 CookBook
 
-Dans le **Phi-3 CookBook**, j’ai utilisé la méthode suivante pour vérifier les erreurs de traduction dans les fichiers coréens et relancer automatiquement la traduction pour tous les fichiers présentant des problèmes détectés.
+Dans le **Phi-3 CookBook**, j’ai utilisé la méthode suivante pour vérifier les erreurs de traduction dans les fichiers coréens et relancer automatiquement la traduction pour ceux qui présentaient des problèmes.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -139,13 +129,13 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Cette option vérifie les erreurs de traduction. Actuellement, si la différence de saut de ligne entre les fichiers originaux et traduits dépasse six, le fichier est signalé comme ayant une erreur de traduction. Je prévois d’améliorer ce critère pour plus de flexibilité à l’avenir.
+Cette option détecte les erreurs de traduction. Actuellement, si la différence dans les sauts de ligne entre les fichiers originaux et traduits dépasse six, le fichier est signalé comme ayant une erreur de traduction. Je prévois d’améliorer ce critère pour plus de souplesse à l’avenir.
 
-Par exemple, cette méthode est utile pour détecter les morceaux manquants ou les traductions corrompues, et elle relancera automatiquement la traduction pour ces fichiers.
+Par exemple, cette méthode est utile pour détecter des segments manquants ou des traductions corrompues, et elle relance automatiquement la traduction pour ces fichiers.
 
 Cependant, si vous savez déjà quels fichiers posent problème, il est plus efficace de supprimer manuellement ces fichiers puis d’utiliser l’option `-a` option to re-translate them.
 
-### 9. Debug Mode
+### 8. Debug Mode
 
 To enable detailed logging for troubleshooting, use the `-d` :
 
@@ -153,11 +143,11 @@ To enable detailed logging for troubleshooting, use the `-d` :
 translate -l "ko" -d
 ```
 
-Cette commande lancera la traduction en mode debug, fournissant des informations de journalisation supplémentaires qui peuvent vous aider à identifier les problèmes durant le processus de traduction.
+Cette commande lance la traduction en mode debug, fournissant des informations de journalisation supplémentaires qui peuvent vous aider à identifier les problèmes lors du processus de traduction.
 
 #### Exemple sur Phi-3 CookBook
 
-Dans le **Phi-3 CookBook**, j’ai rencontré un problème où les traductions comportant de nombreux liens dans les fichiers markdown provoquaient des erreurs de formatage, telles que des traductions cassées et des sauts de ligne ignorés. Pour diagnostiquer ce problème, j’ai utilisé l’option `-d` pour voir comment se déroulait le processus de traduction.
+Dans le **Phi-3 CookBook**, j’ai rencontré un problème où les traductions contenant de nombreux liens dans les fichiers markdown provoquaient des erreurs de formatage, telles que des traductions cassées et des sauts de ligne ignorés. Pour diagnostiquer ce problème, j’ai utilisé l’option `-d` afin de voir comment le processus de traduction fonctionnait.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -165,33 +155,35 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 ...
 ```
 
-### 10. Traduire toutes les langues
+### 9. Traduire toutes les langues
 
 Si vous souhaitez traduire le projet dans toutes les langues supportées, utilisez le mot-clé all.
 
 > [!WARNING]
-> Traduire toutes les langues en une seule fois peut prendre beaucoup de temps selon la taille du projet. Par exemple, traduire le **Phi-3 CookBook** en espagnol a pris environ 2 heures. Vu l’ampleur, il n’est pas réaliste qu’une seule personne gère 20 langues. Il est recommandé de répartir le travail entre plusieurs contributeurs, chacun prenant en charge une ou deux langues, et de mettre à jour les traductions progressivement.
+> Traduire toutes les langues en une seule fois peut prendre beaucoup de temps selon la taille du projet. Par exemple, traduire le **Phi-3 CookBook** en espagnol a pris environ 2 heures. Au vu de l’ampleur, il n’est pas réaliste qu’une seule personne gère 20 langues. Il est recommandé de répartir le travail entre plusieurs contributeurs, chacun prenant en charge une ou deux langues, et de mettre à jour les traductions progressivement.
 
 ```bash
 translate -l "all"
 ```
 
-Cette commande traduira le projet dans toutes les langues disponibles. Si vous continuez, la traduction peut prendre un temps important selon la taille du projet.
+Cette commande traduira le projet dans toutes les langues disponibles. Si vous continuez, la traduction peut prendre un temps considérable selon la taille du projet.
 
 > [!TIP]
 >
-> ### Supprimer les fichiers à mettre à jour  
-> Pour mettre à jour les fichiers récemment modifiés dans une Pull Request, la première étape consiste à supprimer toutes les versions existantes du fichier spécifique situées dans les différents dossiers de traduction des langues. Vous pouvez faire cela en masse avec la commande suivante pour supprimer tous les fichiers portant un nom spécifique dans les dossiers de traduction.
+> ### Suppression manuelle des fichiers traduits (optionnel)
+> Les fichiers traduits sont désormais automatiquement détectés et nettoyés lorsqu’un fichier source est mis à jour.
+>
+> Cependant, si vous souhaitez mettre à jour manuellement une traduction – par exemple pour refaire un fichier spécifique ou contourner le comportement du système – vous pouvez utiliser la commande suivante pour supprimer toutes les versions du fichier dans les dossiers de langues.
 >
 > ### Sous Windows :
 > 1. **Avec l’invite de commandes** :
 >    - Ouvrez l’invite de commandes.
->    - Naviguez jusqu’au dossier où se trouvent les fichiers avec la commande `cd`.
+>    - Naviguez vers le dossier où se trouvent les fichiers avec la commande `cd`.
 >    - Utilisez la commande suivante pour supprimer les fichiers :
 >      ```
 >      del /s *filename*
 >      ```
->      L’option `/s` recherche également dans les sous-répertoires.
+>      L’option `/s` recherche aussi dans les sous-répertoires.
 >
 > 2. **Avec PowerShell** :
 >    - Ouvrez PowerShell.
@@ -199,21 +191,19 @@ Cette commande traduira le projet dans toutes les langues disponibles. Si vous c
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      Remplacez `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>      Remplacez `"C:\YourPath"` par le chemin approprié.
 >
-> ### On macOS/Linux:
-> 1. **Using Terminal**:
->   - Open Terminal.
->   - Navigate to the directory with `cd`.
->   - Use the `find` par la commande :
+> ### Pour naviguer et rechercher un fichier spécifique :
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->     Remplacez `filename` with the specific name.
+>
+> ### Pour mettre à jour les fichiers modifiés les plus récents :
+>     Utilisez la commande `filename` with the specific name.
 >
 > Always double-check the files before deleting to avoid accidental loss. 
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` par la commande pour mettre à jour les fichiers les plus récents.
+> Once you have deleted the files which need to be replace simply rerun your `translate -l`.
 
 **Avertissement** :  
-Ce document a été traduit à l’aide du service de traduction automatique [Co-op Translator](https://github.com/Azure/co-op-translator). Bien que nous nous efforcions d’assurer l’exactitude, veuillez noter que les traductions automatiques peuvent contenir des erreurs ou des inexactitudes. Le document original dans sa langue d’origine doit être considéré comme la source faisant foi. Pour les informations critiques, une traduction professionnelle réalisée par un humain est recommandée. Nous déclinons toute responsabilité en cas de malentendus ou d’interprétations erronées résultant de l’utilisation de cette traduction.
+Ce document a été traduit à l’aide du service de traduction automatique [Co-op Translator](https://github.com/Azure/co-op-translator). Bien que nous nous efforcions d’assurer l’exactitude, veuillez noter que les traductions automatiques peuvent contenir des erreurs ou des inexactitudes. Le document original dans sa langue d’origine doit être considéré comme la source faisant foi. Pour les informations critiques, il est recommandé de recourir à une traduction professionnelle réalisée par un humain. Nous déclinons toute responsabilité en cas de malentendus ou d’interprétations erronées résultant de l’utilisation de cette traduction.

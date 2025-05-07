@@ -302,7 +302,17 @@ def update_image_links(
 
                 if use_original_images:
                     # Link to original image when in markdown-only mode
-                    original_linked_file_path = (md_file_path.parent / path).resolve()
+                    # Handle root-relative paths (starting with '/')
+                    if path.startswith('/'):
+                        # Paths starting with '/' are relative to the project root directory
+                        # Remove the leading slash and combine with the root directory
+                        path_without_leading_slash = path[1:]
+                        original_linked_file_path = (root_dir / path_without_leading_slash).resolve()
+                        logger.info(f"Root-relative path detected: {path} -> {original_linked_file_path}")
+                    else:
+                        # Handle regular relative paths
+                        original_linked_file_path = (md_file_path.parent / path).resolve()
+                    
                     updated_link = os.path.relpath(
                         original_linked_file_path, translated_md_dir
                     ).replace(os.path.sep, "/")

@@ -293,7 +293,7 @@ def update_image_links(
             logger.info(f"Processing image file {link}")
 
             try:
-                actual_image_path = get_actual_image_path(link, md_file_path)
+                # We'll resolve actual_image_path later based on the path type
                 translated_md_dir = (
                     translations_dir
                     / language_code
@@ -302,31 +302,46 @@ def update_image_links(
 
                 if use_original_images:
                     # Link to original image when in markdown-only mode
-                    # Handle root-relative paths (starting with '/')
+                    # For root-relative paths (starting with '/'), keep them unchanged
                     if path.startswith('/'):
-                        # Paths starting with '/' are relative to the project root directory
-                        # Remove the leading slash and combine with the root directory
-                        path_without_leading_slash = path[1:]
-                        original_linked_file_path = (root_dir / path_without_leading_slash).resolve()
-                        logger.info(f"Root-relative path detected: {path} -> {original_linked_file_path}")
+                        logger.info(f"Root-relative path detected in markdown-only mode: {path}")
+                        # Keep the original root-relative path as is
+                        updated_link = path
+                        logger.info(f"Keeping original root-relative path: {updated_link}")
                     else:
                         # Handle regular relative paths
                         original_linked_file_path = (md_file_path.parent / path).resolve()
-                    
-                    updated_link = os.path.relpath(
-                        original_linked_file_path, translated_md_dir
-                    ).replace(os.path.sep, "/")
-                    logger.info(f"Using original image link: {updated_link}")
+                        updated_link = os.path.relpath(
+                            original_linked_file_path, translated_md_dir
+                        ).replace(os.path.sep, "/")
+                        logger.info(f"Using original image link: {updated_link}")
                 else:
                     # Link to translated image when not in markdown-only mode
-                    rel_path = os.path.relpath(translated_images_dir, translated_md_dir)
-                    new_filename = generate_translated_filename(
-                        actual_image_path, language_code, root_dir
-                    )
-                    updated_link = os.path.join(rel_path, new_filename).replace(
-                        os.path.sep, "/"
-                    )
-                    logger.info(f"Using translated image link: {updated_link}")
+                    # We need to handle both root-relative and regular paths
+                    try:
+                        # Pass root_dir to get_actual_image_path to properly handle root-relative paths
+                        if path.startswith('/'):
+                            # For root-relative paths, we need to use the root_dir
+                            logger.info(f"Root-relative path detected in non-markdown-only mode: {path}")
+                            # Use the modified get_actual_image_path that accepts root_dir
+                            actual_image_path = get_actual_image_path(path, md_file_path, root_dir)
+                        else:
+                            # No change for regular paths
+                            actual_image_path = get_actual_image_path(path, md_file_path)
+                            
+                        rel_path = os.path.relpath(translated_images_dir, translated_md_dir)
+                        new_filename = generate_translated_filename(
+                            actual_image_path, language_code, root_dir
+                        )
+                        updated_link = os.path.join(rel_path, new_filename).replace(
+                            os.path.sep, "/"
+                        )
+                        logger.info(f"Using translated image link: {updated_link}")
+                    except Exception as e:
+                        logger.error(f"Error processing image path {path}: {e}")
+                        # Fallback to original path if there's an error
+                        updated_link = path
+                        logger.warning(f"Falling back to original path: {updated_link}")
 
                 old_image_markup = f"![{alt_text}]({link})"
                 new_image_markup = f"![{alt_text}]({updated_link})"

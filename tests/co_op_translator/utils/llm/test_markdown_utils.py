@@ -336,21 +336,61 @@ def test_root_relative_paths_in_markdown_only_mode(complex_dir_structure):
     print(f"\nOriginal content:\n{markdown_content}")
     print(f"\nResult content:\n{result}")
     
-    # Verify paths from actual results
-    logo_path_actual = "../../imgs/logo.png" # Adjusted to match actual output
-    thumbnail_path_actual = "../../imgs/open-ms-thumbnail.jpg" # Adjusted to match actual output
+    # In markdown-only mode with our updated code, root-relative paths should remain unchanged
+    assert "![Logo](/imgs/logo.png)" in result, "Root-relative logo path should remain unchanged"
+    assert "[![Thumbnail](/imgs/open-ms-thumbnail.jpg)](https://example.com)" in result, "Root-relative path in link should remain unchanged"
+
+
+def test_root_relative_paths_in_regular_mode(complex_dir_structure):
+    """
+    Test that root-relative image paths (starting with '/') are correctly resolved in regular mode (non-markdown-only).
+    This tests the updated handling of root-relative paths in the non-markdown-only mode.
+    """
+    # Setup paths
+    root_dir = complex_dir_structure
+    md_file_path = root_dir / "README.md"
+    translations_dir = root_dir / "translations"
+    translated_images_dir = root_dir / "translated_images"
     
-    # Create exact expected image markups
-    expected_logo_markup = f"![Logo]({logo_path_actual})"
-    expected_thumbnail_markup = f"[![Thumbnail]({thumbnail_path_actual})](https://example.com)"
+    # Read the markdown content
+    markdown_content = open(md_file_path, "r").read()
     
-    # More precise assertions with exact match
-    assert expected_logo_markup in result, f"Expected exact image markup: '{expected_logo_markup}' not found"
-    assert expected_thumbnail_markup in result, f"Expected exact image markup: '{expected_thumbnail_markup}' not found"
+    # Process with direct function call with markdown_only=False
+    result = update_image_links(
+        markdown_content,
+        md_file_path,
+        "ko",
+        translations_dir,
+        translated_images_dir,
+        root_dir,
+        markdown_only=False
+    )
     
-    # Make sure original paths are gone
-    assert "![Logo](/imgs/logo.png)" not in result, "Root-relative path still has leading slash"
-    assert "[![Thumbnail](/imgs/open-ms-thumbnail.jpg)]" not in result, "Root-relative path in link+image still has leading slash"
+    # Print paths for debugging
+    print(f"\nRoot dir: {root_dir}")
+    print(f"MD file path: {md_file_path}")
+    print(f"Translations dir: {translations_dir}")
+    print(f"Translated md directory: {translations_dir / 'ko' / md_file_path.relative_to(root_dir).parent}")
+    print(f"\nOriginal content:\n{markdown_content}")
+    print(f"\nResult content:\n{result}")
+    
+    # In regular mode, paths should be updated to point to translated images
+    # Original root-relative paths should be gone
+    assert "![Logo](/imgs/logo.png)" not in result, "Original root-relative logo path should not be present"
+    assert "[![Thumbnail](/imgs/open-ms-thumbnail.jpg)](https://example.com)" not in result, "Original root-relative thumbnail path should not be present"
+    
+    # Should contain paths to translated images
+    assert "translated_images" in result, "Result should contain references to translated images directory"
+    
+    # Extract the logo image path from the result to verify it's correctly processed
+    import re
+    logo_pattern = r"!\[Logo\]\((.+?)\)"
+    logo_match = re.search(logo_pattern, result)
+    assert logo_match, "Logo image reference not found in result"
+    logo_path = logo_match.group(1)
+    
+    # Verify the path points to the translated_images directory
+    assert "translated_images" in logo_path, "Logo path should point to translated_images directory"
 
 
 def test_image_paths_in_nested_structure(complex_dir_structure):

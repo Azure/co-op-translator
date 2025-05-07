@@ -56,7 +56,9 @@ def write_output_file(output_file: str | Path, results: list) -> None:
 
 
 def get_actual_image_path(
-    image_relative_path: str | Path, markdown_file_path: str | Path, root_dir: Path = None
+    image_relative_path: str | Path,
+    markdown_file_path: str | Path,
+    root_dir: Path = None,
 ) -> Path:
     """
     Given an image's relative path from the markdown file, return the actual file path
@@ -70,12 +72,15 @@ def get_actual_image_path(
     Returns:
         Path: The resolved absolute path to the image file.
     """
-    if isinstance(image_relative_path, str) and image_relative_path.startswith('/'):
+    if isinstance(image_relative_path, str) and image_relative_path.startswith("/"):
         if root_dir is None:
             # If root_dir is not provided but we have a root-relative path,
             # try to derive root_dir from markdown_file_path
             # This is a fallback and may not be accurate
-            logger.warning("Root directory not provided for root-relative path: %s", image_relative_path)
+            logger.warning(
+                "Root directory not provided for root-relative path: %s",
+                image_relative_path,
+            )
             markdown_file_path = Path(markdown_file_path).resolve()
             # Attempt to find the project root (this is a guess)
             actual_image_path = markdown_file_path.parent / image_relative_path[1:]
@@ -83,7 +88,9 @@ def get_actual_image_path(
             # Use the root directory to resolve the path
             image_path_without_leading_slash = image_relative_path[1:]
             actual_image_path = (root_dir / image_path_without_leading_slash).resolve()
-            logger.info(f"Resolved root-relative path: {image_relative_path} -> {actual_image_path}")
+            logger.info(
+                f"Resolved root-relative path: {image_relative_path} -> {actual_image_path}"
+            )
     else:
         # Handle regular relative paths as before
         image_relative_path = Path(image_relative_path)

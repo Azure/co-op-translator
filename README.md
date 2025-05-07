@@ -90,6 +90,14 @@ Co-op Translator takes Markdown files and images from your project folder and pr
 
 Get started quickly with the CLI or set up full automation with GitHub Actions.
 
+### Initial Setup
+
+> [!NOTE]
+>
+> By default, it uses Azure AI Services as the primary backend. Alternatively, you can configure it to work with the OpenAI API if preferred.
+
+- [Set up Azure AI](./getting_started/set-up-azure-ai.md)
+
 ### Quick Start: Command Line
 
 For a fast start using the command line:

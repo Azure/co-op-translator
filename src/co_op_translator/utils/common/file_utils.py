@@ -56,24 +56,46 @@ def write_output_file(output_file: str | Path, results: list) -> None:
 
 
 def get_actual_image_path(
-    image_relative_path: str | Path, markdown_file_path: str | Path
+    image_relative_path: str | Path,
+    markdown_file_path: str | Path,
+    root_dir: Path = None,
 ) -> Path:
     """
     Given an image's relative path from the markdown file, return the actual file path
-    by resolving the relative path against the markdown file's location.
+    by resolving the relative path against the markdown file's location or the project root.
 
     Args:
         image_relative_path (str | Path): The relative path of the image as found in the markdown file.
         markdown_file_path (str | Path): The path to the markdown file.
+        root_dir (Path, optional): The root directory of the project, for resolving root-relative paths.
 
     Returns:
         Path: The resolved absolute path to the image file.
     """
-    image_relative_path = Path(image_relative_path)
-    markdown_file_path = Path(markdown_file_path).resolve()
-
-    # Resolve the actual image path based on the markdown file's parent directory
-    actual_image_path = (markdown_file_path.parent / image_relative_path).resolve()
+    if isinstance(image_relative_path, str) and image_relative_path.startswith("/"):
+        if root_dir is None:
+            # If root_dir is not provided but we have a root-relative path,
+            # try to derive root_dir from markdown_file_path
+            # This is a fallback and may not be accurate
+            logger.warning(
+                "Root directory not provided for root-relative path: %s",
+                image_relative_path,
+            )
+            markdown_file_path = Path(markdown_file_path).resolve()
+            # Attempt to find the project root (this is a guess)
+            actual_image_path = markdown_file_path.parent / image_relative_path[1:]
+        else:
+            # Use the root directory to resolve the path
+            image_path_without_leading_slash = image_relative_path[1:]
+            actual_image_path = (root_dir / image_path_without_leading_slash).resolve()
+            logger.info(
+                f"Resolved root-relative path: {image_relative_path} -> {actual_image_path}"
+            )
+    else:
+        # Handle regular relative paths as before
+        image_relative_path = Path(image_relative_path)
+        markdown_file_path = Path(markdown_file_path).resolve()
+        actual_image_path = (markdown_file_path.parent / image_relative_path).resolve()
 
     return actual_image_path
 

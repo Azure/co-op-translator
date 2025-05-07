@@ -1,4 +1,4 @@
-![Logo](/imgs/logo.png)
+![Logo](./imgs/logo.png)
 
 # Co-op Translator: Automate the Translation of Educational Documentation Effortlessly
 
@@ -50,7 +50,7 @@ Language barriers significantly hinder access to valuable educational resources 
 
 See how Co-op Translator organizes translated educational content:
 
-![Example](/imgs/translation-ex.png)
+![Example](./imgs/translation-ex.png)
 
 Markdown files and image text are automatically translated and neatly organized into language-specific folders.
 
@@ -78,7 +78,7 @@ Co-op Translator helps bridge the language gap for key Microsoft educational ini
 
 ## How It Works
 
-![Architecture](/imgs/architecture_241019.png)
+![Architecture](./imgs/architecture_241019.png)
 
 Co-op Translator takes Markdown files and images from your project folder and processes them as follows:
 
@@ -148,11 +148,11 @@ Learn more about Co-op Translator through our presentations _(Click the image be
 
 - **Open at Microsoft**: A brief 18-minute introduction and quick guide on how to use Co-op Translator.
 
-  [![Open at Microsoft](/imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
+  [![Open at Microsoft](./imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
 - **Microsoft Reactor**: A one-hour detailed step-by-step guide covering everything from understanding what Co-op Translator is, setting up the tool, and using it effectively, to a live demo showcasing its capabilities in action.
 
-  [![Microsoft Reactor](/imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
+  [![Microsoft Reactor](./imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
 
 ## Support Us and Foster Global Learning
 

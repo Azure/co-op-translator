@@ -15,6 +15,10 @@ _Easily automate the translation of your documentation into multiple languages t
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
+### Language Support Powered by Co-op Translator
+
+[Korean](./translations/ko/README.md) | [Japanese](./translations/ja/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Chinese (Traditional, Taiwan)](./translations/tw/README.md) | [Spanish](./translations/es/README.md) | [French](./translations/fr/README.md) | [German](./translations/de/README.md) | [Portuguese (Brazil)](./translations/br/README.md) | [Hindi](./translations/hi/README.md) | [Russian](./translations/ru/README.md) | [Turkish](./translations/tr/README.md) | [Arabic](./translations/ar/README.md) | [Indonesian](./translations/id/README.md) | [Vietnamese](./translations/vi/README.md)
+
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
 [![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)

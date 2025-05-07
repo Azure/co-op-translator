@@ -53,16 +53,13 @@ class VisionConfig:
         if provider == VisionProvider.AZURE_COMPUTER_VISION:
             azure_config = AzureComputerVisionConfig()
             # If any required environment variable is missing, return None
-            if (
-                not azure_config.get_subscription_key()
-                or not azure_config.get_endpoint()
-            ):
+            if not azure_config.get_api_key() or not azure_config.get_endpoint():
                 return None
 
             return VisionServiceConfig(
                 required=True,
                 env_vars={
-                    "AZURE_SUBSCRIPTION_KEY": azure_config.get_subscription_key(),
+                    "AZURE_AI_SERVICE_API_KEY": azure_config.get_api_key(),
                     "AZURE_AI_SERVICE_ENDPOINT": azure_config.get_endpoint(),
                 },
             )

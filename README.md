@@ -88,7 +88,15 @@ Co-op Translator takes Markdown files and images from your project folder and pr
 
 ## Getting Started
 
+> [!NOTE]
+> While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](#-supported-models-and-services) list.
+
+
 Get started quickly with the CLI or set up full automation with GitHub Actions.
+
+### Initial Setup
+
+- [Set up Azure AI](./getting_started/set-up-azure-ai.md)
 
 ### Quick Start: Command Line
 
@@ -127,9 +135,6 @@ Choose the approach that best fits your workflow:
 - Guides:
   - [GitHub Actions Guide (Public Repositories & Standard Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) - Use this for most public or personal repositories relying on standard repository secrets.
   - [GitHub Actions Guide (Microsoft Organization Repos & Org-Level Setups)](./getting_started/github-actions-guide/github-actions-guide-org.md) - Use this guide if you are working within the Microsoft GitHub organization or need to leverage organization-level secrets or runners.
-
-> [!NOTE]
-> While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](#-supported-models-and-services) list.
 
 ### Troubleshooting and Tips
 

@@ -25,5 +25,5 @@ class AzureImageTranslator(ImageTranslator):
             ImageAnalysisClient: The initialized client.
         """
         endpoint = AzureComputerVisionConfig.get_endpoint()
-        subscription_key = AzureComputerVisionConfig.get_subscription_key()
+        subscription_key = AzureComputerVisionConfig.get_api_key()
         return ImageAnalysisClient(endpoint, AzureKeyCredential(subscription_key))

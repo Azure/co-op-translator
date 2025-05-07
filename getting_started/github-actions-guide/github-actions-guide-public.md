@@ -21,14 +21,12 @@ You need credentials for at least one supported Language Model:
 - **Azure OpenAI**: Requires Endpoint, API Key, Model/Deployment Names, API Version.
 - **OpenAI**: Requires API Key, (Optional: Org ID, Base URL, Model ID).
 - See [Supported Models and Services](../../README.md/#-supported-models-and-services) for details.
-- Setup Guide: [Set up Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
 
-**2. Optional: Computer Vision Credentials (for Image Translation)**
+**2. Optional: AI Vision Credentials (for Image Translation)**
 
 - Required only if you need to translate text within images.
-- **Azure Computer Vision**: Requires Endpoint and Subscription Key.
+- **Azure AI Vision**: Requires Endpoint and Subscription Key.
 - If not provided, the action defaults to [Markdown-only mode](../markdown-only-mode.md).
-- Setup Guide: [Set up Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
 
 ## Setup and Configuration
 

@@ -5,7 +5,7 @@ class AzureComputerVisionConfig:
     """Azure Computer Vision specific configuration."""
 
     @staticmethod
-    def get_subscription_key():
+    def get_api_key():
         """Retrieve the Azure AI Vision API key from environment variables.
         
         First checks for AZURE_AI_SERVICE_API_KEY (recommended), then falls back to

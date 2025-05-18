@@ -4,7 +4,7 @@
 
 - **Python 3.10 or higher**: Required for running the Co-op Translator.
 - **Language Model Resource**: 
-  - **Azure OpenAI** or other LLMs. Details can be found in the [supported models and services](../../README.md/#-supported-models-and-services).
+  - **Azure OpenAI** or other LLMs. Details can be found in the [supported models and services](../../README.md#supported-models-and-services).
 - **Computer Vision Resource** (optional):
   - For image translation. If unavailable, the translator defaults to [Markdown-only mode](../markdown-only-mode.md).
   - **Azure Computer Vision**

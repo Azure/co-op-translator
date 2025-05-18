@@ -85,8 +85,7 @@ Co-op Translator takes Markdown files and images from your project folder and pr
 ## Getting Started
 
 > [!NOTE]
-> While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](#-supported-models-and-services) list.
-
+> While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](#supported-models-and-services) list.
 
 Get started quickly with the CLI or set up full automation with GitHub Actions.
 

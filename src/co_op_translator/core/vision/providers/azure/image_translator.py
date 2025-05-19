@@ -10,19 +10,21 @@ logger = logging.getLogger(__name__)
 
 
 class AzureImageTranslator(ImageTranslator):
-    """Azure implementation for image translation using Computer Vision API.
+    """Implements image translation using Azure AI Vision services.
 
-    This class provides image translation capabilities using Azure's Computer Vision
+    This class provides image translation capabilities using Azure's AI Vision
     service for text extraction, combined
     with translation services to convert text within images to different languages.
     """
 
     def get_image_analysis_client(self):
-        """
-        Initialize and return an Image Analysis Client.
+        """Create an Azure Image Analysis Client using configured credentials.
+
+        Retrieves endpoint and API key from AzureComputerVisionConfig to establish
+        a connection to the Azure AI Vision service.
 
         Returns:
-            ImageAnalysisClient: The initialized client.
+            Configured Azure ImageAnalysisClient instance
         """
         endpoint = AzureComputerVisionConfig.get_endpoint()
         subscription_key = AzureComputerVisionConfig.get_api_key()

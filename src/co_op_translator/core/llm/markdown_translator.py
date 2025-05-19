@@ -33,55 +33,54 @@ logger = logging.getLogger(__name__)
 
 
 class MarkdownTranslator(ABC):
-    """Base class for markdown translation services."""
+    """Define interface for markdown translation services.
+
+    Provides common utilities and abstract methods to be implemented by providers.
+    """
 
     def __init__(self, root_dir: Path = None):
-        """
-        Initialize the MarkdownTranslator.
+        """Initialize translator with project configuration.
 
         Args:
-            root_dir (Path, optional): The root directory of the project. Defaults to None.
+            root_dir: Root directory of the project for path calculations
         """
         self.root_dir = root_dir
         self.font_config = FontConfig()
 
     def calculate_file_hash(self, file_path: Path) -> str:
-        """
-        Calculate MD5 hash of a file.
+        """Calculate MD5 hash of a file for change detection.
 
         Args:
-            file_path (Path): Path to the file to calculate hash for.
+            file_path: Path to the file to hash
 
         Returns:
-            str: MD5 hash of the file content.
+            MD5 hash of the file content
         """
         return calculate_file_hash(file_path)
 
     def create_metadata(self, original_file: Path, language_code: str) -> dict:
-        """
-        Create metadata for a translated file.
+        """Create metadata for a translated file.
 
         Args:
-            original_file (Path): Path to the original file
-            language_code (str): Target language code
+            original_file: Path to the source file being translated
+            language_code: Target language code
 
         Returns:
-            dict: Metadata dictionary containing file information
+            Metadata dictionary with source file information
         """
         return create_metadata(original_file, language_code, self.root_dir)
 
     def format_metadata_comment(self, metadata: dict) -> str:
-        """
-        Convert a metadata dictionary into a formatted HTML comment.
+        """Format metadata dictionary as HTML comment.
 
-        This function serializes the metadata dictionary as a JSON string with indentation,
-        wraps it in a custom HTML comment format, and returns the resulting string.
+        Serializes the metadata as JSON and wraps it in an HTML comment format
+        for embedding in markdown files.
 
         Args:
-            metadata (dict): A dictionary containing metadata to be formatted.
+            metadata: Dictionary containing translation metadata
 
         Returns:
-            str: A string containing the metadata formatted as an HTML comment.
+            Formatted HTML comment string
         """
         return format_metadata_comment(metadata)
 
@@ -92,14 +91,16 @@ class MarkdownTranslator(ABC):
         md_file_path: str | Path,
         markdown_only: bool = False,
     ) -> str:
-        """
-        Translate the markdown document to the specified language, handling documents with more than 10 links by splitting them into chunks.
+        """Translate markdown document to target language.
+
+        Handles complex documents by splitting into manageable chunks while
+        preserving formatting, links, and code blocks.
 
         Args:
-            document (str): The content of the markdown file.
-            language_code (str): The target language code.
-            md_file_path (str | Path): The file path of the markdown file.
-            markdown_only (bool): Whether we're in markdown-only mode.
+            document: Content of the markdown file
+            language_code: Target language code
+            md_file_path: Path to the markdown file
+            markdown_only: Skip embedded image translation if True
 
         Returns:
             str: The translated content with metadata, updated links and a disclaimer.
@@ -160,14 +161,13 @@ class MarkdownTranslator(ABC):
         return updated_content
 
     async def _run_prompts_sequentially(self, prompts):
-        """
-        Run the translation prompts sequentially with a timeout for each chunk.
+        """Execute translation prompts in sequence with timeout protection.
 
         Args:
-            prompts (list): List of translation prompts.
+            prompts: List of translation prompts to process
 
         Returns:
-            list: List of translated text chunks.
+            List of translated text chunks or error messages
         """
         results = []
         for index, prompt in enumerate(prompts):
@@ -189,29 +189,30 @@ class MarkdownTranslator(ABC):
         return results
 
     @abstractmethod
-    async def _run_prompt(self, prompt, index, total):
-        """
-        Execute a single translation prompt.
+    async def _run_prompt(self, prompt: str, index: int, total: int) -> str:
+        """Execute a single translation prompt against LLM provider.
 
         Args:
-            prompt (str): The translation prompt to execute.
-            index (int): The index of the prompt.
-            total (int): The total number of prompts.
+            prompt: Translation instruction prompt content
+            index: Current chunk index for progress tracking
+            total: Total number of chunks for progress reporting
 
         Returns:
-            str: The translated text.
+            Translated text content
         """
         pass
 
     async def generate_disclaimer(self, output_lang: str) -> str:
-        """
-        Generate a disclaimer translation prompt for the specified language.
+        """Generate a translated disclaimer notice.
+
+        Creates standardized disclaimer about machine translation quality
+        in the target language.
 
         Args:
-            output_lang (str): The target language for the disclaimer.
+            output_lang: Target language code
 
         Returns:
-            str: The translated disclaimer text.
+            Translated disclaimer text
         """
 
         disclaimer_prompt = f""" Translate the following text to {output_lang}.
@@ -225,14 +226,19 @@ class MarkdownTranslator(ABC):
 
     @classmethod
     def create(cls, root_dir: Path = None) -> "MarkdownTranslator":
-        """
-        Factory method to create appropriate markdown translator based on available provider.
+        """Create appropriate markdown translator based on configured provider.
+
+        Factory method that instantiates the correct implementation based on
+        the LLM provider configuration.
 
         Args:
-            root_dir: Optional root directory for the project
+            root_dir: Root directory of the project for path calculations
 
         Returns:
-            MarkdownTranslator: An instance of the appropriate markdown translator.
+            Appropriate translator implementation instance
+
+        Raises:
+            ValueError: If no valid LLM provider is configured
         """
         provider = LLMConfig.get_available_provider()
         if provider is None:

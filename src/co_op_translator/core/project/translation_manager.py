@@ -27,8 +27,10 @@ logger = logging.getLogger(__name__)
 
 
 class TranslationManager:
-    """
-    Manages the translation of markdown and image files.
+    """Manages translation of markdown and image files for a project.
+
+    Coordinates file discovery, translation tasks, and maintains translation metadata
+    to efficiently track and update translations.
     """
 
     def __init__(
@@ -43,8 +45,9 @@ class TranslationManager:
         image_translator=None,
         markdown_only: bool = False,
     ):
-        """
-        Initialize TranslationManager.
+        """Initialize translation manager with required components and settings.
+
+        Sets up paths, translators, and configurations needed for managing translations.
 
         Args:
             root_dir: Root directory containing original files
@@ -73,16 +76,17 @@ class TranslationManager:
     async def translate_image(
         self, image_path: Path, language_code: str, fast_mode: bool = False
     ) -> str:
-        """
-        Translate an image and handle file permissions or path errors.
+        """Translate an image to the target language.
+
+        Handles file permission checks and errors during translation process.
 
         Args:
-            image_path (Path): Path to the image file
-            language_code (str): Target language code
-            fast_mode (bool): Whether to use faster translation method
+            image_path: Path to the image file
+            language_code: Target language code
+            fast_mode: Whether to use faster translation method
 
         Returns:
-            str: The translated image path if successful, otherwise the original path
+            Translated image path if successful, otherwise the original path
         """
         image_path = Path(image_path).resolve()
         if not self.image_translator:
@@ -117,15 +121,16 @@ class TranslationManager:
             return str(image_path)
 
     async def translate_markdown(self, file_path: Path, language_code: str) -> str:
-        """
-        Translate a markdown file to the specified language.
+        """Translate a markdown file to the specified language.
+
+        Handles empty documents, translation failures, and line break inconsistencies.
 
         Args:
-            file_path (Path): Path to the markdown file.
-            language_code (str): The target language code.
+            file_path: Path to the markdown file
+            language_code: Target language code
 
         Returns:
-            str: The path to translated markdown file if successful, otherwise empty string
+            Path to translated markdown file if successful, otherwise empty string
         """
         file_path = Path(file_path).resolve()
         try:
@@ -136,7 +141,7 @@ class TranslationManager:
                 handle_empty_document(file_path, output_file)
                 return str(output_file)
 
-            # First attempt at translation
+            # Perform initial translation attempt
             translated_content = await self.markdown_translator.translate_markdown(
                 document, language_code, file_path, markdown_only=self.markdown_only
             )
@@ -146,7 +151,7 @@ class TranslationManager:
                 )
                 return ""
 
-            # Check if translation format is broken (e.g., line breaks mismatch)
+            # Validate translation format and line break consistency
             if compare_line_breaks(document, translated_content):
                 logger.warning(f"Translation failed for {file_path}. Retrying...")
                 # Retry translation
@@ -181,21 +186,20 @@ class TranslationManager:
     async def translate_all_markdown_files(
         self, update: bool = False
     ) -> tuple[int, list[str]]:
-        """
-        Translate all markdown files in the project directory.
+        """Process and translate all markdown files in the project directory.
+
+        Optionally updates existing translations if requested.
 
         Args:
-            update (bool): If True, update existing translations. Defaults to False.
+            update: Whether to update existing translations
 
         Returns:
-            tuple[int, list[str]]: A tuple containing:
-                - Number of files modified
-                - List of error messages
+            Tuple containing (number_of_modified_files, error_messages_list)
         """
         modified_count = 0
         errors = []
 
-        # Step 1: If update is True, delete all existing translated markdown files
+        # Delete existing translations when update mode is enabled
         if update:
             for language_code in self.language_codes:
                 delete_translated_markdown_files_by_language_code(
@@ -205,7 +209,7 @@ class TranslationManager:
                     f"Deleted all translated markdown files for language: {language_code}"
                 )
 
-        # Step 2: Collect markdown files for translation
+        # Discover markdown files requiring translation
         markdown_files = filter_files(self.root_dir, self.excluded_dirs)
         tasks = []
 
@@ -236,7 +240,7 @@ class TranslationManager:
                     )
 
         if tasks:  # Check if there are tasks to process
-            # Step 3: Process markdown translations sequentially using the sequential API request queue
+            # Process translations sequentially to avoid rate limiting
             results = await self.process_api_requests_sequential(
                 tasks, "🛠️  Translating markdown files"
             )
@@ -256,23 +260,23 @@ class TranslationManager:
     async def translate_all_image_files(
         self, update: bool = False, fast_mode: bool = False
     ) -> tuple[int, list[str]]:
-        """
-        Translate all image files, with optional update mode to refresh translations.
+        """Process and translate all image files in the project directory.
+
+        Optionally updates existing translations and uses a faster mode if specified.
 
         Args:
-            update (bool): If True, update existing translations. Defaults to False.
+            update: Whether to update existing translations
+            fast_mode: Whether to use faster translation method
 
         Returns:
-            tuple[int, list[str]]: A tuple containing:
-                - Number of files modified
-                - List of error messages
+            Tuple containing (number_of_modified_files, error_messages_list)
         """
         modified_count = 0
         errors = []
 
         logger.info("Starting image translation tasks...")
 
-        # Step 1: If update is True, delete all existing translated images
+        # Delete existing image translations when update mode is enabled
         if update:
             for language_code in self.language_codes:
                 delete_translated_images_by_language_code(language_code, self.image_dir)
@@ -280,7 +284,7 @@ class TranslationManager:
                     f"Deleted all translated images for language: {language_code}"
                 )
 
-        # Step 2: Collect image files for translation
+        # Discover image files requiring translation
         image_files = filter_files(self.root_dir, self.excluded_dirs)
         tasks = []
 
@@ -313,7 +317,7 @@ class TranslationManager:
                     )
 
         if tasks:
-            # Step 3: Process image translations using API request queue
+            # Process image translations in parallel for efficiency
             results = await self.process_api_requests_parallel(
                 tasks, f"{'🏎️  (fast mode)' if fast_mode else '🖼️ '} Translating images"
             )
@@ -331,14 +335,15 @@ class TranslationManager:
         return modified_count, errors
 
     async def check_outdated_files(self, update: bool = False) -> tuple[int, List[str]]:
-        """
-        Check for outdated translated files by comparing metadata hash values and retranslate if needed.
+        """Identify and update outdated translated files based on content hash comparison.
+
+        Retranslates files whose content has changed since last translation.
 
         Args:
-            update (bool): Whether to update existing translations regardless of hash values
+            update: Whether to update existing translations regardless of hash values
 
         Returns:
-            tuple[int, List[str]]: Number of retranslated files and list of errors
+            Tuple containing (number_of_retranslated_files, error_messages_list)
         """
         modified_count = 0
         errors = []
@@ -451,8 +456,7 @@ class TranslationManager:
         update: bool = False,
         fast_mode: bool = False,
     ) -> tuple[int, list[str]]:
-        """
-        Asynchronously translate the project.
+        """Translate project files asynchronously following a structured workflow.
 
         The translation process follows these steps:
         1. Remove orphaned files
@@ -461,22 +465,20 @@ class TranslationManager:
         4. Perform translation on required files
 
         Args:
-            images (bool): Whether to translate images. Defaults to False.
-            markdown (bool): Whether to translate markdown files. Defaults to False.
-            update (bool): Whether to update existing translations. Defaults to False.
-            fast_mode (bool): Whether to use faster translation method. Defaults to False.
+            images: Whether to translate images
+            markdown: Whether to translate markdown files
+            update: Whether to update existing translations
+            fast_mode: Whether to use faster translation method
 
         Returns:
-            tuple[int, list[str]]: A tuple containing:
-                - Total number of files modified
-                - List of error messages
+            Tuple containing (total_modified_files, error_messages_list)
         """
         logger.info("Starting project translation...")
         total_modified = 0
         all_errors = []
 
         try:
-            # 1. Remove orphaned files first
+            # Clean up files no longer needed in target directories
             logger.info("Removing orphaned files...")
             with tqdm(total=1, desc="🧹 Cleaning orphaned files") as cleanup_progress:
                 removed_count = self.directory_manager.cleanup_orphaned_translations(
@@ -487,7 +489,7 @@ class TranslationManager:
                 )
                 cleanup_progress.update(1)
 
-            # 2. Then synchronize directory structure
+            # Create and update directory structure to match source
             logger.info("Synchronizing directory structure...")
             with tqdm(total=1, desc="📁 Synchronizing directories") as sync_progress:
                 created, removed, _ = self.directory_manager.sync_directory_structure()
@@ -498,7 +500,7 @@ class TranslationManager:
                 )
                 sync_progress.update(1)
 
-            # 3. Identify files requiring updates
+            # Find files needing translation due to source changes
             if markdown:
                 with tqdm(total=1, desc="🔍 Checking translations") as check_progress:
                     outdated_files = self.get_outdated_translations()
@@ -512,7 +514,7 @@ class TranslationManager:
                 if outdated_files:
                     await self.retranslate_outdated_files(outdated_files)
 
-            # 4. Perform translation
+            # Execute translation for markdown and image files
             if markdown:
                 md_modified, md_errors = await self.translate_all_markdown_files(
                     update=update
@@ -538,11 +540,12 @@ class TranslationManager:
         return total_modified, all_errors
 
     def get_outdated_translations(self) -> List[tuple[Path, Path]]:
-        """
-        Identify translations that need updates by comparing metadata.
+        """Identify translations that need updates based on file hash comparison.
+
+        Scans all translation files and compares their metadata with source files.
 
         Returns:
-            List[tuple[Path, Path]]: List of (original file, translation file) tuples that need updates
+            List of (original_file, translation_file) tuples that need updates
         """
         outdated_files = []
         all_translation_files = []
@@ -579,8 +582,10 @@ class TranslationManager:
     async def retranslate_outdated_files(
         self, outdated_files: List[tuple[Path, Path]]
     ) -> None:
-        """
-        Retranslate the given outdated files.
+        """Translate files identified as outdated or requiring updates.
+
+        Extracts language codes from translation file paths and re-processes files.
+
         Args:
             outdated_files: List of (original_file, translation_file) tuples to retranslate
         """
@@ -615,9 +620,13 @@ class TranslationManager:
                 progress_bar.set_postfix_str(f"Current: {original_file.name}")
 
     async def check_and_retry_translations(self):
-        """
-        Check translated files for errors and retry translation if needed.
-        Display a single progress bar for both checking and retry processes.
+        """Check translated files for formatting errors and retry failed translations.
+
+        Identifies missing translations or files with line break inconsistencies
+        and schedules them for retranslation.
+
+        Returns:
+            Tuple containing (total_files_checked, total_files_translated)
         """
         total_files_checked = 0
         files_to_translate = []
@@ -642,7 +651,7 @@ class TranslationManager:
 
         logger.info("Checking translated files for errors...")
 
-        # Step 1: Check all markdown files and collect files that need translation
+        # Identify files needing translation due to missing or format issues
         with tqdm(
             total=total_files, desc="Checking files", unit="file"
         ) as progress_bar:
@@ -678,7 +687,7 @@ class TranslationManager:
                 # Update the progress bar after each file is checked
                 progress_bar.update(1)
 
-        # Step 2: Translate missing or mismatched files
+        # Translate files with missing translations or format problems
         if files_to_translate:
             logger.info(f"Starting translation for {len(files_to_translate)} files...")
 
@@ -705,8 +714,17 @@ class TranslationManager:
         logger.info(f"Total files checked: {total_files_checked}")
 
     async def process_api_requests_parallel(self, tasks, task_desc) -> list:
-        """
-        Process API requests using a queue system for better resource management (Parallel).
+        """Execute multiple API requests concurrently with controlled parallelism.
+
+        Uses a queue system to manage API requests efficiently while providing
+        progress feedback.
+
+        Args:
+            tasks: List of task functions to execute
+            task_desc: Description for progress display
+
+        Returns:
+            List of results from completed tasks
         """
         if not tasks:  # No tasks to process
             logger.warning("No tasks available for processing.")
@@ -714,18 +732,18 @@ class TranslationManager:
 
         task_queue = asyncio.Queue()
 
-        # Step 1: Populate the queue with tasks
+        # Initialize queue with all translation tasks
         for task in tasks:
             task_queue.put_nowait(task)
 
-        # Step 2: Create a progress bar
+        # Setup progress tracking UI
         with tqdm(total=len(tasks), desc=task_desc) as progress_bar:
-            # Step 3: Create worker tasks to process the queue
+            # Launch parallel worker tasks for processing
             workers = [
                 asyncio.create_task(worker(task_queue, progress_bar)) for _ in range(5)
             ]
 
-            # Step 4: Wait until all tasks are processed
+            # Wait for all queued tasks to complete
             await task_queue.join()
 
             # Get results from completed tasks
@@ -738,8 +756,16 @@ class TranslationManager:
         return results
 
     async def process_api_requests_sequential(self, tasks, task_desc) -> list:
-        """
-        Process API requests sequentially, one after another (Sequential).
+        """Execute API requests one at a time in sequence.
+
+        Ensures requests are processed in order while providing progress feedback.
+
+        Args:
+            tasks: List of task functions to execute
+            task_desc: Description for progress display
+
+        Returns:
+            List of results from completed tasks
         """
         if not tasks:  # No tasks to process
             logger.warning("No tasks available for processing.")
@@ -759,21 +785,23 @@ class TranslationManager:
     def _is_translation_outdated(
         self, original_file: Path, translation_file: Path
     ) -> bool:
-        """
-        Check if a translation needs to be updated by comparing original file's hash with the hash in translation metadata.
+        """Determine if a translation file needs updating based on content hash.
+
+        Compares the hash of the original file with the hash stored in the translation
+        file's metadata.
 
         Args:
-            original_file (Path): Path to the original file
-            translation_file (Path): Path to the translation file
+            original_file: Path to the original file
+            translation_file: Path to the translation file
 
         Returns:
-            bool: True if the translation needs to be updated, False otherwise
+            True if translation needs updating, False if it's current
         """
         if not translation_file.exists():
             return True
 
         try:
-            # Read translation file and find metadata comment
+            # Extract metadata from translation file
             content = translation_file.read_text(encoding="utf-8")
             metadata_match = re.search(
                 r"<!--\s*CO_OP_TRANSLATOR_METADATA:\s*(.*?)\s*-->",
@@ -788,7 +816,7 @@ class TranslationManager:
             except json.JSONDecodeError:
                 return True
 
-            # Compare original file's hash with metadata
+            # Determine if content has changed since last translation
             original_hash = calculate_file_hash(original_file)
             stored_hash = metadata.get("original_hash")
 

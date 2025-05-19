@@ -20,19 +20,34 @@ logger = logging.getLogger(__name__)
 
 
 class ProjectTranslator:
+    """Manages translation of project content across multiple languages.
+
+    Coordinates translation of markdown documents and images, directory management,
+    and tracking of translation status across the project.
+    """
+
     def __init__(self, language_codes, root_dir=".", markdown_only=False):
+        """Initialize project translation environment.
+
+        Sets up translators and managers needed for project translation operations.
+
+        Args:
+            language_codes: Space-separated list of target language codes
+            root_dir: Root directory of the project to translate
+            markdown_only: Whether to process only markdown files and skip images
+        """
         self.language_codes = language_codes.split()
         self.root_dir = Path(root_dir).resolve()
         self.translations_dir = self.root_dir / "translations"
         self.image_dir = self.root_dir / "translated_images"
         self.markdown_only = markdown_only
 
-        # Use factory methods to create appropriate translators
+        # Initialize text translator
         self.text_translator = text_translator.TextTranslator.create()
+
+        # Initialize image translator if not in markdown-only mode
         try:
-            if (
-                not markdown_only
-            ):  # Only create image translator if not in markdown-only mode
+            if not markdown_only:
                 self.image_translator = image_translator.ImageTranslator.create(
                     default_output_dir=self.image_dir, root_dir=self.root_dir
                 )
@@ -47,11 +62,12 @@ class ProjectTranslator:
             )
             self.markdown_only = True  # Auto-switch to markdown-only mode
             self.image_translator = None
+
         self.markdown_translator = markdown_translator.MarkdownTranslator.create(
             self.root_dir
         )
 
-        # Initialize managers
+        # Initialize directory and translation managers
         self.directory_manager = DirectoryManager(
             self.root_dir, self.translations_dir, self.language_codes, EXCLUDED_DIRS
         )
@@ -70,8 +86,9 @@ class ProjectTranslator:
     def translate_project(
         self, images=False, markdown=False, update=False, fast_mode=False
     ):
-        """
-        Public synchronous method to start the project translation.
+        """Start the project translation process synchronously.
+
+        Serves as a public entry point that delegates to the async translation manager.
 
         Args:
             images: Whether to translate images
@@ -86,14 +103,23 @@ class ProjectTranslator:
         )
 
     async def check_and_retry_translations(self):
-        """Check and retry translations for all files."""
+        """Check for outdated translations and translate missing content.
+
+        Performs a three-step process:
+        1. Identifies and updates outdated translations
+        2. Translates all markdown files that need translation
+        3. Translates all image files that need translation (when available)
+
+        Returns:
+            Tuple containing (total_translated_count, combined_errors_list)
+        """
         # Check outdated files first
         modified_count, errors = await self.translation_manager.check_outdated_files()
         logger.info(f"Found {modified_count} outdated files")
         if errors:
             logger.warning(f"Errors during checking outdated files: {errors}")
 
-        # Then translate all files
+        # Translate all markdown files
         (
             markdown_count,
             markdown_errors,
@@ -102,7 +128,7 @@ class ProjectTranslator:
         if markdown_errors:
             logger.warning(f"Errors during markdown translation: {markdown_errors}")
 
-        # Finally translate images if image translator is available
+        # Translate images if image translator is available
         (
             image_count,
             image_errors,

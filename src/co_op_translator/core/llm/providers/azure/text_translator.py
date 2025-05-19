@@ -11,11 +11,13 @@ class AzureTextTranslator(TextTranslator):
         self.client = self.get_openai_client()
 
     def get_openai_client(self):
-        """
-        Initialize and return an Azure OpenAI client.
+        """Create an Azure OpenAI client instance.
+
+        Configures client with API key, version and deployment endpoint
+        from application settings.
 
         Returns:
-            AzureOpenAI: The initialized OpenAI client.
+            Configured Azure OpenAI client
         """
         return AzureOpenAI(
             api_key=AzureOpenAIConfig.get_api_key(),
@@ -24,5 +26,5 @@ class AzureTextTranslator(TextTranslator):
         )
 
     def get_model_name(self):
-        """Get the Azure OpenAI model name."""
+        """Retrieve the configured Azure OpenAI model name."""
         return AzureOpenAIConfig.get_model_name()

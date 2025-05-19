@@ -12,34 +12,40 @@ logger = logging.getLogger(__name__)
 
 
 class TextTranslator(ABC):
+    """Define interface for text translation services.
+
+    Provides common functionality and abstract methods to be implemented by providers.
+    """
+
     def __init__(self):
         self.client = self.get_openai_client()
 
     @abstractmethod
     def get_openai_client(self):
-        """
-        Initialize and return a client.
+        """Create and configure a model client instance.
 
         Returns:
-            The initialized AI model client.
+            Initialized AI model client for the specific provider
         """
         pass
 
     @abstractmethod
-    def get_model_name(self):
-        """Get the model name for the provider."""
+    def get_model_name(self) -> str:
+        """Retrieve the configured model name for the provider."""
         pass
 
-    def translate_image_text(self, text_data, target_language):
-        """
-        Translate text data in image using the LLM API.
+    def translate_image_text(self, text_data: list, target_language: str) -> list:
+        """Translate extracted text from images to target language.
+
+        Processes text discovered through OCR and generates translations
+        formatted for placement back onto images.
 
         Args:
-            text_data (list): List of text lines to be translated.
-            target_language (str): Target language for translation.
+            text_data: List of text lines to translate
+            target_language: Target language code
 
         Returns:
-            list: List of translated text lines.
+            List of translated text lines
         """
         prompt = gen_image_translation_prompt(text_data, target_language)
         response = self.client.chat.completions.create(
@@ -56,16 +62,15 @@ class TextTranslator(ABC):
         logger.debug(f"Extracted translation lines: {result}")
         return result
 
-    def translate_text(self, text, target_language):
-        """
-        Translate a given text into the target language using the LLM API.
+    def translate_text(self, text: str, target_language: str) -> str:
+        """Translate plain text to specified target language.
 
         Args:
-            text (str): The text to be translated.
-            target_language (str): The target language code.
+            text: Source text content to translate
+            target_language: Target language code
 
         Returns:
-            str: The translated text.
+            Translated text content
         """
         prompt = f"Translate the following text into {target_language}:\n\n{text}"
         response = self.client.chat.completions.create(
@@ -80,8 +85,18 @@ class TextTranslator(ABC):
         return translated_text
 
     @classmethod
-    def create(cls):
-        """Factory method to create appropriate translator based on available provider."""
+    def create(cls) -> "TextTranslator":
+        """Create appropriate text translator implementation based on configuration.
+
+        Factory method that instantiates the correct translator class based on
+        the LLM provider settings.
+
+        Returns:
+            Configured text translator instance
+
+        Raises:
+            ValueError: When no valid LLM provider is configured
+        """
         provider = LLMConfig.get_available_provider()
         if provider == LLMProvider.AZURE_OPENAI:
             from co_op_translator.core.llm.providers.azure.text_translator import (

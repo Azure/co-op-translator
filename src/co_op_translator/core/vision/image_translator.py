@@ -42,11 +42,14 @@ logger = logging.getLogger(__name__)
 
 class ImageTranslator(ABC):
     def __init__(self, default_output_dir="./translated_images", root_dir="."):
-        """
-        Initialize the ImageTranslator with a default output directory.
+        """Initialize translator with output directory and dependencies.
+
+        Sets up required components for image translation workflow including text
+        translation service and font configuration.
 
         Args:
-            default_output_dir (str): The default directory where translated images will be saved.
+            default_output_dir: Directory where translated images will be saved
+            root_dir: Root directory of the project for path calculations
         """
         self.text_translator = TextTranslator.create()
         self.font_config = FontConfig()
@@ -60,7 +63,7 @@ class ImageTranslator(ABC):
         Initialize and return an Image Analysis Client.
 
         Returns:
-            ImageAnalysisClient: The initialized client.
+            Configured client instance for image analysis
         """
         pass
 
@@ -69,13 +72,14 @@ class ImageTranslator(ABC):
         Extract line bounding boxes from an image using Azure Analysis Client.
 
         Args:
-            image_path (str): Path to the image file.
+            image_path: Path to the image file to analyze
 
         Returns:
-            list: List of dictionaries containing text, bounding box coordinates, and confidence scores.
+            List of dictionaries containing text content, bounding box coordinates,
+            and confidence scores for each detected text line
 
         Raises:
-            Exception: If the OCR operation did not succeed.
+            Exception: If text recognition fails or no text is found
         """
         image_analysis_client = self.get_image_analysis_client()
         with open(image_path, "rb") as image_stream:
@@ -116,28 +120,30 @@ class ImageTranslator(ABC):
         verbose=False,
         fast_mode=False,
     ):
-        """
-        Plot an annotated image with translated text using a perspective warp.
-        When fast_mode is True, a faster (though less neat) variant is used.
+        """Render translated text onto original image at appropriate positions.
+
+        Uses either a fast or high-quality ("neat") rendering approach based on the
+        fast_mode parameter. Handles text orientation, RTL languages, and maintains
+        visual context.
 
         Args:
-            image_path (str): Path to the image file.
-            line_bounding_boxes (list): Flat list of bounding box dictionaries.
-            translated_text_list (list): List of translated texts corresponding to each bounding box.
-            target_language_code (str): Target language code.
-            destination_path (str, optional): Directory to save the output image.
-            verbose (bool, optional): If True, display processing progress.
-            fast_mode (bool, optional): Translations are up to 3x faster, at a slight cost to quality and alignment precision. If True, the fast method is used.
+            image_path: Path to the image file
+            line_bounding_boxes: List of detected text regions with coordinates
+            translated_text_list: List of translated texts corresponding to each region
+            target_language_code: Language code determining font and text direction
+            destination_path: Directory to save the output image (optional)
+            verbose: Whether to display processing progress
+            fast_mode: Whether to use faster rendering (3x faster but less precise)
 
         Returns:
-            str: The path to the annotated image.
+            Path to the annotated image with translated text
         """
         style = "fast" if fast_mode else "neat"
         logger.info("=" * 50)
         logger.info(f"Starting annotation ({style} mode) for image: {image_path} ")
         rtl = self.font_config.is_rtl(target_language_code)
 
-        # Process text for specific languages that need special handling
+        # Apply RTL language-specific text processing for Arabic, Hebrew, etc.
         processed_text_list = []
         try:
             # Import these libraries only when needed
@@ -397,7 +403,7 @@ class ImageTranslator(ABC):
                 f"Total time taken to plot annotated image (Neat Mode): {elapsed_time:.4f} seconds for {image_path}"
             )
 
-        # Handle RGB conversion to RGBA if needed before saving - common for both methods
+        # Convert to RGB for file formats that don't support transparency
         if output_path.suffix.lower() in RGB_IMAGE_EXTENSIONS:
             image = image.convert("RGB")
 
@@ -410,17 +416,19 @@ class ImageTranslator(ABC):
     def translate_image(
         self, image_path, target_language_code, destination_path=None, fast_mode=False
     ):
-        """
-        Translate text in an image and return the image annotated with the translated text.
+        """Process an image to detect, translate, and render text in target language.
+
+        Orchestrates the full image translation workflow including error handling.
+        When no text is found or errors occur, saves a copy of the original image.
 
         Args:
-            image_path (str): Path to the image file.
-            target_language_code (str): The language to translate the text into.
-            destination_path (str, optional): The path to save the translated image.
-                                            If None, save in default location (./translated_images/).
+            image_path: Path to the image file
+            target_language_code: Language code to translate text into
+            destination_path: Directory to save the output image (optional)
+            fast_mode: Whether to use faster rendering with slightly lower quality
 
         Returns:
-            str: The path to the annotated image, or the original image saved as a new file in case of errors.
+            Path to the result image (translated or copied original in case of errors)
         """
         image_path = Path(image_path)
 
@@ -500,16 +508,20 @@ class ImageTranslator(ABC):
     def create(
         cls, default_output_dir="./translated_images", root_dir="."
     ) -> "ImageTranslator":
-        """
-        Factory method to create appropriate ImageTranslator instance.
-        Currently only supports Azure Computer Vision.
+        """Create appropriate ImageTranslator instance based on configuration.
+
+        Factory method that determines and instantiates the correct provider-specific
+        implementation (currently only Azure Computer Vision is supported).
 
         Args:
-            default_output_dir (str): The default directory where translated images will be saved.
-            root_dir (str): The root directory of the project.
+            default_output_dir: Directory where translated images will be saved
+            root_dir: Root directory of the project for path calculations
 
         Returns:
-            ImageTranslator: An instance of the appropriate image translator.
+            Configured ImageTranslator instance ready for use
+
+        Raises:
+            ValueError: If Computer Vision is not properly configured
         """
         try:
             from co_op_translator.config.vision_config.config import VisionConfig

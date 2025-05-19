@@ -96,7 +96,7 @@ AZURE_OPENAI_API_KEY="your_azure_openai_api_key" # e.g., 21xasd...
 AZURE_OPENAI_ENDPOINT="https://your_azure_openai_endpoint.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="your_model_name" # e.g., gpt-4o
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="your_deployment_name" # e.g., cooptranslator-gpt4o
-AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-02-01
+AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-12-01-preview
 ```
 
 ---

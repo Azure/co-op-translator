@@ -3,7 +3,6 @@ import logging
 import json
 from co_op_translator.utils.common.file_utils import get_unique_id
 from pathlib import PurePosixPath
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +19,7 @@ class DirectoryManager:
         language_codes: list[str],
         excluded_dirs: list[str],
     ):
-        """
-        Initialize DirectoryManager.
+        """Initialize directory manager with project configuration.
 
         Args:
             root_dir: Root directory containing original files
@@ -51,7 +49,8 @@ class DirectoryManager:
             images: Whether to sync image directories
 
         Returns:
-            tuple[int, int, int]: (created_dirs, removed_dirs, synced_langs)
+            Tuple containing counts of created directories, removed directories,
+            and number of languages synchronized
         """
         created_count = 0
         removed_count = 0
@@ -131,15 +130,18 @@ class DirectoryManager:
     def cleanup_orphaned_translations(
         self, markdown: bool = True, images: bool = True
     ) -> int:
-        """
-        Remove translation files whose original files no longer exist.
+        """Remove orphaned translation files that no longer have source files.
+
+        Identifies and removes translation files where the original source file
+        has been deleted or moved. Processes files by matching metadata to determine
+        the correct language code and source file relationship.
 
         Args:
             markdown: Whether to clean up markdown files
             images: Whether to clean up image files
 
         Returns:
-            int: Number of removed translation files
+            Number of removed translation files
         """
         removed_count = 0
         logger.info(f"Starting cleanup with markdown={markdown}, images={images}")

@@ -1,11 +1,4 @@
-"""
-Test cases for markdown utility functions.
-"""
-
 import pytest
-import tempfile
-from pathlib import Path
-import shutil
 import os
 
 from co_op_translator.utils.llm.markdown_utils import (
@@ -280,7 +273,6 @@ def test_markdown_only_mode_image_paths(complex_dir_structure):
     print(f"Root image: {expected_root_path}")
     print(f"\nResult content:\n{result}")
 
-    # 실제 결과에서 경로 추출
     lines = result.split("\n")
     local_image_actual = None
     parent_image_actual = None
@@ -479,7 +471,6 @@ def test_image_paths_in_nested_structure(complex_dir_structure):
     print(f"\nOriginal content:\n{markdown_content}")
     print(f"\nResult content:\n{result_md_only}")
 
-    # 실제 결과에서 경로 추출
     lines = result_md_only.split("\n")
     local_image_actual = None
     parent_image_actual = None

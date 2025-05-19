@@ -28,19 +28,15 @@ _Easily automate the translation of your documentation into multiple languages t
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
-> [!TIP]
->
-> **Powerful Automation**: Now with GitHub Actions support! Automatically translate your documentation when changes are made to your repository, keeping everything up-to-date effortlessly. [Learn more](#-getting-started-with-co-op-translator).
-
 ## Supported Models and Services
 
 | Type                  | Name                           |
 |-----------------------|--------------------------------|
 | Language Model        | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
-| Computer Vision       | ![Azure Computer Vision](https://img.shields.io/badge/Azure_Computer_Vision-blue?style=flat-square) |
+| AI Vision       | ![Azure AI Vision](https://img.shields.io/badge/Azure_AI_Vision-blue?style=flat-square) |
 
 > [!NOTE]
-> If a computer vision service is not available, the co-op translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
+> If a AI vision service is not available, the co-op translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
 
 ## Overview: Streamline Your Educational Content Translation
 
@@ -82,15 +78,14 @@ Co-op Translator helps bridge the language gap for key Microsoft educational ini
 
 Co-op Translator takes Markdown files and images from your project folder and processes them as follows:
 
-1. **Text Extraction**: Extracts text from Markdown files and, if configured (e.g., with Azure Computer Vision), text embedded within images.
+1. **Text Extraction**: Extracts text from Markdown files and, if configured (e.g., with Azure AI Vision), text embedded within images.
 1. **AI Translation**: Sends the extracted text to the configured LLM (Azure OpenAI, OpenAI, etc.) for translation.
 1. **Result Saving**: Saves the translated Markdown files and images (with translated text) into language-specific folders, preserving the original formatting.
 
 ## Getting Started
 
 > [!NOTE]
-> While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](#-supported-models-and-services) list.
-
+> While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](#supported-models-and-services) list.
 
 Get started quickly with the CLI or set up full automation with GitHub Actions.
 
@@ -154,10 +149,6 @@ Learn more about Co-op Translator through our presentations _(Click the image be
 - **Open at Microsoft**: A brief 18-minute introduction and quick guide on how to use Co-op Translator.
 
   [![Open at Microsoft](./imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
-
-- **Microsoft Reactor**: A one-hour detailed step-by-step guide covering everything from understanding what Co-op Translator is, setting up the tool, and using it effectively, to a live demo showcasing its capabilities in action.
-
-  [![Microsoft Reactor](./imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
 
 ## Support Us and Foster Global Learning
 

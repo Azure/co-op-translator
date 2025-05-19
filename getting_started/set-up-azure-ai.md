@@ -46,6 +46,9 @@ If not already there, open your newly created project (e.g., `CoopTranslator-Pro
 
 Once deployed, you can select the deployment from the "**Models + endpoints**" page to find its **REST endpoint URL**, **Key**, **Deployment name**, **Model name** and **API version**. These will be needed to integrate the translation model into your application.
 
+> [!NOTE]
+> You can select API versions from the [API version deprecation](https://learn.microsoft.com/azure/ai-services/openai/api-version-deprecation) page based on your requirements. Be aware that the **API version** is different from the **Model version** shown on the **Models + endpoints** page in Azure AI Foundry.
+
 ## Set up Azure Computer Vision for Image Translation
 
 To enable translation of text within images, you need to find the Azure AI Service API Key and Endpoint.
@@ -93,7 +96,7 @@ AZURE_OPENAI_API_KEY="your_azure_openai_api_key" # e.g., 21xasd...
 AZURE_OPENAI_ENDPOINT="https://your_azure_openai_endpoint.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="your_model_name" # e.g., gpt-4o
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="your_deployment_name" # e.g., cooptranslator-gpt4o
-AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-02-01
+AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-12-01-preview
 ```
 
 ---

@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, patch
 import re
-from pathlib import Path
 
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 

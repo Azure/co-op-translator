@@ -1,7 +1,3 @@
-"""
-Test cases for file utility functions.
-"""
-
 from pathlib import Path
 import pytest
 from co_op_translator.utils.common.file_utils import (

@@ -7,15 +7,17 @@ class OpenAITextTranslator(TextTranslator):
     """OpenAI implementation for text translation."""
 
     def __init__(self):
-        """Initialize OpenAI Text Translator."""
+        """Initialize the OpenAI text translator with client."""
         self.client = self.get_openai_client()
 
     def get_openai_client(self):
-        """
-        Initialize and return an OpenAI client.
+        """Create an OpenAI client instance.
+
+        Configures client with API key, organization ID, and base URL
+        from application settings.
 
         Returns:
-            OpenAI: The initialized OpenAI client.
+            Configured OpenAI client
         """
         return OpenAI(
             api_key=OpenAIConfig.get_api_key(),
@@ -23,6 +25,6 @@ class OpenAITextTranslator(TextTranslator):
             base_url=OpenAIConfig.get_base_url(),
         )
 
-    def get_model_name(self):
-        """Get the OpenAI model name."""
+    def get_model_name(self) -> str:
+        """Retrieve the configured OpenAI model name."""
         return OpenAIConfig.get_chat_model_id()

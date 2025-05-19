@@ -16,8 +16,7 @@ class AzureMarkdownTranslator(MarkdownTranslator):
     """Azure OpenAI implementation for markdown translation."""
 
     def __init__(self, root_dir: Path = None):
-        """
-        Initialize Azure Markdown Translator.
+        """Initialize translator with Azure-specific configuration.
 
         Args:
             root_dir: Optional root directory for the project
@@ -26,11 +25,10 @@ class AzureMarkdownTranslator(MarkdownTranslator):
         self.kernel = self._initialize_kernel()
 
     def _initialize_kernel(self):
-        """
-        Initialize the semantic kernel with Azure OpenAI service.
+        """Create and configure Semantic Kernel with Azure OpenAI service.
 
         Returns:
-            Kernel: Initialized semantic kernel.
+            Configured Semantic Kernel instance
         """
         kernel = Kernel()
         service_id = LLMProvider.AZURE_OPENAI.value
@@ -50,15 +48,15 @@ class AzureMarkdownTranslator(MarkdownTranslator):
         Execute a single translation prompt using Azure OpenAI.
 
         Args:
-            prompt: The translation prompt
-            index: Current chunk index
-            total: Total number of chunks
+            prompt: Translation instruction prompt content
+            index: Current chunk index for progress tracking
+            total: Total number of chunks for progress reporting
 
         Returns:
-            str: Translated text
+            Translated text content or empty string on error
         """
         try:
-            # Initialize settings for all prompts
+            # Configure model parameters for translation quality
             req_settings = self.kernel.get_prompt_execution_settings_from_service_id(
                 LLMProvider.AZURE_OPENAI.value
             )
@@ -66,7 +64,7 @@ class AzureMarkdownTranslator(MarkdownTranslator):
             req_settings.temperature = 0.7
             req_settings.top_p = 0.8
 
-            # Log appropriate message based on prompt type
+            # Use different logging format for system vs. content prompts
             if index == "disclaimer" or isinstance(index, str):
                 logger.info(f"Running system prompt: {index}")
             else:

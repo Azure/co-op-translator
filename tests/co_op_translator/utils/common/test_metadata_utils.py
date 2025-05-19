@@ -1,7 +1,3 @@
-"""
-Tests for metadata_utils.py
-"""
-
 import json
 from freezegun import freeze_time
 from pathlib import Path

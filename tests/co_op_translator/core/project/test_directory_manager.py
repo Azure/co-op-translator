@@ -1,7 +1,3 @@
-"""
-Tests for DirectoryManager class
-"""
-
 import pytest
 import os
 

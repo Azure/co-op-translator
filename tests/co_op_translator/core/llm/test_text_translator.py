@@ -1,7 +1,6 @@
 import pytest
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import MagicMock
 from co_op_translator.core.llm.text_translator import TextTranslator
-from co_op_translator.utils.llm.text_utils import remove_code_backticks
 
 
 class MockTextTranslator(TextTranslator):

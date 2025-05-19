@@ -1,11 +1,4 @@
-"""
-Test cases for markdown utility functions.
-"""
-
 import pytest
-import tempfile
-from pathlib import Path
-import shutil
 import os
 
 from co_op_translator.utils.llm.markdown_utils import (

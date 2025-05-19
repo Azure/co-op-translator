@@ -1,10 +1,7 @@
-import os
 import pytest
 from unittest.mock import patch, MagicMock
 from PIL import Image
 from co_op_translator.utils.vision.image_utils import (
-    save_bounding_boxes,
-    load_bounding_boxes,
     get_average_color,
     get_text_color,
     draw_text_on_image,

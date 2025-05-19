@@ -1,8 +1,3 @@
-"""
-Test cases for text utility functions.
-"""
-
-import pytest
 from co_op_translator.utils.llm.text_utils import (
     remove_code_backticks,
     extract_yaml_lines,

@@ -98,21 +98,47 @@ Get started quickly with the CLI or set up full automation with GitHub Actions.
 
 For a fast start using the command line:
 
+1. Create a virtual environment:
+
+    ```bash
+    python -m venv .venv
+    ```
+
+1. Activate the virtual environment:
+
+    - On Windows:
+
+    ```bash
+    .venv\scripts\activate
+    ```
+
+    - On Linux/macOS:
+
+    ```bash
+    source .venv/bin/activate
+    ```
+
 1. Install the package:
+
     ```bash
     pip install co-op-translator
     ```
-2. Configure Credentials:
-  - Create a `.env` file in your project's root directory.
-  - Copy the contents from the [.env.template](./.env.template) file into your new `.env` file.
-  - Fill in the required API keys and endpoint information in your `.env` file.
-3. Run Translation:
-  - Navigate to your project's root directory in your terminal.
-  - Execute the translate command, specifying target languages with the `-l` flag:
+
+1. Configure Credentials:
+
+    - Create a `.env` file in your project's root directory.
+    - Copy the contents from the [.env.template](./.env.template) file into your new `.env` file.
+    - Fill in the required API keys and endpoint information in your `.env` file.
+
+1. Run Translation:
+    - Navigate to your project's root directory in your terminal.
+    - Execute the translate command, specifying target languages with the `-l` flag:
+
     ```bash
     translate -l "ko ja fr"
     ```
-    *(Replace `"ko ja fr"` with your desired space-separated language codes)*
+
+    _(Replace `"ko ja fr"` with your desired space-separated language codes)_
 
 ### Detailed Usage Guides
 

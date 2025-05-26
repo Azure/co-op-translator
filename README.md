@@ -19,6 +19,9 @@ _Easily automate the translation of your documentation into multiple languages t
 
 [Korean](./translations/ko/README.md) | [Japanese](./translations/ja/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Chinese (Traditional, Taiwan)](./translations/tw/README.md) | [Spanish](./translations/es/README.md) | [French](./translations/fr/README.md) | [German](./translations/de/README.md) | [Portuguese (Brazil)](./translations/br/README.md) | [Hindi](./translations/hi/README.md) | [Russian](./translations/ru/README.md) | [Turkish](./translations/tr/README.md) | [Arabic](./translations/ar/README.md) | [Indonesian](./translations/id/README.md) | [Vietnamese](./translations/vi/README.md)
 
+> [!NOTE]
+> These are the current translations of this repository's content. For a complete list of languages supported by Co-op Translator, please see the [Language Support](#language-support) section.
+
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
 [![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
@@ -27,16 +30,6 @@ _Easily automate the translation of your documentation into multiple languages t
 
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
-
-## Supported Models and Services
-
-| Type                  | Name                           |
-|-----------------------|--------------------------------|
-| Language Model        | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
-| AI Vision       | ![Azure AI Vision](https://img.shields.io/badge/Azure_AI_Vision-blue?style=flat-square) |
-
-> [!NOTE]
-> If a AI vision service is not available, the co-op translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
 
 ## Overview: Streamline Your Educational Content Translation
 
@@ -85,34 +78,168 @@ Co-op Translator takes Markdown files and images from your project folder and pr
 
 ## Getting Started
 
-> [!NOTE]
-> While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](#supported-models-and-services) list.
+Get started quickly with the CLI or set up full automation with GitHub Actions. Choose the approach that best fits your workflow:
 
-Get started quickly with the CLI or set up full automation with GitHub Actions.
+1. **Command Line (CLI)** - For one-time translations or manual control
+2. **GitHub Actions** - For automated translations on every push
+
+> [!NOTE]
+> While this tutorial focuses on Azure resources, you can use any supported language model.
+
+### Language Support
+
+Co-op Translator supports a wide range of languages to help you reach a global audience. Here's what you need to know:
+
+#### Quick Reference
+
+| Language | Code | Language | Code | Language | Code |
+|----------|------|----------|------|----------|------|
+| Arabic | ar | Bengali | bn | Bulgarian | bg |
+| Chinese (Simplified) | zh | Chinese (Traditional, HK) | hk | Chinese (Traditional, Macau) | mo |
+| Chinese (Traditional, TW) | tw | Croatian | hr | Czech | cs |
+| Danish | da | Dutch | nl | Finnish | fi |
+| French | fr | German | de | Greek | el |
+| Hebrew | he | Hindi | hi | Hungarian | hu |
+| Indonesian | id | Italian | it | Japanese | ja |
+| Korean | ko | Malay | ms | Marathi | mr |
+| Nepali | ne | Norwegian | no | Persian (Farsi) | fa |
+| Polish | pl | Portuguese (Brazil) | br | Portuguese (Portugal) | pt |
+| Punjabi (Gurmukhi) | pa | Romanian | ro | Russian | ru |
+| Serbian (Cyrillic) | sr | Slovak | sk | Slovenian | sl |
+| Spanish | es | Swahili | sw | Swedish | sv |
+| Tagalog (Filipino) | tl | Thai | th | Turkish | tr |
+| Urdu | ur | Vietnamese | vi | |
+
+#### Using Language Codes
+
+When using Co-op Translator, you'll need to specify languages using their codes. For example:
+
+```bash
+# Translate to French, Spanish, and German
+translate -l "fr es de"
+
+# Translate to Chinese (Simplified) and Japanese
+translate -l "zh ja"
+```
+
+#### Language Variants
+
+Some languages have multiple variants to better serve specific regions:
+
+- **Chinese**: 
+  - Simplified (zh) - Used in China
+  - Traditional (tw) - Used in Taiwan
+  - Traditional (hk) - Used in Hong Kong
+  - Traditional (mo) - Used in Macau
+
+- **Portuguese**:
+  - Portugal (pt) - European Portuguese
+  - Brazil (br) - Brazilian Portuguese
+
+> [!NOTE]
+> For detailed technical information about language support, including:
+>
+> - Font specifications for each language
+> - Known issues
+> - How to add new languages
+>
+> See our [Supported Languages Documentation](./getting_started/supported-languages.md).
+
+### Supported Models and Services
+
+| Type                  | Name                           |
+|-----------------------|--------------------------------|
+| Language Model        | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
+| AI Vision       | ![Azure AI Vision](https://img.shields.io/badge/Azure_AI_Vision-blue?style=flat-square) |
+
+> [!NOTE]
+> If a AI vision service is not available, the co-op translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
 
 ### Initial Setup
 
-- [Set up Azure AI](./getting_started/set-up-azure-ai.md)
+Before you begin, you'll need to set up the following resources:
+
+1. Language Model Resource (Required):
+   - Azure OpenAI (Recommended) - Provides high-quality translations with enterprise-grade reliability
+   - OpenAI - Alternative option if you don't have Azure access
+   - For detailed information about supported models, see [Supported Models and Services](#supported-models-and-services)
+
+1. AI Vision Resource (Optional):
+   - Azure AI Vision - Enables translation of text within images
+   - If not configured, the translator will automatically use [Markdown-only mode](./getting_started/markdown-only-mode.md)
+   - Recommended for projects with images containing text that needs translation
+
+1. Configuration Steps:
+   - Follow our [Azure AI setup guide](./getting_started/set-up-azure-ai.md) for detailed instructions
+   - Create a `.env` file with your API keys and endpoints (see [Quick Start](#quick-start-command-line) section)
+   - Ensure you have the necessary permissions and quotas for your chosen services
+
+### Project Setup Before Translation
+
+Before starting the translation process, follow these steps to prepare your project:
+
+1. Prepare Your README:
+   - Add a translations table to your README.md to link to translated versions
+   - Example format:
+
+     ```markdown
+
+     ### 🌐 Multi-Language Support
+     
+     [French](./translations/fr/README.md) | [Spanish](./translations/es/README.md) | [German](./translations/de/README.md) | [Russian](./translations/ru/README.md) | [Arabic](./translations/ar/README.md) | [Persian (Farsi)](./translations/fa/README.md) | [Urdu](./translations/ur/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Chinese (Traditional, Macau)](./translations/mo/README.md) | [Chinese (Traditional, Hong Kong)](./translations/hk/README.md) | [Chinese (Traditional, Taiwan)](./translations/tw/README.md) | [Japanese](./translations/ja/README.md) | [Korean](./translations/ko/README.md) | [Hindi](./translations/hi/README.md) | [Bengali](./translations/bn/README.md) | [Marathi](./translations/mr/README.md) | [Nepali](./translations/ne/README.md) | [Punjabi (Gurmukhi)](./translations/pa/README.md) | [Portuguese (Portugal)](./translations/pt/README.md) | [Portuguese (Brazil)](./translations/br/README.md) | [Italian](./translations/it/README.md) | [Polish](./translations/pl/README.md) | [Turkish](./translations/tr/README.md) | [Greek](./translations/el/README.md) | [Thai](./translations/th/README.md) | [Swedish](./translations/sv/README.md) | [Danish](./translations/da/README.md) | [Norwegian](./translations/no/README.md) | [Finnish](./translations/fi/README.md) | [Dutch](./translations/nl/README.md) | [Hebrew](./translations/he/README.md) | [Vietnamese](./translations/vi/README.md) | [Indonesian](./translations/id/README.md) | [Malay](./translations/ms/README.md) | [Tagalog (Filipino)](./translations/tl/README.md) | [Swahili](./translations/sw/README.md) | [Hungarian](./translations/hu/README.md) | [Czech](./translations/cs/README.md) | [Slovak](./translations/sk/README.md) | [Romanian](./translations/ro/README.md) | [Bulgarian](./translations/bg/README.md) | [Serbian (Cyrillic)](./translations/sr/README.md) | [Croatian](./translations/hr/README.md) | [Slovenian](./translations/sl/README.md)
+       
+     ```
+
+1. Clean Up Existing Translations (if needed):
+   - Remove any existing translation folders (e.g., `translations/`)
+   - Delete any old translation files to start fresh
+   - This ensures no conflicts with the new translation process
 
 ### Quick Start: Command Line
 
 For a fast start using the command line:
 
+1. Create a virtual environment:
+
+    ```bash
+    python -m venv .venv
+    ```
+
+1. Activate the virtual environment:
+
+    - On Windows:
+
+    ```bash
+    .venv\scripts\activate
+    ```
+
+    - On Linux/macOS:
+
+    ```bash
+    source .venv/bin/activate
+    ```
+
 1. Install the package:
+
     ```bash
     pip install co-op-translator
     ```
-2. Configure Credentials:
-  - Create a `.env` file in your project's root directory.
-  - Copy the contents from the [.env.template](./.env.template) file into your new `.env` file.
-  - Fill in the required API keys and endpoint information in your `.env` file.
-3. Run Translation:
-  - Navigate to your project's root directory in your terminal.
-  - Execute the translate command, specifying target languages with the `-l` flag:
+
+1. Configure Credentials:
+
+    - Create a `.env` file in your project's root directory.
+    - Copy the contents from the [.env.template](./.env.template) file into your new `.env` file.
+    - Fill in the required API keys and endpoint information in your `.env` file.
+
+1. Run Translation:
+    - Navigate to your project's root directory in your terminal.
+    - Execute the translate command, specifying target languages with the `-l` flag:
+
     ```bash
     translate -l "ko ja fr"
     ```
-    *(Replace `"ko ja fr"` with your desired space-separated language codes)*
+
+    _(Replace `"ko ja fr"` with your desired space-separated language codes)_
 
 ### Detailed Usage Guides
 
@@ -139,7 +266,6 @@ Choose the approach that best fits your workflow:
 ### Additional Resources
 
 - [Command Reference](./getting_started/command-reference.md): Detailed guide to all available commands and options.
-- [Multi-language Support Setup](./getting_started/multi-language-support.md): How to add a table linking to translated versions in your README.
 - [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions for adding new ones.
 - [Markdown-Only Mode](./getting_started/markdown-only-mode.md): How to translate text only, without image translation.
 
@@ -154,7 +280,6 @@ Learn more about Co-op Translator through our presentations _(Click the image be
 ## Support Us and Foster Global Learning
 
 Join us in revolutionizing how educational content is shared globally! Give [Co-op Translator](https://github.com/azure/co-op-translator) a ⭐ on GitHub and support our mission to break down language barriers in learning and technology. Your interest and contributions make a significant impact! Code contributions and feature suggestions are always welcome.
-
 
 ## Contributing
 
@@ -173,7 +298,7 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 ## Responsible AI
 
 Microsoft is committed to helping our customers use our AI products responsibly, sharing our learnings, and building trust-based partnerships through tools like Transparency Notes and Impact Assessments. Many of these resources can be found at [https://aka.ms/RAI](https://aka.ms/RAI).
-Microsoft’s approach to responsible AI is grounded in our AI principles of fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability.
+Microsoft's approach to responsible AI is grounded in our AI principles of fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability.
 
 Large-scale natural language, image, and speech models - like the ones used in this sample - can potentially behave in ways that are unfair, unreliable, or offensive, in turn causing harms. Please consult the [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) to be informed about risks and limitations.
 

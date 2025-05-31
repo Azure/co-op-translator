@@ -2,11 +2,10 @@
 This module provides functionality for evaluating translations across a project.
 """
 
-import asyncio
 import logging
 from pathlib import Path
-from typing import Dict, List, Tuple, Set, Optional
-import os
+from typing import List, Tuple
+from tqdm import tqdm
 
 from co_op_translator.core.llm.markdown_evaluator import MarkdownEvaluator
 
@@ -72,6 +71,15 @@ class ProjectEvaluator:
         files_with_issues = 0
         total_confidence = 0.0
 
+        # Create progress bar
+        progress_bar = tqdm(
+            total=total_files,
+            desc=f"Evaluating {language_code} translations",
+            unit="files",
+            ncols=100,
+            bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]"
+        )
+
         for orig_file, trans_file in translation_pairs:
             logger.info(f"Evaluating: {trans_file}")
             evaluation_result, success = (
@@ -89,6 +97,13 @@ class ProjectEvaluator:
                 if issues:
                     files_with_issues += 1
                     logger.info(f"Issues found in {trans_file.name}: {issues}")
+            
+            # Update progress bar with file name
+            progress_bar.set_postfix(file=trans_file.name, refresh=True)
+            progress_bar.update(1)
+        
+        # Close the progress bar
+        progress_bar.close()
 
         # Calculate average confidence score
         avg_confidence = total_confidence / total_files if total_files > 0 else 0.0

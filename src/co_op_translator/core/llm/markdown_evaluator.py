@@ -2,11 +2,10 @@
 This module provides functionality to evaluate the quality of markdown translations.
 """
 
-import asyncio
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Optional, Tuple, List, Any
+from typing import Dict, Optional, Tuple, List
 
 from co_op_translator.utils.common.metadata_utils import (
     evaluate_translation,
@@ -17,7 +16,6 @@ from co_op_translator.utils.llm.markdown_utils import (
     generate_evaluation_prompt,
     process_markdown,
     replace_code_blocks_and_inline_code,
-    restore_code_blocks_and_inline_code,
 )
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.llm_config.provider import LLMProvider
@@ -121,6 +119,8 @@ class MarkdownEvaluator:
 
                     # Make sure we have the same number of chunks
                     min_chunks = min(len(orig_chunks), len(trans_chunks))
+                    
+                    logger.info(f"Evaluating {min_chunks} chunks in {translated_file.name}")
 
                     # Evaluate each chunk pair
                     for i in range(min_chunks):
@@ -143,14 +143,19 @@ class MarkdownEvaluator:
                                     i  # Track which chunk had issues
                                 )
                                 chunk_evaluations.append(chunk_result)
-                                logger.info(
-                                    f"Evaluated chunk {i+1}/{min_chunks} for {translated_file}"
-                                )
+                                
+                                # Log progress
+                                if (i+1) % 5 == 0 or i+1 == min_chunks:  # Log every 5 chunks or at the end
+                                    logger.info(f"Evaluated chunk {i+1}/{min_chunks} for {translated_file.name}")
+                        
                         except json.JSONDecodeError:
                             logger.warning(
                                 f"Failed to parse LLM response for chunk {i}: {llm_response[:100]}..."
                             )
 
+                    # Log completion
+                    logger.info(f"Completed evaluation of all {min_chunks} chunks in {translated_file.name}")
+                    
                     # Check for mismatch in number of chunks
                     if len(orig_chunks) != len(trans_chunks):
                         chunk_issue = {

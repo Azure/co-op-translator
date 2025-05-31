@@ -22,58 +22,59 @@ from co_op_translator.config.llm_config.provider import LLMProvider
 logger = logging.getLogger(__name__)
 
 
-def evaluate_translation_rule_based(original_content: str, translated_content: str, language_code: str) -> dict:
+def evaluate_translation_rule_based(
+    original_content: str, translated_content: str, language_code: str
+) -> dict:
     """
     Perform rule-based evaluation of a translation.
-    
+
     This function evaluates the translation quality based on simple rules like
     content length ratio, code block preservation, etc.
-    
+
     Args:
         original_content: Content of the original file
         translated_content: Content of the translated file
         language_code: Language code of the translation
-        
+
     Returns:
         dict: Evaluation results containing confidence score and any issues found
     """
     # Start with high confidence and decrease based on issues
     confidence_score = 1.0
     issues = []
-    
+
     # Check if translation is significantly shorter or longer than original
     # This is a very simple heuristic that might need adjustment for different languages
     original_length = len(original_content)
     translated_length = len(translated_content)
     length_ratio = translated_length / original_length if original_length > 0 else 0
-    
+
     # Different languages have different expected length ratios
     # For example, Asian languages might have shorter text than English
     expected_ratio_min = 0.5
     expected_ratio_max = 2.0
-    
+
     if length_ratio < expected_ratio_min:
         confidence_score -= 0.3
-        issues.append(f"Translation seems too short (ratio: {length_ratio:.2f})") 
+        issues.append(f"Translation seems too short (ratio: {length_ratio:.2f})")
     elif length_ratio > expected_ratio_max:
         confidence_score -= 0.3
         issues.append(f"Translation seems too long (ratio: {length_ratio:.2f})")
-    
+
     # Simple check for code blocks (very basic)
     orig_code_count = original_content.count("```")
     trans_code_count = translated_content.count("```")
-    
+
     if orig_code_count != trans_code_count:
         confidence_score -= 0.2
-        issues.append(f"Code block count mismatch: original={orig_code_count}, translation={trans_code_count}")
-    
+        issues.append(
+            f"Code block count mismatch: original={orig_code_count}, translation={trans_code_count}"
+        )
+
     # Ensure confidence score stays within 0-1 range
     confidence_score = max(0.0, min(1.0, confidence_score))
-    
-    return {
-        "confidence_score": confidence_score,
-        "issues_found": issues
-    }
+
+    return {"confidence_score": confidence_score, "issues_found": issues}
 
 
 class MarkdownEvaluator:
@@ -153,11 +154,8 @@ class MarkdownEvaluator:
                 return {}, False
 
             # Initialize evaluation results
-            rule_based_result = {
-                "confidence_score": 1.0,
-                "issues_found": []
-            }
-            
+            rule_based_result = {"confidence_score": 1.0, "issues_found": []}
+
             # Perform rule-based evaluation if enabled
             if self.use_rule:
                 logger.info(f"Performing rule-based evaluation for {translated_file}")
@@ -185,8 +183,10 @@ class MarkdownEvaluator:
 
                     # Make sure we have the same number of chunks
                     min_chunks = min(len(orig_chunks), len(trans_chunks))
-                    
-                    logger.info(f"Evaluating {min_chunks} chunks in {translated_file.name}")
+
+                    logger.info(
+                        f"Evaluating {min_chunks} chunks in {translated_file.name}"
+                    )
 
                     # Evaluate each chunk pair
                     for i in range(min_chunks):
@@ -209,19 +209,25 @@ class MarkdownEvaluator:
                                     i  # Track which chunk had issues
                                 )
                                 chunk_evaluations.append(chunk_result)
-                                
+
                                 # Log progress
-                                if (i+1) % 5 == 0 or i+1 == min_chunks:  # Log every 5 chunks or at the end
-                                    logger.info(f"Evaluated chunk {i+1}/{min_chunks} for {translated_file.name}")
-                        
+                                if (
+                                    i + 1
+                                ) % 5 == 0 or i + 1 == min_chunks:  # Log every 5 chunks or at the end
+                                    logger.info(
+                                        f"Evaluated chunk {i+1}/{min_chunks} for {translated_file.name}"
+                                    )
+
                         except json.JSONDecodeError:
                             logger.warning(
                                 f"Failed to parse LLM response for chunk {i}: {llm_response[:100]}..."
                             )
 
                     # Log completion
-                    logger.info(f"Completed evaluation of all {min_chunks} chunks in {translated_file.name}")
-                    
+                    logger.info(
+                        f"Completed evaluation of all {min_chunks} chunks in {translated_file.name}"
+                    )
+
                     # Check for mismatch in number of chunks
                     if len(orig_chunks) != len(trans_chunks):
                         chunk_issue = {

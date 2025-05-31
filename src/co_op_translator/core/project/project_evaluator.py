@@ -48,12 +48,10 @@ class ProjectEvaluator:
         self.excluded_dirs = excluded_dirs
         self.use_llm = use_llm
         self.use_rule = use_rule
-        
+
         # MarkdownEvaluator 생성 시 평가 방법 설정 전달
         self.markdown_evaluator = markdown_evaluator or MarkdownEvaluator(
-            root_dir=root_dir,
-            use_llm=self.use_llm,
-            use_rule=self.use_rule
+            root_dir=root_dir, use_llm=self.use_llm, use_rule=self.use_rule
         )
 
     async def evaluate_project(self, language_code: str) -> Tuple[int, int, float]:
@@ -89,7 +87,7 @@ class ProjectEvaluator:
             desc=f"Evaluating {language_code} translations",
             unit="files",
             ncols=100,
-            bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]"
+            bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
         )
 
         for orig_file, trans_file in translation_pairs:
@@ -109,11 +107,11 @@ class ProjectEvaluator:
                 if issues:
                     files_with_issues += 1
                     logger.info(f"Issues found in {trans_file.name}: {issues}")
-            
+
             # Update progress bar with file name
             progress_bar.set_postfix(file=trans_file.name, refresh=True)
             progress_bar.update(1)
-        
+
         # Close the progress bar
         progress_bar.close()
 

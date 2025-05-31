@@ -35,12 +35,16 @@ logger = logging.getLogger(__name__)
 )
 @click.option("--debug", "-d", is_flag=True, help="Enable debug mode.")
 @click.option(
-    "--fast", "-f", is_flag=True, 
-    help="Fast mode: Use only rule-based evaluation without LLM. Faster but less accurate."
+    "--fast",
+    "-f",
+    is_flag=True,
+    help="Fast mode: Use only rule-based evaluation without LLM. Faster but less accurate.",
 )
 @click.option(
-    "--deep", "-D", is_flag=True,
-    help="Deep mode: Use only LLM-based evaluation without basic rules. More accurate but slower."
+    "--deep",
+    "-D",
+    is_flag=True,
+    help="Deep mode: Use only LLM-based evaluation without basic rules. More accurate but slower.",
 )
 def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep):
     """
@@ -82,7 +86,9 @@ def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep)
         # Create evaluator
         # Determine evaluation mode (fast, deep or default mode)
         if fast and deep:
-            click.echo("Warning: Both --fast and --deep flags specified. Using default mode (both rule-based and LLM).")
+            click.echo(
+                "Warning: Both --fast and --deep flags specified. Using default mode (both rule-based and LLM)."
+            )
             use_rule = True
             use_llm = True
         elif fast:
@@ -90,14 +96,16 @@ def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep)
             use_rule = True
             use_llm = False
         elif deep:
-            click.echo("Using DEEP mode: LLM-based evaluation only (more thorough but slower)")
+            click.echo(
+                "Using DEEP mode: LLM-based evaluation only (more thorough but slower)"
+            )
             use_rule = False
             use_llm = True
         else:
             click.echo("Using DEFAULT mode: Both rule-based and LLM evaluation")
             use_rule = True
             use_llm = True
-        
+
         evaluator = ProjectEvaluator(
             root_dir=root_path,
             translations_dir=root_path / "translations",

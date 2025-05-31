@@ -569,30 +569,36 @@ def restore_code_blocks_and_inline_code(
     return translated_document
 
 
-def generate_evaluation_prompt(original_content: str, translated_content: str, language_code: str) -> str:
+def generate_evaluation_prompt(
+    original_content: str, translated_content: str, language_code: str
+) -> str:
     """
     Generate a prompt for LLM to evaluate translation quality.
-    
+
     This prompt asks the LLM to evaluate a translation by comparing the original and translated content
     and identifying issues related to completeness, accuracy, language consistency, and preservation of
     markdown structure.
-    
+
     Args:
         original_content (str): The original markdown content
         translated_content (str): The translated markdown content
         language_code (str): The target language code of the translation
-        
+
     Returns:
         str: A prompt for the LLM to evaluate the translation quality
     """
     # Remove metadata comments from both contents to ensure fair comparison
-    clean_original = re.sub(r'<!--\s*CO_OP_TRANSLATOR_METADATA:[\s\S]*?-->', '', original_content)
-    clean_translated = re.sub(r'<!--\s*CO_OP_TRANSLATOR_METADATA:[\s\S]*?-->', '', translated_content)
-    
+    clean_original = re.sub(
+        r"<!--\s*CO_OP_TRANSLATOR_METADATA:[\s\S]*?-->", "", original_content
+    )
+    clean_translated = re.sub(
+        r"<!--\s*CO_OP_TRANSLATOR_METADATA:[\s\S]*?-->", "", translated_content
+    )
+
     # Using full content for evaluation since the chunks are already limited to 2048 tokens
     original_sample = clean_original
     translated_sample = clean_translated
-    
+
     # Create the evaluation prompt
     prompt = f"""You are a professional translation quality evaluator specializing in {language_code} translations.
     
@@ -622,5 +628,5 @@ def generate_evaluation_prompt(original_content: str, translated_content: str, l
     Format your response as a JSON object with the following structure:
     {{"completeness_score": 0-10, "accuracy_score": 0-10, "language_consistency_score": 0-10, "markdown_structure_score": 0-10, "issues_found": ["list", "of", "issues"], "confidence_score": 0.0-1.0, "evaluation_summary": "A brief summary of your evaluation."}}
     """
-    
+
     return prompt

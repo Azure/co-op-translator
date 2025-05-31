@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Dict, Optional, Tuple, List
 
 from co_op_translator.utils.common.metadata_utils import (
-    evaluate_translation,
     extract_metadata_from_content,
     format_metadata_comment,
 )
@@ -23,6 +22,60 @@ from co_op_translator.config.llm_config.provider import LLMProvider
 logger = logging.getLogger(__name__)
 
 
+def evaluate_translation_rule_based(original_content: str, translated_content: str, language_code: str) -> dict:
+    """
+    Perform rule-based evaluation of a translation.
+    
+    This function evaluates the translation quality based on simple rules like
+    content length ratio, code block preservation, etc.
+    
+    Args:
+        original_content: Content of the original file
+        translated_content: Content of the translated file
+        language_code: Language code of the translation
+        
+    Returns:
+        dict: Evaluation results containing confidence score and any issues found
+    """
+    # Start with high confidence and decrease based on issues
+    confidence_score = 1.0
+    issues = []
+    
+    # Check if translation is significantly shorter or longer than original
+    # This is a very simple heuristic that might need adjustment for different languages
+    original_length = len(original_content)
+    translated_length = len(translated_content)
+    length_ratio = translated_length / original_length if original_length > 0 else 0
+    
+    # Different languages have different expected length ratios
+    # For example, Asian languages might have shorter text than English
+    expected_ratio_min = 0.5
+    expected_ratio_max = 2.0
+    
+    if length_ratio < expected_ratio_min:
+        confidence_score -= 0.3
+        issues.append(f"Translation seems too short (ratio: {length_ratio:.2f})") 
+    elif length_ratio > expected_ratio_max:
+        confidence_score -= 0.3
+        issues.append(f"Translation seems too long (ratio: {length_ratio:.2f})")
+    
+    # Simple check for code blocks (very basic)
+    orig_code_count = original_content.count("```")
+    trans_code_count = translated_content.count("```")
+    
+    if orig_code_count != trans_code_count:
+        confidence_score -= 0.2
+        issues.append(f"Code block count mismatch: original={orig_code_count}, translation={trans_code_count}")
+    
+    # Ensure confidence score stays within 0-1 range
+    confidence_score = max(0.0, min(1.0, confidence_score))
+    
+    return {
+        "confidence_score": confidence_score,
+        "issues_found": issues
+    }
+
+
 class MarkdownEvaluator:
     """
     Class for evaluating the quality of markdown translations.
@@ -35,7 +88,8 @@ class MarkdownEvaluator:
     def __init__(
         self,
         root_dir: Optional[Path] = None,
-        use_llm: bool = False,
+        use_llm: bool = True,
+        use_rule: bool = True,
         llm_config: Optional[Dict] = None,
     ):
         """
@@ -44,10 +98,12 @@ class MarkdownEvaluator:
         Args:
             root_dir: Root directory of the project for path calculations
             use_llm: Whether to use LLM for enhanced evaluation (if available)
+            use_rule: Whether to use rule-based evaluation
             llm_config: Configuration for the LLM provider (if use_llm is True)
         """
         self.root_dir = root_dir
         self.use_llm = use_llm
+        self.use_rule = use_rule
         self.llm_provider = None
 
         # Initialize LLM provider if requested
@@ -96,10 +152,20 @@ class MarkdownEvaluator:
                 logger.warning(f"No metadata found in {translated_file}")
                 return {}, False
 
-            # First perform rule-based evaluation on the entire content
-            rule_based_result = evaluate_translation(
-                original_content, translated_content, language_code
-            )
+            # Initialize evaluation results
+            rule_based_result = {
+                "confidence_score": 1.0,
+                "issues_found": []
+            }
+            
+            # Perform rule-based evaluation if enabled
+            if self.use_rule:
+                logger.info(f"Performing rule-based evaluation for {translated_file}")
+                rule_based_result = evaluate_translation_rule_based(
+                    original_content, translated_content, language_code
+                )
+            else:
+                logger.info(f"Skipping rule-based evaluation for {translated_file}")
 
             # If LLM is enabled, perform chunk-based evaluation
             chunk_evaluations = []

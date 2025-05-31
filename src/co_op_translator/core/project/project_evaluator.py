@@ -27,6 +27,8 @@ class ProjectEvaluator:
         language_codes: list[str],
         excluded_dirs: list[str],
         markdown_evaluator: MarkdownEvaluator = None,
+        use_llm: bool = True,
+        use_rule: bool = True,
     ):
         """
         Initialize project evaluator.
@@ -37,12 +39,22 @@ class ProjectEvaluator:
             language_codes: List of target language codes
             excluded_dirs: List of directories to exclude
             markdown_evaluator: Evaluator instance for markdown files (optional)
+            use_llm: Whether to use LLM-based evaluation
+            use_rule: Whether to use rule-based evaluation
         """
         self.root_dir = root_dir
         self.translations_dir = translations_dir
         self.language_codes = language_codes
         self.excluded_dirs = excluded_dirs
-        self.markdown_evaluator = markdown_evaluator or MarkdownEvaluator(root_dir)
+        self.use_llm = use_llm
+        self.use_rule = use_rule
+        
+        # MarkdownEvaluator 생성 시 평가 방법 설정 전달
+        self.markdown_evaluator = markdown_evaluator or MarkdownEvaluator(
+            root_dir=root_dir,
+            use_llm=self.use_llm,
+            use_rule=self.use_rule
+        )
 
     async def evaluate_project(self, language_code: str) -> Tuple[int, int, float]:
         """

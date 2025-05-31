@@ -552,7 +552,7 @@ def replace_code_blocks_and_inline_code(document: str):
 
 def restore_code_blocks_and_inline_code(
     translated_document: str, placeholder_map: dict
-):
+) -> str:
     """
     Restore code blocks and inline code into the translated document from the placeholders.
 
@@ -565,4 +565,62 @@ def restore_code_blocks_and_inline_code(
     """
     for placeholder, code in placeholder_map.items():
         translated_document = translated_document.replace(placeholder, code)
+
     return translated_document
+
+
+def generate_evaluation_prompt(original_content: str, translated_content: str, language_code: str) -> str:
+    """
+    Generate a prompt for LLM to evaluate translation quality.
+    
+    This prompt asks the LLM to evaluate a translation by comparing the original and translated content
+    and identifying issues related to completeness, accuracy, language consistency, and preservation of
+    markdown structure.
+    
+    Args:
+        original_content (str): The original markdown content
+        translated_content (str): The translated markdown content
+        language_code (str): The target language code of the translation
+        
+    Returns:
+        str: A prompt for the LLM to evaluate the translation quality
+    """
+    # Remove metadata comments from both contents to ensure fair comparison
+    clean_original = re.sub(r'<!--\s*CO_OP_TRANSLATOR_METADATA:[\s\S]*?-->', '', original_content)
+    clean_translated = re.sub(r'<!--\s*CO_OP_TRANSLATOR_METADATA:[\s\S]*?-->', '', translated_content)
+    
+    # Using full content for evaluation since the chunks are already limited to 2048 tokens
+    original_sample = clean_original
+    translated_sample = clean_translated
+    
+    # Create the evaluation prompt
+    prompt = f"""You are a professional translation quality evaluator specializing in {language_code} translations.
+    
+    I will provide you with an original text in English and its translation to {language_code}.
+    Please evaluate the translation quality based on the following criteria:
+    
+    1. COMPLETENESS: Are all sections from the original present in the translation?
+    2. ACCURACY: Is the meaning of the original accurately conveyed?
+    3. LANGUAGE CONSISTENCY: Is the target language used consistently throughout?
+    4. MARKDOWN STRUCTURE: Are markdown elements (headings, links, lists) preserved?
+    
+    For each criterion, assign a score from 0 to 10 where 10 is perfect.
+    Also provide specific examples of any issues you find.
+    
+    Finally, calculate an overall confidence score from 0 to 1.0 based on these criteria.
+    
+    ORIGINAL CONTENT SAMPLE (English):
+    ```
+    {original_sample}
+    ```
+    
+    TRANSLATED CONTENT SAMPLE ({language_code}):
+    ```
+    {translated_sample}
+    ```
+    
+    Format your response as a JSON object with the following structure:
+    {{"completeness_score": 0-10, "accuracy_score": 0-10, "language_consistency_score": 0-10, "markdown_structure_score": 0-10, "issues_found": ["list", "of", "issues"], "confidence_score": 0.0-1.0, "evaluation_summary": "A brief summary of your evaluation."}}
+    """
+    
+    return prompt

@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 class OpenAIMarkdownEvaluator(MarkdownEvaluator):
     """OpenAI implementation for markdown evaluation."""
 
-    def __init__(self, root_dir: Path = None, use_llm: bool = True, use_rule: bool = True):
+    def __init__(
+        self, root_dir: Path = None, use_llm: bool = True, use_rule: bool = True
+    ):
         """Initialize evaluator with OpenAI-specific configuration.
 
         Args:

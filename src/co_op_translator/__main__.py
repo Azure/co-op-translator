@@ -12,6 +12,7 @@ from co_op_translator.cli.evaluate import evaluate_command
 
 logger = logging.getLogger(__name__)
 
+
 def main():
     """
     Main entry point function that routes to the appropriate command.
@@ -22,11 +23,12 @@ def main():
         command_name = "evaluate"
     else:
         command_name = "translate"
-    
+
     if command_name == "evaluate":
         evaluate_command()
     else:
         translate_command()
+
 
 if __name__ == "__main__":
     main()

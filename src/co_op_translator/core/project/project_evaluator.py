@@ -90,7 +90,7 @@ class ProjectEvaluator:
             eval_mode = "Rule only"
         else:
             eval_mode = "No evaluation"
-            
+
         # Create progress bar
         progress_bar = tqdm(
             total=total_files,
@@ -118,7 +118,7 @@ class ProjectEvaluator:
                 if confidence < 0.8:
                     files_with_issues += 1
                     logger.info(f"Low confidence in {trans_file.name}: {confidence}")
-                    
+
                 # Log issues regardless of confidence score
                 if issues:
                     logger.info(f"Issues found in {trans_file.name}: {issues}")
@@ -129,7 +129,7 @@ class ProjectEvaluator:
                 display_name = str(rel_path)
             except ValueError:
                 display_name = trans_file.name
-                
+
             progress_bar.set_description_str(
                 f"Evaluating {language_code}: {display_name} [{eval_mode}]"
             )
@@ -240,14 +240,12 @@ class ProjectEvaluator:
                 if metadata and "evaluation" in metadata:
                     confidence = metadata["evaluation"].get("confidence_score", 1.0)
                     if confidence < threshold:
-                        low_confidence_translations.append(
-                            (trans_file, confidence)
-                        )
+                        low_confidence_translations.append((trans_file, confidence))
             except Exception as e:
                 logger.error(f"Error reading metadata from {trans_file}: {e}")
 
         return low_confidence_translations
-        
+
     async def get_translations_with_issues(
         self, language_code: str
     ) -> List[Tuple[Path, float, List[str]]]:
@@ -285,7 +283,7 @@ class ProjectEvaluator:
                 logger.error(f"Error reading metadata from {trans_file}: {e}")
 
         return translations_with_issues
-        
+
     async def get_problematic_translations(
         self, language_code: str, threshold: float = 0.7
     ) -> List[Tuple[Path, float, List[str]]]:

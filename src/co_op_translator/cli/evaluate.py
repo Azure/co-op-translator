@@ -123,14 +123,22 @@ def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep)
         # Display results with color highlighting
         click.echo(f"\n{click.style('Evaluation Complete', fg='green', bold=True)}\n")
         click.echo(f"Total files evaluated: {click.style(str(total_files), fg='blue')}")
-        
+
         # Color-code the issue count based on severity
-        issue_color = 'red' if issue_files > 0 else 'green'
-        click.echo(f"Files with potential issues: {click.style(str(issue_files), fg=issue_color, bold=issue_files > 0)}")
-        
+        issue_color = "red" if issue_files > 0 else "green"
+        click.echo(
+            f"Files with potential issues: {click.style(str(issue_files), fg=issue_color, bold=issue_files > 0)}"
+        )
+
         # Color-code the confidence score
-        conf_color = 'green' if avg_confidence >= 0.9 else 'yellow' if avg_confidence >= 0.8 else 'red'
-        click.echo(f"Average confidence score: {click.style(f'{avg_confidence:.2f}', fg=conf_color)}")
+        conf_color = (
+            "green"
+            if avg_confidence >= 0.9
+            else "yellow" if avg_confidence >= 0.8 else "red"
+        )
+        click.echo(
+            f"Average confidence score: {click.style(f'{avg_confidence:.2f}', fg=conf_color)}"
+        )
 
         # Get low confidence translations
         low_confidence = asyncio.run(
@@ -138,11 +146,13 @@ def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep)
         )
 
         if low_confidence:
-            click.echo(f"\n{click.style('Files with potential issues', fg='yellow', bold=True)} (confidence below {min_confidence}):")
-            
+            click.echo(
+                f"\n{click.style('Files with potential issues', fg='yellow', bold=True)} (confidence below {min_confidence}):"
+            )
+
             # Sort by confidence score (lowest first)
             low_confidence.sort(key=lambda x: x[1])
-            
+
             for file_path, confidence in low_confidence:
                 # Try to show relative path rather than absolute path
                 try:
@@ -150,40 +160,56 @@ def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep)
                     display_path = f"./translations/{language_code}/{rel_path}"
                 except ValueError:
                     display_path = file_path
-                
+
                 # Read file to get issues for reference
                 try:
                     with open(file_path, "r", encoding="utf-8") as f:
                         content = f.read()
-                    from co_op_translator.utils.common.metadata_utils import extract_metadata_from_content
+                    from co_op_translator.utils.common.metadata_utils import (
+                        extract_metadata_from_content,
+                    )
+
                     metadata = extract_metadata_from_content(content)
                     issues = []
                     if metadata and "evaluation" in metadata:
                         issues = metadata["evaluation"].get("issues_found", [])
-                    
+
                     # Display file with confidence score
-                    conf_color = 'green' if confidence >= 0.9 else 'yellow' if confidence >= 0.8 else 'red'
+                    conf_color = (
+                        "green"
+                        if confidence >= 0.9
+                        else "yellow" if confidence >= 0.8 else "red"
+                    )
                     click.echo(f"\n- {click.style(display_path, bold=True)}")
-                    click.echo(f"  Score: {click.style(f'{confidence:.2f}', fg=conf_color)}")
-                    
+                    click.echo(
+                        f"  Score: {click.style(f'{confidence:.2f}', fg=conf_color)}"
+                    )
+
                     # Show issues as reference information if available
                     if issues:
                         click.echo(f"  Issues found:")
                         for issue in issues:
                             click.echo(f"    - {issue}")
                     else:
-                        click.echo(f"  No specific issues identified, but confidence score is low")
+                        click.echo(
+                            f"  No specific issues identified, but confidence score is low"
+                        )
                 except Exception as e:
                     logger.error(f"Error reading issues from {file_path}: {e}")
-                    
+
             click.echo("")  # Add empty line for better readability
         elif issue_files > 0:
-            click.echo(f"\n{click.style('Note:', fg='yellow')} Files with issues were found during evaluation, but none fall below the confidence threshold of {min_confidence}.")
-            click.echo(f"Consider running with a higher threshold: {click.style(f'evaluate -l {language_code} --min-confidence 0.9', bold=True)}")
+            click.echo(
+                f"\n{click.style('Note:', fg='yellow')} Files with issues were found during evaluation, but none fall below the confidence threshold of {min_confidence}."
+            )
+            click.echo(
+                f"Consider running with a higher threshold: {click.style(f'evaluate -l {language_code} --min-confidence 0.9', bold=True)}"
+            )
 
         else:
-            click.echo(f"\n{click.style('✓ All translations look good!', fg='green', bold=True)}")
-
+            click.echo(
+                f"\n{click.style('✓ All translations look good!', fg='green', bold=True)}"
+            )
 
         logger.info(f"Evaluation completed for language: {language_code}")
 

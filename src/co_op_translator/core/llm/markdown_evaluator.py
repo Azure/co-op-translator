@@ -105,22 +105,24 @@ class MarkdownEvaluator(ABC):
         """
         Execute a single evaluation prompt using the configured LLM provider.
         This is a base method that should be overridden by provider-specific subclasses.
-        
+
         Args:
             prompt: The evaluation prompt to send to the LLM
             index: Current chunk index for progress tracking
             total: Total number of chunks for progress reporting
-            
+
         Returns:
             The evaluation result as text
-            
+
         Raises:
             NotImplementedError: If called directly on the base class
         """
         pass
 
     @classmethod
-    def create(cls, root_dir: Path = None, use_llm: bool = True, use_rule: bool = True) -> "MarkdownEvaluator":
+    def create(
+        cls, root_dir: Path = None, use_llm: bool = True, use_rule: bool = True
+    ) -> "MarkdownEvaluator":
         """Create appropriate markdown evaluator based on configured provider.
 
         Factory method that instantiates the correct implementation based on
@@ -140,7 +142,7 @@ class MarkdownEvaluator(ABC):
         # If LLM is not requested, return base evaluator
         if not use_llm:
             return cls(root_dir=root_dir, use_llm=False, use_rule=use_rule)
-            
+
         provider = LLMConfig.get_available_provider()
         if provider is None:
             raise ValueError("No valid LLM provider configured")
@@ -150,16 +152,20 @@ class MarkdownEvaluator(ABC):
                 AzureMarkdownEvaluator,
             )
 
-            return AzureMarkdownEvaluator(root_dir=root_dir, use_llm=use_llm, use_rule=use_rule)
+            return AzureMarkdownEvaluator(
+                root_dir=root_dir, use_llm=use_llm, use_rule=use_rule
+            )
         elif provider == LLMProvider.OPENAI:
             from co_op_translator.core.llm.providers.openai.markdown_evaluator import (
                 OpenAIMarkdownEvaluator,
             )
 
-            return OpenAIMarkdownEvaluator(root_dir=root_dir, use_llm=use_llm, use_rule=use_rule)
+            return OpenAIMarkdownEvaluator(
+                root_dir=root_dir, use_llm=use_llm, use_rule=use_rule
+            )
         else:
             raise ValueError(f"Unsupported provider: {provider}")
-        
+
     async def evaluate_markdown(
         self,
         original_file: Path,
@@ -216,7 +222,7 @@ class MarkdownEvaluator(ABC):
                 trans_no_code, trans_code_map = replace_code_blocks_and_inline_code(
                     translated_content
                 )
-                
+
                 # Use LLM for evaluation if use_llm is enabled
                 logger.info(f"Performing LLM-based evaluation for {translated_file}")
                 try:
@@ -230,36 +236,48 @@ class MarkdownEvaluator(ABC):
                     logger.info(
                         f"LLM Evaluation: Processing {min_chunks} chunks in {translated_file.name}"
                     )
-                    
+
                     # Evaluate each chunk pair
                     for i in range(min_chunks):
                         orig_chunk = orig_chunks[i]
                         trans_chunk = trans_chunks[i]
-                        
+
                         # Generate evaluation prompt for this chunk
                         prompt = generate_evaluation_prompt(
                             orig_chunk, trans_chunk, language_code
                         )
-                        
+
                         # Get evaluation from LLM
-                        logger.debug(f"Sending chunk {i+1}/{min_chunks} to LLM for evaluation")
-                        llm_response = await self._run_prompt(prompt, i+1, min_chunks)
+                        logger.debug(
+                            f"Sending chunk {i+1}/{min_chunks} to LLM for evaluation"
+                        )
+                        llm_response = await self._run_prompt(prompt, i + 1, min_chunks)
 
                         # Parse response
                         try:
                             if llm_response:
                                 chunk_result = json.loads(llm_response)
-                                chunk_result["chunk_index"] = i  # Track which chunk had issues
+                                chunk_result["chunk_index"] = (
+                                    i  # Track which chunk had issues
+                                )
                                 chunk_evaluations.append(chunk_result)
 
                                 # Log progress
-                                if (i + 1) % 5 == 0 or i + 1 == min_chunks:  # Log every 5 chunks or at the end
-                                    logger.info(f"Evaluated chunk {i+1}/{min_chunks} for {translated_file.name}")
+                                if (
+                                    i + 1
+                                ) % 5 == 0 or i + 1 == min_chunks:  # Log every 5 chunks or at the end
+                                    logger.info(
+                                        f"Evaluated chunk {i+1}/{min_chunks} for {translated_file.name}"
+                                    )
                         except json.JSONDecodeError:
-                            logger.warning(f"Failed to parse LLM response for chunk {i}: {llm_response[:100]}...")
+                            logger.warning(
+                                f"Failed to parse LLM response for chunk {i}: {llm_response[:100]}..."
+                            )
 
                     # Log completion
-                    logger.info(f"Completed LLM evaluation of all {min_chunks} chunks in {translated_file.name}")
+                    logger.info(
+                        f"Completed LLM evaluation of all {min_chunks} chunks in {translated_file.name}"
+                    )
 
                     # Check for mismatch in number of chunks
                     if len(orig_chunks) != len(trans_chunks):
@@ -273,7 +291,7 @@ class MarkdownEvaluator(ABC):
                         chunk_evaluations.append(chunk_issue)
                 except Exception as e:
                     logger.error(f"Error during LLM evaluation: {e}")
-                
+
                 # Also check code blocks preservation
                 if orig_code_map.keys() != trans_code_map.keys():
                     code_issue = {

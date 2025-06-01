@@ -61,7 +61,7 @@ def create_metadata(
 def extract_metadata_from_content(content: str) -> dict:
     """
     Extract metadata from the content of a markdown file.
-    
+
     This function looks for metadata embedded as an HTML comment in the format:
     <!--
     CO_OP_TRANSLATOR_METADATA:
@@ -72,10 +72,10 @@ def extract_metadata_from_content(content: str) -> dict:
       "language_code": "ko"
     }
     -->
-    
+
     Args:
         content (str): The content of the markdown file
-        
+
     Returns:
         dict: Extracted metadata dictionary, or empty dict if no metadata found
     """
@@ -83,20 +83,20 @@ def extract_metadata_from_content(content: str) -> dict:
     metadata_start = content.find("<!--\nCO_OP_TRANSLATOR_METADATA:")
     if metadata_start == -1:
         return {}
-        
+
     # Find the start of the JSON content
     json_start = content.find("{", metadata_start)
     if json_start == -1:
         return {}
-        
+
     # Find the end of the comment
     comment_end = content.find("-->\n", json_start)
     if comment_end == -1:
         return {}
-        
+
     # Extract the JSON string
     json_content = content[json_start:comment_end].strip()
-    
+
     try:
         metadata = json.loads(json_content)
         return metadata

@@ -12,16 +12,21 @@ from co_op_translator.cli.evaluate import evaluate_command
 
 logger = logging.getLogger(__name__)
 
-script_name = Path(sys.argv[0]).name
-if script_name == "evaluate":
-    command_name = "evaluate"
-else:
-    command_name = "translate"
-
-
-if __name__ == "__main__":
-
+def main():
+    """
+    Main entry point function that routes to the appropriate command.
+    This function is used by the command-line scripts.
+    """
+    script_name = Path(sys.argv[0]).name
+    if script_name == "evaluate":
+        command_name = "evaluate"
+    else:
+        command_name = "translate"
+    
     if command_name == "evaluate":
         evaluate_command()
     else:
         translate_command()
+
+if __name__ == "__main__":
+    main()

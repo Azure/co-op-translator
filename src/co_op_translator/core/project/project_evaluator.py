@@ -49,8 +49,8 @@ class ProjectEvaluator:
         self.use_llm = use_llm
         self.use_rule = use_rule
 
-        # MarkdownEvaluator 생성 시 평가 방법 설정 전달
-        self.markdown_evaluator = markdown_evaluator or MarkdownEvaluator(
+        # Use the create class method to initialize the MarkdownEvaluator
+        self.markdown_evaluator = markdown_evaluator or MarkdownEvaluator.create(
             root_dir=root_dir, use_llm=self.use_llm, use_rule=self.use_rule
         )
 
@@ -81,10 +81,20 @@ class ProjectEvaluator:
         files_with_issues = 0
         total_confidence = 0.0
 
+        # Determine evaluation mode for progress bar description
+        if self.use_rule and self.use_llm:
+            eval_mode = "Default (Rule+LLM)"
+        elif self.use_llm:
+            eval_mode = "LLM only"
+        elif self.use_rule:
+            eval_mode = "Rule only"
+        else:
+            eval_mode = "No evaluation"
+            
         # Create progress bar
         progress_bar = tqdm(
             total=total_files,
-            desc=f"Evaluating {language_code} translations",
+            desc=f"Evaluating {language_code} translations [{eval_mode}]",
             unit="files",
             ncols=100,
             bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
@@ -104,12 +114,25 @@ class ProjectEvaluator:
 
                 total_confidence += confidence
 
-                if issues:
+                # Count file as problematic if confidence is below threshold (0.8)
+                if confidence < 0.8:
                     files_with_issues += 1
+                    logger.info(f"Low confidence in {trans_file.name}: {confidence}")
+                    
+                # Log issues regardless of confidence score
+                if issues:
                     logger.info(f"Issues found in {trans_file.name}: {issues}")
 
-            # Update progress bar with file name
-            progress_bar.set_postfix(file=trans_file.name, refresh=True)
+            # Update progress bar with current file name and evaluation mode
+            try:
+                rel_path = trans_file.relative_to(self.translations_dir / language_code)
+                display_name = str(rel_path)
+            except ValueError:
+                display_name = trans_file.name
+                
+            progress_bar.set_description_str(
+                f"Evaluating {language_code}: {display_name} [{eval_mode}]"
+            )
             progress_bar.update(1)
 
         # Close the progress bar
@@ -189,7 +212,7 @@ class ProjectEvaluator:
 
     async def get_low_confidence_translations(
         self, language_code: str, threshold: float = 0.7
-    ) -> List[Tuple[Path, Path, float]]:
+    ) -> List[Tuple[Path, float]]:
         """
         Get a list of translations with confidence scores below a threshold.
 
@@ -198,12 +221,12 @@ class ProjectEvaluator:
             threshold: Confidence score threshold (translations below this will be returned)
 
         Returns:
-            List of tuples containing (original_file, translated_file, confidence_score)
+            List of tuples containing (translated_file, confidence_score)
         """
         translation_pairs = await self._get_translation_pairs(language_code)
         low_confidence_translations = []
 
-        for orig_file, trans_file in translation_pairs:
+        for _, trans_file in translation_pairs:
             try:
                 with open(trans_file, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -218,9 +241,87 @@ class ProjectEvaluator:
                     confidence = metadata["evaluation"].get("confidence_score", 1.0)
                     if confidence < threshold:
                         low_confidence_translations.append(
-                            (orig_file, trans_file, confidence)
+                            (trans_file, confidence)
                         )
             except Exception as e:
                 logger.error(f"Error reading metadata from {trans_file}: {e}")
 
         return low_confidence_translations
+        
+    async def get_translations_with_issues(
+        self, language_code: str
+    ) -> List[Tuple[Path, float, List[str]]]:
+        """
+        Get a list of translations that have issues_found in their metadata.
+
+        Args:
+            language_code: Language code to check
+
+        Returns:
+            List of tuples containing (translated_file, confidence_score, issues_found)
+        """
+        translation_pairs = await self._get_translation_pairs(language_code)
+        translations_with_issues = []
+
+        for _, trans_file in translation_pairs:
+            try:
+                with open(trans_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+
+                from co_op_translator.utils.common.metadata_utils import (
+                    extract_metadata_from_content,
+                )
+
+                metadata = extract_metadata_from_content(content)
+
+                if metadata and "evaluation" in metadata:
+                    confidence = metadata["evaluation"].get("confidence_score", 1.0)
+                    issues = metadata["evaluation"].get("issues_found", [])
+                    if issues:  # Only include if there are issues
+                        translations_with_issues.append(
+                            (trans_file, confidence, issues)
+                        )
+            except Exception as e:
+                logger.error(f"Error reading metadata from {trans_file}: {e}")
+
+        return translations_with_issues
+        
+    async def get_problematic_translations(
+        self, language_code: str, threshold: float = 0.7
+    ) -> List[Tuple[Path, float, List[str]]]:
+        """
+        Get a list of translations that either have low confidence scores or issues found.
+
+        Args:
+            language_code: Language code to check
+            threshold: Confidence score threshold
+
+        Returns:
+            List of tuples containing (translated_file, confidence_score, issues_found)
+        """
+        translation_pairs = await self._get_translation_pairs(language_code)
+        problematic_translations = []
+
+        for _, trans_file in translation_pairs:
+            try:
+                with open(trans_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+
+                from co_op_translator.utils.common.metadata_utils import (
+                    extract_metadata_from_content,
+                )
+
+                metadata = extract_metadata_from_content(content)
+
+                if metadata and "evaluation" in metadata:
+                    confidence = metadata["evaluation"].get("confidence_score", 1.0)
+                    issues = metadata["evaluation"].get("issues_found", [])
+                    # Include files with low confidence OR any issues
+                    if confidence < threshold or issues:
+                        problematic_translations.append(
+                            (trans_file, confidence, issues)
+                        )
+            except Exception as e:
+                logger.error(f"Error reading metadata from {trans_file}: {e}")
+
+        return problematic_translations

@@ -262,11 +262,16 @@ class ProjectTranslator:
 
             tasks.append(translate_task)
 
+        # Store file information for progress bar
+        file_names = [str(f[0].name) for f in files_to_retranslate]
+
         # Process translations sequentially with progress bar
         if tasks:
-            # Use the translation manager's method for processing API requests
+            # Use the translation manager's method for processing API requests with file names
             results = await self.translation_manager.process_api_requests_sequential(
-                tasks, f"🔄 Retranslating low confidence files (<{min_confidence})"
+                tasks,
+                f"🔄 Retranslating low confidence files (<{min_confidence})",
+                file_names,
             )
 
             # Count successful translations from results

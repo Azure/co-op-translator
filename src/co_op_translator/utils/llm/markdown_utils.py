@@ -635,6 +635,16 @@ def generate_evaluation_prompt(
     translated_sample = clean_translated
 
     # Create the evaluation prompt
+    disclaimer_instruction = """
+IMPORTANT: The translated text includes an automatically generated disclaimer at the end that is not part of the original content.
+This disclaimer typically starts with bold text (e.g., '**Disclaimer**') and contains information about the machine translation.
+When evaluating:
+1. EXCLUDE this disclaimer from your comparison and evaluation
+2. DO NOT penalize the translation for having content that isn't in the original
+3. IGNORE any references to 'Co-op-translator' or similar tools in the disclaimer
+4. Focus ONLY on the actual translated content that corresponds to the original text
+"""
+
     prompt = f"""You are a professional translation quality evaluator specializing in {language_code} translations.
     
     I will provide you with an original text in English and its translation to {language_code}.
@@ -649,6 +659,8 @@ def generate_evaluation_prompt(
     Also provide specific examples of any issues you find.
     
     Finally, calculate an overall confidence score from 0 to 1.0 based on these criteria.
+    
+    {disclaimer_instruction}
     
     ORIGINAL CONTENT SAMPLE (English):
     ```

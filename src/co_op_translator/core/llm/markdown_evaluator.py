@@ -47,6 +47,39 @@ def evaluate_translation_rule_based(
     clean_original_content = extract_content_without_metadata(original_content)
     clean_translated_content = extract_content_without_metadata(translated_content)
 
+    # Check for disclaimer in translated content and remove it if present
+    # Disclaimer typically contains a link to Co-op Translator in the last line of last chunk
+    disclaimer_marker = "[Co-op Translator]"
+
+    # Split content into chunks by double newlines (empty lines)
+    chunks = clean_translated_content.split("\n\n")
+
+    # Check if there's at least one chunk
+    has_disclaimer = False
+    if chunks:
+        # Get the last chunk and split it into lines
+        last_chunk = chunks[-1]
+        lines = last_chunk.split("\n")
+
+        # Check if the last line of the last chunk contains the disclaimer marker
+        if lines and disclaimer_marker in lines[-1]:
+            has_disclaimer = True
+            logging.debug("Found disclaimer in last line of last chunk")
+
+            # If the last chunk is just the disclaimer, remove the entire chunk
+            if len(lines) == 1:
+                clean_chunks = chunks[:-1]
+            else:
+                # Otherwise, remove just the last line from the last chunk
+                clean_last_chunk = "\n".join(lines[:-1])
+                clean_chunks = chunks[:-1] + [clean_last_chunk]
+
+            # Reassemble content without disclaimer
+            clean_translated_content = "\n\n".join(clean_chunks)
+            logging.debug(
+                "Removed disclaimer from translated content for length comparison"
+            )
+
     # Calculate length ratio based on cleaned content
     original_length = len(clean_original_content)
     translated_length = len(clean_translated_content)
@@ -160,9 +193,13 @@ class MarkdownEvaluator(ABC):
         Raises:
             ValueError: If no valid LLM provider is configured
         """
-        # If LLM is not requested, return base evaluator
+        # If LLM is not requested, return rule-based evaluator
         if not use_llm:
-            return cls(root_dir=root_dir, use_llm=False, use_rule=use_rule)
+            from co_op_translator.core.llm.rule_based_evaluator import (
+                RuleBasedMarkdownEvaluator,
+            )
+
+            return RuleBasedMarkdownEvaluator(root_dir=root_dir, use_rule=use_rule)
 
         provider = LLMConfig.get_available_provider()
         if provider is None:

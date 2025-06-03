@@ -40,10 +40,17 @@ logger = logging.getLogger(__name__)
 @click.option("--markdown", "-md", is_flag=True, help="Only translate markdown files.")
 @click.option("--debug", "-d", is_flag=True, help="Enable debug mode.")
 @click.option(
-    "--check",
-    "-chk",
+    "--fix",
+    "-x",
     is_flag=True,
-    help="Check translated files for errors and retry translation if needed.",
+    help="Retranslate files with low confidence scores based on previous evaluation results.",
+)
+@click.option(
+    "--min-confidence",
+    "-c",
+    default=0.7,
+    type=float,
+    help="Minimum confidence threshold (0.0-1.0) for identifying translations to fix. Only used with --fix.",
 )
 @click.option(
     "--fast",
@@ -58,7 +65,16 @@ logger = logging.getLogger(__name__)
     help="Automatically confirm all prompts (useful for CI/CD pipelines).",
 )
 def translate_command(
-    language_codes, root_dir, update, images, markdown, debug, check, fast, yes
+    language_codes,
+    root_dir,
+    update,
+    images,
+    markdown,
+    debug,
+    fix,
+    fast,
+    yes,
+    min_confidence,
 ):
     """
     CLI for translating project files.
@@ -81,14 +97,14 @@ def translate_command(
     5. Add new markdown translations for Korean without affecting other translations:
        translate -l "ko" -md
 
-    6. Check translated files for errors and retry translations if necessary:
-       translate -l "ko" -chk
+    6. Fix low confidence translations based on previous evaluation results:
+       translate -l "ko" --fix
 
-    7. Check translated files for errors and retry translations (only markdown):
-       translate -l "ko" -chk -md
+    7. Fix low confidence translations with custom threshold:
+       translate -l "ko" --fix -c 0.8
 
-    8. Check translated files for errors and retry translations (only images):
-       translate -l "ko" -chk -img
+    8. Fix low confidence translations for specific files only:
+       translate -l "ko" --fix -md
 
     9. Use fast mode for image translation:
        translate -l "ko" -img -f
@@ -218,17 +234,74 @@ def translate_command(
             language_codes, root_dir, markdown_only=markdown and not images
         )
 
-        if check:
-            # Call check_and_retry_translations if --check is passed
-            click.echo(f"Checking translated files for errors in {language_codes}...")
-            asyncio.run(translator.check_and_retry_translations())
+        if fix:
+            click.echo(f"Fixing translations with confidence below {min_confidence}...")
+
+            # Fix is only applicable to markdown files, not images
+            if images and not markdown:
+                click.echo("Note: --fix only applies to markdown files, not images.")
+
+            # Handle language codes
+            if language_codes.lower() == "all":
+                lang_list = Config.get_language_codes()
+            else:
+                lang_list = [code.strip() for code in language_codes.split()]
+
+            total_retranslated = 0
+            total_errors = 0
+
+            for lang_code in lang_list:
+
+                logger.info(f"Processing language: {lang_code}")
+
+                try:
+                    retranslated_count, errors = asyncio.run(
+                        translator.retranslate_low_confidence_files(
+                            lang_code, min_confidence
+                        )
+                    )
+
+                    total_retranslated += retranslated_count
+                    total_errors += len(errors)
+
+                    if retranslated_count > 0:
+                        logger.info(
+                            f"{retranslated_count} files were retranslated successfully"
+                        )
+                    else:
+                        logger.info(
+                            f"No files with confidence below {min_confidence} were found or needed retranslation"
+                        )
+
+                    if errors:
+                        logger.warning(
+                            f"Errors during retranslation: {len(errors)} errors"
+                        )
+                        for error in errors:
+                            logger.error(f"Error detail: {error}")
+                except Exception as e:
+                    logger.error(f"Error processing {lang_code}: {str(e)}")
+
+            click.echo(f"\n{click.style('Summary:', fg='blue', bold=True)}")
+            click.echo(
+                f"Total files retranslated: {click.style(str(total_retranslated), fg='green')}"
+            )
+            if total_errors > 0:
+                click.echo(f"Total errors: {click.style(str(total_errors), fg='red')}")
+
+            logger.info(
+                f"Project translation completed for languages: {language_codes}"
+            )
+
         else:
             # Call translate_project with determined settings
             translator.translate_project(
                 images=images, markdown=markdown, update=update, fast_mode=fast
             )
 
-        logger.info(f"Project translation completed for languages: {language_codes}")
+            logger.info(
+                f"Project translation completed for languages: {language_codes}"
+            )
 
     except Exception as e:
         if debug:

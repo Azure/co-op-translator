@@ -340,15 +340,15 @@ class MarkdownEvaluator(ABC):
             metadata_comment = format_metadata_comment(metadata)
 
             # Update the file with new metadata
-            # First, remove old metadata comment and add new one
-            content_parts = translated_content.split("\n\n", 1)
-            if len(content_parts) > 1:
-                updated_content = metadata_comment + content_parts[1]
-            else:
-                # If splitting fails, preserve content but add new metadata
-                updated_content = metadata_comment + translated_content.replace(
-                    content_parts[0], ""
-                )
+            # Extract the actual content without metadata
+            content_without_metadata = extract_content_without_metadata(
+                translated_content
+            )
+
+            # Create updated content with new metadata followed by original content
+            updated_content = metadata_comment
+            if content_without_metadata.strip():
+                updated_content += "\n" + content_without_metadata
 
             # Write back to file
             with open(translated_file, "w", encoding="utf-8") as f:

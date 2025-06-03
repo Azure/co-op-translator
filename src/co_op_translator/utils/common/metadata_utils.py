@@ -173,6 +173,6 @@ def format_metadata_comment(metadata: dict) -> str:
 
     Total lines: 9
     """
-    metadata_json = json.dumps(metadata, indent=2)
+    metadata_json = json.dumps(metadata, indent=2, ensure_ascii=False)
     formatted_comment = f"<!--\nCO_OP_TRANSLATOR_METADATA:\n{metadata_json}\n-->\n"
     return formatted_comment

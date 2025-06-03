@@ -72,7 +72,7 @@ def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep)
             logging.basicConfig(level=logging.DEBUG)
             logging.debug("Debug mode enabled.")
         else:
-            logging.basicConfig(level=logging.INFO)
+            logging.basicConfig(level=logging.CRITICAL)
 
         # Validate root directory
         root_path = Path(root_dir).resolve()
@@ -156,10 +156,19 @@ def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep)
             for file_path, confidence in low_confidence:
                 # Try to show relative path rather than absolute path
                 try:
-                    rel_path = Path(file_path).relative_to(root_path)
-                    display_path = f"./translations/{language_code}/{rel_path}"
+                    # Get full relative path from project root
+                    rel_path = str(Path(file_path).relative_to(root_path)).replace(
+                        "\\", "/"
+                    )
+
+                    # Check if the path already contains translations/language_code
+                    # to avoid duplication
+                    if rel_path.startswith(f"translations/{language_code}/"):
+                        display_path = f"./{rel_path}"
+                    else:
+                        display_path = f"./translations/{language_code}/{rel_path}"
                 except ValueError:
-                    display_path = file_path
+                    display_path = str(file_path).replace("\\", "/")
 
                 # Read file to get issues for reference
                 try:
@@ -172,7 +181,8 @@ def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep)
                     metadata = extract_metadata_from_content(content)
                     issues = []
                     if metadata and "evaluation" in metadata:
-                        issues = metadata["evaluation"].get("issues_found", [])
+                        # Only check issues field
+                        issues = metadata["evaluation"].get("issues", [])
 
                     # Display file with confidence score
                     conf_color = (

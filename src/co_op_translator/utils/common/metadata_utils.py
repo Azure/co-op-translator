@@ -104,6 +104,49 @@ def extract_metadata_from_content(content: str) -> dict:
         return {}
 
 
+def extract_content_without_metadata(content: str) -> str:
+    """
+    Extract content from a markdown file, removing the metadata comment block.
+
+    This function removes the CO_OP_TRANSLATOR_METADATA comment block and any
+    standard disclaimer comment blocks from the content.
+
+    Args:
+        content (str): The content of the markdown file
+
+    Returns:
+        str: The content with metadata and disclaimer comments removed
+    """
+    # Remove metadata comment block
+    metadata_start = content.find("<!--\nCO_OP_TRANSLATOR_METADATA:")
+    if metadata_start != -1:
+        comment_end = content.find("-->\n", metadata_start)
+        if comment_end != -1:
+            # Remove the metadata block and the newline after it
+            content = content[:metadata_start] + content[comment_end + 4 :]
+
+    # Remove any other disclaimer comment blocks (simplified approach)
+    disclaimer_start = content.find("<!--")
+    while disclaimer_start != -1:
+        disclaimer_end = content.find("-->", disclaimer_start)
+        if disclaimer_end != -1:
+            # Remove the disclaimer block and the newline after it if present
+            if (
+                len(content) > disclaimer_end + 3
+                and content[disclaimer_end + 3] == "\n"
+            ):
+                content = content[:disclaimer_start] + content[disclaimer_end + 4 :]
+            else:
+                content = content[:disclaimer_start] + content[disclaimer_end + 3 :]
+        else:
+            break
+
+        # Look for next disclaimer
+        disclaimer_start = content.find("<!--")
+
+    return content.strip()
+
+
 def format_metadata_comment(metadata: dict) -> str:
     """
     Convert a metadata dictionary into a formatted HTML comment.

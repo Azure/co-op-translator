@@ -7,12 +7,14 @@ from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.utils.common.metadata_utils import (
     extract_metadata_from_content,
+    extract_content_without_metadata,
     format_metadata_comment,
 )
 from co_op_translator.utils.llm.markdown_utils import (
     generate_evaluation_prompt,
     process_markdown,
     replace_code_blocks_and_inline_code,
+    extract_json_from_markdown_codeblock,
 )
 
 logger = logging.getLogger(__name__)
@@ -41,9 +43,28 @@ def evaluate_translation_rule_based(
 
     # Check if translation is significantly shorter or longer than original
     # This is a very simple heuristic that might need adjustment for different languages
-    original_length = len(original_content)
-    translated_length = len(translated_content)
-    length_ratio = translated_length / original_length if original_length > 0 else 0
+    # Extract content without metadata for more accurate length comparison
+    clean_original_content = extract_content_without_metadata(original_content)
+    clean_translated_content = extract_content_without_metadata(translated_content)
+
+    # Calculate length ratio based on cleaned content
+    original_length = len(clean_original_content)
+    translated_length = len(clean_translated_content)
+
+    # Add debug logging
+    logging.debug(f"Original content (cleaned): '{clean_original_content}'")
+    logging.debug(f"Translated content (cleaned): '{clean_translated_content}'")
+    logging.debug(
+        f"Original length: {original_length}, Translated length: {translated_length}"
+    )
+
+    # If both contents are empty or very small, set ratio to 1.0 (perfect match)
+    if original_length <= 5 and translated_length <= 5:
+        length_ratio = 1.0
+    else:
+        length_ratio = translated_length / original_length if original_length > 0 else 0
+
+    logging.debug(f"Length ratio: {length_ratio:.2f}")
 
     # Different languages have different expected length ratios
     # For example, Asian languages might have shorter text than English
@@ -256,7 +277,11 @@ class MarkdownEvaluator(ABC):
                         # Parse response
                         try:
                             if llm_response:
-                                chunk_result = json.loads(llm_response)
+                                # Use utility function to extract JSON from markdown code blocks
+                                cleaned_response = extract_json_from_markdown_codeblock(
+                                    llm_response
+                                )
+                                chunk_result = json.loads(cleaned_response)
                                 chunk_result["chunk_index"] = (
                                     i  # Track which chunk had issues
                                 )
@@ -353,8 +378,12 @@ class MarkdownEvaluator(ABC):
 
         # If we have chunk evaluations, enhance the overall evaluation
         if chunk_evaluations:
-            # Collect all issues from all chunks
-            all_issues = set(combined.get("issues", []))
+            # Collect all issues from rule-based evaluation first
+            all_issues = set()
+
+            # Add issues from rule-based evaluation
+            if "issues_found" in combined:
+                all_issues.update(combined.get("issues_found", []))
 
             # Track chunk confidence scores
             chunk_scores = []
@@ -396,8 +425,12 @@ class MarkdownEvaluator(ABC):
                 combined["confidence_score"] = round(weighted_score, 2)
                 combined["chunk_scores"] = chunk_scores
 
-            # Update issues list
+            # Update issues list - store all issues in a single field to avoid duplication
             combined["issues"] = list(all_issues)
+
+            # Remove the old issues_found field to avoid duplication
+            if "issues_found" in combined:
+                del combined["issues_found"]
 
             # Add summary of chunk evaluation
             summary = f"Evaluated {len(chunk_evaluations)} chunks. "

@@ -569,6 +569,41 @@ def restore_code_blocks_and_inline_code(
     return translated_document
 
 
+def extract_json_from_markdown_codeblock(response: str) -> str:
+    """
+    Extract JSON content from markdown code blocks.
+
+    Extracts JSON formatted as markdown code blocks (```json) from LLM responses.
+
+    Args:
+        response (str): Original response text from the LLM
+
+    Returns:
+        str: Cleaned JSON string with markdown formatting removed
+    """
+    cleaned_response = response
+
+    # Check if the response starts with a markdown code block
+    if cleaned_response.strip().startswith("```"):
+        # Extract content between the first and last code block markers
+        parts = cleaned_response.split("```", 2)
+        if len(parts) >= 3:
+            # If the format is ```json\n{...}\n```, take the middle part
+            json_content = parts[1]
+            # Remove language identifier if present
+            if "\n" in json_content:
+                json_content = json_content.split("\n", 1)[1]
+            cleaned_response = json_content
+        else:
+            # Handle cases where closing ``` might be missing
+            if cleaned_response.strip().startswith("```json"):
+                cleaned_response = cleaned_response.replace("```json", "", 1).strip()
+            elif cleaned_response.strip().startswith("```"):
+                cleaned_response = cleaned_response.replace("```", "", 1).strip()
+
+    return cleaned_response
+
+
 def generate_evaluation_prompt(
     original_content: str, translated_content: str, language_code: str
 ) -> str:

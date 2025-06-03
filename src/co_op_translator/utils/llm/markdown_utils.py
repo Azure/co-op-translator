@@ -638,11 +638,7 @@ def generate_evaluation_prompt(
     disclaimer_instruction = """
 IMPORTANT: The translated text includes an automatically generated disclaimer at the end that is not part of the original content.
 This disclaimer typically starts with bold text (e.g., '**Disclaimer**') and contains information about the machine translation.
-When evaluating:
-1. EXCLUDE this disclaimer from your comparison and evaluation
-2. DO NOT penalize the translation for having content that isn't in the original
-3. IGNORE any references to 'Co-op-translator' or similar tools in the disclaimer
-4. Focus ONLY on the actual translated content that corresponds to the original text
+When evaluating EXCLUDE this disclaimer from your comparison and evaluation
 """
 
     prompt = f"""You are a professional translation quality evaluator specializing in {language_code} translations.

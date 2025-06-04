@@ -622,16 +622,13 @@ def generate_evaluation_prompt(
     Returns:
         str: A prompt for the LLM to evaluate the translation quality
     """
-    # Remove metadata comments from both contents to ensure fair comparison
-    clean_original = re.sub(
-        r"<!--\s*CO_OP_TRANSLATOR_METADATA:[\s\S]*?-->", "", original_content
-    )
+    # Remove metadata comments from translated content to ensure fair comparison
     clean_translated = re.sub(
         r"<!--\s*CO_OP_TRANSLATOR_METADATA:[\s\S]*?-->", "", translated_content
     )
 
     # Using full content for evaluation since the chunks are already limited to 2048 tokens
-    original_sample = clean_original
+    original_sample = original_content
     translated_sample = clean_translated
 
     # Create the evaluation prompt

@@ -643,7 +643,7 @@ When evaluating EXCLUDE this disclaimer from your comparison and evaluation
 
     prompt = f"""You are a professional translation quality evaluator specializing in {language_code} translations.
     
-    I will provide you with an original text in English and its translation to {language_code}.
+    I will provide you with an original text and its translation to {language_code}.
     Please evaluate the translation quality based on the following criteria:
     
     1. COMPLETENESS: Are all sections from the original present in the translation?
@@ -658,7 +658,7 @@ When evaluating EXCLUDE this disclaimer from your comparison and evaluation
     
     {disclaimer_instruction}
     
-    ORIGINAL CONTENT SAMPLE (English):
+    ORIGINAL CONTENT SAMPLE:
     ```
     {original_sample}
     ```

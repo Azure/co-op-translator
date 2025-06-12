@@ -114,7 +114,7 @@ CLI で手早く始めるか、GitHub Actions で完全自動化を設定しま�
     pip install co-op-translator
     ```
 2. 資格情報を設定：
-  - `.env` file in your project's root directory.
+  - プロジェクトのルート ディレクトリにある `.env` ファイル。
   - Copy the contents from the [.env.template](../../.env.template) file into your new `.env` file.
   - Fill in the required API keys and endpoint information in your `.env` file.
 3. Run Translation:

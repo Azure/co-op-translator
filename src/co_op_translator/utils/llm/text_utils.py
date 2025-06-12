@@ -9,19 +9,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def gen_image_translation_prompt(text_data, language):
+def gen_image_translation_prompt(text_data, language_code, language_name):
     """
     Generate a translation prompt for the given text data.
 
     Args:
         text_data (list): List of text lines to be translated.
-        language (str): Target language for translation.
+        language_code (str): Target language code for translation.
+        language_name (str): Target language name for translation.
 
     Returns:
         str: Generated translation prompt.
     """
     prompt = f"""
-    You are a translator that receives a batch of lines in an image. Given the following yaml file, please translate each line into {language}.
+    You are a translator that receives a batch of lines in an image. Given the following yaml file, please translate each line into {language_name} ({language_code}).
     For each line, fill it in with the translation, respecting the context of the text.
     Return only the yaml file, fully filled in.
     """

@@ -303,7 +303,9 @@ class MarkdownEvaluator(ABC):
                         trans_chunk = trans_chunks[i]
 
                         # Generate evaluation prompt for this chunk
-                        language_name = self.font_config.get_language_name(language_code)
+                        language_name = self.font_config.get_language_name(
+                            language_code
+                        )
                         prompt = generate_evaluation_prompt(
                             orig_chunk, trans_chunk, language_code, language_name
                         )
@@ -418,66 +420,126 @@ class MarkdownEvaluator(ABC):
 
         # If we have chunk evaluations, enhance the overall evaluation
         if chunk_evaluations:
-            # Collect all issues from rule-based evaluation first
-            all_issues = set()
-
-            # Add issues from rule-based evaluation
-            if "issues_found" in combined:
-                all_issues.update(combined.get("issues_found", []))
-
-            # Track chunk confidence scores
+            # Collect all issues with their severity scores
+            all_issues = []
+            max_severity = 0.0
             chunk_scores = []
 
-            for chunk_eval in chunk_evaluations:
-                # Add issues from this chunk
+            # Add issues from rule-based evaluation (assign moderate severity)
+            if "issues_found" in combined:
+                for issue in combined.get("issues_found", []):
+                    all_issues.append(
+                        {
+                            "description": issue,
+                            "severity": 0.4,  # Moderate severity for rule-based issues
+                            "source": "rule-based",
+                        }
+                    )
+                    max_severity = max(max_severity, 0.4)
+
+            for i, chunk_eval in enumerate(chunk_evaluations):
+                # Handle new structured issues format
                 if "issues_found" in chunk_eval:
-                    for issue in chunk_eval["issues_found"]:
-                        # Add chunk index to the issue if available
-                        if "chunk_index" in chunk_eval:
-                            issue_text = f"{issue} (chunk {chunk_eval['chunk_index']})"
-                        else:
-                            issue_text = issue
-                        all_issues.add(issue_text)
+                    issues = chunk_eval["issues_found"]
+
+                    # Check if issues are in new structured format
+                    if (
+                        issues
+                        and isinstance(issues[0], dict)
+                        and "severity" in issues[0]
+                    ):
+                        # New structured format with severity
+                        for issue in issues:
+                            issue_with_chunk = {
+                                "description": f"{issue['description']} (chunk {i})",
+                                "severity": issue["severity"],
+                                "source": "llm",
+                                "chunk": i,
+                            }
+                            if "location" in issue:
+                                issue_with_chunk["location"] = issue["location"]
+                            if "impact" in issue:
+                                issue_with_chunk["impact"] = issue["impact"]
+                            all_issues.append(issue_with_chunk)
+                            max_severity = max(max_severity, issue["severity"])
+                    else:
+                        # Old format - convert to new format with default severity
+                        for issue in issues:
+                            all_issues.append(
+                                {
+                                    "description": f"{issue} (chunk {i})",
+                                    "severity": 0.5,  # Default moderate severity
+                                    "source": "llm",
+                                    "chunk": i,
+                                }
+                            )
+                            max_severity = max(max_severity, 0.5)
+
+                # Handle max_issue_severity from LLM response
+                if "max_issue_severity" in chunk_eval:
+                    max_severity = max(max_severity, chunk_eval["max_issue_severity"])
 
                 # Track confidence score
                 if "confidence_score" in chunk_eval:
                     chunk_scores.append(chunk_eval["confidence_score"])
 
-            # Calculate weighted average of confidence scores
-            if chunk_scores:
-                # Rule-based score
+            # Determine retranslation requirement based on severity threshold
+            requires_retranslation = max_severity >= 0.7
+            if requires_retranslation:
+                decision_reason = f"Max issue severity ({max_severity:.2f}) exceeds threshold (0.7) - retranslation required"
+            else:
+                decision_reason = f"Max issue severity ({max_severity:.2f}) below threshold (0.7) - translation acceptable"
+
+            # Calculate final confidence based on maximum issue severity
+            if max_severity > 0:
+                # If there are severe issues, confidence should be low
+                severity_penalty = max_severity * 0.8  # Scale penalty
+                base_confidence = 1.0 - severity_penalty
+
+                # Also consider rule-based confidence
                 rule_confidence = combined.get("confidence_score", 0.5)
 
-                # Find the minimum chunk score (worst chunk)
-                min_chunk_score = min(chunk_scores)
+                # Take the lower of severity-based and rule-based confidence
+                final_confidence = min(base_confidence, rule_confidence)
 
-                # Average of all chunk scores
-                avg_chunk_score = sum(chunk_scores) / len(chunk_scores)
+                # Ensure it doesn't go below 0.1
+                combined["confidence_score"] = max(0.1, round(final_confidence, 2))
+            else:
+                # No issues found, use original rule-based confidence
+                combined["confidence_score"] = combined.get("confidence_score", 0.8)
 
-                # Weighted average with bias towards lower scores (more conservative)
-                # 40% weight to worst chunk, 30% to rule-based, 30% to average of chunks
-                weighted_score = (
-                    min_chunk_score * 0.4
-                    + rule_confidence * 0.3
-                    + avg_chunk_score * 0.3
-                )
+            # Store structured issues data
+            combined["issues"] = all_issues
+            combined["max_issue_severity"] = round(max_severity, 2)
+            combined["requires_retranslation"] = requires_retranslation
+            combined["decision_reason"] = decision_reason
 
-                combined["confidence_score"] = round(weighted_score, 2)
+            # Store chunk scores for reference
+            if chunk_scores:
                 combined["chunk_scores"] = chunk_scores
-
-            # Update issues list - store all issues in a single field to avoid duplication
-            combined["issues"] = list(all_issues)
 
             # Remove the old issues_found field to avoid duplication
             if "issues_found" in combined:
                 del combined["issues_found"]
 
-            # Add summary of chunk evaluation
-            summary = f"Evaluated {len(chunk_evaluations)} chunks. "
-            if chunk_scores:
-                worst_chunk_idx = chunk_scores.index(min(chunk_scores))
-                summary += f"Lowest confidence in chunk {worst_chunk_idx}."
-                combined["worst_chunk"] = worst_chunk_idx
+            # Add summary
+            severity_description = "no issues"
+            if max_severity >= 0.9:
+                severity_description = "critical issues"
+            elif max_severity >= 0.7:
+                severity_description = "major issues"
+            elif max_severity >= 0.5:
+                severity_description = "significant issues"
+            elif max_severity >= 0.3:
+                severity_description = "moderate issues"
+            elif max_severity > 0:
+                severity_description = "minor issues"
+
+            summary = f"Evaluated {len(chunk_evaluations)} chunks with {severity_description}. "
+            if max_severity >= 0.7:
+                summary += "Retranslation recommended."
+            else:
+                summary += "Translation acceptable."
 
             combined["summary"] = summary
 

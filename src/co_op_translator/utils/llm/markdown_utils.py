@@ -605,7 +605,10 @@ def extract_json_from_markdown_codeblock(response: str) -> str:
 
 
 def generate_evaluation_prompt(
-    original_content: str, translated_content: str, language_code: str, language_name: str
+    original_content: str,
+    translated_content: str,
+    language_code: str,
+    language_name: str,
 ) -> str:
     """
     Generate a prompt for LLM to evaluate translation quality.
@@ -642,17 +645,24 @@ When evaluating EXCLUDE this disclaimer from your comparison and evaluation
     prompt = f"""You are a professional translation quality evaluator specializing in {language_name} ({language_code}) translations.
     
     I will provide you with an original text and its translation to {language_name} ({language_code}).
-    Please evaluate the translation quality based on the following criteria:
+    Please evaluate the translation quality and identify specific issues.
     
+    For each issue you find, provide:
+    1. A clear description of the issue
+    2. A severity score from 0.0 to 1.0 where:
+       - 0.0-0.2: Minor issues (typos, minor style inconsistencies)
+       - 0.3-0.4: Moderate issues (unclear phrasing, minor meaning changes)
+       - 0.5-0.6: Significant issues (noticeable meaning changes, grammar errors)
+       - 0.7-0.8: Major issues (substantial meaning errors, missing content)
+       - 0.9-1.0: Critical issues (completely wrong meaning, missing major sections)
+    
+    Also evaluate these criteria on a scale of 0-10:
     1. COMPLETENESS: Are all sections from the original present in the translation?
     2. ACCURACY: Is the meaning of the original accurately conveyed?
     3. LANGUAGE CONSISTENCY: Is the target language ({language_name}) used consistently throughout?
     4. MARKDOWN STRUCTURE: Are markdown elements (headings, links, lists) preserved?
     
-    For each criterion, assign a score from 0 to 10 where 10 is perfect.
-    Also provide specific examples of any issues you find.
-    
-    Finally, calculate an overall confidence score from 0 to 1.0 based on these criteria.
+    Calculate an overall confidence score from 0 to 1.0 based on these criteria.
     
     {disclaimer_instruction}
     
@@ -667,7 +677,25 @@ When evaluating EXCLUDE this disclaimer from your comparison and evaluation
     ```
     
     Format your response as a JSON object with the following structure:
-    {{"completeness_score": 0-10, "accuracy_score": 0-10, "language_consistency_score": 0-10, "markdown_structure_score": 0-10, "issues_found": ["list", "of", "issues"], "confidence_score": 0.0-1.0, "evaluation_summary": "A brief summary of your evaluation."}}
+    {{
+        "completeness_score": 0-10, 
+        "accuracy_score": 0-10, 
+        "language_consistency_score": 0-10, 
+        "markdown_structure_score": 0-10, 
+        "issues_found": [
+            {{
+                "description": "Clear description of the issue",
+                "severity": 0.0-1.0,
+                "location": "Where the issue occurs (optional)",
+                "impact": "Brief explanation of why this issue matters"
+            }}
+        ],
+        "max_issue_severity": 0.0-1.0,
+        "confidence_score": 0.0-1.0, 
+        "evaluation_summary": "A brief summary of your evaluation."
+    }}
+    
+    IMPORTANT: Focus on providing accurate severity scores for each issue. The system will use these scores to determine if retranslation is needed.
     """
 
     return prompt

@@ -95,20 +95,21 @@ Co-op Translator supports a wide range of languages to help you reach a global a
 | Language | Code | Language | Code | Language | Code |
 |----------|------|----------|------|----------|------|
 | Arabic | ar | Bengali | bn | Bulgarian | bg |
-| Chinese (Simplified) | zh | Chinese (Traditional, HK) | hk | Chinese (Traditional, Macau) | mo |
-| Chinese (Traditional, TW) | tw | Croatian | hr | Czech | cs |
-| Danish | da | Dutch | nl | Finnish | fi |
-| French | fr | German | de | Greek | el |
-| Hebrew | he | Hindi | hi | Hungarian | hu |
-| Indonesian | id | Italian | it | Japanese | ja |
-| Korean | ko | Malay | ms | Marathi | mr |
-| Nepali | ne | Norwegian | no | Persian (Farsi) | fa |
-| Polish | pl | Portuguese (Brazil) | br | Portuguese (Portugal) | pt |
-| Punjabi (Gurmukhi) | pa | Romanian | ro | Russian | ru |
-| Serbian (Cyrillic) | sr | Slovak | sk | Slovenian | sl |
-| Spanish | es | Swahili | sw | Swedish | sv |
-| Tagalog (Filipino) | tl | Thai | th | Turkish | tr |
-| Urdu | ur | Vietnamese | vi | |
+| Burmese (Myanmar) | my | Chinese (Simplified) | zh | Chinese (Traditional, HK) | hk |
+| Chinese (Traditional, Macau) | mo | Chinese (Traditional, TW) | tw | Croatian | hr |
+| Czech | cs | Danish | da | Dutch | nl |
+| Finnish | fi | French | fr | German | de |
+| Greek | el | Hebrew | he | Hindi | hi |
+| Hungarian | hu | Indonesian | id | Italian | it |
+| Japanese | ja | Korean | ko | Malay | ms |
+| Marathi | mr | Nepali | ne | Norwegian | no |
+| Persian (Farsi) | fa | Polish | pl | Portuguese (Brazil) | br |
+| Portuguese (Portugal) | pt | Punjabi (Gurmukhi) | pa | Romanian | ro |
+| Russian | ru | Serbian (Cyrillic) | sr | Slovak | sk |
+| Slovenian | sl | Spanish | es | Swahili | sw |
+| Swedish | sv | Tagalog (Filipino) | tl | Thai | th |
+| Turkish | tr | Ukrainian | uk | Urdu | ur |
+| Vietnamese | vi | — | — | — | — |
 
 #### Using Language Codes
 
@@ -121,20 +122,6 @@ translate -l "fr es de"
 # Translate to Chinese (Simplified) and Japanese
 translate -l "zh ja"
 ```
-
-#### Language Variants
-
-Some languages have multiple variants to better serve specific regions:
-
-- **Chinese**: 
-  - Simplified (zh) - Used in China
-  - Traditional (tw) - Used in Taiwan
-  - Traditional (hk) - Used in Hong Kong
-  - Traditional (mo) - Used in Macau
-
-- **Portuguese**:
-  - Portugal (pt) - European Portuguese
-  - Brazil (br) - Brazilian Portuguese
 
 > [!NOTE]
 > For detailed technical information about language support, including:
@@ -186,8 +173,8 @@ Before starting the translation process, follow these steps to prepare your proj
 
      ### 🌐 Multi-Language Support
      
-     [French](./translations/fr/README.md) | [Spanish](./translations/es/README.md) | [German](./translations/de/README.md) | [Russian](./translations/ru/README.md) | [Arabic](./translations/ar/README.md) | [Persian (Farsi)](./translations/fa/README.md) | [Urdu](./translations/ur/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Chinese (Traditional, Macau)](./translations/mo/README.md) | [Chinese (Traditional, Hong Kong)](./translations/hk/README.md) | [Chinese (Traditional, Taiwan)](./translations/tw/README.md) | [Japanese](./translations/ja/README.md) | [Korean](./translations/ko/README.md) | [Hindi](./translations/hi/README.md) | [Bengali](./translations/bn/README.md) | [Marathi](./translations/mr/README.md) | [Nepali](./translations/ne/README.md) | [Punjabi (Gurmukhi)](./translations/pa/README.md) | [Portuguese (Portugal)](./translations/pt/README.md) | [Portuguese (Brazil)](./translations/br/README.md) | [Italian](./translations/it/README.md) | [Polish](./translations/pl/README.md) | [Turkish](./translations/tr/README.md) | [Greek](./translations/el/README.md) | [Thai](./translations/th/README.md) | [Swedish](./translations/sv/README.md) | [Danish](./translations/da/README.md) | [Norwegian](./translations/no/README.md) | [Finnish](./translations/fi/README.md) | [Dutch](./translations/nl/README.md) | [Hebrew](./translations/he/README.md) | [Vietnamese](./translations/vi/README.md) | [Indonesian](./translations/id/README.md) | [Malay](./translations/ms/README.md) | [Tagalog (Filipino)](./translations/tl/README.md) | [Swahili](./translations/sw/README.md) | [Hungarian](./translations/hu/README.md) | [Czech](./translations/cs/README.md) | [Slovak](./translations/sk/README.md) | [Romanian](./translations/ro/README.md) | [Bulgarian](./translations/bg/README.md) | [Serbian (Cyrillic)](./translations/sr/README.md) | [Croatian](./translations/hr/README.md) | [Slovenian](./translations/sl/README.md)
-       
+     [French](./translations/fr/README.md) | [Spanish](./translations/es/README.md) | [German](./translations/de/README.md) | [Russian](./translations/ru/README.md) | [Arabic](./translations/ar/README.md) | [Persian (Farsi)](./translations/fa/README.md) | [Urdu](./translations/ur/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Chinese (Traditional, Macau)](./translations/mo/README.md) | [Chinese (Traditional, Hong Kong)](./translations/hk/README.md) | [Chinese (Traditional, Taiwan)](./translations/tw/README.md) | [Japanese](./translations/ja/README.md) | [Korean](./translations/ko/README.md) | [Hindi](./translations/hi/README.md) | [Bengali](./translations/bn/README.md) | [Marathi](./translations/mr/README.md) | [Nepali](./translations/ne/README.md) | [Punjabi (Gurmukhi)](./translations/pa/README.md) | [Portuguese (Portugal)](./translations/pt/README.md) | [Portuguese (Brazil)](./translations/br/README.md) | [Italian](./translations/it/README.md) | [Polish](./translations/pl/README.md) | [Turkish](./translations/tr/README.md) | [Greek](./translations/el/README.md) | [Thai](./translations/th/README.md) | [Swedish](./translations/sv/README.md) | [Danish](./translations/da/README.md) | [Norwegian](./translations/no/README.md) | [Finnish](./translations/fi/README.md) | [Dutch](./translations/nl/README.md) | [Hebrew](./translations/he/README.md) | [Vietnamese](./translations/vi/README.md) | [Indonesian](./translations/id/README.md) | [Malay](./translations/ms/README.md) | [Tagalog (Filipino)](./translations/tl/README.md) | [Swahili](./translations/sw/README.md) | [Hungarian](./translations/hu/README.md) | [Czech](./translations/cs/README.md) | [Slovak](./translations/sk/README.md) | [Romanian](./translations/ro/README.md) | [Bulgarian](./translations/bg/README.md) | [Serbian (Cyrillic)](./translations/sr/README.md) | [Croatian](./translations/hr/README.md) | [Slovenian](./translations/sl/README.md) | [Ukrainian](./translations/uk/README.md) | [Burmese (Myanmar)](./translations/my/README.md) 
+    
      ```
 
 1. Clean Up Existing Translations (if needed):

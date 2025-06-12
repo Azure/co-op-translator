@@ -605,7 +605,7 @@ def extract_json_from_markdown_codeblock(response: str) -> str:
 
 
 def generate_evaluation_prompt(
-    original_content: str, translated_content: str, language_code: str
+    original_content: str, translated_content: str, language_code: str, language_name: str
 ) -> str:
     """
     Generate a prompt for LLM to evaluate translation quality.
@@ -618,6 +618,7 @@ def generate_evaluation_prompt(
         original_content (str): The original markdown content
         translated_content (str): The translated markdown content
         language_code (str): The target language code of the translation
+        language_name (str): The target language name of the translation
 
     Returns:
         str: A prompt for the LLM to evaluate the translation quality
@@ -638,14 +639,14 @@ This disclaimer typically starts with bold text (e.g., '**Disclaimer**') and con
 When evaluating EXCLUDE this disclaimer from your comparison and evaluation
 """
 
-    prompt = f"""You are a professional translation quality evaluator specializing in {language_code} translations.
+    prompt = f"""You are a professional translation quality evaluator specializing in {language_name} ({language_code}) translations.
     
-    I will provide you with an original text and its translation to {language_code}.
+    I will provide you with an original text and its translation to {language_name} ({language_code}).
     Please evaluate the translation quality based on the following criteria:
     
     1. COMPLETENESS: Are all sections from the original present in the translation?
     2. ACCURACY: Is the meaning of the original accurately conveyed?
-    3. LANGUAGE CONSISTENCY: Is the target language used consistently throughout?
+    3. LANGUAGE CONSISTENCY: Is the target language ({language_name}) used consistently throughout?
     4. MARKDOWN STRUCTURE: Are markdown elements (headings, links, lists) preserved?
     
     For each criterion, assign a score from 0 to 10 where 10 is perfect.
@@ -660,7 +661,7 @@ When evaluating EXCLUDE this disclaimer from your comparison and evaluation
     {original_sample}
     ```
     
-    TRANSLATED CONTENT SAMPLE ({language_code}):
+    TRANSLATED CONTENT SAMPLE ({language_name} - {language_code}):
     ```
     {translated_sample}
     ```

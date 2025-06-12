@@ -64,15 +64,17 @@ class TestGenerateEvaluationPrompt:
         original = "Test content"
         translated = "테스트 콘텐츠"
         language_code = "ko"
+        language_name = "Korean"
         
         # Act
-        prompt = generate_evaluation_prompt(original, translated, language_code)
+        prompt = generate_evaluation_prompt(original, translated, language_code, language_name)
         
         # Assert
         assert isinstance(prompt, str), "Prompt should be a string"
         assert original in prompt, "Original content should be included"
         assert translated in prompt, "Translated content should be included"
         assert language_code in prompt, "Target language should be specified"
+        assert language_name in prompt, "Target language name should be specified"
         
         # Check for required sections
         required_sections = [
@@ -90,7 +92,7 @@ class TestGenerateEvaluationPrompt:
         test_content = SAMPLE_MD_CONTENT
         
         # Act
-        prompt = generate_evaluation_prompt(test_content, test_content, "ko")
+        prompt = generate_evaluation_prompt(test_content, test_content, "ko", "Korean")
         
         # Assert
         markdown_elements = [
@@ -103,6 +105,39 @@ class TestGenerateEvaluationPrompt:
         
         for element in markdown_elements:
             assert element in prompt, f"Markdown element not preserved: {element}"
+
+    def test_generate_evaluation_prompt():
+        """Test suite for the generate_evaluation_prompt function."""
+        original = "# Hello World\nThis is a test document."
+        translated = "# 안녕 세상\n이것은 테스트 문서입니다."
+        language_code = "ko"
+        language_name = "Korean"
+
+        # Test basic functionality
+        prompt = generate_evaluation_prompt(original, translated, language_code, language_name)
+
+        # Basic validation
+        assert prompt is not None
+        assert isinstance(prompt, str)
+        assert len(prompt) > 0
+
+        # Check content presence
+        assert language_code in prompt
+        assert language_name in prompt
+        assert "translation quality evaluator" in prompt.lower()
+        assert "completeness" in prompt.lower()
+        assert "accuracy" in prompt.lower()
+        assert "JSON object" in prompt
+        assert original in prompt
+        assert translated in prompt
+
+        # Test with identical content (perfect translation scenario)
+        test_content = "# Test\nSample content for evaluation."
+        prompt = generate_evaluation_prompt(test_content, test_content, "ko", "Korean")
+        assert prompt is not None
+        assert "ko" in prompt
+        assert "Korean" in prompt
+        assert test_content in prompt
 
 
 class TestOpenAIMarkdownEvaluator:

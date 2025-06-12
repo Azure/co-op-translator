@@ -16,6 +16,7 @@ from co_op_translator.utils.llm.markdown_utils import (
     replace_code_blocks_and_inline_code,
     extract_json_from_markdown_codeblock,
 )
+from co_op_translator.config.font_config import FontConfig
 
 logger = logging.getLogger(__name__)
 
@@ -153,6 +154,7 @@ class MarkdownEvaluator(ABC):
         self.root_dir = root_dir
         self.use_llm = use_llm
         self.use_rule = use_rule
+        self.font_config = FontConfig()
 
     @abstractmethod
     async def _run_prompt(self, prompt: str, index: int, total: int) -> str:
@@ -301,8 +303,9 @@ class MarkdownEvaluator(ABC):
                         trans_chunk = trans_chunks[i]
 
                         # Generate evaluation prompt for this chunk
+                        language_name = self.font_config.get_language_name(language_code)
                         prompt = generate_evaluation_prompt(
-                            orig_chunk, trans_chunk, language_code
+                            orig_chunk, trans_chunk, language_code, language_name
                         )
 
                         # Get evaluation from LLM

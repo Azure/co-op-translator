@@ -115,7 +115,7 @@ CLI で手早く始めるか、GitHub Actions で完全自動化を設定しま�
     ```
 2. 資格情報を設定：
   - プロジェクトのルート ディレクトリにある `.env` ファイル。
-  - Copy the contents from the [.env.template](../../.env.template) file into your new `.env` file.
+  - [.env.template](../../.env.template) ファイルの内容を新しい `.env` ファイルにコピーします。
   - Fill in the required API keys and endpoint information in your `.env` file.
 3. Run Translation:
   - Navigate to your project's root directory in your terminal.

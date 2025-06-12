@@ -2,7 +2,7 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b38d8f042530a4bc872def7cb2c141cd",
-  "translation_date": "2025-05-06T17:40:20+00:00",
+  "translation_date": "2025-06-12T11:22:01+00:00",
   "source_file": "getting_started/command-reference.md",
   "language_code": "en"
 }

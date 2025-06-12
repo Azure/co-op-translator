@@ -2,20 +2,20 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-05-06T17:21:08+00:00",
+  "translation_date": "2025-06-12T09:24:08+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "es"
 }
 -->
 # Contribuyendo a Co-op Translator
 
-Este proyecto acepta contribuciones y sugerencias. La mayoría de las contribuciones requieren que aceptes un Acuerdo de Licencia de Contribuidor (CLA) declarando que tienes el derecho y realmente nos otorgas los derechos para usar tu contribución. Para más detalles, visita https://cla.opensource.microsoft.com.
+Este proyecto acepta contribuciones y sugerencias. La mayoría de las contribuciones requieren que aceptes un Acuerdo de Licencia de Contribuyente (CLA) declarando que tienes el derecho, y efectivamente otorgas, los derechos para que usemos tu contribución. Para más detalles, visita https://cla.opensource.microsoft.com.
 
-Cuando envíes un pull request, un bot de CLA determinará automáticamente si necesitas proporcionar un CLA y decorará el PR apropiadamente (por ejemplo, verificación de estado, comentario). Simplemente sigue las instrucciones proporcionadas por el bot. Solo tendrás que hacer esto una vez en todos los repositorios que usan nuestro CLA.
+Cuando envíes un pull request, un bot de CLA determinará automáticamente si necesitas proporcionar un CLA y marcará el PR adecuadamente (por ejemplo, verificación de estado, comentario). Solo debes seguir las instrucciones proporcionadas por el bot. Solo tendrás que hacer esto una vez para todos los repositorios que usen nuestro CLA.
 
 ## Configuración del entorno de desarrollo
 
-Para configurar el entorno de desarrollo para este proyecto, recomendamos usar Poetry para gestionar las dependencias. Usamos `pyproject.toml` para administrar las dependencias del proyecto, por lo que para instalar las dependencias, debes usar Poetry.
+Para configurar el entorno de desarrollo de este proyecto, recomendamos usar Poetry para gestionar las dependencias. Usamos `pyproject.toml` para manejar las dependencias del proyecto, por lo que para instalar las dependencias, debes usar Poetry.
 
 ### Crear un entorno virtual
 
@@ -70,7 +70,7 @@ Antes de enviar un PR, es importante probar la funcionalidad de traducción con 
     mkdir test_docs
     ```
 
-2. Copia algo de documentación markdown e imágenes que quieras traducir en el directorio de prueba. Por ejemplo:
+2. Copia algunos documentos markdown y las imágenes que quieras traducir en el directorio de prueba. Por ejemplo:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -86,7 +86,7 @@ Antes de enviar un PR, es importante probar la funcionalidad de traducción con 
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Revisa los archivos traducidos en el archivo `test_docs/translations` and `test_docs/translated_images` to verify:
+5. Revisa los archivos traducidos en `test_docs/translations` and `test_docs/translated_images` to verify:
    - The translation quality
    - The metadata comments are correct
    - The original markdown structure is preserved
@@ -103,13 +103,13 @@ This manual testing helps ensure that your changes work well in real-world scena
 >
 > ### Opciones adicionales para el entorno de desarrollo
 >
-> Además de ejecutar el proyecto localmente, también puedes usar GitHub Codespaces o VS Code Dev Containers como una alternativa para configurar el entorno de desarrollo.
+> Además de ejecutar el proyecto localmente, también puedes usar GitHub Codespaces o VS Code Dev Containers para una configuración alternativa del entorno de desarrollo.
 >
 > #### GitHub Codespaces
 >
-> Puedes ejecutar estas muestras virtualmente usando GitHub Codespaces y no se requieren configuraciones adicionales.
+> Puedes ejecutar estos ejemplos virtualmente usando GitHub Codespaces sin necesidad de configuraciones adicionales.
 >
-> El botón abrirá una instancia web de VS Code en tu navegador:
+> El botón abrirá una instancia de VS Code basada en web en tu navegador:
 >
 > 1. Abre la plantilla (esto puede tardar varios minutos):
 >
@@ -129,7 +129,7 @@ This manual testing helps ensure that your changes work well in real-world scena
 
 ### Estilo de código
 
-Usamos [Black](https://github.com/psf/black) como formateador de código Python para mantener un estilo consistente en todo el proyecto. Black es un formateador de código inflexible que reformatea automáticamente el código Python para ajustarse al estilo Black.
+Usamos [Black](https://github.com/psf/black) como formateador de código Python para mantener un estilo consistente en todo el proyecto. Black es un formateador inflexible que reformatea automáticamente el código Python para ajustarse al estilo Black.
 
 #### Configuración
 
@@ -164,7 +164,7 @@ pip install black
 
 ##### Con Poetry
 
-1. Formatea todos los archivos Python del proyecto:
+1. Formatea todos los archivos Python en el proyecto:
     ```bash
     poetry run black .
     ```
@@ -176,7 +176,7 @@ pip install black
 
 ##### Con pip
 
-1. Formatea todos los archivos Python del proyecto:
+1. Formatea todos los archivos Python en el proyecto:
     ```bash
     black .
     ```
@@ -187,15 +187,15 @@ pip install black
     ```
 
 > [!TIP]
-> Recomendamos configurar tu editor para que formatee el código automáticamente con Black al guardar. La mayoría de los editores modernos soportan esto mediante extensiones o plugins.
+> Recomendamos configurar tu editor para que formatee automáticamente el código con Black al guardar. La mayoría de los editores modernos soportan esto mediante extensiones o plugins.
 
 ## Ejecutando Co-op Translator
 
 Para ejecutar Co-op Translator usando Poetry en tu entorno, sigue estos pasos:
 
-1. Navega al directorio donde quieres hacer pruebas de traducción o crea una carpeta temporal para pruebas.
+1. Navega al directorio donde quieres realizar pruebas de traducción o crea una carpeta temporal para pruebas.
 
-2. Ejecuta el siguiente comando. La bandera `-l ko` with the language code you wish to translate into. The `-d` indica modo debug.
+2. Ejecuta el siguiente comando. El flag `-l ko` with the language code you wish to translate into. The `-d` indica modo debug.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -208,9 +208,9 @@ Para ejecutar Co-op Translator usando Poetry en tu entorno, sigue estos pasos:
 
 ### Mensaje de commit y estrategia de Merge
 
-Para asegurar consistencia y claridad en el historial de commits de nuestro proyecto, seguimos un formato específico para el mensaje de commit **final** cuando usamos la estrategia de **Squash and Merge**.
+Para asegurar consistencia y claridad en el historial de commits de nuestro proyecto, seguimos un formato específico para el mensaje de commit **final** cuando usamos la estrategia **Squash and Merge**.
 
-Cuando un pull request (PR) se fusiona, los commits individuales se combinan en un solo commit. El mensaje final debe seguir el formato a continuación para mantener un historial limpio y consistente.
+Cuando un pull request (PR) se fusiona, los commits individuales se combinarán en un solo commit. El mensaje de commit final debe seguir el formato que se muestra a continuación para mantener un historial limpio y consistente.
 
 #### Formato del mensaje de commit (para squash and merge)
 
@@ -231,7 +231,7 @@ Usamos el siguiente formato para los mensajes de commit:
 **Examples**:
 
 - `Docs: Actualizar instrucciones de instalación para mayor claridad (#50)`
-- `Core: Mejorar manejo de la traducción de imágenes (#60)`
+- `Core: Mejorar manejo de traducción de imágenes (#60)`
 
 > [!NOTE]
 > Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
@@ -259,4 +259,4 @@ They should be squashed into:
 `Docs: Mejorar claridad y formato de la documentación (#65)`
 
 **Aviso legal**:  
-Este documento ha sido traducido utilizando el servicio de traducción automática [Co-op Translator](https://github.com/Azure/co-op-translator). Aunque nos esforzamos por la precisión, tenga en cuenta que las traducciones automáticas pueden contener errores o inexactitudes. El documento original en su idioma nativo debe considerarse la fuente autorizada. Para información crítica, se recomienda la traducción profesional realizada por humanos. No nos hacemos responsables de ningún malentendido o interpretación errónea derivada del uso de esta traducción.
+Este documento ha sido traducido utilizando el servicio de traducción automática [Co-op Translator](https://github.com/Azure/co-op-translator). Aunque nos esforzamos por la precisión, tenga en cuenta que las traducciones automáticas pueden contener errores o inexactitudes. El documento original en su idioma nativo debe considerarse la fuente autorizada. Para información crítica, se recomienda una traducción profesional realizada por humanos. No nos hacemos responsables de malentendidos o interpretaciones erróneas derivadas del uso de esta traducción.

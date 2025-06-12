@@ -1,13 +1,13 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "329abbc9354793ea422f7e7ebf66be2c",
-  "translation_date": "2025-05-07T01:50:04+00:00",
+  "original_hash": "044724537b57868117aadae8e7728c7c",
+  "translation_date": "2025-06-12T09:46:10+00:00",
   "source_file": "README.md",
   "language_code": "en"
 }
 -->
-![Logo](../../imgs/logo.png)
+![Logo](../../translated_images/logo.1d3fc925341d99d6b16418721c0de21f1df6f1366b93d55dc2b5a996f55ade5f.en.png)
 
 # Co-op Translator: Automate the Translation of Educational Documentation Effortlessly
 
@@ -25,41 +25,28 @@ _Easily automate the translation of your documentation into multiple languages t
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 ### Language Support Powered by Co-op Translator
-
-[Korean](../ko/README.md) | [Japanese](../ja/README.md) | [Chinese (Simplified)](../zh/README.md) | [Chinese (Traditional, Taiwan)](../tw/README.md) | [Spanish](../es/README.md) | [French](../fr/README.md) | [German](../de/README.md) | [Portuguese (Brazil)](../br/README.md) | [Hindi](../hi/README.md) | [Russian](../ru/README.md) | [Turkish](../tr/README.md) | [Arabic](../ar/README.md) | [Indonesian](../id/README.md) | [Vietnamese](../vi/README.md)
+[French](../fr/README.md) | [Spanish](../es/README.md) | [German](../de/README.md) | [Russian](../ru/README.md) | [Arabic](../ar/README.md) | [Persian (Farsi)](../fa/README.md) | [Urdu](../ur/README.md) | [Chinese (Simplified)](../zh/README.md) | [Chinese (Traditional, Macau)](../mo/README.md) | [Chinese (Traditional, Hong Kong)](../hk/README.md) | [Chinese (Traditional, Taiwan)](../tw/README.md) | [Japanese](../ja/README.md) | [Korean](../ko/README.md) | [Hindi](../hi/README.md) | [Bengali](../bn/README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Portuguese (Portugal)](../pt/README.md) | [Portuguese (Brazil)](../br/README.md) | [Italian](../it/README.md) | [Polish](../pl/README.md) | [Turkish](../tr/README.md) | [Greek](../el/README.md) | [Thai](../th/README.md) | [Swedish](../sv/README.md) | [Danish](../da/README.md) | [Norwegian](../no/README.md) | [Finnish](../fi/README.md) | [Dutch](../nl/README.md) | [Hebrew](../he/README.md) | [Vietnamese](../vi/README.md) | [Indonesian](../id/README.md) | [Malay](../ms/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Swahili](../sw/README.md) | [Hungarian](../hu/README.md) | [Czech](../cs/README.md) | [Slovak](../sk/README.md) | [Romanian](../ro/README.md) | [Bulgarian](../bg/README.md) | [Serbian (Cyrillic)](../sr/README.md) | [Croatian](../hr/README.md) | [Slovenian](../sl/README.md) | [Ukrainian](../uk/README.md) | [Burmese (Myanmar)](../my/README.md)
+> [!NOTE]
+> These are the current translations of this repository's content. For a complete list of languages supported by Co-op Translator, please see the [Language Support](../..) section.
 
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
-[![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator.svg?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
+[![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
 
 [![Azure AI Community Discord](https://dcbadge.vercel.app/api/server/ByRwuEEgH4)](https://discord.com/invite/ByRwuEEgH4)
 
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
-> [!TIP]
->
-> **Powerful Automation**: Now with GitHub Actions support! Automatically translate your documentation whenever changes are made to your repository, keeping everything up-to-date with ease. [Learn more](../..).
+## Overview: Streamline Your Educational Content Translation
 
-## Supported Models and Services
+Language barriers significantly limit access to valuable educational resources and technical knowledge for learners and developers worldwide. This restricts participation and slows the pace of global innovation and learning.
 
-| Type                  | Name                           |
-|-----------------------|--------------------------------|
-| Language Model        | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
-| Computer Vision       | ![Azure Computer Vision](https://img.shields.io/badge/Azure_Computer_Vision-blue?style=flat-square) |
-
-> [!NOTE]
-> If a computer vision service is unavailable, co-op translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
-
-## Overview: Simplify Your Educational Content Translation
-
-Language barriers significantly limit access to valuable educational materials and technical knowledge for learners and developers worldwide. This restricts participation and slows down global innovation and learning.
-
-**Co-op Translator** was created to solve the inefficient manual translation process used for Microsoft’s large-scale educational series (such as the "For Beginners" guides). It has grown into a user-friendly, powerful tool designed to break down these barriers for everyone. By offering high-quality automated translations through CLI and GitHub Actions, Co-op Translator enables educators, students, researchers, and developers worldwide to share and access knowledge without language limits.
+**Co-op Translator** was created to solve the inefficient manual translation process for Microsoft's large educational series (such as the "For Beginners" guides). It has grown into an easy-to-use, powerful tool designed to break down these barriers for everyone. By providing high-quality automated translations via CLI and GitHub Actions, Co-op Translator enables educators, students, researchers, and developers around the world to share and access knowledge without language restrictions.
 
 See how Co-op Translator organizes translated educational content:
 
-![Example](../../imgs/translation-ex.png)
+![Example](../../translated_images/translation-ex.e97fcdf09d27f56060939080a0b3e491e92b67e047ca005826cb3de11399907c.en.png)
 
 Markdown files and image text are automatically translated and neatly organized into language-specific folders.
 
@@ -67,78 +54,189 @@ Markdown files and image text are automatically translated and neatly organized 
 
 ## Supporting Global Access for Microsoft's Learning Resources
 
-Co-op Translator helps close the language gap for key Microsoft educational initiatives by automating translations for repositories that serve a worldwide developer community. Examples currently using Co-op Translator include:
+Co-op Translator helps close the language gap for key Microsoft educational initiatives by automating translation for repositories serving a global developer community. Current projects using Co-op Translator include:
 
+[![Generative-AI-for-beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=Generative-AI-for-beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/Generative-AI-for-beginners)
 [![ML-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ML-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ML-For-Beginners)
-[![Generative-AI-for-beginners-dotnet](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=Generative-AI-for-beginners-dotnet&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
 [![AI-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=AI-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/AI-For-Beginners)
 [![ai-agents-for-beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ai-agents-for-beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ai-agents-for-beginners)
 [![PhiCookBook](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=PhiCookBook&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/PhiCookBook)
+[![Generative-AI-for-beginners-dotnet](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=Generative-AI-for-beginners-dotnet&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
 
 ## Key Features
 
-- **Automated Translations**: Effortlessly translate text into multiple languages.
+- **Automated Translations**: Easily translate text into multiple languages.
 - **GitHub Actions Integration**: Automate translations as part of your CI/CD workflow.
-- **Markdown Preservation**: Keep proper Markdown syntax intact during translation.
-- **Image Text Translation**: Extract and translate text within images.
-- **Advanced LLM Technology**: Utilize state-of-the-art language models for high-quality translations.
-- **Easy Integration**: Smoothly fit into your existing project setup.
-- **Simplify Localization**: Make localizing your project for international audiences straightforward.
+- **Markdown Preservation**: Keep correct Markdown formatting during translation.
+- **Image Text Translation**: Extract and translate text inside images.
+- **Advanced LLM Technology**: Leverage state-of-the-art language models for high-quality translations.
+- **Easy Integration**: Seamlessly add to your existing project setup.
+- **Simplify Localization**: Streamline the process of localizing your project for international audiences.
 
 ## How It Works
 
-![Architecture](../../imgs/architecture_241019.png)
+![Architecture](../../translated_images/architecture_241019.15de09d63bf3f7065d5da8ac1e08948c9d3bf795aae3b7f6f8d3cce53c95d00b.en.png)
 
 Co-op Translator processes Markdown files and images from your project folder as follows:
 
-1. **Text Extraction**: Extracts text from Markdown files and, if configured (e.g., with Azure Computer Vision), text embedded in images.
+1. **Text Extraction**: Extracts text from Markdown files and, if configured (e.g., with Azure AI Vision), text embedded in images.
 1. **AI Translation**: Sends the extracted text to the configured LLM (Azure OpenAI, OpenAI, etc.) for translation.
-1. **Result Saving**: Saves the translated Markdown files and images (with translated text) into language-specific folders, preserving the original formatting.
+1. **Result Saving**: Saves translated Markdown files and images (with translated text) into language-specific folders, preserving the original formatting.
 
 ## Getting Started
 
-Get started quickly with the CLI or set up full automation using GitHub Actions.
+Start quickly with the CLI or set up full automation with GitHub Actions. Choose the method that fits your workflow best:
+
+1. **Command Line (CLI)** - For one-time translations or manual control
+2. **GitHub Actions** - For automated translations on every push
+
+> [!NOTE]
+> Although this tutorial focuses on Azure resources, you can use any supported language model.
+
+### Language Support
+
+Co-op Translator supports a wide variety of languages to help you reach a global audience. Here’s what you need to know:
+
+#### Quick Reference
+
+| Language | Code | Language | Code | Language | Code |
+|----------|------|----------|------|----------|------|
+| Arabic | ar | Bengali | bn | Bulgarian | bg |
+| Burmese (Myanmar) | my | Chinese (Simplified) | zh | Chinese (Traditional, HK) | hk |
+| Chinese (Traditional, Macau) | mo | Chinese (Traditional, TW) | tw | Croatian | hr |
+| Czech | cs | Danish | da | Dutch | nl |
+| Finnish | fi | French | fr | German | de |
+| Greek | el | Hebrew | he | Hindi | hi |
+| Hungarian | hu | Indonesian | id | Italian | it |
+| Japanese | ja | Korean | ko | Malay | ms |
+| Marathi | mr | Nepali | ne | Norwegian | no |
+| Persian (Farsi) | fa | Polish | pl | Portuguese (Brazil) | br |
+| Portuguese (Portugal) | pt | Punjabi (Gurmukhi) | pa | Romanian | ro |
+| Russian | ru | Serbian (Cyrillic) | sr | Slovak | sk |
+| Slovenian | sl | Spanish | es | Swahili | sw |
+| Swedish | sv | Tagalog (Filipino) | tl | Thai | th |
+| Turkish | tr | Ukrainian | uk | Urdu | ur |
+| Vietnamese | vi | — | — | — | — |
+
+#### Using Language Codes
+
+When using Co-op Translator, specify languages using their codes. For example:
+
+```bash
+# Translate to French, Spanish, and German
+translate -l "fr es de"
+
+# Translate to Chinese (Simplified) and Japanese
+translate -l "zh ja"
+```
+
+> [!NOTE]
+> For detailed technical info about language support, including:
+>
+> - Font specifications for each language
+> - Known issues
+> - How to add new languages
+>
+> See our [Supported Languages Documentation](./getting_started/supported-languages.md).
+
+### Supported Models and Services
+
+| Type                  | Name                           |
+|-----------------------|--------------------------------|
+| Language Model        | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
+| AI Vision       | ![Azure AI Vision](https://img.shields.io/badge/Azure_AI_Vision-blue?style=flat-square) |
+
+> [!NOTE]
+> If an AI vision service is unavailable, Co-op Translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
+
+### Initial Setup
+
+Before starting, set up the following resources:
+
+1. Language Model Resource (Required):
+   - Azure OpenAI (Recommended) - Offers high-quality translations with enterprise-grade reliability
+   - OpenAI - Alternative if you don’t have Azure access
+   - For detailed info on supported models, see [Supported Models and Services](../..)
+
+1. AI Vision Resource (Optional):
+   - Azure AI Vision - Enables translation of text inside images
+   - If not set up, the translator will automatically use [Markdown-only mode](./getting_started/markdown-only-mode.md)
+   - Recommended for projects with images containing text that needs translating
+
+1. Configuration Steps:
+   - Follow our [Azure AI setup guide](./getting_started/set-up-azure-ai.md) for detailed instructions
+   - Create a `.env` file with your API keys and endpoints (see [Quick Start](../..) section)
+   - Make sure you have the required permissions and quotas for your services
+
+### Project Setup Before Translation
+
+Before starting translation, prepare your project as follows:
+
+1. Prepare Your README:
+   - Add a translations table to your README.md linking to translated versions
+   - Example format:
+
+     ```markdown
+
+     ### 🌐 Multi-Language Support
+     
+     [French](../fr/README.md) | [Spanish](../es/README.md) | [German](../de/README.md) | [Russian](../ru/README.md) | [Arabic](../ar/README.md) | [Persian (Farsi)](../fa/README.md) | [Urdu](../ur/README.md) | [Chinese (Simplified)](../zh/README.md) | [Chinese (Traditional, Macau)](../mo/README.md) | [Chinese (Traditional, Hong Kong)](../hk/README.md) | [Chinese (Traditional, Taiwan)](../tw/README.md) | [Japanese](../ja/README.md) | [Korean](../ko/README.md) | [Hindi](../hi/README.md) | [Bengali](../bn/README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Portuguese (Portugal)](../pt/README.md) | [Portuguese (Brazil)](../br/README.md) | [Italian](../it/README.md) | [Polish](../pl/README.md) | [Turkish](../tr/README.md) | [Greek](../el/README.md) | [Thai](../th/README.md) | [Swedish](../sv/README.md) | [Danish](../da/README.md) | [Norwegian](../no/README.md) | [Finnish](../fi/README.md) | [Dutch](../nl/README.md) | [Hebrew](../he/README.md) | [Vietnamese](../vi/README.md) | [Indonesian](../id/README.md) | [Malay](../ms/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Swahili](../sw/README.md) | [Hungarian](../hu/README.md) | [Czech](../cs/README.md) | [Slovak](../sk/README.md) | [Romanian](../ro/README.md) | [Bulgarian](../bg/README.md) | [Serbian (Cyrillic)](../sr/README.md) | [Croatian](../hr/README.md) | [Slovenian](../sl/README.md) | [Ukrainian](../uk/README.md) | [Burmese (Myanmar)](../my/README.md) 
+    
+     ```
+
+1. Clean Up Existing Translations (if necessary):
+   - Remove any existing translation folders (e.g., `translations/`)
+   - Delete any old translation files to start fresh
+   - This avoids conflicts with the new translation process
 
 ### Quick Start: Command Line
 
-For a quick start using the command line:
+To get started quickly using the command line:
+
+1. Create a virtual environment:
+
+    ```bash
+    python -m venv .venv
+    ```
+
+1. Activate the virtual environment:
+
+    - On Windows:
+
+    ```bash
+    .venv\scripts\activate
+    ```
+
+    - On Linux/macOS:
+
+    ```bash
+    source .venv/bin/activate
+    ```
 
 1. Install the package:
+
     ```bash
     pip install co-op-translator
     ```
-2. Configure Credentials:
-  - Create a `.env` file in your project's root directory.
-  - Copy the contents from the [.env.template](../../.env.template) file into your new `.env` file.
-  - Fill in the required API keys and endpoint information in your `.env` file.
-3. Run Translation:
-  - Navigate to your project's root directory in your terminal.
-  - Execute the translate command, specifying target languages with the `-l` flag:
+
+1. Configure Credentials:
+
+    - Create a `.env` file with your API keys and endpoints
+
     ```bash
     translate -l "ko ja fr"
     ```
-    *(Replace `"ko ja fr"` with your desired space-separated language codes)*
 
-### Detailed Usage Guides
+_(Replace `"ko ja fr"` with the language codes you want.)_
 
-Choose the approach that best fits your workflow:
+### GitHub Actions Setup
 
-#### 1. Using the Command Line (CLI)
+For automated translations triggered on repository pushes, configure GitHub Actions:
 
-- Best for: One-time translations, manual control, or integration into custom scripts.
-- Requires: Local installation of Python and the `co-op-translator` package.
-- Guide: [Command Line Guide](./getting_started/command-line-guide/command-line-guide.md)
-
-#### 2. Using GitHub Actions (Automation)
-
-- Best for: Automatically translating content whenever changes are pushed to your repository. Keeps translations consistently up-to-date.
-- Requires: Setting up a workflow file (`.github/workflows`) in your repository. No local installation needed.
+- Place your workflow file in `.github/workflows` in your repository. No local installation is required.
 - Guides:
-  - [GitHub Actions Guide (Public Repositories & Standard Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) - Use this for most public or personal repositories that rely on standard repository secrets.
-  - [GitHub Actions Guide (Microsoft Organization Repos & Org-Level Setups)](./getting_started/github-actions-guide/github-actions-guide-org.md) - Use this if you work within the Microsoft GitHub organization or need to use organization-level secrets or runners.
-
-> [!NOTE]
-> While this tutorial focuses on Azure resources, you can use any supported language model from the [supported models and services](../..) list.
+  - [GitHub Actions Guide (Public Repositories & Standard Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) - For most public or personal repositories using standard repository secrets.
+  - [GitHub Actions Guide (Microsoft Organization Repos & Org-Level Setups)](./getting_started/github-actions-guide/github-actions-guide-org.md) - For use within the Microsoft GitHub organization or when leveraging organization-level secrets or runners.
 
 ### Troubleshooting and Tips
 
@@ -147,29 +245,23 @@ Choose the approach that best fits your workflow:
 ### Additional Resources
 
 - [Command Reference](./getting_started/command-reference.md): Detailed guide to all commands and options.
-- [Multi-language Support Setup](./getting_started/multi-language-support.md): How to add a table linking to translated versions in your README.
-- [Supported Languages](./getting_started/supported-languages.md): List of supported languages and instructions for adding new ones.
-- [Markdown-Only Mode](./getting_started/markdown-only-mode.md): How to translate text only, without translating images.
+- [Supported Languages](./getting_started/supported-languages.md): List of supported languages and how to add new ones.
+- [Markdown-Only Mode](./getting_started/markdown-only-mode.md): How to translate text only, without image translation.
 
 ## Video Presentations
 
 Learn more about Co-op Translator through our presentations _(Click the image below to watch on YouTube.)_:
 
-- **Open at Microsoft**: A concise 18-minute introduction and quick guide on how to use Co-op Translator.
-
-  [![Open at Microsoft](../../imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
-
-- **Microsoft Reactor**: A detailed one-hour step-by-step walkthrough covering everything from understanding what Co-op Translator is, setting up the tool, and using it effectively, to a live demo showcasing its capabilities.
-
-  [![Microsoft Reactor](../../imgs/reactor-thumbnail.jpg)](https://www.youtube.com/watch?v=boTtKVPBLAc)
+- **Open at Microsoft**: A concise 18-minute introduction and quick guide on using Co-op Translator.
+[![Open at Microsoft](../../translated_images/open-ms-thumbnail.efccad9ffa49d0d5ba770919408384be68c6f5ea7e79c06e22cea5a54db3110c.en.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
 ## Support Us and Promote Global Learning
 
-Join us in transforming how educational content is shared worldwide! Give [Co-op Translator](https://github.com/azure/co-op-translator) a ⭐ on GitHub and support our mission to remove language barriers in learning and technology. Your interest and contributions make a big difference! Contributions and feature suggestions are always welcome.
+Join us in transforming the way educational content is shared worldwide! Give [Co-op Translator](https://github.com/azure/co-op-translator) a ⭐ on GitHub and help us break down language barriers in education and technology. Your interest and contributions make a real difference! Code contributions and feature ideas are always appreciated.
 
 ## Contributing
 
-This project welcomes contributions and ideas. Interested in contributing to Azure Co-op Translator? Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how you can help make Co-op Translator more accessible.
+We welcome contributions and suggestions to this project. Interested in helping with Azure Co-op Translator? Please check our [CONTRIBUTING.md](./CONTRIBUTING.md) for details on how you can help make Co-op Translator more accessible.
 
 ## Contributors
 
@@ -177,24 +269,28 @@ This project welcomes contributions and ideas. Interested in contributing to Azu
 
 ## Code of Conduct
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any questions or comments.
+This project follows the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).  
+For more details, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or  
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any questions or feedback.
 
 ## Responsible AI
 
-Microsoft is committed to helping customers use our AI products responsibly, sharing our insights, and building trust-based partnerships through tools like Transparency Notes and Impact Assessments. Many of these resources are available at [https://aka.ms/RAI](https://aka.ms/RAI).
-Microsoft’s approach to responsible AI is based on our AI principles of fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability.
+Microsoft is dedicated to helping customers use our AI products responsibly, sharing what we’ve learned, and building trust through tools like Transparency Notes and Impact Assessments. Many of these resources are available at [https://aka.ms/RAI](https://aka.ms/RAI).  
+Microsoft’s approach to responsible AI is based on principles of fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability.
 
-Large-scale natural language, image, and speech models—like those used in this sample—can sometimes behave in ways that are unfair, unreliable, or offensive, potentially causing harm. Please refer to the [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) to understand the risks and limitations.
-The recommended approach to mitigating these risks is to include a safety system in your architecture that can detect and prevent harmful behavior. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) provides an independent layer of protection, capable of detecting harmful user-generated and AI-generated content in applications and services. Azure AI Content Safety includes text and image APIs that enable you to identify harmful material. We also offer an interactive Content Safety Studio that lets you view, explore, and try out sample code for detecting harmful content across different modalities. The following [quickstart documentation](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) guides you through making requests to the service.
+Large-scale natural language, image, and speech models—like those used in this example—may sometimes behave in ways that are unfair, unreliable, or offensive, potentially causing harm. Please review the [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) to understand the risks and limitations.
 
-Another factor to consider is the overall application performance. With multi-modal and multi-model applications, performance means that the system behaves as you and your users expect, including not producing harmful outputs. It's important to evaluate your application's overall performance using [generation quality and risk and safety metrics](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in).
+The best way to reduce these risks is to include a safety system in your architecture that can identify and block harmful behavior. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) offers an independent protection layer to detect harmful user-generated and AI-generated content in your apps and services. Azure AI Content Safety provides text and image APIs to identify harmful material. We also offer an interactive Content Safety Studio where you can explore and test sample code for detecting harmful content across different formats. The following [quickstart guide](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) will help you get started with making requests to the service.
 
-You can assess your AI application in your development environment using the [prompt flow SDK](https://microsoft.github.io/promptflow/index.html). Whether you have a test dataset or a specific target, your generative AI application's outputs are quantitatively measured with built-in or custom evaluators of your choice. To get started with the prompt flow SDK for evaluating your system, follow the [quickstart guide](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). After running an evaluation, you can [visualize the results in Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
+Another important factor is overall application performance. For multi-modal and multi-model applications, performance means the system behaves as you and your users expect, including avoiding harmful outputs. It’s important to evaluate your application’s performance using [generation quality and risk and safety metrics](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in).
+
+You can assess your AI application in your development environment using the [prompt flow SDK](https://microsoft.github.io/promptflow/index.html). Whether you have a test dataset or a specific goal, your generative AI outputs are quantitatively measured with built-in or custom evaluators. To start using the prompt flow SDK to evaluate your system, follow the [quickstart guide](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). After running an evaluation, you can [view the results in Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos is subject to those third parties' policies.
+This project may include trademarks or logos for various projects, products, or services. Use of Microsoft trademarks or logos must comply with [Microsoft’s Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).  
+Using Microsoft trademarks or logos in modified versions of this project must not cause confusion or suggest Microsoft sponsorship.  
+Use of third-party trademarks or logos is subject to the respective third party’s policies.
 
 **Disclaimer**:  
 This document has been translated using the AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.

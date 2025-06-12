@@ -142,3 +142,6 @@ sl:
 my:
   name: "Burmese"
   font: "NotoSansMyanmar-Medium.ttf"
+uk:
+  name: "Ukrainian"
+  font: "NotoSans-Medium.ttf"

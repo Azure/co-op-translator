@@ -10,8 +10,8 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | de            | German               | NotoSans-Medium.ttf               | No          | No           |
 | ru            | Russian              | NotoSans-Medium.ttf               | No          | No           |
 | ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | No         | No           |
-| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | No         | No           |
+| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | No          | No           |
+| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | No          | No           |
 | zh            | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
 | mo            | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc    | No          | No           |
 | hk            | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc| No          | No           |
@@ -35,7 +35,7 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | no            | Norwegian            | NotoSans-Medium.ttf               | No          | No           |
 | fi            | Finnish              | NotoSans-Medium.ttf               | No          | No           |
 | nl            | Dutch                | NotoSans-Medium.ttf               | No          | No           |
-| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | No         | No           |
+| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | No          | No           |
 | vi            | Vietnamese           | NotoSans-Medium.ttf               | No          | No           |
 | id            | Indonesian           | NotoSans-Medium.ttf               | No          | No           |
 | ms            | Malay                | NotoSans-Medium.ttf               | No          | No           |
@@ -49,6 +49,7 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | sr            | Serbian (Cyrillic)   | NotoSans-Medium.ttf               | No          | No           |
 | hr            | Croatian             | NotoSans-Medium.ttf               | No          | No           |
 | sl            | Slovenian            | NotoSans-Medium.ttf               | No          | No           |
+| uk            | Ukrainian            | NotoSans-Medium.ttf               | No          | No           |
 
 ## Adding a new language
 

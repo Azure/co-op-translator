@@ -140,7 +140,7 @@ sl:
   name: "Slovenian"
   font: "NotoSans-Medium.ttf"
 my:
-  name: "Burmese"
+  name: "Burmese (Myanmar)"
   font: "NotoSansMyanmar-Medium.ttf"
 uk:
   name: "Ukrainian"

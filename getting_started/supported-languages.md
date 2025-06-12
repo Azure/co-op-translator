@@ -50,6 +50,7 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | hr            | Croatian             | NotoSans-Medium.ttf               | No          | No           |
 | sl            | Slovenian            | NotoSans-Medium.ttf               | No          | No           |
 | uk            | Ukrainian            | NotoSans-Medium.ttf               | No          | No           |
+| my            | Burmese (Myanmar)    | NotoSans-Medium.ttf               | No          | No           |
 
 ## Adding a new language
 

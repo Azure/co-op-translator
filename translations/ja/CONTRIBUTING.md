@@ -2,20 +2,20 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-05-06T17:20:10+00:00",
+  "translation_date": "2025-06-12T09:28:48+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "ja"
 }
 -->
 # Co-op Translatorへの貢献
 
-このプロジェクトでは、貢献や提案を歓迎しています。ほとんどの貢献には、あなたが貢献物の権利を有し、実際に使用権を当方に付与することを宣言するContributor License Agreement（CLA）への同意が必要です。詳細は https://cla.opensource.microsoft.com をご覧ください。
+このプロジェクトでは、貢献や提案を歓迎しています。ほとんどの貢献には、Contributor License Agreement（CLA）に同意していただく必要があります。CLAは、あなたが貢献物の権利を持ち、実際に私たちにその使用権を許諾していることを宣言するものです。詳細は https://cla.opensource.microsoft.com をご覧ください。
 
-プルリクエストを提出すると、CLAボットが自動的にCLAの提出が必要かどうかを判断し、PRに適切な装飾（ステータスチェックやコメントなど）を行います。ボットの指示に従うだけで構いません。CLAは当方のすべてのリポジトリで一度だけ対応すれば十分です。
+プルリクエストを提出すると、CLAボットが自動的にCLAの提出が必要かどうかを判定し、プルリクエストに適切な装飾（ステータスチェックやコメントなど）を付けます。ボットの指示に従うだけで構いません。CLAはすべてのリポジトリで一度だけ行えば大丈夫です。
 
 ## 開発環境のセットアップ
 
-このプロジェクトの開発環境をセットアップするには、依存関係管理にPoetryの使用を推奨します。プロジェクト依存関係の管理には`pyproject.toml`を使っているため、依存関係のインストールにはPoetryを使用してください。
+このプロジェクトの開発環境をセットアップするには、依存関係管理にPoetryの使用を推奨します。プロジェクトの依存関係管理には`pyproject.toml`を使用しているため、依存関係のインストールにはPoetryを使ってください。
 
 ### 仮想環境の作成
 
@@ -53,7 +53,7 @@ poetry init
 poetry shell
 ```
 
-### パッケージおよび必要なパッケージのインストール
+### パッケージと必要なパッケージのインストール
 
 #### Poetryを使う場合（pyproject.tomlから）
 
@@ -63,7 +63,7 @@ poetry install
 
 ### 手動テスト
 
-PRを提出する前に、実際のドキュメントで翻訳機能をテストすることが重要です：
+プルリクエストを提出する前に、実際のドキュメントで翻訳機能をテストすることが重要です：
 
 1. ルートディレクトリにテスト用ディレクトリを作成します：
     ```bash
@@ -97,19 +97,19 @@ This manual testing helps ensure that your changes work well in real-world scena
 ### Environment variables
 
 1. Create an `.env` file in the root directory by copying the provided `.env.template` ファイル内の翻訳済みファイルを確認します。
-1. 環境変数は指示に従って入力してください。
+1. 環境変数を指示に従って入力してください。
 
 > [!TIP]
 >
 > ### 追加の開発環境オプション
 >
-> ローカルでプロジェクトを実行する以外に、GitHub CodespacesやVS Code Dev Containersを使った代替の開発環境セットアップも可能です。
+> ローカルでプロジェクトを実行する以外に、GitHub CodespacesやVS Code Dev Containersを使った開発環境構築も可能です。
 >
 > #### GitHub Codespaces
 >
-> GitHub Codespacesを利用すれば、追加の設定や準備なしにこのサンプルを仮想的に実行できます。
+> GitHub Codespacesを使えば、追加の設定なしにブラウザ上でVS Codeを実行できます。
 >
-> 下のボタンをクリックすると、ブラウザ上でVS Codeのウェブ版が開きます：
+> ボタンをクリックするとブラウザでVS Codeが開きます：
 >
 > 1. テンプレートを開きます（数分かかる場合があります）：
 >
@@ -117,9 +117,9 @@ This manual testing helps ensure that your changes work well in real-world scena
 >
 > #### VS Code Dev Containersを使ったローカル実行
 >
-> ⚠️ この方法はDocker Desktopに少なくとも16GBのRAMが割り当てられている場合のみ動作します。16GB未満の場合は[GitHub Codespacesのオプション](../..)や[ローカルセットアップ](../..)を試してください。
+> ⚠️ このオプションはDocker Desktopに最低16GBのRAMが割り当てられている場合にのみ動作します。16GB未満の場合は[GitHub Codespacesオプション](../..)か[ローカルセットアップ](../..)をお試しください。
 >
-> 関連する選択肢としてVS Code Dev Containersがあります。これは[Dev Containers拡張機能](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)を使い、ローカルのVS Codeでプロジェクトを開きます：
+> 関連オプションとしてVS Code Dev Containersがあります。これはローカルのVS Codeで[Dev Containers拡張機能](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)を使ってプロジェクトを開きます：
 >
 > 1. Docker Desktopを起動します（未インストールの場合はインストールしてください）
 > 2. プロジェクトを開きます：
@@ -129,11 +129,11 @@ This manual testing helps ensure that your changes work well in real-world scena
 
 ### コードスタイル
 
-プロジェクト全体で一貫したコードスタイルを保つために、Pythonコードフォーマッターとして[Black](https://github.com/psf/black)を使用しています。Blackは妥協のないコードフォーマッターで、PythonコードをBlackのスタイルに自動整形します。
+プロジェクト全体で一貫したコードスタイルを維持するために、Pythonコードフォーマッターとして[Black](https://github.com/psf/black)を使用しています。Blackは妥協しないコードフォーマッターで、自動的にPythonコードをBlackのコードスタイルに整形します。
 
 #### 設定
 
-Blackの設定は`pyproject.toml`内に記述されています：
+Blackの設定は`pyproject.toml`に記載されています：
 
 ```toml
 [tool.black]
@@ -148,7 +148,7 @@ BlackはPoetry（推奨）またはpipでインストールできます：
 
 ##### Poetryを使う場合
 
-開発環境セットアップ時にBlackは自動的にインストールされます：
+開発環境のセットアップ時にBlackは自動的にインストールされます：
 ```bash
 poetry install
 ```
@@ -160,9 +160,9 @@ pipを使う場合はBlackを直接インストールしてください：
 pip install black
 ```
 
-#### Blackの使用方法
+#### Blackの使い方
 
-##### Poetryを使う場合
+##### Poetryの場合
 
 1. プロジェクト内のすべてのPythonファイルを整形：
     ```bash
@@ -174,7 +174,7 @@ pip install black
     poetry run black path/to/file_or_directory
     ```
 
-##### pipを使う場合
+##### pipの場合
 
 1. プロジェクト内のすべてのPythonファイルを整形：
     ```bash
@@ -187,7 +187,7 @@ pip install black
     ```
 
 > [!TIP]
-> 保存時にBlackで自動整形するようエディターを設定することを推奨します。ほとんどのモダンなエディターは拡張機能やプラグインで対応しています。
+> 保存時にBlackで自動整形するようエディタを設定することをおすすめします。多くのモダンなエディタは拡張機能やプラグインで対応しています。
 
 ## Co-op Translatorの実行
 
@@ -202,25 +202,25 @@ Poetryを使ってCo-op Translatorを実行するには、以下の手順に従�
     ```
 
 > [!NOTE]
-> コマンドを実行する前に、Poetry環境が有効化されている（poetry shell）ことを確認してください。
+> コマンド実行前にPoetry環境が有効（poetry shell）になっていることを確認してください。
 
 ## メンテナ
 
 ### コミットメッセージとマージ戦略
 
-プロジェクトのコミット履歴を一貫性かつ明確に保つため、**Squash and Merge**戦略を使う場合の**最終コミットメッセージ**には特定のフォーマットを用いています。
+プロジェクトのコミット履歴の一貫性と明瞭さを保つため、**Squash and Merge**戦略を使う際の**最終コミットメッセージ**には特定のフォーマットを使用しています。
 
-プルリクエストがマージされると、複数のコミットが1つにまとめられます。最終コミットメッセージは以下のフォーマットに従い、履歴をきれいに保ちます。
+プルリクエスト（PR）がマージされると、個々のコミットは一つにまとめられます。最終コミットメッセージは以下のフォーマットに従い、履歴をきれいに保ちます。
 
-#### コミットメッセージのフォーマット（squash and merge用）
+#### コミットメッセージのフォーマット（Squash and Merge用）
 
-コミットメッセージには以下のフォーマットを使います：
+コミットメッセージは以下の形式を使います：
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: コミットの種類を指定します。以下のタイプを使用しています：
+- **type**: コミットのカテゴリを指定します。以下のタイプを使います：
   - `Docs`: For documentation updates.
   - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
   - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
@@ -259,4 +259,4 @@ They should be squashed into:
 `Docs: Improve documentation clarity and formatting (#65)`
 
 **免責事項**：  
-本書類はAI翻訳サービス「[Co-op Translator](https://github.com/Azure/co-op-translator)」を使用して翻訳されています。正確性を期していますが、自動翻訳には誤りや不正確な部分が含まれる可能性があることをご了承ください。原文の母国語版が正式な情報源とみなされるべきです。重要な情報については、専門の人間による翻訳を推奨します。本翻訳の利用により生じた誤解や誤訳について、当方は一切の責任を負いかねます。
+本書類はAI翻訳サービス「[Co-op Translator](https://github.com/Azure/co-op-translator)」を使用して翻訳されました。正確性の向上に努めておりますが、自動翻訳には誤りや不正確な部分が含まれる可能性があることをご了承ください。原文の言語による文書が正式な情報源とみなされます。重要な情報については、専門の人間による翻訳を推奨します。本翻訳の利用により生じたいかなる誤解や誤訳についても、当方は一切の責任を負いかねます。

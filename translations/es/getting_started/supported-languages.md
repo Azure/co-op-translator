@@ -1,15 +1,15 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "ba33aa8d5da0d3dd14322b77fcb63deb",
-  "translation_date": "2025-05-06T17:47:18+00:00",
+  "original_hash": "b4ed48f23ec418b31e90a02fe629fcde",
+  "translation_date": "2025-06-12T12:01:21+00:00",
   "source_file": "getting_started/supported-languages.md",
   "language_code": "es"
 }
 -->
 # Lenguajes soportados
 
-La siguiente tabla muestra los idiomas que actualmente soporta **Co-op Translator**. Incluye los códigos de idioma, nombres y cualquier problema conocido asociado a cada idioma. Si deseas agregar soporte para un nuevo idioma, añade el código correspondiente, el nombre y la fuente adecuada en el archivo `font_language_mappings.yml` ubicado en `src/co_op_translator/fonts/` y envía un pull request después de realizar las pruebas.
+La siguiente tabla lista los idiomas actualmente soportados por **Co-op Translator**. Incluye códigos de idioma, nombres y cualquier problema conocido asociado con cada idioma. Si deseas agregar soporte para un nuevo idioma, por favor añade el código correspondiente, el nombre y la fuente adecuada en el archivo `font_language_mappings.yml` ubicado en `src/co_op_translator/fonts/` y envía una solicitud de extracción después de probarlo.
 
 | Language Code | Language Name        | Font                              | RTL Support | Known Issues |
 |---------------|----------------------|-----------------------------------|-------------|--------------|
@@ -19,8 +19,8 @@ La siguiente tabla muestra los idiomas que actualmente soporta **Co-op Translato
 | de            | German               | NotoSans-Medium.ttf               | No          | No           |
 | ru            | Russian              | NotoSans-Medium.ttf               | No          | No           |
 | ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | Yes         | No           |
+| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | No          | No           |
+| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | No          | No           |
 | zh            | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
 | mo            | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc    | No          | No           |
 | hk            | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc| No          | No           |
@@ -44,7 +44,7 @@ La siguiente tabla muestra los idiomas que actualmente soporta **Co-op Translato
 | no            | Norwegian            | NotoSans-Medium.ttf               | No          | No           |
 | fi            | Finnish              | NotoSans-Medium.ttf               | No          | No           |
 | nl            | Dutch                | NotoSans-Medium.ttf               | No          | No           |
-| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | Yes         | No           |
+| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | No          | No           |
 | vi            | Vietnamese           | NotoSans-Medium.ttf               | No          | No           |
 | id            | Indonesian           | NotoSans-Medium.ttf               | No          | No           |
 | ms            | Malay                | NotoSans-Medium.ttf               | No          | No           |
@@ -58,16 +58,18 @@ La siguiente tabla muestra los idiomas que actualmente soporta **Co-op Translato
 | sr            | Serbian (Cyrillic)   | NotoSans-Medium.ttf               | No          | No           |
 | hr            | Croatian             | NotoSans-Medium.ttf               | No          | No           |
 | sl            | Slovenian            | NotoSans-Medium.ttf               | No          | No           |
+| uk            | Ukrainian            | NotoSans-Medium.ttf               | No          | No           |
+| my            | Burmese (Myanmar)    | NotoSans-Medium.ttf               | No          | No           |
 
-## Añadiendo un nuevo idioma
+## Agregar un nuevo idioma
 
 Para agregar soporte para un nuevo idioma:
 
 1. Ve a [src/co_op_translator/fonts/font_language_mappings.yml](https://github.com/Azure/co-op-translator/blob/main/src/co_op_translator/fonts/font_language_mappings.yml).
-2. Añade el código del idioma, el nombre y el nombre del archivo de fuente correspondiente. Asegúrate de incluir el atributo `rtl` si el idioma se escribe de derecha a izquierda.
-3. Si necesitas usar una fuente nueva, verifica que sea libre para proyectos de código abierto revisando sus términos de licencia y derechos de autor. Tras verificarlo, añade el archivo de fuente al directorio `src/co_op_translator/fonts/`.
+2. Añade el código de idioma, nombre y el archivo de fuente apropiado. Asegúrate de incluir el atributo `rtl` si el idioma se escribe de derecha a izquierda.
+3. Si necesitas usar una fuente nueva, verifica que sea libre para proyectos de código abierto revisando su licencia y términos de copyright. Tras la verificación, añade el archivo de fuente al directorio `src/co_op_translator/fonts/`.
 4. Prueba tus cambios localmente para asegurarte de que el nuevo idioma esté correctamente soportado.
-5. Envía un Pull Request con tus cambios e indica la adición del nuevo idioma en la descripción del PR.
+5. Envía una solicitud de extracción con tus cambios e indica la adición del nuevo idioma en la descripción del PR.
 
 Ejemplo:
 
@@ -78,5 +80,5 @@ new_lang:
   rtl: false
 ```
 
-**Descargo de responsabilidad**:  
-Este documento ha sido traducido utilizando el servicio de traducción automática [Co-op Translator](https://github.com/Azure/co-op-translator). Aunque nos esforzamos por la precisión, tenga en cuenta que las traducciones automáticas pueden contener errores o inexactitudes. El documento original en su idioma nativo debe considerarse la fuente autorizada. Para información crítica, se recomienda una traducción profesional realizada por humanos. No nos hacemos responsables de ningún malentendido o interpretación errónea que surja del uso de esta traducción.
+**Aviso legal**:  
+Este documento ha sido traducido utilizando el servicio de traducción automática [Co-op Translator](https://github.com/Azure/co-op-translator). Aunque nos esforzamos por la precisión, tenga en cuenta que las traducciones automáticas pueden contener errores o inexactitudes. El documento original en su idioma nativo debe considerarse la fuente autorizada. Para información crítica, se recomienda la traducción profesional realizada por humanos. No nos hacemos responsables de malentendidos o interpretaciones erróneas derivadas del uso de esta traducción.

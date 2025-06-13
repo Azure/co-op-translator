@@ -2,21 +2,21 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "66029e3b67a3eb980ab8740367e91283",
-  "translation_date": "2025-05-07T14:15:11+00:00",
+  "translation_date": "2025-06-12T18:28:10+00:00",
   "source_file": "getting_started/command-line-guide/create-env-file.md",
   "language_code": "id"
 }
 -->
 # Buat file *.env* di direktori root
 
-Dalam tutorial ini, kami akan membimbing Anda dalam mengatur variabel lingkungan untuk layanan Azure menggunakan file *.env*. Variabel lingkungan memungkinkan Anda mengelola kredensial sensitif dengan aman, seperti kunci API, tanpa harus menuliskannya langsung di kode Anda.
+Dalam tutorial ini, kami akan memandu Anda untuk mengatur variabel lingkungan untuk layanan Azure menggunakan file *.env*. Variabel lingkungan memungkinkan Anda mengelola kredensial sensitif dengan aman, seperti kunci API, tanpa harus menuliskannya langsung di kode.
 
 > [!IMPORTANT]
-> - Hanya satu layanan model bahasa (Azure OpenAI atau OpenAI) yang perlu dikonfigurasi. Isi variabel lingkungan untuk layanan yang Anda pilih. Jika variabel lingkungan untuk beberapa model bahasa diatur, penerjemah co-op akan memilih salah satu berdasarkan prioritas.
+> - Hanya satu layanan model bahasa (Azure OpenAI atau OpenAI) yang perlu dikonfigurasi. Isi variabel lingkungan untuk layanan yang Anda pilih. Jika variabel lingkungan untuk beberapa model bahasa diatur, penerjemah co-op akan memilih satu berdasarkan prioritas.
 > - Jika variabel lingkungan Computer Vision tidak diatur, penerjemah akan otomatis beralih ke [mode hanya Markdown](./markdown-only-mode.md).
 
 > [!NOTE]
-> Panduan ini terutama berfokus pada layanan Azure, tetapi Anda dapat memilih model bahasa mana pun yang didukung dari [daftar model dan layanan yang didukung](../README.md#-supported-models-and-services).
+> Panduan ini terutama berfokus pada layanan Azure, tetapi Anda dapat memilih model bahasa apa pun yang didukung dari [daftar model dan layanan yang didukung](../README.md#-supported-models-and-services).
 
 ## Buat file *.env*
 
@@ -54,4 +54,4 @@ Di direktori root proyek Anda, buat file bernama *.env*. File ini akan menyimpan
 > Jika Anda ingin menemukan kunci API dan endpoint Anda, Anda dapat merujuk ke [set-up-azure-ai.md](../set-up-azure-ai.md).
 
 **Penafian**:  
-Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berusaha untuk akurasi, harap diingat bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sahih. Untuk informasi penting, disarankan menggunakan terjemahan profesional oleh manusia. Kami tidak bertanggung jawab atas kesalahpahaman atau salah tafsir yang timbul dari penggunaan terjemahan ini.
+Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berusaha untuk akurasi, harap diperhatikan bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sahih. Untuk informasi penting, disarankan menggunakan terjemahan profesional oleh manusia. Kami tidak bertanggung jawab atas kesalahpahaman atau penafsiran yang keliru yang timbul dari penggunaan terjemahan ini.

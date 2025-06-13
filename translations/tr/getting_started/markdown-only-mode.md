@@ -2,56 +2,56 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "9b1b247a8d0f1736459e0e9ede0d9c92",
-  "translation_date": "2025-05-06T17:44:19+00:00",
+  "translation_date": "2025-06-12T11:40:07+00:00",
   "source_file": "getting_started/markdown-only-mode.md",
   "language_code": "tr"
 }
 -->
-# Yalnızca Markdown Modunu Kullanma
+# Sadece Markdown Modu Kullanımı
 
 ## Giriş  
-Yalnızca Markdown modu, projenizin sadece Markdown içeriğini çevirmek için tasarlanmıştır. Bu mod, resim çeviri sürecini atlar ve sadece metin içeriğine odaklanır; bu da resim çevirisinin gerekmediği veya Bilgisayarlı Görü ile ilgili ortam değişkenlerinin ayarlanmadığı durumlar için idealdir.
+Sadece Markdown modu, projenizin yalnızca Markdown içeriğini çevirmek için tasarlanmıştır. Bu mod, resim çeviri sürecini atlar ve sadece metin içeriğine odaklanır; bu da resim çevirisinin gerekli olmadığı veya Bilgisayarlı Görü ile ilgili ortam değişkenlerinin ayarlanmadığı durumlar için idealdir.
 
 ## Ne Zaman Kullanılır  
 - Bilgisayarlı Görü ile ilgili ortam değişkenleri yapılandırılmadığında.  
 - Resim bağlantılarını güncellemeden sadece metin içeriğini çevirmek istediğinizde.  
-- Kullanıcının `-md` komut satırı seçeneğini açıkça belirtmesi durumunda.
+- Kullanıcının `-md` komut satırı seçeneği ile açıkça belirttiği durumlarda.
 
 ## Nasıl Etkinleştirilir  
-Yalnızca Markdown modunu etkinleştirmek için komutunuzda `-md` seçeneğini kullanın. Örneğin:  
+Sadece Markdown modunu etkinleştirmek için komutunuzda `-md` seçeneğini kullanın. Örneğin:  
 ```
 translate -l "ko" -md
 ```
 
-Ya da Bilgisayarlı Görü ile ilgili ortam değişkenleri yapılandırılmamışsa, `translate -l "ko"` komutunu çalıştırmak otomatik olarak Yalnızca Markdown moduna geçiş yapar.
+Ya da Bilgisayarlı Görü ile ilgili ortam değişkenleri yapılandırılmadıysa, `translate -l "ko"` komutunu çalıştırmak otomatik olarak sadece Markdown moduna geçer.
 
 ```
 translate -l "ko"
 ```
 
-Bu komut, Markdown içeriğini Korece’ye çevirir ve resim bağlantılarını çevrilmiş resim yolları yerine orijinal yollarına göre günceller.
+Bu komut, Markdown içeriğini Korece'ye çevirir ve resim bağlantılarını orijinal yollarında tutar; onları çevrilmiş resim yollarına dönüştürmez.
 
 ## Davranış  
-Yalnızca Markdown modunda:  
-- Çeviri süreci resim çeviri adımını atlar.  
-- Markdown içindeki resim bağlantıları değişmeden kalır ve orijinal yollarına işaret eder.
+Sadece Markdown modunda:  
+- Çeviri süreci resim çevirisi adımını atlar.  
+- Markdown'daki resim bağlantıları değişmeden, orijinal yollarına işaret eder.
 
 ## Örnekler  
 ### Öncesi  
 ```markdown
-![Image](../../../getting_started/translated/path/to/image.png)
+![Image](../../../translated_images/image.aa98bae4d78871bb3b23ac9f938ff86539da4cd6fb4c52dafedc4665135c3d61.tr.png)
 ```  
-### Yalnızca Markdown modu kullanıldıktan sonra  
+### Sadece Markdown modu kullanıldıktan sonra  
 ```markdown
-![Image](../../../getting_started/original/path/to/image.png)
+![Image](../../../translated_images/image.fc8708ffe1e1ca12c38822b1a382726da4b232025d1daa8a50ab75c8635d0c4a.tr.png)
 ```
 
 ## Sorun Giderme  
-- `-md` seçeneğinin komutta doğru belirtildiğinden emin olun.  
-- Bilgisayarlı Görü ortam değişkenlerinin sürece müdahale etmediğini doğrulayın.
+- `-md` seçeneğinin komutta doğru şekilde belirtildiğinden emin olun.  
+- Hiçbir Bilgisayarlı Görü ortam değişkeninin sürece müdahale etmediğini doğrulayın.
 
 ## Sonuç  
-Yalnızca Markdown modu, resim bağlantılarını değiştirmeden metin içeriğini çevirmek için sadeleştirilmiş bir yol sunar. Resim çevirisinin gereksiz olduğu veya Bilgisayarlı Görü kurulumu olmayan ortamlarda özellikle faydalıdır.
+Sadece Markdown modu, resim bağlantılarını değiştirmeden metin içeriğini çevirmek için sadeleştirilmiş bir yol sunar. Resim çevirisinin gereksiz olduğu veya Bilgisayarlı Görü kurulumu olmayan ortamlarda özellikle faydalıdır.
 
 **Feragatname**:  
-Bu belge, AI çeviri hizmeti [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba göstersek de, otomatik çevirilerin hatalar veya yanlışlıklar içerebileceğini lütfen unutmayınız. Orijinal belge, kendi dilindeki haliyle yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımı sonucu oluşabilecek yanlış anlamalar veya yanlış yorumlamalardan sorumlu değiliz.
+Bu belge, AI çeviri hizmeti [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba göstersek de, otomatik çevirilerin hata veya yanlışlık içerebileceğini lütfen unutmayınız. Orijinal belge, kendi dilinde yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımı sonucu oluşabilecek yanlış anlamalar veya yanlış yorumlamalardan sorumlu değiliz.

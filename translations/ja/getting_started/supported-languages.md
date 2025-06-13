@@ -1,15 +1,15 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "ba33aa8d5da0d3dd14322b77fcb63deb",
-  "translation_date": "2025-05-06T17:46:35+00:00",
+  "original_hash": "b4ed48f23ec418b31e90a02fe629fcde",
+  "translation_date": "2025-06-12T12:05:33+00:00",
   "source_file": "getting_started/supported-languages.md",
   "language_code": "ja"
 }
 -->
 # 対応言語
 
-以下の表は、現在**Co-op Translator**が対応している言語を示しています。言語コード、言語名、および各言語に関する既知の問題が含まれています。新しい言語を追加したい場合は、`src/co_op_translator/fonts/`にある`font_language_mappings.yml`ファイルに対応する言語コード、名前、および適切なフォントを追加し、テスト後にプルリクエストを送信してください。
+以下の表は、現在**Co-op Translator**でサポートされている言語を示しています。言語コード、言語名、および各言語に関連する既知の問題が含まれています。新しい言語のサポートを追加したい場合は、`src/co_op_translator/fonts/`にある`font_language_mappings.yml`ファイルに対応する言語コード、名前、および適切なフォントを追加し、テスト後にプルリクエストを提出してください。
 
 | Language Code | Language Name        | Font                              | RTL Support | Known Issues |
 |---------------|----------------------|-----------------------------------|-------------|--------------|
@@ -19,8 +19,8 @@ CO_OP_TRANSLATOR_METADATA:
 | de            | German               | NotoSans-Medium.ttf               | No          | No           |
 | ru            | Russian              | NotoSans-Medium.ttf               | No          | No           |
 | ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | Yes         | No           |
+| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | No          | No           |
+| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | No          | No           |
 | zh            | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
 | mo            | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc    | No          | No           |
 | hk            | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc| No          | No           |
@@ -44,7 +44,7 @@ CO_OP_TRANSLATOR_METADATA:
 | no            | Norwegian            | NotoSans-Medium.ttf               | No          | No           |
 | fi            | Finnish              | NotoSans-Medium.ttf               | No          | No           |
 | nl            | Dutch                | NotoSans-Medium.ttf               | No          | No           |
-| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | Yes         | No           |
+| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | No          | No           |
 | vi            | Vietnamese           | NotoSans-Medium.ttf               | No          | No           |
 | id            | Indonesian           | NotoSans-Medium.ttf               | No          | No           |
 | ms            | Malay                | NotoSans-Medium.ttf               | No          | No           |
@@ -58,16 +58,18 @@ CO_OP_TRANSLATOR_METADATA:
 | sr            | Serbian (Cyrillic)   | NotoSans-Medium.ttf               | No          | No           |
 | hr            | Croatian             | NotoSans-Medium.ttf               | No          | No           |
 | sl            | Slovenian            | NotoSans-Medium.ttf               | No          | No           |
+| uk            | Ukrainian            | NotoSans-Medium.ttf               | No          | No           |
+| my            | Burmese (Myanmar)    | NotoSans-Medium.ttf               | No          | No           |
 
 ## 新しい言語の追加方法
 
-新しい言語を追加するには：
+新しい言語のサポートを追加するには：
 
-1. [src/co_op_translator/fonts/font_language_mappings.yml](https://github.com/Azure/co-op-translator/blob/main/src/co_op_translator/fonts/font_language_mappings.yml) にアクセスします。
-2. 言語コード、名前、および適切なフォントファイル名を追加します。言語が右から左に書かれる場合は`rtl`属性を必ず含めてください。
-3. 新しいフォントを使用する場合は、そのフォントがオープンソースプロジェクトでの利用が許可されているか、ライセンスと著作権の条件を確認してください。確認後、フォントファイルを`src/co_op_translator/fonts/`ディレクトリに追加します。
-4. 変更をローカルでテストし、新しい言語が正しくサポートされていることを確認します。
-5. 変更を含むプルリクエストを送信し、PRの説明に新しい言語の追加を明記してください。
+1. [src/co_op_translator/fonts/font_language_mappings.yml](https://github.com/Azure/co-op-translator/blob/main/src/co_op_translator/fonts/font_language_mappings.yml)にアクセスします。
+2. 言語コード、名前、および適切なフォントファイル名を追加します。言語が右から左に書かれる場合は、`rtl`属性を必ず含めてください。
+3. 新しいフォントを使用する場合は、そのフォントがオープンソースプロジェクトで無料で使用できることを、ライセンスおよび著作権条件を確認してから確認してください。確認後、フォントファイルを`src/co_op_translator/fonts/`ディレクトリに追加します。
+4. ローカルで変更をテストし、新しい言語が正しくサポートされていることを確認します。
+5. 変更を含むプルリクエストを提出し、PRの説明に新しい言語の追加を明記してください。
 
 例：
 
@@ -79,4 +81,4 @@ new_lang:
 ```
 
 **免責事項**：  
-本書類はAI翻訳サービス「[Co-op Translator](https://github.com/Azure/co-op-translator)」を使用して翻訳されています。正確性には努めておりますが、自動翻訳には誤りや不正確な部分が含まれる可能性があります。原文の言語による原本が正式な情報源とみなされるべきです。重要な情報については、専門の人間による翻訳を推奨します。本翻訳の利用により生じたいかなる誤解や解釈の相違についても、当方は責任を負いかねます。
+本書類はAI翻訳サービス「Co-op Translator」（https://github.com/Azure/co-op-translator）を使用して翻訳されています。正確性の確保に努めておりますが、自動翻訳には誤りや不正確な部分が含まれる可能性があることをご承知ください。原文の母国語版が正式な情報源とみなされます。重要な情報については、専門の人間翻訳を推奨します。本翻訳の利用により生じた誤解や解釈の相違について、当方は一切の責任を負いかねます。

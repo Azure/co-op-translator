@@ -2,7 +2,7 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "62fe65c1d8e3796c01aa1e3c89666cba",
-  "translation_date": "2025-05-06T17:36:56+00:00",
+  "translation_date": "2025-06-12T11:14:04+00:00",
   "source_file": "SUPPORT.md",
   "language_code": "en"
 }
@@ -22,7 +22,7 @@ CO_OP_TRANSLATOR_METADATA:
 ## How to file issues and get help  
 
 This project uses GitHub Issues to track bugs and feature requests. Please search the existing 
-issues before filing new issues to avoid duplicates.  For new issues, file your bug or 
+issues before filing new issues to avoid duplicates. For new issues, submit your bug or 
 feature request as a new Issue.
 
 For help and questions about using this project, please **REPO MAINTAINER: INSERT INSTRUCTIONS HERE 

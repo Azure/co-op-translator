@@ -2,14 +2,14 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-05-06T17:56:31+00:00",
+  "translation_date": "2025-06-12T18:30:38+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "fr"
 }
 -->
 # Installer le package Co-op translator
 
-Le **Co-op Translator** est un outil en ligne de commande (CLI) conçu pour vous aider à traduire tous les fichiers markdown et images de votre projet en plusieurs langues. Ce tutoriel vous guidera pour configurer le traducteur et l’exécuter selon différents cas d’usage.
+Le **Co-op Translator** est un outil en ligne de commande (CLI) conçu pour vous aider à traduire tous les fichiers markdown et images de votre projet en plusieurs langues. Ce tutoriel vous guidera dans la configuration du traducteur et son utilisation pour différents cas d'usage.
 
 ### Créer un environnement virtuel
 
@@ -29,7 +29,7 @@ poetry init
 
 ### Activer l’environnement virtuel
 
-Après avoir créé l’environnement virtuel, vous devez l’activer. Les étapes varient selon votre système d’exploitation. Tapez la commande suivante dans votre terminal.
+Après avoir créé l’environnement virtuel, vous devrez l’activer. Les étapes varient selon votre système d’exploitation. Tapez la commande suivante dans votre terminal.
 
 #### Pour pip et Poetry
 
@@ -53,7 +53,7 @@ Après avoir créé l’environnement virtuel, vous devez l’activer. Les étap
     poetry shell
     ```
 
-### Installer le package et les dépendances requises
+### Installation du package et des dépendances requises
 
 Une fois votre environnement virtuel configuré et activé, l’étape suivante consiste à installer les dépendances nécessaires.
 
@@ -73,9 +73,9 @@ poetry add co-op-translator
 
 #### Avec pip (depuis requirements.txt) si vous clonez ce dépôt
 
-![NOTE] Veuillez NE PAS faire cela si vous installez co-op translator via l’installation rapide.
+![NOTE] Merci de NE PAS faire cela si vous installez co-op translator via l’installation rapide.
 
-1. Si vous utilisez pip, tapez la commande suivante dans votre terminal. Cela installera automatiquement les packages requis spécifiés dans le fichier `requirements.txt` :
+1. Si vous utilisez pip, tapez la commande suivante dans votre terminal. Elle installera automatiquement les packages requis listés dans le fichier `requirements.txt` :
 
     ```bash
     pip install -r requirements.txt
@@ -83,11 +83,11 @@ poetry add co-op-translator
 
 #### Avec Poetry (depuis pyproject.toml)
 
-1. Si vous utilisez Poetry, tapez la commande suivante dans votre terminal. Cela installera automatiquement les packages requis spécifiés dans le fichier `pyproject.toml` :
+1. Si vous utilisez Poetry, tapez la commande suivante dans votre terminal. Elle installera automatiquement les packages requis listés dans le fichier `pyproject.toml` :
 
     ```bash
     poetry install
     ```
 
 **Avertissement** :  
-Ce document a été traduit à l'aide du service de traduction automatique [Co-op Translator](https://github.com/Azure/co-op-translator). Bien que nous nous efforcions d'assurer l'exactitude, veuillez noter que les traductions automatiques peuvent contenir des erreurs ou des inexactitudes. Le document original dans sa langue native doit être considéré comme la source faisant autorité. Pour les informations critiques, une traduction professionnelle réalisée par un humain est recommandée. Nous déclinons toute responsabilité en cas de malentendus ou de mauvaises interprétations résultant de l'utilisation de cette traduction.
+Ce document a été traduit à l’aide du service de traduction automatique [Co-op Translator](https://github.com/Azure/co-op-translator). Bien que nous nous efforcions d’assurer l’exactitude, veuillez noter que les traductions automatiques peuvent contenir des erreurs ou des inexactitudes. Le document original dans sa langue d’origine doit être considéré comme la source faisant foi. Pour les informations critiques, une traduction professionnelle réalisée par un humain est recommandée. Nous déclinons toute responsabilité en cas de malentendus ou d’interprétations erronées résultant de l’utilisation de cette traduction.

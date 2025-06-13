@@ -24,13 +24,14 @@ logger = logging.getLogger(__name__)
 
 
 def generate_prompt_template(
-    output_lang: str, document_chunk: str, is_rtl: bool
+    language_code: str, language_name: str, document_chunk: str, is_rtl: bool
 ) -> str:
     """
     Generate a translation prompt for a document chunk, considering language direction.
 
     Args:
-        output_lang (str): The target language for translation.
+        language_code (str): The target language code for translation.
+        language_name (str): The target language name for translation.
         document_chunk (str): The chunk of the document to be translated.
         is_rtl (bool): Whether the target language is right-to-left.
 
@@ -39,10 +40,10 @@ def generate_prompt_template(
     """
 
     if len(document_chunk.split("\n")) == 1:
-        prompt = f"Translate the following text to {output_lang}. NEVER ADD ANY EXTRA CONTENT OR TAGS OUTSIDE THE TRANSLATION. DO NOT ADD '''markdown OR ANY OTHER TAGS. TRANSLATE ONLY WHAT IS GIVEN TO YOU. MAINTAIN MARKDOWN FORMAT.\n\n{document_chunk}"
+        prompt = f"Translate the following text to {language_name} ({language_code}). NEVER ADD ANY EXTRA CONTENT OR TAGS OUTSIDE THE TRANSLATION. DO NOT ADD '''markdown OR ANY OTHER TAGS. TRANSLATE ONLY WHAT IS GIVEN TO YOU. MAINTAIN MARKDOWN FORMAT.\n\n{document_chunk}"
     else:
         prompt = f"""
-        Translate the following markdown file to {output_lang}.
+        Translate the following markdown file to {language_name} ({language_code}).
         IMPORTANT RULES:
         1. DO NOT add '''markdown or any other tags around the translation
         2. Make sure the translation does not sound too literal

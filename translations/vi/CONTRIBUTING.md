@@ -2,30 +2,30 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-05-06T17:23:38+00:00",
+  "translation_date": "2025-06-12T09:38:52+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "vi"
 }
 -->
-# Đóng góp cho Co-op Translator
+# Góp phần vào Co-op Translator
 
-Dự án này hoan nghênh các đóng góp và đề xuất. Hầu hết các đóng góp yêu cầu bạn đồng ý với Thỏa thuận Cấp phép Người đóng góp (CLA), xác nhận rằng bạn có quyền và thực sự cho phép chúng tôi sử dụng đóng góp của bạn. Chi tiết xem tại https://cla.opensource.microsoft.com.
+Dự án này hoan nghênh các đóng góp và đề xuất. Hầu hết các đóng góp yêu cầu bạn đồng ý với Thỏa thuận Giấy phép Người đóng góp (CLA), xác nhận rằng bạn có quyền và thực sự cấp cho chúng tôi quyền sử dụng đóng góp của bạn. Chi tiết xem tại https://cla.opensource.microsoft.com.
 
-Khi bạn gửi pull request, bot CLA sẽ tự động xác định xem bạn có cần cung cấp CLA và đánh dấu PR phù hợp (ví dụ: kiểm tra trạng thái, bình luận). Chỉ cần làm theo hướng dẫn do bot cung cấp. Bạn chỉ cần thực hiện việc này một lần cho tất cả các kho dùng CLA của chúng tôi.
+Khi bạn gửi pull request, bot CLA sẽ tự động xác định xem bạn có cần cung cấp CLA hay không và đánh dấu PR phù hợp (ví dụ: kiểm tra trạng thái, bình luận). Chỉ cần làm theo hướng dẫn do bot cung cấp. Bạn chỉ cần thực hiện điều này một lần cho tất cả các kho sử dụng CLA của chúng tôi.
 
 ## Thiết lập môi trường phát triển
 
-Để thiết lập môi trường phát triển cho dự án này, chúng tôi khuyên bạn nên dùng Poetry để quản lý các phụ thuộc. Chúng tôi sử dụng `pyproject.toml` để quản lý các phụ thuộc dự án, vì vậy để cài đặt các phụ thuộc, bạn nên dùng Poetry.
+Để thiết lập môi trường phát triển cho dự án này, chúng tôi khuyên bạn nên sử dụng Poetry để quản lý các phụ thuộc. Chúng tôi sử dụng `pyproject.toml` để quản lý phụ thuộc dự án, do đó, để cài đặt các phụ thuộc, bạn nên dùng Poetry.
 
 ### Tạo môi trường ảo
 
-#### Dùng pip
+#### Sử dụng pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Dùng Poetry
+#### Sử dụng Poetry
 
 ```bash
 poetry init
@@ -47,7 +47,7 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Dùng Poetry
+#### Sử dụng Poetry
 
 ```bash
 poetry shell
@@ -55,7 +55,7 @@ poetry shell
 
 ### Cài đặt Package và các Package cần thiết
 
-#### Dùng Poetry (từ pyproject.toml)
+#### Sử dụng Poetry (từ pyproject.toml)
 
 ```bash
 poetry install
@@ -63,7 +63,7 @@ poetry install
 
 ### Kiểm thử thủ công
 
-Trước khi gửi PR, bạn nên kiểm thử chức năng dịch với tài liệu thật:
+Trước khi gửi PR, bạn nên kiểm thử chức năng dịch với tài liệu thực tế:
 
 1. Tạo thư mục test trong thư mục gốc:
     ```bash
@@ -101,25 +101,25 @@ This manual testing helps ensure that your changes work well in real-world scena
 
 > [!TIP]
 >
-> ### Các lựa chọn môi trường phát triển bổ sung
+> ### Các tùy chọn môi trường phát triển bổ sung
 >
-> Ngoài việc chạy dự án trên máy cục bộ, bạn cũng có thể sử dụng GitHub Codespaces hoặc VS Code Dev Containers như một cách thiết lập môi trường phát triển thay thế.
+> Ngoài việc chạy dự án cục bộ, bạn cũng có thể sử dụng GitHub Codespaces hoặc VS Code Dev Containers để thiết lập môi trường phát triển thay thế.
 >
 > #### GitHub Codespaces
 >
-> Bạn có thể chạy các mẫu này gần như ngay lập tức bằng GitHub Codespaces mà không cần cài đặt hay thiết lập thêm.
+> Bạn có thể chạy mẫu này gần như trực tiếp bằng GitHub Codespaces mà không cần thiết lập hay cấu hình thêm.
 >
-> Nút bấm sẽ mở một phiên bản VS Code trên web trong trình duyệt của bạn:
+> Nút bấm sẽ mở một phiên bản VS Code trên trình duyệt của bạn:
 >
 > 1. Mở mẫu (có thể mất vài phút):
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
-> #### Chạy trên máy cục bộ bằng VS Code Dev Containers
+> #### Chạy cục bộ với VS Code Dev Containers
 >
-> ⚠️ Lựa chọn này chỉ hoạt động nếu Docker Desktop của bạn được cấp ít nhất 16 GB RAM. Nếu bạn có ít hơn 16 GB RAM, bạn có thể thử [GitHub Codespaces](../..) hoặc [thiết lập trên máy](../..).
+> ⚠️ Tùy chọn này chỉ hoạt động nếu Docker Desktop của bạn được cấp ít nhất 16 GB RAM. Nếu máy bạn có ít hơn 16 GB RAM, bạn có thể thử [GitHub Codespaces](../..) hoặc [thiết lập cục bộ](../..).
 >
-> Một lựa chọn liên quan là VS Code Dev Containers, sẽ mở dự án trong VS Code cục bộ của bạn bằng [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Một tùy chọn liên quan là VS Code Dev Containers, sẽ mở dự án trong VS Code cục bộ của bạn bằng [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
 > 1. Khởi động Docker Desktop (cài nếu chưa có)
 > 2. Mở dự án:
@@ -127,9 +127,9 @@ This manual testing helps ensure that your changes work well in real-world scena
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
 
-### Kiểu mã nguồn
+### Quy tắc Code Style
 
-Chúng tôi dùng [Black](https://github.com/psf/black) làm trình định dạng mã Python để duy trì phong cách mã nhất quán trong dự án. Black là trình định dạng mã không khoan nhượng, tự động định dạng lại mã Python để tuân theo phong cách của Black.
+Chúng tôi sử dụng [Black](https://github.com/psf/black) làm trình định dạng code Python để duy trì phong cách code nhất quán trong dự án. Black là trình định dạng code không khoan nhượng, tự động định dạng lại code Python theo chuẩn phong cách Black.
 
 #### Cấu hình
 
@@ -148,7 +148,7 @@ Bạn có thể cài Black bằng Poetry (khuyến nghị) hoặc pip:
 
 ##### Dùng Poetry
 
-Black sẽ được tự động cài khi bạn thiết lập môi trường phát triển:
+Black sẽ được cài tự động khi bạn thiết lập môi trường phát triển:
 ```bash
 poetry install
 ```
@@ -160,7 +160,7 @@ Nếu dùng pip, bạn có thể cài Black trực tiếp:
 pip install black
 ```
 
-#### Dùng Black
+#### Sử dụng Black
 
 ##### Với Poetry
 
@@ -169,7 +169,7 @@ pip install black
     poetry run black .
     ```
 
-2. Định dạng một file hoặc thư mục cụ thể:
+2. Định dạng file hoặc thư mục cụ thể:
     ```bash
     poetry run black path/to/file_or_directory
     ```
@@ -181,21 +181,21 @@ pip install black
     black .
     ```
 
-2. Định dạng một file hoặc thư mục cụ thể:
+2. Định dạng file hoặc thư mục cụ thể:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> Chúng tôi khuyên bạn nên thiết lập trình soạn thảo để tự động định dạng mã bằng Black khi lưu file. Hầu hết trình soạn thảo hiện đại đều hỗ trợ điều này qua các extension hoặc plugin.
+> Chúng tôi khuyên bạn thiết lập trình soạn thảo tự động định dạng code với Black khi lưu. Hầu hết các trình soạn thảo hiện đại đều hỗ trợ qua extension hoặc plugin.
 
 ## Chạy Co-op Translator
 
 Để chạy Co-op Translator bằng Poetry trong môi trường của bạn, làm theo các bước sau:
 
-1. Điều hướng đến thư mục bạn muốn dùng để kiểm thử dịch hoặc tạo một thư mục tạm để thử nghiệm.
+1. Điều hướng đến thư mục nơi bạn muốn thử nghiệm dịch hoặc tạo thư mục tạm để thử nghiệm.
 
-2. Thực thi lệnh sau. Cờ `-l ko` with the language code you wish to translate into. The `-d` chỉ chế độ gỡ lỗi.
+2. Thực thi lệnh sau. Tham số `-l ko` with the language code you wish to translate into. The `-d` chỉ chế độ gỡ lỗi.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -208,19 +208,19 @@ pip install black
 
 ### Tin nhắn commit và chiến lược Merge
 
-Để đảm bảo tính nhất quán và rõ ràng trong lịch sử commit của dự án, chúng tôi theo định dạng tin nhắn commit cụ thể **cho tin nhắn commit cuối cùng** khi dùng chiến lược **Squash and Merge**.
+Để đảm bảo sự nhất quán và rõ ràng trong lịch sử commit của dự án, chúng tôi tuân theo định dạng tin nhắn commit cụ thể **cho tin nhắn commit cuối cùng** khi sử dụng chiến lược **Squash and Merge**.
 
-Khi pull request (PR) được merge, các commit riêng lẻ sẽ được gộp lại thành một commit duy nhất. Tin nhắn commit cuối cùng nên theo định dạng dưới đây để duy trì lịch sử sạch và nhất quán.
+Khi một pull request (PR) được merge, các commit riêng lẻ sẽ được gộp thành một commit duy nhất. Tin nhắn commit cuối cùng cần theo định dạng dưới đây để giữ lịch sử sạch và nhất quán.
 
 #### Định dạng tin nhắn commit (cho squash and merge)
 
-Chúng tôi dùng định dạng sau cho tin nhắn commit:
+Chúng tôi sử dụng định dạng sau cho tin nhắn commit:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: Chỉ loại commit. Chúng tôi dùng các loại sau:
+- **type**: Chỉ loại commit. Các loại được sử dụng gồm:
   - `Docs`: For documentation updates.
   - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
   - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
@@ -256,7 +256,7 @@ If a PR contains the following commits:
 - `điều chỉnh định dạng`
 
 They should be squashed into:
-`Docs: Cải thiện độ rõ ràng và định dạng tài liệu (#65)`
+`Docs: Cải thiện sự rõ ràng và định dạng tài liệu (#65)`
 
-**Tuyên bố miễn trừ trách nhiệm**:  
-Tài liệu này đã được dịch bằng dịch vụ dịch thuật AI [Co-op Translator](https://github.com/Azure/co-op-translator). Mặc dù chúng tôi cố gắng đảm bảo độ chính xác, xin lưu ý rằng các bản dịch tự động có thể chứa lỗi hoặc sai sót. Tài liệu gốc bằng ngôn ngữ gốc nên được coi là nguồn chính xác và đáng tin cậy. Đối với các thông tin quan trọng, nên sử dụng dịch thuật chuyên nghiệp bởi con người. Chúng tôi không chịu trách nhiệm đối với bất kỳ sự hiểu lầm hoặc diễn giải sai nào phát sinh từ việc sử dụng bản dịch này.
+**Tuyên bố từ chối trách nhiệm**:  
+Tài liệu này đã được dịch bằng dịch vụ dịch thuật AI [Co-op Translator](https://github.com/Azure/co-op-translator). Mặc dù chúng tôi cố gắng đảm bảo độ chính xác, xin lưu ý rằng các bản dịch tự động có thể chứa lỗi hoặc không chính xác. Tài liệu gốc bằng ngôn ngữ nguyên bản nên được coi là nguồn chính xác và đáng tin cậy. Đối với các thông tin quan trọng, nên sử dụng dịch vụ dịch thuật chuyên nghiệp do con người thực hiện. Chúng tôi không chịu trách nhiệm về bất kỳ sự hiểu lầm hoặc diễn giải sai nào phát sinh từ việc sử dụng bản dịch này.

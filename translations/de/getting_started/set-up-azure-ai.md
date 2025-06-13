@@ -1,18 +1,18 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "220341925e9a67a0e467d1ba94d3cf7d",
-  "translation_date": "2025-05-07T14:19:06+00:00",
+  "original_hash": "b58d7c3cb4210697a073d20eb3064945",
+  "translation_date": "2025-06-12T11:45:31+00:00",
   "source_file": "getting_started/set-up-azure-ai.md",
   "language_code": "de"
 }
 -->
-# Einrichtung von Azure AI für Co-op Translator (Azure OpenAI & Azure AI Vision)
+# Azure AI für Co-op Translator einrichten (Azure OpenAI & Azure AI Vision)
 
-Diese Anleitung führt Sie durch die Einrichtung von Azure OpenAI für Sprachübersetzungen und Azure Computer Vision zur Analyse von Bildinhalten (die dann für bildbasierte Übersetzungen verwendet werden können) innerhalb von Azure AI Foundry.
+Diese Anleitung führt Sie durch die Einrichtung von Azure OpenAI für Sprachübersetzung und Azure Computer Vision zur Analyse von Bildinhalten (die anschließend für bildbasierte Übersetzungen genutzt werden können) innerhalb von Azure AI Foundry.
 
 **Voraussetzungen:**
-- Ein Azure-Konto mit einem aktiven Abonnement.
+- Ein Azure-Konto mit aktivem Abonnement.
 - Ausreichende Berechtigungen zum Erstellen von Ressourcen und Bereitstellungen in Ihrem Azure-Abonnement.
 
 ## Erstellen eines Azure AI-Projekts
@@ -31,29 +31,32 @@ Sie beginnen mit der Erstellung eines Azure AI-Projekts, das als zentraler Ort z
 
 ## Azure OpenAI für Sprachübersetzung einrichten
 
-Innerhalb Ihres Projekts werden Sie ein Azure OpenAI-Modell bereitstellen, das als Backend für die Textübersetzung dient.
+Innerhalb Ihres Projekts stellen Sie ein Azure OpenAI-Modell bereit, das als Backend für die Textübersetzung dient.
 
-### Navigieren Sie zu Ihrem Projekt
+### Navigieren zu Ihrem Projekt
 
 Falls noch nicht geschehen, öffnen Sie Ihr neu erstelltes Projekt (z. B. `CoopTranslator-Project`) in Azure AI Foundry.
 
-### Ein OpenAI-Modell bereitstellen
+### Bereitstellen eines OpenAI-Modells
 
 1. Wählen Sie im linken Menü Ihres Projekts unter „My assets“ den Punkt "**Models + endpoints**".
 
-1. Klicken Sie auf **+ Deploy model**.
+1. Wählen Sie **+ Deploy model**.
 
 1. Wählen Sie **Deploy Base Model**.
 
-1. Ihnen wird eine Liste verfügbarer Modelle angezeigt. Filtern oder suchen Sie nach einem passenden GPT-Modell. Wir empfehlen `gpt-4o`.
+1. Es wird eine Liste verfügbarer Modelle angezeigt. Filtern oder suchen Sie nach einem passenden GPT-Modell. Wir empfehlen `gpt-4o`.
 
-1. Wählen Sie Ihr gewünschtes Modell aus und klicken Sie auf **Confirm**.
+1. Wählen Sie das gewünschte Modell aus und klicken Sie auf **Confirm**.
 
 1. Klicken Sie auf **Deploy**.
 
 ### Azure OpenAI-Konfiguration
 
-Nach der Bereitstellung können Sie die Bereitstellung auf der Seite "**Models + endpoints**" auswählen, um die **REST endpoint URL**, den **Key**, den **Deployment name**, den **Model name** und die **API version** zu finden. Diese Informationen werden benötigt, um das Übersetzungsmodell in Ihre Anwendung zu integrieren.
+Nach der Bereitstellung können Sie die Bereitstellung auf der Seite "**Models + endpoints**" auswählen, um die **REST endpoint URL**, den **Key**, den **Deployment name**, den **Model name** und die **API version** zu finden. Diese werden benötigt, um das Übersetzungsmodell in Ihre Anwendung zu integrieren.
+
+> [!NOTE]
+> Sie können API-Versionen auf der Seite [API version deprecation](https://learn.microsoft.com/azure/ai-services/openai/api-version-deprecation) je nach Bedarf auswählen. Beachten Sie, dass sich die **API version** von der **Model version** unterscheidet, die auf der Seite **Models + endpoints** in Azure AI Foundry angezeigt wird.
 
 ## Azure Computer Vision für Bildübersetzung einrichten
 
@@ -69,11 +72,11 @@ Finden Sie den API-Schlüssel und den Endpunkt im Azure AI Service.
 
 1. Finden Sie den **API Key** und den **Endpoint** im Tab Azure AI Service.
 
-    ![API-Schlüssel und Endpunkt finden](../../../getting_started/imgs/find-azure-ai-info.png)
+    ![Find API Key and Endpoint](../../../translated_images/find-azure-ai-info.60f8299be786dd67e61e2c79b4b9ea1f7694e6c0923f17a90bc6abf9d5f1dbd7.de.png)
 
-Diese Verbindung macht die Funktionen der verknüpften Azure AI Services-Ressource (einschließlich der Bildanalyse) für Ihr AI Foundry-Projekt verfügbar. Sie können diese Verbindung dann in Ihren Notebooks oder Anwendungen nutzen, um Text aus Bildern zu extrahieren, der anschließend an das Azure OpenAI-Modell zur Übersetzung gesendet werden kann.
+Diese Verbindung macht die Funktionen der verknüpften Azure AI Services-Ressource (einschließlich Bildanalyse) für Ihr AI Foundry-Projekt verfügbar. Sie können diese Verbindung dann in Ihren Notebooks oder Anwendungen verwenden, um Text aus Bildern zu extrahieren, der anschließend an das Azure OpenAI-Modell zur Übersetzung gesendet werden kann.
 
-## Konsolidierung Ihrer Zugangsdaten
+## Zusammenführung Ihrer Zugangsdaten
 
 Bis jetzt sollten Sie folgende Daten gesammelt haben:
 
@@ -90,7 +93,7 @@ Bis jetzt sollten Sie folgende Daten gesammelt haben:
 
 ### Beispiel: Konfiguration von Umgebungsvariablen (Vorschau)
 
-Später, beim Erstellen Ihrer Anwendung, werden Sie diese gesammelten Zugangsdaten vermutlich als Umgebungsvariablen konfigurieren, zum Beispiel so:
+Später, beim Erstellen Ihrer Anwendung, konfigurieren Sie diese wahrscheinlich mit den gesammelten Zugangsdaten. Zum Beispiel könnten Sie sie als Umgebungsvariablen wie folgt festlegen:
 
 ```bash
 # Azure AI Service Credentials (Required for image translation)
@@ -102,7 +105,7 @@ AZURE_OPENAI_API_KEY="your_azure_openai_api_key" # e.g., 21xasd...
 AZURE_OPENAI_ENDPOINT="https://your_azure_openai_endpoint.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="your_model_name" # e.g., gpt-4o
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="your_deployment_name" # e.g., cooptranslator-gpt4o
-AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-02-01
+AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-12-01-preview
 ```
 
 ---
@@ -114,4 +117,4 @@ AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-02-01
 - [How to Deploy OpenAI models in Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-openai)
 
 **Haftungsausschluss**:  
-Dieses Dokument wurde mithilfe des KI-Übersetzungsdienstes [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir uns um Genauigkeit bemühen, beachten Sie bitte, dass automatisierte Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner Ursprungssprache ist als maßgebliche Quelle zu betrachten. Für wichtige Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die aus der Verwendung dieser Übersetzung entstehen.
+Dieses Dokument wurde mit dem KI-Übersetzungsdienst [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir uns um Genauigkeit bemühen, beachten Sie bitte, dass automatisierte Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner Ursprungssprache gilt als maßgebliche Quelle. Für wichtige Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die durch die Verwendung dieser Übersetzung entstehen.

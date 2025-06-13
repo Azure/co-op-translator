@@ -2,22 +2,22 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-05-06T17:21:38+00:00",
+  "translation_date": "2025-06-12T09:24:43+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "de"
 }
 -->
-# Beiträge zum Co-op Translator
+# Beitrag zum Co-op Translator
 
-Dieses Projekt freut sich über Beiträge und Vorschläge. Die meisten Beiträge erfordern, dass Sie einer Contributor License Agreement (CLA) zustimmen, in der Sie bestätigen, dass Sie das Recht haben und tatsächlich die Rechte einräumen, Ihre Beiträge zu verwenden. Weitere Informationen finden Sie unter https://cla.opensource.microsoft.com.
+Dieses Projekt freut sich über Beiträge und Vorschläge. Die meisten Beiträge erfordern, dass Sie einer Contributor License Agreement (CLA) zustimmen, die bestätigt, dass Sie das Recht haben und tatsächlich gewähren, dass wir Ihre Beiträge verwenden dürfen. Weitere Informationen finden Sie unter https://cla.opensource.microsoft.com.
 
-Wenn Sie eine Pull-Anfrage einreichen, bestimmt ein CLA-Bot automatisch, ob Sie eine CLA bereitstellen müssen, und versieht die PR entsprechend (z. B. Statusüberprüfung, Kommentar). Folgen Sie einfach den Anweisungen des Bots. Dies müssen Sie nur einmal für alle Repositories tun, die unsere CLA verwenden.
+Wenn Sie eine Pull-Anfrage einreichen, prüft ein CLA-Bot automatisch, ob Sie eine CLA vorlegen müssen, und versieht die PR entsprechend (z. B. Statusprüfung, Kommentar). Folgen Sie einfach den Anweisungen des Bots. Dies müssen Sie nur einmal für alle Repositories mit unserer CLA tun.
 
 ## Einrichtung der Entwicklungsumgebung
 
-Für die Einrichtung der Entwicklungsumgebung dieses Projekts empfehlen wir die Verwendung von Poetry zur Verwaltung der Abhängigkeiten. Wir nutzen `pyproject.toml`, um Projektabhängigkeiten zu verwalten. Daher sollten Sie zum Installieren der Abhängigkeiten Poetry verwenden.
+Für die Einrichtung der Entwicklungsumgebung dieses Projekts empfehlen wir die Verwendung von Poetry zur Verwaltung der Abhängigkeiten. Wir verwenden `pyproject.toml` zur Verwaltung der Projektabhängigkeiten, daher sollten Sie Poetry verwenden, um die Abhängigkeiten zu installieren.
 
-### Erstellen einer virtuellen Umgebung
+### Virtuelle Umgebung erstellen
 
 #### Mit pip
 
@@ -53,7 +53,7 @@ poetry init
 poetry shell
 ```
 
-### Installation des Pakets und erforderlicher Pakete
+### Installation des Pakets und der benötigten Pakete
 
 #### Mit Poetry (aus pyproject.toml)
 
@@ -81,7 +81,7 @@ Bevor Sie eine PR einreichen, ist es wichtig, die Übersetzungsfunktion mit echt
     pip install -e .
     ```
 
-4. Führen Sie Co-op Translator für Ihre Testdokumente aus:
+4. Führen Sie Co-op Translator auf Ihren Testdokumenten aus:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
@@ -97,13 +97,13 @@ This manual testing helps ensure that your changes work well in real-world scena
 ### Environment variables
 
 1. Create an `.env` file in the root directory by copying the provided `.env.template`.
-1. Füllen Sie die Umgebungsvariablen wie angegeben aus.
+1. Füllen Sie die Umgebungsvariablen entsprechend der Anleitung aus.
 
 > [!TIP]
 >
-> ### Weitere Optionen für die Entwicklungsumgebung
+> ### Zusätzliche Optionen für die Entwicklungsumgebung
 >
-> Zusätzlich zur lokalen Ausführung des Projekts können Sie auch GitHub Codespaces oder VS Code Dev Containers als alternative Entwicklungsumgebungen verwenden.
+> Zusätzlich zur lokalen Ausführung des Projekts können Sie auch GitHub Codespaces oder VS Code Dev Containers als alternative Entwicklungsumgebungen nutzen.
 >
 > #### GitHub Codespaces
 >
@@ -117,11 +117,11 @@ This manual testing helps ensure that your changes work well in real-world scena
 >
 > #### Lokale Ausführung mit VS Code Dev Containers
 >
-> ⚠️ Diese Option funktioniert nur, wenn Docker Desktop mindestens 16 GB RAM zugewiesen sind. Wenn Sie weniger als 16 GB RAM haben, können Sie die [GitHub Codespaces-Option](../..) ausprobieren oder [die lokale Einrichtung](../..) verwenden.
+> ⚠️ Diese Option funktioniert nur, wenn Docker Desktop mindestens 16 GB RAM zugewiesen sind. Wenn Sie weniger als 16 GB RAM haben, können Sie die [GitHub Codespaces-Option](../..) nutzen oder die lokale Einrichtung vornehmen ([siehe oben](../..)).
 >
-> Eine verwandte Möglichkeit sind VS Code Dev Containers, die das Projekt lokal in VS Code mit der [Dev Containers-Erweiterung](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) öffnen:
+> Eine verwandte Option sind VS Code Dev Containers, mit denen das Projekt in Ihrem lokalen VS Code unter Verwendung der [Dev Containers-Erweiterung](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) geöffnet wird:
 >
-> 1. Starten Sie Docker Desktop (falls noch nicht installiert, installieren Sie es)
+> 1. Starten Sie Docker Desktop (installieren Sie es, falls noch nicht geschehen)
 > 2. Öffnen Sie das Projekt:
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
@@ -129,7 +129,7 @@ This manual testing helps ensure that your changes work well in real-world scena
 
 ### Code-Stil
 
-Wir verwenden [Black](https://github.com/psf/black) als Python-Code-Formatter, um einen einheitlichen Code-Stil im Projekt zu gewährleisten. Black ist ein kompromissloser Code-Formatter, der Python-Code automatisch so formatiert, dass er dem Black-Code-Stil entspricht.
+Wir verwenden [Black](https://github.com/psf/black) als Python-Code-Formatter, um einen einheitlichen Code-Stil im Projekt sicherzustellen. Black ist ein kompromissloser Code-Formatter, der Python-Code automatisch so formatiert, dass er dem Black-Code-Stil entspricht.
 
 #### Konfiguration
 
@@ -187,15 +187,15 @@ pip install black
     ```
 
 > [!TIP]
-> Wir empfehlen, Ihren Editor so einzurichten, dass der Code beim Speichern automatisch mit Black formatiert wird. Die meisten modernen Editoren unterstützen dies über Erweiterungen oder Plugins.
+> Wir empfehlen, Ihren Editor so einzurichten, dass er den Code beim Speichern automatisch mit Black formatiert. Die meisten modernen Editoren unterstützen dies über Erweiterungen oder Plugins.
 
-## Co-op Translator ausführen
+## Ausführen von Co-op Translator
 
 Um Co-op Translator mit Poetry in Ihrer Umgebung auszuführen, gehen Sie wie folgt vor:
 
-1. Wechseln Sie in das Verzeichnis, in dem Sie Übersetzungstests durchführen möchten, oder erstellen Sie einen temporären Ordner für Testzwecke.
+1. Navigieren Sie in das Verzeichnis, in dem Sie Übersetzungstests durchführen möchten, oder erstellen Sie einen temporären Ordner für Testzwecke.
 
-2. Führen Sie den folgenden Befehl aus. Das Flag `-l ko` with the language code you wish to translate into. The `-d` aktiviert den Debug-Modus.
+2. Führen Sie folgenden Befehl aus. Der Schalter `-l ko` with the language code you wish to translate into. The `-d` aktiviert den Debug-Modus.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -208,9 +208,9 @@ Um Co-op Translator mit Poetry in Ihrer Umgebung auszuführen, gehen Sie wie fol
 
 ### Commit-Nachricht und Merge-Strategie
 
-Um Konsistenz und Klarheit im Commit-Verlauf unseres Projekts sicherzustellen, verwenden wir ein bestimmtes Format für Commit-Nachrichten **für die abschließende Commit-Nachricht** beim Einsatz der **Squash and Merge**-Strategie.
+Um Konsistenz und Klarheit in der Commit-Historie unseres Projekts sicherzustellen, verwenden wir ein bestimmtes Format für Commit-Nachrichten **für die abschließende Commit-Nachricht** bei Verwendung der **Squash and Merge**-Strategie.
 
-Wenn eine Pull-Anfrage (PR) zusammengeführt wird, werden die einzelnen Commits zu einem einzigen Commit zusammengefasst. Die abschließende Commit-Nachricht sollte dem folgenden Format entsprechen, um eine saubere und konsistente Historie zu gewährleisten.
+Wenn eine Pull-Anfrage (PR) gemerged wird, werden die einzelnen Commits zu einem einzigen Commit zusammengefasst. Die abschließende Commit-Nachricht sollte folgendem Format entsprechen, um eine saubere und einheitliche Historie zu gewährleisten.
 
 #### Format der Commit-Nachricht (für squash and merge)
 
@@ -220,7 +220,7 @@ Wir verwenden das folgende Format für Commit-Nachrichten:
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: Gibt die Kategorie des Commits an. Wir verwenden folgende Typen:
+- **type**: Gibt die Kategorie des Commits an. Folgende Typen verwenden wir:
   - `Docs`: For documentation updates.
   - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
   - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
@@ -259,4 +259,4 @@ They should be squashed into:
 `Docs: Improve documentation clarity and formatting (#65)`
 
 **Haftungsausschluss**:  
-Dieses Dokument wurde mit dem KI-Übersetzungsdienst [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir auf Genauigkeit achten, kann es bei automatischen Übersetzungen zu Fehlern oder Ungenauigkeiten kommen. Das Originaldokument in der Originalsprache ist als maßgebliche Quelle zu betrachten. Für wichtige Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die durch die Nutzung dieser Übersetzung entstehen.
+Dieses Dokument wurde mit dem KI-Übersetzungsdienst [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir uns um Genauigkeit bemühen, beachten Sie bitte, dass automatisierte Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner Ursprungssprache ist als maßgebliche Quelle zu betrachten. Für wichtige Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die durch die Verwendung dieser Übersetzung entstehen.

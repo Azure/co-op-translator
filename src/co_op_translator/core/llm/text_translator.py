@@ -7,6 +7,7 @@ from co_op_translator.utils.llm.text_utils import (
 )
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.llm_config.provider import LLMProvider
+from co_op_translator.config.font_config import FontConfig
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ class TextTranslator(ABC):
 
     def __init__(self):
         self.client = self.get_openai_client()
+        self.font_config = FontConfig()
 
     @abstractmethod
     def get_openai_client(self):
@@ -47,7 +49,8 @@ class TextTranslator(ABC):
         Returns:
             List of translated text lines
         """
-        prompt = gen_image_translation_prompt(text_data, target_language)
+        language_name = self.font_config.get_language_name(target_language)
+        prompt = gen_image_translation_prompt(text_data, target_language, language_name)
         response = self.client.chat.completions.create(
             model=self.get_model_name(),
             messages=[

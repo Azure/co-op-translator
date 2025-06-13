@@ -1,8 +1,8 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "33db54f4f3ca9f0321be05374b591f2b",
-  "translation_date": "2025-05-06T17:57:53+00:00",
+  "original_hash": "d238206c3503631e32774716d11d1868",
+  "translation_date": "2025-06-12T18:38:50+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "en"
 }
@@ -67,17 +67,7 @@ Translating markdown files: 100%|███████████████�
 > [!NOTE]
 > While it's generally recommended to translate one language at a time, in situations like this where specific changes need to be added, translating multiple languages at once can be efficient.
 
-### 3. Specifying the Root Directory
-
-By default, the translator uses the current working directory. If your project is located elsewhere, specify the root directory with the -r option:
-
-```bash
-translate -l "es fr de" -r "./my_project"
-```
-
-This command translates the files in `./my_project` into Spanish, French, and German.
-
-### 4. Updating Translations (Deletes Existing Translations)
+### 3. Updating Translations (Deletes Existing Translations)
 
 To update existing translations (i.e., delete the current translations and replace them with new ones), use the `-u` option. This will delete all existing translations for the specified languages and re-translate them.
 
@@ -100,7 +90,7 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|███████████████████████████████████| 95/95 [1:40:27<00:00, 125.62s/it]
 ```
 
-### 6. Translating Only Images
+### 5. Translating Only Images
 
 To translate only the image files in your project, use the `-img` option:
 
@@ -110,7 +100,7 @@ translate -l "ko" -img
 
 This command will translate only the images into Korean, without affecting any markdown files.
 
-### 7. Translating Only Markdown Files
+### 6. Translating Only Markdown Files
 
 To translate only the markdown files in your project, use the `-md` option:
 
@@ -118,7 +108,7 @@ To translate only the markdown files in your project, use the `-md` option:
 translate -l "ko" -md
 ```
 
-### 8. Checking for Errors in Translated Files
+### 7. Checking for Errors in Translated Files
 
 If you want to check translated files for errors and retry the translation if necessary, use the `-chk` option:
 
@@ -145,7 +135,7 @@ For example, this method is useful for detecting missing chunks or corrupted tra
 
 However, if you already know which files are problematic, it’s more efficient to manually delete those files and use the `-a` option to re-translate them.
 
-### 9. Debug Mode
+### 8. Debug Mode
 
 To enable detailed logging for troubleshooting, use the `-d` option:
 
@@ -165,7 +155,7 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 ...
 ```
 
-### 10. Translating All Languages
+### 9. Translating All Languages
 
 If you want to translate the project into all supported languages, use the all keyword.
 
@@ -180,8 +170,10 @@ This command will translate the project into all available languages. If you pro
 
 > [!TIP]
 >
-> ### Deleting files which need to be updated 
-> To update files recently changed in Pull Request the first step is to delete all the existing versions of the specific file located in the different language translation folders. You can do this in bulk by using the following command to delete all the files with a specific name within the translation folders.
+> ### Manually Deleting Translated Files (Optional)
+> Translated files are now automatically detected and cleaned up when a source file is updated.
+>
+> However, if you want to manually update a translation - for example, to redo a specific file or override the system behavior - you can use the following command to delete all versions of the file across language folders.
 >
 > ### On Windows:
 > 1. **Using Command Prompt**:

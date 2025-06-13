@@ -2,14 +2,14 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-05-06T17:55:46+00:00",
+  "translation_date": "2025-06-12T18:30:29+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "en"
 }
 -->
 # Install the Co-op translator package
 
-The **Co-op Translator** is a command-line interface (CLI) tool designed to help you translate all the markdown files and images in your project into multiple languages. This tutorial will guide you through setting up the translator and running it for different scenarios.
+The **Co-op Translator** is a command-line interface (CLI) tool designed to help you translate all the markdown files and images in your project into multiple languages. This tutorial will guide you through configuring the translator and running it for various use cases.
 
 ### Create a virtual environment
 
@@ -29,7 +29,7 @@ poetry init
 
 ### Activate the virtual environment
 
-After creating the virtual environment, you need to activate it. The steps vary depending on your operating system. Enter the following command in your terminal.
+After creating the virtual environment, you'll need to activate it. The steps vary depending on your operating system. Enter the following command in your terminal.
 
 #### For both pip and Poetry
 
@@ -55,11 +55,11 @@ After creating the virtual environment, you need to activate it. The steps vary 
 
 ### Installing the Package and required Packages
 
-Once your virtual environment is ready and activated, the next step is to install the necessary dependencies.
+Once your virtual environment is set up and activated, the next step is to install the necessary dependencies.
 
 ### Quick install
 
-Install Co-op Translator via pip
+Install Co-Op Translator via pip
 
 ```
 pip install co-op-translator
@@ -90,4 +90,4 @@ poetry add co-op-translator
     ```
 
 **Disclaimer**:  
-This document has been translated using the AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.
+This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.

@@ -2,18 +2,18 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "66029e3b67a3eb980ab8740367e91283",
-  "translation_date": "2025-05-07T14:07:01+00:00",
+  "translation_date": "2025-06-12T12:38:37+00:00",
   "source_file": "getting_started/command-line-guide/create-env-file.md",
   "language_code": "de"
 }
 -->
 # Erstellen Sie die Datei *.env* im Stammverzeichnis
 
-In diesem Tutorial zeigen wir Ihnen, wie Sie Ihre Umgebungsvariablen für Azure-Dienste mit einer *.env*-Datei einrichten. Umgebungsvariablen ermöglichen es Ihnen, sensible Zugangsdaten wie API-Schlüssel sicher zu verwalten, ohne sie fest im Code zu verankern.
+In diesem Tutorial zeigen wir Ihnen, wie Sie Ihre Umgebungsvariablen für Azure-Dienste mithilfe einer *.env*-Datei einrichten. Umgebungsvariablen ermöglichen es Ihnen, sensible Zugangsdaten wie API-Schlüssel sicher zu verwalten, ohne sie direkt im Code zu hinterlegen.
 
 > [!IMPORTANT]
-> - Es muss nur ein Sprachmodell-Dienst (Azure OpenAI oder OpenAI) konfiguriert werden. Füllen Sie die Umgebungsvariablen für den von Ihnen bevorzugten Dienst aus. Wenn Umgebungsvariablen für mehrere Sprachmodelle gesetzt sind, wählt der Co-op Translator eines nach Priorität aus.
-> - Wenn die Umgebungsvariablen für Computer Vision nicht gesetzt sind, wechselt der Translator automatisch in den [Markdown-only-Modus](./markdown-only-mode.md).
+> - Es muss nur ein Sprachmodell-Dienst (Azure OpenAI oder OpenAI) konfiguriert werden. Füllen Sie die Umgebungsvariablen für den bevorzugten Dienst aus. Wenn Umgebungsvariablen für mehrere Sprachmodelle gesetzt sind, wählt der Co-op Translator eines nach Priorität aus.
+> - Wenn keine Umgebungsvariablen für Computer Vision gesetzt sind, wechselt der Translator automatisch in den [Markdown-Only-Modus](./markdown-only-mode.md).
 
 > [!NOTE]
 > Diese Anleitung konzentriert sich hauptsächlich auf Azure-Dienste, aber Sie können jedes unterstützte Sprachmodell aus der [Liste der unterstützten Modelle und Dienste](../README.md#-supported-models-and-services) wählen.
@@ -23,11 +23,11 @@ In diesem Tutorial zeigen wir Ihnen, wie Sie Ihre Umgebungsvariablen für Azure-
 Erstellen Sie im Stammverzeichnis Ihres Projekts eine Datei mit dem Namen *.env*. In dieser Datei werden alle Ihre Umgebungsvariablen in einem einfachen Format gespeichert.
 
 > [!WARNING]
-> Vermeiden Sie es, Ihre *.env*-Datei in Versionsverwaltungssysteme wie Git einzuchecken. Fügen Sie *.env* zu Ihrer .gitignore-Datei hinzu, um versehentliche Commits zu verhindern.
+> Veröffentlichen Sie Ihre *.env*-Datei nicht in Versionskontrollsystemen wie Git. Fügen Sie *.env* zu Ihrer .gitignore-Datei hinzu, um versehentliche Commits zu vermeiden.
 
 1. Navigieren Sie zum Stammverzeichnis Ihres Projekts.
 
-1. Erstellen Sie eine *.env*-Datei im Stammverzeichnis Ihres Projekts.
+1. Erstellen Sie im Stammverzeichnis Ihres Projekts eine *.env*-Datei.
 
 1. Öffnen Sie die *.env*-Datei und fügen Sie die folgende Vorlage ein:
 
@@ -51,7 +51,7 @@ Erstellen Sie im Stammverzeichnis Ihres Projekts eine Datei mit dem Namen *.env*
     ```
 
 > [!NOTE]
-> Wenn Sie Ihre API-Schlüssel und Endpunkte suchen, können Sie die Anleitung in [set-up-azure-ai.md](../set-up-azure-ai.md) nutzen.
+> Wenn Sie Ihre API-Schlüssel und Endpunkte finden möchten, können Sie die Anleitung [set-up-azure-ai.md](../set-up-azure-ai.md) zu Rate ziehen.
 
 **Haftungsausschluss**:  
-Dieses Dokument wurde mit dem KI-Übersetzungsdienst [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir uns um Genauigkeit bemühen, beachten Sie bitte, dass automatisierte Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner Ursprungssprache gilt als maßgebliche Quelle. Für wichtige Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die aus der Verwendung dieser Übersetzung entstehen.
+Dieses Dokument wurde mithilfe des KI-Übersetzungsdienstes [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir uns um Genauigkeit bemühen, beachten Sie bitte, dass automatisierte Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner Ausgangssprache ist als maßgebliche Quelle zu betrachten. Für wichtige Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die aus der Nutzung dieser Übersetzung entstehen.

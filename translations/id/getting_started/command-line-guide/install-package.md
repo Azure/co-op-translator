@@ -2,18 +2,18 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-05-06T17:57:39+00:00",
+  "translation_date": "2025-06-12T18:36:15+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "id"
 }
 -->
-# Install paket penerjemah Co-op
+# Instal paket Co-op translator
 
-**Co-op Translator** adalah alat antarmuka baris perintah (CLI) yang dirancang untuk membantu Anda menerjemahkan semua file markdown dan gambar dalam proyek Anda ke berbagai bahasa. Tutorial ini akan memandu Anda dalam mengonfigurasi penerjemah dan menjalankannya untuk berbagai kasus penggunaan.
+**Co-op Translator** adalah alat antarmuka baris perintah (CLI) yang dirancang untuk membantu Anda menerjemahkan semua file markdown dan gambar dalam proyek Anda ke dalam berbagai bahasa. Tutorial ini akan memandu Anda dalam mengonfigurasi translator dan menjalankannya untuk berbagai kasus penggunaan.
 
-### Membuat lingkungan virtual
+### Buat lingkungan virtual
 
-Anda dapat membuat lingkungan virtual menggunakan `pip` atau `Poetry`. Ketik salah satu perintah berikut di dalam terminal Anda.
+Anda dapat membuat lingkungan virtual menggunakan `pip` atau `Poetry`. Ketik salah satu perintah berikut di terminal Anda.
 
 #### Menggunakan pip
 
@@ -27,9 +27,9 @@ python -m venv .venv
 poetry init
 ```
 
-### Mengaktifkan lingkungan virtual
+### Aktifkan lingkungan virtual
 
-Setelah membuat lingkungan virtual, Anda perlu mengaktifkannya. Langkah-langkahnya berbeda tergantung sistem operasi Anda. Ketik perintah berikut di dalam terminal Anda.
+Setelah membuat lingkungan virtual, Anda perlu mengaktifkannya. Langkah-langkahnya berbeda tergantung pada sistem operasi Anda. Ketik perintah berikut di terminal Anda.
 
 #### Untuk pip dan Poetry
 
@@ -53,20 +53,20 @@ Setelah membuat lingkungan virtual, Anda perlu mengaktifkannya. Langkah-langkahn
     poetry shell
     ```
 
-### Menginstal Paket dan paket yang dibutuhkan
+### Instal Paket dan paket yang dibutuhkan
 
-Setelah lingkungan virtual Anda siap dan diaktifkan, langkah selanjutnya adalah menginstal dependensi yang diperlukan.
+Setelah lingkungan virtual Anda siap dan aktif, langkah berikutnya adalah menginstal dependensi yang diperlukan.
 
-### Instalasi cepat
+### Instal cepat
 
-Instal melalui Co-Op Translator menggunakan pip
+Instal Co-Op Translator melalui pip
 
 ```
 pip install co-op-translator
-```  
-Atau  
+```
+Atau
 
-Instal melalui poetry  
+Instal melalui poetry
 ```
 poetry add co-op-translator
 ```
@@ -90,4 +90,4 @@ poetry add co-op-translator
     ```
 
 **Penafian**:  
-Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berusaha untuk akurasi, harap diperhatikan bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sahih. Untuk informasi yang penting, disarankan menggunakan terjemahan profesional oleh manusia. Kami tidak bertanggung jawab atas kesalahpahaman atau salah tafsir yang timbul dari penggunaan terjemahan ini.
+Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berusaha untuk akurasi, harap diperhatikan bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sah. Untuk informasi penting, disarankan menggunakan terjemahan profesional oleh manusia. Kami tidak bertanggung jawab atas kesalahpahaman atau penafsiran yang salah yang timbul dari penggunaan terjemahan ini.

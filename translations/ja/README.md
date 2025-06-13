@@ -213,16 +213,13 @@ translate -l "zh ja"
     pip install co-op-translator
     ```
 
-1. 認証情報を設定：
-
-    - `.env` file in your project's root directory.
-    - Copy the contents from the [.env.template](../../.env.template) file into your new `.env` file.
-    - Fill in the required API keys and endpoint information in your `.env` file.
-
-1. Run Translation:
-    - Navigate to your project's root directory in your terminal.
-    - Execute the translate command, specifying target languages with the `-l` フラグ：
-
+2. 資格情報を設定：
+  - プロジェクトのルート ディレクトリにある `.env` ファイル。
+  - [.env.template](../../.env.template) ファイルの内容を新しい `.env` ファイルにコピーします。
+  - Fill in the required API keys and endpoint information in your `.env` file.
+3. Run Translation:
+  - Navigate to your project's root directory in your terminal.
+  - Execute the translate command, specifying target languages with the `-l` フラグを作成：
     ```bash
     translate -l "ko ja fr"
     ```

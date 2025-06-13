@@ -1,23 +1,23 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "87bf95d45e684475ef1e67d8dae5f6eb",
-  "translation_date": "2025-05-06T18:09:37+00:00",
+  "original_hash": "a52587a512e667f70d92db853d3c61d5",
+  "translation_date": "2025-06-12T19:20:32+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "en"
 }
 -->
 # Using the Co-op Translator GitHub Action (Public Setup)
 
-**Target Audience:** This guide is designed for users of most public or private repositories where standard GitHub Actions permissions suffice. It uses the built-in `GITHUB_TOKEN`.
+**Target Audience:** This guide is designed for users of most public or private repositories where standard GitHub Actions permissions are sufficient. It uses the built-in `GITHUB_TOKEN`.
 
-Easily automate the translation of your repository’s documentation with the Co-op Translator GitHub Action. This guide explains how to set up the action to automatically open pull requests with updated translations whenever your source Markdown files or images change.
+Easily automate the translation of your repository’s documentation with the Co-op Translator GitHub Action. This guide walks you through setting up the action to automatically create pull requests with updated translations whenever your source Markdown files or images are updated.
 
 > [!IMPORTANT]
 >
 > **Choosing the Right Guide:**
 >
-> This guide covers the **simpler setup using the standard `GITHUB_TOKEN`**. This is the recommended approach for most users since it doesn’t require managing sensitive GitHub App Private Keys.
+> This guide explains the **simpler setup using the standard `GITHUB_TOKEN`**. This is the recommended approach for most users as it doesn’t require handling sensitive GitHub App Private Keys.
 >
 
 ## Prerequisites
@@ -29,15 +29,13 @@ You need credentials for at least one supported Language Model:
 
 - **Azure OpenAI**: Requires Endpoint, API Key, Model/Deployment Names, API Version.  
 - **OpenAI**: Requires API Key, (Optional: Org ID, Base URL, Model ID).  
-- See [Supported Models and Services](../../../../README.md) for details.  
-- Setup Guide: [Set up Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
+- See [Supported Models and Services](../../../../README.md) for details.
 
-**2. Optional: Computer Vision Credentials (for Image Translation)**
+**2. Optional: AI Vision Credentials (for Image Translation)**
 
 - Only needed if you want to translate text inside images.  
-- **Azure Computer Vision**: Requires Endpoint and Subscription Key.  
-- If not provided, the action will run in [Markdown-only mode](../markdown-only-mode.md).  
-- Setup Guide: [Set up Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
+- **Azure AI Vision**: Requires Endpoint and Subscription Key.  
+- If not provided, the action will run in [Markdown-only mode](../markdown-only-mode.md).
 
 ## Setup and Configuration
 
@@ -45,7 +43,7 @@ Follow these steps to configure the Co-op Translator GitHub Action in your repos
 
 ### Step 1: Understand Authentication (Using `GITHUB_TOKEN`)
 
-This workflow uses the built-in `GITHUB_TOKEN` provided by GitHub Actions. This token automatically grants the workflow permissions to interact with your repository according to the settings you configure in **Step 3**.
+This workflow uses the built-in `GITHUB_TOKEN` provided by GitHub Actions. This token automatically grants the workflow the permissions needed to interact with your repository based on the settings you configure in **Step 3**.
 
 ### Step 2: Configure Repository Secrets
 
@@ -55,7 +53,7 @@ You only need to add your **AI service credentials** as encrypted secrets in you
 2.  Navigate to **Settings** > **Secrets and variables** > **Actions**.  
 3.  Under **Repository secrets**, click **New repository secret** for each required AI service secret listed below.
 
-    ![Select setting action](../../../../getting_started/github-actions-guide/imgs/select-setting-action.png) *(Image Reference: Shows where to add secrets)*
+    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.en.png) *(Image Reference: Shows where to add secrets)*
 
 **Required AI Service Secrets (Add ALL that apply based on your Prerequisites):**
 
@@ -75,21 +73,21 @@ You only need to add your **AI service credentials** as encrypted secrets in you
 
 ### Step 3: Configure Workflow Permissions
 
-The GitHub Action requires permissions granted via the `GITHUB_TOKEN` to check out code and create pull requests.
+The GitHub Action requires permissions granted through the `GITHUB_TOKEN` to check out code and create pull requests.
 
 1.  In your repository, go to **Settings** > **Actions** > **General**.  
-2.  Scroll to the **Workflow permissions** section.  
-3.  Select **Read and write permissions**. This grants the `GITHUB_TOKEN` the necessary `contents: write` and `pull-requests: write` permissions for this workflow.  
-4.  Make sure the checkbox for **Allow GitHub Actions to create and approve pull requests** is **checked**.  
+2.  Scroll down to the **Workflow permissions** section.  
+3.  Select **Read and write permissions**. This gives the `GITHUB_TOKEN` the necessary `contents: write` and `pull-requests: write` permissions for this workflow.  
+4.  Make sure the box for **Allow GitHub Actions to create and approve pull requests** is **checked**.  
 5.  Click **Save**.
 
-![Permission setting](../../../../getting_started/github-actions-guide/imgs/permission-setting.png)
+![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.en.png)
 
 ### Step 4: Create the Workflow File
 
 Finally, create the YAML file that defines the automated workflow using `GITHUB_TOKEN`.
 
-1.  In your repository’s root directory, create the `.github/workflows/` folder if it doesn’t already exist.  
+1.  In the root directory of your repository, create the `.github/workflows/` folder if it doesn’t already exist.  
 2.  Inside `.github/workflows/`, create a file named `co-op-translator.yml`.  
 3.  Paste the following content into `co-op-translator.yml`.
 
@@ -171,9 +169,9 @@ jobs:
             translated_images/
 ```  
 4.  **Customize the Workflow:**  
-  - **[!IMPORTANT] Target Languages:** In the `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
+  - **[!IMPORTANT] Target Languages:** Adjust the `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
   - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step, update the target languages as needed.
+  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step as needed.
 
 **Disclaimer**:  
-This document has been translated using the AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.
+This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.

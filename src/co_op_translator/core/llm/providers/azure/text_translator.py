@@ -8,7 +8,7 @@ class AzureTextTranslator(TextTranslator):
 
     def __init__(self):
         """Initialize Azure Text Translator."""
-        self.client = self.get_openai_client()
+        super().__init__()
 
     def get_openai_client(self):
         """Create an Azure OpenAI client instance.

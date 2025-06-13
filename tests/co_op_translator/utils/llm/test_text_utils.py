@@ -39,20 +39,23 @@ def test_extract_yaml_lines():
 def test_gen_image_translation_prompt():
     """Test generating image translation prompts."""
     text_data = ["Line 1", "Line 2", "Line 3"]
-    language = "ko"
+    language_code = "ko"
+    language_name = "Korean"
 
-    prompt = gen_image_translation_prompt(text_data, language)
+    prompt = gen_image_translation_prompt(text_data, language_code, language_name)
 
     assert isinstance(prompt, str)
-    assert language in prompt
+    assert language_code in prompt
+    assert language_name in prompt
     assert all(line in prompt for line in text_data)
 
 
 def test_gen_image_translation_prompt_empty():
     """Test generating image translation prompt with empty data."""
-    prompt = gen_image_translation_prompt([], "ko")
+    prompt = gen_image_translation_prompt([], "ko", "Korean")
     assert isinstance(prompt, str)
     assert "ko" in prompt
+    assert "Korean" in prompt
 
 
 def test_gen_image_translation_prompt_special_chars():
@@ -62,7 +65,7 @@ def test_gen_image_translation_prompt_special_chars():
         "Line with [markdown] syntax",
         "Line with <html> tags",
     ]
-    prompt = gen_image_translation_prompt(text_data, "ko")
+    prompt = gen_image_translation_prompt(text_data, "ko", "Korean")
 
     assert isinstance(prompt, str)
     assert all(line in prompt for line in text_data)

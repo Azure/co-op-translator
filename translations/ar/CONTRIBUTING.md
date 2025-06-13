@@ -2,20 +2,20 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-05-06T17:23:10+00:00",
+  "translation_date": "2025-06-12T09:25:32+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "ar"
 }
 -->
 # المساهمة في Co-op Translator
 
-يرحب هذا المشروع بالمساهمات والاقتراحات. تتطلب معظم المساهمات موافقتك على اتفاقية ترخيص المساهمين (CLA) التي تُعلن فيها أنك تملك الحق، وأنك فعليًا تمنحنا الحقوق لاستخدام مساهمتك. لمزيد من التفاصيل، قم بزيارة https://cla.opensource.microsoft.com.
+يرحب هذا المشروع بالمساهمات والاقتراحات. تتطلب معظم المساهمات موافقتك على اتفاقية ترخيص المساهمين (CLA) التي تُعلن فيها بأن لديك الحق في منحنا حقوق استخدام مساهمتك، وأنك فعلًا تمنحنا هذه الحقوق. لمزيد من التفاصيل، زر https://cla.opensource.microsoft.com.
 
-عند تقديم طلب سحب، سيقوم بوت CLA تلقائيًا بتحديد ما إذا كنت بحاجة إلى تقديم اتفاقية CLA وتزيين طلب السحب بشكل مناسب (مثل، فحص الحالة، تعليق). فقط اتبع التعليمات المقدمة من البوت. ستحتاج إلى القيام بذلك مرة واحدة فقط عبر جميع المستودعات التي تستخدم اتفاقيتنا.
+عند تقديم طلب سحب، سيقوم بوت CLA تلقائيًا بتحديد ما إذا كنت بحاجة لتوفير CLA وتزيين طلب السحب بشكل مناسب (مثل فحص الحالة، تعليق). ما عليك سوى اتباع التعليمات التي يقدمها البوت. ستحتاج إلى القيام بذلك مرة واحدة فقط عبر جميع المستودعات التي تستخدم اتفاقيتنا.
 
 ## إعداد بيئة التطوير
 
-لإعداد بيئة التطوير لهذا المشروع، نوصي باستخدام Poetry لإدارة التبعيات. نستخدم `pyproject.toml` لإدارة تبعيات المشروع، ولذلك، لتثبيت التبعيات، يجب عليك استخدام Poetry.
+لإعداد بيئة التطوير لهذا المشروع، نوصي باستخدام Poetry لإدارة التبعيات. نستخدم `pyproject.toml` لإدارة تبعيات المشروع، وبالتالي لتثبيت التبعيات، يجب عليك استخدام Poetry.
 
 ### إنشاء بيئة افتراضية
 
@@ -33,7 +33,7 @@ poetry init
 
 ### تفعيل البيئة الافتراضية
 
-#### لكل من pip وPoetry
+#### لكل من pip و Poetry
 
 - ويندوز:
 
@@ -70,13 +70,13 @@ poetry install
     mkdir test_docs
     ```
 
-2. انسخ بعض وثائق الماركداون والصور التي تريد ترجمتها إلى مجلد الاختبار. على سبيل المثال:
+2. انسخ بعض وثائق الماركدوان والصور التي تريد ترجمتها إلى مجلد الاختبار. على سبيل المثال:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. ثبّت الحزمة محليًا:
+3. ثبت الحزمة محليًا:
     ```bash
     pip install -e .
     ```
@@ -103,13 +103,13 @@ This manual testing helps ensure that your changes work well in real-world scena
 >
 > ### خيارات إضافية لبيئة التطوير
 >
-> بالإضافة إلى تشغيل المشروع محليًا، يمكنك أيضًا استخدام GitHub Codespaces أو VS Code Dev Containers كبدائل لإعداد بيئة التطوير.
+> بالإضافة إلى تشغيل المشروع محليًا، يمكنك أيضًا استخدام GitHub Codespaces أو VS Code Dev Containers كخيارات بديلة لإعداد بيئة التطوير.
 >
 > #### GitHub Codespaces
 >
-> يمكنك تشغيل هذه العينات افتراضيًا باستخدام GitHub Codespaces دون الحاجة إلى إعدادات إضافية.
+> يمكنك تشغيل هذه العينات افتراضيًا باستخدام GitHub Codespaces ولا تحتاج إلى أي إعدادات إضافية.
 >
-> الزر سيفتح نسخة VS Code قائمة على الويب في متصفحك:
+> سيفتح الزر مثيل VS Code قائم على الويب في متصفحك:
 >
 > 1. افتح القالب (قد يستغرق عدة دقائق):
 >
@@ -117,11 +117,11 @@ This manual testing helps ensure that your changes work well in real-world scena
 >
 > #### التشغيل محليًا باستخدام VS Code Dev Containers
 >
-> ⚠️ هذا الخيار يعمل فقط إذا كان لديك على الأقل 16 جيجابايت من ذاكرة الوصول العشوائي مخصصة لـ Docker Desktop. إذا كانت الذاكرة أقل من 16 جيجابايت، يمكنك تجربة خيار [GitHub Codespaces](../..) أو [إعداده محليًا](../..).
+> ⚠️ هذا الخيار سيعمل فقط إذا كان Docker Desktop مخصصًا له على الأقل 16 جيجابايت من الذاكرة العشوائية. إذا كانت الذاكرة أقل من 16 جيجابايت، يمكنك تجربة خيار [GitHub Codespaces](../..) أو [إعداده محليًا](../..).
 >
 > خيار ذو صلة هو VS Code Dev Containers، الذي سيفتح المشروع في VS Code المحلي باستخدام [امتداد Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. شغّل Docker Desktop (قم بتثبيته إذا لم يكن مثبتًا)
+> 1. شغّل Docker Desktop (وثبته إذا لم يكن مثبتًا)
 > 2. افتح المشروع:
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
@@ -129,11 +129,11 @@ This manual testing helps ensure that your changes work well in real-world scena
 
 ### نمط كتابة الكود
 
-نستخدم [Black](https://github.com/psf/black) كمنسق كود بايثون للحفاظ على نمط كود متسق عبر المشروع. Black هو منسق كود صارم يعيد تنسيق كود بايثون تلقائيًا ليتوافق مع نمط Black.
+نستخدم [Black](https://github.com/psf/black) كمنسق كود بايثون للحفاظ على نمط كود موحد عبر المشروع. Black هو منسق كود صارم يعيد تنسيق كود بايثون تلقائيًا ليتوافق مع نمط Black.
 
 #### التهيئة
 
-تُحدد تهيئة Black في ملف `pyproject.toml` الخاص بنا:
+يتم تحديد تهيئة Black في `pyproject.toml` الخاص بنا:
 
 ```toml
 [tool.black]
@@ -144,7 +144,7 @@ include = '\.pyi?$'
 
 #### تثبيت Black
 
-يمكنك تثبيت Black باستخدام Poetry (الموصى به) أو pip:
+يمكنك تثبيت Black باستخدام Poetry (موصى به) أو pip:
 
 ##### باستخدام Poetry
 
@@ -169,7 +169,7 @@ pip install black
     poetry run black .
     ```
 
-2. نسق ملف أو مجلد معين:
+2. نسق ملف أو مجلد محدد:
     ```bash
     poetry run black path/to/file_or_directory
     ```
@@ -181,19 +181,19 @@ pip install black
     black .
     ```
 
-2. نسق ملف أو مجلد معين:
+2. نسق ملف أو مجلد محدد:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> نوصي بضبط محررك لنسق الكود تلقائيًا باستخدام Black عند الحفظ. تدعم معظم المحررات الحديثة ذلك عبر الإضافات أو البلجنات.
+> نوصي بضبط محررك ليقوم تلقائيًا بتنسيق الكود باستخدام Black عند الحفظ. معظم المحررات الحديثة تدعم ذلك عبر الإضافات أو البلجنات.
 
 ## تشغيل Co-op Translator
 
 لتشغيل Co-op Translator باستخدام Poetry في بيئتك، اتبع الخطوات التالية:
 
-1. انتقل إلى المجلد الذي تريد إجراء اختبارات الترجمة فيه أو أنشئ مجلدًا مؤقتًا لأغراض الاختبار.
+1. انتقل إلى المجلد حيث تريد إجراء اختبارات الترجمة أو أنشئ مجلدًا مؤقتًا لأغراض الاختبار.
 
 2. نفذ الأمر التالي. يشير العلم `-l ko` with the language code you wish to translate into. The `-d` إلى وضع التصحيح.
 
@@ -204,17 +204,17 @@ pip install black
 > [!NOTE]
 > تأكد من تفعيل بيئة Poetry (poetry shell) قبل تشغيل الأمر.
 
-## القائمون على الصيانة
+## المسؤولون عن الصيانة
 
 ### رسالة الالتزام واستراتيجية الدمج
 
-لضمان الاتساق والوضوح في سجل الالتزامات لمشروعنا، نتبع صيغة معينة لرسائل الالتزام **لرسالة الالتزام النهائية** عند استخدام استراتيجية **Squash and Merge**.
+لضمان الاتساق والوضوح في سجل الالتزام الخاص بمشروعنا، نتبع تنسيقًا محددًا لرسائل الالتزام **لرسالة الالتزام النهائية** عند استخدام استراتيجية **Squash and Merge**.
 
-عند دمج طلب سحب (PR)، سيتم دمج الالتزامات الفردية في التزام واحد. يجب أن تتبع رسالة الالتزام النهائية الصيغة أدناه للحفاظ على سجل نظيف ومتسق.
+عند دمج طلب سحب، يتم دمج الالتزامات الفردية في التزام واحد. يجب أن تتبع رسالة الالتزام النهائية التنسيق أدناه للحفاظ على سجل نظيف ومتسق.
 
-#### صيغة رسالة الالتزام (لـ squash and merge)
+#### تنسيق رسالة الالتزام (لـ squash and merge)
 
-نستخدم الصيغة التالية لرسائل الالتزام:
+نستخدم التنسيق التالي لرسائل الالتزام:
 
 ```bash
 <type>: <description> (#<PR number>)
@@ -230,8 +230,8 @@ pip install black
 
 **Examples**:
 
-- `Docs: تحديث تعليمات التثبيت لزيادة الوضوح (#50)`
-- `Core: تحسين معالجة ترجمة الصور (#60)`
+- `Docs: Update installation instructions for clarity (#50)`
+- `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
 > Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
@@ -251,12 +251,12 @@ When merging, ensure the final commit message follows the commit message format 
 **Example of Squash and Merge**
 If a PR contains the following commits:
 
-- `تصحيح خطأ مطبعي`
-- `تحديث README`
-- `تعديل التنسيق`
+- `fix typo`
+- `update README`
+- `adjust formatting`
 
 They should be squashed into:
-`Docs: تحسين وضوح وتنسيق الوثائق (#65)`
+`Docs: Improve documentation clarity and formatting (#65)`
 
-**إخلاء المسؤولية**:  
-تمت ترجمة هذا المستند باستخدام خدمة الترجمة الآلية [Co-op Translator](https://github.com/Azure/co-op-translator). بينما نسعى لتحقيق الدقة، يرجى العلم أن الترجمات الآلية قد تحتوي على أخطاء أو عدم دقة. يجب اعتبار المستند الأصلي بلغته الأصلية المصدر الموثوق به. للمعلومات الهامة، يُنصح بالاعتماد على الترجمة المهنية البشرية. نحن غير مسؤولين عن أي سوء فهم أو تفسير ناتج عن استخدام هذه الترجمة.
+**إخلاء مسؤولية**:  
+تمت ترجمة هذا المستند باستخدام خدمة الترجمة الآلية [Co-op Translator](https://github.com/Azure/co-op-translator). بينما نسعى لتحقيق الدقة، يرجى العلم أن الترجمات الآلية قد تحتوي على أخطاء أو عدم دقة. يجب اعتبار المستند الأصلي بلغته الأصلية المصدر الموثوق به. للمعلومات الحساسة، يُنصح بالاستعانة بترجمة بشرية محترفة. نحن غير مسؤولين عن أي سوء فهم أو تفسير ناتج عن استخدام هذه الترجمة.

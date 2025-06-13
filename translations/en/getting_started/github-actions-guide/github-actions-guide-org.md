@@ -2,26 +2,26 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-05-06T18:01:54+00:00",
+  "translation_date": "2025-06-12T18:58:54+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "en"
 }
 -->
 # Using the Co-op Translator GitHub Action (Organization Guide)
 
-**Target Audience:** This guide is intended for **Microsoft internal users** or **teams who have access to the necessary credentials for the pre-built Co-op Translator GitHub App** or can create their own custom GitHub App.
+**Target Audience:** This guide is for **Microsoft internal users** or **teams who have access to the necessary credentials for the pre-built Co-op Translator GitHub App** or who can create their own custom GitHub App.
 
-Easily automate the translation of your repository’s documentation using the Co-op Translator GitHub Action. This guide explains how to set up the action so that it automatically creates pull requests with updated translations whenever your source Markdown files or images are modified.
+Automate the translation of your repository’s documentation easily with the Co-op Translator GitHub Action. This guide explains how to set up the action to automatically create pull requests with updated translations whenever your source Markdown files or images are changed.
 
 > [!IMPORTANT]
 > 
 > **Choosing the Right Guide:**
 >
-> This guide explains setup using a **GitHub App ID and a Private Key**. You usually need this "Organization Guide" method if: **`GITHUB_TOKEN` Permissions are Restricted:** Your organization or repository settings limit the default permissions granted to the standard `GITHUB_TOKEN`. Specifically, if the `GITHUB_TOKEN` is not granted the necessary `write` permissions (such as `contents: write` or `pull-requests: write`), the workflow described in the [Public Setup Guide](./github-actions-guide-public.md) will fail due to insufficient permissions. Using a dedicated GitHub App with explicitly assigned permissions avoids this issue.
+> This guide explains setup using a **GitHub App ID and a Private Key**. You usually need this "Organization Guide" method if: **`GITHUB_TOKEN` Permissions are Restricted:** Your organization or repository settings limit the default permissions of the standard `GITHUB_TOKEN`. Specifically, if the `GITHUB_TOKEN` is not granted the necessary `write` permissions (such as `contents: write` or `pull-requests: write`), the workflow in the [Public Setup Guide](./github-actions-guide-public.md) will fail due to insufficient permissions. Using a dedicated GitHub App with explicitly assigned permissions avoids this problem.
 >
 > **If this does not apply to you:**
 >
-> If the standard `GITHUB_TOKEN` has sufficient permissions in your repository (i.e., you are not blocked by organizational restrictions), please use the **[Public Setup Guide using GITHUB_TOKEN](./github-actions-guide-public.md)**. The public guide does not require obtaining or managing App IDs or Private Keys and relies solely on the standard `GITHUB_TOKEN` and repository permissions.
+> If the standard `GITHUB_TOKEN` has sufficient permissions in your repository (i.e., you are not restricted by organizational policies), please use the **[Public Setup Guide using GITHUB_TOKEN](./github-actions-guide-public.md)**. The public guide does not require managing App IDs or Private Keys and relies solely on the standard `GITHUB_TOKEN` and repository permissions.
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ You need credentials for at least one supported Language Model:
 
 **2. Optional: Computer Vision Credentials (for Image Translation)**
 
-- Only required if you want to translate text within images.  
+- Only needed if you want to translate text inside images.  
 - **Azure Computer Vision**: Requires Endpoint and Subscription Key.  
 - If not provided, the action will run in [Markdown-only mode](../markdown-only-mode.md).  
 - Setup Guide: [Set up Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
@@ -48,7 +48,7 @@ Follow these steps to configure the Co-op Translator GitHub Action in your repos
 
 ### Step 1: Install and Configure GitHub App Authentication
 
-The workflow uses GitHub App authentication to securely interact with your repository (e.g., create pull requests) on your behalf. Choose one of the following options:
+The workflow uses GitHub App authentication to securely interact with your repository (for example, to create pull requests) on your behalf. Choose one option:
 
 #### **Option A: Install the Pre-built Co-op Translator GitHub App (for Microsoft Internal Use)**
 
@@ -56,21 +56,21 @@ The workflow uses GitHub App authentication to securely interact with your repos
 
 1. Click **Install** and select the account or organization where your target repository is located.
 
-    ![Install app](../../../../getting_started/github-actions-guide/imgs/install-app.png)
+    ![Install app](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.en.png)
 
-1. Choose **Only select repositories** and pick your target repository (e.g., `PhiCookBook`). Click **Install**. You may be asked to authenticate.
+1. Choose **Only select repositories** and pick your target repository (e.g., `PhiCookBook`). Click **Install**. You might be prompted to authenticate.
 
-    ![Install authorize](../../../../getting_started/github-actions-guide/imgs/install-authorize.png)
+    ![Install authorize](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.en.png)
 
 1. **Obtain App Credentials (Internal Process Required):** To allow the workflow to authenticate as the app, you need two pieces of information provided by the Co-op Translator team:  
   - **App ID:** The unique identifier for the Co-op Translator app. The App ID is: `1164076`.  
-  - **Private Key:** You must get the **entire content** of the `.pem` private key file from the maintainer contact. **Handle this key like a password and keep it secure.**
+  - **Private Key:** You must obtain the **entire content** of the `.pem` private key file from the maintainer contact. **Handle this key like a password and keep it secure.**
 
 1. Proceed to Step 2.
 
 #### **Option B: Use Your Own Custom GitHub App**
 
-- Alternatively, you can create and configure your own GitHub App. Make sure it has Read & Write access to Contents and Pull Requests. You will need its App ID and a generated Private Key.
+- Alternatively, you can create and configure your own GitHub App. Make sure it has Read & write access to Contents and Pull requests. You will need its App ID and a generated Private Key.
 
 ### Step 2: Configure Repository Secrets
 
@@ -82,7 +82,7 @@ Add the GitHub App credentials and your AI service credentials as encrypted secr
 
 1. Under **Repository secrets**, click **New repository secret** for each secret listed below.
 
-   ![Select setting action](../../../../getting_started/github-actions-guide/imgs/select-setting-action.png)
+   ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.en.png)
 
 **Required Secrets (for GitHub App Authentication):**
 
@@ -107,13 +107,13 @@ Add the GitHub App credentials and your AI service credentials as encrypted secr
 | `OPENAI_CHAT_MODEL_ID`              | Specific OpenAI model ID                  | OpenAI Platform                    |
 | `OPENAI_BASE_URL`                   | Custom OpenAI API Base URL                | OpenAI Platform                    |
 
-![Enter environment variable name](../../../../getting_started/github-actions-guide/imgs/add-secrets-done.png)
+![Enter environment variable name](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.en.png)
 
 ### Step 3: Create the Workflow File
 
 Finally, create the YAML file that defines the automated workflow.
 
-1. In the root directory of your repository, create the `.github/workflows/` directory if it doesn’t already exist.
+1. In the root directory of your repository, create the `.github/workflows/` folder if it doesn’t already exist.
 
 1. Inside `.github/workflows/`, create a file named `co-op-translator.yml`.
 
@@ -221,7 +221,9 @@ jobs:
 
 ## Running the Workflow
 
-Once the `co-op-translator.yml` file is merged into your main branch (or the branch specified in the `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` filter, if configured), the action will automatically create a Pull Request with the updated translations whenever changes are detected. This PR will be ready for your review and merging.
+Once the `co-op-translator.yml` file is merged into your main branch (or the branch specified in the `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` filter, if configured),
+
+if translations are generated or updated, the action will automatically create a Pull Request containing the changes, ready for your review and merging.
 
 **Disclaimer**:  
 This document has been translated using the AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.

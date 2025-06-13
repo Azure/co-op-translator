@@ -2,28 +2,28 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "66029e3b67a3eb980ab8740367e91283",
-  "translation_date": "2025-05-07T14:12:19+00:00",
+  "translation_date": "2025-06-12T18:26:41+00:00",
   "source_file": "getting_started/command-line-guide/create-env-file.md",
   "language_code": "tr"
 }
 -->
 # Kök dizinde *.env* dosyasını oluşturun
 
-Bu eğitimde, Azure servisleri için ortam değişkenlerinizi *.env* dosyası kullanarak nasıl ayarlayacağınızı göstereceğiz. Ortam değişkenleri, API anahtarları gibi hassas kimlik bilgilerini kod tabanınıza doğrudan yazmadan güvenli bir şekilde yönetmenizi sağlar.
+Bu eğitimde, Azure hizmetleri için ortam değişkenlerinizi *.env* dosyası kullanarak nasıl ayarlayacağınızı göstereceğiz. Ortam değişkenleri, API anahtarları gibi hassas kimlik bilgilerini kod tabanınıza doğrudan yazmadan güvenli bir şekilde yönetmenizi sağlar.
 
 > [!IMPORTANT]
-> - Sadece bir dil modeli servisi (Azure OpenAI veya OpenAI) yapılandırılmalıdır. Tercih ettiğiniz servis için ortam değişkenlerini doldurun. Birden fazla dil modeli için ortam değişkenleri ayarlanırsa, çeviri aracı önceliğe göre birini seçecektir.
-> - Computer Vision ortam değişkenleri ayarlanmazsa, çeviri aracı otomatik olarak [Yalnızca Markdown modu](./markdown-only-mode.md)'na geçecektir.
+> - Yalnızca bir dil modeli servisi (Azure OpenAI veya OpenAI) yapılandırılmalıdır. Tercih ettiğiniz servis için ortam değişkenlerini doldurun. Birden fazla dil modeli için ortam değişkenleri ayarlanırsa, çeviri aracı önceliğe göre birini seçer.
+> - Bilgisayar Görüşü ortam değişkenleri ayarlanmadıysa, çeviri aracı otomatik olarak [yalnızca Markdown modu](./markdown-only-mode.md)na geçer.
 
 > [!NOTE]
-> Bu rehber öncelikle Azure servislerine odaklanmıştır, ancak [desteklenen modeller ve servisler listesi](../README.md#-supported-models-and-services) içinden istediğiniz dil modelini seçebilirsiniz.
+> Bu rehber öncelikle Azure hizmetlerine odaklanmaktadır, ancak [desteklenen modeller ve hizmetler listesi](../README.md#-supported-models-and-services)nden desteklenen herhangi bir dil modelini seçebilirsiniz.
 
 ## *.env* dosyasını oluşturun
 
-Projenizin kök dizininde *.env* adında bir dosya oluşturun. Bu dosya, tüm ortam değişkenlerinizi basit bir formatta tutacaktır.
+Projenizin kök dizininde, *.env* adında bir dosya oluşturun. Bu dosya, tüm ortam değişkenlerinizi basit bir formatta saklayacaktır.
 
 > [!WARNING]
-> *.env* dosyanızı Git gibi sürüm kontrol sistemlerine göndermeyin. Kazara gönderimleri önlemek için *.env* dosyasını .gitignore dosyanıza ekleyin.
+> *.env* dosyanızı Git gibi sürüm kontrol sistemlerine eklemeyin. Yanlışlıkla commit edilmemesi için *.env* dosyasını .gitignore dosyanıza ekleyin.
 
 1. Projenizin kök dizinine gidin.
 
@@ -54,4 +54,4 @@ Projenizin kök dizininde *.env* adında bir dosya oluşturun. Bu dosya, tüm or
 > API anahtarlarınızı ve uç noktalarınızı bulmak için [set-up-azure-ai.md](../set-up-azure-ai.md) dosyasına bakabilirsiniz.
 
 **Feragatname**:  
-Bu belge, AI çeviri hizmeti [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba göstersek de, otomatik çevirilerin hatalar veya yanlışlıklar içerebileceğini lütfen unutmayınız. Orijinal belge, kendi ana dilinde yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımı sonucu ortaya çıkabilecek yanlış anlamalar veya yanlış yorumlamalardan sorumlu değiliz.
+Bu belge, AI çeviri servisi [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba göstersek de, otomatik çevirilerin hatalar veya yanlışlıklar içerebileceğini lütfen unutmayınız. Orijinal belge, kendi dilinde yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımı sonucunda oluşabilecek yanlış anlamalar veya yorum hatalarından sorumlu değiliz.

@@ -2,24 +2,24 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-05-06T17:23:24+00:00",
+  "translation_date": "2025-06-12T09:39:22+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "id"
 }
 -->
-# Berkontribusi ke Co-op Translator
+# Berkontribusi pada Co-op Translator
 
-Proyek ini menyambut kontribusi dan saran. Sebagian besar kontribusi mengharuskan Anda menyetujui
-Contributor License Agreement (CLA) yang menyatakan bahwa Anda memiliki hak, dan memang memberikan,
-hak kepada kami untuk menggunakan kontribusi Anda. Untuk detail, kunjungi https://cla.opensource.microsoft.com.
+Proyek ini menerima kontribusi dan saran. Sebagian besar kontribusi mengharuskan Anda menyetujui  
+Contributor License Agreement (CLA) yang menyatakan bahwa Anda memiliki hak, dan memang memberikan,  
+izin kepada kami untuk menggunakan kontribusi Anda. Untuk detailnya, kunjungi https://cla.opensource.microsoft.com.
 
-Saat Anda mengirimkan pull request, bot CLA akan secara otomatis menentukan apakah Anda perlu menyediakan
-CLA dan menghias PR sesuai (misalnya, pemeriksaan status, komentar). Cukup ikuti instruksi
-yang diberikan oleh bot. Anda hanya perlu melakukan ini sekali untuk semua repositori yang menggunakan CLA kami.
+Saat Anda mengirim pull request, bot CLA akan secara otomatis menentukan apakah Anda perlu menyediakan  
+CLA dan menghias PR dengan tepat (misalnya, pemeriksaan status, komentar). Cukup ikuti instruksi yang  
+diberikan oleh bot. Anda hanya perlu melakukan ini sekali untuk semua repositori yang menggunakan CLA kami.
 
 ## Pengaturan lingkungan pengembangan
 
-Untuk menyiapkan lingkungan pengembangan untuk proyek ini, kami menyarankan menggunakan Poetry untuk mengelola dependensi. Kami menggunakan `pyproject.toml` untuk mengelola dependensi proyek, jadi untuk menginstal dependensi, Anda harus menggunakan Poetry.
+Untuk mengatur lingkungan pengembangan proyek ini, kami merekomendasikan menggunakan Poetry untuk mengelola dependensi. Kami menggunakan `pyproject.toml` untuk mengelola dependensi proyek, jadi untuk memasang dependensi, Anda harus menggunakan Poetry.
 
 ### Membuat lingkungan virtual
 
@@ -57,7 +57,7 @@ poetry init
 poetry shell
 ```
 
-### Menginstal Paket dan Paket yang dibutuhkan
+### Memasang Paket dan Paket yang diperlukan
 
 #### Menggunakan Poetry (dari pyproject.toml)
 
@@ -67,25 +67,25 @@ poetry install
 
 ### Pengujian manual
 
-Sebelum mengirimkan PR, penting untuk menguji fungsi terjemahan dengan dokumentasi asli:
+Sebelum mengirim PR, penting untuk menguji fungsi terjemahan dengan dokumentasi nyata:
 
-1. Buat direktori tes di direktori root:
+1. Buat direktori test di direktori root:  
     ```bash
     mkdir test_docs
     ```
 
-2. Salin beberapa dokumentasi markdown dan gambar yang ingin Anda terjemahkan ke dalam direktori tes. Misalnya:
+2. Salin beberapa dokumentasi markdown dan gambar yang ingin Anda terjemahkan ke direktori test. Misalnya:  
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. Instal paket secara lokal:
+3. Pasang paket secara lokal:  
     ```bash
     pip install -e .
     ```
 
-4. Jalankan Co-op Translator pada dokumen tes Anda:
+4. Jalankan Co-op Translator pada dokumen test Anda:  
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
@@ -100,7 +100,7 @@ This manual testing helps ensure that your changes work well in real-world scena
 
 ### Environment variables
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template`.
+1. Create an `.env` file in the root directory by copying the provided `.env.template`.  
 1. Isi variabel lingkungan sesuai panduan.
 
 > [!TIP]
@@ -111,11 +111,11 @@ This manual testing helps ensure that your changes work well in real-world scena
 >
 > #### GitHub Codespaces
 >
-> Anda dapat menjalankan contoh ini secara virtual menggunakan GitHub Codespaces tanpa pengaturan tambahan.
+> Anda dapat menjalankan contoh ini secara virtual dengan menggunakan GitHub Codespaces tanpa perlu pengaturan tambahan.
 >
 > Tombol ini akan membuka instance VS Code berbasis web di browser Anda:
 >
-> 1. Buka template (ini mungkin memakan waktu beberapa menit):
+> 1. Buka template (ini mungkin memerlukan beberapa menit):
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
@@ -125,15 +125,15 @@ This manual testing helps ensure that your changes work well in real-world scena
 >
 > Opsi terkait adalah VS Code Dev Containers, yang akan membuka proyek di VS Code lokal Anda menggunakan [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Mulai Docker Desktop (instal jika belum terpasang)
-> 2. Buka proyek:
+> 1. Mulai Docker Desktop (pasang jika belum terpasang)  
+> 2. Buka proyek:  
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
 
 ### Gaya Kode
 
-Kami menggunakan [Black](https://github.com/psf/black) sebagai formatter kode Python untuk menjaga konsistensi gaya kode di seluruh proyek. Black adalah formatter kode yang tegas yang secara otomatis memformat ulang kode Python agar sesuai dengan gaya kode Black.
+Kami menggunakan [Black](https://github.com/psf/black) sebagai formatter kode Python untuk menjaga konsistensi gaya kode di seluruh proyek. Black adalah formatter kode tanpa kompromi yang secara otomatis memformat ulang kode Python agar sesuai dengan gaya kode Black.
 
 #### Konfigurasi
 
@@ -146,20 +146,20 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-#### Menginstal Black
+#### Memasang Black
 
-Anda dapat menginstal Black menggunakan Poetry (disarankan) atau pip:
+Anda dapat memasang Black menggunakan Poetry (direkomendasikan) atau pip:
 
 ##### Menggunakan Poetry
 
-Black otomatis terinstal saat Anda menyiapkan lingkungan pengembangan:
+Black otomatis terpasang saat Anda mengatur lingkungan pengembangan:  
 ```bash
 poetry install
 ```
 
 ##### Menggunakan pip
 
-Jika Anda menggunakan pip, Anda dapat menginstal Black secara langsung:
+Jika menggunakan pip, Anda bisa memasang Black secara langsung:  
 ```bash
 pip install black
 ```
@@ -168,38 +168,38 @@ pip install black
 
 ##### Dengan Poetry
 
-1. Format semua file Python dalam proyek:
+1. Format semua file Python dalam proyek:  
     ```bash
     poetry run black .
     ```
 
-2. Format file atau direktori tertentu:
+2. Format file atau direktori tertentu:  
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
 ##### Dengan pip
 
-1. Format semua file Python dalam proyek:
+1. Format semua file Python dalam proyek:  
     ```bash
     black .
     ```
 
-2. Format file atau direktori tertentu:
+2. Format file atau direktori tertentu:  
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> Kami menyarankan agar editor Anda diatur untuk memformat kode secara otomatis dengan Black saat menyimpan. Sebagian besar editor modern mendukung ini melalui ekstensi atau plugin.
+> Kami menyarankan mengatur editor Anda agar secara otomatis memformat kode dengan Black saat menyimpan. Sebagian besar editor modern mendukung ini melalui ekstensi atau plugin.
 
 ## Menjalankan Co-op Translator
 
 Untuk menjalankan Co-op Translator menggunakan Poetry di lingkungan Anda, ikuti langkah-langkah berikut:
 
-1. Arahkan ke direktori tempat Anda ingin melakukan tes terjemahan atau buat folder sementara untuk keperluan pengujian.
+1. Arahkan ke direktori tempat Anda ingin melakukan pengujian terjemahan atau buat folder sementara untuk tujuan pengujian.
 
-2. Jalankan perintah berikut. Flag `-l ko` with the language code you wish to translate into. The `-d` menunjukkan mode debug.
+2. Jalankan perintah berikut. Ganti `-l ko` with the language code you wish to translate into. The `-d` menunjukkan mode debug.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -214,9 +214,9 @@ Untuk menjalankan Co-op Translator menggunakan Poetry di lingkungan Anda, ikuti 
 
 Untuk memastikan konsistensi dan kejelasan dalam riwayat commit proyek kami, kami mengikuti format pesan commit tertentu **untuk pesan commit akhir** saat menggunakan strategi **Squash and Merge**.
 
-Saat pull request (PR) digabungkan, commit individual akan disatukan menjadi satu commit. Pesan commit akhir harus mengikuti format di bawah ini untuk menjaga riwayat yang bersih dan konsisten.
+Saat pull request (PR) digabungkan, commit individu akan digabung menjadi satu commit. Pesan commit akhir harus mengikuti format di bawah ini untuk menjaga riwayat yang bersih dan konsisten.
 
-#### Format pesan commit (untuk squash and merge)
+#### Format pesan commit (untuk squash dan merge)
 
 Kami menggunakan format berikut untuk pesan commit:
 
@@ -224,7 +224,7 @@ Kami menggunakan format berikut untuk pesan commit:
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: Menentukan kategori commit. Kami menggunakan tipe berikut:
+- **type**: Menentukan kategori commit. Kami menggunakan tipe berikut:  
   - `Docs`: For documentation updates.
   - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
   - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
@@ -263,4 +263,4 @@ They should be squashed into:
 `Docs: Improve documentation clarity and formatting (#65)`
 
 **Penafian**:  
-Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berupaya untuk akurasi, harap diketahui bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sah. Untuk informasi penting, disarankan menggunakan terjemahan profesional oleh manusia. Kami tidak bertanggung jawab atas kesalahpahaman atau salah tafsir yang timbul dari penggunaan terjemahan ini.
+Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berusaha untuk akurasi, harap diperhatikan bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sahih. Untuk informasi penting, disarankan menggunakan terjemahan profesional oleh manusia. Kami tidak bertanggung jawab atas kesalahpahaman atau kesalahan tafsir yang timbul dari penggunaan terjemahan ini.

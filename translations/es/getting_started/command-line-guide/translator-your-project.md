@@ -2,14 +2,14 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-05-07T14:04:13+00:00",
+  "translation_date": "2025-06-12T18:39:28+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "es"
 }
 -->
 # Traduce tu proyecto usando Co-op Translator
 
-El **Co-op Translator** es una herramienta de línea de comandos (CLI) que te ayuda a traducir archivos markdown e imágenes de tu proyecto a varios idiomas. Esta sección explica cómo usar la herramienta, detalla las opciones de la CLI y ofrece ejemplos para distintos casos de uso.
+El **Co-op Translator** es una herramienta de línea de comandos (CLI) que te ayuda a traducir archivos markdown e imágenes de tu proyecto a varios idiomas. Esta sección explica cómo usar la herramienta, describe las diferentes opciones de la CLI y proporciona ejemplos para distintos casos de uso.
 
 > [!NOTE]
 > Para una lista completa de comandos y sus descripciones detalladas, consulta la [Referencia de comandos](./command-reference.md).
@@ -18,7 +18,7 @@ El **Co-op Translator** es una herramienta de línea de comandos (CLI) que te ay
 
 ## Escenarios y comandos de ejemplo
 
-Aquí tienes algunos casos comunes para usar el **Co-op Translator**, junto con los comandos adecuados para cada uno.
+Aquí tienes algunos casos comunes para usar el **Co-op Translator**, junto con los comandos adecuados para ejecutarlos.
 
 ### 1. Traducción básica (un solo idioma)
 
@@ -28,7 +28,7 @@ Para traducir todo tu proyecto (archivos markdown e imágenes) a un solo idioma,
 translate -l "ko"
 ```
 
-Este comando traducirá todos los archivos markdown e imágenes al coreano, añadiendo nuevas traducciones sin eliminar las existentes.
+Este comando traducirá todos los archivos markdown e imágenes al coreano, agregando nuevas traducciones sin eliminar las existentes.
 
 > [!TIP]
 >
@@ -36,7 +36,7 @@ Este comando traducirá todos los archivos markdown e imágenes al coreano, aña
 
 #### Ejemplo en Phi-3 CookBook
 
-En el **Phi-3 CookBook**, utilicé el siguiente método para añadir la traducción al coreano de los archivos markdown e imágenes existentes.
+En el **Phi-3 CookBook**, usé el siguiente método para añadir la traducción al coreano de los archivos markdown e imágenes existentes.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -44,7 +44,7 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|████████████████████████████████████████████████| 153/153 [1:43:07<00:00, 241.31s/it]
 ```
 
-### 2. Traducción a varios idiomas
+### 2. Traducción a múltiples idiomas
 
 Para traducir tu proyecto a varios idiomas (por ejemplo, español, francés y alemán), usa este comando:
 
@@ -52,7 +52,7 @@ Para traducir tu proyecto a varios idiomas (por ejemplo, español, francés y al
 translate -l "es fr de"
 ```
 
-Este comando traducirá el proyecto a español, francés y alemán, añadiendo nuevas traducciones sin sobrescribir las existentes.
+Este comando traducirá el proyecto a español, francés y alemán, agregando nuevas traducciones sin sobrescribir las existentes.
 
 #### Ejemplo en Phi-3 CookBook
 
@@ -65,21 +65,21 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Aunque generalmente se recomienda traducir un idioma a la vez, en situaciones como esta donde hay que añadir cambios específicos, traducir varios idiomas simultáneamente puede ser más eficiente.
+> Aunque generalmente se recomienda traducir un idioma a la vez, en situaciones como esta donde se deben agregar cambios específicos, traducir varios idiomas a la vez puede ser eficiente.
 
 ### 3. Actualizar traducciones (elimina las traducciones existentes)
 
-Para actualizar las traducciones existentes (es decir, eliminar las traducciones actuales y reemplazarlas por nuevas), usa la opción `-u`. Esto eliminará todas las traducciones existentes para los idiomas especificados y las volverá a traducir.
+Para actualizar traducciones existentes (es decir, eliminar las traducciones actuales y reemplazarlas por nuevas), usa la opción `-u`. Esto eliminará todas las traducciones existentes para los idiomas especificados y las volverá a traducir.
 
 ```bash
 translate -l "ko" -u
 ```
 
-Advertencia: Este comando te pedirá confirmación antes de proceder a eliminar las traducciones existentes.
+Advertencia: este comando te pedirá confirmación antes de proceder a eliminar las traducciones existentes.
 
 #### Ejemplo en Phi-3 CookBook
 
-En el **Phi-3 CookBook**, utilicé el siguiente método para actualizar todos los archivos traducidos al español. Recomiendo este método cuando hay cambios importantes en el contenido original en varios documentos markdown. Si solo hay unos pocos archivos traducidos para actualizar, es más eficiente eliminar manualmente esos archivos específicos y luego usar el método `-a` para añadir las traducciones actualizadas.
+En el **Phi-3 CookBook**, usé el siguiente método para actualizar todos los archivos traducidos al español. Recomiendo usar este método cuando hay cambios significativos en el contenido original en varios documentos markdown. Si solo hay unos pocos archivos traducidos para actualizar, es más eficiente eliminar manualmente esos archivos específicos y luego usar el método `-a` para añadir las traducciones actualizadas.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -98,9 +98,9 @@ Para traducir únicamente los archivos de imagen en tu proyecto, usa la opción 
 translate -l "ko" -img
 ```
 
-Este comando traducirá solo las imágenes al coreano, sin afectar los archivos markdown.
+Este comando traducirá solo las imágenes al coreano, sin afectar ningún archivo markdown.
 
-### 6. Traducir solo archivos markdown
+### 6. Traducir solo archivos Markdown
 
 Para traducir únicamente los archivos markdown en tu proyecto, usa la opción `-md`:
 
@@ -108,7 +108,7 @@ Para traducir únicamente los archivos markdown en tu proyecto, usa la opción `
 translate -l "ko" -md
 ```
 
-### 7. Comprobar errores en archivos traducidos
+### 7. Verificar errores en archivos traducidos
 
 Si quieres revisar los archivos traducidos en busca de errores y reintentar la traducción si es necesario, usa la opción `-chk`:
 
@@ -116,11 +116,11 @@ Si quieres revisar los archivos traducidos en busca de errores y reintentar la t
 translate -l "ko" -chk
 ```
 
-Este comando escaneará los archivos markdown traducidos y reintentará la traducción en aquellos que tengan errores.
+Este comando escaneará los archivos markdown traducidos y reintentará la traducción para cualquier archivo que tenga errores.
 
 #### Ejemplo en Phi-3 CookBook
 
-En el **Phi-3 CookBook**, utilicé el siguiente método para verificar errores de traducción en los archivos coreanos y reintentar automáticamente la traducción en los archivos con problemas detectados.
+En el **Phi-3 CookBook**, usé el siguiente método para revisar errores de traducción en los archivos coreanos y reintentar automáticamente la traducción para cualquier archivo con problemas detectados.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -129,11 +129,11 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Esta opción revisa errores de traducción. Actualmente, si la diferencia en saltos de línea entre el archivo original y el traducido es mayor a seis, el archivo se marca como con error de traducción. Planeo mejorar este criterio para mayor flexibilidad en el futuro.
+Esta opción verifica errores de traducción. Actualmente, si la diferencia en saltos de línea entre el archivo original y el traducido es mayor a seis, el archivo se marca como con error de traducción. Planeo mejorar este criterio para ofrecer mayor flexibilidad en el futuro.
 
 Por ejemplo, este método es útil para detectar fragmentos faltantes o traducciones corruptas, y reintentará automáticamente la traducción de esos archivos.
 
-Sin embargo, si ya sabes cuáles archivos tienen problemas, es más eficiente eliminarlos manualmente y usar la opción `-a` option to re-translate them.
+Sin embargo, si ya sabes qué archivos son problemáticos, es más eficiente eliminar manualmente esos archivos y usar la opción `-a` option to re-translate them.
 
 ### 8. Debug Mode
 
@@ -143,11 +143,11 @@ To enable detailed logging for troubleshooting, use the `-d`:
 translate -l "ko" -d
 ```
 
-Este comando ejecutará la traducción en modo debug, proporcionando información adicional en los registros que puede ayudarte a identificar problemas durante el proceso de traducción.
+Este comando ejecutará la traducción en modo depuración, proporcionando información adicional en los registros que puede ayudarte a identificar problemas durante el proceso de traducción.
 
 #### Ejemplo en Phi-3 CookBook
 
-En el **Phi-3 CookBook**, encontré un problema donde las traducciones con muchos enlaces en archivos markdown causaban errores de formato, como traducciones rotas y saltos de línea ignorados. Para diagnosticar este problema, usé la opción `-d` para ver cómo funciona el proceso de traducción.
+En el **Phi-3 CookBook**, tuve un problema donde las traducciones con muchos enlaces en archivos markdown causaban errores de formato, como traducciones incompletas y saltos de línea ignorados. Para diagnosticar este problema, usé la opción `-d` para ver cómo funciona el proceso de traducción.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -160,24 +160,24 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 Si quieres traducir el proyecto a todos los idiomas soportados, usa la palabra clave all.
 
 > [!WARNING]
-> Traducir todos los idiomas a la vez puede tomar mucho tiempo dependiendo del tamaño del proyecto. Por ejemplo, traducir el **Phi-3 CookBook** al español tomó aproximadamente 2 horas. Dado el volumen, no es práctico que una sola persona maneje 20 idiomas. Se recomienda dividir el trabajo entre varios colaboradores, cada uno encargado de uno o dos idiomas, y actualizar las traducciones de forma gradual.
+> Traducir todos los idiomas a la vez puede tomar mucho tiempo dependiendo del tamaño del proyecto. Por ejemplo, traducir el **Phi-3 CookBook** al español tomó alrededor de 2 horas. Dada la escala, no es práctico que una sola persona maneje 20 idiomas. Se recomienda dividir el trabajo entre varios colaboradores, cada uno encargado de uno o dos idiomas, y actualizar las traducciones gradualmente.
 
 ```bash
 translate -l "all"
 ```
 
-Este comando traducirá el proyecto a todos los idiomas disponibles. Si decides continuar, la traducción puede tomar un tiempo considerable dependiendo del tamaño del proyecto.
+Este comando traducirá el proyecto a todos los idiomas disponibles. Si decides continuar, la traducción puede tomar mucho tiempo dependiendo del tamaño del proyecto.
 
 > [!TIP]
 >
-> ### Eliminar manualmente archivos traducidos (opcional)
-> Ahora los archivos traducidos se detectan y limpian automáticamente cuando se actualiza un archivo fuente.
+> ### Eliminación manual de archivos traducidos (opcional)
+> Ahora los archivos traducidos se detectan y limpian automáticamente cuando un archivo fuente se actualiza.
 >
-> Sin embargo, si quieres actualizar manualmente una traducción —por ejemplo, para rehacer un archivo específico o anular el comportamiento del sistema— puedes usar el siguiente comando para eliminar todas las versiones del archivo en las carpetas de idiomas.
+> Sin embargo, si quieres actualizar manualmente una traducción —por ejemplo, para rehacer un archivo específico o sobrescribir el comportamiento del sistema— puedes usar el siguiente comando para eliminar todas las versiones del archivo en las carpetas de idiomas.
 >
 > ### En Windows:
-> 1. **Usando el símbolo del sistema**:
->    - Abre el símbolo del sistema.
+> 1. **Usando Command Prompt**:
+>    - Abre Command Prompt.
 >    - Navega a la carpeta donde están los archivos usando el comando `cd`.
 >    - Usa el siguiente comando para eliminar archivos:
 >      ```
@@ -197,9 +197,7 @@ Este comando traducirá el proyecto a todos los idiomas disponibles. Si decides 
 > 1. **Using Terminal**:
 >   - Open Terminal.
 >   - Navigate to the directory with `cd`.
->   - Use the `find` con la ruta y nombre adecuados.
->
->     Comando para buscar archivos:
+>   - Use the `find` comando:
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
@@ -207,7 +205,7 @@ Este comando traducirá el proyecto a todos los idiomas disponibles. Si decides 
 >
 > Always double-check the files before deleting to avoid accidental loss. 
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` para actualizar los cambios más recientes en los archivos.
+> Once you have deleted the files which need to be replace simply rerun your `translate -l` comando para actualizar los cambios más recientes en los archivos.
 
-**Descargo de responsabilidad**:  
-Este documento ha sido traducido utilizando el servicio de traducción automática [Co-op Translator](https://github.com/Azure/co-op-translator). Aunque nos esforzamos por la precisión, tenga en cuenta que las traducciones automáticas pueden contener errores o inexactitudes. El documento original en su idioma nativo debe considerarse la fuente autorizada. Para información crítica, se recomienda la traducción profesional realizada por humanos. No nos hacemos responsables de ningún malentendido o interpretación errónea derivada del uso de esta traducción.
+**Aviso legal**:  
+Este documento ha sido traducido utilizando el servicio de traducción automática [Co-op Translator](https://github.com/Azure/co-op-translator). Aunque nos esforzamos por la precisión, tenga en cuenta que las traducciones automáticas pueden contener errores o inexactitudes. El documento original en su idioma nativo debe considerarse la fuente autorizada. Para información crítica, se recomienda una traducción profesional realizada por humanos. No nos hacemos responsables de malentendidos o interpretaciones erróneas derivadas del uso de esta traducción.

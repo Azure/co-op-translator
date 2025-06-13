@@ -2,16 +2,16 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-05-07T14:15:36+00:00",
+  "translation_date": "2025-06-12T19:32:03+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "id"
 }
 -->
 # Menggunakan Co-op Translator GitHub Action (Pengaturan Publik)
 
-**Audiens Sasaran:** Panduan ini ditujukan untuk pengguna di sebagian besar repositori publik atau privat di mana izin GitHub Actions standar sudah cukup. Ini memanfaatkan `GITHUB_TOKEN` bawaan.
+**Audiens Sasaran:** Panduan ini ditujukan untuk pengguna di sebagian besar repositori publik atau privat di mana izin standar GitHub Actions sudah memadai. Panduan ini memanfaatkan `GITHUB_TOKEN` bawaan.
 
-Otomatiskan penerjemahan dokumentasi repositori Anda dengan mudah menggunakan Co-op Translator GitHub Action. Panduan ini memandu Anda dalam mengatur action agar secara otomatis membuat pull request dengan terjemahan yang diperbarui setiap kali file Markdown sumber atau gambar Anda berubah.
+Otomatiskan penerjemahan dokumentasi repositori Anda dengan mudah menggunakan Co-op Translator GitHub Action. Panduan ini akan memandu Anda dalam mengatur action untuk secara otomatis membuat pull request dengan terjemahan terbaru setiap kali file Markdown sumber atau gambar Anda berubah.
 
 > [!IMPORTANT]
 >
@@ -22,7 +22,7 @@ Otomatiskan penerjemahan dokumentasi repositori Anda dengan mudah menggunakan Co
 
 ## Prasyarat
 
-Sebelum mengonfigurasi GitHub Action, pastikan Anda sudah menyiapkan kredensial layanan AI yang diperlukan.
+Sebelum mengonfigurasi GitHub Action, pastikan Anda sudah memiliki kredensial layanan AI yang diperlukan.
 
 **1. Wajib: Kredensial Model Bahasa AI**  
 Anda memerlukan kredensial untuk setidaknya satu Model Bahasa yang didukung:
@@ -33,31 +33,31 @@ Anda memerlukan kredensial untuk setidaknya satu Model Bahasa yang didukung:
 
 **2. Opsional: Kredensial AI Vision (untuk Terjemahan Gambar)**
 
-- Diperlukan hanya jika Anda ingin menerjemahkan teks dalam gambar.  
+- Hanya diperlukan jika Anda ingin menerjemahkan teks dalam gambar.  
 - **Azure AI Vision**: Membutuhkan Endpoint dan Subscription Key.  
-- Jika tidak disediakan, action akan default ke [Markdown-only mode](../markdown-only-mode.md).
+- Jika tidak disediakan, action akan menggunakan [mode Markdown saja](../markdown-only-mode.md).
 
 ## Pengaturan dan Konfigurasi
 
-Ikuti langkah-langkah ini untuk mengonfigurasi Co-op Translator GitHub Action di repositori Anda menggunakan `GITHUB_TOKEN` standar.
+Ikuti langkah-langkah berikut untuk mengonfigurasi Co-op Translator GitHub Action di repositori Anda menggunakan `GITHUB_TOKEN` standar.
 
-### Langkah 1: Pahami Autentikasi (Menggunakan `GITHUB_TOKEN`)
+### Langkah 1: Memahami Autentikasi (Menggunakan `GITHUB_TOKEN`)
 
-Workflow ini menggunakan `GITHUB_TOKEN` bawaan yang disediakan oleh GitHub Actions. Token ini secara otomatis memberikan izin kepada workflow untuk berinteraksi dengan repositori Anda sesuai pengaturan yang dikonfigurasi di **Langkah 3**.
+Workflow ini menggunakan `GITHUB_TOKEN` bawaan yang disediakan oleh GitHub Actions. Token ini secara otomatis memberikan izin kepada workflow untuk berinteraksi dengan repositori Anda berdasarkan pengaturan yang dikonfigurasi pada **Langkah 3**.
 
-### Langkah 2: Konfigurasikan Secrets Repositori
+### Langkah 2: Konfigurasi Secrets Repositori
 
 Anda hanya perlu menambahkan **kredensial layanan AI** sebagai secrets terenkripsi di pengaturan repositori Anda.
 
 1.  Buka repositori GitHub target Anda.  
 2.  Pergi ke **Settings** > **Secrets and variables** > **Actions**.  
-3.  Di bawah **Repository secrets**, klik **New repository secret** untuk setiap secret layanan AI yang diperlukan berikut ini.
+3.  Di bawah **Repository secrets**, klik **New repository secret** untuk setiap secret layanan AI yang dibutuhkan seperti daftar berikut.
 
-    ![Select setting action](../../../../getting_started/github-actions-guide/imgs/select-setting-action.png) *(Referensi Gambar: Menunjukkan lokasi menambahkan secrets)*
+    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.id.png) *(Referensi Gambar: Menunjukkan lokasi menambahkan secrets)*
 
-**Secrets Layanan AI yang Diperlukan (Tambahkan SEMUA yang berlaku berdasarkan Prasyarat Anda):**
+**Secrets Layanan AI yang Wajib (Tambahkan SEMUA yang sesuai dengan Prasyarat Anda):**
 
-| Nama Secret                         | Deskripsi                                | Sumber Nilai                    |
+| Nama Secret                         | Deskripsi                               | Sumber Nilai                     |
 | :---------------------------------- | :---------------------------------------- | :------------------------------- |
 | `AZURE_SUBSCRIPTION_KEY`            | Kunci untuk Azure AI Service (Computer Vision)  | Azure AI Foundry Anda               |
 | `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint untuk Azure AI Service (Computer Vision) | Azure AI Foundry Anda               |
@@ -69,21 +69,21 @@ Anda hanya perlu menambahkan **kredensial layanan AI** sebagai secrets terenkrip
 | `OPENAI_API_KEY`                    | API Key untuk OpenAI                        | Platform OpenAI Anda              |
 | `OPENAI_ORG_ID`                     | ID Organisasi OpenAI (Opsional)         | Platform OpenAI Anda              |
 | `OPENAI_CHAT_MODEL_ID`              | ID model OpenAI spesifik (Opsional)       | Platform OpenAI Anda              |
-| `OPENAI_BASE_URL`                   | URL Base API OpenAI kustom (Opsional)     | Platform OpenAI Anda              |
+| `OPENAI_BASE_URL`                   | Custom OpenAI API Base URL (Opsional)     | Platform OpenAI Anda              |
 
-### Langkah 3: Konfigurasikan Izin Workflow
+### Langkah 3: Konfigurasi Izin Workflow
 
-GitHub Action membutuhkan izin yang diberikan melalui `GITHUB_TOKEN` untuk checkout kode dan membuat pull request.
+GitHub Action membutuhkan izin yang diberikan melalui `GITHUB_TOKEN` untuk melakukan checkout kode dan membuat pull request.
 
 1.  Di repositori Anda, buka **Settings** > **Actions** > **General**.  
-2.  Gulir ke bagian **Workflow permissions**.  
-3.  Pilih **Read and write permissions**. Ini memberikan izin `GITHUB_TOKEN` yang diperlukan untuk `contents: write` dan `pull-requests: write` pada workflow ini.  
+2.  Gulir ke bawah ke bagian **Workflow permissions**.  
+3.  Pilih **Read and write permissions**. Ini memberikan izin `contents: write` dan `pull-requests: write` yang diperlukan untuk workflow ini melalui `GITHUB_TOKEN`.  
 4.  Pastikan kotak centang **Allow GitHub Actions to create and approve pull requests** dicentang.  
-5.  Pilih **Save**.
+5.  Klik **Save**.
 
-![Permission setting](../../../../getting_started/github-actions-guide/imgs/permission-setting.png)
+![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.id.png)
 
-### Langkah 4: Buat File Workflow
+### Langkah 4: Membuat File Workflow
 
 Terakhir, buat file YAML yang mendefinisikan workflow otomatis menggunakan `GITHUB_TOKEN`.
 
@@ -171,7 +171,7 @@ jobs:
 4.  **Sesuaikan Workflow:**  
   - **[!IMPORTANT] Bahasa Target:** Pada langkah `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
   - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` jika perlu.
+  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` jika diperlukan.
 
 **Penafian**:  
-Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berusaha untuk akurasi, harap diketahui bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sahih. Untuk informasi penting, disarankan menggunakan terjemahan manusia profesional. Kami tidak bertanggung jawab atas kesalahpahaman atau salah tafsir yang timbul dari penggunaan terjemahan ini.
+Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berupaya untuk memberikan terjemahan yang akurat, harap diperhatikan bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sahih. Untuk informasi yang penting, disarankan menggunakan terjemahan profesional oleh manusia. Kami tidak bertanggung jawab atas kesalahpahaman atau penafsiran yang keliru yang timbul dari penggunaan terjemahan ini.

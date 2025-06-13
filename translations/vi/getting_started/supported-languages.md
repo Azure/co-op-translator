@@ -1,15 +1,15 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "ba33aa8d5da0d3dd14322b77fcb63deb",
-  "translation_date": "2025-05-06T17:49:15+00:00",
+  "original_hash": "b4ed48f23ec418b31e90a02fe629fcde",
+  "translation_date": "2025-06-12T12:14:34+00:00",
   "source_file": "getting_started/supported-languages.md",
   "language_code": "vi"
 }
 -->
 # Ngôn ngữ được hỗ trợ
 
-Bảng dưới đây liệt kê các ngôn ngữ hiện đang được **Co-op Translator** hỗ trợ. Nó bao gồm mã ngôn ngữ, tên ngôn ngữ và các vấn đề đã biết liên quan đến từng ngôn ngữ. Nếu bạn muốn thêm hỗ trợ cho một ngôn ngữ mới, vui lòng thêm mã ngôn ngữ, tên và font phù hợp vào file `font_language_mappings.yml` nằm ở `src/co_op_translator/fonts/` và gửi pull request sau khi đã kiểm tra.
+Bảng dưới đây liệt kê các ngôn ngữ hiện đang được **Co-op Translator** hỗ trợ. Nó bao gồm mã ngôn ngữ, tên ngôn ngữ và bất kỳ vấn đề nào đã biết liên quan đến từng ngôn ngữ. Nếu bạn muốn thêm hỗ trợ cho một ngôn ngữ mới, vui lòng thêm mã ngôn ngữ tương ứng, tên và font phù hợp vào file `font_language_mappings.yml` nằm tại `src/co_op_translator/fonts/` và gửi pull request sau khi đã kiểm tra.
 
 | Language Code | Language Name        | Font                              | RTL Support | Known Issues |
 |---------------|----------------------|-----------------------------------|-------------|--------------|
@@ -19,8 +19,8 @@ Bảng dưới đây liệt kê các ngôn ngữ hiện đang được **Co-op T
 | de            | German               | NotoSans-Medium.ttf               | No          | No           |
 | ru            | Russian              | NotoSans-Medium.ttf               | No          | No           |
 | ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | Yes         | No           |
+| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | No          | No           |
+| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | No          | No           |
 | zh            | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
 | mo            | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc    | No          | No           |
 | hk            | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc| No          | No           |
@@ -44,7 +44,7 @@ Bảng dưới đây liệt kê các ngôn ngữ hiện đang được **Co-op T
 | no            | Norwegian            | NotoSans-Medium.ttf               | No          | No           |
 | fi            | Finnish              | NotoSans-Medium.ttf               | No          | No           |
 | nl            | Dutch                | NotoSans-Medium.ttf               | No          | No           |
-| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | Yes         | No           |
+| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | No          | No           |
 | vi            | Vietnamese           | NotoSans-Medium.ttf               | No          | No           |
 | id            | Indonesian           | NotoSans-Medium.ttf               | No          | No           |
 | ms            | Malay                | NotoSans-Medium.ttf               | No          | No           |
@@ -58,8 +58,10 @@ Bảng dưới đây liệt kê các ngôn ngữ hiện đang được **Co-op T
 | sr            | Serbian (Cyrillic)   | NotoSans-Medium.ttf               | No          | No           |
 | hr            | Croatian             | NotoSans-Medium.ttf               | No          | No           |
 | sl            | Slovenian            | NotoSans-Medium.ttf               | No          | No           |
+| uk            | Ukrainian            | NotoSans-Medium.ttf               | No          | No           |
+| my            | Burmese (Myanmar)    | NotoSans-Medium.ttf               | No          | No           |
 
-## Thêm ngôn ngữ mới
+## Thêm một ngôn ngữ mới
 
 Để thêm hỗ trợ cho một ngôn ngữ mới:
 
@@ -67,7 +69,7 @@ Bảng dưới đây liệt kê các ngôn ngữ hiện đang được **Co-op T
 2. Thêm mã ngôn ngữ, tên và tên file font phù hợp. Đảm bảo bao gồm thuộc tính `rtl` nếu ngôn ngữ đó viết từ phải sang trái.
 3. Nếu bạn cần dùng font mới, hãy chắc chắn font đó được phép sử dụng miễn phí trong các dự án mã nguồn mở bằng cách kiểm tra giấy phép và điều khoản bản quyền. Sau khi xác nhận, thêm file font vào thư mục `src/co_op_translator/fonts/`.
 4. Kiểm tra thay đổi trên máy để đảm bảo ngôn ngữ mới được hỗ trợ đúng.
-5. Gửi Pull Request với các thay đổi của bạn và ghi rõ việc thêm ngôn ngữ mới trong phần mô tả PR.
+5. Gửi Pull Request với thay đổi của bạn và ghi rõ việc thêm ngôn ngữ mới trong mô tả PR.
 
 Ví dụ:
 
@@ -78,5 +80,5 @@ new_lang:
   rtl: false
 ```
 
-**Tuyên bố từ chối trách nhiệm**:  
-Tài liệu này đã được dịch bằng dịch vụ dịch thuật AI [Co-op Translator](https://github.com/Azure/co-op-translator). Mặc dù chúng tôi cố gắng đảm bảo độ chính xác, xin lưu ý rằng các bản dịch tự động có thể chứa lỗi hoặc không chính xác. Tài liệu gốc bằng ngôn ngữ gốc nên được xem là nguồn thông tin chính xác nhất. Đối với các thông tin quan trọng, nên sử dụng dịch vụ dịch thuật chuyên nghiệp do con người thực hiện. Chúng tôi không chịu trách nhiệm về bất kỳ sự hiểu lầm hoặc giải thích sai nào phát sinh từ việc sử dụng bản dịch này.
+**Tuyên bố miễn trừ trách nhiệm**:  
+Tài liệu này đã được dịch bằng dịch vụ dịch thuật AI [Co-op Translator](https://github.com/Azure/co-op-translator). Mặc dù chúng tôi cố gắng đảm bảo độ chính xác, xin lưu ý rằng các bản dịch tự động có thể chứa lỗi hoặc không chính xác. Tài liệu gốc bằng ngôn ngữ gốc nên được coi là nguồn chính xác và đáng tin cậy. Đối với thông tin quan trọng, nên sử dụng dịch vụ dịch thuật chuyên nghiệp do con người thực hiện. Chúng tôi không chịu trách nhiệm về bất kỳ sự hiểu nhầm hay giải thích sai nào phát sinh từ việc sử dụng bản dịch này.

@@ -133,10 +133,10 @@ class MarkdownTranslator(ABC):
             document_chunks = process_markdown(document_with_placeholders)
 
         # Step 3: Generate translation prompts and translate each chunk
+        language_name = self.font_config.get_language_name(language_code)
+        is_rtl = self.font_config.is_rtl(language_code)
         prompts = [
-            generate_prompt_template(
-                language_code, chunk, self.font_config.is_rtl(language_code)
-            )
+            generate_prompt_template(language_code, language_name, chunk, is_rtl)
             for chunk in document_chunks
         ]
         results = await self._run_prompts_sequentially(prompts)
@@ -214,8 +214,8 @@ class MarkdownTranslator(ABC):
         Returns:
             Translated disclaimer text
         """
-
-        disclaimer_prompt = f""" Translate the following text to {output_lang}.
+        language_name = self.font_config.get_language_name(output_lang)
+        disclaimer_prompt = f""" Translate the following text to {language_name} ({output_lang}).
 
         **Disclaimer**: 
         This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation."""

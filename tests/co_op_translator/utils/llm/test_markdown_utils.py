@@ -125,10 +125,11 @@ def test_process_markdown_with_many_links():
 def test_generate_prompt_template():
     """Test generating translation prompt template."""
     document_chunk = "Test content"
-    prompt = generate_prompt_template("ko", document_chunk, False)
+    prompt = generate_prompt_template("ko", "Korean", document_chunk, False)
 
     assert isinstance(prompt, str)
     assert "ko" in prompt
+    assert "Korean" in prompt
     assert document_chunk in prompt
 
 

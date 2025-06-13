@@ -2,95 +2,91 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-05-06T17:21:52+00:00",
+  "translation_date": "2025-06-12T09:33:07+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "br"
 }
 -->
-# Contribuer au Co-op Translator
+# Contribuindo para o Co-op Translator
 
-Ce projet accueille les contributions et suggestions. La plupart des contributions nécessitent que vous acceptiez un  
-Contributor License Agreement (CLA) déclarant que vous avez le droit, et que vous accordez effectivement, les droits  
-d’utiliser votre contribution. Pour plus de détails, consultez https://cla.opensource.microsoft.com.
+Este projeto aceita contribuições e sugestões. A maioria das contribuições exige que você concorde com um Acordo de Licença de Contribuidor (CLA) declarando que você tem o direito e realmente concede a nós os direitos de usar sua contribuição. Para mais detalhes, visite https://cla.opensource.microsoft.com.
 
-Lorsque vous soumettez une pull request, un bot CLA déterminera automatiquement si vous devez fournir un CLA et  
-décorera la PR en conséquence (par exemple, vérification de statut, commentaire). Suivez simplement les instructions  
-fournies par le bot. Vous n’aurez à le faire qu’une seule fois pour tous les dépôts utilisant notre CLA.
+Quando você submete um pull request, um bot CLA determinará automaticamente se você precisa fornecer um CLA e marcará o PR adequadamente (por exemplo, verificação de status, comentário). Basta seguir as instruções fornecidas pelo bot. Você precisará fazer isso apenas uma vez para todos os repositórios que usam nosso CLA.
 
-## Configuration de l’environnement de développement
+## Configuração do ambiente de desenvolvimento
 
-Pour configurer l’environnement de développement de ce projet, nous recommandons d’utiliser Poetry pour gérer les dépendances. Nous utilisons `pyproject.toml` pour gérer les dépendances du projet, donc pour installer les dépendances, vous devez utiliser Poetry.
+Para configurar o ambiente de desenvolvimento deste projeto, recomendamos usar Poetry para gerenciar dependências. Usamos `pyproject.toml` para gerenciar as dependências do projeto, portanto, para instalar dependências, você deve usar Poetry.
 
-### Créer un environnement virtuel
+### Criar um ambiente virtual
 
-#### Avec pip
+#### Usando pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Avec Poetry
+#### Usando Poetry
 
 ```bash
 poetry init
 ```
 
-### Activer l’environnement virtuel
+### Ativar o ambiente virtual
 
-#### Pour pip et Poetry
+#### Para pip e Poetry
 
-- Windows :
+- Windows:
 
     ```bash
     .venv\Scripts\activate.bat
     ```
 
-- Mac/Linux :
+- Mac/Linux:
 
     ```bash
     source .venv/bin/activate
     ```
 
-#### Avec Poetry
+#### Usando Poetry
 
 ```bash
 poetry shell
 ```
 
-### Installer le package et les packages requis
+### Instalando o Pacote e os Pacotes necessários
 
-#### Avec Poetry (depuis pyproject.toml)
+#### Usando Poetry (a partir do pyproject.toml)
 
 ```bash
 poetry install
 ```
 
-### Tests manuels
+### Testes manuais
 
-Avant de soumettre une PR, il est important de tester la fonctionnalité de traduction avec une vraie documentation :
+Antes de enviar um PR, é importante testar a funcionalidade de tradução com documentação real:
 
-1. Créez un répertoire de test à la racine du projet :  
+1. Crie um diretório de teste na raiz do projeto:  
     ```bash
     mkdir test_docs
     ```
 
-2. Copiez de la documentation markdown et des images que vous souhaitez traduire dans ce répertoire de test. Par exemple :  
+2. Copie algumas documentações markdown e imagens que deseja traduzir para o diretório de teste. Por exemplo:  
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. Installez le package localement :  
+3. Instale o pacote localmente:  
     ```bash
     pip install -e .
     ```
 
-4. Lancez Co-op Translator sur vos documents de test :  
+4. Execute o Co-op Translator nos seus documentos de teste:  
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Vérifiez les fichiers traduits dans `test_docs/translations` and `test_docs/translated_images` to verify:
+5. Verifique os arquivos traduzidos em `test_docs/translations` and `test_docs/translated_images` to verify:
    - The translation quality
    - The metadata comments are correct
    - The original markdown structure is preserved
@@ -101,43 +97,43 @@ This manual testing helps ensure that your changes work well in real-world scena
 ### Environment variables
 
 1. Create an `.env` file in the root directory by copying the provided `.env.template`.  
-1. Remplissez les variables d’environnement comme indiqué.
+1. Preencha as variáveis de ambiente conforme orientado.
 
 > [!TIP]
 >
-> ### Options supplémentaires pour l’environnement de développement
+> ### Opções adicionais para ambiente de desenvolvimento
 >
-> En plus d’exécuter le projet localement, vous pouvez aussi utiliser GitHub Codespaces ou VS Code Dev Containers comme environnement de développement alternatif.
+> Além de rodar o projeto localmente, você também pode usar GitHub Codespaces ou VS Code Dev Containers para uma configuração alternativa do ambiente de desenvolvimento.
 >
 > #### GitHub Codespaces
 >
-> Vous pouvez exécuter ces exemples virtuellement avec GitHub Codespaces sans nécessiter de configuration supplémentaire.
+> Você pode rodar esses exemplos virtualmente usando GitHub Codespaces, sem necessidade de configurações ou instalações adicionais.
 >
-> Le bouton ouvrira une instance VS Code web dans votre navigateur :
+> O botão abrirá uma instância do VS Code baseada na web no seu navegador:
 >
-> 1. Ouvrez le template (cela peut prendre quelques minutes) :
+> 1. Abra o template (isso pode levar alguns minutos):
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
-> #### Exécution locale avec VS Code Dev Containers
+> #### Rodando localmente usando VS Code Dev Containers
 >
-> ⚠️ Cette option ne fonctionnera que si Docker Desktop dispose d’au moins 16 Go de RAM alloués. Si vous avez moins de 16 Go, vous pouvez essayer l’option [GitHub Codespaces](../..) ou [configurer localement](../..).
+> ⚠️ Esta opção funcionará apenas se seu Docker Desktop tiver pelo menos 16 GB de RAM alocados. Se você tiver menos que isso, pode tentar a opção do [GitHub Codespaces](../..) ou [configurar localmente](../..).
 >
-> Une option associée est VS Code Dev Containers, qui ouvrira le projet dans votre VS Code local via l’[extension Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) :
+> Uma opção relacionada é o VS Code Dev Containers, que abrirá o projeto no seu VS Code local usando a [extensão Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Lancez Docker Desktop (installez-le si ce n’est pas déjà fait)
-> 2. Ouvrez le projet :
+> 1. Inicie o Docker Desktop (instale se ainda não estiver instalado)
+> 2. Abra o projeto:
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
 
-### Style de code
+### Estilo de Código
 
-Nous utilisons [Black](https://github.com/psf/black) comme formateur de code Python pour maintenir un style cohérent dans tout le projet. Black est un formateur strict qui reformate automatiquement le code Python pour respecter le style Black.
+Usamos [Black](https://github.com/psf/black) como nosso formatador de código Python para manter um estilo consistente em todo o projeto. Black é um formatador rigoroso que reformata automaticamente o código Python para seguir o estilo Black.
 
-#### Configuration
+#### Configuração
 
-La configuration de Black est spécifiée dans notre `pyproject.toml` :
+A configuração do Black está especificada no nosso `pyproject.toml`:
 
 ```toml
 [tool.black]
@@ -146,85 +142,85 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-#### Installation de Black
+#### Instalando o Black
 
-Vous pouvez installer Black avec Poetry (recommandé) ou pip :
+Você pode instalar o Black usando Poetry (recomendado) ou pip:
 
-##### Avec Poetry
+##### Usando Poetry
 
-Black est installé automatiquement lors de la configuration de l’environnement de développement :  
+Black é instalado automaticamente quando você configura o ambiente de desenvolvimento:  
 ```bash
 poetry install
 ```
 
-##### Avec pip
+##### Usando pip
 
-Si vous utilisez pip, vous pouvez installer Black directement :  
+Se estiver usando pip, pode instalar o Black diretamente:  
 ```bash
 pip install black
 ```
 
-#### Utilisation de Black
+#### Usando o Black
 
-##### Avec Poetry
+##### Com Poetry
 
-1. Formatez tous les fichiers Python du projet :  
+1. Formate todos os arquivos Python do projeto:  
     ```bash
     poetry run black .
     ```
 
-2. Formatez un fichier ou répertoire spécifique :  
+2. Formate um arquivo ou diretório específico:  
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
-##### Avec pip
+##### Com pip
 
-1. Formatez tous les fichiers Python du projet :  
+1. Formate todos os arquivos Python do projeto:  
     ```bash
     black .
     ```
 
-2. Formatez un fichier ou répertoire spécifique :  
+2. Formate um arquivo ou diretório específico:  
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> Nous recommandons de configurer votre éditeur pour formater automatiquement le code avec Black à chaque sauvegarde. La plupart des éditeurs modernes supportent cela via des extensions ou plugins.
+> Recomendamos configurar seu editor para formatar o código automaticamente com Black ao salvar. A maioria dos editores modernos suporta isso por meio de extensões ou plugins.
 
-## Exécuter Co-op Translator
+## Executando o Co-op Translator
 
-Pour lancer Co-op Translator avec Poetry dans votre environnement, suivez ces étapes :
+Para rodar o Co-op Translator usando Poetry no seu ambiente, siga estes passos:
 
-1. Rendez-vous dans le répertoire où vous souhaitez effectuer des tests de traduction ou créez un dossier temporaire pour les tests.
+1. Navegue até o diretório onde deseja realizar os testes de tradução ou crie uma pasta temporária para testes.
 
-2. Exécutez la commande suivante. Le flag `-l ko` with the language code you wish to translate into. The `-d` indique le mode debug.
+2. Execute o comando abaixo. A flag `-l ko` with the language code you wish to translate into. The `-d` indica modo debug.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Assurez-vous que votre environnement Poetry est activé (poetry shell) avant d’exécuter la commande.
+> Certifique-se de que seu ambiente Poetry está ativado (poetry shell) antes de executar o comando.
 
-## Mainteneurs
+## Mantenedores
 
-### Message de commit et stratégie de fusion
+### Mensagem de commit e estratégia de merge
 
-Pour garantir la cohérence et la clarté dans l’historique des commits de notre projet, nous suivons un format spécifique de message de commit **pour le message final** lors de l’utilisation de la stratégie **Squash and Merge**.
+Para garantir consistência e clareza no histórico de commits do nosso projeto, seguimos um formato específico para a mensagem de commit **final** ao usar a estratégia **Squash and Merge**.
 
-Quand une pull request (PR) est fusionnée, les commits individuels sont regroupés en un seul commit. Le message final doit respecter le format ci-dessous pour maintenir un historique propre et cohérent.
+Quando um pull request (PR) é mesclado, os commits individuais serão condensados em um único commit. A mensagem final deve seguir o formato abaixo para manter um histórico limpo e consistente.
 
-#### Format du message de commit (pour squash and merge)
+#### Formato da mensagem de commit (para squash and merge)
 
-Nous utilisons le format suivant pour les messages de commit :
+Usamos o seguinte formato para as mensagens de commit:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type** : Spécifie la catégorie du commit. Nous utilisons les types suivants :  
+- **type**: Especifica a categoria do commit. Usamos os seguintes tipos:
   - `Docs`: For documentation updates.
   - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
   - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
@@ -263,4 +259,4 @@ They should be squashed into:
 `Docs: Improve documentation clarity and formatting (#65)`
 
 **Aviso Legal**:  
-Este documento foi traduzido usando o serviço de tradução por IA [Co-op Translator](https://github.com/Azure/co-op-translator). Embora nos esforcemos para garantir a precisão, esteja ciente de que traduções automáticas podem conter erros ou imprecisões. O documento original em seu idioma nativo deve ser considerado a fonte oficial. Para informações críticas, recomenda-se tradução profissional realizada por humanos. Não nos responsabilizamos por quaisquer mal-entendidos ou interpretações incorretas decorrentes do uso desta tradução.
+Este documento foi traduzido utilizando o serviço de tradução por IA [Co-op Translator](https://github.com/Azure/co-op-translator). Embora nos esforcemos para garantir a precisão, esteja ciente de que traduções automáticas podem conter erros ou imprecisões. O documento original em seu idioma nativo deve ser considerado a fonte oficial. Para informações críticas, recomenda-se a tradução profissional realizada por humanos. Não nos responsabilizamos por quaisquer mal-entendidos ou interpretações incorretas decorrentes do uso desta tradução.

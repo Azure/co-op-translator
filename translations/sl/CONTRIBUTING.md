@@ -2,38 +2,38 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:44:41+00:00",
+  "translation_date": "2025-06-13T01:26:15+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "sl"
 }
 -->
-# Contributing to Co-op Translator
+# Prispevanje k Co-op Translator
 
-This project accepts contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) confirming that you have the rights to grant us permission to use your contribution. For more details, visit https://cla.opensource.microsoft.com.
+Ta projekt pozdravlja prispevke in predloge. Večina prispevkov zahteva, da se strinjate s Pogodbo o prispevanju (CLA), ki navaja, da imate pravico in dejansko podeljujete pravice za uporabo vašega prispevka. Za podrobnosti obiščite https://cla.opensource.microsoft.com.
 
-When you submit a pull request, a CLA bot will automatically check if you need to provide a CLA and will label the PR accordingly (e.g., status check, comment). Just follow the bot’s instructions. You only need to do this once for all repos using our CLA.
+Ko oddate zahtevo za združitev (pull request), bo bot CLA samodejno določil, ali morate zagotoviti CLA in ustrezno okrasil PR (npr. preverjanje stanja, komentar). Preprosto sledite navodilom, ki jih zagotavlja bot. To boste morali storiti le enkrat v vseh repozitorijih, ki uporabljajo naš CLA.
 
-## Development environment setup
+## Nastavitev razvojnega okolja
 
-To prepare the development environment for this project, we recommend using Poetry to manage dependencies. We use `pyproject.toml` to handle project dependencies, so you should use Poetry to install them.
+Za nastavitev razvojnega okolja za ta projekt priporočamo uporabo Poetry za upravljanje odvisnosti. Uporabljamo `pyproject.toml` za upravljanje projektnih odvisnosti, zato za namestitev odvisnosti uporabite Poetry.
 
-### Create a virtual environment
+### Ustvarjanje virtualnega okolja
 
-#### Using pip
+#### Uporaba pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Using Poetry
+#### Uporaba Poetry
 
 ```bash
 poetry init
 ```
 
-### Activate the virtual environment
+### Aktiviranje virtualnega okolja
 
-#### For both pip and Poetry
+#### Za pip in Poetry
 
 - Windows:
 
@@ -47,46 +47,46 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Using Poetry
+#### Uporaba Poetry
 
 ```bash
 poetry shell
 ```
 
-### Installing the Package and required Packages
+### Namestitev paketa in potrebnih paketov
 
-#### Using Poetry (from pyproject.toml)
+#### Uporaba Poetry (iz pyproject.toml)
 
 ```bash
 poetry install
 ```
 
-### Manual testing
+### Ročno testiranje
 
-Before submitting a PR, it’s important to test the translation feature with actual documentation:
+Pred oddajo PR je pomembno testirati funkcionalnost prevajanja z resnično dokumentacijo:
 
-1. Create a test directory at the root:
+1. Ustvarite testni imenik v korenskem imeniku:
     ```bash
     mkdir test_docs
     ```
 
-2. Copy some markdown documentation and images you want to translate into the test directory. For example:
+2. Kopirajte nekaj markdown dokumentacije in slik, ki jih želite prevesti, v testni imenik. Na primer:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. Install the package locally:
+3. Namestite paket lokalno:
     ```bash
     pip install -e .
     ```
 
-4. Run Co-op Translator on your test documents:
+4. Zaženite Co-op Translator na vaših testnih dokumentih:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Check the translated files in `test_docs/translations` and `test_docs/translated_images` to verify:
+5. Preverite prevedene datoteke v `test_docs/translations` and `test_docs/translated_images` to verify:
    - The translation quality
    - The metadata comments are correct
    - The original markdown structure is preserved
@@ -96,44 +96,43 @@ This manual testing helps ensure that your changes work well in real-world scena
 
 ### Environment variables
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template`.
-1. Fill in the environment variables as instructed.
+1. Create an `.env` file in the root directory by copying the provided `.env.template` datoteki.
+1. Izpolnite okoljske spremenljivke, kot je navedeno.
 
 > [!TIP]
 >
-> ### Additional development environment options
+> ### Dodatne možnosti razvojnega okolja
 >
-> Besides running the project locally, you can also use GitHub Codespaces or VS Code Dev Containers as alternative development environments.
+> Poleg lokalnega zagona projekta lahko uporabite tudi GitHub Codespaces ali VS Code Dev Containers za alternativno nastavitev razvojnega okolja.
 >
 > #### GitHub Codespaces
 >
-> You can run this sample virtually using GitHub Codespaces without any extra setup.
+> Te vzorce lahko virtualno zaženete z uporabo GitHub Codespaces, brez dodatnih nastavitev ali konfiguracij.
 >
-> The button will open a web-based VS Code instance in your browser:
+> Gumb bo odprl spletno različico VS Code v vašem brskalniku:
 >
-> 1. Open the template (this might take a few minutes):
+> 1. Odprite predlogo (to lahko traja nekaj minut):
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
-> #### Running Locally using VS Code Dev Containers
+> #### Lokalno zaganjanje z uporabo VS Code Dev Containers
 >
-> ⚠️ This option only works if your Docker Desktop has at least 16 GB of RAM allocated. If you have less, try the [GitHub Codespaces option](../..) or [set it up locally](../..).
+> ⚠️ Ta možnost bo delovala le, če je vašemu Docker Desktop dodeljenih vsaj 16 GB RAM-a. Če imate manj kot 16 GB RAM-a, lahko poskusite možnost [GitHub Codespaces](../..) ali [nastavite lokalno](../..).
 >
-> Another option is VS Code Dev Containers, which opens the project in your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Sorodna možnost je VS Code Dev Containers, ki bo odprla projekt v vašem lokalnem VS Code z uporabo [Dev Containers razširitve](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Start Docker Desktop (install it if you haven’t yet)
-> 2. Open the project:
+> 1. Zaženite Docker Desktop (namestite ga, če še ni nameščen)
+> 2. Odprite projekt:
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
+### Slog kode
 
-### Code Style
+Uporabljamo [Black](https://github.com/psf/black) kot naš Python oblikovalnik kode za ohranjanje doslednega sloga kode v projektu. Black je nepopustljiv oblikovalnik kode, ki samodejno preoblikuje Python kodo, da ustreza slogu kode Black.
 
-We use [Black](https://github.com/psf/black) as our Python code formatter to keep a consistent style throughout the project. Black is an opinionated formatter that automatically reformats Python code to fit its style.
+#### Konfiguracija
 
-#### Configuration
-
-The Black configuration is set in our `pyproject.toml`:
+Konfiguracija Black je določena v našem `pyproject.toml`:
 
 ```toml
 [tool.black]
@@ -142,85 +141,85 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-#### Installing Black
+#### Namestitev Black
 
-You can install Black via Poetry (recommended) or pip:
+Black lahko namestite z uporabo Poetry (priporočeno) ali pip:
 
-##### Using Poetry
+##### Uporaba Poetry
 
-Black is installed automatically when setting up the development environment:
+Black se samodejno namesti, ko nastavite razvojno okolje:
 ```bash
 poetry install
 ```
 
-##### Using pip
+##### Uporaba pip
 
-If you use pip, install Black directly:
+Če uporabljate pip, lahko Black namestite neposredno:
 ```bash
 pip install black
 ```
 
-#### Using Black
+#### Uporaba Black
 
-##### With Poetry
+##### Z Poetry
 
-1. Format all Python files in the project:
+1. Oblikujte vse Python datoteke v projektu:
     ```bash
     poetry run black .
     ```
 
-2. Format a specific file or folder:
+2. Oblikujte določeno datoteko ali imenik:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
-##### With pip
+##### Z pip
 
-1. Format all Python files in the project:
+1. Oblikujte vse Python datoteke v projektu:
     ```bash
     black .
     ```
 
-2. Format a specific file or folder:
+2. Oblikujte določeno datoteko ali imenik:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> We recommend configuring your editor to format code with Black automatically on save. Most modern editors support this via extensions or plugins.
+> Priporočamo nastavitev vašega urejevalnika, da samodejno oblikuje kodo z Black ob shranjevanju. Večina sodobnih urejevalnikov to podpira preko razširitev ali vtičnikov.
 
-## Running Co-op Translator
+## Zagon Co-op Translator
 
-To run Co-op Translator using Poetry in your environment, follow these steps:
+Za zagon Co-op Translator z uporabo Poetry v vašem okolju sledite tem korakom:
 
-1. Go to the folder where you want to run translation tests or create a temporary folder for testing.
+1. Pomaknite se do imenika, kjer želite izvesti teste prevajanja ali ustvarite začasno mapo za testne namene.
 
-2. Run the following command. The `-l ko` with the language code you wish to translate into. The `-d` flag enables debug mode.
+2. Izvedite naslednji ukaz. Zamenjajte `-l ko` with the language code you wish to translate into. The `-d` zastavica označuje način odpravljanja napak.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Make sure your Poetry environment is activated (`poetry shell`) before running the command.
+> Pred izvajanjem ukaza poskrbite, da je vaše Poetry okolje aktivirano (poetry shell).
 
-## Maintainers
+## Vzdrževalci
 
-### Commit message and Merge strategy
+### Sporočilo o potrditvi in strategija združevanja
 
-To keep our commit history consistent and clear, we follow a specific commit message format **for the final commit message** when using the **Squash and Merge** strategy.
+Da zagotovimo doslednost in jasnost v zgodovini potrditev našega projekta, sledimo specifičnemu formatu sporočila o potrditvi **za končno sporočilo o potrditvi** pri uporabi strategije **Squash and Merge**.
 
-When a pull request (PR) is merged, all commits are squashed into one. The final commit message should follow the format below to keep the history clean and uniform.
+Ko je zahteva za združitev (PR) združena, bodo posamezne potrditve združene v eno samo potrditev. Končno sporočilo o potrditvi naj sledi spodnjemu formatu za ohranjanje čiste in dosledne zgodovine.
 
-#### Commit message format (for squash and merge)
+#### Format sporočila o potrditvi (za squash and merge)
 
-We use this format for commit messages:
+Uporabljamo naslednji format za sporočila o potrditvi:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: Defines the commit category. We use these types:
+- **type**: Določa kategorijo potrditve. Uporabljamo naslednje tipe:
   - `Docs`: For documentation updates.
   - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
   - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
@@ -258,5 +257,5 @@ If a PR contains the following commits:
 They should be squashed into:
 `Docs: Improve documentation clarity and formatting (#65)`
 
-**Izjava o omejitvi odgovornosti**:  
-Ta dokument je bil preveden z uporabo AI prevajalske storitve [Co-op Translator](https://github.com/Azure/co-op-translator). Čeprav si prizadevamo za natančnost, vas prosimo, da upoštevate, da lahko avtomatizirani prevodi vsebujejo napake ali netočnosti. Izvirni dokument v izvorni jezikovni različici velja za avtoritativni vir. Za ključne informacije priporočamo strokovni človeški prevod. Za morebitne nesporazume ali napačne interpretacije, ki izhajajo iz uporabe tega prevoda, ne prevzemamo odgovornosti.
+**Omejitev odgovornosti**:  
+Ta dokument je bil preveden z uporabo storitve AI za prevajanje [Co-op Translator](https://github.com/Azure/co-op-translator). Čeprav si prizadevamo za natančnost, vas prosimo, da se zavedate, da lahko avtomatizirani prevodi vsebujejo napake ali netočnosti. Izvirni dokument v njegovem maternem jeziku je treba obravnavati kot avtoritativni vir. Za kritične informacije je priporočljiv strokovni človeški prevod. Ne prevzemamo odgovornosti za morebitna nesporazumevanja ali napačne razlage, ki izhajajo iz uporabe tega prevoda.

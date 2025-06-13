@@ -465,14 +465,9 @@ class ImageTranslator(ABC):
             # Extract the text data from the bounding boxes
             text_data = [line["text"] for line in line_bounding_boxes]
 
-            # Retrieve the name of the target language based on the language code
-            target_language_name = self.font_config.get_language_name(
-                target_language_code
-            )
-
             # Translate the text data into the target language
             translated_text_list = self.text_translator.translate_image_text(
-                text_data, target_language_name
+                text_data, target_language_code
             )
 
             # Annotate the image with the translated text and save the result

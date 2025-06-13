@@ -136,9 +136,7 @@ class MarkdownTranslator(ABC):
         language_name = self.font_config.get_language_name(language_code)
         is_rtl = self.font_config.is_rtl(language_code)
         prompts = [
-            generate_prompt_template(
-                language_code, language_name, chunk, is_rtl
-            )
+            generate_prompt_template(language_code, language_name, chunk, is_rtl)
             for chunk in document_chunks
         ]
         results = await self._run_prompts_sequentially(prompts)

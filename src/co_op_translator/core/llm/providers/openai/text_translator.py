@@ -8,7 +8,7 @@ class OpenAITextTranslator(TextTranslator):
 
     def __init__(self):
         """Initialize the OpenAI text translator with client."""
-        self.client = self.get_openai_client()
+        super().__init__()
 
     def get_openai_client(self):
         """Create an OpenAI client instance.

@@ -354,7 +354,8 @@ class TranslationManager:
         for notebook_file_path in notebook_files:
             notebook_file_path = notebook_file_path.resolve()
 
-            if notebook_file_path.suffix == ".ipynb":
+            # Use supported_notebook_extensions for filtering
+            if notebook_file_path.suffix in self.supported_notebook_extensions:
                 for language_code in self.language_codes:
                     relative_path = notebook_file_path.relative_to(self.root_dir)
                     translated_notebook_path = (

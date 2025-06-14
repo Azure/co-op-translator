@@ -4,6 +4,7 @@ import asyncio
 from co_op_translator.core.llm import (
     markdown_translator,
     text_translator,
+    JupyterNotebookTranslator,
 )
 from co_op_translator.core.vision import (
     image_translator,
@@ -11,6 +12,7 @@ from co_op_translator.core.vision import (
 from co_op_translator.config.constants import (
     EXCLUDED_DIRS,
     SUPPORTED_IMAGE_EXTENSIONS,
+    SUPPORTED_NOTEBOOK_EXTENSIONS,
 )
 
 from .directory_manager import DirectoryManager
@@ -67,6 +69,9 @@ class ProjectTranslator:
             self.root_dir
         )
 
+        # Initialize notebook translator
+        self.notebook_translator = JupyterNotebookTranslator.create(self.root_dir)
+
         # Initialize directory and translation managers
         self.directory_manager = DirectoryManager(
             self.root_dir, self.translations_dir, self.language_codes, EXCLUDED_DIRS
@@ -78,8 +83,10 @@ class ProjectTranslator:
             self.language_codes,
             EXCLUDED_DIRS,
             SUPPORTED_IMAGE_EXTENSIONS,
+            SUPPORTED_NOTEBOOK_EXTENSIONS,
             self.markdown_translator,
             self.image_translator,
+            self.notebook_translator,
             self.markdown_only,
         )
 
@@ -105,10 +112,11 @@ class ProjectTranslator:
     async def check_and_retry_translations(self):
         """Check for outdated translations and translate missing content.
 
-        Performs a three-step process:
+        Performs a four-step process:
         1. Identifies and updates outdated translations
         2. Translates all markdown files that need translation
-        3. Translates all image files that need translation (when available)
+        3. Translates all notebook files that need translation
+        4. Translates all image files that need translation (when available)
 
         Returns:
             Tuple containing (total_translated_count, combined_errors_list)
@@ -128,6 +136,15 @@ class ProjectTranslator:
         if markdown_errors:
             logger.warning(f"Errors during markdown translation: {markdown_errors}")
 
+        # Translate all notebook files
+        (
+            notebook_count,
+            notebook_errors,
+        ) = await self.translation_manager.translate_all_notebook_files()
+        logger.info(f"Translated {notebook_count} notebook files")
+        if notebook_errors:
+            logger.warning(f"Errors during notebook translation: {notebook_errors}")
+
         # Translate images if image translator is available
         (
             image_count,
@@ -138,6 +155,6 @@ class ProjectTranslator:
             logger.warning(f"Errors during image translation: {image_errors}")
 
         return (
-            modified_count + markdown_count + image_count,
-            errors + markdown_errors + image_errors,
+            modified_count + markdown_count + notebook_count + image_count,
+            errors + markdown_errors + notebook_errors + image_errors,
         )

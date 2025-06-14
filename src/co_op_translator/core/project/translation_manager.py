@@ -18,6 +18,7 @@ from co_op_translator.utils.common.file_utils import (
 )
 from co_op_translator.utils.common.metadata_utils import calculate_file_hash
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
+from co_op_translator.core.llm.jupyter_notebook_translator import JupyterNotebookTranslator
 from co_op_translator.core.project.directory_manager import DirectoryManager
 from co_op_translator.config.constants import SUPPORTED_IMAGE_EXTENSIONS
 from co_op_translator.utils.common.task_utils import worker
@@ -41,8 +42,10 @@ class TranslationManager:
         language_codes: list[str],
         excluded_dirs: list[str],
         supported_image_extensions: list[str],
+        supported_notebook_extensions: list[str],
         markdown_translator: MarkdownTranslator,
         image_translator=None,
+        notebook_translator=None,
         markdown_only: bool = False,
     ):
         """Initialize translation manager with required components and settings.
@@ -56,8 +59,10 @@ class TranslationManager:
             language_codes: List of target language codes
             excluded_dirs: List of directories to exclude
             supported_image_extensions: List of supported image extensions
+            supported_notebook_extensions: List of supported notebook extensions
             markdown_translator: Translator instance for markdown files
             image_translator: Translator instance for image files
+            notebook_translator: Translator instance for notebook files
             markdown_only: Whether to only translate markdown files
         """
         self.root_dir = root_dir
@@ -66,8 +71,10 @@ class TranslationManager:
         self.language_codes = language_codes
         self.excluded_dirs = excluded_dirs
         self.supported_image_extensions = supported_image_extensions
+        self.supported_notebook_extensions = supported_notebook_extensions
         self.markdown_translator = markdown_translator
         self.image_translator = image_translator
+        self.notebook_translator = notebook_translator
         self.markdown_only = markdown_only
         self.directory_manager = DirectoryManager(
             root_dir, translations_dir, language_codes, excluded_dirs
@@ -183,6 +190,56 @@ class TranslationManager:
             logger.error(f"Failed to translate {file_path}: {e}")
             return ""
 
+    async def translate_notebook(self, file_path: Path, language_code: str) -> str:
+        """Translate a Jupyter notebook file to the specified language.
+
+        Handles empty documents and translation failures.
+
+        Args:
+            file_path: Path to the notebook file
+            language_code: Target language code
+
+        Returns:
+            Path to translated notebook file if successful, otherwise empty string
+        """
+        file_path = Path(file_path).resolve()
+        try:
+            document = read_input_file(file_path)
+            if not document:
+                relative_path = file_path.relative_to(self.root_dir)
+                output_file = self.translations_dir / language_code / relative_path
+                handle_empty_document(file_path, output_file)
+                return str(output_file)
+
+            # Perform translation
+            translated_content = await self.notebook_translator.translate_notebook(
+                file_path, language_code, markdown_only=self.markdown_only
+            )
+            if not translated_content:
+                logger.error(
+                    f"Translation failed for {file_path}: Empty translation result"
+                )
+                return ""
+
+            relative_path = file_path.relative_to(self.root_dir)
+            translated_path = self.translations_dir / language_code / relative_path
+            translated_path.parent.mkdir(parents=True, exist_ok=True)
+
+            try:
+                with open(translated_path, "w", encoding="utf-8") as f:
+                    f.write(translated_content)
+                logger.info(
+                    f"Translated {file_path} to {language_code} and saved to {translated_path}"
+                )
+                return str(translated_path)
+            except Exception as e:
+                logger.error(f"Failed to write translation to {translated_path}: {e}")
+                return ""
+
+        except Exception as e:
+            logger.error(f"Failed to translate {file_path}: {e}")
+            return ""
+
     async def translate_all_markdown_files(
         self, update: bool = False
     ) -> tuple[int, list[str]]:
@@ -254,6 +311,84 @@ class TranslationManager:
             ]
         else:
             logger.warning("No markdown files found for translation.")
+
+        return modified_count, errors
+
+    async def translate_all_notebook_files(
+        self, update: bool = False
+    ) -> tuple[int, list[str]]:
+        """Process and translate all Jupyter notebook files in the project directory.
+
+        Optionally updates existing translations if requested.
+
+        Args:
+            update: Whether to update existing translations
+
+        Returns:
+            Tuple containing (number_of_modified_files, error_messages_list)
+        """
+        modified_count = 0
+        errors = []
+
+        if not self.notebook_translator:
+            logger.info("Notebook translator not available, skipping notebook files")
+            return modified_count, errors
+
+        # Delete existing translations when update mode is enabled
+        if update:
+            for language_code in self.language_codes:
+                # Find and delete translated notebook files
+                translation_dir = self.translations_dir / language_code
+                if translation_dir.exists():
+                    for notebook_file in translation_dir.rglob("*.ipynb"):
+                        notebook_file.unlink()
+                        logger.info(f"Deleted translated notebook: {notebook_file}")
+
+        # Discover notebook files requiring translation
+        notebook_files = filter_files(self.root_dir, self.excluded_dirs)
+        tasks = []
+
+        for notebook_file_path in notebook_files:
+            notebook_file_path = notebook_file_path.resolve()
+
+            if notebook_file_path.suffix == ".ipynb":
+                for language_code in self.language_codes:
+                    relative_path = notebook_file_path.relative_to(self.root_dir)
+                    translated_notebook_path = (
+                        self.translations_dir / language_code / relative_path
+                    )
+
+                    if not update and translated_notebook_path.exists():
+                        logger.info(
+                            f"Skipping already translated notebook file: {translated_notebook_path}"
+                        )
+                        continue
+
+                    logger.info(
+                        f"Translating notebook file: {notebook_file_path} for language: {language_code}"
+                    )
+                    # Create a task for each notebook file translation
+                    tasks.append(
+                        lambda notebook_file_path=notebook_file_path, language_code=language_code: self.translate_notebook(
+                            notebook_file_path, language_code
+                        )
+                    )
+
+        if tasks:  # Check if there are tasks to process
+            # Process translations sequentially to avoid rate limiting
+            results = await self.process_api_requests_sequential(
+                tasks, "📓 Translating notebook files"
+            )
+            modified_count = sum(
+                1 for r in results if r
+            )  # Count successful translations
+            errors = [
+                f"Failed to translate {task.__name__}"
+                for task, result in zip(tasks, results)
+                if not result
+            ]
+        else:
+            logger.warning("No notebook files found for translation.")
 
         return modified_count, errors
 
@@ -522,6 +657,13 @@ class TranslationManager:
                 total_modified += md_modified
                 all_errors.extend(md_errors)
 
+                # Also translate notebook files when markdown translation is enabled
+                nb_modified, nb_errors = await self.translate_all_notebook_files(
+                    update=update
+                )
+                total_modified += nb_modified
+                all_errors.extend(nb_errors)
+
             if images and not self.markdown_only:
                 img_modified, img_errors = await self.translate_all_image_files(
                     update=update, fast_mode=fast_mode
@@ -556,6 +698,8 @@ class TranslationManager:
                 continue
             for md_file in translation_dir.rglob("*.md"):
                 all_translation_files.append((lang_code, md_file))
+            for nb_file in translation_dir.rglob("*.ipynb"):
+                all_translation_files.append((lang_code, nb_file))
 
         if not all_translation_files:
             return []

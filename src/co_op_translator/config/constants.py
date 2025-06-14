@@ -3,6 +3,9 @@ RGBA_IMAGE_EXTENSIONS = {".png"}
 RGB_IMAGE_EXTENSIONS = {".jpg", ".jpeg"}
 SUPPORTED_IMAGE_EXTENSIONS = RGBA_IMAGE_EXTENSIONS.union(RGB_IMAGE_EXTENSIONS)
 
+# Supported notebook file extensions
+SUPPORTED_NOTEBOOK_EXTENSIONS = {".ipynb"}
+
 EXCLUDED_DIRS = {
     "translations",
     "translated_images",

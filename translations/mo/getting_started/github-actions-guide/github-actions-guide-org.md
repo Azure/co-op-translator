@@ -2,122 +2,120 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:02:44+00:00",
+  "translation_date": "2025-06-14T12:50:53+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "mo"
 }
 -->
 # 使用 Co-op Translator GitHub Action（組織指南）
 
-**目標讀者：** 本指南適用於 **Microsoft 內部使用者** 或 **擁有預建 Co-op Translator GitHub App 必要憑證的團隊**，或能自行建立自訂 GitHub App 的團隊。
+**目標讀者：** 本指南適用於 **Microsoft 內部用戶** 或 **擁有預建 Co-op Translator GitHub App 所需憑證的團隊**，或者能夠創建自己的自定義 GitHub App。
 
-使用 Co-op Translator GitHub Action，輕鬆自動化您的倉庫文件翻譯。此指南將帶您設定該 Action，當您的原始 Markdown 檔案或圖片有變更時，自動建立包含更新翻譯的 Pull Request。
+使用 Co-op Translator GitHub Action 自動化翻譯您的存儲庫文檔。此指南將引導您設置該操作，以便在您的源 Markdown 文件或圖片更改時，自動創建包含更新翻譯的拉取請求。
 
-> [!IMPORTANT]
-> 
-> **選擇正確的指南：**
+> **選擇合適的指南：**
 >
-> 本指南說明如何使用 **GitHub App ID 與私鑰** 進行設定。通常當您遇到以下情況時，需使用此「組織指南」方法：**`GITHUB_TOKEN` 權限受限：** 您的組織或倉庫設定限制了標準 `GITHUB_TOKEN` 預設授權的權限。特別是若 `GITHUB_TOKEN` 無法取得必要的 `write` 權限（如 `contents: write` 或 `pull-requests: write`），則 [公開設定指南](./github-actions-guide-public.md) 中的工作流程將因權限不足而失敗。使用專屬且明確授權的 GitHub App 可避開此限制。
+> 本指南詳細介紹使用 **GitHub App ID 和私鑰** 的設置。如果您通常需要此「組織指南」方法，原因如下：**`GITHUB_TOKEN` 權限受限：** 您的組織或存儲庫設置限制了授予標準 `GITHUB_TOKEN` 的默認權限。具體來說，如果 `GITHUB_TOKEN` 不允許必要的 `write` 權限（例如 `contents: write` 或 `pull-requests: write`），則 [公共設置指南](./github-actions-guide-public.md) 中的工作流程將因權限不足而失敗。使用具有明確授予權限的專用 GitHub App 可以繞過此限制。
 >
-> **若上述情況不適用於您：**
+> **如果上述情況不適用於您：**
 >
-> 若標準 `GITHUB_TOKEN` 在您的倉庫中擁有足夠權限（即未被組織限制阻擋），請使用 **[使用 GITHUB_TOKEN 的公開設定指南](./github-actions-guide-public.md)**。公開指南不需取得或管理 App ID 與私鑰，僅依賴標準 `GITHUB_TOKEN` 及倉庫權限。
+> 如果標準 `GITHUB_TOKEN` 在您的存儲庫中擁有足夠的權限（即您未被組織限制阻止），請使用 **[公共設置指南使用 GITHUB_TOKEN](./github-actions-guide-public.md)**。公共指南不需要獲取或管理 App ID 或私鑰，僅依賴於標準 `GITHUB_TOKEN` 和存儲庫權限。
 
-## 前置條件
+## 先決條件
 
-在設定 GitHub Action 之前，請先準備好必要的 AI 服務憑證。
+在配置 GitHub Action 之前，請確保您已準備好必要的 AI 服務憑證。
 
-**1. 必備：AI 語言模型憑證**  
-您需要至少一組支援的語言模型憑證：
+**1. 必需：AI 語言模型憑證**
+您需要至少一個支持的語言模型的憑證：
 
-- **Azure OpenAI**：需要 Endpoint、API 金鑰、模型／部署名稱、API 版本。
-- **OpenAI**：需要 API 金鑰，（可選：組織 ID、Base URL、模型 ID）。
-- 詳情請參考 [支援的模型與服務](../../../../README.md)。
-- 設定指南：[設定 Azure OpenAI](../set-up-resources/set-up-azure-openai.md)。
+- **Azure OpenAI**：需要端點、API 密鑰、模型/部署名稱、API 版本。
+- **OpenAI**：需要 API 密鑰，（可選：組織 ID、基礎 URL、模型 ID）。
+- 詳情請參閱 [支持的模型和服務](../../../../README.md)。
+- 設置指南：[設置 Azure OpenAI](../set-up-resources/set-up-azure-openai.md)。
 
-**2. 選用：電腦視覺憑證（用於圖片翻譯）**
+**2. 可選：計算機視覺憑證（用於圖片翻譯）**
 
-- 僅在需要翻譯圖片中的文字時才需提供。
-- **Azure Computer Vision**：需要 Endpoint 與訂閱金鑰。
-- 若未提供，Action 將預設為 [僅 Markdown 模式](../markdown-only-mode.md)。
-- 設定指南：[設定 Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md)。
+- 僅在需要翻譯圖片中的文本時才需要。
+- **Azure Computer Vision**：需要端點和訂閱密鑰。
+- 如果未提供，操作默認為 [Markdown-only 模式](../markdown-only-mode.md)。
+- 設置指南：[設置 Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md)。
 
-## 安裝與設定
+## 設置和配置
 
-請依下列步驟，在您的倉庫中設定 Co-op Translator GitHub Action：
+按照以下步驟在您的存儲庫中配置 Co-op Translator GitHub Action：
 
-### 步驟 1：安裝並設定 GitHub App 認證
+### 步驟 1：安裝和配置 GitHub App 認證
 
-此工作流程使用 GitHub App 認證，以安全地代表您與倉庫互動（例如建立 Pull Request）。請選擇以下其中一個方案：
+工作流程使用 GitHub App 認證安全地與您的存儲庫交互（例如，創建拉取請求）。選擇一個選項：
 
-#### **方案 A：安裝預建 Co-op Translator GitHub App（僅限 Microsoft 內部使用）**
+#### **選項 A：安裝預建的 Co-op Translator GitHub App（僅限 Microsoft 內部使用）**
 
 1. 前往 [Co-op Translator GitHub App](https://github.com/apps/co-op-translator) 頁面。
 
-1. 選擇 **Install**，並選擇目標倉庫所在的帳戶或組織。
+1. 選擇 **安裝** 並選擇您的目標存儲庫所在的帳戶或組織。
 
-    ![Install app](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.mo.png)
+    ![安裝應用](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.mo.png)
 
-1. 選擇 **Only select repositories**，並挑選目標倉庫（例如 `PhiCookBook`）。點擊 **Install**。系統可能會要求您進行身份驗證。
+1. 選擇 **僅選擇存儲庫** 並選擇您的目標存儲庫（例如 `PhiCookBook`）。點擊 **安裝**。您可能需要進行身份驗證。
 
-    ![Install authorize](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.mo.png)
+    ![安裝授權](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.mo.png)
 
-1. **取得 App 憑證（需內部流程）：** 為讓工作流程能以 App 身份驗證，您需要從 Co-op Translator 團隊取得兩項資訊：
-  - **App ID：** Co-op Translator App 的唯一識別碼，App ID 為：`1164076`。
-  - **私鑰：** 請從維護者聯絡人取得 `.pem` 私鑰檔案的**完整內容**。**此私鑰請妥善保管，視同密碼。**
+1. **獲取應用憑證（需要內部流程）：** 為了使工作流程以應用身份進行身份驗證，您需要由 Co-op Translator 團隊提供的兩條信息：
+  - **App ID：** Co-op Translator 應用的唯一標識符。App ID 是：`1164076`。
+  - **私鑰：** 您必須從維護者聯繫人處獲得 `.pem` 私鑰文件的 **完整內容**。**像密碼一樣對待此密鑰並保持其安全。**
 
-1. 繼續進行步驟 2。
+1. 進入步驟 2。
 
-#### **方案 B：使用您自訂的 GitHub App**
+#### **選項 B：使用您自己的自定義 GitHub App**
 
-- 若您願意，也可以自行建立並設定 GitHub App。請確保該 App 擁有 Contents 與 Pull requests 的讀寫權限。您將需要該 App 的 App ID 與產生的私鑰。
+- 如果您願意，您可以創建並配置自己的 GitHub App。確保它具有對內容和拉取請求的讀寫訪問權限。您將需要其 App ID 和生成的私鑰。
 
-### 步驟 2：設定倉庫秘密（Secrets）
+### 步驟 2：配置存儲庫秘密
 
-您需將 GitHub App 憑證與 AI 服務憑證以加密秘密的形式加入倉庫設定。
+您需要將 GitHub App 憑證和您的 AI 服務憑證添加為加密的秘密到您的存儲庫設置中。
 
-1. 前往目標 GitHub 倉庫（例如 `PhiCookBook`）。
+1. 前往您的目標 GitHub 存儲庫（例如 `PhiCookBook`）。
 
-1. 點選 **Settings** > **Secrets and variables** > **Actions**。
+1. 進入 **設置** > **秘密和變量** > **操作**。
 
-1. 在 **Repository secrets** 底下，針對以下每個秘密點擊 **New repository secret**。
+1. 在 **存儲庫秘密** 下，為以下列出的每個秘密點擊 **新建存儲庫秘密**。
 
-   ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.mo.png)
+   ![選擇設置操作](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.mo.png)
 
-**必要秘密（GitHub App 認證）：**
+**必需的秘密（用於 GitHub App 認證）：**
 
-| 秘密名稱            | 說明                                         | 來源                                               |
-| :------------------- | :------------------------------------------- | :------------------------------------------------- |
-| `GH_APP_ID`          | GitHub App 的 App ID（來自步驟 1）。          | GitHub App 設定                                    |
-| `GH_APP_PRIVATE_KEY` | 下載的 `.pem` 私鑰檔案的**完整內容**。 | `.pem` 檔案（來自步驟 1）              |
+| 秘密名稱          | 描述                                      | 值來源                                     |
+| :------------------- | :----------------------------------------------- | :----------------------------------------------- |
+| `GH_APP_ID`          | GitHub App 的 App ID（來自步驟 1）。      | GitHub App 設置                              |
+| `GH_APP_PRIVATE_KEY` | 下載的 `.pem` 文件的 **完整內容**。 | `.pem` 文件（來自步驟 1）                      |
 
-**AI 服務秘密（依前置條件需求，全部適用皆需加入）：**
+**AI 服務秘密（根據您的先決條件添加所有適用的）：**
 
-| 秘密名稱                         | 說明                                     | 來源                           |
-| :---------------------------------- | :---------------------------------------- | :------------------------------ |
-| `AZURE_SUBSCRIPTION_KEY`            | Azure AI 服務（電腦視覺）金鑰              | Azure AI Foundry                |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI 服務（電腦視覺）Endpoint          | Azure AI Foundry                |
-| `AZURE_OPENAI_API_KEY`              | Azure OpenAI 服務金鑰                      | Azure AI Foundry                |
-| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI 服務 Endpoint                 | Azure AI Foundry                |
-| `AZURE_OPENAI_MODEL_NAME`           | 您的 Azure OpenAI 模型名稱                 | Azure AI Foundry                |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | 您的 Azure OpenAI 部署名稱                 | Azure AI Foundry                |
-| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI API 版本                      | Azure AI Foundry                |
-| `OPENAI_API_KEY`                    | OpenAI API 金鑰                           | OpenAI Platform                |
-| `OPENAI_ORG_ID`                     | OpenAI 組織 ID                            | OpenAI Platform                |
-| `OPENAI_CHAT_MODEL_ID`              | 特定 OpenAI 模型 ID                        | OpenAI Platform                |
-| `OPENAI_BASE_URL`                   | 自訂 OpenAI API Base URL                  | OpenAI Platform                |
+| 秘密名稱                         | 描述                               | 值來源                     |
+| :---------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_SUBSCRIPTION_KEY`            | Azure AI 服務（計算機視覺）的密鑰  | Azure AI Foundry                    |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI 服務（計算機視覺）的端點 | Azure AI Foundry                     |
+| `AZURE_OPENAI_API_KEY`              | Azure OpenAI 服務的密鑰              | Azure AI Foundry                     |
+| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI 服務的端點         | Azure AI Foundry                     |
+| `AZURE_OPENAI_MODEL_NAME`           | 您的 Azure OpenAI 模型名稱              | Azure AI Foundry                     |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | 您的 Azure OpenAI 部署名稱         | Azure AI Foundry                     |
+| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI 的 API 版本              | Azure AI Foundry                     |
+| `OPENAI_API_KEY`                    | OpenAI 的 API 密鑰                        | OpenAI 平台                  |
+| `OPENAI_ORG_ID`                     | OpenAI 組織 ID                    | OpenAI 平台                  |
+| `OPENAI_CHAT_MODEL_ID`              | 特定 OpenAI 模型 ID                  | OpenAI 平台                    |
+| `OPENAI_BASE_URL`                   | 自定義 OpenAI API 基礎 URL                | OpenAI 平台                    |
 
-![Enter environment variable name](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.mo.png)
+![輸入環境變量名稱](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.mo.png)
 
-### 步驟 3：建立工作流程檔案
+### 步驟 3：創建工作流程文件
 
-最後，建立定義自動化工作流程的 YAML 檔案。
+最後，創建定義自動化工作流程的 YAML 文件。
 
-1. 在您的倉庫根目錄下，若尚未存在 `.github/workflows/` 目錄，請先建立。
+1. 在您的存儲庫根目錄中，如果不存在，請創建 `.github/workflows/` 目錄。
 
-1. 在 `.github/workflows/` 目錄內，建立名為 `co-op-translator.yml` 的檔案。
+1. 在 `.github/workflows/` 中創建名為 `co-op-translator.yml` 的文件。
 
-1. 將以下內容貼入 co-op-translator.yml。
+1. 將以下內容粘貼到 co-op-translator.yml 中。
 
 ```
 name: Co-op Translator
@@ -209,7 +207,7 @@ jobs:
 
 ```
 
-4.  **自訂工作流程：**
+4.  **自定義工作流程：**
   - **[!IMPORTANT] 目標語言：** 在 `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
   - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
   - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
@@ -217,13 +215,13 @@ jobs:
 ## Credential Management and Renewal
 
 - **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` 相關欄位中設定，並確保密鑰在**過期前**更新，以避免工作流程失敗。
+- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` 鍵）**在它們過期之前**，以防止工作流程失敗。
 
-## 執行工作流程
+## 運行工作流程
 
-當 `co-op-translator.yml` 檔案合併至您的 main 分支（或 `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` 篩選設定的分支）後。
+一旦 `co-op-translator.yml` 文件合併到您的主分支（或配置的 `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` 過濾器中指定的分支）。
 
-若有產生或更新翻譯，該 Action 將自動建立包含變更的 Pull Request，供您審核與合併。
+如果生成或更新了翻譯，該操作將自動創建一個包含更改的拉取請求，等待您的審查和合併。
 
-**免責聲明**：  
-本文件使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。雖然我們力求準確，但請注意自動翻譯可能包含錯誤或不準確之處。原始文件的母語版本應視為權威來源。對於重要資訊，建議採用專業人工翻譯。我們不對因使用本翻譯所引起的任何誤解或誤譯負責。
+**免責聲明**：
+本文件已使用AI翻譯服務[Co-op Translator](https://github.com/Azure/co-op-translator)進行翻譯。我們努力確保準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原始語言的文件視為權威來源。對於關鍵信息，建議尋求專業人工翻譯。我們對因使用此翻譯而產生的任何誤解或誤釋不承擔責任。

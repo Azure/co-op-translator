@@ -2,28 +2,24 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "c64ba65e091e5d87385490fa63a8f574",
-  "translation_date": "2025-06-12T12:33:25+00:00",
+  "translation_date": "2025-06-14T12:50:13+00:00",
   "source_file": "getting_started/command-line-guide/command-line-guide.md",
   "language_code": "mo"
 }
 -->
-# Co-op Translator command line interface (CLI) хэрхэн ашиглах
+# 如何使用 Co-op Translator 命令列介面 (CLI)
 
-## Урьдчилсан шаардлага
+## 先決條件
 
-- **Python 3.10 ба түүнээс дээш хувилбар**: Co-op Translator ажиллуулахад шаардлагатай.
+- **Python 3.10 或更高版本**：執行 Co-op Translator 所需。
 
-## Агуулга
+## 目錄
 
-1. [Үндсэн хавтас дотор '.env' файл үүсгэх](./create-env-file.md)
-   - Сонгосон хэлний загварын үйлчилгээнд шаардлагатай түлхүүрүүдийг оруулах.
-   - Хэрэв Azure Computer Vision-ийн түлхүүрүүдийг оруулаагүй эсвэл `-md` заасан бол орчуулагч зөвхөн Markdown горимд ажиллана.
-1. [Co-op translator багцыг суулгах](./install-package.md)
-1. [Co-op Translator ашиглан төслөө орчуулах](./translator-your-project.md)
+1. [在根目錄中創建 '.env' 文件](./create-env-file.md)
+   - 包含所選語言模型服務所需的密鑰。
+   - 如果省略 Azure Computer Vision 密鑰或指定 `-md`，翻譯器將僅在 Markdown 模式下運行。
+1. [安裝 Co-op Translator 套件](./install-package.md)
+1. [使用 Co-op Translator 翻譯您的專案](./translator-your-project.md)
 
-**Disclaimer**:  
-This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.
-
----
-
-(Note: "mo" is not a recognized language code or name in my data. Could you please clarify which language "mo" refers to?)
+**免責聲明**：
+此文件已使用AI翻譯服務[Co-op Translator](https://github.com/Azure/co-op-translator)進行翻譯。我們努力追求準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原始語言的文件視為權威來源。對於關鍵信息，建議尋求專業人工翻譯。我們不對因使用此翻譯而引起的任何誤解或誤釋承擔責任。

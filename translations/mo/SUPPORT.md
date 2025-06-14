@@ -2,40 +2,32 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "62fe65c1d8e3796c01aa1e3c89666cba",
-  "translation_date": "2025-06-12T11:15:25+00:00",
+  "translation_date": "2025-06-14T12:48:56+00:00",
   "source_file": "SUPPORT.md",
   "language_code": "mo"
 }
 -->
-# TODO: The maintainer of this repo has not yet edited this file
+# TODO: 此存儲庫的維護者尚未編輯此文件
 
-**REPO OWNER**: Do you want Customer Service & Support (CSS) support for this product/project?
+**存儲庫擁有者**：您是否希望此產品/專案獲得客戶服務與支持（CSS）的支援？
 
-- **No CSS support:** Fill out this template with information about how to file issues and get help.
-- **Yes CSS support:** Fill out an intake form at [aka.ms/onboardsupport](https://aka.ms/onboardsupport). CSS will work with/help you to determine next steps.
-- **Not sure?** Fill out an intake as though the answer were "Yes". CSS will help you decide.
+- **無 CSS 支援：** 使用此模板填寫有關如何提交問題和獲得幫助的信息。
+- **有 CSS 支援：** 在 [aka.ms/onboardsupport](https://aka.ms/onboardsupport) 填寫接收表單。CSS 將與您合作/幫助您確定下一步。
+- **不確定？** 填寫接收表單，假設答案是“是”。CSS 會幫助您做出決定。
 
-*Then remove this first heading from this SUPPORT.MD file before publishing your repo.*
+*然後在發布您的存儲庫之前，從此 SUPPORT.MD 文件中刪除此第一個標題。*
 
-# Support
+# 支援
 
-## How to file issues and get help  
+## 如何提交問題和獲得幫助
 
-This project uses GitHub Issues to track bugs and feature requests. Please search the existing 
-issues before filing new issues to avoid duplicates.  For new issues, file your bug or 
-feature request as a new Issue.
+此專案使用 GitHub Issues 來追蹤錯誤和功能請求。在提交新問題之前，請先搜索現有問題以避免重複。對於新問題，請將您的錯誤或功能請求作為新問題提交。
 
-For help and questions about using this project, please **REPO MAINTAINER: INSERT INSTRUCTIONS HERE 
-FOR HOW TO ENGAGE REPO OWNERS OR COMMUNITY FOR HELP. COULD BE A STACK OVERFLOW TAG OR OTHER
-CHANNEL. WHERE WILL YOU HELP PEOPLE?**.
+如需有關使用此專案的幫助和問題，請 **存儲庫維護者：在此插入有關如何聯繫存儲庫擁有者或社群以獲得幫助的說明。可能是一個 STACK OVERFLOW 標籤或其他渠道。您將在哪裡幫助人們？**。
 
-## Microsoft Support Policy  
+## 微軟支援政策
 
-Support for this **PROJECT or PRODUCT** is limited to the resources listed above.
+對於此 **專案或產品** 的支援僅限於上述資源。
 
-**Disclaimer**:  
-This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.
-
----
-
-I’m not familiar with a language or script called “mo.” Could you please clarify or provide more details about the language or script you want the text translated into?
+**免責聲明**：
+本文件是使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 翻譯的。我們努力追求準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原始語言的文件視為權威來源。對於關鍵信息，建議使用專業人工翻譯。我們對因使用此翻譯而產生的任何誤解或誤釋不承擔責任。

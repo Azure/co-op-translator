@@ -2,18 +2,18 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:31:56+00:00",
+  "translation_date": "2025-06-14T12:50:27+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "mo"
 }
 -->
-# 安裝 Co-op translator 套件
+# 安裝 Co-op 翻譯器套件
 
-**Co-op Translator** 是一款命令列介面（CLI）工具，能幫助你將專案中的所有 Markdown 檔案和圖片翻譯成多種語言。本教學將引導你設定翻譯工具並示範各種使用情境的操作。
+**Co-op Translator** 是一個命令行介面（CLI）工具，旨在幫助您將項目中的所有 Markdown 文件和圖片翻譯成多種語言。本教程將指導您配置翻譯器並在各種使用情況下運行它。
 
-### 建立虛擬環境
+### 創建虛擬環境
 
-你可以使用 `pip` 或 `Poetry` 來建立虛擬環境。請在終端機中輸入以下任一指令。
+您可以使用 `pip` 或 `Poetry` 創建虛擬環境。在終端中輸入以下命令之一。
 
 #### 使用 pip
 
@@ -29,17 +29,17 @@ poetry init
 
 ### 啟動虛擬環境
 
-建立虛擬環境後，需要啟動它。根據你的作業系統，步驟會有所不同。請在終端機中輸入以下指令。
+創建虛擬環境後，您需要啟動它。步驟因操作系統而異。在終端中輸入以下命令。
 
-#### pip 和 Poetry 通用
+#### 適用於 pip 和 Poetry
 
-- Windows：
+- Windows:
 
     ```bash
     .venv\Scripts\activate
     ```
 
-- Mac/Linux：
+- Mac/Linux:
 
     ```bash
     source .venv/bin/activate
@@ -47,35 +47,35 @@ poetry init
 
 #### 使用 Poetry
 
-1. 如果你是用 Poetry 建立虛擬環境，請在終端機中輸入以下指令來啟動它。
+1. 如果您使用 Poetry 創建環境，請在終端中輸入以下命令以啟動它。
 
     ```bash
     poetry shell
     ```
 
-### 安裝套件及所需依賴
+### 安裝套件和所需的套件
 
-當虛擬環境建立並啟動完成後，下一步是安裝所需的依賴套件。
+一旦您的虛擬環境設置並啟動，下一步就是安裝必要的依賴項。
 
 ### 快速安裝
 
-透過 pip 安裝 Co-Op Translator
+通過 pip 安裝 Co-Op Translator
 
 ```
 pip install co-op-translator
-```  
+```
 或者
 
-透過 Poetry 安裝  
+通過 poetry 安裝
 ```
 poetry add co-op-translator
 ```
 
-#### 使用 pip（從 requirements.txt）若你是從此倉庫複製
+#### 使用 pip（從 requirements.txt）如果您克隆此 repo
 
-![NOTE] 若你是用快速安裝方式安裝 co-op translator，請勿使用此方法。
+![NOTE] 如果您通過快速安裝安裝 co-op translator，請不要這樣做。
 
-1. 若你使用 pip，請在終端機中輸入以下指令，系統會自動安裝 `requirements.txt` 中指定的套件：
+1. 如果您使用 pip，請在終端中輸入以下命令。它將自動安裝 `requirements.txt` 文件中指定的所需套件：
 
     ```bash
     pip install -r requirements.txt
@@ -83,11 +83,11 @@ poetry add co-op-translator
 
 #### 使用 Poetry（從 pyproject.toml）
 
-1. 若你使用 Poetry，請在終端機中輸入以下指令，系統會自動安裝 `pyproject.toml` 中指定的套件：
+1. 如果您使用 Poetry，請在終端中輸入以下命令。它將自動安裝 `pyproject.toml` 文件中指定的所需套件：
 
     ```bash
     poetry install
     ```
 
 **免責聲明**：  
-本文件係使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。雖然我們致力於確保翻譯的準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。原始文件的母語版本應被視為權威來源。對於重要資訊，建議採用專業人工翻譯。我們不對因使用本翻譯而產生的任何誤解或誤譯承擔責任。
+本文件使用AI翻譯服務[Co-op Translator](https://github.com/Azure/co-op-translator)進行翻譯。我們努力追求準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原始文件的母語版本視為權威來源。對於關鍵資訊，建議進行專業人工翻譯。我們不對因使用本翻譯而產生的任何誤解或誤譯承擔責任。

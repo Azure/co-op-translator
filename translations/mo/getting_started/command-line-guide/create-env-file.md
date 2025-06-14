@@ -2,34 +2,34 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "66029e3b67a3eb980ab8740367e91283",
-  "translation_date": "2025-06-12T12:39:45+00:00",
+  "translation_date": "2025-06-14T12:50:19+00:00",
   "source_file": "getting_started/command-line-guide/create-env-file.md",
   "language_code": "mo"
 }
 -->
-# Create the *.env* file in the root directory
+# 在根目錄創建 *.env* 文件
 
-In this tutorial, we will guide you through setting up your environment variables for Azure services using an *.env* file. Environment variables let you securely manage sensitive credentials, such as API keys, without embedding them directly in your code.
+在本教程中，我們將指導您使用 *.env* 文件為 Azure 服務設置環境變量。環境變量允許您安全地管理敏感憑證，例如 API 密鑰，而不必將它們硬編碼到您的代碼庫中。
 
 > [!IMPORTANT]
-> - Only one language model service (Azure OpenAI or OpenAI) needs to be configured. Fill in the environment variables for the service you prefer. If variables for multiple language models are set, the co-op translator will choose one based on priority.
-> - If Computer Vision environment variables are missing, the translator will automatically switch to [Markdown-only mode](./markdown-only-mode.md).
+> - 只需配置一個語言模型服務（Azure OpenAI 或 OpenAI）。填寫您首選服務的環境變量。如果設置了多個語言模型的環境變量，合作翻譯器將根據優先級選擇一個。
+> - 如果未設置計算機視覺環境變量，翻譯器將自動切換到[僅 Markdown 模式](./markdown-only-mode.md)。
 
 > [!NOTE]
-> This guide mainly focuses on Azure services, but you can select any supported language model from the [supported models and services list](../README.md#-supported-models-and-services).
+> 本指南主要關注 Azure 服務，但您可以從[支持的模型和服務列表](../README.md#-supported-models-and-services)中選擇任何支持的語言模型。
 
-## Create the *.env* file
+## 創建 *.env* 文件
 
-In your project’s root directory, create a file named *.env*. This file will hold all your environment variables in a straightforward format.
+在您的項目的根目錄中，創建一個名為 *.env* 的文件。此文件將以簡單的格式存儲所有環境變量。
 
 > [!WARNING]
-> Do not commit your *.env* file to version control systems like Git. Add *.env* to your .gitignore file to avoid accidental commits.
+> 不要將您的 *.env* 文件提交到像 Git 這樣的版本控制系統。將 *.env* 添加到您的 .gitignore 文件中以防止意外提交。
 
-1. Go to the root directory of your project.
+1. 導航到您的項目的根目錄。
 
-1. Create an *.env* file in the root directory.
+1. 在項目的根目錄中創建 *.env* 文件。
 
-1. Open the *.env* file and paste the following template:
+1. 打開 *.env* 文件並粘貼以下模板：
 
     ```plaintext
     # Azure Credentials
@@ -51,7 +51,7 @@ In your project’s root directory, create a file named *.env*. This file will h
     ```
 
 > [!NOTE]
-> To find your API keys and endpoints, refer to [set-up-azure-ai.md](../set-up-azure-ai.md).
+> 如果您想查找您的 API 密鑰和端點，可以參考 [set-up-azure-ai.md](../set-up-azure-ai.md)。
 
-**Disclaimer**:  
-Thi documont has ben translaited usin AI translaiton servise [Co-op Translator](https://github.com/Azure/co-op-translator). Wile we stryve for accurasy, plese be awair that automatid translaitons may contain erors or inaccurasies. The origonal documont in its nativ langwage shold be considred the authoritativ sorce. For critcal informasion, profesonal human translaiton is recomended. We ar not liabl for any misundrstandings or misinterpretations arising from the use of this translaiton.
+**免責聲明**：  
+此文件已使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。儘管我們努力確保準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。應以原始語言的文件為權威來源。對於關鍵信息，建議使用專業的人力翻譯。我們對因使用此翻譯而產生的任何誤解或誤釋不承擔責任。

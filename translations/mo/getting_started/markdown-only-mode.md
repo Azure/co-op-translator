@@ -2,56 +2,56 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "9b1b247a8d0f1736459e0e9ede0d9c92",
-  "translation_date": "2025-06-12T11:37:28+00:00",
+  "translation_date": "2025-06-14T12:49:17+00:00",
   "source_file": "getting_started/markdown-only-mode.md",
   "language_code": "mo"
 }
 -->
-# Using Markdown-Only Mode
+# 使用純 Markdown 模式
 
-## Introduction
-Markdown-only 모드는 프로젝트의 Markdown 콘텐츠만 번역하도록 설계되었습니다. 이 모드는 이미지 번역 과정을 건너뛰고 텍스트 콘텐츠에만 집중하기 때문에 이미지 번역이 필요 없거나 Computer Vision 관련 환경 변수가 설정되지 않은 상황에 적합합니다.
+## 介紹
+純 Markdown 模式專為翻譯項目的 Markdown 內容而設計。此模式跳過圖像翻譯過程，僅專注於文字內容，非常適合不需要圖像翻譯或未設置計算機視覺相關環境變數的情況。
 
-## When to Use
-- Computer Vision 관련 환경 변수가 설정되어 있지 않을 때.
-- 이미지 링크를 업데이트하지 않고 텍스트 콘텐츠만 번역하고 싶을 때.
-- 사용자가 `-md` 명령줄 옵션을 명시적으로 지정했을 때.
+## 何時使用
+- 當計算機視覺相關環境變數未配置時。
+- 當您只想翻譯文字內容而不更新圖像鏈接時。
+- 當用戶通過 `-md` 命令行選項明確指定時。
 
-## How to Enable
-Markdown-only 모드를 활성화하려면 명령어에 `-md` 옵션을 사용하세요. 예를 들어:
+## 如何啟用
+要啟用純 Markdown 模式，請在命令中使用 `-md` 選項。例如：
 ```
 translate -l "ko" -md
 ```
 
-또는 Computer Vision 관련 환경 변수가 설정되어 있지 않은 경우 `translate -l "ko"` 명령을 실행하면 자동으로 Markdown-only 모드로 전환됩니다.
+或者如果計算機視覺相關環境變數未配置。運行 `translate -l "ko"` 將自動切換到純 Markdown 模式。
 
 ```
 translate -l "ko"
 ```
 
-이 명령은 Markdown 콘텐츠를 한국어로 번역하며, 이미지 링크는 번역된 이미지 경로가 아닌 원본 경로로 유지합니다.
+此命令將 Markdown 內容翻譯成韓文，並將圖像鏈接更新為其原始路徑，而不是修改為翻譯後的圖像路徑。
 
-## Behavior
-Markdown-only 모드에서는:
-- 번역 과정에서 이미지 번역 단계를 건너뜁니다.
-- Markdown 내 이미지 링크는 변경되지 않고 원본 경로를 가리킵니다.
+## 行為
+在純 Markdown 模式中：
+- 翻譯過程會跳過圖像翻譯步驟。
+- Markdown 中的圖像鏈接保持不變，指向其原始路徑。
 
-## Examples
-### Before
+## 範例
+### 之前
 ```markdown
 ![Image](../../../translated_images/image.aa98bae4d78871bb3b23ac9f938ff86539da4cd6fb4c52dafedc4665135c3d61.mo.png)
 ```
-### After using Markdown-only mode
+### 使用純 Markdown 模式後
 ```markdown
 ![Image](../../../translated_images/image.fc8708ffe1e1ca12c38822b1a382726da4b232025d1daa8a50ab75c8635d0c4a.mo.png)
 ```
 
-## Troubleshooting
-- `-md` 옵션이 명령어에 정확히 지정되었는지 확인하세요.
-- Computer Vision 환경 변수가 번역 과정에 영향을 주지 않는지 점검하세요.
+## 疑難排解
+- 確保在命令中正確指定了 `-md` 選項。
+- 驗證是否有計算機視覺環境變數干擾了該過程。
 
-## Conclusion
-Markdown-only 모드는 이미지 링크를 변경하지 않고 텍스트 콘텐츠만 간편하게 번역할 수 있는 방법을 제공합니다. 이미지 번역이 필요 없거나 Computer Vision 환경 구성이 되어 있지 않은 환경에서 특히 유용합니다.
+## 結論
+純 Markdown 模式提供了一種簡化的方法來翻譯文字內容而不修改圖像鏈接。當圖像翻譯不必要或在缺乏計算機視覺設置的環境中工作時，它特別有用。
 
-**Disclaimer**:  
-Dis dokument has bin transleitid yuzing AI transleishon sarvis [Co-op Translator](https://github.com/Azure/co-op-translator). Wail wi striv for akyurasi, pliz bi awer dat otomated transleishons mei konten erors or inakurytes. Di orijinal dokument in its neitiv langwij shud bi konsidrd di autoritativ sors. For kritikol informeyshon, profeshonal human transleishon is rekomended. Wi ar not laybl for eni misunderstandingz or misinterpretayshons arising from di yuz of dis transleishon.
+**免責聲明**：
+本文檔是使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 翻譯的。我們努力追求準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原始語言的文件視為權威來源。對於關鍵信息，建議使用專業人工翻譯。對於因使用本翻譯而產生的任何誤解或誤釋，我們不承擔責任。

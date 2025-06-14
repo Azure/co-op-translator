@@ -2,24 +2,20 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "e8b14f0e66db374a2ada46e25fac88ae",
-  "translation_date": "2025-06-12T09:19:00+00:00",
+  "translation_date": "2025-06-14T12:46:41+00:00",
   "source_file": "CODE_OF_CONDUCT.md",
   "language_code": "mo"
 }
 -->
-# Microsoft Open Source Code of Conduct
+# Microsoft 開放源碼行為準則
 
-Este proyecto ha adoptado el [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+此專案已採用 [Microsoft 開放源碼行為準則](https://opensource.microsoft.com/codeofconduct/)。
 
-Recursos:
+資源：
 
-- [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/)
-- [Microsoft Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
-- Contacta a [opencode@microsoft.com](mailto:opencode@microsoft.com) para preguntas o inquietudes
+- [Microsoft 開放源碼行為準則](https://opensource.microsoft.com/codeofconduct/)
+- [Microsoft 行為準則常見問題](https://opensource.microsoft.com/codeofconduct/faq/)
+- 如有問題或疑慮，請聯繫 [opencode@microsoft.com](mailto:opencode@microsoft.com)
 
-**Disclaimer**:  
-This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.
-
----
-
-If by "mo" you meant a specific language or code, please clarify so I can provide the accurate translation.
+**免責聲明**：  
+本文檔使用AI翻譯服務[Co-op Translator](https://github.com/Azure/co-op-translator)進行翻譯。我們力求準確，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原語言的原始文件視為權威來源。對於關鍵信息，建議使用專業人工翻譯。我們對因使用此翻譯而引起的任何誤解或誤釋不承擔責任。

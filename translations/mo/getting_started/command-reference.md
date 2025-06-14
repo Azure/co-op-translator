@@ -2,48 +2,48 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b38d8f042530a4bc872def7cb2c141cd",
-  "translation_date": "2025-06-12T11:24:44+00:00",
+  "translation_date": "2025-06-14T12:49:05+00:00",
   "source_file": "getting_started/command-reference.md",
   "language_code": "mo"
 }
 -->
-# Command reference
-The **Co-op Translator** CLI는 번역 과정을 맞춤 설정할 수 있는 여러 옵션을 제공합니다:
+# 指令參考
+**Co-op Translator** CLI 提供多種選項來自訂翻譯過程：
 
-Command                                       | Description
+指令                                       | 描述
 ----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-translate -l "language_codes"                 | 프로젝트를 지정한 언어들로 번역합니다. 예: translate -l "es fr de"는 스페인어, 프랑스어, 독일어로 번역합니다. translate -l "all"을 사용하면 지원하는 모든 언어로 번역합니다.
-translate -l "language_codes" -u              | 기존 번역을 삭제하고 다시 생성하여 번역을 업데이트합니다. 주의: 지정한 언어의 모든 현재 번역이 삭제됩니다.
-translate -l "language_codes" -img            | 이미지 파일만 번역합니다.
-translate -l "language_codes" -md             | Markdown 파일만 번역합니다.
-translate -l "language_codes" -chk            | 번역된 파일의 오류를 검사하고 필요 시 번역을 재시도합니다.
-translate -l "language_codes" -d              | 자세한 로그를 위한 디버그 모드를 활성화합니다.
-translate -l "language_codes" -r "root_dir"   | 프로젝트의 루트 디렉터리를 지정합니다.
-translate -l "language_codes" -f              | 이미지 번역에 빠른 모드를 사용합니다 (품질과 정렬이 약간 희생되지만 최대 3배 빠른 처리 속도).
-translate -l "language_codes" -y              | 모든 프롬프트를 자동으로 확인합니다 (CI/CD 파이프라인에 유용).
-translate -l "language_codes" --help          | CLI 내에서 사용 가능한 명령어에 대한 도움말을 표시합니다.
+translate -l "language_codes"                 | 將您的專案翻譯成指定語言。例如：translate -l "es fr de" 會翻譯成西班牙文、法文和德文。使用 translate -l "all" 來翻譯成所有支援的語言。
+translate -l "language_codes" -u              | 更新翻譯，刪除現有的並重新創建。警告：這將刪除指定語言的所有現有翻譯。
+translate -l "language_codes" -img            | 僅翻譯圖片文件。
+translate -l "language_codes" -md             | 僅翻譯 Markdown 文件。
+translate -l "language_codes" -chk            | 檢查翻譯文件中的錯誤，必要時重試翻譯。
+translate -l "language_codes" -d              | 啟用除錯模式以獲取詳細日誌。
+translate -l "language_codes" -r "root_dir"   | 指定專案的根目錄
+translate -l "language_codes" -f              | 使用快速模式進行圖片翻譯（最多可快 3 倍，略微犧牲質量和對齊）。
+translate -l "language_codes" -y              | 自動確認所有提示（對於 CI/CD 管線很有用）
+translate -l "language_codes" --help          | CLI 內的幫助詳情，顯示可用指令
 
-### Usage examples:
+### 使用範例：
 
-  1. 기본 동작 (기존 번역을 삭제하지 않고 새 번역 추가):   translate -l "ko"    translate -l "es fr de" -r "./my_project"
+  1. 預設行為（新增翻譯而不刪除現有的）：   translate -l "ko"    translate -l "es fr de" -r "./my_project"
 
-  2. 기존 번역을 삭제하지 않고 한국어 이미지 번역만 추가:    translate -l "ko" -img
+  2. 僅新增新的韓文圖片翻譯（不刪除現有翻譯）：    translate -l "ko" -img
 
-  3. 모든 한국어 번역을 업데이트 (주의: 기존 한국어 번역이 모두 삭제된 후 재번역):    translate -l "ko" -u
+  3. 更新所有韓文翻譯（警告：這會刪除所有現有韓文翻譯後重新翻譯）：    translate -l "ko" -u
 
-  4. 한국어 이미지 번역만 업데이트 (주의: 기존 한국어 이미지가 모두 삭제된 후 재번역):    translate -l "ko" -img -u
+  4. 僅更新韓文圖片（警告：這會刪除所有現有韓文圖片後重新翻譯）：    translate -l "ko" -img -u
 
-  5. 다른 번역에 영향을 주지 않고 한국어 마크다운 번역만 새로 추가:    translate -l "ko" -md
+  5. 新增韓文的 Markdown 翻譯而不影響其他翻譯：    translate -l "ko" -md
 
-  6. 번역된 파일에서 오류를 검사하고 필요 시 번역 재시도: translate -l "ko" -chk
+  6. 檢查翻譯文件中的錯誤，必要時重試翻譯： translate -l "ko" -chk
 
-  7. 오류 검사 및 재시도 (마크다운 파일만): translate -l "ko" -chk -md
+  7. 檢查翻譯文件中的錯誤，必要時重試翻譯（僅限 Markdown）： translate -l "ko" -chk -md
 
-  8. 오류 검사 및 재시도 (이미지 파일만): translate -l "ko" -chk -img
+  8. 檢查翻譯文件中的錯誤，必要時重試翻譯（僅限圖片）： translate -l "ko" -chk -img
 
-  9. 이미지 번역에 빠른 모드 사용:    translate -l "ko" -img -f
+  9. 使用快速模式進行圖片翻譯：    translate -l "ko" -img -f
 
-  10. 디버그 모드 예시: - translate -l "ko" -d: 디버그 로그 활성화.
+  10. 除錯模式範例： - translate -l "ko" -d: 啟用除錯日誌。
 
-**Disclaimer**:  
-This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.
+**免責聲明**：
+本文件已使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。我們努力確保準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原始語言的文件視為權威來源。對於關鍵信息，建議尋求專業人工翻譯。對於因使用此翻譯而產生的任何誤解或誤釋，我們不承擔責任。

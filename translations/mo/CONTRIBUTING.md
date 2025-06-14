@@ -2,38 +2,38 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:27:12+00:00",
+  "translation_date": "2025-06-14T12:46:48+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "mo"
 }
 -->
-# Contributing to Co-op Translator
+# 貢獻給 Co-op Translator
 
-This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+這個專案歡迎貢獻和建議。大多數貢獻需要您同意一份貢獻者授權協議 (CLA)，聲明您有權並且確實授予我們使用您的貢獻的權利。詳細資訊請訪問 https://cla.opensource.microsoft.com。
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
+當您提交一個拉取請求時，CLA 機器人會自動判定您是否需要提供 CLA 並適當地裝飾 PR（例如，狀態檢查、評論）。只需按照機器人提供的指示操作即可。您只需在所有使用我們 CLA 的倉庫中做一次。
 
-## Development environment setup
+## 開發環境設置
 
-To set up the development environment for this project, we recommend using Poetry for managing dependencies. We use `pyproject.toml` to manage project dependencies, and therefore, to install dependencies, you should use Poetry.
+為了設置此專案的開發環境，我們建議使用 Poetry 來管理依賴項。我們使用 `pyproject.toml` 來管理專案依賴項，因此，要安裝依賴項，您應使用 Poetry。
 
-### Create a virtual environment
+### 創建虛擬環境
 
-#### Using pip
+#### 使用 pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Using Poetry
+#### 使用 Poetry
 
 ```bash
 poetry init
 ```
 
-### Activate the virtual environment
+### 激活虛擬環境
 
-#### For both pip and Poetry
+#### 適用於 pip 和 Poetry
 
 - Windows:
 
@@ -47,46 +47,46 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Using Poetry
+#### 使用 Poetry
 
 ```bash
 poetry shell
 ```
 
-### Installing the Package and required Packages
+### 安裝套件和所需套件
 
-#### Using Poetry (from pyproject.toml)
+#### 使用 Poetry（從 pyproject.toml）
 
 ```bash
 poetry install
 ```
 
-### Manual testing
+### 手動測試
 
-Before submitting a PR, it's important to test the translation functionality with real documentation:
+在提交 PR 之前，使用真實文件測試翻譯功能是很重要的：
 
-1. Create a test directory in the root directory:
+1. 在根目錄中創建一個測試目錄：
     ```bash
     mkdir test_docs
     ```
 
-2. Copy some markdown documentation and images you want to translate into the test directory. For example:
+2. 將一些您想翻譯的 Markdown 文件和圖片複製到測試目錄中。例如：
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. Install the package locally:
+3. 在本地安裝套件：
     ```bash
     pip install -e .
     ```
 
-4. Run Co-op Translator on your test documents:
+4. 在您的測試文件上運行 Co-op Translator：
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Check the translated files in `test_docs/translations` and `test_docs/translated_images` to verify:
+5. 檢查 `test_docs/translations` and `test_docs/translated_images` to verify:
    - The translation quality
    - The metadata comments are correct
    - The original markdown structure is preserved
@@ -96,44 +96,43 @@ This manual testing helps ensure that your changes work well in real-world scena
 
 ### Environment variables
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template` file.
-1. Fill in the environment variables as guided.
+1. Create an `.env` file in the root directory by copying the provided `.env.template` 文件中的翻譯文件。
+1. 按指導填寫環境變數。
 
 > [!TIP]
 >
-> ### Additional development environment options
+> ### 額外的開發環境選項
 >
-> Besides running the project locally, you can also use GitHub Codespaces or VS Code Dev Containers for an alternative development environment setup.
+> 除了在本地運行專案外，您還可以使用 GitHub Codespaces 或 VS Code Dev Containers 來設置替代的開發環境。
 >
 > #### GitHub Codespaces
 >
-> You can run this sample virtually using GitHub Codespaces without any extra settings or setup required.
+> 您可以使用 GitHub Codespaces 虛擬運行這些範例，並且不需要額外的設置或配置。
 >
-> The button will open a web-based VS Code instance in your browser:
+> 該按鈕將在您的瀏覽器中打開基於 Web 的 VS Code 實例：
 >
-> 1. Open the template (this may take a few minutes):
+> 1. 打開模板（這可能需要幾分鐘）：
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
-> #### Running Locally using VS Code Dev Containers
+> #### 本地運行使用 VS Code Dev Containers
 >
-> ⚠️ This option only works if your Docker Desktop is allocated at least 16 GB of RAM. If you have less than 16 GB of RAM, you can try the [GitHub Codespaces option](../..) or [set it up locally](../..).
+> ⚠️ 此選項僅在您的 Docker Desktop 分配至少 16 GB RAM 時有效。如果您的 RAM 少於 16 GB，可以嘗試 [GitHub Codespaces 選項](../..) 或 [在本地設置](../..)。
 >
-> Another option is VS Code Dev Containers, which will open the project in your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> 相關選項是 VS Code Dev Containers，這將使用 [Dev Containers 擴展](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) 在本地 VS Code 中打開專案：
 >
-> 1. Start Docker Desktop (install it if not already installed)
-> 2. Open the project:
+> 1. 啟動 Docker Desktop（如果未安裝則安裝）
+> 2. 打開專案：
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
+### 代碼風格
 
-### Code Style
+我們使用 [Black](https://github.com/psf/black) 作為我們的 Python 代碼格式化工具，以在專案中維持一致的代碼風格。Black 是一個毫不妥協的代碼格式化工具，它會自動重新格式化 Python 代碼以符合 Black 代碼風格。
 
-We use [Black](https://github.com/psf/black) as our Python code formatter to maintain consistent code style across the project. Black is a strict code formatter that automatically reformats Python code to comply with the Black code style.
+#### 配置
 
-#### Configuration
-
-The Black configuration is specified in our `pyproject.toml`:
+Black 的配置在我們的 `pyproject.toml` 中指定：
 
 ```toml
 [tool.black]
@@ -142,85 +141,85 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-#### Installing Black
+#### 安裝 Black
 
-You can install Black using either Poetry (recommended) or pip:
+您可以使用 Poetry（推薦）或 pip 安裝 Black：
 
-##### Using Poetry
+##### 使用 Poetry
 
-Black is installed automatically when you set up the development environment:
+當您設置開發環境時，Black 會自動安裝：
 ```bash
 poetry install
 ```
 
-##### Using pip
+##### 使用 pip
 
-If you prefer pip, you can install Black directly:
+如果您使用 pip，可以直接安裝 Black：
 ```bash
 pip install black
 ```
 
-#### Using Black
+#### 使用 Black
 
-##### With Poetry
+##### 使用 Poetry
 
-1. Format all Python files in the project:
+1. 格式化專案中的所有 Python 文件：
     ```bash
     poetry run black .
     ```
 
-2. Format a specific file or directory:
+2. 格式化特定文件或目錄：
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
-##### With pip
+##### 使用 pip
 
-1. Format all Python files in the project:
+1. 格式化專案中的所有 Python 文件：
     ```bash
     black .
     ```
 
-2. Format a specific file or directory:
+2. 格式化特定文件或目錄：
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> We recommend configuring your editor to format code automatically with Black on save. Most modern editors support this via extensions or plugins.
+> 我們建議設置您的編輯器以在保存時自動使用 Black 格式化代碼。大多數現代編輯器都支持通過擴展或插件來實現此功能。
 
-## Running Co-op Translator
+## 運行 Co-op Translator
 
-To run Co-op Translator using Poetry in your environment, follow these steps:
+要在您的環境中使用 Poetry 運行 Co-op Translator，請按照以下步驟操作：
 
-1. Go to the directory where you want to perform translation tests or create a temporary folder for testing.
+1. 導航到您想進行翻譯測試的目錄或創建一個臨時文件夾以進行測試。
 
-2. Run the following command. The `-l ko` with the language code you wish to translate into. The `-d` flag activates debug mode.
+2. 執行以下命令。替換 `-l ko` with the language code you wish to translate into. The `-d` 標誌表示調試模式。
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Make sure your Poetry environment is activated (poetry shell) before running the command.
+> 在運行命令之前，請確保您的 Poetry 環境已激活（poetry shell）。
 
-## Maintainers
+## 維護者
 
-### Commit message and Merge strategy
+### 提交信息和合併策略
 
-To keep our project’s commit history clear and consistent, we follow a specific commit message format **for the final commit message** when using the **Squash and Merge** strategy.
+為了確保我們專案的提交歷史的一致性和清晰度，我們遵循特定的提交信息格式 **用於最終提交信息** 當使用 **Squash and Merge** 策略。
 
-When a pull request (PR) is merged, all individual commits are combined into one. The final commit message should follow the format below to keep a clean and consistent history.
+當拉取請求（PR）被合併時，個別提交將被壓縮為一個提交。最終提交信息應遵循以下格式以保持整潔和一致的歷史。
 
-#### Commit message format (for squash and merge)
+#### 提交信息格式（用於壓縮和合併）
 
-We use the following format for commit messages:
+我們使用以下格式的提交信息：
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: Defines the category of the commit. We use these types:
+- **type**: 指定提交的類別。我們使用以下類型：
   - `Docs`: For documentation updates.
   - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
   - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
@@ -230,8 +229,8 @@ We use the following format for commit messages:
 
 **Examples**:
 
-- `Docs: Update installation instructions for clarity (#50)`
-- `Core: Improve handling of image translation (#60)`
+- `Docs: 更新安裝說明以提高清晰度 (#50)`
+- `Core: 改進圖片翻譯處理 (#60)`
 
 > [!NOTE]
 > Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
@@ -251,16 +250,12 @@ When merging, ensure the final commit message follows the commit message format 
 **Example of Squash and Merge**
 If a PR contains the following commits:
 
-- `fix typo`
-- `update README`
-- `adjust formatting`
+- `修正錯字`
+- `更新 README`
+- `調整格式`
 
 They should be squashed into:
-`Docs: Improve documentation clarity and formatting (#65)`
+`Docs: 改善文件清晰度和格式 (#65)`
 
-**Disclaimer**:  
-This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.
-
----
-
-If by "mo" you mean a specific language or code, could you please clarify which language "mo" refers to? This will help me provide an accurate translation.
+**免責聲明**：  
+本文件已使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。我們努力確保準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原始語言的文件視為權威來源。對於關鍵信息，建議尋求專業人工翻譯。我們不對使用此翻譯所引起的任何誤解或誤釋承擔責任。

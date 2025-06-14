@@ -2,98 +2,98 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b58d7c3cb4210697a073d20eb3064945",
-  "translation_date": "2025-06-12T11:47:47+00:00",
+  "translation_date": "2025-06-14T12:49:27+00:00",
   "source_file": "getting_started/set-up-azure-ai.md",
   "language_code": "mo"
 }
 -->
-# Set Up Azure AI for Co-op Translator (Azure OpneAI & Azure AI Vision)
+# 設置 Azure AI 以協作翻譯（Azure OpenAI 和 Azure AI Vision）
 
-This guide walks you through setting up Azure OpenAI for language translation and Azure Computer Vision for image content analysis (which can then be used for image-based translation) within Azure AI Foundry.
+本指南將引導您設置 Azure OpenAI 用於語言翻譯，以及 Azure Computer Vision 用於圖像內容分析（可用於基於圖像的翻譯），在 Azure AI Foundry 中使用。
 
-**Prerequisites:**
-- An Azure account with an active subscription.
-- Sufficient permissions to create resources and deployments in your Azure subscription.
+**先決條件：**
+- 擁有一個有效訂閱的 Azure 帳戶。
+- 有足夠的權限在您的 Azure 訂閱中創建資源和部署。
 
-## Create an Azure AI Project
+## 創建 Azure AI 項目
 
-You'll start by creating an Azure AI Project, which acts as a central place for managing your AI resources.
+您將首先創建一個 Azure AI 項目，作為管理您的 AI 資源的中心。
 
-1. Navigate to [https://ai.azure.com](https://ai.azure.com) and sign in with your Azure account.
+1. 前往 [https://ai.azure.com](https://ai.azure.com) 並使用您的 Azure 帳戶登錄。
 
-1. Select **+Create** to create a new project.
+1. 選擇 **+Create** 來創建一個新項目。
 
-1. Perform the following tasks:
-   - Enter a **Project name** (e.g., `CoopTranslator-Project`).
-   - Select the **AI hub**  (e.g., `CoopTranslator-Hub`) (Create a new one if needed).
+1. 執行以下任務：
+   - 輸入一個 **項目名稱**（例如，`CoopTranslator-Project`）。
+   - 選擇 **AI hub**（例如，`CoopTranslator-Hub`）（如有需要，創建一個新的）。
 
-1. Click "**Review and Create**" to set up your project. You will be taken to your project's overview page.
+1. 點擊 "**Review and Create**" 來設置您的項目。您將被帶到項目的概覽頁面。
 
-## Set up Azure OpenAI for Language Translation
+## 設置 Azure OpenAI 用於語言翻譯
 
-Within your project, you will deploy an Azure OpenAI model to serve as the backend for text translation.
+在您的項目中，您將部署一個 Azure OpenAI 模型作為文本翻譯的後端。
 
-### Navigate to Your Project
+### 瀏覽您的項目
 
-If not already there, open your newly created project (e.g., `CoopTranslator-Project`) in Azure AI Foundry.
+如果尚未打開，請在 Azure AI Foundry 中打開您新創建的項目（例如，`CoopTranslator-Project`）。
 
-### Deploy an OpenAI Model
+### 部署 OpenAI 模型
 
-1. From your project's left-hand menu, under "My assets", select "**Models + endpoints**".
+1. 從項目的左側菜單中，在 "My assets" 下，選擇 "**Models + endpoints**"。
 
-1. Select **+ Deploy model**.
+1. 選擇 **+ Deploy model**。
 
-1. Select **Deploy Base Model**.
+1. 選擇 **Deploy Base Model**。
 
-1. You will be presented with a list of available models. Filter or search for a suitable GPT model. We recommend `gpt-4o`.
+1. 系統將顯示可用模型的列表。篩選或搜索合適的 GPT 模型。我們推薦 `gpt-4o`。
 
-1. Select your desired model and click **Confirm**.
+1. 選擇您想要的模型並點擊 **Confirm**。
 
-1. Select **Deploy**.
+1. 選擇 **Deploy**。
 
-### Azure OpenAI configuration
+### Azure OpenAI 配置
 
-Once deployed, you can select the deployment from the "**Models + endpoints**" page to find its **REST endpoint URL**, **Key**, **Deployment name**, **Model name** and **API version**. These will be needed to integrate the translation model into your application.
+部署完成後，您可以從 "**Models + endpoints**" 頁面選擇該部署，以找到其 **REST endpoint URL**、**Key**、**Deployment name**、**Model name** 和 **API version**。這些將需要集成翻譯模型到您的應用程序中。
 
 > [!NOTE]
-> You can select API versions from the [API version deprecation](https://learn.microsoft.com/azure/ai-services/openai/api-version-deprecation) page based on your requirements. Be aware that the **API version** is different from the **Model version** shown on the **Models + endpoints** page in Azure AI Foundry.
+> 您可以根據需要從 [API 版本棄用](https://learn.microsoft.com/azure/ai-services/openai/api-version-deprecation) 頁面選擇 API 版本。請注意，**API 版本** 與 Azure AI Foundry 中 **Models + endpoints** 頁面上顯示的 **Model version** 不同。
 
-## Set up Azure Computer Vision for Image Translation
+## 設置 Azure Computer Vision 用於圖像翻譯
 
-To enable translation of text within images, you need to find the Azure AI Service API Key and Endpoint.
+為了啟用圖像內文本的翻譯，您需要找到 Azure AI 服務的 API Key 和 Endpoint。
 
-1. Navigate to your Azure AI Project (e.g., `CoopTranslator-Project`). Ensure you are in the project overview page.
+1. 瀏覽到您的 Azure AI 項目（例如，`CoopTranslator-Project`）。確保您在項目概覽頁面。
 
-### Azure AI Service configuration
+### Azure AI 服務配置
 
-Find the API Key and Endpoint from the Azure AI Service.
+從 Azure AI 服務中找到 API Key 和 Endpoint。
 
-1. Navigate to your Azure AI Project (e.g., `CoopTranslator-Project`). Ensure you are in the project overview page.
+1. 瀏覽到您的 Azure AI 項目（例如，`CoopTranslator-Project`）。確保您在項目概覽頁面。
 
-1. Find the **API Key** and **Endpoint** from the Azure AI Service tab.
+1. 從 Azure AI 服務選項卡中找到 **API Key** 和 **Endpoint**。
 
-    ![Find API Key and Endpoint](../../../translated_images/find-azure-ai-info.60f8299be786dd67e61e2c79b4b9ea1f7694e6c0923f17a90bc6abf9d5f1dbd7.mo.png)
+    ![查找 API Key 和 Endpoint](../../../translated_images/find-azure-ai-info.60f8299be786dd67e61e2c79b4b9ea1f7694e6c0923f17a90bc6abf9d5f1dbd7.mo.png)
 
-This connection makes the capabilities of the linked Azure AI Services resource (including image analysis) available to your AI Foundry project. You can then use this connection in your notebooks or applications to extract text from images, which can subsequently be sent to the Azure OpenAI model for translation.
+此連接使得鏈接的 Azure AI 服務資源的功能（包括圖像分析）可用於您的 AI Foundry 項目。然後，您可以在筆記本或應用程序中使用此連接從圖像中提取文本，然後將其發送到 Azure OpenAI 模型進行翻譯。
 
-## Consolidating Your Credentials
+## 整合您的憑據
 
-By now, you should have collected the following:
+到現在為止，您應該已經收集到以下內容：
 
-**For Azure OpenAI (Text Translation):**
+**對於 Azure OpenAI（文本翻譯）：**
 - Azure OpenAI Endpoint
 - Azure OpenAI API Key
-- Azure OpenAI Model Name (e.g., `gpt-4o`)
-- Azure OpenAI Deployment Name (e.g., `cooptranslator-gpt4o`)
+- Azure OpenAI Model Name（例如，`gpt-4o`）
+- Azure OpenAI Deployment Name（例如，`cooptranslator-gpt4o`）
 - Azure OpenAI API Version
 
-**For Azure AI Services (Image Text Extraction via Vision):**
+**對於 Azure AI 服務（通過 Vision 提取圖像文本）：**
 - Azure AI Service Endpoint
 - Azure AI Service API Key
 
-### Example: Environment Variable Configuration (Preview)
+### 示例：環境變量配置（預覽）
 
-Later, when building your application, you'll likely configure it using these collected credentials. For instance, you might set them as environment variables like so:
+稍後，當構建您的應用程序時，您可能會使用這些收集到的憑據來配置它。例如，您可能會將它們設置為環境變量，如下所示：
 
 ```bash
 # Azure AI Service Credentials (Required for image translation)
@@ -110,11 +110,11 @@ AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-12-01-preview
 
 ---
 
-### Further Reading
+### 延伸閱讀
 
-- [How to Create a project in Azure AI Foundry](https://learn.microsoft.com/azure/ai-foundry/how-to/create-projects?tabs=ai-studio)
-- [How to Create Azure AI resources](https://learn.microsoft.com/azure/ai-foundry/how-to/create-azure-ai-resource?tabs=portal)
-- [How to Deploy OpenAI models in Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-openai)
+- [如何在 Azure AI Foundry 中創建項目](https://learn.microsoft.com/azure/ai-foundry/how-to/create-projects?tabs=ai-studio)
+- [如何創建 Azure AI 資源](https://learn.microsoft.com/azure/ai-foundry/how-to/create-azure-ai-resource?tabs=portal)
+- [如何在 Azure AI Foundry 中部署 OpenAI 模型](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-openai)
 
-**Disclaimer**:  
-This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.
+**免責聲明**：
+本文檔是使用AI翻譯服務[Co-op Translator](https://github.com/Azure/co-op-translator)翻譯的。儘管我們努力確保準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原始語言的文檔視為權威來源。對於關鍵信息，建議使用專業人工翻譯。我們對因使用此翻譯而引起的任何誤解或誤釋不承擔責任。

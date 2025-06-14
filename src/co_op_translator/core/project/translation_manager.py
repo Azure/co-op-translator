@@ -269,6 +269,7 @@ class TranslationManager:
         # Discover markdown files requiring translation
         markdown_files = filter_files(self.root_dir, self.excluded_dirs)
         tasks = []
+        task_info = []  # Store (file_path, language_code) for error reporting
 
         for md_file_path in markdown_files:
             md_file_path = md_file_path.resolve()
@@ -295,6 +296,7 @@ class TranslationManager:
                             md_file_path, language_code
                         )
                     )
+                    task_info.append((str(md_file_path), language_code))
 
         if tasks:  # Check if there are tasks to process
             # Process translations sequentially to avoid rate limiting
@@ -305,8 +307,8 @@ class TranslationManager:
                 1 for r in results if r
             )  # Count successful translations
             errors = [
-                f"Failed to translate {task.__name__}"
-                for task, result in zip(tasks, results)
+                f"Failed to translate markdown file: {file_path} (lang: {lang_code})"
+                for (file_path, lang_code), result in zip(task_info, results)
                 if not result
             ]
         else:
@@ -347,6 +349,7 @@ class TranslationManager:
         # Discover notebook files requiring translation
         notebook_files = filter_files(self.root_dir, self.excluded_dirs)
         tasks = []
+        task_info = []  # Store (file_path, language_code) for error reporting
 
         for notebook_file_path in notebook_files:
             notebook_file_path = notebook_file_path.resolve()
@@ -373,6 +376,7 @@ class TranslationManager:
                             notebook_file_path, language_code
                         )
                     )
+                    task_info.append((str(notebook_file_path), language_code))
 
         if tasks:  # Check if there are tasks to process
             # Process translations sequentially to avoid rate limiting
@@ -383,8 +387,8 @@ class TranslationManager:
                 1 for r in results if r
             )  # Count successful translations
             errors = [
-                f"Failed to translate {task.__name__}"
-                for task, result in zip(tasks, results)
+                f"Failed to translate notebook file: {file_path} (lang: {lang_code})"
+                for (file_path, lang_code), result in zip(task_info, results)
                 if not result
             ]
         else:
@@ -422,6 +426,7 @@ class TranslationManager:
         # Discover image files requiring translation
         image_files = filter_files(self.root_dir, self.excluded_dirs)
         tasks = []
+        task_info = []  # Store (file_path, language_code) for error reporting
 
         for image_file_path in image_files:
             image_file_path = image_file_path.resolve()
@@ -450,6 +455,7 @@ class TranslationManager:
                             image_file_path, language_code, fast_mode=fast_mode
                         )
                     )
+                    task_info.append((str(image_file_path), language_code))
 
         if tasks:
             # Process image translations in parallel for efficiency
@@ -460,9 +466,9 @@ class TranslationManager:
                 1 for r in results if r != str(image_file_path)
             )  # Count successful translations
             errors = [
-                f"Failed to translate {task.__name__}"
-                for task, result in zip(tasks, results)
-                if result == str(image_file_path)
+                f"Failed to translate image file: {file_path} (lang: {lang_code})"
+                for (file_path, lang_code), result in zip(task_info, results)
+                if result == file_path
             ]
         else:
             logger.warning("No image files found for translation.")

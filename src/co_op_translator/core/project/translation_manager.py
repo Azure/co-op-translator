@@ -346,38 +346,38 @@ class TranslationManager:
                         notebook_file.unlink()
                         logger.info(f"Deleted translated notebook: {notebook_file}")
 
-        # Discover notebook files requiring translation
-        notebook_files = filter_files(self.root_dir, self.excluded_dirs)
+        # Discover notebook files requiring translation using supported_notebook_extensions
+        notebook_files = []
+        for ext in self.supported_notebook_extensions:
+            notebook_files.extend(filter_files(self.root_dir, self.excluded_dirs, ext))
         tasks = []
         task_info = []  # Store (file_path, language_code) for error reporting
 
         for notebook_file_path in notebook_files:
             notebook_file_path = notebook_file_path.resolve()
 
-            # Use supported_notebook_extensions for filtering
-            if notebook_file_path.suffix in self.supported_notebook_extensions:
-                for language_code in self.language_codes:
-                    relative_path = notebook_file_path.relative_to(self.root_dir)
-                    translated_notebook_path = (
-                        self.translations_dir / language_code / relative_path
-                    )
+            for language_code in self.language_codes:
+                relative_path = notebook_file_path.relative_to(self.root_dir)
+                translated_notebook_path = (
+                    self.translations_dir / language_code / relative_path
+                )
 
-                    if not update and translated_notebook_path.exists():
-                        logger.info(
-                            f"Skipping already translated notebook file: {translated_notebook_path}"
-                        )
-                        continue
-
+                if not update and translated_notebook_path.exists():
                     logger.info(
-                        f"Translating notebook file: {notebook_file_path} for language: {language_code}"
+                        f"Skipping already translated notebook file: {translated_notebook_path}"
                     )
-                    # Create a task for each notebook file translation
-                    tasks.append(
-                        lambda notebook_file_path=notebook_file_path, language_code=language_code: self.translate_notebook(
-                            notebook_file_path, language_code
-                        )
+                    continue
+
+                logger.info(
+                    f"Translating notebook file: {notebook_file_path} for language: {language_code}"
+                )
+                # Create a task for each notebook file translation
+                tasks.append(
+                    lambda notebook_file_path=notebook_file_path, language_code=language_code: self.translate_notebook(
+                        notebook_file_path, language_code
                     )
-                    task_info.append((str(notebook_file_path), language_code))
+                )
+                task_info.append((str(notebook_file_path), language_code))
 
         if tasks:  # Check if there are tasks to process
             # Process translations sequentially to avoid rate limiting

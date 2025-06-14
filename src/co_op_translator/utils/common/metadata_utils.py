@@ -58,6 +58,76 @@ def create_metadata(
     }
 
 
+def extract_metadata_from_content(content: str) -> dict:
+    """
+    Extract metadata from the content of a markdown file.
+
+    This function looks for metadata embedded as an HTML comment in the format:
+    <!--
+    CO_OP_TRANSLATOR_METADATA:
+    {
+      "original_hash": "sample_hash",
+      "translation_date": "2025-01-30T13:02:53+00:00",
+      "source_file": "test.md",
+      "language_code": "ko"
+    }
+    -->
+
+    Args:
+        content (str): The content of the markdown file
+
+    Returns:
+        dict: Extracted metadata dictionary, or empty dict if no metadata found
+    """
+    # Look for metadata comment
+    metadata_start = content.find("<!--\nCO_OP_TRANSLATOR_METADATA:")
+    if metadata_start == -1:
+        return {}
+
+    # Find the start of the JSON content
+    json_start = content.find("{", metadata_start)
+    if json_start == -1:
+        return {}
+
+    # Find the end of the comment
+    comment_end = content.find("-->\n", json_start)
+    if comment_end == -1:
+        return {}
+
+    # Extract the JSON string
+    json_content = content[json_start:comment_end].strip()
+
+    try:
+        metadata = json.loads(json_content)
+        return metadata
+    except json.JSONDecodeError:
+        return {}
+
+
+def extract_content_without_metadata(content: str) -> str:
+    """
+    Extract content from a markdown file, removing the metadata comment block.
+
+    This function removes the CO_OP_TRANSLATOR_METADATA comment block.
+    Note: This function only removes metadata, not disclaimers or other content.
+
+    Args:
+        content (str): The content of the markdown file
+
+    Returns:
+        str: The content with metadata comments removed
+    """
+    # Remove metadata comment block
+    metadata_start = content.find("<!--\nCO_OP_TRANSLATOR_METADATA:")
+    if metadata_start != -1:
+        comment_end = content.find("-->\n", metadata_start)
+        if comment_end != -1:
+            # Remove the metadata block and the newline after it
+            content = content[:metadata_start] + content[comment_end + 4 :]
+
+    return content.strip()
+
+
 def format_metadata_comment(metadata: dict) -> str:
     """
     Convert a metadata dictionary into a formatted HTML comment.
@@ -84,6 +154,6 @@ def format_metadata_comment(metadata: dict) -> str:
 
     Total lines: 9
     """
-    metadata_json = json.dumps(metadata, indent=2)
+    metadata_json = json.dumps(metadata, indent=2, ensure_ascii=False)
     formatted_comment = f"<!--\nCO_OP_TRANSLATOR_METADATA:\n{metadata_json}\n-->\n"
     return formatted_comment

@@ -40,7 +40,7 @@ def generate_prompt_template(
     """
 
     if len(document_chunk.split("\n")) == 1:
-        prompt = f"Translate the following text to {language_name} ({language_code}). NEVER ADD ANY EXTRA CONTENT OR TAGS OUTSIDE THE TRANSLATION. DO NOT ADD '''markdown OR ANY OTHER TAGS. TRANSLATE ONLY WHAT IS GIVEN TO YOU. MAINTAIN MARKDOWN FORMAT.\n\n{document_chunk}"
+        prompt = f"Translate the following text to {language_name} ({language_code}). NEVER ADD ANY EXTRA CONTENT OR TAGS OUTSIDE THE TRANSLATION. DO NOT ADD '''markdown OR ANY OTHER TAGS. TRANSLATE ONLY WHAT IS GIVEN TO YOU. MAINTAIN MARKDOWN FORMAT."
     else:
         prompt = f"""
         Translate the following markdown file to {language_name} ({language_code}).

@@ -19,15 +19,6 @@ from co_op_translator.utils.common.metadata_utils import (
     create_metadata,
     format_metadata_comment,
 )
-from co_op_translator.utils.llm.markdown_utils import (
-    process_markdown,
-    update_links,
-    generate_prompt_template,
-    count_links_in_markdown,
-    process_markdown_with_many_links,
-    replace_code_blocks_and_inline_code,
-    restore_code_blocks_and_inline_code,
-)
 
 logger = logging.getLogger(__name__)
 

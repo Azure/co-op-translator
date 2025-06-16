@@ -755,7 +755,9 @@ class TranslationManager:
 
         return results
 
-    async def process_api_requests_sequential(self, tasks, task_desc) -> list:
+    async def process_api_requests_sequential(
+        self, tasks, task_desc, file_names=None
+    ) -> list:
         """Execute API requests one at a time in sequence.
 
         Ensures requests are processed in order while providing progress feedback.
@@ -775,10 +777,22 @@ class TranslationManager:
 
         results = []
         with tqdm(total=total_tasks, desc=task_desc) as progress_bar:
-            for task in tasks:
+            for i, task in enumerate(tasks):
+                # Show current file name in progress bar if available
+                if file_names and i < len(file_names):
+                    file_name = file_names[i]
+                    progress_bar.set_description(f"🔄 Translating: {file_name}")
+
+                # Execute task and get result
                 result = await task()  # Execute each task sequentially
                 results.append(result)
-                progress_bar.update(1)  # Update progress bar
+
+                # Update progress bar
+                progress_bar.update(1)
+
+                # Reset description after completion if needed
+                if i + 1 < total_tasks:
+                    progress_bar.set_description(task_desc)
 
         return results
 

@@ -220,7 +220,7 @@ translate -l "zh ja"
     - `.env` ファイルに必要な API キーとエンドポイント情報を入力します。
 
 1. 翻訳を実行する:
-    - Navigate to your project's root directory in your terminal.
+    - ターミナルでプロジェクトのルート ディレクトリに移動します。
     - Execute the translate command, specifying target languages with the `-l` flag:
 
     ```bash

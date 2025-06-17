@@ -227,7 +227,7 @@ translate -l "zh ja"
     translate -l "ko ja fr"
     ```
 
-    _(リポジトリ内の `"ko ja fr"` with your desired space-separated language codes)_
+    _(`"ko ja fr"` をスペースで区切られた希望の言語コードに置き換えてください)_
 
 ### Detailed Usage Guides
 

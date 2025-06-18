@@ -229,7 +229,7 @@ translate -l "zh ja"
 
     _(リポジトリ内の `"ko ja fr"` with your desired space-separated language codes)_
 
-### Detailed Usage Guides
+### 詳細な使用ガイド
 
 Choose the approach that best fits your workflow:
 

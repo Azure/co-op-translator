@@ -221,7 +221,7 @@ translate -l "zh ja"
 
 1. 翻訳を実行する:
     - ターミナルでプロジェクトのルート ディレクトリに移動します。
-    - Execute the translate command, specifying target languages with the `-l` flag:
+    - `-l` フラグを使用してターゲット言語を指定して、translate コマンドを実行します。
 
     ```bash
     translate -l "ko ja fr"

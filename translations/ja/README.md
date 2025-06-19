@@ -229,7 +229,7 @@ translate -l "zh ja"
 
     _(`"ko ja fr"` をスペースで区切られた希望の言語コードに置き換えてください)_
 
-### Detailed Usage Guides
+### 詳細な使用ガイド
 
 Choose the approach that best fits your workflow:
 

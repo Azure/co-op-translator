@@ -231,7 +231,7 @@ translate -l "zh ja"
 
 ### 詳細な使用ガイド
 
-Choose the approach that best fits your workflow:
+ワークフローに最適なアプローチを選択してください。
 
 #### 1. Using the Command Line (CLI)
 

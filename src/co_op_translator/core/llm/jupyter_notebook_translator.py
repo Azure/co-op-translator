@@ -83,11 +83,14 @@ class JupyterNotebookTranslator:
                 
                 try:
                     # Translate the markdown content
+                    # Don't add metadata and disclaimer to individual cells
                     translated_content = await self.markdown_translator.translate_markdown(
                         markdown_content,
                         language_code,
                         notebook_path,
                         markdown_only=markdown_only,
+                        add_metadata=False,
+                        add_disclaimer=False,
                     )
                     
                     # Convert back to the original format (list or string)

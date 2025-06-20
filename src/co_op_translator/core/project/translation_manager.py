@@ -347,9 +347,11 @@ class TranslationManager:
                         logger.info(f"Deleted translated notebook: {notebook_file}")
 
         # Discover notebook files requiring translation using supported_notebook_extensions
-        notebook_files = []
-        for ext in self.supported_notebook_extensions:
-            notebook_files.extend(filter_files(self.root_dir, self.excluded_dirs, ext))
+        all_files = filter_files(self.root_dir, self.excluded_dirs)
+        notebook_files = [
+            file for file in all_files
+            if file.suffix.lower() in self.supported_notebook_extensions
+        ]
         tasks = []
         task_info = []  # Store (file_path, language_code) for error reporting
 

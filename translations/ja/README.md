@@ -233,7 +233,7 @@ translate -l "zh ja"
 
 Choose the approach that best fits your workflow:
 
-#### 1. Using the Command Line (CLI)
+#### 1. コマンドライン（CLI）の使用
 
 - Best for: One-time translations, manual control, or integration into custom scripts.
 - Requires: Local installation of Python and the `co-op-translator` package.

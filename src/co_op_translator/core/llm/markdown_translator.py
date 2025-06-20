@@ -90,6 +90,8 @@ class MarkdownTranslator(ABC):
         language_code: str,
         md_file_path: str | Path,
         markdown_only: bool = False,
+        add_metadata: bool = True,
+        add_disclaimer: bool = True,
     ) -> str:
         """Translate markdown document to target language.
 
@@ -101,15 +103,19 @@ class MarkdownTranslator(ABC):
             language_code: Target language code
             md_file_path: Path to the markdown file
             markdown_only: Skip embedded image translation if True
+            add_metadata: Whether to add metadata comment at the beginning
+            add_disclaimer: Whether to add disclaimer at the end
 
         Returns:
-            str: The translated content with metadata, updated links and a disclaimer.
+            str: The translated content with optional metadata and disclaimer.
         """
         md_file_path = Path(md_file_path)
 
-        # Create and format metadata
-        metadata = self.create_metadata(md_file_path, language_code)
-        metadata_comment = self.format_metadata_comment(metadata)
+        # Create and format metadata (only if requested)
+        metadata_comment = ""
+        if add_metadata:
+            metadata = self.create_metadata(md_file_path, language_code)
+            metadata_comment = self.format_metadata_comment(metadata)
 
         # Step 1: Replace code blocks and inline code with placeholders
         (
@@ -147,7 +153,7 @@ class MarkdownTranslator(ABC):
             translated_content, placeholder_map
         )
 
-        # Step 5: Update links and add disclaimer
+        # Step 5: Update links
         updated_content = update_links(
             md_file_path,
             translated_content,
@@ -155,10 +161,16 @@ class MarkdownTranslator(ABC):
             self.root_dir,
             markdown_only=markdown_only,
         )
-        disclaimer = await self.generate_disclaimer(language_code)
-        updated_content = metadata_comment + updated_content + "\n\n" + disclaimer
+        
+        # Step 6: Add metadata and disclaimer (only if requested)
+        result = updated_content
+        if add_metadata:
+            result = metadata_comment + result
+        if add_disclaimer:
+            disclaimer = await self.generate_disclaimer(language_code)
+            result = result + "\n\n" + disclaimer
 
-        return updated_content
+        return result
 
     async def _run_prompts_sequentially(self, prompts):
         """Execute translation prompts in sequence with timeout protection.

@@ -231,11 +231,11 @@ translate -l "zh ja"
 
 ### 詳細な使用ガイド
 
-Choose the approach that best fits your workflow:
+ワークフローに最適なアプローチを選択してください。
 
-#### 1. Using the Command Line (CLI)
+#### 1. コマンドライン（CLI）の使用
 
-- Best for: One-time translations, manual control, or integration into custom scripts.
+- 最適な用途: 1 回限りの翻訳、手動制御、またはカスタム スクリプトへの統合。
 - 必要なもの: Python と `co-op-translator` パッケージのローカル インストール。
 - Guide: [Command Line Guide](./getting_started/command-line-guide/command-line-guide.md)
 

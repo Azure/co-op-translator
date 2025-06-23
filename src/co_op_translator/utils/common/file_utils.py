@@ -103,25 +103,27 @@ def get_actual_image_path(
 def get_unique_id(file_path: str | Path, root_dir: Path) -> str:
     """
     Generate a unique identifier (hash) for the given file path, based on the relative path to the root directory.
+    This function normalizes path separators to '/' before hashing to ensure consistency across operating systems.
 
     Args:
         file_path (str | Path): The file path to hash.
         root_dir (Path): The root directory to which the file path should be relative.
 
     Returns:
-        str: A SHA-256 hash of the relative file path.
+        str: A SHA-256 hash of the normalized relative file path.
     """
     file_path = Path(file_path).resolve()
     relative_path = file_path.relative_to(root_dir)
 
-    # Convert the relative path to bytes and hash it
-    relative_path_bytes = str(relative_path).encode("utf-8")
+    # Normalize path separators to '/' for cross-platform consistency
+    normalized_path = str(relative_path).replace(os.sep, "/")
+
+    # Convert the normalized path to bytes and hash it
+    relative_path_bytes = normalized_path.encode("utf-8")
     hash_object = hashlib.sha256(relative_path_bytes)
     unique_identifier = hash_object.hexdigest()
 
-    logger.info(
-        f"HASH for relative file path: {relative_path} HASH={unique_identifier}"
-    )
+    logger.info(f"HASH for normalized path: {normalized_path} HASH={unique_identifier}")
 
     return unique_identifier
 

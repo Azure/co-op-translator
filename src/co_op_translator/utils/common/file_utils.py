@@ -116,16 +116,14 @@ def get_unique_id(file_path: str | Path, root_dir: Path) -> str:
     relative_path = file_path.relative_to(root_dir)
 
     # Normalize path separators to '/' for cross-platform consistency
-    normalized_path = str(relative_path).replace(os.sep, '/')
-    
+    normalized_path = str(relative_path).replace(os.sep, "/")
+
     # Convert the normalized path to bytes and hash it
     relative_path_bytes = normalized_path.encode("utf-8")
     hash_object = hashlib.sha256(relative_path_bytes)
     unique_identifier = hash_object.hexdigest()
 
-    logger.info(
-        f"HASH for normalized path: {normalized_path} HASH={unique_identifier}"
-    )
+    logger.info(f"HASH for normalized path: {normalized_path} HASH={unique_identifier}")
 
     return unique_identifier
 

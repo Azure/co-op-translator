@@ -237,7 +237,7 @@ translate -l "zh ja"
 
 - 最適な用途: 1 回限りの翻訳、手動制御、またはカスタム スクリプトへの統合。
 - 必要なもの: Python と `co-op-translator` パッケージのローカル インストール。
-- Guide: [Command Line Guide](./getting_started/command-line-guide/command-line-guide.md)
+- ガイド: [コマンドライン ガイド](./getting_started/command-line-guide/command-line-guide.md)
 
 #### 2. Using GitHub Actions (Automation)
 

@@ -73,6 +73,40 @@ def test_get_unique_id(temp_dir):
     assert len(unique_id) > 0
 
 
+def test_cross_platform_path_hash_consistency(temp_dir, monkeypatch):
+    """Test that path hashing is consistent across different OS path separators."""
+    import os
+
+    # Setup test directory structure
+    test_dir = temp_dir / "test_dir"
+    test_dir.mkdir()
+    file_path = test_dir / "subdir" / "test_file.txt"
+    file_path.parent.mkdir(parents=True)
+    file_path.touch()
+
+    # Case 1: Get hash with default OS path separator
+    original_hash = get_unique_id(file_path, temp_dir)
+
+    # Case 2: Simulate Windows-style paths with backslashes
+    windows_style_path = str(file_path).replace("/", "\\")
+    windows_hash = get_unique_id(windows_style_path, temp_dir)
+
+    # Case 3: Simulate Unix-style paths with forward slashes
+    unix_style_path = str(file_path).replace("\\", "/")
+    unix_hash = get_unique_id(unix_style_path, temp_dir)
+
+    # All hashes should be identical regardless of path separator style
+    assert (
+        original_hash == windows_hash
+    ), "Hash should be the same regardless of Windows or default style paths"
+    assert (
+        original_hash == unix_hash
+    ), "Hash should be the same regardless of Unix or default style paths"
+    assert (
+        windows_hash == unix_hash
+    ), "Hash should be the same regardless of Windows or Unix style paths"
+
+
 def test_get_filename_and_extension():
     """Test extracting filename and extension."""
     test_cases = [

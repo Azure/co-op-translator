@@ -236,7 +236,7 @@ translate -l "zh ja"
 #### 1. コマンドライン（CLI）の使用
 
 - 最適な用途: 1 回限りの翻訳、手動制御、またはカスタム スクリプトへの統合。
-- Requires: Local installation of Python and the `co-op-translator` package.
+- 必要なもの: Python と `co-op-translator` パッケージのローカル インストール。
 - Guide: [Command Line Guide](./getting_started/command-line-guide/command-line-guide.md)
 
 #### 2. Using GitHub Actions (Automation)

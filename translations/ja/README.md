@@ -239,7 +239,7 @@ translate -l "zh ja"
 - 必要なもの: Python と `co-op-translator` パッケージのローカル インストール。
 - Guide: [Command Line Guide](./getting_started/command-line-guide/command-line-guide.md)
 
-#### 2. Using GitHub Actions (Automation)
+#### 2. GitHub Actions（自動化）の使用
 
 - Best for: Automatically translating content whenever changes are pushed to your repository. Keeps translations consistently up-to-date.
 - Requires: Setting up a workflow file (`.github/workflows` を置き換えてください。ローカルインストールは不要です。)_

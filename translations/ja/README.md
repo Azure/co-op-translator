@@ -242,7 +242,7 @@ translate -l "zh ja"
 #### 2. Using GitHub Actions (Automation)
 
 - Best for: Automatically translating content whenever changes are pushed to your repository. Keeps translations consistently up-to-date.
-- Requires: Setting up a workflow file (`.github/workflows` を置き換えてください。ローカルインストールは不要です。)_
+- 必要なもの：リポジトリにワークフローファイル（`.github/workflows`）を設定する必要があります。ローカルインストールは不要です。
 
 - ガイド：
   - [GitHub Actions Guide (Public Repositories & Standard Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) - 一般のパブリックまたは個人リポジトリで標準リポジトリシークレットを使う場合はこちら。

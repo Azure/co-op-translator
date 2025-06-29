@@ -141,3 +141,140 @@ class ProjectTranslator:
             modified_count + markdown_count + image_count,
             errors + markdown_errors + image_errors,
         )
+
+    async def retranslate_low_confidence_files(
+        self, language_code: str, min_confidence: float = 0.7
+    ):
+        """Retranslate files with confidence scores below the specified threshold.
+
+        This method finds translations with low confidence scores from previous evaluations
+        and retranslates them to improve quality.
+
+        Args:
+            language_code: Target language code to process
+            min_confidence: Minimum confidence threshold (files below this will be retranslated)
+
+        Returns:
+            Tuple containing (number_of_retranslated_files, error_messages_list)
+        """
+        # Import the evaluator here to avoid circular imports
+        from co_op_translator.core.project.project_evaluator import ProjectEvaluator
+
+        # Create an evaluator to get low confidence files
+        evaluator = ProjectEvaluator(
+            root_dir=self.root_dir,
+            translations_dir=self.translations_dir,
+            language_codes=[language_code],
+            excluded_dirs=EXCLUDED_DIRS,
+            use_llm=True,
+            use_rule=True,
+        )
+
+        # Get low confidence files
+        low_confidence_files = await evaluator.get_low_confidence_translations(
+            language_code, min_confidence
+        )
+
+        if not low_confidence_files:
+            logger.info(
+                f"No low confidence files found below threshold {min_confidence}"
+            )
+            return 0, []
+
+        # Prepare files for retranslation
+        files_to_retranslate = []
+        errors = []
+
+        for trans_file_path, confidence in low_confidence_files:
+            trans_file = Path(trans_file_path)
+
+            # Extract metadata to get original file path
+            try:
+                with open(trans_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+
+                from co_op_translator.utils.common.metadata_utils import (
+                    extract_metadata_from_content,
+                )
+
+                metadata = extract_metadata_from_content(content)
+
+                if metadata and "source_file" in metadata:
+                    # Get original file path from metadata
+                    orig_file = self.root_dir / metadata["source_file"]
+
+                    if orig_file.exists():
+                        files_to_retranslate.append((orig_file, confidence))
+                    else:
+                        error_msg = f"Original file not found: {orig_file}"
+                        logger.warning(error_msg)
+                        errors.append(error_msg)
+                else:
+                    error_msg = f"No metadata or source_file in {trans_file}"
+                    logger.warning(error_msg)
+                    errors.append(error_msg)
+            except Exception as e:
+                error_msg = f"Failed to process file {trans_file}: {e}"
+                logger.error(error_msg)
+                errors.append(error_msg)
+
+        if not files_to_retranslate:
+            logger.info("No files could be prepared for retranslation")
+            return 0, errors
+
+        # Retranslate files
+        retranslated = 0
+
+        if not files_to_retranslate:
+            return retranslated, errors
+
+        # Create tasks for retranslation with progress bar
+        tasks = []
+
+        for file_info in files_to_retranslate:
+            orig_file, confidence = file_info
+
+            # Closure to capture the current file information
+            async def translate_task(file=orig_file, conf=confidence):
+                try:
+                    # Log current file being translated
+                    logger.info(f"🔄 Now translating: {file} (confidence: {conf:.2f})")
+
+                    # Use the translation manager to retranslate the file
+                    result = await self.translation_manager.translate_markdown(
+                        file, language_code
+                    )
+                    if result:
+                        logger.debug(
+                            f"Successfully retranslated {file} (previous confidence: {conf:.2f})"
+                        )
+                        return True
+                    else:
+                        error_msg = f"Failed to retranslate {file}"
+                        logger.error(error_msg)
+                        errors.append(error_msg)
+                        return False
+                except Exception as e:
+                    error_msg = f"Error retranslating {file}: {str(e)}"
+                    logger.error(error_msg)
+                    errors.append(error_msg)
+                    return False
+
+            tasks.append(translate_task)
+
+        # Store file information for progress bar
+        file_names = [str(f[0].name) for f in files_to_retranslate]
+
+        # Process translations sequentially with progress bar
+        if tasks:
+            # Use the translation manager's method for processing API requests with file names
+            results = await self.translation_manager.process_api_requests_sequential(
+                tasks,
+                f"🔄 Retranslating low confidence files (<{min_confidence})",
+                file_names,
+            )
+
+            # Count successful translations from results
+            retranslated = sum(1 for result in results if result)
+
+        return retranslated, errors

@@ -130,7 +130,7 @@ class MarkdownTranslator(ABC):
             generate_prompt_template(language_code, language_name, chunk, is_rtl)
             for chunk in document_chunks
         ]
-        results = await self._run_prompts_sequentially(prompts)
+        results = await self._run_prompts_sequentially(prompts, md_file_path)
         translated_content = "\n".join(results)
 
         # Step 4: Restore the code blocks and inline code from placeholders
@@ -151,11 +151,12 @@ class MarkdownTranslator(ABC):
 
         return updated_content
 
-    async def _run_prompts_sequentially(self, prompts):
+    async def _run_prompts_sequentially(self, prompts, md_file_path):
         """Execute translation prompts in sequence with timeout protection.
 
         Args:
             prompts: List of translation prompts to process
+            md_file_path: Path to the markdown file being translated
 
         Returns:
             List of translated text chunks or error messages
@@ -168,15 +169,19 @@ class MarkdownTranslator(ABC):
                 )
                 results.append(result)
             except asyncio.TimeoutError:
-                logger.warning(f"Chunk {index + 1} translation timed out. Skipping...")
+                logger.warning(
+                    f"Translation timeout for chunk {index + 1} of file '{md_file_path.name}': Request exceeded 300 seconds. Check your network connection and API response time."
+                )
                 results.append(
-                    f"Translation for chunk {index + 1} skipped due to timeout."
+                    f"Translation for chunk {index + 1} of '{md_file_path.name}' skipped due to timeout."
                 )
             except Exception as e:
                 logger.error(
-                    f"Error during prompt execution for chunk {index + 1}: {e}"
+                    f"Translation failed for chunk {index + 1} of file '{md_file_path.name}': {str(e)}. Check your API configuration and network connection."
                 )
-                results.append(f"Error during translation of chunk {index + 1}")
+                results.append(
+                    f"Error translating chunk {index + 1} of '{md_file_path.name}': {str(e)}"
+                )
         return results
 
     @abstractmethod
@@ -233,7 +238,9 @@ class MarkdownTranslator(ABC):
         """
         provider = LLMConfig.get_available_provider()
         if provider is None:
-            raise ValueError("No valid LLM provider configured")
+            raise ValueError(
+                "No valid LLM provider configured. Please check your .env file and ensure AZURE_OPENAI_API_KEY or OPENAI_API_KEY is set."
+            )
 
         if provider == LLMProvider.AZURE_OPENAI:
             from co_op_translator.core.llm.providers.azure.markdown_translator import (
@@ -248,4 +255,6 @@ class MarkdownTranslator(ABC):
 
             return OpenAIMarkdownTranslator(root_dir)
         else:
-            raise ValueError(f"Unsupported provider: {provider}")
+            raise ValueError(
+                f"Unsupported LLM provider '{provider}'. Supported providers: AZURE_OPENAI, OPENAI. Please check your configuration."
+            )

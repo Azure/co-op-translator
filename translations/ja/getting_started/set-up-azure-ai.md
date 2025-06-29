@@ -7,7 +7,7 @@ CO_OP_TRANSLATOR_METADATA:
   "language_code": "ja"
 }
 -->
-# Set Up Azure AI for Co-op Translator (Azure OpneAI & Azure AI Vision)
+# Co-op Translator 用の Azure AI のセットアップ (Azure OpneAI & Azure AI Vision)
 
 このガイドでは、Azure AI Foundry内で言語翻訳用のAzure OpenAIと、画像ベースの翻訳に使える画像コンテンツ解析用のAzure Computer Visionの設定方法を説明します。
 

@@ -1,6 +1,5 @@
-"""Test improved error messages across all translator modules.
-
-This test file specifically tests the error message improvements made for issue #46.
+"""
+Tests for verifying user-facing error messages in core translator components.
 """
 
 import pytest

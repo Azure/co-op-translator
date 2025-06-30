@@ -544,18 +544,16 @@ def replace_code_blocks(document: str):
     return document, placeholder_map
 
 
-def restore_code_blocks_and_inline_code(
-    translated_document: str, placeholder_map: dict
-) -> str:
+def restore_code_blocks(translated_document: str, placeholder_map: dict) -> str:
     """
-    Restore code blocks and inline code into the translated document from the placeholders.
+    Restore code blocks into the translated document from the placeholders.
 
     Args:
         translated_document (str): The translated document containing placeholders.
         placeholder_map (dict): A dictionary mapping placeholders to their original code.
 
     Returns:
-        str: The translated document with the original code blocks and inline code restored.
+        str: The translated document with the original code blocks restored.
     """
     for placeholder, code in placeholder_map.items():
         translated_document = translated_document.replace(placeholder, code)

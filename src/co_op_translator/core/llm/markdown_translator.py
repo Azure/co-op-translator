@@ -10,7 +10,7 @@ from co_op_translator.utils.llm.markdown_utils import (
     count_links_in_markdown,
     process_markdown_with_many_links,
     replace_code_blocks,
-    restore_code_blocks_and_inline_code,
+    restore_code_blocks,
 )
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.llm_config.config import LLMConfig
@@ -134,9 +134,7 @@ class MarkdownTranslator(ABC):
         translated_content = "\n".join(results)
 
         # Step 4: Restore the code blocks and inline code from placeholders
-        translated_content = restore_code_blocks_and_inline_code(
-            translated_content, placeholder_map
-        )
+        translated_content = restore_code_blocks(translated_content, placeholder_map)
 
         # Step 5: Update links and add disclaimer
         updated_content = update_links(

@@ -31,7 +31,7 @@ def real_markdown_translator(tmp_path):
 async def test_translate_markdown_partial_mock(real_markdown_translator, tmp_path):
     """Test the translation logic using the real code for:
     - replace_code_blocks
-    - restore_code_blocks_and_inline_code
+    - restore_code_blocks
     - update_links
     but mock _run_prompt to avoid calling a real external translator.
 

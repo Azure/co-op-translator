@@ -13,7 +13,7 @@ from co_op_translator.utils.common.metadata_utils import (
 from co_op_translator.utils.llm.markdown_utils import (
     generate_evaluation_prompt,
     process_markdown,
-    replace_code_blocks_and_inline_code,
+    replace_code_blocks,
     extract_json_from_markdown_codeblock,
 )
 from co_op_translator.config.font_config import FontConfig
@@ -276,12 +276,8 @@ class MarkdownEvaluator(ABC):
             chunk_evaluations = []
             if self.use_llm:
                 # First handle code blocks to prevent them from being evaluated
-                orig_no_code, orig_code_map = replace_code_blocks_and_inline_code(
-                    original_content
-                )
-                trans_no_code, trans_code_map = replace_code_blocks_and_inline_code(
-                    translated_content
-                )
+                orig_no_code, orig_code_map = replace_code_blocks(original_content)
+                trans_no_code, trans_code_map = replace_code_blocks(translated_content)
 
                 # Use LLM for evaluation if use_llm is enabled
                 logger.info(f"Performing LLM-based evaluation for {translated_file}")

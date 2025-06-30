@@ -61,7 +61,7 @@ class AzureMarkdownTranslator(MarkdownTranslator):
                 LLMProvider.AZURE_OPENAI.value
             )
             req_settings.max_tokens = 4096
-            req_settings.temperature = 0.7
+            req_settings.temperature = 0
             req_settings.top_p = 0.8
 
             # Use different logging format for system vs. content prompts

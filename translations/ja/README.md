@@ -237,12 +237,13 @@ translate -l "zh ja"
 
 - 最適な用途: 1 回限りの翻訳、手動制御、またはカスタム スクリプトへの統合。
 - 必要なもの: Python と `co-op-translator` パッケージのローカル インストール。
-- Guide: [Command Line Guide](./getting_started/command-line-guide/command-line-guide.md)
+- ガイド: [コマンドライン ガイド](./getting_started/command-line-guide/command-line-guide.md)
 
-#### 2. Using GitHub Actions (Automation)
+#### 2. GitHub Actions（自動化）の使用
 
-- Best for: Automatically translating content whenever changes are pushed to your repository. Keeps translations consistently up-to-date.
+- 最適な用途：リポジトリに変更がプッシュされるたびにコンテンツを自動的に翻訳します。翻訳を常に最新の状態に保ちます。
 - 必要なもの：リポジトリにワークフローファイル（`.github/workflows`）を設定する必要があります。ローカルインストールは不要です。
+- Requires: Setting up a workflow file (`.github/workflows` を置き換えてください。ローカルインストールは不要です。
 
 - ガイド：
   - [GitHub Actions Guide (Public Repositories & Standard Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) - 一般のパブリックまたは個人リポジトリで標準リポジトリシークレットを使う場合はこちら。

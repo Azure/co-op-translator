@@ -1,68 +1,72 @@
 from pathlib import Path
-import asyncio
+from semantic_kernel import Kernel
+from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
+from semantic_kernel.prompt_template.prompt_template_config import PromptTemplateConfig
+from co_op_translator.core.llm.markdown_evaluator import MarkdownEvaluator
+from co_op_translator.config.llm_config.provider import LLMProvider
+from co_op_translator.config.llm_config.openai import OpenAIConfig
 import logging
 import time
-from semantic_kernel import Kernel
-from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
-from semantic_kernel.prompt_template.prompt_template_config import PromptTemplateConfig
-from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
-from co_op_translator.config.llm_config.provider import LLMProvider
-from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
+import asyncio
 
 logger = logging.getLogger(__name__)
 
 
-class AzureMarkdownTranslator(MarkdownTranslator):
-    """Azure OpenAI implementation for markdown translation."""
+class OpenAIMarkdownEvaluator(MarkdownEvaluator):
+    """OpenAI implementation for markdown evaluation."""
 
-    def __init__(self, root_dir: Path = None):
-        """Initialize translator with Azure-specific configuration.
+    def __init__(
+        self, root_dir: Path = None, use_llm: bool = True, use_rule: bool = True
+    ):
+        """Initialize evaluator with OpenAI-specific configuration.
 
         Args:
             root_dir: Optional root directory for the project
+            use_llm: Whether to use LLM for enhanced evaluation
+            use_rule: Whether to use rule-based evaluation
         """
-        super().__init__(root_dir)
+        super().__init__(root_dir, use_llm, use_rule)
         self.kernel = self._initialize_kernel()
 
     def _initialize_kernel(self):
-        """Create and configure Semantic Kernel with Azure OpenAI service.
+        """Create and configure Semantic Kernel with OpenAI service.
 
         Returns:
             Configured Semantic Kernel instance
         """
         kernel = Kernel()
-        service_id = LLMProvider.AZURE_OPENAI.value
+        service_id = LLMProvider.OPENAI.value
 
         kernel.add_service(
-            AzureChatCompletion(
+            OpenAIChatCompletion(
                 service_id=service_id,
-                deployment_name=AzureOpenAIConfig.get_chat_deployment_name(),
-                endpoint=AzureOpenAIConfig.get_endpoint(),
-                api_key=AzureOpenAIConfig.get_api_key(),
+                ai_model_id=OpenAIConfig.get_chat_model_id(),
+                org_id=OpenAIConfig.get_org_id(),
+                api_key=OpenAIConfig.get_api_key(),
             )
         )
         return kernel
 
     async def _run_prompt(self, prompt: str, index: int, total: int) -> str:
         """
-        Execute a single translation prompt using Azure OpenAI.
+        Execute a single evaluation prompt using OpenAI.
 
         Args:
-            prompt: Translation instruction prompt content
+            prompt: Evaluation instruction prompt content
             index: Current chunk index for progress tracking
             total: Total number of chunks for progress reporting
 
         Returns:
-            Translated text content or empty string on error
+            Evaluation result as text or empty string on error
         """
         try:
             # Configure model parameters for translation quality
             req_settings = self.kernel.get_prompt_execution_settings_from_service_id(
-                LLMProvider.AZURE_OPENAI.value
+                LLMProvider.OPENAI.value
             )
-            req_settings.max_tokens = 4096
+            req_settings.max_tokens = 2048
             req_settings.temperature = 0
-            req_settings.top_p = 0.8
+            req_settings.top_p = 0.95
 
             # Use different logging format for system vs. content prompts
             if index == "disclaimer" or isinstance(index, str):
@@ -74,15 +78,15 @@ class AzureMarkdownTranslator(MarkdownTranslator):
 
             prompt_template_config = PromptTemplateConfig(
                 template=prompt,
-                name="translate",
-                description="Translate a text to another language",
+                name="evaluate",
+                description="Evaluate a text translation quality",
                 template_format="semantic-kernel",
                 execution_settings=req_settings,
             )
 
             function = self.kernel.add_function(
-                function_name="translate_function",
-                plugin_name="translate_plugin",
+                function_name="evaluate_function",
+                plugin_name="evaluate_plugin",
                 prompt_template_config=prompt_template_config,
             )
 

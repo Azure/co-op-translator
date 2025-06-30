@@ -9,8 +9,8 @@ from co_op_translator.utils.llm.markdown_utils import (
     generate_prompt_template,
     count_links_in_markdown,
     process_markdown_with_many_links,
-    replace_code_blocks_and_inline_code,
-    restore_code_blocks_and_inline_code,
+    replace_code_blocks,
+    restore_code_blocks,
 )
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.llm_config.config import LLMConfig
@@ -18,15 +18,6 @@ from co_op_translator.utils.common.metadata_utils import (
     calculate_file_hash,
     create_metadata,
     format_metadata_comment,
-)
-from co_op_translator.utils.llm.markdown_utils import (
-    process_markdown,
-    update_links,
-    generate_prompt_template,
-    count_links_in_markdown,
-    process_markdown_with_many_links,
-    replace_code_blocks_and_inline_code,
-    restore_code_blocks_and_inline_code,
 )
 
 logger = logging.getLogger(__name__)
@@ -115,7 +106,7 @@ class MarkdownTranslator(ABC):
         (
             document_with_placeholders,
             placeholder_map,
-        ) = replace_code_blocks_and_inline_code(document)
+        ) = replace_code_blocks(document)
 
         # Step 2: Split the document into chunks and generate prompts
         link_limit = 30
@@ -143,9 +134,7 @@ class MarkdownTranslator(ABC):
         translated_content = "\n".join(results)
 
         # Step 4: Restore the code blocks and inline code from placeholders
-        translated_content = restore_code_blocks_and_inline_code(
-            translated_content, placeholder_map
-        )
+        translated_content = restore_code_blocks(translated_content, placeholder_map)
 
         # Step 5: Update links and add disclaimer
         updated_content = update_links(

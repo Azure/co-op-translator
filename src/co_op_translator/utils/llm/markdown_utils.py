@@ -515,9 +515,10 @@ def count_links_in_markdown(content: str) -> int:
     return len(link_pattern.findall(content))
 
 
-def replace_code_blocks_and_inline_code(document: str):
+def replace_code_blocks(document: str):
     """
-    Replace code blocks and inline code in the document with placeholders.
+    Replace code blocks in the document with placeholders.
+    Inline code is left as-is for the LLM to handle naturally.
 
     Args:
         document (str): The markdown document to process.
@@ -528,11 +529,9 @@ def replace_code_blocks_and_inline_code(document: str):
             - A dictionary mapping placeholders to their original code.
     """
     code_block_pattern = r"```[\s\S]*?```"
-    inline_code_pattern = r"`[^`]+`"
 
     # Replace code blocks
     code_blocks = re.findall(code_block_pattern, document)
-    inline_codes = re.findall(inline_code_pattern, document)
 
     placeholder_map = {}
 
@@ -541,12 +540,6 @@ def replace_code_blocks_and_inline_code(document: str):
         placeholder = f"@@CODE_BLOCK_{i}@@"
         document = document.replace(code_block, placeholder)
         placeholder_map[placeholder] = code_block
-
-    # Replace inline codes with placeholders
-    for i, inline_code in enumerate(inline_codes):
-        placeholder = f"@@INLINE_CODE_{i}@@"
-        document = document.replace(inline_code, placeholder)
-        placeholder_map[placeholder] = inline_code
 
     return document, placeholder_map
 

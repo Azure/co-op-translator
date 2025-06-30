@@ -9,7 +9,7 @@ from co_op_translator.utils.llm.markdown_utils import (
     generate_prompt_template,
     count_links_in_markdown,
     process_markdown_with_many_links,
-    replace_code_blocks_and_inline_code,
+    replace_code_blocks,
     restore_code_blocks_and_inline_code,
 )
 from co_op_translator.config.font_config import FontConfig
@@ -106,7 +106,7 @@ class MarkdownTranslator(ABC):
         (
             document_with_placeholders,
             placeholder_map,
-        ) = replace_code_blocks_and_inline_code(document)
+        ) = replace_code_blocks(document)
 
         # Step 2: Split the document into chunks and generate prompts
         link_limit = 30

@@ -58,6 +58,7 @@ class TextTranslator(ABC):
                 {"role": "user", "content": prompt},
             ],
             max_tokens=2000,
+            temperature=0,
         )
         translated_text = remove_code_backticks(response.choices[0].message.content)
         logger.debug(f"Raw translation response: {translated_text}")
@@ -83,6 +84,7 @@ class TextTranslator(ABC):
                 {"role": "user", "content": prompt},
             ],
             max_tokens=2000,
+            temperature=0,
         )
         translated_text = remove_code_backticks(response.choices[0].message.content)
         return translated_text

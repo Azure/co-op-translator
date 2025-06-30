@@ -242,7 +242,8 @@ translate -l "zh ja"
 #### 2. GitHub Actions（自動化）の使用
 
 - 最適な用途：リポジトリに変更がプッシュされるたびにコンテンツを自動的に翻訳します。翻訳を常に最新の状態に保ちます。
-- Requires: Setting up a workflow file (`.github/workflows` を置き換えてください。ローカルインストールは不要です。)_
+- 必要なもの：リポジトリにワークフローファイル（`.github/workflows`）を設定する必要があります。ローカルインストールは不要です。
+- Requires: Setting up a workflow file (`.github/workflows` を置き換えてください。ローカルインストールは不要です。
 
 - ガイド：
   - [GitHub Actions Guide (Public Repositories & Standard Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) - 一般のパブリックまたは個人リポジトリで標準リポジトリシークレットを使う場合はこちら。

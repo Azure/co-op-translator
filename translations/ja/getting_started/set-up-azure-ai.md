@@ -55,7 +55,7 @@ CO_OP_TRANSLATOR_METADATA:
 
 デプロイ後、「**Models + endpoints**」ページからデプロイメントを選択すると、**REST endpoint URL**、**Key**、**Deployment name**、**Model name**、**API version** を確認できます。これらは翻訳モデルをアプリケーションに統合する際に必要です。
 
-> [!NOTE]
+> [!注記]
 > APIバージョンは、[API version deprecation](https://learn.microsoft.com/azure/ai-services/openai/api-version-deprecation) ページからニーズに応じて選択可能です。**API version** はAzure AI Foundryの「Models + endpoints」ページに表示される**Model version**とは異なることに注意してください。
 
 ## 画像翻訳用Azure Computer Visionの設定

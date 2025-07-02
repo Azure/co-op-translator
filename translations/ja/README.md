@@ -257,7 +257,7 @@ translate -l "zh ja"
 
 - [コマンドリファレンス](./getting_started/command-reference.md)：利用可能なコマンドとオプションの詳細ガイド
 - [対応言語](./getting_started/supported-languages.md)：対応言語一覧と新規追加手順
-- [Markdown-Only Mode](./getting_started/markdown-only-mode.md)：画像翻訳なしでテキストのみ翻訳する方法
+- [Markdownのみのモード](./getting_started/markdown-only-mode.md)：画像翻訳なしでテキストのみ翻訳する方法
 
 ## ビデオプレゼンテーション
 

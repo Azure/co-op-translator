@@ -97,7 +97,8 @@ def count_tokens(text: str, tokenizer) -> int:
 
 def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
     """
-    Split the markdown content into smaller chunks based on code blocks, blockquotes, or HTML.
+    Split the markdown content into smaller chunks based on code blocks, blockquotes, or HTML,
+    preserving markdown structure by splitting at line breaks when possible.
 
     Args:
         content (str): The markdown content to split.
@@ -108,6 +109,7 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
         list: A list of markdown chunks.
     """
     chunks = []
+    # Pattern for code blocks, HTML tags, and blockquotes
     block_pattern = re.compile(
         r"(```[\s\S]*?```|<.*?>|(?:>\s+.*(?:\n>.*|\n(?!\n))*\n?)+)"
     )
@@ -116,31 +118,99 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
     current_chunk = []
     current_length = 0
 
+    # Safety margin: allow up to 10% over the max_tokens when trying to find a line break
+    # This prevents excessive fragmentation while still respecting token limits
+    line_break_margin = min(500, max_tokens * 0.1)  # 10% margin, capped at 500 tokens
+    extended_max = max_tokens + line_break_margin
+
     for part in parts:
         part_tokens = count_tokens(part, tokenizer)
 
-        if current_length + part_tokens <= max_tokens:
-            current_chunk.append(part)
-            current_length += part_tokens
-        else:
-            if block_pattern.match(part):
+        # If this part is a code block, HTML, or blockquote and fits within limits
+        if block_pattern.match(part):
+            if current_length + part_tokens <= max_tokens:
+                # Add the special block as is
+                current_chunk.append(part)
+                current_length += part_tokens
+            else:
+                # This block is too large, we need to split it
                 if current_chunk:
                     chunks.append("".join(current_chunk))
+                    current_chunk = []
+                    current_length = 0
+                # Add the large block as its own chunk
                 chunks.append(part)
-                current_chunk = []
-                current_length = 0
+        else:
+            # This is regular text - try to preserve line breaks
+            if current_length + part_tokens <= max_tokens:
+                # The whole part fits, add it entirely
+                current_chunk.append(part)
+                current_length += part_tokens
             else:
-                words = part.split()
-                for word in words:
-                    word_tokens = count_tokens(word + " ", tokenizer)
-                    if current_length + word_tokens > max_tokens:
-                        chunks.append("".join(current_chunk))
-                        current_chunk = [word + " "]
-                        current_length = word_tokens
-                    else:
-                        current_chunk.append(word + " ")
-                        current_length += word_tokens
+                # Need to split this part
+                lines = part.split("\n")
+                current_line_buffer = []
+                current_line_tokens = 0
 
+                for line in lines:
+                    line_with_break = line + "\n"
+                    line_tokens = count_tokens(line_with_break, tokenizer)
+
+                    if (
+                        current_length + current_line_tokens + line_tokens
+                        <= extended_max
+                    ):
+                        # Line fits within extended margin, add to current line buffer
+                        current_line_buffer.append(line_with_break)
+                        current_line_tokens += line_tokens
+                    else:
+                        # Line would exceed limits, flush what we have so far
+                        if current_chunk or current_line_buffer:
+                            # Add accumulated line buffer to current chunk
+                            current_chunk.extend(current_line_buffer)
+                            # Save the chunk
+                            chunks.append("".join(current_chunk))
+
+                        # Reset for next chunk
+                        current_chunk = []
+                        current_length = 0
+
+                        # Handle potentially long individual lines
+                        if line_tokens > max_tokens:
+                            # This single line is too long, we need to split by words
+                            words = line.split()
+                            word_chunk = []
+                            word_chunk_tokens = 0
+
+                            for word in words:
+                                word_with_space = word + " "
+                                word_tokens = count_tokens(word_with_space, tokenizer)
+
+                                if word_chunk_tokens + word_tokens <= max_tokens:
+                                    word_chunk.append(word_with_space)
+                                    word_chunk_tokens += word_tokens
+                                else:
+                                    # Flush word chunk
+                                    chunks.append("".join(word_chunk))
+                                    word_chunk = [word_with_space]
+                                    word_chunk_tokens = word_tokens
+
+                            if word_chunk:
+                                # Add final word chunk directly to chunks
+                                chunks.append("".join(word_chunk))
+                        else:
+                            # Line is reasonable size but doesn't fit current chunk
+                            current_chunk = [line_with_break]
+                            current_length = line_tokens
+                            current_line_buffer = []
+                            current_line_tokens = 0
+
+                # Add any remaining lines from the buffer
+                if current_line_buffer:
+                    current_chunk.extend(current_line_buffer)
+                    current_length += current_line_tokens
+
+    # Add the final chunk if there's anything left
     if current_chunk:
         chunks.append("".join(current_chunk))
 

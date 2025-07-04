@@ -2,7 +2,7 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "cc205495d4eace1fabcdee963024069f",
-  "translation_date": "2025-07-03T07:10:20+00:00",
+  "translation_date": "2025-07-04T06:49:14+00:00",
   "source_file": "SECURITY.md",
   "language_code": "ko"
 }
@@ -17,9 +17,9 @@ Microsoft 소유의 저장소에서 [Microsoft의 보안 취약성 정의](https
 
 **공개 GitHub 이슈를 통해 보안 취약성을 보고하지 마십시오.**
 
-대신, Microsoft 보안 대응 센터(MSRC)에 [https://msrc.microsoft.com/create-report](https://aka.ms/security.md/msrc/create-report)에서 보고해 주십시오.
+대신, Microsoft 보안 대응 센터(MSRC)로 [https://msrc.microsoft.com/create-report](https://aka.ms/security.md/msrc/create-report)에서 보고해 주시기 바랍니다.
 
-로그인 없이 제출하고 싶으시면, [secure@microsoft.com](mailto:secure@microsoft.com)으로 이메일을 보내주십시오. 가능하다면, 메시지를 우리의 PGP 키로 암호화해 주십시오. PGP 키는 [Microsoft 보안 대응 센터 PGP 키 페이지](https://aka.ms/security.md/msrc/pgp)에서 다운로드할 수 있습니다.
+로그인 없이 제출하고 싶으시면, [secure@microsoft.com](mailto:secure@microsoft.com)으로 이메일을 보내주십시오. 가능하다면, 메시지를 우리의 PGP 키로 암호화해 주십시오. [Microsoft 보안 대응 센터 PGP 키 페이지](https://aka.ms/security.md/msrc/pgp)에서 다운로드할 수 있습니다.
 
 24시간 이내에 응답을 받을 수 있습니다. 만약 그렇지 않은 경우, 원본 메시지를 우리가 받았는지 확인하기 위해 이메일로 후속 조치를 취해 주십시오. 추가 정보는 [microsoft.com/msrc](https://www.microsoft.com/msrc)에서 확인할 수 있습니다.
 
@@ -27,7 +27,7 @@ Microsoft 소유의 저장소에서 [Microsoft의 보안 취약성 정의](https
 
   * 문제 유형 (예: 버퍼 오버플로, SQL 인젝션, 크로스 사이트 스크립팅 등)
   * 문제 발생과 관련된 소스 파일의 전체 경로
-  * 영향을 받은 소스 코드의 위치 (태그/브랜치/커밋 또는 직접 URL)
+  * 영향을 받는 소스 코드의 위치 (태그/브랜치/커밋 또는 직접 URL)
   * 문제를 재현하기 위해 필요한 특별한 구성
   * 문제를 재현하기 위한 단계별 지침
   * 개념 증명 또는 익스플로잇 코드 (가능한 경우)
@@ -35,7 +35,7 @@ Microsoft 소유의 저장소에서 [Microsoft의 보안 취약성 정의](https
 
 이 정보는 보고서를 더 신속하게 분류하는 데 도움이 됩니다.
 
-버그 바운티를 위해 보고하는 경우, 더 완전한 보고서는 더 높은 바운티 보상에 기여할 수 있습니다. 활성 프로그램에 대한 자세한 내용은 [Microsoft Bug Bounty Program](https://aka.ms/security.md/msrc/bounty) 페이지를 방문해 주십시오.
+버그 바운티를 위해 보고하는 경우, 더 완전한 보고서는 더 높은 바운티 보상에 기여할 수 있습니다. 활성 프로그램에 대한 자세한 내용은 [Microsoft Bug Bounty Program](https://aka.ms/security.md/msrc/bounty) 페이지를 방문하십시오.
 
 ## 선호 언어
 

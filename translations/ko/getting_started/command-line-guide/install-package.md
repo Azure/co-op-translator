@@ -2,7 +2,7 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-07-03T07:12:03+00:00",
+  "translation_date": "2025-07-04T06:50:51+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "ko"
 }
@@ -13,7 +13,7 @@ CO_OP_TRANSLATOR_METADATA:
 
 ### 가상 환경 생성
 
-`pip` 또는 `Poetry`를 사용하여 가상 환경을 생성할 수 있습니다. 터미널에 다음 명령어 중 하나를 입력하세요.
+`pip` 또는 `Poetry`를 사용하여 가상 환경을 생성할 수 있습니다. 터미널에 다음 명령 중 하나를 입력하세요.
 
 #### pip 사용하기
 
@@ -29,9 +29,9 @@ poetry init
 
 ### 가상 환경 활성화
 
-가상 환경을 생성한 후에는 이를 활성화해야 합니다. 운영 체제에 따라 단계가 다릅니다. 터미널에 다음 명령어를 입력하세요.
+가상 환경을 생성한 후에는 활성화해야 합니다. 운영 체제에 따라 단계가 다릅니다. 터미널에 다음 명령을 입력하세요.
 
-#### pip 및 Poetry 모두에 해당
+#### pip 및 Poetry 모두 사용하기
 
 - Windows:
 
@@ -47,7 +47,7 @@ poetry init
 
 #### Poetry 사용하기
 
-1. Poetry로 환경을 생성한 경우, 터미널에 다음 명령어를 입력하여 활성화하세요.
+1. Poetry로 환경을 생성했다면, 터미널에 다음 명령을 입력하여 활성화하세요.
 
     ```bash
     poetry shell
@@ -59,31 +59,31 @@ poetry init
 
 ### 빠른 설치
 
-pip을 통해 Co-Op 번역기 설치
+Co-Op 번역기를 pip를 통해 설치
 
 ```
 pip install co-op-translator
 ```
-또는
+또는 
 
-poetry를 통해 설치
+Poetry를 통해 설치
 ```
 poetry add co-op-translator
 ```
 
-#### 이 저장소를 클론한 경우 pip (requirements.txt에서) 사용하기
+#### 이 저장소를 복제한 경우 requirements.txt에서 pip 사용하기
 
 ![NOTE] 빠른 설치를 통해 co-op 번역기를 설치한 경우 이 작업을 수행하지 마세요.
 
-1. pip을 사용하는 경우, 터미널에 다음 명령어를 입력하세요. 이는 `requirements.txt` 파일에 지정된 필요한 패키지를 자동으로 설치합니다:
+1. pip를 사용하는 경우, 터미널에 다음 명령을 입력하세요. `requirements.txt` 파일에 지정된 필요한 패키지를 자동으로 설치합니다:
 
     ```bash
     pip install -r requirements.txt
     ```
 
-#### Poetry (pyproject.toml에서) 사용하기
+#### pyproject.toml에서 Poetry 사용하기
 
-1. Poetry를 사용하는 경우, 터미널에 다음 명령어를 입력하세요. 이는 `pyproject.toml` 파일에 지정된 필요한 패키지를 자동으로 설치합니다:
+1. Poetry를 사용하는 경우, 터미널에 다음 명령을 입력하세요. `pyproject.toml` 파일에 지정된 필요한 패키지를 자동으로 설치합니다:
 
     ```bash
     poetry install

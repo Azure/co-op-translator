@@ -2,36 +2,36 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:28:48+00:00",
+  "translation_date": "2025-07-04T08:09:02+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "ja"
 }
 -->
 # Co-op Translatorへの貢献
 
-このプロジェクトでは、貢献や提案を歓迎しています。ほとんどの貢献には、Contributor License Agreement（CLA）に同意していただく必要があります。CLAは、あなたが貢献物の権利を持ち、実際に私たちにその使用権を許諾していることを宣言するものです。詳細は https://cla.opensource.microsoft.com をご覧ください。
+このプロジェクトは貢献と提案を歓迎します。ほとんどの貢献には、貢献者ライセンス契約（CLA）に同意する必要があります。CLAは、あなたが貢献する権利を持ち、実際に貢献を使用する権利を私たちに与えることを宣言するものです。詳細は、https://cla.opensource.microsoft.com をご覧ください。
 
-プルリクエストを提出すると、CLAボットが自動的にCLAの提出が必要かどうかを判定し、プルリクエストに適切な装飾（ステータスチェックやコメントなど）を付けます。ボットの指示に従うだけで構いません。CLAはすべてのリポジトリで一度だけ行えば大丈夫です。
+プルリクエストを提出すると、CLAボットが自動的にCLAを提供する必要があるかどうかを判断し、PRに適切に装飾を施します（例：ステータスチェック、コメント）。ボットの指示に従うだけで済みます。CLAを使用するすべてのリポジトリでこれを一度だけ行う必要があります。
 
 ## 開発環境のセットアップ
 
-このプロジェクトの開発環境をセットアップするには、依存関係管理にPoetryの使用を推奨します。プロジェクトの依存関係管理には`pyproject.toml`を使用しているため、依存関係のインストールにはPoetryを使ってください。
+このプロジェクトの開発環境をセットアップするには、依存関係管理にPoetryを使用することをお勧めします。プロジェクトの依存関係を管理するために`pyproject.toml`を使用しているため、依存関係をインストールするにはPoetryを使用してください。
 
 ### 仮想環境の作成
 
-#### pipを使う場合
+#### pipを使用する場合
 
 ```bash
 python -m venv .venv
 ```
 
-#### Poetryを使う場合
+#### Poetryを使用する場合
 
 ```bash
 poetry init
 ```
 
-### 仮想環境の有効化
+### 仮想環境のアクティブ化
 
 #### pipとPoetryの両方の場合
 
@@ -47,7 +47,7 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Poetryを使う場合
+#### Poetryを使用する場合
 
 ```bash
 poetry shell
@@ -55,7 +55,7 @@ poetry shell
 
 ### パッケージと必要なパッケージのインストール
 
-#### Poetryを使う場合（pyproject.tomlから）
+#### Poetryを使用する場合（pyproject.tomlから）
 
 ```bash
 poetry install
@@ -63,14 +63,14 @@ poetry install
 
 ### 手動テスト
 
-プルリクエストを提出する前に、実際のドキュメントで翻訳機能をテストすることが重要です：
+PRを提出する前に、実際のドキュメントで翻訳機能をテストすることが重要です：
 
-1. ルートディレクトリにテスト用ディレクトリを作成します：
+1. ルートディレクトリにテストディレクトリを作成します：
     ```bash
     mkdir test_docs
     ```
 
-2. 翻訳したいマークダウンのドキュメントや画像をテストディレクトリにコピーします。例：
+2. 翻訳したいMarkdownドキュメントと画像をテストディレクトリにコピーします。例えば：
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -81,59 +81,58 @@ poetry install
     pip install -e .
     ```
 
-4. テストドキュメントに対してCo-op Translatorを実行します：
+4. テストドキュメントでCo-op Translatorを実行します：
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. `test_docs/translations`と`test_docs/translated_images`で翻訳されたファイルを確認して、以下を検証します：
+   - 翻訳の品質
+   - メタデータコメントが正しいか
+   - 元のMarkdown構造が保持されているか
+   - リンクと画像が正しく動作しているか
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+この手動テストは、実際のシナリオで変更がうまく機能することを確認するのに役立ちます。
 
-### Environment variables
+### 環境変数
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template` ファイル内の翻訳済みファイルを確認します。
-1. 環境変数を指示に従って入力してください。
+1. 提供された`.env.template`ファイルをコピーして、ルートディレクトリに`.env`ファイルを作成します。
+1. 指示に従って環境変数を入力します。
 
 > [!TIP]
 >
 > ### 追加の開発環境オプション
 >
-> ローカルでプロジェクトを実行する以外に、GitHub CodespacesやVS Code Dev Containersを使った開発環境構築も可能です。
+> プロジェクトをローカルで実行することに加えて、GitHub CodespacesやVS Code Dev Containersを使用して代替の開発環境をセットアップすることもできます。
 >
 > #### GitHub Codespaces
 >
-> GitHub Codespacesを使えば、追加の設定なしにブラウザ上でVS Codeを実行できます。
+> GitHub Codespacesを使用してサンプルを仮想的に実行することができ、追加の設定やセットアップは不要です。
 >
-> ボタンをクリックするとブラウザでVS Codeが開きます：
+> ボタンをクリックすると、ブラウザでWebベースのVS Codeインスタンスが開きます：
 >
-> 1. テンプレートを開きます（数分かかる場合があります）：
+> 1. テンプレートを開く（数分かかる場合があります）：
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
-> #### VS Code Dev Containersを使ったローカル実行
+> #### VS Code Dev Containersを使用してローカルで実行する
 >
-> ⚠️ このオプションはDocker Desktopに最低16GBのRAMが割り当てられている場合にのみ動作します。16GB未満の場合は[GitHub Codespacesオプション](../..)か[ローカルセットアップ](../..)をお試しください。
+> ⚠️ このオプションは、Docker Desktopに少なくとも16 GBのRAMが割り当てられている場合にのみ機能します。16 GB未満のRAMを持っている場合は、[GitHub Codespacesオプション](../..)を試すか、[ローカルでセットアップ](../..)してください。
 >
-> 関連オプションとしてVS Code Dev Containersがあります。これはローカルのVS Codeで[Dev Containers拡張機能](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)を使ってプロジェクトを開きます：
+> 関連するオプションはVS Code Dev Containersで、[Dev Containers拡張機能](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)を使用してローカルのVS Codeでプロジェクトを開きます：
 >
-> 1. Docker Desktopを起動します（未インストールの場合はインストールしてください）
-> 2. プロジェクトを開きます：
+> 1. Docker Desktopを起動する（インストールされていない場合はインストールする）
+> 2. プロジェクトを開く：
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
-
 ### コードスタイル
 
-プロジェクト全体で一貫したコードスタイルを維持するために、Pythonコードフォーマッターとして[Black](https://github.com/psf/black)を使用しています。Blackは妥協しないコードフォーマッターで、自動的にPythonコードをBlackのコードスタイルに整形します。
+プロジェクト全体で一貫したコードスタイルを維持するために、Pythonコードフォーマッタとして[Black](https://github.com/psf/black)を使用しています。Blackは妥協のないコードフォーマッタで、Pythonコードを自動的にBlackコードスタイルに準拠するように再フォーマットします。
 
 #### 設定
 
-Blackの設定は`pyproject.toml`に記載されています：
+Blackの設定は`pyproject.toml`に指定されています：
 
 ```toml
 [tool.black]
@@ -144,119 +143,119 @@ include = '\.pyi?$'
 
 #### Blackのインストール
 
-BlackはPoetry（推奨）またはpipでインストールできます：
+BlackはPoetry（推奨）またはpipを使用してインストールできます：
 
-##### Poetryを使う場合
+##### Poetryを使用する場合
 
-開発環境のセットアップ時にBlackは自動的にインストールされます：
+開発環境をセットアップするとBlackが自動的にインストールされます：
 ```bash
 poetry install
 ```
 
-##### pipを使う場合
+##### pipを使用する場合
 
-pipを使う場合はBlackを直接インストールしてください：
+pipを使用している場合は、Blackを直接インストールできます：
 ```bash
 pip install black
 ```
 
-#### Blackの使い方
+#### Blackの使用
 
-##### Poetryの場合
+##### Poetryを使用する場合
 
-1. プロジェクト内のすべてのPythonファイルを整形：
+1. プロジェクト内のすべてのPythonファイルをフォーマットします：
     ```bash
     poetry run black .
     ```
 
-2. 特定のファイルやディレクトリを整形：
+2. 特定のファイルまたはディレクトリをフォーマットします：
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
-##### pipの場合
+##### pipを使用する場合
 
-1. プロジェクト内のすべてのPythonファイルを整形：
+1. プロジェクト内のすべてのPythonファイルをフォーマットします：
     ```bash
     black .
     ```
 
-2. 特定のファイルやディレクトリを整形：
+2. 特定のファイルまたはディレクトリをフォーマットします：
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> 保存時にBlackで自動整形するようエディタを設定することをおすすめします。多くのモダンなエディタは拡張機能やプラグインで対応しています。
+> エディタを設定して、保存時にBlackでコードを自動的にフォーマットすることをお勧めします。ほとんどの最新のエディタは、拡張機能やプラグインを通じてこれをサポートしています。
 
 ## Co-op Translatorの実行
 
-Poetryを使ってCo-op Translatorを実行するには、以下の手順に従ってください：
+Poetryを使用して環境でCo-op Translatorを実行するには、以下の手順に従ってください：
 
-1. 翻訳テストを行いたいディレクトリに移動するか、テスト用の一時フォルダを作成します。
+1. 翻訳テストを行いたいディレクトリに移動するか、テスト目的のために一時フォルダを作成します。
 
-2. 次のコマンドを実行します。`-l ko` with the language code you wish to translate into. The `-d` はデバッグモードを示します。
+2. 次のコマンドを実行します。`-l ko`を翻訳したい言語コードに置き換えてください。`-d`フラグはデバッグモードを示します。
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> コマンド実行前にPoetry環境が有効（poetry shell）になっていることを確認してください。
+> コマンドを実行する前に、Poetry環境がアクティブ化されていることを確認してください（poetry shell）。
 
-## メンテナ
+## メンテナー
 
 ### コミットメッセージとマージ戦略
 
-プロジェクトのコミット履歴の一貫性と明瞭さを保つため、**Squash and Merge**戦略を使う際の**最終コミットメッセージ**には特定のフォーマットを使用しています。
+プロジェクトのコミット履歴の一貫性と明確さを確保するために、**Squash and Merge**戦略を使用する際の**最終コミットメッセージ**の形式に従います。
 
-プルリクエスト（PR）がマージされると、個々のコミットは一つにまとめられます。最終コミットメッセージは以下のフォーマットに従い、履歴をきれいに保ちます。
+プルリクエスト（PR）がマージされると、個々のコミットは1つのコミットにまとめられます。最終コミットメッセージは、以下の形式に従って、クリーンで一貫した履歴を維持する必要があります。
 
-#### コミットメッセージのフォーマット（Squash and Merge用）
+#### コミットメッセージ形式（Squash and Mergeの場合）
 
-コミットメッセージは以下の形式を使います：
+コミットメッセージには以下の形式を使用します：
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: コミットのカテゴリを指定します。以下のタイプを使います：
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+- **type**: コミットのカテゴリを指定します。以下のタイプを使用します：
+  - `Docs`: ドキュメントの更新。
+  - `Build`: ビルドシステムや依存関係に関連する変更、設定ファイル、CIワークフロー、Dockerfileの更新を含む。
+  - `Core`: プロジェクトのコア機能や特徴の変更、特に`src/co_op_translator/core`ディレクトリ内のファイルに関するもの。
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: 変更の簡潔な概要。
+- **PR number**: コミットに関連するプルリクエストの番号。
 
-**Examples**:
+**例**：
 
-- `Docs: Update installation instructions for clarity (#50)`
-- `Core: Improve handling of image translation (#60)`
+- `Docs: インストール手順を明確に更新 (#50)`
+- `Core: 画像翻訳の処理を改善 (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> 現在、**`Docs`**、**`Core`**、**`Build`**のプレフィックスは、変更されたソースコードに適用されたラベルに基づいてPRタイトルに自動的に追加されます。正しいラベルが適用されている限り、通常はPRタイトルを手動で更新する必要はありません。すべてが正しいことを確認し、プレフィックスが適切に生成されていることを確認するだけです。
 
-#### Merge strategy
+#### マージ戦略
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+プルリクエストには**Squash and Merge**をデフォルトの戦略として使用します。この戦略は、個々のコミットがそうでなくても、コミットメッセージが私たちの形式に従うことを保証します。
 
-**Reasons**:
+**理由**：
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- クリーンで直線的なプロジェクト履歴。
+- コミットメッセージの一貫性。
+- マイナーなコミット（例："fix typo"）によるノイズの削減。
 
-When merging, ensure the final commit message follows the commit message format described above.
+マージする際は、最終コミットメッセージが上記のコミットメッセージ形式に従っていることを確認してください。
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**Squash and Mergeの例**
+PRに以下のコミットが含まれている場合：
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-They should be squashed into:
-`Docs: Improve documentation clarity and formatting (#65)`
+それらは次のようにまとめられるべきです：
+`Docs: ドキュメントの明確さとフォーマットを改善 (#65)`
 
-**免責事項**：  
-本書類はAI翻訳サービス「[Co-op Translator](https://github.com/Azure/co-op-translator)」を使用して翻訳されました。正確性の向上に努めておりますが、自動翻訳には誤りや不正確な部分が含まれる可能性があることをご了承ください。原文の言語による文書が正式な情報源とみなされます。重要な情報については、専門の人間による翻訳を推奨します。本翻訳の利用により生じたいかなる誤解や誤訳についても、当方は一切の責任を負いかねます。
+**免責事項**:
+この文書はAI翻訳サービス[Co-op Translator](https://github.com/Azure/co-op-translator)を使用して翻訳されています。正確性を追求していますが、自動翻訳には誤りや不正確さが含まれる可能性があることをご了承ください。元の言語での文書が権威ある情報源とみなされるべきです。重要な情報については、専門の人間による翻訳をお勧めします。この翻訳の使用に起因する誤解や誤解について、当社は責任を負いません。

@@ -2,98 +2,98 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b58d7c3cb4210697a073d20eb3064945",
-  "translation_date": "2025-06-12T11:48:51+00:00",
+  "translation_date": "2025-07-04T08:12:00+00:00",
   "source_file": "getting_started/set-up-azure-ai.md",
   "language_code": "ja"
 }
 -->
-# Co-op Translator 用の Azure AI のセットアップ (Azure OpneAI & Azure AI Vision)
+# Azure AI のセットアップ方法 (Azure OpenAI & Azure AI Vision)
 
-このガイドでは、Azure AI Foundry内で言語翻訳用のAzure OpenAIと、画像ベースの翻訳に使える画像コンテンツ解析用のAzure Computer Visionの設定方法を説明します。
+このガイドでは、Azure AI Foundry 内で言語翻訳のための Azure OpenAI と、画像コンテンツ分析（画像ベースの翻訳に使用可能）のための Azure Computer Vision のセットアップ方法を説明します。
 
 **前提条件:**
-- 有効なサブスクリプションを持つAzureアカウント。
-- Azureサブスクリプション内でリソースとデプロイメントを作成する十分な権限。
+- 有効なサブスクリプションを持つ Azure アカウント。
+- Azure サブスクリプションでリソースとデプロイメントを作成するための十分な権限。
 
-## Azure AIプロジェクトの作成
+## Azure AI プロジェクトの作成
 
-まず、AIリソースを管理するための中心的な場所となるAzure AIプロジェクトを作成します。
+まず、AI リソースを管理するための中心的な場所として機能する Azure AI プロジェクトを作成します。
 
-1. [https://ai.azure.com](https://ai.azure.com) にアクセスし、Azureアカウントでサインインします。
+1. [https://ai.azure.com](https://ai.azure.com) にアクセスし、Azure アカウントでサインインします。
 
 1. **+Create** を選択して新しいプロジェクトを作成します。
 
-1. 以下の操作を行います:
+1. 次のタスクを実行します:
    - **Project name** を入力します（例: `CoopTranslator-Project`）。
-   - **AI hub** を選択します（例: `CoopTranslator-Hub`）（必要に応じて新規作成）。
+   - **AI hub** を選択します（例: `CoopTranslator-Hub`）（必要に応じて新しいものを作成します）。
 
-1. 「**Review and Create**」をクリックしてプロジェクトを設定します。プロジェクトの概要ページに移動します。
+1. "**Review and Create**" をクリックしてプロジェクトを設定します。プロジェクトの概要ページに移動します。
 
-## 言語翻訳用Azure OpenAIの設定
+## 言語翻訳のための Azure OpenAI のセットアップ
 
-プロジェクト内で、テキスト翻訳のバックエンドとしてAzure OpenAIモデルをデプロイします。
+プロジェクト内で、テキスト翻訳のバックエンドとして機能する Azure OpenAI モデルをデプロイします。
 
 ### プロジェクトに移動
 
-まだの場合は、Azure AI Foundryで作成したプロジェクト（例: `CoopTranslator-Project`）を開きます。
+まだ移動していない場合は、新しく作成したプロジェクト（例: `CoopTranslator-Project`）を Azure AI Foundry で開きます。
 
-### OpenAIモデルのデプロイ
+### OpenAI モデルのデプロイ
 
-1. プロジェクトの左メニューの「My assets」から「**Models + endpoints**」を選択します。
+1. プロジェクトの左側のメニューから "My assets" の下にある "**Models + endpoints**" を選択します。
 
 1. **+ Deploy model** を選択します。
 
 1. **Deploy Base Model** を選択します。
 
-1. 利用可能なモデルのリストが表示されます。適切なGPTモデルを検索またはフィルタリングしてください。おすすめは `gpt-4o` です。
+1. 利用可能なモデルのリストが表示されます。適切な GPT モデルをフィルタリングまたは検索します。`gpt-4o` をお勧めします。
 
-1. 希望のモデルを選択し、**Confirm** をクリックします。
+1. 希望するモデルを選択し、**Confirm** をクリックします。
 
 1. **Deploy** を選択します。
 
-### Azure OpenAIの設定
+### Azure OpenAI の設定
 
-デプロイ後、「**Models + endpoints**」ページからデプロイメントを選択すると、**REST endpoint URL**、**Key**、**Deployment name**、**Model name**、**API version** を確認できます。これらは翻訳モデルをアプリケーションに統合する際に必要です。
+デプロイが完了すると、"**Models + endpoints**" ページからデプロイメントの **REST endpoint URL**、**Key**、**Deployment name**、**Model name**、**API version** を確認できます。これらは翻訳モデルをアプリケーションに統合する際に必要です。
 
-> [!注記]
-> APIバージョンは、[API version deprecation](https://learn.microsoft.com/azure/ai-services/openai/api-version-deprecation) ページからニーズに応じて選択可能です。**API version** はAzure AI Foundryの「Models + endpoints」ページに表示される**Model version**とは異なることに注意してください。
+> [!NOTE]
+> 要件に基づいて [API version deprecation](https://learn.microsoft.com/azure/ai-services/openai/api-version-deprecation) ページから API バージョンを選択できます。**API version** は Azure AI Foundry の **Models + endpoints** ページに表示される **Model version** とは異なることに注意してください。
 
-## 画像翻訳用Azure Computer Visionの設定
+## 画像翻訳のための Azure Computer Vision のセットアップ
 
-画像内のテキストを翻訳可能にするため、Azure AI ServiceのAPIキーとエンドポイントを取得します。
+画像内のテキストを翻訳できるようにするには、Azure AI Service API Key と Endpoint を見つける必要があります。
 
-1. Azure AIプロジェクト（例: `CoopTranslator-Project`）に移動し、プロジェクトの概要ページにいることを確認します。
+1. Azure AI プロジェクト（例: `CoopTranslator-Project`）に移動します。プロジェクトの概要ページにいることを確認してください。
 
-### Azure AI Serviceの設定
+### Azure AI Service の設定
 
-Azure AI ServiceからAPIキーとエンドポイントを取得します。
+Azure AI Service から API Key と Endpoint を見つけます。
 
-1. Azure AIプロジェクト（例: `CoopTranslator-Project`）に移動し、プロジェクトの概要ページにいることを確認します。
+1. Azure AI プロジェクト（例: `CoopTranslator-Project`）に移動します。プロジェクトの概要ページにいることを確認してください。
 
-1. Azure AI Serviceタブから**API Key**と**Endpoint**を確認します。
+1. Azure AI Service タブから **API Key** と **Endpoint** を見つけます。
 
-    ![Find API Key and Endpoint](../../../translated_images/find-azure-ai-info.60f8299be786dd67e61e2c79b4b9ea1f7694e6c0923f17a90bc6abf9d5f1dbd7.ja.png)
+    ![API Key と Endpoint を見つける](../../../translated_images/find-azure-ai-info.0e00140419c12517d2011ecdde3fafb9306d379b29d2c04a0d18063e56983559.ja.png)
 
-この接続により、リンクされたAzure AI Servicesリソースの機能（画像解析を含む）がAI Foundryプロジェクトで利用可能になります。これを使ってノートブックやアプリケーションで画像からテキストを抽出し、その後Azure OpenAIモデルに翻訳を依頼できます。
+この接続により、リンクされた Azure AI Services リソースの機能（画像分析を含む）が AI Foundry プロジェクトで利用可能になります。この接続を使用して、ノートブックやアプリケーションで画像からテキストを抽出し、その後 Azure OpenAI モデルに送信して翻訳することができます。
 
-## 資格情報のまとめ
+## 資格情報の統合
 
-ここまでで、以下の情報が揃っているはずです：
+ここまでで、次の情報を収集しているはずです:
 
-**Azure OpenAI（テキスト翻訳）用:**
+**Azure OpenAI (テキスト翻訳) の場合:**
 - Azure OpenAI Endpoint
 - Azure OpenAI API Key
-- Azure OpenAI Model Name（例: `gpt-4o`）
-- Azure OpenAI Deployment Name（例: `cooptranslator-gpt4o`）
+- Azure OpenAI Model Name (例: `gpt-4o`)
+- Azure OpenAI Deployment Name (例: `cooptranslator-gpt4o`)
 - Azure OpenAI API Version
 
-**Azure AI Services（Visionによる画像テキスト抽出）用:**
+**Azure AI Services (Vision を介した画像テキスト抽出) の場合:**
 - Azure AI Service Endpoint
 - Azure AI Service API Key
 
-### 例: 環境変数設定（プレビュー）
+### 例: 環境変数の設定 (プレビュー)
 
-後でアプリケーションを構築する際、これらの資格情報を環境変数などで設定することが多いでしょう。例として以下のように設定します：
+後でアプリケーションを構築する際に、これらの収集した資格情報を使用して設定することが多いでしょう。例えば、次のように環境変数として設定することができます:
 
 ```bash
 # Azure AI Service Credentials (Required for image translation)
@@ -110,11 +110,11 @@ AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-12-01-preview
 
 ---
 
-### 参考リンク
+### さらなる学習
 
-- [Azure AI Foundryでのプロジェクト作成方法](https://learn.microsoft.com/azure/ai-foundry/how-to/create-projects?tabs=ai-studio)
-- [Azure AIリソースの作成方法](https://learn.microsoft.com/azure/ai-foundry/how-to/create-azure-ai-resource?tabs=portal)
-- [Azure AI FoundryでのOpenAIモデルのデプロイ方法](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-openai)
+- [Azure AI Foundry でプロジェクトを作成する方法](https://learn.microsoft.com/azure/ai-foundry/how-to/create-projects?tabs=ai-studio)
+- [Azure AI リソースを作成する方法](https://learn.microsoft.com/azure/ai-foundry/how-to/create-azure-ai-resource?tabs=portal)
+- [Azure AI Foundry で OpenAI モデルをデプロイする方法](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-openai)
 
-**免責事項**:  
-本書類はAI翻訳サービス[Co-op Translator](https://github.com/Azure/co-op-translator)を使用して翻訳されています。正確性の向上に努めておりますが、自動翻訳には誤りや不正確な箇所が含まれる可能性があることをご理解ください。原文の言語によるオリジナル文書が正式な情報源とみなされます。重要な情報については、専門の人間による翻訳を推奨します。本翻訳の利用により生じたいかなる誤解や誤訳についても、当方は責任を負いかねます。
+**免責事項**:
+この文書はAI翻訳サービス[Co-op Translator](https://github.com/Azure/co-op-translator)を使用して翻訳されています。正確性を追求していますが、自動翻訳には誤りや不正確さが含まれる可能性があることにご注意ください。元の文書はその言語での権威ある情報源とみなされるべきです。重要な情報については、専門の人間による翻訳をお勧めします。この翻訳の使用に起因する誤解や誤解について、当社は責任を負いません。

@@ -2,7 +2,7 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "0788d7ebe4876c9be89132f48e09b26d",
-  "translation_date": "2025-07-03T07:11:36+00:00",
+  "translation_date": "2025-07-04T06:50:25+00:00",
   "source_file": "getting_started/troubleshooting.md",
   "language_code": "ko"
 }
@@ -21,7 +21,7 @@ Microsoft Co-Op Translator는 Markdown 문서를 원활하게 번역할 수 있�
 
 **단계:**
 1. 번역된 Markdown (`.md`) 파일을 엽니다.
-2. 문서 상단에서 `markdown` 태그를 찾습니다.
+2. 문서 상단의 `markdown` 태그를 찾습니다.
 3. `markdown` 태그를 삭제합니다.
 4. 파일에 변경 사항을 저장합니다.
 5. 파일을 다시 열어 올바르게 렌더링되는지 확인합니다.

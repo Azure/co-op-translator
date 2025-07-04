@@ -2,7 +2,7 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "e8b14f0e66db374a2ada46e25fac88ae",
-  "translation_date": "2025-07-03T07:07:40+00:00",
+  "translation_date": "2025-07-04T06:46:44+00:00",
   "source_file": "CODE_OF_CONDUCT.md",
   "language_code": "ko"
 }

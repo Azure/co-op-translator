@@ -2,7 +2,7 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-07-03T07:12:13+00:00",
+  "translation_date": "2025-07-04T06:50:59+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "ko"
 }
@@ -12,7 +12,7 @@ CO_OP_TRANSLATOR_METADATA:
 **Co-op Translator**는 명령줄 인터페이스(CLI) 도구로, 프로젝트 내의 마크다운 및 이미지 파일을 여러 언어로 번역하는 데 도움을 줍니다. 이 섹션에서는 도구 사용 방법, 다양한 CLI 옵션, 그리고 다양한 사용 사례에 대한 예제를 설명합니다.
 
 > [!NOTE]
-> 명령어의 전체 목록과 자세한 설명은 [Command reference](./command-reference.md)를 참조하세요.
+> 명령어 목록과 자세한 설명은 [Command reference](./command-reference.md)를 참조하세요.
 
 ---
 
@@ -32,7 +32,7 @@ translate -l "ko"
 
 > [!TIP]
 >
-> **Co-op Translator**에서 사용할 수 있는 언어 코드를 확인하고 싶으신가요? 저장소의 [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) 섹션을 방문해 자세한 내용을 확인하세요.
+> **Co-op Translator**에서 사용할 수 있는 언어 코드를 확인하고 싶으신가요? 저장소의 [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) 섹션을 방문하세요.
 
 #### Phi-3 CookBook 예제
 
@@ -90,7 +90,7 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|███████████████████████████████████| 95/95 [1:40:27<00:00, 125.62s/it]
 ```
 
-### 5. 이미지 파일만 번역
+### 5. 이미지 파일만 번역하기
 
 프로젝트 내 이미지 파일만 번역하려면 `-img` 옵션을 사용하세요:
 
@@ -100,7 +100,7 @@ translate -l "ko" -img
 
 이 명령어는 마크다운 파일에 영향을 주지 않고 이미지 파일만 한국어로 번역합니다.
 
-### 6. 마크다운 파일만 번역
+### 6. 마크다운 파일만 번역하기
 
 프로젝트 내 마크다운 파일만 번역하려면 `-md` 옵션을 사용하세요:
 
@@ -133,7 +133,7 @@ Retrying vsc-extension-quickstart.md for ko:   0%|                              
 
 예를 들어, 이 방법은 누락된 부분이나 손상된 번역을 감지하는 데 유용하며, 해당 파일에 대해 자동으로 번역을 다시 시도합니다.
 
-하지만 이미 문제가 있는 파일을 알고 있다면, 해당 파일을 수동으로 삭제하고 `-a` 옵션을 사용하여 다시 번역하는 것이 더 효율적입니다.
+그러나 이미 문제가 있는 파일을 알고 있다면, 해당 파일을 수동으로 삭제하고 `-a` 옵션을 사용하여 다시 번역하는 것이 더 효율적입니다.
 
 ### 8. 디버그 모드
 
@@ -147,7 +147,7 @@ translate -l "ko" -d
 
 #### Phi-3 CookBook 예제
 
-**Phi-3 CookBook**에서는 마크다운 파일에 많은 링크가 포함된 번역이 형식 오류를 일으키는 문제를 해결하기 위해 `-d` 옵션을 사용하여 번역 과정이 어떻게 작동하는지 확인했습니다.
+**Phi-3 CookBook**에서는 마크다운 파일에 많은 링크가 포함된 번역이 형식 오류를 일으키는 문제를 진단하기 위해 `-d` 옵션을 사용하여 번역 과정이 어떻게 작동하는지 확인했습니다.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -160,7 +160,7 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 프로젝트를 지원되는 모든 언어로 번역하려면 all 키워드를 사용하세요.
 
 > [!WARNING]
-> 모든 언어를 한 번에 번역하는 것은 프로젝트 크기에 따라 상당한 시간이 걸릴 수 있습니다. 예를 들어, **Phi-3 CookBook**을 스페인어로 번역하는 데 약 2시간이 걸렸습니다. 규모를 고려할 때 한 사람이 20개의 언어를 처리하는 것은 실용적이지 않습니다. 여러 기여자가 각각 한두 개의 언어를 관리하고 번역을 점진적으로 업데이트하는 것이 권장됩니다.
+> 모든 언어를 한 번에 번역하는 것은 프로젝트 크기에 따라 상당한 시간이 걸릴 수 있습니다. 예를 들어, **Phi-3 CookBook**을 스페인어로 번역하는 데 약 2시간이 걸렸습니다. 규모를 고려할 때 한 사람이 20개 언어를 처리하는 것은 실용적이지 않습니다. 여러 기여자가 각각 한두 개의 언어를 관리하고 번역을 점진적으로 업데이트하는 것이 권장됩니다.
 
 ```bash
 translate -l "all"
@@ -191,7 +191,7 @@ translate -l "all"
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      `"C:\YourPath"`을 폴더 경로로, `filename`을 특정 이름으로 바꿉니다.
+>      `"C:\YourPath"`를 폴더 경로로, `filename`을 특정 이름으로 바꿉니다.
 >
 > ### macOS/Linux에서:
 > 1. **터미널 사용**:
@@ -208,4 +208,4 @@ translate -l "all"
 > 파일을 삭제한 후에는 `translate -l` 명령어를 다시 실행하여 가장 최근의 파일 변경 사항을 업데이트하세요.
 
 **면책 조항**:  
-이 문서는 AI 번역 서비스 [Co-op Translator](https://github.com/Azure/co-op-translator)를 사용하여 번역되었습니다. 우리는 정확성을 위해 노력하지만, 자동 번역에는 오류나 부정확성이 있을 수 있음을 유의하시기 바랍니다. 원본 문서는 해당 언어로 작성된 것이 권위 있는 출처로 간주되어야 합니다. 중요한 정보에 대해서는 전문적인 인간 번역을 권장합니다. 이 번역 사용으로 인해 발생하는 오해나 잘못된 해석에 대해 책임을 지지 않습니다.
+이 문서는 AI 번역 서비스 [Co-op Translator](https://github.com/Azure/co-op-translator)를 사용하여 번역되었습니다. 우리는 정확성을 위해 노력하지만, 자동 번역에는 오류나 부정확성이 있을 수 있음을 유의하시기 바랍니다. 원본 문서는 해당 언어로 작성된 것이 권위 있는 출처로 간주되어야 합니다. 중요한 정보의 경우, 전문적인 인간 번역을 권장합니다. 이 번역 사용으로 인해 발생하는 오해나 잘못된 해석에 대해 책임을 지지 않습니다.

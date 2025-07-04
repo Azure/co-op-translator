@@ -2,7 +2,7 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b58d7c3cb4210697a073d20eb3064945",
-  "translation_date": "2025-07-03T07:10:59+00:00",
+  "translation_date": "2025-07-04T06:49:51+00:00",
   "source_file": "getting_started/set-up-azure-ai.md",
   "language_code": "ko"
 }
@@ -25,7 +25,7 @@ AI 리소스를 관리할 중앙 장소로서 Azure AI 프로젝트를 생성합
 
 1. 다음 작업을 수행합니다:
    - **프로젝트 이름** 입력 (예: `CoopTranslator-Project`).
-   - **AI 허브** 선택 (예: `CoopTranslator-Hub`) (필요시 새로 생성).
+   - **AI 허브** 선택 (예: `CoopTranslator-Hub`) (필요한 경우 새로 생성).
 
 1. "**Review and Create**"를 클릭하여 프로젝트를 설정합니다. 프로젝트 개요 페이지로 이동합니다.
 
@@ -74,7 +74,7 @@ Azure AI 서비스에서 API Key와 Endpoint를 찾습니다.
 
     ![API Key와 Endpoint 찾기](../../../translated_images/find-azure-ai-info.0e00140419c12517d2011ecdde3fafb9306d379b29d2c04a0d18063e56983559.ko.png)
 
-이 연결은 연결된 Azure AI 서비스 리소스의 기능(이미지 분석 포함)을 AI Foundry 프로젝트에 사용할 수 있게 합니다. 이 연결을 사용하여 노트북이나 애플리케이션에서 이미지를 추출하고, 이를 Azure OpenAI 모델로 번역할 수 있습니다.
+이 연결은 연결된 Azure AI 서비스 리소스의 기능(이미지 분석 포함)을 AI Foundry 프로젝트에 사용할 수 있게 합니다. 이 연결을 사용하여 노트북이나 애플리케이션에서 이미지를 추출한 텍스트를 Azure OpenAI 모델로 번역할 수 있습니다.
 
 ## 자격 증명 통합
 
@@ -117,4 +117,4 @@ AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-12-01-preview
 - [Azure AI Foundry에서 OpenAI 모델 배포 방법](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-openai)
 
 **면책 조항**:  
-이 문서는 AI 번역 서비스 [Co-op Translator](https://github.com/Azure/co-op-translator)를 사용하여 번역되었습니다. 우리는 정확성을 위해 노력하지만, 자동 번역에는 오류나 부정확성이 있을 수 있음을 유의하시기 바랍니다. 원본 문서는 해당 언어로 작성된 것이 권위 있는 출처로 간주되어야 합니다. 중요한 정보의 경우, 전문적인 인간 번역을 권장합니다. 이 번역 사용으로 인해 발생하는 오해나 잘못된 해석에 대해 책임을 지지 않습니다.
+이 문서는 AI 번역 서비스 [Co-op Translator](https://github.com/Azure/co-op-translator)를 사용하여 번역되었습니다. 우리는 정확성을 위해 노력하지만, 자동 번역에는 오류나 부정확성이 있을 수 있음을 유의하시기 바랍니다. 원본 문서는 해당 언어로 작성된 것이 권위 있는 출처로 간주되어야 합니다. 중요한 정보에 대해서는 전문적인 인간 번역을 권장합니다. 이 번역 사용으로 인해 발생하는 오해나 잘못된 해석에 대해 책임을 지지 않습니다.

@@ -2,7 +2,7 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "c64ba65e091e5d87385490fa63a8f574",
-  "translation_date": "2025-07-03T07:11:49+00:00",
+  "translation_date": "2025-07-04T06:50:36+00:00",
   "source_file": "getting_started/command-line-guide/command-line-guide.md",
   "language_code": "ko"
 }
@@ -16,7 +16,7 @@ CO_OP_TRANSLATOR_METADATA:
 ## 목차
 
 1. [루트 디렉토리에 '.env' 파일 생성하기](./create-env-file.md)
-   - 선택한 언어 모델 서비스에 필요한 키를 포함합니다.
+   - 선택한 언어 모델 서비스에 필요한 키를 포함시킵니다.
    - Azure Computer Vision 키가 생략되거나 `-md`가 지정된 경우, 번역기는 Markdown 전용 모드로 작동합니다.
 1. [Co-op Translator 패키지 설치하기](./install-package.md)
 1. [Co-op Translator를 사용하여 프로젝트 번역하기](./translator-your-project.md)

@@ -155,3 +155,119 @@ async def test_markdown_only_mode(temp_project_dir):
             ]
             is True
         )
+
+
+class TestProjectTranslatorErrorMessages:
+    """Test improved error messages in ProjectTranslator.
+
+    This test class verifies error message improvements made for issue #46.
+    These tests ensure that error messages are user-friendly and provide helpful context.
+    """
+
+    def test_computer_vision_config_error_message(self, tmp_path, caplog):
+        """Test Computer Vision configuration error message."""
+        # Set logging level to capture info messages
+        caplog.set_level("INFO")
+
+        with patch(
+            "co_op_translator.core.vision.image_translator.ImageTranslator.create",
+            side_effect=ValueError("CV error"),
+        ):
+            with patch(
+                "co_op_translator.core.llm.text_translator.TextTranslator.create"
+            ):
+                with patch(
+                    "co_op_translator.core.llm.markdown_translator.MarkdownTranslator.create"
+                ):
+                    translator = ProjectTranslator(
+                        "ko", str(tmp_path), markdown_only=False
+                    )
+
+                    # Check that it auto-switched to markdown_only
+                    assert translator.markdown_only is True
+
+                    # Check improved log message
+                    log_text = caplog.text
+                    assert "Computer Vision not configured" in log_text
+                    assert "AZURE_COMPUTER_VISION_KEY" in log_text
+
+    def test_markdown_only_mode_message(self, tmp_path, caplog):
+        """Test markdown-only mode initialization message."""
+        # Set logging level to capture info messages
+        caplog.set_level("INFO")
+
+        with patch("co_op_translator.core.llm.text_translator.TextTranslator.create"):
+            with patch(
+                "co_op_translator.core.llm.markdown_translator.MarkdownTranslator.create"
+            ):
+                translator = ProjectTranslator("ko", str(tmp_path), markdown_only=True)
+
+                # Check improved log message for markdown-only mode
+                log_text = caplog.text
+                assert "Running in markdown-only mode" in log_text
+                assert "Image translation disabled" in log_text
+
+    def test_missing_api_keys_scenario(self, tmp_path):
+        """Test scenario where all API keys are missing."""
+        with patch(
+            "co_op_translator.config.llm_config.config.LLMConfig.get_available_provider",
+            return_value=None,
+        ):
+            with patch(
+                "co_op_translator.config.vision_config.config.VisionConfig.get_available_provider",
+                side_effect=ValueError("No CV"),
+            ):
+                # Should raise error when trying to create without proper config
+                with pytest.raises(ValueError) as exc_info:
+                    ProjectTranslator("ko", str(tmp_path), markdown_only=False)
+
+                # Check error message contains the actual message from the code
+                error_msg = str(exc_info.value)
+                assert "No valid LLM provider configured" in error_msg
+
+    def test_project_initialization_with_missing_services(self, tmp_path, caplog):
+        """Test ProjectTranslator initialization when services are missing."""
+        # Set logging level to capture info messages
+        caplog.set_level("INFO")
+
+        with patch("co_op_translator.core.llm.text_translator.TextTranslator.create"):
+            with patch(
+                "co_op_translator.core.llm.markdown_translator.MarkdownTranslator.create"
+            ):
+                with patch(
+                    "co_op_translator.core.vision.image_translator.ImageTranslator.create",
+                    side_effect=ValueError("No CV"),
+                ):
+                    translator = ProjectTranslator(
+                        "ko ja", str(tmp_path), markdown_only=False
+                    )
+
+                    # Should auto-switch to markdown-only
+                    assert translator.markdown_only is True
+                    assert translator.image_translator is None
+
+                    # Should have helpful error message
+                    log_text = caplog.text
+                    assert "Computer Vision not configured" in log_text
+                    assert "AZURE_COMPUTER_VISION_KEY" in log_text
+
+    def test_environment_variable_references_in_logs(self, tmp_path, caplog):
+        """Test that log messages reference environment variables."""
+        caplog.set_level("INFO")
+
+        with patch(
+            "co_op_translator.core.vision.image_translator.ImageTranslator.create",
+            side_effect=ValueError("Image translation error"),
+        ):
+            with patch(
+                "co_op_translator.core.llm.text_translator.TextTranslator.create"
+            ):
+                with patch(
+                    "co_op_translator.core.llm.markdown_translator.MarkdownTranslator.create"
+                ):
+                    ProjectTranslator("ko", str(tmp_path), markdown_only=False)
+
+                    log_text = caplog.text
+                    # Check the actual log message format
+                    assert "Computer Vision not configured" in log_text
+                    assert "AZURE_COMPUTER_VISION_KEY" in log_text

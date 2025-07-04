@@ -29,6 +29,8 @@ class MarkdownTranslator(ABC):
     Provides common utilities and abstract methods to be implemented by providers.
     """
 
+    TRANSLATION_TIMEOUT_SECONDS = 300  # Translation timeout in seconds
+
     def __init__(self, root_dir: Path = None):
         """Initialize translator with project configuration.
 
@@ -165,19 +167,23 @@ class MarkdownTranslator(ABC):
         for index, prompt in enumerate(prompts):
             try:
                 result = await asyncio.wait_for(
-                    self._run_prompt(prompt, index + 1, len(prompts)), timeout=300
+                    self._run_prompt(prompt, index + 1, len(prompts)),
+                    timeout=self.TRANSLATION_TIMEOUT_SECONDS,
                 )
                 results.append(result)
             except asyncio.TimeoutError:
                 logger.warning(
-                    f"Translation timeout for chunk {index + 1} of file '{md_file_path.name}': Request exceeded 300 seconds. Check your network connection and API response time."
+                    f"Translation timeout for chunk {index + 1} of file '{md_file_path.name}': "
+                    f"Request exceeded {self.TRANSLATION_TIMEOUT_SECONDS} seconds. "
+                    f"Check your network connection and API response time."
                 )
                 results.append(
                     f"Translation for chunk {index + 1} of '{md_file_path.name}' skipped due to timeout."
                 )
             except Exception as e:
                 logger.error(
-                    f"Translation failed for chunk {index + 1} of file '{md_file_path.name}': {str(e)}. Check your API configuration and network connection."
+                    f"Translation failed for chunk {index + 1} of file '{md_file_path.name}': {str(e)}. "
+                    f"Check your API configuration and network connection."
                 )
                 results.append(
                     f"Error translating chunk {index + 1} of '{md_file_path.name}': {str(e)}"

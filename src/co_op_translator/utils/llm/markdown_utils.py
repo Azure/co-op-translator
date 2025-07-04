@@ -218,7 +218,7 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
 
 
 def process_markdown(
-    content: str, max_tokens=4096, encoding="o200k_base"
+    content: str, max_tokens=2600, encoding="o200k_base"
 ) -> list:  # o200k_base is for GPT-4o, cl100k_base is for GPT-4 and GPT-3.5
     """
     Process the markdown content to split it into smaller chunks.

@@ -40,14 +40,3 @@ The Microsoft Co-Op Translator is a powerful tool for translating Markdown docum
 2. Review the content carefully.
 3. Make necessary edits to improve translation accuracy.
 4. Save the changes.
-
-### 4. File Formatting Issues
-**Problem:** The formatting of the translated document is incorrect. This can occur in table here additional ``` are added.
-
-**Solution:** Adjust the formatting of the document to match the original structure. Simply deleting the ``` will address the table issues.
-
-**Steps:**
-1. Open the translated document.
-2. Compare it with the original document to identify formatting issues.
-3. Adjust the formatting to match the original document.
-4. Save the changes.

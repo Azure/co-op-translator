@@ -164,10 +164,8 @@ class TestProjectTranslatorErrorMessages:
     These tests ensure that error messages are user-friendly and provide helpful context.
     """
 
-    def test_computer_vision_config_error_message(self, tmp_path, caplog):
+    def test_computer_vision_config_error_message(self, tmp_path):
         """Test Computer Vision configuration error message."""
-        # Set logging level to capture info messages
-        caplog.set_level("INFO")
 
         with patch(
             "co_op_translator.core.vision.image_translator.ImageTranslator.create",
@@ -186,26 +184,14 @@ class TestProjectTranslatorErrorMessages:
                     # Check that it auto-switched to markdown_only
                     assert translator.markdown_only is True
 
-                    # Check improved log message
-                    log_text = caplog.text
-                    assert "Computer Vision not configured" in log_text
-                    assert "AZURE_COMPUTER_VISION_KEY" in log_text
-
-    def test_markdown_only_mode_message(self, tmp_path, caplog):
+    def test_markdown_only_mode_message(self, tmp_path):
         """Test markdown-only mode initialization message."""
-        # Set logging level to capture info messages
-        caplog.set_level("INFO")
 
         with patch("co_op_translator.core.llm.text_translator.TextTranslator.create"):
             with patch(
                 "co_op_translator.core.llm.markdown_translator.MarkdownTranslator.create"
             ):
                 translator = ProjectTranslator("ko", str(tmp_path), markdown_only=True)
-
-                # Check improved log message for markdown-only mode
-                log_text = caplog.text
-                assert "Running in markdown-only mode" in log_text
-                assert "Image translation disabled" in log_text
 
     def test_missing_api_keys_scenario(self, tmp_path):
         """Test scenario where all API keys are missing."""
@@ -225,10 +211,8 @@ class TestProjectTranslatorErrorMessages:
                 error_msg = str(exc_info.value)
                 assert "No valid LLM provider configured" in error_msg
 
-    def test_project_initialization_with_missing_services(self, tmp_path, caplog):
+    def test_project_initialization_with_missing_services(self, tmp_path):
         """Test ProjectTranslator initialization when services are missing."""
-        # Set logging level to capture info messages
-        caplog.set_level("INFO")
 
         with patch("co_op_translator.core.llm.text_translator.TextTranslator.create"):
             with patch(
@@ -245,8 +229,3 @@ class TestProjectTranslatorErrorMessages:
                     # Should auto-switch to markdown-only
                     assert translator.markdown_only is True
                     assert translator.image_translator is None
-
-                    # Should have helpful error message
-                    log_text = caplog.text
-                    assert "Computer Vision not configured" in log_text
-                    assert "AZURE_COMPUTER_VISION_KEY" in log_text

@@ -250,24 +250,3 @@ class TestProjectTranslatorErrorMessages:
                     log_text = caplog.text
                     assert "Computer Vision not configured" in log_text
                     assert "AZURE_COMPUTER_VISION_KEY" in log_text
-
-    def test_environment_variable_references_in_logs(self, tmp_path, caplog):
-        """Test that log messages reference environment variables."""
-        caplog.set_level("INFO")
-
-        with patch(
-            "co_op_translator.core.vision.image_translator.ImageTranslator.create",
-            side_effect=ValueError("Image translation error"),
-        ):
-            with patch(
-                "co_op_translator.core.llm.text_translator.TextTranslator.create"
-            ):
-                with patch(
-                    "co_op_translator.core.llm.markdown_translator.MarkdownTranslator.create"
-                ):
-                    ProjectTranslator("ko", str(tmp_path), markdown_only=False)
-
-                    log_text = caplog.text
-                    # Check the actual log message format
-                    assert "Computer Vision not configured" in log_text
-                    assert "AZURE_COMPUTER_VISION_KEY" in log_text

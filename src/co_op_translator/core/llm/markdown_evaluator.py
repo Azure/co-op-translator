@@ -324,9 +324,9 @@ class MarkdownEvaluator(ABC):
                                     llm_response
                                 )
                                 chunk_result = json.loads(cleaned_response)
-                                chunk_result[
-                                    "chunk_index"
-                                ] = i  # Track which chunk had issues
+                                chunk_result["chunk_index"] = (
+                                    i  # Track which chunk had issues
+                                )
                                 chunk_evaluations.append(chunk_result)
 
                                 # Log progress

@@ -160,11 +160,10 @@ class ProjectEvaluator:
                 orig_file = file_data["orig_file"]
 
                 logger.info(f"Evaluating with LLM: {trans_file}")
-                (
-                    evaluation_result,
-                    success,
-                ) = await self.markdown_evaluator.evaluate_markdown(
-                    orig_file, trans_file, language_code
+                evaluation_result, success = (
+                    await self.markdown_evaluator.evaluate_markdown(
+                        orig_file, trans_file, language_code
+                    )
                 )
 
                 if success and evaluation_result:
@@ -214,11 +213,10 @@ class ProjectEvaluator:
 
             for orig_file, trans_file in translation_pairs:
                 logger.info(f"Evaluating: {trans_file}")
-                (
-                    evaluation_result,
-                    success,
-                ) = await self.markdown_evaluator.evaluate_markdown(
-                    orig_file, trans_file, language_code
+                evaluation_result, success = (
+                    await self.markdown_evaluator.evaluate_markdown(
+                        orig_file, trans_file, language_code
+                    )
                 )
 
                 if success and evaluation_result:
@@ -267,11 +265,10 @@ class ProjectEvaluator:
 
             for orig_file, trans_file in translation_pairs:
                 logger.info(f"Evaluating: {trans_file}")
-                (
-                    evaluation_result,
-                    success,
-                ) = await self.markdown_evaluator.evaluate_markdown(
-                    orig_file, trans_file, language_code
+                evaluation_result, success = (
+                    await self.markdown_evaluator.evaluate_markdown(
+                        orig_file, trans_file, language_code
+                    )
                 )
 
                 if success and evaluation_result:

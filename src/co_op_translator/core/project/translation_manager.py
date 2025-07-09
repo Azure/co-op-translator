@@ -18,7 +18,9 @@ from co_op_translator.utils.common.file_utils import (
 )
 from co_op_translator.utils.common.metadata_utils import calculate_file_hash
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
-from co_op_translator.core.llm.jupyter_notebook_translator import JupyterNotebookTranslator
+from co_op_translator.core.llm.jupyter_notebook_translator import (
+    JupyterNotebookTranslator,
+)
 from co_op_translator.core.project.directory_manager import DirectoryManager
 from co_op_translator.config.constants import SUPPORTED_IMAGE_EXTENSIONS
 from co_op_translator.utils.common.task_utils import worker
@@ -349,7 +351,8 @@ class TranslationManager:
         # Discover notebook files requiring translation using supported_notebook_extensions
         all_files = filter_files(self.root_dir, self.excluded_dirs)
         notebook_files = [
-            file for file in all_files
+            file
+            for file in all_files
             if file.suffix.lower() in self.supported_notebook_extensions
         ]
         tasks = []

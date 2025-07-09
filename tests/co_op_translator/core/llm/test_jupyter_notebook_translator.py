@@ -7,7 +7,9 @@ import pytest
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from co_op_translator.core.llm.jupyter_notebook_translator import JupyterNotebookTranslator
+from co_op_translator.core.llm.jupyter_notebook_translator import (
+    JupyterNotebookTranslator,
+)
 
 
 @pytest.fixture
@@ -18,11 +20,7 @@ def sample_notebook():
             {
                 "cell_type": "markdown",
                 "metadata": {},
-                "source": [
-                    "# Hello World\n",
-                    "\n",
-                    "This is a test notebook."
-                ]
+                "source": ["# Hello World\n", "\n", "This is a test notebook."],
             },
             {
                 "cell_type": "code",
@@ -31,24 +29,24 @@ def sample_notebook():
                 "outputs": [],
                 "source": [
                     "print('Hello, World!')\n",
-                    "# This should not be translated"
-                ]
+                    "# This should not be translated",
+                ],
             },
             {
                 "cell_type": "markdown",
                 "metadata": {},
-                "source": ["## Section 2\n", "\n", "Another markdown cell."]
-            }
+                "source": ["## Section 2\n", "\n", "Another markdown cell."],
+            },
         ],
         "metadata": {
             "kernelspec": {
                 "display_name": "Python 3",
                 "language": "python",
-                "name": "python3"
+                "name": "python3",
             }
         },
         "nbformat": 4,
-        "nbformat_minor": 4
+        "nbformat_minor": 4,
     }
 
 
@@ -56,7 +54,7 @@ def sample_notebook():
 def temp_notebook_file(tmp_path, sample_notebook):
     """Create a temporary notebook file for testing."""
     notebook_file = tmp_path / "test.ipynb"
-    with open(notebook_file, 'w', encoding='utf-8') as f:
+    with open(notebook_file, "w", encoding="utf-8") as f:
         json.dump(sample_notebook, f, ensure_ascii=False, indent=1)
     return notebook_file
 
@@ -64,7 +62,7 @@ def temp_notebook_file(tmp_path, sample_notebook):
 class TestJupyterNotebookTranslator:
     """Test cases for JupyterNotebookTranslator."""
 
-    @patch('co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator')
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
     def test_create_translator(self, mock_markdown_translator_class):
         """Test that translator can be created."""
         mock_markdown_translator_class.create.return_value = MagicMock()
@@ -72,20 +70,26 @@ class TestJupyterNotebookTranslator:
         assert translator is not None
         assert translator.root_dir is None
 
-    @patch('co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator')
-    def test_create_translator_with_root_dir(self, mock_markdown_translator_class, tmp_path):
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
+    def test_create_translator_with_root_dir(
+        self, mock_markdown_translator_class, tmp_path
+    ):
         """Test that translator can be created with root directory."""
         mock_markdown_translator_class.create.return_value = MagicMock()
         translator = JupyterNotebookTranslator.create(tmp_path)
         assert translator.root_dir == tmp_path
 
-    @patch('co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator')
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
     @pytest.mark.asyncio
-    async def test_translate_notebook_basic(self, mock_markdown_translator_class, temp_notebook_file):
+    async def test_translate_notebook_basic(
+        self, mock_markdown_translator_class, temp_notebook_file
+    ):
         """Test basic notebook translation functionality."""
         # Setup mock
         mock_translator = AsyncMock()
-        mock_translator.translate_markdown = AsyncMock(return_value="# Translated Content\n\nTranslated text.")
+        mock_translator.translate_markdown = AsyncMock(
+            return_value="# Translated Content\n\nTranslated text."
+        )
         mock_markdown_translator_class.create.return_value = mock_translator
 
         # Create translator and translate
@@ -107,24 +111,26 @@ class TestJupyterNotebookTranslator:
         assert code_cell["cell_type"] == "code"
         assert "print('Hello, World!')" in "".join(code_cell["source"])
 
-    @patch('co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator')
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
     @pytest.mark.asyncio
-    async def test_translate_notebook_empty_cells(self, mock_markdown_translator_class, tmp_path):
+    async def test_translate_notebook_empty_cells(
+        self, mock_markdown_translator_class, tmp_path
+    ):
         """Test translation with empty markdown cells."""
         # Create notebook with empty cells
         notebook_content = {
             "cells": [
                 {"cell_type": "markdown", "metadata": {}, "source": []},
                 {"cell_type": "markdown", "metadata": {}, "source": ""},
-                {"cell_type": "code", "metadata": {}, "source": ["print('test')"]}
+                {"cell_type": "code", "metadata": {}, "source": ["print('test')"]},
             ],
             "metadata": {},
             "nbformat": 4,
-            "nbformat_minor": 4
+            "nbformat_minor": 4,
         }
-        
+
         notebook_file = tmp_path / "empty_test.ipynb"
-        with open(notebook_file, 'w', encoding='utf-8') as f:
+        with open(notebook_file, "w", encoding="utf-8") as f:
             json.dump(notebook_content, f)
 
         # Setup mock
@@ -142,9 +148,11 @@ class TestJupyterNotebookTranslator:
         translated_notebook = json.loads(result)
         assert len(translated_notebook["cells"]) == 3
 
-    @patch('co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator')
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
     @pytest.mark.asyncio
-    async def test_translate_notebook_with_list_source(self, mock_markdown_translator_class, tmp_path):
+    async def test_translate_notebook_with_list_source(
+        self, mock_markdown_translator_class, tmp_path
+    ):
         """Test translation with source as list of strings."""
         # Create notebook with list-based source
         notebook_content = {
@@ -152,21 +160,23 @@ class TestJupyterNotebookTranslator:
                 {
                     "cell_type": "markdown",
                     "metadata": {},
-                    "source": ["# Title\n", "\n", "Some content"]
+                    "source": ["# Title\n", "\n", "Some content"],
                 }
             ],
             "metadata": {},
             "nbformat": 4,
-            "nbformat_minor": 4
+            "nbformat_minor": 4,
         }
-        
+
         notebook_file = tmp_path / "list_test.ipynb"
-        with open(notebook_file, 'w', encoding='utf-8') as f:
+        with open(notebook_file, "w", encoding="utf-8") as f:
             json.dump(notebook_content, f)
 
         # Setup mock
         mock_translator = AsyncMock()
-        mock_translator.translate_markdown = AsyncMock(return_value="# Translated Title\n\nTranslated content")
+        mock_translator.translate_markdown = AsyncMock(
+            return_value="# Translated Title\n\nTranslated content"
+        )
         mock_markdown_translator_class.create.return_value = mock_translator
 
         # Create translator and translate

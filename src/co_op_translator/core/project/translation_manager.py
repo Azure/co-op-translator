@@ -598,6 +598,7 @@ class TranslationManager:
         self,
         images: bool = False,
         markdown: bool = False,
+        notebook: bool = False,
         update: bool = False,
         fast_mode: bool = False,
     ) -> tuple[int, list[str]]:
@@ -612,6 +613,7 @@ class TranslationManager:
         Args:
             images: Whether to translate images
             markdown: Whether to translate markdown files
+            notebook: Whether to translate notebook files
             update: Whether to update existing translations
             fast_mode: Whether to use faster translation method
 
@@ -646,7 +648,7 @@ class TranslationManager:
                 sync_progress.update(1)
 
             # Find files needing translation due to source changes
-            if markdown:
+            if markdown or notebook:
                 with tqdm(total=1, desc="🔍 Checking translations") as check_progress:
                     outdated_files = self.get_outdated_translations()
                     check_progress.set_postfix_str(
@@ -659,7 +661,7 @@ class TranslationManager:
                 if outdated_files:
                     await self.retranslate_outdated_files(outdated_files)
 
-            # Execute translation for markdown and image files
+            # Execute translation for markdown, notebook and image files
             if markdown:
                 md_modified, md_errors = await self.translate_all_markdown_files(
                     update=update
@@ -667,7 +669,7 @@ class TranslationManager:
                 total_modified += md_modified
                 all_errors.extend(md_errors)
 
-                # Also translate notebook files when markdown translation is enabled
+            if notebook:
                 nb_modified, nb_errors = await self.translate_all_notebook_files(
                     update=update
                 )

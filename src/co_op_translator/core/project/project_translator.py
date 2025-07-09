@@ -91,7 +91,12 @@ class ProjectTranslator:
         )
 
     def translate_project(
-        self, images=False, markdown=False, update=False, fast_mode=False
+        self,
+        images=False,
+        markdown=False,
+        notebook=False,
+        update=False,
+        fast_mode=False,
     ):
         """Start the project translation process synchronously.
 
@@ -100,12 +105,17 @@ class ProjectTranslator:
         Args:
             images: Whether to translate images
             markdown: Whether to translate markdown files
+            notebook: Whether to translate notebook files
             update: Whether to update existing translations
             fast_mode: Whether to use faster translation method
         """
         asyncio.run(
             self.translation_manager.translate_project_async(
-                images=images, markdown=markdown, update=update, fast_mode=fast_mode
+                images=images,
+                markdown=markdown,
+                notebook=notebook,
+                update=update,
+                fast_mode=fast_mode,
             )
         )
 

@@ -155,4 +155,3 @@ async def test_markdown_only_mode(temp_project_dir):
             ]
             is True
         )
-

@@ -18,7 +18,9 @@ from co_op_translator.utils.common.file_utils import (
 )
 from co_op_translator.utils.common.metadata_utils import calculate_file_hash
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
-from co_op_translator.core.llm.jupyter_notebook_translator import JupyterNotebookTranslator
+from co_op_translator.core.llm.jupyter_notebook_translator import (
+    JupyterNotebookTranslator,
+)
 from co_op_translator.core.project.directory_manager import DirectoryManager
 from co_op_translator.config.constants import SUPPORTED_IMAGE_EXTENSIONS
 from co_op_translator.utils.common.task_utils import worker
@@ -347,11 +349,10 @@ class TranslationManager:
                         logger.info(f"Deleted translated notebook: {notebook_file}")
 
         # Discover notebook files requiring translation using supported_notebook_extensions
-        all_files = filter_files(self.root_dir, self.excluded_dirs)
-        notebook_files = [
-            file for file in all_files
-            if file.suffix.lower() in self.supported_notebook_extensions
-        ]
+        notebook_files = []
+        for ext in self.supported_notebook_extensions:
+            notebook_files.extend(filter_files(self.root_dir, self.excluded_dirs, ext))
+
         tasks = []
         task_info = []  # Store (file_path, language_code) for error reporting
 
@@ -597,6 +598,7 @@ class TranslationManager:
         self,
         images: bool = False,
         markdown: bool = False,
+        notebook: bool = False,
         update: bool = False,
         fast_mode: bool = False,
     ) -> tuple[int, list[str]]:
@@ -611,6 +613,7 @@ class TranslationManager:
         Args:
             images: Whether to translate images
             markdown: Whether to translate markdown files
+            notebook: Whether to translate notebook files
             update: Whether to update existing translations
             fast_mode: Whether to use faster translation method
 
@@ -645,7 +648,7 @@ class TranslationManager:
                 sync_progress.update(1)
 
             # Find files needing translation due to source changes
-            if markdown:
+            if markdown or notebook:
                 with tqdm(total=1, desc="🔍 Checking translations") as check_progress:
                     outdated_files = self.get_outdated_translations()
                     check_progress.set_postfix_str(
@@ -658,7 +661,7 @@ class TranslationManager:
                 if outdated_files:
                     await self.retranslate_outdated_files(outdated_files)
 
-            # Execute translation for markdown and image files
+            # Execute translation for markdown, notebook and image files
             if markdown:
                 md_modified, md_errors = await self.translate_all_markdown_files(
                     update=update
@@ -666,7 +669,7 @@ class TranslationManager:
                 total_modified += md_modified
                 all_errors.extend(md_errors)
 
-                # Also translate notebook files when markdown translation is enabled
+            if notebook:
                 nb_modified, nb_errors = await self.translate_all_notebook_files(
                     update=update
                 )

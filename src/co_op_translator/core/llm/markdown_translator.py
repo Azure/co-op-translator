@@ -7,8 +7,6 @@ from co_op_translator.utils.llm.markdown_utils import (
     process_markdown,
     update_links,
     generate_prompt_template,
-    count_links_in_markdown,
-    process_markdown_with_many_links,
     replace_code_blocks,
     restore_code_blocks,
 )
@@ -138,7 +136,7 @@ class MarkdownTranslator(ABC):
             self.root_dir,
             markdown_only=markdown_only,
         )
-        
+
         # Step 6: Add metadata and disclaimer (only if requested)
         result = updated_content
         if add_metadata:

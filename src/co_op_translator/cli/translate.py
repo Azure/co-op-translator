@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 )
 @click.option("--images", "-img", is_flag=True, help="Only translate image files.")
 @click.option("--markdown", "-md", is_flag=True, help="Only translate markdown files.")
+@click.option("--notebook", "-n", is_flag=True, help="Only translate notebook files.")
 @click.option("--debug", "-d", is_flag=True, help="Enable debug mode.")
 @click.option(
     "--fix",
@@ -70,6 +71,7 @@ def translate_command(
     update,
     images,
     markdown,
+    notebook,
     debug,
     fix,
     fast,
@@ -88,25 +90,28 @@ def translate_command(
     2. Add only new Korean image translations (no existing translations are deleted):
        translate -l "ko" -img
 
-    3. Update all Korean translations (Warning: This deletes all existing Korean translations before re-translating):
+    3. Add only new Korean notebook translations:
+       translate -l "ko" -n
+
+    4. Update all Korean translations (Warning: This deletes all existing Korean translations before re-translating):
        translate -l "ko" -u
 
-    4. Update only Korean images (Warning: This deletes all existing Korean images before re-translating):
+    5. Update only Korean images (Warning: This deletes all existing Korean images before re-translating):
        translate -l "ko" -img -u
 
-    5. Add new markdown translations for Korean without affecting other translations:
+    6. Add new markdown translations for Korean without affecting other translations:
        translate -l "ko" -md
 
-    6. Fix low confidence translations based on previous evaluation results:
+    7. Fix low confidence translations based on previous evaluation results:
        translate -l "ko" --fix
 
-    7. Fix low confidence translations with custom threshold:
+    8. Fix low confidence translations with custom threshold:
        translate -l "ko" --fix -c 0.8
 
-    8. Fix low confidence translations for specific files only:
+    9. Fix low confidence translations for specific files only:
        translate -l "ko" --fix -md
 
-    9. Use fast mode for image translation:
+    10. Use fast mode for image translation:
        translate -l "ko" -img -f
 
     Debug mode example:
@@ -121,9 +126,10 @@ def translate_command(
         cv_available = VisionConfig.check_configuration()
 
         # Determine translation mode based on flags and CV availability
-        if not images and not markdown:
-            # Default: translate both if possible
+        if not images and not markdown and not notebook:
+            # Default: translate markdown and notebook files, images if CV available
             markdown = True
+            notebook = True
             images = cv_available
         elif images and not cv_available:
             # User requested images but CV not available
@@ -138,12 +144,22 @@ def translate_command(
 
         # Log selected translation mode
         mode_msg = "🚀 Translation mode: "
-        if markdown and images:
+        if images and markdown and notebook:
+            mode_msg += "markdown, notebook and images"
+        elif images and markdown:
             mode_msg += "markdown and images"
+        elif images and notebook:
+            mode_msg += "notebook and images"
+        elif markdown and notebook:
+            mode_msg += "markdown and notebook"
         elif markdown:
             mode_msg += "markdown only"
+        elif notebook:
+            mode_msg += "notebook only"
         elif images:
             mode_msg += "images only"
+        else:
+            mode_msg += "no files to translate"
         click.echo(mode_msg)
 
         if debug:
@@ -296,7 +312,11 @@ def translate_command(
         else:
             # Call translate_project with determined settings
             translator.translate_project(
-                images=images, markdown=markdown, update=update, fast_mode=fast
+                images=images,
+                markdown=markdown,
+                notebook=notebook,
+                update=update,
+                fast_mode=fast,
             )
 
             logger.info(

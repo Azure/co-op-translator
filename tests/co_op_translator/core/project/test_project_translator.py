@@ -2,6 +2,7 @@ import pytest
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 from co_op_translator.core.project.project_translator import ProjectTranslator
+from co_op_translator.config.llm_config.provider import LLMProvider
 
 
 @pytest.fixture
@@ -36,6 +37,9 @@ async def project_translator(temp_project_dir):
             "co_op_translator.core.vision.image_translator.ImageTranslator"
         ) as mock_image_translator,
         patch(
+            "co_op_translator.core.llm.jupyter_notebook_translator.JupyterNotebookTranslator"
+        ) as mock_jupyter_translator,
+        patch(
             "co_op_translator.config.llm_config.config.LLMConfig.get_available_provider"
         ) as mock_get_provider,
     ):
@@ -43,7 +47,8 @@ async def project_translator(temp_project_dir):
         mock_text_translator.create.return_value = MagicMock()
         mock_markdown_translator.create.return_value = MagicMock()
         mock_image_translator.create.return_value = MagicMock()
-        mock_get_provider.return_value = "azure"  # Mock LLM provider
+        mock_jupyter_translator.create.return_value = MagicMock()
+        mock_get_provider.return_value = LLMProvider.AZURE_OPENAI  # Mock LLM provider
 
         translator = ProjectTranslator("ko ja", root_dir=temp_project_dir)
         translator.translation_manager.translate_all_markdown_files = AsyncMock(
@@ -114,6 +119,9 @@ async def test_markdown_only_mode(temp_project_dir):
             "co_op_translator.core.llm.markdown_translator.MarkdownTranslator"
         ) as mock_markdown_translator,
         patch(
+            "co_op_translator.core.llm.jupyter_notebook_translator.JupyterNotebookTranslator"
+        ) as mock_jupyter_translator,
+        patch(
             "co_op_translator.config.llm_config.config.LLMConfig.get_available_provider"
         ) as mock_get_provider,
     ):
@@ -124,7 +132,10 @@ async def test_markdown_only_mode(temp_project_dir):
         mock_markdown_translator_instance = AsyncMock()
         mock_markdown_translator.create.return_value = mock_markdown_translator_instance
 
-        mock_get_provider.return_value = "azure"
+        mock_jupyter_translator_instance = AsyncMock()
+        mock_jupyter_translator.create.return_value = mock_jupyter_translator_instance
+
+        mock_get_provider.return_value = LLMProvider.AZURE_OPENAI
 
         # Create translator in markdown-only mode
         translator = ProjectTranslator(

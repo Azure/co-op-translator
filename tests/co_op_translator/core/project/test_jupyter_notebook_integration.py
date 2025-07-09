@@ -19,29 +19,39 @@ def temp_project_with_notebook(tmp_path):
             {
                 "cell_type": "markdown",
                 "metadata": {},
-                "source": ["# Test Notebook\n", "\n", "This is a test for translation."]
+                "source": [
+                    "# Test Notebook\n",
+                    "\n",
+                    "This is a test for translation.",
+                ],
             },
             {
                 "cell_type": "code",
                 "execution_count": None,
                 "metadata": {},
                 "outputs": [],
-                "source": ["print('Hello, World!')"]
+                "source": ["print('Hello, World!')"],
             },
             {
                 "cell_type": "markdown",
                 "metadata": {},
-                "source": "## Section 2\n\nAnother section to translate."
-            }
+                "source": "## Section 2\n\nAnother section to translate.",
+            },
         ],
-        "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}},
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3",
+            }
+        },
         "nbformat": 4,
-        "nbformat_minor": 4
+        "nbformat_minor": 4,
     }
 
     # Create notebook file
     notebook_file = tmp_path / "test_notebook.ipynb"
-    with open(notebook_file, 'w', encoding='utf-8') as f:
+    with open(notebook_file, "w", encoding="utf-8") as f:
         json.dump(notebook_content, f, ensure_ascii=False, indent=1)
 
     # Create markdown file for comparison
@@ -73,7 +83,9 @@ class TestJupyterNotebookIntegration:
         mock_jupyter_markdown_translator.create.return_value = MagicMock()
 
         # Create translator
-        translator = ProjectTranslator("ko", root_dir=temp_project_with_notebook, markdown_only=True)
+        translator = ProjectTranslator(
+            "ko", root_dir=temp_project_with_notebook, markdown_only=True
+        )
 
         # Verify notebook translator was created
         assert translator.notebook_translator is not None
@@ -98,31 +110,57 @@ class TestJupyterNotebookIntegration:
         # Setup mocks
         mock_get_provider.return_value = "azure"
         mock_text_translator.create.return_value = MagicMock()
-        
+
         # Mock markdown translator
         mock_md_translator = AsyncMock()
-        mock_md_translator.translate_markdown = AsyncMock(return_value="# Translated\nTranslated content")
+        mock_md_translator.translate_markdown = AsyncMock(
+            return_value="# Translated\nTranslated content"
+        )
         mock_markdown_translator.create.return_value = mock_md_translator
 
         # Mock jupyter notebook translator
         mock_jupyter_md_translator = AsyncMock()
-        mock_jupyter_md_translator.translate_markdown = AsyncMock(return_value="# Translated\nTranslated content")
-        mock_jupyter_markdown_translator.create.return_value = mock_jupyter_md_translator
+        mock_jupyter_md_translator.translate_markdown = AsyncMock(
+            return_value="# Translated\nTranslated content"
+        )
+        mock_jupyter_markdown_translator.create.return_value = (
+            mock_jupyter_md_translator
+        )
 
         # Create translator
-        translator = ProjectTranslator("ko", root_dir=temp_project_with_notebook, markdown_only=True)
+        translator = ProjectTranslator(
+            "ko", root_dir=temp_project_with_notebook, markdown_only=True
+        )
 
         # Mock the notebook translator's translate_notebook method
         mock_notebook_translator = AsyncMock()
         translated_notebook = {
             "cells": [
-                {"cell_type": "markdown", "metadata": {}, "source": ["# Translated\n", "Translated content"]},
-                {"cell_type": "code", "metadata": {}, "source": ["print('Hello, World!')"]},
-                {"cell_type": "markdown", "metadata": {}, "source": "## Translated Section\nTranslated content"}
+                {
+                    "cell_type": "markdown",
+                    "metadata": {},
+                    "source": ["# Translated\n", "Translated content"],
+                },
+                {
+                    "cell_type": "code",
+                    "metadata": {},
+                    "source": ["print('Hello, World!')"],
+                },
+                {
+                    "cell_type": "markdown",
+                    "metadata": {},
+                    "source": "## Translated Section\nTranslated content",
+                },
             ],
-            "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}},
+            "metadata": {
+                "kernelspec": {
+                    "display_name": "Python 3",
+                    "language": "python",
+                    "name": "python3",
+                }
+            },
             "nbformat": 4,
-            "nbformat_minor": 4
+            "nbformat_minor": 4,
         }
         mock_notebook_translator.translate_notebook = AsyncMock(
             return_value=json.dumps(translated_notebook, ensure_ascii=False, indent=1)
@@ -130,7 +168,9 @@ class TestJupyterNotebookIntegration:
         translator.translation_manager.notebook_translator = mock_notebook_translator
 
         # Run translation
-        total_modified, errors = await translator.translation_manager.translate_all_notebook_files()
+        total_modified, errors = (
+            await translator.translation_manager.translate_all_notebook_files()
+        )
 
         # Verify notebook translation was attempted
         assert mock_notebook_translator.translate_notebook.call_count >= 1
@@ -157,7 +197,9 @@ class TestJupyterNotebookIntegration:
         mock_jupyter_markdown_translator.create.return_value = MagicMock()
 
         # Create translator
-        translator = ProjectTranslator("ko", root_dir=temp_project_with_notebook, markdown_only=True)
+        translator = ProjectTranslator(
+            "ko", root_dir=temp_project_with_notebook, markdown_only=True
+        )
 
         # Simulate missing notebook translator
         translator.translation_manager.notebook_translator = None
@@ -168,4 +210,5 @@ class TestJupyterNotebookIntegration:
     def test_constants_include_notebook_extensions(self):
         """Test that notebook extensions are included in constants."""
         from co_op_translator.config.constants import SUPPORTED_NOTEBOOK_EXTENSIONS
+
         assert ".ipynb" in SUPPORTED_NOTEBOOK_EXTENSIONS

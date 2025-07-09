@@ -180,13 +180,16 @@ def get_filename_and_extension(file_path: str | Path) -> tuple[str, str]:
     return original_filename, file_ext.lower()
 
 
-def filter_files(directory: str | Path, excluded_dirs) -> list:
+def filter_files(directory: str | Path, excluded_dirs, extension: str = None) -> list:
     """
     Filter and return only the files in the given directory, excluding specified directories.
+    Optionally filter by file extension.
 
     Args:
         directory (str | Path): The directory path to search for files.
         excluded_dirs (set): A set of directory names to exclude from the search.
+        extension (str, optional): File extension to filter by (e.g., '.ipynb').
+                                If None, all file types are included.
 
     Returns:
         list: A list of Path objects representing only the files (excluding specified directories).
@@ -196,9 +199,11 @@ def filter_files(directory: str | Path, excluded_dirs) -> list:
 
     # Recursively traverse the directory
     for path in directory.rglob("*"):
-        # Check if the path is a file and does not contain any excluded directories
-        if path.is_file() and not any(
-            excluded_dir in path.parts for excluded_dir in excluded_dirs
+        # Check if the path is a file, matches extension if specified, and doesn't contain excluded dirs
+        if (
+            path.is_file()
+            and (extension is None or path.suffix.lower() == extension.lower())
+            and not any(excluded_dir in path.parts for excluded_dir in excluded_dirs)
         ):
             files.append(path)
 

@@ -108,7 +108,11 @@ class ImageTranslator(ABC):
             )
             return line_bounding_boxes
         else:
-            raise Exception("No text was recognized in the image.")
+            raise Exception(
+                f"No text detected in image '{Path(image_path).name}': "
+                f"The image may not contain clear, high-contrast text, or the text quality is too poor for recognition. "
+                f"Please ensure the image contains readable text."
+            )
 
     def plot_annotated_image(
         self,
@@ -201,7 +205,10 @@ class ImageTranslator(ABC):
             try:
                 base_font = ImageFont.truetype(font_path, font_size)
             except IOError:
-                logger.error(f"Font file not found at {font_path}. Using default font.")
+                logger.error(
+                    f"Font file not found for language '{target_language_code}' at '{font_path}' in image '{Path(image_path).name}': "
+                    f"Using default font. Install the required font or check font configuration."
+                )
                 base_font = ImageFont.load_default()
 
             iterator = zip(grouped_boxes, grouped_translations)
@@ -225,7 +232,9 @@ class ImageTranslator(ABC):
                     bounding_box_flat = line_info.get("bounding_box", [])
                     if len(bounding_box_flat) != 8:
                         logger.error(
-                            f"Invalid bounding_box length: {bounding_box_flat}"
+                            f"Invalid text detection data in image '{Path(image_path).name}': "
+                            f"Expected 8 coordinates but got {len(bounding_box_flat)}. "
+                            f"The text detection may be corrupted."
                         )
                         continue
 
@@ -233,7 +242,10 @@ class ImageTranslator(ABC):
                         zip(bounding_box_flat[::2], bounding_box_flat[1::2])
                     )
                     if len(bounding_box_tuples) < 4:
-                        logger.error("Bounding box does not have enough points.")
+                        logger.error(
+                            f"Insufficient bounding box points in image '{Path(image_path).name}': "
+                            f"Text detection data is incomplete. Try re-processing the image."
+                        )
                         continue
 
                     try:
@@ -243,7 +255,10 @@ class ImageTranslator(ABC):
                         angle = math.degrees(math.atan2(p1[1] - p0[1], p1[0] - p0[0]))
                         angle = -angle  # Invert angle for proper rotation.
                     except ValueError:
-                        logger.error("Invalid bounding_box points for quadrilateral.")
+                        logger.error(
+                            f"Invalid bounding box coordinates in image '{Path(image_path).name}': "
+                            f"Text detection geometry is malformed. The image may have distorted text regions."
+                        )
                         continue
 
                     bg_color, _ = get_dominant_color(image, bounding_box_flat)
@@ -280,7 +295,8 @@ class ImageTranslator(ABC):
                             font = ImageFont.truetype(font_path, optimal_font_size)
                         except IOError:
                             logger.error(
-                                f"Font file not found at {font_path}. Using default font."
+                                f"Font file not found for language '{target_language_code}' at '{font_path}' in image '{Path(image_path).name}': "
+                                f"Using default font. Install the required font or check font configuration."
                             )
                             font = ImageFont.load_default()
 
@@ -344,7 +360,10 @@ class ImageTranslator(ABC):
             try:
                 font = ImageFont.truetype(font_path, font_size)
             except IOError:
-                logger.error(f"Font file not found at {font_path}. Using default font.")
+                logger.error(
+                    f"Font file not found for language '{target_language_code}' at '{font_path}' in image '{Path(image_path).name}': "
+                    f"Using default font. Install the required font or check font configuration."
+                )
                 font = ImageFont.load_default()
 
             iterator = zip(grouped_boxes, grouped_translations)
@@ -451,7 +470,9 @@ class ImageTranslator(ABC):
             # Check if any text was recognized
             if not line_bounding_boxes:
                 logger.info(
-                    f"No text was recognized in the image: {image_path}. Saving the original image as the translated image."
+                    f"No text detected in image '{image_path.name}': "
+                    f"Saving original image as translation result. "
+                    f"The image may not contain readable text or text may be too small/blurry to detect."
                 )
 
                 # Load the original image and save it with the new name
@@ -482,7 +503,8 @@ class ImageTranslator(ABC):
 
         except Exception as e:
             logger.error(
-                f"Failed to translate image {image_path} due to an error: {e}. Saving the original image instead."
+                f"Failed to translate image '{image_path.name}': {str(e)}. "
+                f"Saving original image instead."
             )
 
             # Load the original image and save it with the new name
@@ -533,5 +555,7 @@ class ImageTranslator(ABC):
         except (ImportError, ValueError) as e:
             logger.warning(f"Computer Vision is not properly configured: {e}")
             raise ValueError(
-                "Computer Vision environment variables are not properly configured"
+                "Image translation is not configured: Missing required environment variables "
+                "(AZURE_AI_SERVICE_API_KEY, AZURE_AI_SERVICE_ENDPOINT). "
+                "Please check your .env file and ensure your Azure AI service credentials are set correctly."
             )

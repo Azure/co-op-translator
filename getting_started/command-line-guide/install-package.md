@@ -64,7 +64,8 @@ poetry add co-op-translator
 
 #### Using pip (from requirements.txt) if you clone this repo 
 
-![NOTE] Please do NOT do this if you install co-op translator via the quick install.
+> [!NOTE]
+> Please do NOT do this if you install co-op translator via the quick install.
 
 1. If you're using pip, type the following command inside your terminal. It will automatically install the required packages specified in the `requirements.txt` file:
 

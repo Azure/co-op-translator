@@ -7,8 +7,6 @@ from co_op_translator.utils.llm.markdown_utils import (
     process_markdown,
     update_links,
     generate_prompt_template,
-    count_links_in_markdown,
-    process_markdown_with_many_links,
     replace_code_blocks,
     restore_code_blocks,
 )
@@ -114,20 +112,8 @@ class MarkdownTranslator(ABC):
             placeholder_map,
         ) = replace_code_blocks(document)
 
-        # Step 2: Split the document into chunks and generate prompts
-        link_limit = 30
-        if count_links_in_markdown(document_with_placeholders) > link_limit:
-            logger.info(
-                f"Document contains more than {link_limit} links, splitting the document into chunks."
-            )
-            document_chunks = process_markdown_with_many_links(
-                document_with_placeholders, link_limit
-            )
-        else:
-            logger.info(
-                f"Document contains {link_limit} or fewer links, processing normally."
-            )
-            document_chunks = process_markdown(document_with_placeholders)
+        # Step 2: Split the document into chunks
+        document_chunks = process_markdown(document_with_placeholders)
 
         # Step 3: Generate translation prompts and translate each chunk
         language_name = self.font_config.get_language_name(language_code)

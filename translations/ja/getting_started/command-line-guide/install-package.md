@@ -73,7 +73,8 @@ poetry add co-op-translator
 
 #### このリポジトリをクローンした場合、requirements.txtからpipを使用する
 
-![NOTE] クイックインストールでco-op translatorをインストールした場合はこれを行わないでください。
+> [!NOTE] 
+> クイックインストールでco-op translatorをインストールした場合はこれを行わないでください。
 
 1. pipを使用している場合は、ターミナル内で次のコマンドを入力してください。これにより、`requirements.txt`ファイルに指定された必要なパッケージが自動的にインストールされます。
 

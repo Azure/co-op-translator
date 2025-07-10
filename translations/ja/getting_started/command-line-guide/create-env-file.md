@@ -13,7 +13,7 @@ CO_OP_TRANSLATOR_METADATA:
 
 > [!IMPORTANT]
 > - 設定が必要なのは、Azure OpenAIまたはOpenAIのいずれかの言語モデルサービスのみです。希望するサービスの環境変数を入力してください。複数の言語モデルの環境変数が設定されている場合、協力翻訳者は優先順位に基づいて1つを選択します。
-> - Computer Visionの環境変数が設定されていない場合、翻訳者は自動的に[Markdown-onlyモード](./markdown-only-mode.md)に切り替わります。
+> - Computer Visionの環境変数が設定されていない場合、翻訳者は自動的に[Markdownのみのモード](./markdown-only-mode.md)に切り替わります。
 
 > [!NOTE]
 > このガイドは主にAzureサービスに焦点を当てていますが、[サポートされているモデルとサービスのリスト](../README.md#-supported-models-and-services)から任意のサポートされている言語モデルを選択できます。

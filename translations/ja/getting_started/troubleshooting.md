@@ -52,7 +52,7 @@ Microsoft Co-Op Translatorは、Markdownドキュメントをシームレスに�
 ### 4. ファイルのフォーマットの問題
 **問題:** 翻訳されたたドキュメントのフォーマットが正しくありません。これは表で発生する可能性があり、``` が追加されます。
 
-**Solution:** Adjust the formatting of the document to match the original structure. Simply deleting the ```が表の問題を解決します。
+**解決策:** ドキュメントの書式を元の構造に合わせて調整してください。``` を削除するだけで、表の問題が解決します。
 
 **手順:**
 1. 翻訳されたドキュメントを開きます。

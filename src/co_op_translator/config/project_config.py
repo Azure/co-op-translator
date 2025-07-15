@@ -20,17 +20,17 @@ DEFAULT_CONFIG = {
     "exclude_dirs": EXCLUDED_DIRS.copy(),
     "exclude_patterns": [],
     "migration": {
-        "auto_migrate": False,  # 자동 마이그레이션 비활성화
-        "backup": True,  # 마이그레이션 전 백업 활성화
-        "notify_only": False,  # 알림만 하지 않고 마이그레이션 수행
+        "auto_migrate": False,
+        "backup": True,
+        "notify_only": False,
     },
     "history": {
-        "last_config": {},  # 마지막으로 적용된 설정
-        "migrated_at": None,  # 마지막 마이그레이션 시간
+        "last_config": {},
+        "migrated_at": None,
     },
 }
 
-CONFIG_FILENAMES = ["co-op-translator.yml"]
+CONFIG_FILENAME = "co-op-translator.yml"
 
 
 class ProjectConfig:
@@ -58,14 +58,13 @@ class ProjectConfig:
         config_path = None
         found = False
 
-        for filename in CONFIG_FILENAMES:
-            potential_path = self.root_dir / filename
-            logger.debug(f"Searching for configuration file at: {potential_path}")
+        filename = CONFIG_FILENAME
+        potential_path = self.root_dir / filename
+        logger.debug(f"Searching for configuration file at: {potential_path}")
 
-            if potential_path.exists():
-                config_path = potential_path
-                found = True
-                break
+        if potential_path.exists():
+            config_path = potential_path
+            found = True
 
         if not found:
             logger.debug(
@@ -226,7 +225,7 @@ class ProjectConfig:
         }
 
         # Write to the config file
-        config_path = self.root_dir / CONFIG_FILENAMES[0]
+        config_path = self.root_dir / CONFIG_FILENAME
         with open(config_path, "w") as f:
             yaml.safe_dump(save_config, f, default_flow_style=False, sort_keys=False)
 

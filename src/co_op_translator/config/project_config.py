@@ -99,7 +99,7 @@ class ProjectConfig:
                     if "patterns" in exclude and isinstance(exclude["patterns"], list):
                         merged_config["exclude_patterns"] = exclude["patterns"]
 
-                # Automatically exclude translations directory to prevent re-translation
+                # Automatically exclude translations and images directories to prevent re-translation
                 if (
                     merged_config["translations_dir"]
                     not in merged_config["exclude_dirs"]
@@ -107,6 +107,10 @@ class ProjectConfig:
                     merged_config["exclude_dirs"].append(
                         merged_config["translations_dir"]
                     )
+
+                # Also exclude images directory if it's not already in the exclude list
+                if merged_config["images_dir"] not in merged_config["exclude_dirs"]:
+                    merged_config["exclude_dirs"].append(merged_config["images_dir"])
 
             logger.info(f"Loaded custom configuration from {config_path}")
             logger.debug(

@@ -3,11 +3,10 @@ Project configuration handler for Co-op Translator.
 Manages custom directory structures and exclusion patterns.
 """
 
-import os
 import yaml
 import logging
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 
 from co_op_translator.config.constants import EXCLUDED_DIRS
 

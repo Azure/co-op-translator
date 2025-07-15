@@ -14,6 +14,7 @@ from co_op_translator.config.constants import (
     SUPPORTED_IMAGE_EXTENSIONS,
     SUPPORTED_NOTEBOOK_EXTENSIONS,
 )
+from co_op_translator.config.project_config import ProjectConfig
 
 from .directory_manager import DirectoryManager
 from .translation_manager import TranslationManager
@@ -38,10 +39,17 @@ class ProjectTranslator:
             root_dir: Root directory of the project to translate
             markdown_only: Whether to process only markdown files and skip images
         """
-        self.language_codes = language_codes.split()
+        self.language_codes = (
+            language_codes.split()
+            if isinstance(language_codes, str)
+            else language_codes
+        )
         self.root_dir = Path(root_dir).resolve()
-        self.translations_dir = self.root_dir / "translations"
-        self.image_dir = self.root_dir / "translated_images"
+
+        # Load project configuration
+        self.project_config = ProjectConfig(root_dir=str(self.root_dir))
+        self.translations_dir = self.project_config.get_absolute_translations_dir()
+        self.image_dir = self.project_config.get_absolute_images_dir()
         self.markdown_only = markdown_only
 
         # Initialize text translator
@@ -74,20 +82,25 @@ class ProjectTranslator:
 
         # Initialize directory and translation managers
         self.directory_manager = DirectoryManager(
-            self.root_dir, self.translations_dir, self.language_codes, EXCLUDED_DIRS
+            self.root_dir,
+            self.translations_dir,
+            self.language_codes,
+            self.project_config.exclude_dirs,
+            exclude_patterns=self.project_config.exclude_patterns,
         )
         self.translation_manager = TranslationManager(
             self.root_dir,
             self.translations_dir,
             self.image_dir,
             self.language_codes,
-            EXCLUDED_DIRS,
+            self.project_config.exclude_dirs,
             SUPPORTED_IMAGE_EXTENSIONS,
             SUPPORTED_NOTEBOOK_EXTENSIONS,
             self.markdown_translator,
             self.image_translator,
             self.notebook_translator,
             self.markdown_only,
+            exclude_patterns=self.project_config.exclude_patterns,
         )
 
     def translate_project(
@@ -198,7 +211,7 @@ class ProjectTranslator:
             root_dir=self.root_dir,
             translations_dir=self.translations_dir,
             language_codes=[language_code],
-            excluded_dirs=EXCLUDED_DIRS,
+            excluded_dirs=self.project_config.exclude_dirs,
             use_llm=True,
             use_rule=True,
         )

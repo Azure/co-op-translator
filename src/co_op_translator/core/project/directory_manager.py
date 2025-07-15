@@ -1,6 +1,7 @@
 from pathlib import Path
 import logging
 import json
+import fnmatch
 from co_op_translator.utils.common.file_utils import get_unique_id
 from pathlib import PurePosixPath
 
@@ -18,6 +19,7 @@ class DirectoryManager:
         translations_dir: Path,
         language_codes: list[str],
         excluded_dirs: list[str],
+        exclude_patterns: list[str] = None,
     ):
         """Initialize directory manager with project configuration.
 
@@ -31,6 +33,30 @@ class DirectoryManager:
         self.translations_dir = translations_dir
         self.language_codes = language_codes
         self.excluded_dirs = excluded_dirs
+        self.exclude_patterns = exclude_patterns or []
+
+    def _should_exclude_path(self, path: Path) -> bool:
+        """Check if a path should be excluded based on exclusion rules.
+
+        Args:
+            path: Path to check for exclusion
+
+        Returns:
+            True if path should be excluded, False otherwise
+        """
+        # Check if path should be excluded by directory name
+        for excluded_dir in self.excluded_dirs:
+            if excluded_dir in str(path):
+                return True
+
+        # Check if file matches any exclude pattern
+        if path.is_file():
+            file_name = path.name
+            for pattern in self.exclude_patterns:
+                if fnmatch.fnmatch(file_name, pattern):
+                    return True
+
+        return False
 
     def sync_directory_structure(
         self, markdown: bool = True, images: bool = True
@@ -58,9 +84,7 @@ class DirectoryManager:
         # Get original directory structure (excluding files)
         original_dirs = set()
         for path in self.root_dir.rglob("*"):
-            if path.is_dir() and not any(
-                excluded in str(path) for excluded in self.excluded_dirs
-            ):
+            if path.is_dir() and not self._should_exclude_path(path):
                 # For image-only mode, only include image directories
                 if (
                     not markdown

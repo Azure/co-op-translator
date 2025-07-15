@@ -6,6 +6,7 @@ import re
 import json
 import os
 import asyncio
+import fnmatch
 
 from co_op_translator.utils.common.file_utils import (
     read_input_file,
@@ -48,6 +49,7 @@ class TranslationManager:
         markdown_translator: MarkdownTranslator,
         image_translator=None,
         notebook_translator=None,
+        exclude_patterns: list[str] = None,
         markdown_only: bool = False,
     ):
         """Initialize translation manager with required components and settings.
@@ -72,6 +74,7 @@ class TranslationManager:
         self.image_dir = image_dir
         self.language_codes = language_codes
         self.excluded_dirs = excluded_dirs
+        self.exclude_patterns = exclude_patterns or []
         self.supported_image_extensions = supported_image_extensions
         self.supported_notebook_extensions = supported_notebook_extensions
         self.markdown_translator = markdown_translator
@@ -269,7 +272,9 @@ class TranslationManager:
                 )
 
         # Discover markdown files requiring translation
-        markdown_files = filter_files(self.root_dir, self.excluded_dirs)
+        markdown_files = filter_files(
+            self.root_dir, self.excluded_dirs, exclude_patterns=self.exclude_patterns
+        )
         tasks = []
         task_info = []  # Store (file_path, language_code) for error reporting
 
@@ -351,7 +356,14 @@ class TranslationManager:
         # Discover notebook files requiring translation using supported_notebook_extensions
         notebook_files = []
         for ext in self.supported_notebook_extensions:
-            notebook_files.extend(filter_files(self.root_dir, self.excluded_dirs, ext))
+            notebook_files.extend(
+                filter_files(
+                    self.root_dir,
+                    self.excluded_dirs,
+                    ext,
+                    exclude_patterns=self.exclude_patterns,
+                )
+            )
 
         tasks = []
         task_info = []  # Store (file_path, language_code) for error reporting
@@ -428,7 +440,9 @@ class TranslationManager:
                 )
 
         # Discover image files requiring translation
-        image_files = filter_files(self.root_dir, self.excluded_dirs)
+        image_files = filter_files(
+            self.root_dir, self.excluded_dirs, exclude_patterns=self.exclude_patterns
+        )
         tasks = []
         task_info = []  # Store (file_path, language_code) for error reporting
 

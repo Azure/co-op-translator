@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 import os
 import logging
+import fnmatch
 
 logger = logging.getLogger(__name__)
 
@@ -180,7 +181,12 @@ def get_filename_and_extension(file_path: str | Path) -> tuple[str, str]:
     return original_filename, file_ext.lower()
 
 
-def filter_files(directory: str | Path, excluded_dirs, extension: str = None) -> list:
+def filter_files(
+    directory: str | Path,
+    excluded_dirs,
+    extension: str = None,
+    exclude_patterns: list = None,
+) -> list:
     """
     Filter and return only the files in the given directory, excluding specified directories.
     Optionally filter by file extension.
@@ -190,12 +196,14 @@ def filter_files(directory: str | Path, excluded_dirs, extension: str = None) ->
         excluded_dirs (set): A set of directory names to exclude from the search.
         extension (str, optional): File extension to filter by (e.g., '.ipynb').
                                 If None, all file types are included.
+        exclude_patterns (list, optional): List of glob patterns for files to exclude.
 
     Returns:
         list: A list of Path objects representing only the files (excluding specified directories).
     """
     directory = Path(directory)
     files = []
+    exclude_patterns = exclude_patterns or []
 
     # Recursively traverse the directory
     for path in directory.rglob("*"):
@@ -204,6 +212,9 @@ def filter_files(directory: str | Path, excluded_dirs, extension: str = None) ->
             path.is_file()
             and (extension is None or path.suffix.lower() == extension.lower())
             and not any(excluded_dir in path.parts for excluded_dir in excluded_dirs)
+            and not any(
+                fnmatch.fnmatch(path.name, pattern) for pattern in exclude_patterns
+            )
         ):
             files.append(path)
 

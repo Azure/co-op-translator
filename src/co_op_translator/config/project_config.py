@@ -26,16 +26,21 @@ CONFIG_FILENAMES = ["co-op-translator.yml"]
 class ProjectConfig:
     """Manages project configuration for Co-op Translator."""
 
-    def __init__(self, root_dir: str = None):
+    def __init__(self, root_dir=None):
         """
-        Initialize project configuration.
+        Initialize project configuration with optional root directory.
 
         Args:
-            root_dir (str, optional): Root directory of the project. If None,
-                                     uses current working directory.
+            root_dir: Path to the project root directory. If None, uses current directory.
         """
-        self.root_dir = Path(root_dir or os.getcwd()).resolve()
+        self.root_dir = Path(root_dir) if root_dir else Path.cwd()
+        self._previous_config = (
+            DEFAULT_CONFIG.copy()
+        )  # Store previous config for comparison
         self._config = self._load_config()
+
+        # Check if translations directory has changed
+        self._detect_directory_changes()
 
     def _load_config(self) -> Dict[str, Any]:
         """
@@ -94,6 +99,15 @@ class ProjectConfig:
                     if "patterns" in exclude and isinstance(exclude["patterns"], list):
                         merged_config["exclude_patterns"] = exclude["patterns"]
 
+                # Automatically exclude translations directory to prevent re-translation
+                if (
+                    merged_config["translations_dir"]
+                    not in merged_config["exclude_dirs"]
+                ):
+                    merged_config["exclude_dirs"].append(
+                        merged_config["translations_dir"]
+                    )
+
             logger.info(f"Loaded custom configuration from {config_path}")
             logger.debug(
                 f"Configuration details: translations_dir={merged_config.get('translations_dir')}, "
@@ -107,6 +121,47 @@ class ProjectConfig:
             logger.error(f"Error loading configuration file '{config_path}': {e}")
             logger.info(f"Using default configuration instead: {DEFAULT_CONFIG}")
             return DEFAULT_CONFIG.copy()
+
+    def _detect_directory_changes(self):
+        """
+        Detect if configuration directories have changed and handle accordingly.
+        This helps manage transitions when folder structures are modified in the config.
+        """
+        # Check if translations directory has been modified
+        old_translations = self._previous_config.get("translations_dir")
+        new_translations = self._config.get("translations_dir")
+
+        if old_translations != new_translations:
+            old_path = self.root_dir / old_translations
+            new_path = self.root_dir / new_translations
+
+            if old_path.exists() and old_path != new_path:
+                logger.warning(
+                    f"Translations directory changed from '{old_translations}' to '{new_translations}'"
+                )
+                logger.warning(
+                    "You may need to manually migrate files if you want to keep existing translations"
+                )
+                logger.warning(f"Previous translations directory: {old_path}")
+                logger.warning(f"New translations directory: {new_path}")
+
+        # Check if images directory has been modified
+        old_images = self._previous_config.get("images_dir")
+        new_images = self._config.get("images_dir")
+
+        if old_images != new_images:
+            old_path = self.root_dir / old_images
+            new_path = self.root_dir / new_images
+
+            if old_path.exists() and old_path != new_path:
+                logger.warning(
+                    f"Images directory changed from '{old_images}' to '{new_images}'"
+                )
+                logger.warning(
+                    "You may need to manually migrate files if you want to keep existing translated images"
+                )
+                logger.warning(f"Previous images directory: {old_path}")
+                logger.warning(f"New images directory: {new_path}")
 
     @property
     def translations_dir(self) -> Path:

@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 
 from co_op_translator.core.project.project_translator import ProjectTranslator
+from co_op_translator.core.project.migrator import ProjectMigrator
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
 
@@ -65,6 +66,12 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help="Automatically confirm all prompts (useful for CI/CD pipelines).",
 )
+@click.option(
+    "--migrate",
+    "-m",
+    is_flag=True,
+    help="Migrate files from old to new directories when configuration changes are detected.",
+)
 def translate_command(
     language_codes,
     root_dir,
@@ -77,6 +84,7 @@ def translate_command(
     fast,
     yes,
     min_confidence,
+    migrate,
 ):
     """
     CLI for translating project files.
@@ -113,6 +121,9 @@ def translate_command(
 
     10. Use fast mode for image translation:
        translate -l "ko" -img -f
+
+    11. Migrate files when directory structure changes (in config file):
+       translate -l "ko" --migrate
 
     Debug mode example:
     - translate -l "ko" -d: Enable debug logging.
@@ -249,6 +260,57 @@ def translate_command(
         translator = ProjectTranslator(
             language_codes, root_dir, markdown_only=markdown and not images
         )
+
+        # Always check for directory changes
+        if hasattr(translator, "project_config") and translator.project_config:
+            migrator = ProjectMigrator(translator.project_config.root_dir)
+
+            # Detect any directory changes
+            changes = migrator.detect_directory_changes(
+                translator.project_config._previous_config,
+                translator.project_config._config,
+            )
+
+            # Check if we should auto-migrate based on config
+            auto_migrate = migrator.should_auto_migrate(
+                translator.project_config._config
+            )
+
+            if changes:
+                if auto_migrate or migrate:
+                    click.echo(
+                        "Migrating directories based on configuration changes..."
+                    )
+                    migrated = migrator.migrate_directories(
+                        translator.project_config._previous_config,
+                        translator.project_config._config,
+                    )
+
+                    if migrated:
+                        click.echo("✅ Migration completed successfully")
+                        # Save the configuration with updated history
+                        translator.project_config.save_config()
+                        click.echo("Configuration history updated")
+                    else:
+                        if migrator.is_notify_only(translator.project_config._config):
+                            click.echo(
+                                "⚠️ Migration needed but notify_only is enabled in configuration"
+                            )
+                        else:
+                            click.echo(
+                                "ℹ️ Migration attempted but no files were migrated"
+                            )
+                else:
+                    # Changes detected but no migration requested
+                    click.echo(
+                        "⚠️ Directory changes detected! Use --migrate flag or enable auto_migrate in config."
+                    )
+                    for key, old_path, new_path in changes:
+                        dir_type = key.replace("_dir", "").capitalize()
+                        click.echo(f"  - {dir_type} directory: {old_path} → {new_path}")
+            elif migrate:
+                # No changes but migration was requested
+                click.echo("ℹ️ No directory changes detected that require migration")
 
         if fix:
             click.echo(f"Fixing translations with confidence below {min_confidence}...")

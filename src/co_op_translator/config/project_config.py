@@ -5,18 +5,29 @@ Manages custom directory structures and exclusion patterns.
 
 import yaml
 import logging
+import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 from co_op_translator.config.constants import EXCLUDED_DIRS
 
 logger = logging.getLogger(__name__)
 
+# Default configuration values
 DEFAULT_CONFIG = {
     "translations_dir": "translations",
-    "images_dir": "translated_images",
-    "exclude_dirs": list(EXCLUDED_DIRS),
-    "exclude_patterns": ["*.tmp", "*.swp", "*.bak", "*~"],
+    "images_dir": "images",
+    "exclude_dirs": EXCLUDED_DIRS.copy(),
+    "exclude_patterns": [],
+    "migration": {
+        "auto_migrate": False,  # 자동 마이그레이션 비활성화
+        "backup": True,  # 마이그레이션 전 백업 활성화
+        "notify_only": False,  # 알림만 하지 않고 마이그레이션 수행
+    },
+    "history": {
+        "last_config": {},  # 마지막으로 적용된 설정
+        "migrated_at": None,  # 마지막 마이그레이션 시간
+    },
 }
 
 CONFIG_FILENAMES = ["co-op-translator.yml"]
@@ -33,13 +44,8 @@ class ProjectConfig:
             root_dir: Path to the project root directory. If None, uses current directory.
         """
         self.root_dir = Path(root_dir) if root_dir else Path.cwd()
-        self._previous_config = (
-            DEFAULT_CONFIG.copy()
-        )  # Store previous config for comparison
         self._config = self._load_config()
-
-        # Check if translations directory has changed
-        self._detect_directory_changes()
+        self._previous_config = self._get_previous_config()
 
     def _load_config(self) -> Dict[str, Any]:
         """
@@ -125,46 +131,106 @@ class ProjectConfig:
             logger.info(f"Using default configuration instead: {DEFAULT_CONFIG}")
             return DEFAULT_CONFIG.copy()
 
-    def _detect_directory_changes(self):
+    def _get_previous_config(self) -> Dict[str, Any]:
         """
-        Detect if configuration directories have changed and handle accordingly.
-        This helps manage transitions when folder structures are modified in the config.
+        Get the previous configuration from history if available.
+        Otherwise, return a copy of the default configuration.
+
+        Returns:
+            Dict[str, Any]: The previous configuration
         """
-        # Check if translations directory has been modified
-        old_translations = self._previous_config.get("translations_dir")
-        new_translations = self._config.get("translations_dir")
+        if "history" in self._config and "last_config" in self._config["history"]:
+            last_config = self._config["history"]["last_config"]
+            if last_config and isinstance(last_config, dict):
+                # Create a combined config with defaults and the saved last config
+                previous = DEFAULT_CONFIG.copy()
 
-        if old_translations != new_translations:
-            old_path = self.root_dir / old_translations
-            new_path = self.root_dir / new_translations
+                # Handle direct keys (except history and nested structures)
+                for key, value in last_config.items():
+                    if (
+                        key not in ["history", "migration"]
+                        and key in previous
+                        and not isinstance(value, dict)
+                    ):
+                        previous[key] = value
 
-            if old_path.exists() and old_path != new_path:
-                logger.warning(
-                    f"Translations directory changed from '{old_translations}' to '{new_translations}'"
-                )
-                logger.warning(
-                    "You may need to manually migrate files if you want to keep existing translations"
-                )
-                logger.warning(f"Previous translations directory: {old_path}")
-                logger.warning(f"New translations directory: {new_path}")
+                # Handle nested folder structure
+                if "folders" in last_config and isinstance(
+                    last_config["folders"], dict
+                ):
+                    folders = last_config["folders"]
+                    if "translations" in folders:
+                        previous["translations_dir"] = folders["translations"]
+                    if "images" in folders:
+                        previous["images_dir"] = folders["images"]
 
-        # Check if images directory has been modified
-        old_images = self._previous_config.get("images_dir")
-        new_images = self._config.get("images_dir")
+                # Handle nested exclude structure
+                if "exclude" in last_config and isinstance(
+                    last_config["exclude"], dict
+                ):
+                    exclude = last_config["exclude"]
+                    if "dirs" in exclude and isinstance(exclude["dirs"], list):
+                        previous["exclude_dirs"] = exclude["dirs"]
+                    if "patterns" in exclude and isinstance(exclude["patterns"], list):
+                        previous["exclude_patterns"] = exclude["patterns"]
 
-        if old_images != new_images:
-            old_path = self.root_dir / old_images
-            new_path = self.root_dir / new_images
+                logger.info(f"Using previous configuration from history")
+                return previous
 
-            if old_path.exists() and old_path != new_path:
-                logger.warning(
-                    f"Images directory changed from '{old_images}' to '{new_images}'"
-                )
-                logger.warning(
-                    "You may need to manually migrate files if you want to keep existing translated images"
-                )
-                logger.warning(f"Previous images directory: {old_path}")
-                logger.warning(f"New images directory: {new_path}")
+        # If no valid history found, use default config
+        logger.info(f"No previous configuration history found, using defaults")
+        return DEFAULT_CONFIG.copy()
+
+    def save_config(self):
+        """
+        Save the current configuration to the YAML file, including history.
+        This should be called after any configuration changes that need to be persisted.
+        """
+        # Update history with current config before saving
+        if "history" not in self._config:
+            self._config["history"] = {}
+
+        # Structure the config for saving as YAML
+        # We want to keep the hierarchical structure for the YAML file
+        save_config = {}
+
+        # Create hierarchical structure
+        save_config["folders"] = {
+            "translations": self._config.get("translations_dir"),
+            "images": self._config.get("images_dir"),
+        }
+
+        save_config["exclude"] = {
+            "dirs": self._config.get("exclude_dirs"),
+            "patterns": self._config.get("exclude_patterns"),
+        }
+
+        # Add migration settings
+        if "migration" in self._config:
+            save_config["migration"] = self._config["migration"]
+        else:
+            save_config["migration"] = DEFAULT_CONFIG["migration"]
+
+        # Create a flat version of the current config for the history
+        flat_current_config = {
+            "translations_dir": self._config.get("translations_dir"),
+            "images_dir": self._config.get("images_dir"),
+            "exclude_dirs": self._config.get("exclude_dirs"),
+            "exclude_patterns": self._config.get("exclude_patterns"),
+        }
+
+        # Update history
+        save_config["history"] = {
+            "last_config": flat_current_config,
+            "migrated_at": datetime.datetime.now().isoformat(),
+        }
+
+        # Write to the config file
+        config_path = self.root_dir / CONFIG_FILENAMES[0]
+        with open(config_path, "w") as f:
+            yaml.safe_dump(save_config, f, default_flow_style=False, sort_keys=False)
+
+        logger.info(f"Configuration saved to {config_path} with updated history")
 
     @property
     def translations_dir(self) -> Path:

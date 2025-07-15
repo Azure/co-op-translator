@@ -99,8 +99,8 @@ class ProjectTranslator:
             self.markdown_translator,
             self.image_translator,
             self.notebook_translator,
-            self.markdown_only,
             exclude_patterns=self.project_config.exclude_patterns,
+            markdown_only=self.markdown_only,
         )
 
     def translate_project(

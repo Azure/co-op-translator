@@ -20,7 +20,7 @@ DEFAULT_CONFIG = {
     "exclude_patterns": ["*.tmp", "*.swp", "*.bak", "*~"],
 }
 
-CONFIG_FILENAME = ".co-op-translator.yml"
+CONFIG_FILENAMES = ["co-op-translator.yml"]
 
 
 class ProjectConfig:
@@ -40,15 +40,26 @@ class ProjectConfig:
     def _load_config(self) -> Dict[str, Any]:
         """
         Load configuration from YAML file or use defaults.
+        Checks multiple possible filenames (with and without leading dot).
 
         Returns:
             Dict[str, Any]: Configuration dictionary.
         """
-        config_path = self.root_dir / CONFIG_FILENAME
+        config_path = None
+        found = False
 
-        if not config_path.exists():
+        for filename in CONFIG_FILENAMES:
+            potential_path = self.root_dir / filename
+            logger.debug(f"Searching for configuration file at: {potential_path}")
+
+            if potential_path.exists():
+                config_path = potential_path
+                found = True
+                break
+
+        if not found:
             logger.debug(
-                f"No configuration file found at {config_path}, using defaults"
+                f"No configuration file found in {self.root_dir}, using defaults"
             )
             return DEFAULT_CONFIG.copy()
 
@@ -56,23 +67,45 @@ class ProjectConfig:
             with open(config_path, "r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
 
-            # If loaded config is None (empty file), use default config
             if config is None:
                 return DEFAULT_CONFIG.copy()
 
             # Merge with defaults to ensure all fields exist
             merged_config = DEFAULT_CONFIG.copy()
             if isinstance(config, dict):
-                # Update with user values
+                # Process configuration values, supporting both hierarchical and flat structures
+                # First, handle direct keys (flat structure)
                 for key, value in config.items():
-                    if key in merged_config:
+                    if key in merged_config and key not in ["folders", "exclude"]:
                         merged_config[key] = value
 
+                # Then, handle hierarchical structure (with higher precedence)
+                if "folders" in config and isinstance(config["folders"], dict):
+                    folders = config["folders"]
+                    if "translations" in folders:
+                        merged_config["translations_dir"] = folders["translations"]
+                    if "images" in folders:
+                        merged_config["images_dir"] = folders["images"]
+
+                if "exclude" in config and isinstance(config["exclude"], dict):
+                    exclude = config["exclude"]
+                    if "dirs" in exclude and isinstance(exclude["dirs"], list):
+                        merged_config["exclude_dirs"] = exclude["dirs"]
+                    if "patterns" in exclude and isinstance(exclude["patterns"], list):
+                        merged_config["exclude_patterns"] = exclude["patterns"]
+
             logger.info(f"Loaded custom configuration from {config_path}")
+            logger.debug(
+                f"Configuration details: translations_dir={merged_config.get('translations_dir')}, "
+                f"images_dir={merged_config.get('images_dir')}, "
+                f"exclude_dirs={merged_config.get('exclude_dirs')}, "
+                f"exclude_patterns={merged_config.get('exclude_patterns')}"
+            )
             return merged_config
 
         except Exception as e:
-            logger.error(f"Error loading configuration file: {e}")
+            logger.error(f"Error loading configuration file '{config_path}': {e}")
+            logger.info(f"Using default configuration instead: {DEFAULT_CONFIG}")
             return DEFAULT_CONFIG.copy()
 
     @property

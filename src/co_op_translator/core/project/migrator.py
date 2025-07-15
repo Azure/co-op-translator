@@ -114,6 +114,26 @@ class ProjectMigrator:
             logger.error(f"Error checking backup setting: {e}")
             return True  # Default to True for safety
 
+    def should_remove_original(self, config: Dict[str, Any]) -> bool:
+        """
+        Check if original directories should be removed after migration.
+
+        Args:
+            config: Current configuration dictionary
+
+        Returns:
+            bool: True if original directories should be removed, False otherwise
+        """
+        try:
+            if "migration" in config and isinstance(config["migration"], dict):
+                return config["migration"].get(
+                    "remove_original", True
+                )  # Default to True
+            return True  # Default to True if not specified
+        except Exception as e:
+            logger.error(f"Error checking remove_original setting: {e}")
+            return True  # Default to True for consistency
+
     def is_notify_only(self, config: Dict[str, Any]) -> bool:
         """
         Check if migration should only notify and not perform actual migration.
@@ -160,6 +180,11 @@ class ProjectMigrator:
 
         migration_performed = False
         should_backup = self.should_backup(new_config)
+        should_remove = self.should_remove_original(new_config)
+
+        # 백업 폴더와 원본 폴더 추적을 위한 리스트
+        backup_paths = []
+        migrated_source_paths = []
 
         # Migrate all changed directories
         for key, old_path, new_path in directory_changes:
@@ -167,10 +192,37 @@ class ProjectMigrator:
                 # Create backup before migration
                 backup_path = self._create_backup(old_path)
                 if backup_path:
+                    backup_paths.append(backup_path)
                     logger.info(f"Created backup of {old_path} at {backup_path}")
 
             success = self._migrate_directory(old_path, new_path)
-            migration_performed = success or migration_performed
+            if success:
+                migrated_source_paths.append(old_path)
+                migration_performed = True
+
+        if should_remove and migration_performed:
+            for old_path in migrated_source_paths:
+                if old_path.exists():
+                    try:
+                        shutil.rmtree(old_path)
+                        logger.info(
+                            f"Removed original directory after migration: {old_path}"
+                        )
+                    except Exception as e:
+                        logger.error(
+                            f"Error removing original directory {old_path}: {e}"
+                        )
+
+            if not should_backup:
+                for backup_path in backup_paths:
+                    if backup_path.exists():
+                        try:
+                            shutil.rmtree(backup_path)
+                            logger.info(f"Removed backup directory: {backup_path}")
+                        except Exception as e:
+                            logger.error(
+                                f"Error removing backup directory {backup_path}: {e}"
+                            )
 
         # Update last migrated timestamp
         if migration_performed:

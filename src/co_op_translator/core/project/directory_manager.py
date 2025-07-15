@@ -115,13 +115,8 @@ class DirectoryManager:
                         except ValueError:
                             continue
 
-            # Create missing directories
-            for orig_dir in original_dirs:
-                target_dir = lang_dir / orig_dir
-                if not target_dir.exists():
-                    target_dir.mkdir(parents=True, exist_ok=True)
-                    created_count += 1
-                    logger.info(f"Created directory: {target_dir}")
+            logger.info(f"Language directory prepared: {lang_dir}")
+            created_count += 1
 
             # Remove extra directories that don't exist in original
             for trans_dir in sorted(

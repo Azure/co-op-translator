@@ -40,3 +40,18 @@ The Microsoft Co-Op Translator is a powerful tool for translating Markdown docum
 2. Review the content carefully.
 3. Make necessary edits to improve translation accuracy.
 4. Save the changes.
+
+## 4. Permission Error Redacted or 404
+
+If images or text is not being translated to the correct language and when running in -d debug mode you experience 401 error. This is a classic authentication failure—either the key is invalid, expired, or not linked to the endpoint's region. 
+
+Run co-op translator with the [-d debug switch](https://github.com/Azure/co-op-translator/blob/main/getting_started/command-reference.md) to gain further understanding of root cause.
+
+- **Error Message**: `Access denied due to invalid subscription key or wrong API endpoint.`
+- **Possible Causes**:
+  - Subscription key was redacted or incorrect in the request.).
+  - AI Services Key or Subscription Key might belong to a different Azure resource (like Translator or OpenAI) instead of an **Azure AI Vision** resource.
+
+ **Resource Type**
+   - Go to the [Azure Portal](https://portal.azure.com) or [Azure AI Foundry](https://ai.azure.com) and make sure the resource is of type `Azure AI services` → `Vision`.
+   - Validate the keys and ensure the correct key is being used.

@@ -6,10 +6,9 @@ Handles migration of files between directories when configuration changes.
 
 import logging
 import shutil
-import os
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Tuple, Optional, Union, Set
+from typing import Dict, List, Any, Tuple, Optional, Union
 
 logger = logging.getLogger(__name__)
 

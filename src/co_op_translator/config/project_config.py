@@ -7,7 +7,7 @@ import yaml
 import logging
 import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 
 from co_op_translator.config.constants import EXCLUDED_DIRS
 
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_CONFIG = {
     "translations_dir": "translations",
     "images_dir": "images",
+    "languages": [],
     "exclude_dirs": EXCLUDED_DIRS.copy(),
     "exclude_patterns": [],
     "migration": {
@@ -116,6 +117,21 @@ class ProjectConfig:
                 if merged_config["images_dir"] not in merged_config["exclude_dirs"]:
                     merged_config["exclude_dirs"].append(merged_config["images_dir"])
 
+                # Process languages
+                if "languages" in config:
+                    languages = config["languages"]
+                    if isinstance(languages, list):
+                        merged_config["languages"] = languages
+                    elif isinstance(languages, str):
+                        # Convert space-separated string to list
+                        merged_config["languages"] = [
+                            lang.strip() for lang in languages.split() if lang.strip()
+                        ]
+                    else:
+                        logger.warning(
+                            f"Invalid languages format in config: {languages}. Expected list or string."
+                        )
+
             logger.info(f"Loaded custom configuration from {config_path}")
             logger.debug(
                 f"Configuration details: translations_dir={merged_config.get('translations_dir')}, "
@@ -173,6 +189,17 @@ class ProjectConfig:
                     if "patterns" in exclude and isinstance(exclude["patterns"], list):
                         previous["exclude_patterns"] = exclude["patterns"]
 
+                # Handle languages
+                if "languages" in last_config:
+                    languages = last_config["languages"]
+                    if isinstance(languages, list):
+                        previous["languages"] = languages
+                    elif isinstance(languages, str):
+                        # Convert space-separated string to list
+                        previous["languages"] = [
+                            lang.strip() for lang in languages.split() if lang.strip()
+                        ]
+
                 logger.info(f"Using previous configuration from history")
                 return previous
 
@@ -210,12 +237,19 @@ class ProjectConfig:
         else:
             save_config["migration"] = DEFAULT_CONFIG["migration"]
 
+        # Add languages
+        if "languages" in self._config:
+            save_config["languages"] = self._config["languages"]
+        else:
+            save_config["languages"] = DEFAULT_CONFIG["languages"]
+
         # Create a flat version of the current config for the history
         flat_current_config = {
             "translations_dir": self._config.get("translations_dir"),
             "images_dir": self._config.get("images_dir"),
             "exclude_dirs": self._config.get("exclude_dirs"),
             "exclude_patterns": self._config.get("exclude_patterns"),
+            "languages": self._config.get("languages"),
         }
 
         # Update history
@@ -242,6 +276,11 @@ class ProjectConfig:
     def images_dir(self) -> Path:
         """Get the translated images directory path relative to root."""
         return Path(self._config.get("images_dir", DEFAULT_CONFIG["images_dir"]))
+
+    @property
+    def languages(self) -> List[str]:
+        """Get the list of languages to translate."""
+        return self._config.get("languages", DEFAULT_CONFIG["languages"])
 
     @property
     def exclude_dirs(self) -> List[str]:

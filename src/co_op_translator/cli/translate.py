@@ -22,8 +22,8 @@ logger = logging.getLogger(__name__)
 @click.option(
     "--language-codes",
     "-l",
-    required=True,
-    help='Space-separated language codes for translation (e.g., "es fr de" or "all").',
+    required=False,  # Allow reading from config file
+    help='Space-separated language codes for translation (e.g., "es fr de" or "all"). If not provided, uses languages from config file.',
 )
 @click.option(
     "--root-dir",
@@ -237,6 +237,24 @@ def translate_command(
                         )
             except (FileNotFoundError, yaml.YAMLError) as e:
                 raise click.ClickException(f"Failed to load font mappings: {str(e)}")
+
+        # Handle language codes from config file if not provided
+        if not language_codes:
+            from co_op_translator.config.project_config import ProjectConfig
+
+            temp_config = ProjectConfig(root_dir)
+            config_languages = temp_config.languages
+
+            if config_languages:
+                language_codes = " ".join(config_languages)
+                click.echo(f"🌐 Using languages from config file: {language_codes}")
+            else:
+                raise click.ClickException(
+                    "No language codes specified. Please provide -l option or set 'languages' in co-op-translator.yml file.\n"
+                    "Example config file:\n"
+                    "languages: ['ko', 'ja', 'zh']\n"
+                    "# or add to existing config structure"
+                )
 
         # Show warning and prompt if update is selected
         if update:

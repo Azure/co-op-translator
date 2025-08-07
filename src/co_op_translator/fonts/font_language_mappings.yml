@@ -1,3 +1,7 @@
+new_lang:
+  name: "Lithuania"
+  font: "NotoSans-Regular.ttf"
+  rtl: false
 en:
   name: "English"
   font: "NotoSans-Medium.ttf"

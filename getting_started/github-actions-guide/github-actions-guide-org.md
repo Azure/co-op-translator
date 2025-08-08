@@ -213,6 +213,14 @@ jobs:
 
 ## Running the Workflow
 
+> [!WARNING]  
+> **GitHub-hosted Runner Time Limit:**  
+> GitHub-hosted runners such as `ubuntu-latest` have a **maximum execution time limit of 6 hours**.  
+> For large documentation repositories, if the translation process exceeds 6 hours, the workflow will be automatically terminated.  
+> To prevent this, consider:  
+> - Using a **self-hosted runner** (no time limit)  
+> - Reducing the number of target languages per run
+
 Once the `co-op-translator.yml` file is merged into your main branch (or the branch specified in the `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` filter, if configured).
 
 If translations are generated or updated, the action will automatically create a Pull Request containing the changes, ready for your review and merging.

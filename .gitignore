@@ -425,3 +425,5 @@ test_docs/
 
 # .DS Store
 .DS_Store
+
+.python-version

@@ -1,5 +1,5 @@
-new_lang:
-  name: "Lithuania"
+lt:
+  name: "Lithuanian"
   font: "NotoSans-Regular.ttf"
   rtl: false
 en:

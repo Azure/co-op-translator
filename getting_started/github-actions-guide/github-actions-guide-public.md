@@ -163,3 +163,15 @@ jobs:
   - **[!IMPORTANT] Target Languages:** In the `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
   - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
   - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+
+## Running the Workflow
+
+> [!WARNING]  
+> **GitHub-hosted Runner Time Limit:**  
+> GitHub-hosted runners such as `ubuntu-latest` have a **maximum execution time limit of 6 hours**.  
+> For large documentation repositories, if the translation process exceeds 6 hours, the workflow will be automatically terminated.  
+> To prevent this, consider:  
+> - Using a **self-hosted runner** (no time limit)  
+> - Reducing the number of target languages per run
+
+Once the `co-op-translator.yml` file is merged into your main branch (or the branch specified in the `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` filter, if configured).

@@ -2,22 +2,22 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "b58d7c3cb4210697a073d20eb3064945",
-  "translation_date": "2025-07-04T06:49:51+00:00",
+  "translation_date": "2025-08-10T12:12:27+00:00",
   "source_file": "getting_started/set-up-azure-ai.md",
   "language_code": "ko"
 }
 -->
 # Azure AI 설정하기: 협업 번역기 (Azure OpenAI & Azure AI Vision)
 
-이 가이드는 Azure AI Foundry 내에서 언어 번역을 위한 Azure OpenAI와 이미지 콘텐츠 분석을 위한 Azure Computer Vision을 설정하는 방법을 안내합니다. 이미지 기반 번역에 사용할 수 있습니다.
+이 가이드는 Azure AI Foundry 내에서 언어 번역을 위한 Azure OpenAI와 이미지 콘텐츠 분석을 위한 Azure Computer Vision을 설정하는 방법을 안내합니다. 이는 이미지 기반 번역에 사용될 수 있습니다.
 
-**사전 요구 사항:**
+**필수 조건:**
 - 활성 구독이 있는 Azure 계정.
 - Azure 구독에서 리소스와 배포를 생성할 수 있는 충분한 권한.
 
 ## Azure AI 프로젝트 생성
 
-AI 리소스를 관리할 중앙 장소로서 Azure AI 프로젝트를 생성합니다.
+AI 리소스를 관리하는 중앙 장소로서 Azure AI 프로젝트를 생성하는 것으로 시작합니다.
 
 1. [https://ai.azure.com](https://ai.azure.com)로 이동하여 Azure 계정으로 로그인합니다.
 
@@ -35,7 +35,7 @@ AI 리소스를 관리할 중앙 장소로서 Azure AI 프로젝트를 생성합
 
 ### 프로젝트로 이동
 
-이미 이동하지 않았다면, 새로 생성한 프로젝트 (예: `CoopTranslator-Project`)를 Azure AI Foundry에서 엽니다.
+아직 이동하지 않았다면, Azure AI Foundry에서 새로 생성한 프로젝트 (예: `CoopTranslator-Project`)를 엽니다.
 
 ### OpenAI 모델 배포
 
@@ -53,10 +53,10 @@ AI 리소스를 관리할 중앙 장소로서 Azure AI 프로젝트를 생성합
 
 ### Azure OpenAI 구성
 
-배포 후, "**Models + endpoints**" 페이지에서 배포를 선택하여 **REST endpoint URL**, **Key**, **Deployment name**, **Model name** 및 **API version**을 찾을 수 있습니다. 이는 번역 모델을 애플리케이션에 통합하는 데 필요합니다.
+배포가 완료되면 "**Models + endpoints**" 페이지에서 배포를 선택하여 **REST endpoint URL**, **Key**, **Deployment name**, **Model name** 및 **API version**을 찾을 수 있습니다. 이는 번역 모델을 애플리케이션에 통합하는 데 필요합니다.
 
 > [!NOTE]
-> 요구 사항에 따라 [API 버전 폐기](https://learn.microsoft.com/azure/ai-services/openai/api-version-deprecation) 페이지에서 API 버전을 선택할 수 있습니다. **API 버전**은 Azure AI Foundry의 **Models + endpoints** 페이지에 표시된 **Model version**과 다릅니다.
+> 요구 사항에 따라 [API 버전 폐기](https://learn.microsoft.com/azure/ai-services/openai/api-version-deprecation) 페이지에서 API 버전을 선택할 수 있습니다. **API 버전**은 Azure AI Foundry의 **Models + endpoints** 페이지에 표시된 **Model version**과 다르다는 점에 유의하세요.
 
 ## 이미지 번역을 위한 Azure Computer Vision 설정
 
@@ -74,7 +74,7 @@ Azure AI 서비스에서 API Key와 Endpoint를 찾습니다.
 
     ![API Key와 Endpoint 찾기](../../../translated_images/find-azure-ai-info.0e00140419c12517d2011ecdde3fafb9306d379b29d2c04a0d18063e56983559.ko.png)
 
-이 연결은 연결된 Azure AI 서비스 리소스의 기능(이미지 분석 포함)을 AI Foundry 프로젝트에 사용할 수 있게 합니다. 이 연결을 사용하여 노트북이나 애플리케이션에서 이미지를 추출한 텍스트를 Azure OpenAI 모델로 번역할 수 있습니다.
+이 연결은 연결된 Azure AI 서비스 리소스의 기능(이미지 분석 포함)을 AI Foundry 프로젝트에 사용할 수 있게 합니다. 이 연결을 사용하여 노트북이나 애플리케이션에서 이미지를 추출하고, 이를 Azure OpenAI 모델로 번역할 수 있습니다.
 
 ## 자격 증명 통합
 
@@ -93,7 +93,7 @@ Azure AI 서비스에서 API Key와 Endpoint를 찾습니다.
 
 ### 예시: 환경 변수 구성 (미리보기)
 
-나중에 애플리케이션을 구축할 때, 수집한 자격 증명을 사용하여 환경 변수를 설정할 수 있습니다. 예를 들어 다음과 같이 설정할 수 있습니다:
+나중에 애플리케이션을 구축할 때, 수집한 자격 증명을 사용하여 환경 변수를 설정할 수 있습니다. 예를 들어, 다음과 같이 설정할 수 있습니다:
 
 ```bash
 # Azure AI Service Credentials (Required for image translation)
@@ -117,4 +117,4 @@ AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-12-01-preview
 - [Azure AI Foundry에서 OpenAI 모델 배포 방법](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-openai)
 
 **면책 조항**:  
-이 문서는 AI 번역 서비스 [Co-op Translator](https://github.com/Azure/co-op-translator)를 사용하여 번역되었습니다. 우리는 정확성을 위해 노력하지만, 자동 번역에는 오류나 부정확성이 있을 수 있음을 유의하시기 바랍니다. 원본 문서는 해당 언어로 작성된 것이 권위 있는 출처로 간주되어야 합니다. 중요한 정보에 대해서는 전문적인 인간 번역을 권장합니다. 이 번역 사용으로 인해 발생하는 오해나 잘못된 해석에 대해 책임을 지지 않습니다.
+이 문서는 AI 번역 서비스 [Co-op Translator](https://github.com/Azure/co-op-translator)를 사용하여 번역되었습니다. 우리는 정확성을 위해 노력하지만, 자동 번역에는 오류나 부정확성이 있을 수 있음을 유의하시기 바랍니다. 원본 문서는 해당 언어로 작성된 것이 권위 있는 자료로 간주되어야 합니다. 중요한 정보에 대해서는 전문적인 인간 번역을 권장합니다. 이 번역 사용으로 인해 발생하는 오해나 잘못된 해석에 대해 책임을 지지 않습니다.

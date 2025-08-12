@@ -2,7 +2,7 @@
 CO_OP_TRANSLATOR_METADATA:
 {
   "original_hash": "62fe65c1d8e3796c01aa1e3c89666cba",
-  "translation_date": "2025-07-04T06:49:26+00:00",
+  "translation_date": "2025-08-10T12:12:00+00:00",
   "source_file": "SUPPORT.md",
   "language_code": "ko"
 }
@@ -15,7 +15,7 @@ CO_OP_TRANSLATOR_METADATA:
 - **CSS 지원 있음:** [aka.ms/onboardsupport](https://aka.ms/onboardsupport)에서 접수 양식을 작성하세요. CSS가 다음 단계를 결정하는 데 도움을 줄 것입니다.
 - **잘 모르겠습니까?** 답변이 "예"인 것처럼 접수 양식을 작성하세요. CSS가 결정하는 데 도움을 줄 것입니다.
 
-*그런 다음 이 SUPPORT.MD 파일에서 이 첫 번째 제목을 제거한 후 저장소를 게시하세요.*
+*그런 다음 이 SUPPORT.MD 파일에서 이 첫 번째 제목을 제거하고 저장소를 게시하세요.*
 
 # 지원
 
@@ -30,4 +30,4 @@ CO_OP_TRANSLATOR_METADATA:
 이 **프로젝트 또는 제품**에 대한 지원은 위에 나열된 리소스에 한정됩니다.
 
 **면책 조항**:  
-이 문서는 AI 번역 서비스 [Co-op Translator](https://github.com/Azure/co-op-translator)를 사용하여 번역되었습니다. 우리는 정확성을 위해 노력하지만, 자동 번역에는 오류나 부정확성이 있을 수 있음을 유의하시기 바랍니다. 원본 문서는 해당 언어로 작성된 것이 권위 있는 출처로 간주되어야 합니다. 중요한 정보에 대해서는 전문적인 인간 번역을 권장합니다. 이 번역 사용으로 인해 발생하는 오해나 잘못된 해석에 대해 책임을 지지 않습니다.
+이 문서는 AI 번역 서비스 [Co-op Translator](https://github.com/Azure/co-op-translator)를 사용하여 번역되었습니다. 정확성을 위해 노력하고 있지만, 자동 번역에는 오류나 부정확성이 있을 수 있음을 유의하시기 바랍니다. 원본 문서는 해당 언어로 작성된 것이 권위 있는 자료로 간주되어야 합니다. 중요한 정보의 경우, 전문적인 인간 번역을 권장합니다. 이 번역 사용으로 인해 발생하는 오해나 잘못된 해석에 대해 당사는 책임을 지지 않습니다.

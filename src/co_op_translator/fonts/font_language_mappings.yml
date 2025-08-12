@@ -1,7 +1,3 @@
-lt:
-  name: "Lithuanian"
-  font: "NotoSans-Regular.ttf"
-  rtl: false
 en:
   name: "English"
   font: "NotoSans-Medium.ttf"
@@ -148,4 +144,7 @@ my:
   font: "NotoSansMyanmar-Medium.ttf"
 uk:
   name: "Ukrainian"
+  font: "NotoSans-Medium.ttf"
+lt:
+  name: "Lithuanian"
   font: "NotoSans-Medium.ttf"

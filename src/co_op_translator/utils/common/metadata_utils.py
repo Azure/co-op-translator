@@ -25,6 +25,23 @@ def calculate_file_hash(file_path: Path) -> str:
     return hasher.hexdigest()
 
 
+def calculate_string_hash(text: str) -> str:
+    """
+    Calculate MD5 hash of a Unicode string.
+
+    This is used for per-cell source hashing in notebooks to detect changes.
+
+    Args:
+        text (str): Input text to hash.
+
+    Returns:
+        str: MD5 hash of the UTF-8 encoded text.
+    """
+    hasher = hashlib.md5()
+    hasher.update(text.encode("utf-8"))
+    return hasher.hexdigest()
+
+
 def create_metadata(
     original_file: Path, language_code: str, root_dir: Path | None = None
 ) -> dict:

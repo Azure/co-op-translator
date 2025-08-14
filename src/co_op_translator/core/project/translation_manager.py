@@ -365,6 +365,27 @@ class TranslationManager:
                     self.translations_dir / language_code / relative_path
                 )
 
+                # Minimal skip logic: if translated exists and original hash matches, skip unless update=True
+                if translated_notebook_path.exists() and not update:
+                    try:
+                        with open(translated_notebook_path, "r", encoding="utf-8") as f:
+                            translated_nb = json.load(f)
+                        existing_meta = (
+                            translated_nb.get("metadata", {})
+                            .get("coopTranslator", {})
+                            .get("original_hash")
+                        )
+                        current_hash = calculate_file_hash(notebook_file_path)
+                        if existing_meta and existing_meta == current_hash:
+                            logger.info(
+                                f"Skipping up-to-date notebook: {translated_notebook_path}"
+                            )
+                            continue
+                    except Exception as e:
+                        logger.debug(
+                            f"Unable to read translated notebook metadata for {translated_notebook_path}: {e}"
+                        )
+
                 if not update and translated_notebook_path.exists():
                     logger.info(
                         f"Skipping already translated notebook file: {translated_notebook_path}"

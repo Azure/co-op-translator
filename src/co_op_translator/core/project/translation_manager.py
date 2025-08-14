@@ -18,13 +18,10 @@ from co_op_translator.utils.common.file_utils import (
 )
 from co_op_translator.utils.common.metadata_utils import calculate_file_hash
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
-from co_op_translator.core.llm.jupyter_notebook_translator import (
-    JupyterNotebookTranslator,
-)
 from co_op_translator.core.project.directory_manager import DirectoryManager
-from co_op_translator.config.constants import SUPPORTED_IMAGE_EXTENSIONS
 from co_op_translator.utils.common.task_utils import worker
 from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
+from co_op_translator.utils.common.notebook_utils import is_notebook_up_to_date
 
 logger = logging.getLogger(__name__)
 
@@ -365,26 +362,12 @@ class TranslationManager:
                     self.translations_dir / language_code / relative_path
                 )
 
-                # Minimal skip logic: if translated exists and original hash matches, skip unless update=True
                 if translated_notebook_path.exists() and not update:
-                    try:
-                        with open(translated_notebook_path, "r", encoding="utf-8") as f:
-                            translated_nb = json.load(f)
-                        existing_meta = (
-                            translated_nb.get("metadata", {})
-                            .get("coopTranslator", {})
-                            .get("original_hash")
+                    if is_notebook_up_to_date(notebook_file_path, translated_notebook_path):
+                        logger.info(
+                            f"Skipping up-to-date notebook: {translated_notebook_path}"
                         )
-                        current_hash = calculate_file_hash(notebook_file_path)
-                        if existing_meta and existing_meta == current_hash:
-                            logger.info(
-                                f"Skipping up-to-date notebook: {translated_notebook_path}"
-                            )
-                            continue
-                    except Exception as e:
-                        logger.debug(
-                            f"Unable to read translated notebook metadata for {translated_notebook_path}: {e}"
-                        )
+                        continue
 
                 if not update and translated_notebook_path.exists():
                     logger.info(

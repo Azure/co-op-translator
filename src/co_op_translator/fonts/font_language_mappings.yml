@@ -145,3 +145,6 @@ my:
 uk:
   name: "Ukrainian"
   font: "NotoSans-Medium.ttf"
+lt:
+  name: "Lithuanian"
+  font: "NotoSans-Medium.ttf"

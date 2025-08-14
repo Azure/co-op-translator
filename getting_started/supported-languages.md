@@ -26,6 +26,7 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | pt            | Portuguese (Portugal)| NotoSans-Medium.ttf               | No          | No           |
 | br            | Portuguese (Brazil)  | NotoSans-Medium.ttf               | No          | No           |
 | it            | Italian              | NotoSans-Medium.ttf               | No          | No           |
+| lt            | Lithuanian           | NotoSans-Medium.ttf               | No          | No           |
 | pl            | Polish               | NotoSans-Medium.ttf               | No          | No           |
 | tr            | Turkish              | NotoSans-Medium.ttf               | No          | No           |
 | el            | Greek                | NotoSans-Medium.ttf               | No          | No           |

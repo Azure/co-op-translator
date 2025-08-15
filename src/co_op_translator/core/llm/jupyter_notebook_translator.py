@@ -131,8 +131,10 @@ class JupyterNotebookTranslator:
 
         # Add coopTranslator metadata to the notebook
         notebook_path = Path(notebook_path)
-        notebook = add_notebook_metadata(notebook, notebook_path, language_code, self.root_dir)
-        
+        notebook = add_notebook_metadata(
+            notebook, notebook_path, language_code, self.root_dir
+        )
+
         logger.debug(f"Added coopTranslator metadata to {notebook_path.name}")
 
         # Return the modified notebook as JSON string

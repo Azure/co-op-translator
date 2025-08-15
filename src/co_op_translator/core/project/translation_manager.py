@@ -363,7 +363,9 @@ class TranslationManager:
                 )
 
                 if translated_notebook_path.exists() and not update:
-                    if is_notebook_up_to_date(notebook_file_path, translated_notebook_path):
+                    if is_notebook_up_to_date(
+                        notebook_file_path, translated_notebook_path
+                    ):
                         logger.info(
                             f"Skipping up-to-date notebook: {translated_notebook_path}"
                         )

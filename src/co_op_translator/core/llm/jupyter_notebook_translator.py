@@ -64,37 +64,12 @@ class JupyterNotebookTranslator:
         # Compute notebook-level hash of the original file content
         original_hash = calculate_file_hash(notebook_path)
 
-        # Attempt to load existing translated notebook (if any) to enable per-cell reuse
-        existing_translated: dict | None = None
-        # The caller determines output path; we only reuse by matching cells if the caller provided content.
-        # Here, we support reuse by looking inside this notebook itself if already translated previously.
-        # If this is an original (non-translated) notebook, metadata won't exist and reuse won't happen.
-        existing_translated = notebook
-
-        translated_cells_by_id: dict[str, dict] = {}
-        translated_cells_by_index: dict[int, dict] = {}
-        if isinstance(existing_translated, dict):
-            cells = existing_translated.get("cells", [])
-            for idx, cell in enumerate(cells):
-                if cell.get("cell_type") != "markdown":
-                    continue
-                meta = cell.get("metadata", {}).get("coopTranslator", {})
-                src_hash = meta.get("source_hash")
-                if not src_hash:
-                    continue
-                # Prefer cell id mapping if present
-                cell_id = cell.get("id")
-                entry = {"index": idx, "cell": cell, "source_hash": src_hash}
-                if isinstance(cell_id, str):
-                    translated_cells_by_id[cell_id] = entry
-                translated_cells_by_index[idx] = entry
-
         # Track which cells were translated for logging
         translated_cells = 0
         total_markdown_cells = 0
 
         # Process each cell
-        for idx, cell in enumerate(notebook.get("cells", [])):
+        for cell in notebook.get("cells", []):
             if cell.get("cell_type") == "markdown":
                 total_markdown_cells += 1
 
@@ -111,32 +86,6 @@ class JupyterNotebookTranslator:
 
                 # Skip empty cells
                 if not markdown_content.strip():
-                    continue
-
-                # Compute per-cell source hash and check if unchanged
-                current_src_hash = calculate_string_hash(markdown_content)
-
-                # Try to reuse existing translated content if source hash matches
-                reused = False
-                cell_id = cell.get("id")
-                candidate = None
-                if isinstance(cell_id, str) and cell_id in translated_cells_by_id:
-                    candidate = translated_cells_by_id[cell_id]
-                elif idx in translated_cells_by_index:
-                    candidate = translated_cells_by_index[idx]
-
-                if candidate and candidate.get("source_hash") == current_src_hash:
-                    prev_cell = candidate["cell"]
-                    prev_source = prev_cell.get("source", [])
-                    # Reuse previous translated source as-is
-                    cell["source"] = prev_source
-                    # Ensure metadata is set
-                    cell.setdefault("metadata", {}).setdefault("coopTranslator", {})[
-                        "source_hash"
-                    ] = current_src_hash
-                    reused = True
-
-                if reused:
                     continue
 
                 try:
@@ -166,11 +115,6 @@ class JupyterNotebookTranslator:
                     else:
                         cell["source"] = translated_content
 
-                    # Record per-cell metadata for future reuse
-                    cell.setdefault("metadata", {}).setdefault("coopTranslator", {})[
-                        "source_hash"
-                    ] = current_src_hash
-
                     translated_cells += 1
 
                 except Exception as e:
@@ -178,12 +122,6 @@ class JupyterNotebookTranslator:
                         f"Failed to translate cell in {notebook_path}: {e}. "
                         f"Keeping original content."
                     )
-
-        # Save notebook-level metadata
-        notebook.setdefault("metadata", {}).setdefault("coopTranslator", {})[
-            "original_hash"
-        ] = original_hash
-        notebook["metadata"]["coopTranslator"]["language_code"] = language_code
 
         logger.info(
             f"Translated {translated_cells}/{total_markdown_cells} markdown cells "

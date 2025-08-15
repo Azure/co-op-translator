@@ -773,7 +773,11 @@ class TranslationManager:
             total=len(files_to_translate), desc="🔄 Retranslating outdated files"
         ) as progress_bar:
             for original_file, language_code in files_to_translate:
-                await self.translate_markdown(original_file, language_code)
+                # Determine file type and use appropriate translation method
+                if original_file.suffix.lower() in self.supported_notebook_extensions:
+                    await self.translate_notebook(original_file, language_code)
+                else:
+                    await self.translate_markdown(original_file, language_code)
                 progress_bar.update(1)
                 progress_bar.set_postfix_str(f"Current: {original_file.name}")
 

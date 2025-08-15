@@ -4,7 +4,6 @@ Tests for JupyterNotebookTranslator functionality.
 
 import json
 import pytest
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from co_op_translator.core.llm.jupyter_notebook_translator import (

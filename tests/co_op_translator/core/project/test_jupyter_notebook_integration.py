@@ -4,7 +4,6 @@ Integration tests for Jupyter Notebook translation functionality.
 
 import json
 import pytest
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from co_op_translator.core.project.project_translator import ProjectTranslator

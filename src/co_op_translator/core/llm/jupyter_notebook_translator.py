@@ -8,12 +8,10 @@ extracting markdown cells, translating them, and preserving code cells unchanged
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Any, List
 
 from .markdown_translator import MarkdownTranslator
 from co_op_translator.utils.common.metadata_utils import (
     calculate_file_hash,
-    calculate_string_hash,
     add_notebook_metadata,
 )
 

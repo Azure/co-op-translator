@@ -41,6 +41,7 @@ class JupyterNotebookTranslator:
         notebook_path: str | Path,
         language_code: str,
         markdown_only: bool = False,
+        add_disclaimer: bool = True,
     ) -> str:
         """Translate a Jupyter Notebook file to the target language.
 
@@ -52,6 +53,7 @@ class JupyterNotebookTranslator:
             notebook_path: Path to the .ipynb file
             language_code: Target language code
             markdown_only: Skip embedded image translation if True
+            add_disclaimer: Add disclaimer cell at the end of notebook if True
 
         Returns:
             str: The translated notebook content as JSON string
@@ -128,6 +130,20 @@ class JupyterNotebookTranslator:
             f"Translated {translated_cells}/{total_markdown_cells} markdown cells "
             f"in {notebook_path.name}"
         )
+
+        # Add disclaimer cell at the end if requested
+        if add_disclaimer:
+            disclaimer_text = await self.markdown_translator.generate_disclaimer(
+                language_code
+            )
+            if disclaimer_text:
+                disclaimer_cell = {
+                    "cell_type": "markdown",
+                    "metadata": {},
+                    "source": [f"\n---\n\n{disclaimer_text}\n"],
+                }
+                notebook["cells"].append(disclaimer_cell)
+                logger.debug(f"Added disclaimer cell to {notebook_path.name}")
 
         # Add coopTranslator metadata to the notebook
         notebook_path = Path(notebook_path)

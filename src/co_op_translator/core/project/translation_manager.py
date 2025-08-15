@@ -212,7 +212,10 @@ class TranslationManager:
 
             # Perform translation
             translated_content = await self.notebook_translator.translate_notebook(
-                file_path, language_code, markdown_only=self.markdown_only
+                file_path,
+                language_code,
+                markdown_only=self.markdown_only,
+                add_disclaimer=True,
             )
             if not translated_content:
                 logger.error(

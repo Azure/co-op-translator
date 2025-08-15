@@ -95,7 +95,7 @@ class TestJupyterNotebookTranslator:
         # Create translator and translate
         translator = JupyterNotebookTranslator.create()
         result = await translator.translate_notebook(
-            temp_notebook_file, "es", markdown_only=True
+            temp_notebook_file, "es", markdown_only=True, add_disclaimer=False
         )
 
         # Verify result is valid JSON
@@ -139,7 +139,9 @@ class TestJupyterNotebookTranslator:
 
         # Create translator and translate
         translator = JupyterNotebookTranslator.create()
-        result = await translator.translate_notebook(notebook_file, "es")
+        result = await translator.translate_notebook(
+            notebook_file, "es", add_disclaimer=False
+        )
 
         # Verify no translation calls were made for empty cells
         mock_translator.translate_markdown.assert_not_called()
@@ -181,7 +183,9 @@ class TestJupyterNotebookTranslator:
 
         # Create translator and translate
         translator = JupyterNotebookTranslator.create()
-        result = await translator.translate_notebook(notebook_file, "es")
+        result = await translator.translate_notebook(
+            notebook_file, "es", add_disclaimer=False
+        )
 
         # Verify translation was called
         mock_translator.translate_markdown.assert_called_once()
@@ -294,7 +298,9 @@ class TestJupyterNotebookTranslator:
 
         # Create translator and translate
         translator = JupyterNotebookTranslator.create()
-        result = await translator.translate_notebook(temp_notebook_file, "ko")
+        result = await translator.translate_notebook(
+            temp_notebook_file, "ko", add_disclaimer=False
+        )
 
         # Parse result
         translated_notebook = json.loads(result)
@@ -317,3 +323,105 @@ class TestJupyterNotebookTranslator:
         ]
         assert code_cell["source"] == expected_code_source
         assert code_cell["execution_count"] is None
+
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
+    @pytest.mark.asyncio
+    async def test_translate_notebook_with_disclaimer(
+        self, mock_markdown_translator_class, temp_notebook_file
+    ):
+        """Test that notebook translation adds disclaimer cell when enabled."""
+        # Setup mock translator
+        mock_translator = AsyncMock()
+        mock_translator.translate_markdown = AsyncMock(
+            return_value="# 번역된 제목\n\n번역된 내용"
+        )
+        mock_translator.generate_disclaimer = AsyncMock(
+            return_value="**면책조항**: 이 문서는 AI 번역 서비스를 사용하여 번역되었습니다."
+        )
+        mock_markdown_translator_class.create.return_value = mock_translator
+
+        # Create translator and translate with disclaimer
+        translator = JupyterNotebookTranslator.create()
+        result = await translator.translate_notebook(
+            temp_notebook_file, "ko", add_disclaimer=True
+        )
+
+        # Parse result
+        translated_notebook = json.loads(result)
+
+        # Verify disclaimer cell was added at the end
+        cells = translated_notebook["cells"]
+        assert len(cells) == 4  # Original 3 + 1 disclaimer
+
+        disclaimer_cell = cells[-1]  # Last cell should be disclaimer
+        assert disclaimer_cell["cell_type"] == "markdown"
+        disclaimer_content = "".join(disclaimer_cell["source"])
+        assert "면책조항" in disclaimer_content
+        assert "---" in disclaimer_content  # Separator line
+
+        # Verify generate_disclaimer was called
+        mock_translator.generate_disclaimer.assert_called_once_with("ko")
+
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
+    @pytest.mark.asyncio
+    async def test_translate_notebook_without_disclaimer(
+        self, mock_markdown_translator_class, temp_notebook_file
+    ):
+        """Test that notebook translation skips disclaimer when disabled."""
+        # Setup mock translator
+        mock_translator = AsyncMock()
+        mock_translator.translate_markdown = AsyncMock(
+            return_value="# 번역된 제목\n\n번역된 내용"
+        )
+        mock_translator.generate_disclaimer = AsyncMock(
+            return_value="**면책조항**: 이 문서는 AI 번역 서비스를 사용하여 번역되었습니다."
+        )
+        mock_markdown_translator_class.create.return_value = mock_translator
+
+        # Create translator and translate without disclaimer
+        translator = JupyterNotebookTranslator.create()
+        result = await translator.translate_notebook(
+            temp_notebook_file, "ko", add_disclaimer=False
+        )
+
+        # Parse result
+        translated_notebook = json.loads(result)
+
+        # Verify no disclaimer cell was added
+        cells = translated_notebook["cells"]
+        assert len(cells) == 3  # Original 3, no disclaimer
+
+        # Verify generate_disclaimer was not called
+        mock_translator.generate_disclaimer.assert_not_called()
+
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
+    @pytest.mark.asyncio
+    async def test_translate_notebook_disclaimer_generation_fails(
+        self, mock_markdown_translator_class, temp_notebook_file
+    ):
+        """Test that notebook translation handles disclaimer generation failure gracefully."""
+        # Setup mock translator with failing disclaimer generation
+        mock_translator = AsyncMock()
+        mock_translator.translate_markdown = AsyncMock(
+            return_value="# 번역된 제목\n\n번역된 내용"
+        )
+        mock_translator.generate_disclaimer = AsyncMock(
+            return_value=""  # Empty disclaimer (failure case)
+        )
+        mock_markdown_translator_class.create.return_value = mock_translator
+
+        # Create translator and translate
+        translator = JupyterNotebookTranslator.create()
+        result = await translator.translate_notebook(
+            temp_notebook_file, "ko", add_disclaimer=True
+        )
+
+        # Parse result
+        translated_notebook = json.loads(result)
+
+        # Verify no disclaimer cell was added when generation fails
+        cells = translated_notebook["cells"]
+        assert len(cells) == 3  # Original 3, no disclaimer due to failure
+
+        # Verify generate_disclaimer was called but failed
+        mock_translator.generate_disclaimer.assert_called_once_with("ko")

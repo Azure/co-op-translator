@@ -191,3 +191,129 @@ class TestJupyterNotebookTranslator:
         cell_source = translated_notebook["cells"][0]["source"]
         assert isinstance(cell_source, list)
         assert all(isinstance(line, str) for line in cell_source)
+
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
+    @patch(
+        "co_op_translator.core.llm.jupyter_notebook_translator.add_notebook_metadata"
+    )
+    @pytest.mark.asyncio
+    async def test_translate_notebook_adds_metadata(
+        self,
+        mock_add_metadata,
+        mock_markdown_translator_class,
+        temp_notebook_file,
+        tmp_path,
+    ):
+        """Test that notebook translation adds coopTranslator metadata."""
+        # Setup mock translator
+        mock_translator = AsyncMock()
+        mock_translator.translate_markdown = AsyncMock(
+            return_value="# Translated Content"
+        )
+        mock_markdown_translator_class.create.return_value = mock_translator
+
+        # Setup mock metadata function
+        expected_metadata = {
+            "metadata": {
+                "kernelspec": {
+                    "display_name": "Python 3",
+                    "language": "python",
+                    "name": "python3",
+                },
+                "coopTranslator": {
+                    "original_hash": "test_hash",
+                    "translation_date": "2025-01-26T14:30:00+00:00",
+                    "source_file": "test.ipynb",
+                    "language_code": "ko",
+                },
+            }
+        }
+        mock_add_metadata.return_value = {"cells": [], **expected_metadata}
+
+        # Create translator with root directory
+        translator = JupyterNotebookTranslator.create(tmp_path)
+        result = await translator.translate_notebook(temp_notebook_file, "ko")
+
+        # Verify add_notebook_metadata was called with correct parameters
+        mock_add_metadata.assert_called_once()
+        call_args = mock_add_metadata.call_args
+        assert call_args[0][1] == temp_notebook_file  # original_path
+        assert call_args[0][2] == "ko"  # language_code
+        assert call_args[0][3] == tmp_path  # root_dir
+
+        # Verify result includes metadata
+        translated_notebook = json.loads(result)
+        assert "metadata" in translated_notebook
+
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
+    @pytest.mark.asyncio
+    async def test_translate_notebook_handles_translation_errors(
+        self, mock_markdown_translator_class, temp_notebook_file, caplog
+    ):
+        """Test that notebook translation handles individual cell translation errors gracefully."""
+        # Setup mock translator that raises exception
+        mock_translator = AsyncMock()
+        mock_translator.translate_markdown = AsyncMock(
+            side_effect=Exception("Translation API error")
+        )
+        mock_markdown_translator_class.create.return_value = mock_translator
+
+        # Create translator and translate
+        translator = JupyterNotebookTranslator.create()
+        result = await translator.translate_notebook(temp_notebook_file, "ko")
+
+        # Verify translation still completes (graceful error handling)
+        translated_notebook = json.loads(result)
+        assert "cells" in translated_notebook
+
+        # Verify warning was logged
+        assert "Failed to translate cell" in caplog.text
+
+        # Verify original content is preserved when translation fails
+        markdown_cells = [
+            cell
+            for cell in translated_notebook["cells"]
+            if cell["cell_type"] == "markdown"
+        ]
+        assert len(markdown_cells) > 0
+        # Original content should be preserved
+        assert "Hello World" in "".join(markdown_cells[0]["source"])
+
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
+    @pytest.mark.asyncio
+    async def test_translate_notebook_preserves_notebook_structure(
+        self, mock_markdown_translator_class, temp_notebook_file
+    ):
+        """Test that notebook translation preserves the overall notebook structure."""
+        # Setup mock
+        mock_translator = AsyncMock()
+        mock_translator.translate_markdown = AsyncMock(
+            return_value="# 번역된 제목\n\n번역된 내용"
+        )
+        mock_markdown_translator_class.create.return_value = mock_translator
+
+        # Create translator and translate
+        translator = JupyterNotebookTranslator.create()
+        result = await translator.translate_notebook(temp_notebook_file, "ko")
+
+        # Parse result
+        translated_notebook = json.loads(result)
+
+        # Verify notebook structure is preserved
+        assert translated_notebook["nbformat"] == 4
+        assert translated_notebook["nbformat_minor"] == 4
+        assert "kernelspec" in translated_notebook["metadata"]
+
+        # Verify cell count and types are preserved
+        assert len(translated_notebook["cells"]) == 3
+        cell_types = [cell["cell_type"] for cell in translated_notebook["cells"]]
+        assert cell_types == ["markdown", "code", "markdown"]
+
+        # Verify code cells are completely unchanged
+        code_cell = translated_notebook["cells"][1]
+        expected_code_source = [
+            "print('Hello, World!')\n",
+            "# This should not be translated",
+        ]
+        assert code_cell["source"] == expected_code_source
+        assert code_cell["execution_count"] is None

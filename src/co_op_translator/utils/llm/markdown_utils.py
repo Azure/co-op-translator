@@ -469,11 +469,11 @@ def update_file_links(
             logger.info(f"Skipping image file {link}")
             continue
 
-        if file_ext == ".md":
-            logger.info(f"Skipping markdown file {link}")
+        if file_ext == ".md" or file_ext == ".ipynb":
+            logger.info(f"Skipping markdown/notebook file {link}")
             continue
 
-        logger.info(f"Processing non-image, non-markdown file {link}")
+        logger.info(f"Processing non-image, non-markdown, non-notebook file {link}")
         try:
             translated_md_dir = (
                 translations_dir

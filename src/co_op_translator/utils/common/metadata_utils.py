@@ -6,6 +6,7 @@ import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
+from typing import Dict, Any, Optional
 
 
 def calculate_file_hash(file_path: Path) -> str:
@@ -174,3 +175,101 @@ def format_metadata_comment(metadata: dict) -> str:
     metadata_json = json.dumps(metadata, indent=2, ensure_ascii=False)
     formatted_comment = f"<!--\nCO_OP_TRANSLATOR_METADATA:\n{metadata_json}\n-->\n"
     return formatted_comment
+
+
+# ============================================================================
+# Notebook-specific metadata utilities
+# ============================================================================
+
+def _read_notebook_json(notebook_path: Path) -> Dict[str, Any]:
+    """
+    Safely read a notebook JSON file. Returns empty dict on error.
+    
+    Args:
+        notebook_path: Path to the notebook file
+        
+    Returns:
+        Dict containing the notebook JSON, or empty dict on error
+    """
+    try:
+        with open(notebook_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def read_notebook_metadata(notebook_path: Path, metadata_key: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Read metadata from a notebook file.
+    
+    Example:
+        metadata = read_notebook_metadata(notebook_path, "coopTranslator")
+    
+    Args:
+        notebook_path: Path to the notebook file
+        metadata_key: Optional key to extract specific metadata section.
+                     If None, returns the entire metadata object.
+    
+    Returns:
+        Dict containing the requested metadata. Returns empty dict if not present or on error.
+    """
+    nb = _read_notebook_json(notebook_path)
+    meta = nb.get("metadata", {})
+    if not isinstance(meta, dict):
+        return {}
+    
+    if metadata_key is None:
+        return meta
+    
+    specific_meta = meta.get(metadata_key, {})
+    return specific_meta if isinstance(specific_meta, dict) else {}
+
+
+def is_notebook_up_to_date(original_path: Path, translated_path: Path) -> bool:
+    """
+    Determine if a translated notebook is up to date with its original.
+
+    Compares the current hash of the original notebook with the stored
+    metadata.coopTranslator.original_hash in the translated notebook.
+
+    Args:
+        original_path: Path to the original notebook
+        translated_path: Path to the translated notebook
+
+    Returns:
+        True if translated notebook is up to date, False otherwise
+    """
+    try:
+        stored_hash = read_notebook_metadata(translated_path, "coopTranslator").get("original_hash")
+        if not stored_hash:
+            return False
+        current_hash = calculate_file_hash(Path(original_path))
+        return stored_hash == current_hash
+    except Exception:
+        return False
+
+
+def add_notebook_metadata(notebook: Dict[str, Any], original_path: Path, language_code: str, root_dir: Optional[Path] = None) -> Dict[str, Any]:
+    """
+    Add coopTranslator metadata to a notebook dictionary.
+    
+    Args:
+        notebook: The notebook dictionary to modify
+        original_path: Path to the original notebook file
+        language_code: Target language code
+        root_dir: Root directory for relative path calculation
+        
+    Returns:
+        Modified notebook dictionary with coopTranslator metadata
+    """
+    # Create translation metadata
+    translation_metadata = create_metadata(original_path, language_code, root_dir)
+    
+    # Ensure metadata section exists
+    if "metadata" not in notebook:
+        notebook["metadata"] = {}
+    
+    # Add coopTranslator metadata
+    notebook["metadata"]["coopTranslator"] = translation_metadata
+    
+    return notebook

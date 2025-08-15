@@ -21,7 +21,7 @@ from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.directory_manager import DirectoryManager
 from co_op_translator.utils.common.task_utils import worker
 from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
-from co_op_translator.utils.common.notebook_utils import is_notebook_up_to_date
+from co_op_translator.utils.common.metadata_utils import is_notebook_up_to_date
 
 logger = logging.getLogger(__name__)
 
@@ -368,12 +368,10 @@ class TranslationManager:
                             f"Skipping up-to-date notebook: {translated_notebook_path}"
                         )
                         continue
-
-                if not update and translated_notebook_path.exists():
-                    logger.info(
-                        f"Skipping already translated notebook file: {translated_notebook_path}"
-                    )
-                    continue
+                    else:
+                        logger.info(
+                            f"Notebook is outdated, will retranslate: {notebook_file_path} -> {translated_notebook_path}"
+                        )
 
                 logger.info(
                     f"Translating notebook file: {notebook_file_path} for language: {language_code}"

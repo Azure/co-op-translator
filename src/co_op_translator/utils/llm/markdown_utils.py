@@ -299,8 +299,8 @@ def update_links(
         markdown_only=markdown_only,
     )
 
-    # Update non-image file links
-    markdown_string = update_file_links(
+    # Update links to untranslated files (videos, docs, etc.) to point to original files
+    markdown_string = update_untranslated_file_links(
         markdown_string, md_file_path, language_code, translations_dir, root_dir
     )
 
@@ -442,13 +442,35 @@ def update_image_links(
     return markdown_string
 
 
-def update_file_links(
+def update_untranslated_file_links(
     markdown_string: str,
     md_file_path: Path,
     language_code: str,
     translations_dir: Path,
     root_dir: Path,
 ) -> str:
+    """Update links to untranslated files to point to original source files.
+    
+    Processes links to files that are not translated (videos, documents, PDFs, etc.)
+    and updates their paths to maintain correct relative links from translated markdown
+    files back to the original source files.
+    
+    Skips:
+    - Web URLs (http, https, mailto)
+    - Image files (handled by update_image_links)
+    - Markdown files (handled by update_markdown_file_links)
+    - Notebook files (handled by update_markdown_file_links)
+    
+    Args:
+        markdown_string (str): The markdown content to process
+        md_file_path (Path): Path to the markdown file being processed
+        language_code (str): Target language code
+        translations_dir (Path): Directory containing translations
+        root_dir (Path): Root directory of the project
+        
+    Returns:
+        str: Updated markdown content with corrected untranslated file links
+    """
     file_pattern = r"\[(.*?)\]\((.*?)\)"
     file_matches = re.findall(file_pattern, markdown_string)
 
@@ -473,7 +495,7 @@ def update_file_links(
             logger.info(f"Skipping markdown/notebook file {link}")
             continue
 
-        logger.info(f"Processing non-image, non-markdown, non-notebook file {link}")
+        logger.info(f"Processing untranslated file link {link}")
         try:
             translated_md_dir = (
                 translations_dir
@@ -490,10 +512,10 @@ def update_file_links(
             new_file_markup = f"[{alt_text}]({updated_link})"
             markdown_string = markdown_string.replace(old_file_markup, new_file_markup)
 
-            logger.info(f"Updated non-image file markdown: {new_file_markup}")
+            logger.info(f"Updated untranslated file link: {new_file_markup}")
 
         except Exception as e:
-            logger.error(f"Error processing non-image file {link}: {e}")
+            logger.error(f"Error processing untranslated file link {link}: {e}")
             continue
 
     return markdown_string

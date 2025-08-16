@@ -4,7 +4,7 @@ import os
 from co_op_translator.utils.llm.markdown_utils import (
     update_links,
     update_image_links,
-    update_file_links,
+    update_untranslated_file_links,
     process_markdown,
     process_markdown_with_many_links,
     generate_prompt_template,
@@ -73,8 +73,8 @@ def test_update_image_links(temp_dir, sample_markdown):
     assert "test.png" not in result  # Original image links should be updated
 
 
-def test_update_file_links(temp_dir, sample_markdown):
-    """Test updating file links in markdown content."""
+def test_update_untranslated_file_links(temp_dir, sample_markdown):
+    """Test updating untranslated file links in markdown content."""
     # Create necessary directories and files
     md_file_path = temp_dir / "test.md"
     md_file_path.touch()
@@ -92,7 +92,7 @@ def test_update_file_links(temp_dir, sample_markdown):
     # Create test markdown with a text file link
     test_markdown = "# Test Document\nHere's a [link to text file](docs/example.txt)"
 
-    result = update_file_links(
+    result = update_untranslated_file_links(
         test_markdown, md_file_path, "ko", translations_dir, temp_dir
     )
 

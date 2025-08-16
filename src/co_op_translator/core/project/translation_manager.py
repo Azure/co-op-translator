@@ -983,7 +983,7 @@ class TranslationManager:
         """Determine if a translation file needs updating based on content hash.
 
         Compares the hash of the original file with the hash stored in the translation
-        file's metadata.
+        file's metadata. Handles both markdown and notebook files.
 
         Args:
             original_file: Path to the original file
@@ -996,7 +996,12 @@ class TranslationManager:
             return True
 
         try:
-            # Extract metadata from translation file
+            # Handle notebook files differently from markdown files
+            if translation_file.suffix == ".ipynb":
+                # Use the dedicated notebook metadata comparison function
+                return not is_notebook_up_to_date(original_file, translation_file)
+
+            # Handle markdown files with HTML comment metadata
             content = translation_file.read_text(encoding="utf-8")
             metadata_match = re.search(
                 r"<!--\s*CO_OP_TRANSLATOR_METADATA:\s*(.*?)\s*-->",

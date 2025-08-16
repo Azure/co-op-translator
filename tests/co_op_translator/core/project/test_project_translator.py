@@ -139,7 +139,7 @@ async def test_markdown_only_mode(temp_project_dir):
 
         # Create translator in markdown-only mode
         translator = ProjectTranslator(
-            "ko ja", root_dir=temp_project_dir, markdown_only=True
+            "ko ja", root_dir=temp_project_dir, translation_types=["markdown"]
         )
 
         # Mock the async methods after initialization
@@ -155,14 +155,10 @@ async def test_markdown_only_mode(temp_project_dir):
         )
 
         # Verify markdown-only mode configuration
-        assert translator.markdown_only is True
+        assert translator.translation_types == ["markdown"]
         assert translator.image_translator is None
 
         # Test async operation to ensure all coroutines are properly handled
-        await translator.translation_manager.translate_project_async(markdown=True)
-        assert (
-            translator.translation_manager.translate_project_async.call_args.kwargs[
-                "markdown"
-            ]
-            is True
-        )
+        await translator.translation_manager.translate_project_async()
+        # Verify that translate_project_async was called (no need to check args since translation_types is set in init)
+        translator.translation_manager.translate_project_async.assert_called_once()

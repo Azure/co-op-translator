@@ -304,7 +304,7 @@ async def test_translate_notebook_basic(mock_translation_manager, temp_project_d
     )
 
     # Add missing attributes
-    mock_translation_manager.markdown_only = False
+    mock_translation_manager.translation_types = ["markdown", "notebook"]
 
     # Instead of using the real method, mock the method directly
     mock_translation_manager.translate_notebook = AsyncMock(

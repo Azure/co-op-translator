@@ -28,7 +28,7 @@ class ProjectTranslator:
     and tracking of translation status across the project.
     """
 
-    def __init__(self, language_codes, root_dir=".", markdown_only=False):
+    def __init__(self, language_codes, root_dir=".", translation_types=None):
         """Initialize project translation environment.
 
         Sets up translators and managers needed for project translation operations.
@@ -36,41 +36,50 @@ class ProjectTranslator:
         Args:
             language_codes: Space-separated list of target language codes
             root_dir: Root directory of the project to translate
-            markdown_only: Whether to process only markdown files and skip images
+            translation_types: List of file types to translate (e.g., ["markdown", "images", "notebook"])
         """
         self.language_codes = language_codes.split()
         self.root_dir = Path(root_dir).resolve()
         self.translations_dir = self.root_dir / "translations"
         self.image_dir = self.root_dir / "translated_images"
-        self.markdown_only = markdown_only
+
+        # Default translation types if not specified (safe fallback for direct API usage)
+        if translation_types is None:
+            translation_types = ["markdown", "notebook", "images"]
+        self.translation_types = translation_types
 
         # Initialize text translator
         self.text_translator = text_translator.TextTranslator.create()
 
-        # Initialize image translator if not in markdown-only mode
-        try:
-            if not markdown_only:
+        # Initialize image translator if images are enabled
+        if "images" in self.translation_types:
+            try:
                 self.image_translator = image_translator.ImageTranslator.create(
                     default_output_dir=self.image_dir, root_dir=self.root_dir
                 )
-            else:
-                logger.info(
-                    f"Running in markdown-only mode for project '{self.root_dir.name}': Image translation disabled. Only .md files will be processed."
+            except ValueError as e:
+                logger.error(
+                    f"Computer Vision not configured for project '{self.root_dir.name}' but image translation was requested. "
+                    f"Please configure AZURE_COMPUTER_VISION_KEY in your .env file."
                 )
-                self.image_translator = None
-        except ValueError as e:
+                raise ValueError(
+                    "Image translation requested but Computer Vision not configured"
+                ) from e
+        else:
             logger.info(
-                f"Computer Vision not configured for project '{self.root_dir.name}' - switching to markdown-only mode. Only .md files will be translated. To enable image translation, configure AZURE_COMPUTER_VISION_KEY in your .env file."
+                f"Image translation disabled for project '{self.root_dir.name}': Only {', '.join(self.translation_types)} files will be processed."
             )
-            self.markdown_only = True  # Auto-switch to markdown-only mode
             self.image_translator = None
 
         self.markdown_translator = markdown_translator.MarkdownTranslator.create(
             self.root_dir
         )
 
-        # Initialize notebook translator
-        self.notebook_translator = JupyterNotebookTranslator.create(self.root_dir)
+        # Initialize notebook translator if notebooks are enabled
+        if "notebook" in self.translation_types:
+            self.notebook_translator = JupyterNotebookTranslator.create(self.root_dir)
+        else:
+            self.notebook_translator = None
 
         # Initialize directory and translation managers
         self.directory_manager = DirectoryManager(
@@ -87,33 +96,25 @@ class ProjectTranslator:
             self.markdown_translator,
             self.image_translator,
             self.notebook_translator,
-            self.markdown_only,
+            self.translation_types,
         )
 
     def translate_project(
         self,
-        images=False,
-        markdown=False,
-        notebook=False,
         update=False,
         fast_mode=False,
     ):
         """Start the project translation process synchronously.
 
         Serves as a public entry point that delegates to the async translation manager.
+        Translation types are determined by the translation_types list set during initialization.
 
         Args:
-            images: Whether to translate images
-            markdown: Whether to translate markdown files
-            notebook: Whether to translate notebook files
             update: Whether to update existing translations
             fast_mode: Whether to use faster translation method
         """
         asyncio.run(
             self.translation_manager.translate_project_async(
-                images=images,
-                markdown=markdown,
-                notebook=notebook,
                 update=update,
                 fast_mode=fast_mode,
             )

@@ -281,9 +281,13 @@ def update_links(
     markdown_string: str,
     language_code: str,
     root_dir: Path,
-    markdown_only: bool = False,
+    translation_types: list[str] = None,
 ) -> str:
     logger.info("Updating links in the markdown file")
+
+    # Default translation types if not specified
+    if translation_types is None:
+        translation_types = ["markdown", "notebook", "images"]
 
     translations_dir = root_dir / "translations"
     translated_images_dir = root_dir / "translated_images"
@@ -296,12 +300,17 @@ def update_links(
         translations_dir,
         translated_images_dir,
         root_dir,
-        markdown_only=markdown_only,
+        use_translated_images="images" in translation_types,
     )
 
     # Update links to untranslated files (videos, docs, etc.) to point to original files
     markdown_string = update_untranslated_file_links(
-        markdown_string, md_file_path, language_code, translations_dir, root_dir
+        markdown_string,
+        md_file_path,
+        language_code,
+        translations_dir,
+        root_dir,
+        use_translated_notebook="notebook" in translation_types,
     )
 
     # Update README translation navigation links (language switcher links)
@@ -319,7 +328,7 @@ def update_image_links(
     translations_dir: Path,
     translated_images_dir: Path,
     root_dir: Path,
-    markdown_only: bool = False,
+    use_translated_images: bool = True,
 ) -> str:
     """
     Update image links in markdown content based on mode and Azure Computer Vision availability.
@@ -331,7 +340,7 @@ def update_image_links(
         translations_dir (Path): Directory containing translations
         translated_images_dir (Path): Directory containing translated images
         root_dir (Path): Root directory of the project
-        markdown_only (bool): Whether we're in markdown-only mode
+        use_translated_images (bool): Whether to use translated images (False = use original images)
 
     Returns:
         str: Updated markdown content with modified image links
@@ -339,13 +348,10 @@ def update_image_links(
     image_pattern = r"!\[(.*?)\]\((.*?)\)"
     image_matches = re.findall(image_pattern, markdown_string)
 
-    # Use original image links if in markdown-only mode
-    use_original_images = markdown_only
-
-    if use_original_images:
-        logger.info("Using original image links (markdown-only mode)")
-    else:
+    if use_translated_images:
         logger.info("Using translated image links")
+    else:
+        logger.info("Using original image links")
 
     for alt_text, link in image_matches:
         parsed_url = urlparse(link)
@@ -371,12 +377,12 @@ def update_image_links(
                     / md_file_path.relative_to(root_dir).parent
                 )
 
-                if use_original_images:
-                    # Link to original image when in markdown-only mode
+                if not use_translated_images:
+                    # Link to original image when using original images
                     # For root-relative paths (starting with '/'), keep them unchanged
                     if path.startswith("/"):
                         logger.info(
-                            f"Root-relative path detected in markdown-only mode: {path}"
+                            f"Root-relative path detected in original images mode: {path}"
                         )
                         # Keep the original root-relative path as is
                         updated_link = path
@@ -448,26 +454,28 @@ def update_untranslated_file_links(
     language_code: str,
     translations_dir: Path,
     root_dir: Path,
+    use_translated_notebook: bool = True,
 ) -> str:
     """Update links to untranslated files to point to original source files.
-    
+
     Processes links to files that are not translated (videos, documents, PDFs, etc.)
     and updates their paths to maintain correct relative links from translated markdown
     files back to the original source files.
-    
+
     Skips:
     - Web URLs (http, https, mailto)
     - Image files (handled by update_image_links)
-    - Markdown files (handled by update_markdown_file_links)
-    - Notebook files (handled by update_markdown_file_links)
-    
+    - Markdown files (always translated)
+    - Notebook files (if use_translated_notebook=True, they are translated; if False, processed here)
+
     Args:
         markdown_string (str): The markdown content to process
         md_file_path (Path): Path to the markdown file being processed
         language_code (str): Target language code
         translations_dir (Path): Directory containing translations
         root_dir (Path): Root directory of the project
-        
+        use_translated_notebook (bool): Whether to use translated notebooks (False = process notebook links here)
+
     Returns:
         str: Updated markdown content with corrected untranslated file links
     """
@@ -491,8 +499,12 @@ def update_untranslated_file_links(
             logger.info(f"Skipping image file {link}")
             continue
 
-        if file_ext == ".md" or file_ext == ".ipynb":
-            logger.info(f"Skipping markdown/notebook file {link}")
+        if file_ext == ".md":
+            logger.info(f"Skipping markdown file {link}")
+            continue
+
+        if file_ext == ".ipynb" and use_translated_notebook:
+            logger.info(f"Skipping notebook file {link}")
             continue
 
         logger.info(f"Processing untranslated file link {link}")

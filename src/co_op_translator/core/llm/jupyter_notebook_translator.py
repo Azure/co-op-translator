@@ -38,7 +38,7 @@ class JupyterNotebookTranslator:
         self,
         notebook_path: str | Path,
         language_code: str,
-        markdown_only: bool = False,
+        use_translated_images: bool = True,
         add_disclaimer: bool = True,
     ) -> str:
         """Translate a Jupyter Notebook file to the target language.
@@ -50,7 +50,7 @@ class JupyterNotebookTranslator:
         Args:
             notebook_path: Path to the .ipynb file
             language_code: Target language code
-            markdown_only: Skip embedded image translation if True
+            use_translated_images: Whether to use translated images (False = skip image translation)
             add_disclaimer: Add disclaimer cell at the end of notebook if True
 
         Returns:
@@ -92,12 +92,17 @@ class JupyterNotebookTranslator:
                 try:
                     # Translate the markdown content
                     # Don't add metadata and disclaimer to individual cells
+                    # For notebook translation, always enable notebook link processing
+                    notebook_translation_types = ["markdown", "notebook"]
+                    if use_translated_images:
+                        notebook_translation_types.append("images")
+
                     translated_content = (
                         await self.markdown_translator.translate_markdown(
                             markdown_content,
                             language_code,
                             notebook_path,
-                            markdown_only=markdown_only,
+                            translation_types=notebook_translation_types,
                             add_metadata=False,
                             add_disclaimer=False,
                         )

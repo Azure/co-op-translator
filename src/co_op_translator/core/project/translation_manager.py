@@ -45,7 +45,7 @@ class TranslationManager:
         markdown_translator: MarkdownTranslator,
         image_translator=None,
         notebook_translator=None,
-        markdown_only: bool = False,
+        translation_types: list[str] = None,
     ):
         """Initialize translation manager with required components and settings.
 
@@ -62,7 +62,7 @@ class TranslationManager:
             markdown_translator: Translator instance for markdown files
             image_translator: Translator instance for image files
             notebook_translator: Translator instance for notebook files
-            markdown_only: Whether to only translate markdown files
+            translation_types: List of file types to translate (e.g., ["markdown", "images", "notebook"])
         """
         self.root_dir = root_dir
         self.translations_dir = translations_dir
@@ -74,7 +74,11 @@ class TranslationManager:
         self.markdown_translator = markdown_translator
         self.image_translator = image_translator
         self.notebook_translator = notebook_translator
-        self.markdown_only = markdown_only
+
+        # Default translation types if not specified
+        if translation_types is None:
+            translation_types = ["markdown", "notebook", "images"]
+        self.translation_types = translation_types
         self.directory_manager = DirectoryManager(
             root_dir, translations_dir, language_codes, excluded_dirs
         )
@@ -149,7 +153,10 @@ class TranslationManager:
 
             # Perform initial translation attempt
             translated_content = await self.markdown_translator.translate_markdown(
-                document, language_code, file_path, markdown_only=self.markdown_only
+                document,
+                language_code,
+                file_path,
+                translation_types=self.translation_types,
             )
             if not translated_content:
                 logger.error(
@@ -162,7 +169,10 @@ class TranslationManager:
                 logger.warning(f"Translation failed for {file_path}. Retrying...")
                 # Retry translation
                 translated_content = await self.markdown_translator.translate_markdown(
-                    document, language_code, file_path, markdown_only=self.markdown_only
+                    document,
+                    language_code,
+                    file_path,
+                    translation_types=self.translation_types,
                 )
                 if not translated_content:
                     logger.error(
@@ -211,10 +221,11 @@ class TranslationManager:
                 return str(output_file)
 
             # Perform translation
+            use_translated_images = "images" in self.translation_types
             translated_content = await self.notebook_translator.translate_notebook(
                 file_path,
                 language_code,
-                markdown_only=self.markdown_only,
+                use_translated_images=use_translated_images,
                 add_disclaimer=True,
             )
             if not translated_content:
@@ -572,7 +583,10 @@ class TranslationManager:
                                 # Translate content
                                 translated_content = (
                                     await self.markdown_translator.translate_markdown(
-                                        content, lang_code, md_file, self.markdown_only
+                                        content,
+                                        lang_code,
+                                        md_file,
+                                        translation_types=self.translation_types,
                                     )
                                 )
 
@@ -603,9 +617,6 @@ class TranslationManager:
 
     async def translate_project_async(
         self,
-        images: bool = False,
-        markdown: bool = False,
-        notebook: bool = False,
         update: bool = False,
         fast_mode: bool = False,
     ) -> tuple[int, list[str]]:
@@ -617,10 +628,9 @@ class TranslationManager:
         3. Identify outdated translations
         4. Perform translation on required files
 
+        Translation types are determined by the translation_types list set during initialization.
+
         Args:
-            images: Whether to translate images
-            markdown: Whether to translate markdown files
-            notebook: Whether to translate notebook files
             update: Whether to update existing translations
             fast_mode: Whether to use faster translation method
 
@@ -636,7 +646,8 @@ class TranslationManager:
             logger.info("Removing orphaned files...")
             with tqdm(total=1, desc="🧹 Cleaning orphaned files") as cleanup_progress:
                 removed_count = self.directory_manager.cleanup_orphaned_translations(
-                    markdown=markdown, images=images
+                    markdown="markdown" in self.translation_types,
+                    images="images" in self.translation_types,
                 )
                 cleanup_progress.set_postfix_str(
                     "None" if removed_count == 0 else f"Removed: {removed_count}"
@@ -655,7 +666,10 @@ class TranslationManager:
                 sync_progress.update(1)
 
             # Find files needing translation due to source changes
-            if markdown or notebook:
+            if (
+                "markdown" in self.translation_types
+                or "notebook" in self.translation_types
+            ):
                 with tqdm(total=1, desc="🔍 Checking translations") as check_progress:
                     outdated_files = self.get_outdated_translations()
                     check_progress.set_postfix_str(
@@ -669,21 +683,21 @@ class TranslationManager:
                     await self.retranslate_outdated_files(outdated_files)
 
             # Execute translation for markdown, notebook and image files
-            if markdown:
+            if "markdown" in self.translation_types:
                 md_modified, md_errors = await self.translate_all_markdown_files(
                     update=update
                 )
                 total_modified += md_modified
                 all_errors.extend(md_errors)
 
-            if notebook:
+            if "notebook" in self.translation_types:
                 nb_modified, nb_errors = await self.translate_all_notebook_files(
                     update=update
                 )
                 total_modified += nb_modified
                 all_errors.extend(nb_errors)
 
-            if images and not self.markdown_only:
+            if "images" in self.translation_types:
                 img_modified, img_errors = await self.translate_all_image_files(
                     update=update, fast_mode=fast_mode
                 )

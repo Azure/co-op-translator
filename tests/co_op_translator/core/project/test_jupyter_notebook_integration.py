@@ -83,7 +83,7 @@ class TestJupyterNotebookIntegration:
 
         # Create translator
         translator = ProjectTranslator(
-            "ko", root_dir=temp_project_with_notebook, markdown_only=True
+            "ko", root_dir=temp_project_with_notebook, translation_types=["markdown"]
         )
 
         # Verify notebook translator was created
@@ -128,7 +128,7 @@ class TestJupyterNotebookIntegration:
 
         # Create translator
         translator = ProjectTranslator(
-            "ko", root_dir=temp_project_with_notebook, markdown_only=True
+            "ko", root_dir=temp_project_with_notebook, translation_types=["markdown"]
         )
 
         # Mock the notebook translator's translate_notebook method
@@ -197,7 +197,7 @@ class TestJupyterNotebookIntegration:
 
         # Create translator
         translator = ProjectTranslator(
-            "ko", root_dir=temp_project_with_notebook, markdown_only=True
+            "ko", root_dir=temp_project_with_notebook, translation_types=["markdown"]
         )
 
         # Simulate missing notebook translator

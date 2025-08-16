@@ -246,12 +246,13 @@ async def test_translate_project_async_with_outdated(
     mock_translation_manager.directory_manager.cleanup_orphaned_translations = (
         MagicMock(return_value=0)
     )
+    mock_translation_manager.translation_types = ["markdown", "notebook", "images"]
     mock_translation_manager.translate_project_async = (
         TranslationManager.translate_project_async.__get__(mock_translation_manager)
     )
 
     # Call translate_project_async
-    await mock_translation_manager.translate_project_async(markdown=True)
+    await mock_translation_manager.translate_project_async()
 
     # Verify the sequence of operations
     mock_translation_manager.directory_manager.sync_directory_structure.assert_called_once()

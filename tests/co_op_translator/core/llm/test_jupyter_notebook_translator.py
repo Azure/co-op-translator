@@ -94,7 +94,7 @@ class TestJupyterNotebookTranslator:
         # Create translator and translate
         translator = JupyterNotebookTranslator.create()
         result = await translator.translate_notebook(
-            temp_notebook_file, "es", markdown_only=True, add_disclaimer=False
+            temp_notebook_file, "es", use_translated_images=False, add_disclaimer=False
         )
 
         # Verify result is valid JSON

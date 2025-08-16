@@ -83,7 +83,9 @@ class TestJupyterNotebookIntegration:
 
         # Create translator
         translator = ProjectTranslator(
-            "ko", root_dir=temp_project_with_notebook, translation_types=["markdown"]
+            "ko",
+            root_dir=temp_project_with_notebook,
+            translation_types=["markdown", "notebook"],
         )
 
         # Verify notebook translator was created

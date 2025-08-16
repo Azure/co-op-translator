@@ -103,7 +103,7 @@ def test_translate_project(project_translator):
     # Setup
     with patch.object(asyncio, "run", side_effect=lambda x: None) as mock_run:
         # Execute
-        project_translator.translate_project(images=True, markdown=True)
+        project_translator.translate_project()
         # Verify
         mock_run.assert_called_once()
 

@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 )
 @click.option("--images", "-img", is_flag=True, help="Only translate image files.")
 @click.option("--markdown", "-md", is_flag=True, help="Only translate markdown files.")
-@click.option("--notebook", "-n", is_flag=True, help="Only translate notebook files.")
+@click.option("--notebook", "-nb", is_flag=True, help="Only translate notebook files.")
 @click.option("--debug", "-d", is_flag=True, help="Enable debug mode.")
 @click.option(
     "--fix",
@@ -91,7 +91,7 @@ def translate_command(
        translate -l "ko" -img
 
     3. Add only new Korean notebook translations:
-       translate -l "ko" -n
+       translate -l "ko" -nb
 
     4. Update all Korean translations (Warning: This deletes all existing Korean translations before re-translating):
        translate -l "ko" -u

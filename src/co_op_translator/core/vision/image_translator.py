@@ -528,7 +528,7 @@ class ImageTranslator(ABC):
         """Create appropriate ImageTranslator instance based on configuration.
 
         Factory method that determines and instantiates the correct provider-specific
-        implementation (currently only Azure Computer Vision is supported).
+        implementation (currently only Azure AI Service is supported).
 
         Args:
             default_output_dir: Directory where translated images will be saved
@@ -538,7 +538,7 @@ class ImageTranslator(ABC):
             Configured ImageTranslator instance ready for use
 
         Raises:
-            ValueError: If Computer Vision is not properly configured
+            ValueError: If Azure AI Service is not properly configured
         """
         try:
             from co_op_translator.config.vision_config.config import VisionConfig
@@ -553,7 +553,7 @@ class ImageTranslator(ABC):
                 return AzureImageTranslator(default_output_dir, root_dir)
 
         except (ImportError, ValueError) as e:
-            logger.warning(f"Computer Vision is not properly configured: {e}")
+            logger.warning(f"Azure AI Service is not properly configured: {e}")
             raise ValueError(
                 "Image translation is not configured: Missing required environment variables "
                 "(AZURE_AI_SERVICE_API_KEY, AZURE_AI_SERVICE_ENDPOINT). "

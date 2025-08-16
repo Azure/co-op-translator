@@ -137,7 +137,7 @@ translate -l "zh ja"
 | AI Vision       | ![Azure AI Vision](https://img.shields.io/badge/Azure_AI_Vision-blue?style=flat-square) |
 
 > [!NOTE]
-> If a AI vision service is not available, the co-op translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
+> You can choose what to translate using command-line flags: `-md` for markdown files, `-img` for images, `-nb` for notebooks. If no flags are specified, all supported file types will be translated.
 
 ### Initial Setup
 
@@ -150,7 +150,7 @@ Before you begin, you'll need to set up the following resources:
 
 1. AI Vision Resource (Optional):
    - Azure AI Vision - Enables translation of text within images
-   - If not configured, the translator will automatically use [Markdown-only mode](./getting_started/markdown-only-mode.md)
+   - If not configured, you must explicitly specify what to translate using flags like `-md` or `-md -nb` (excluding `-img`)
    - Recommended for projects with images containing text that needs translation
 
 1. Configuration Steps:
@@ -220,7 +220,17 @@ For a fast start using the command line:
     - Execute the translate command, specifying target languages with the `-l` flag:
 
     ```bash
+    # Translate all file types (markdown, images, notebooks)
     translate -l "ko ja fr"
+    
+    # Translate only markdown files
+    translate -l "ko" -md
+    
+    # Translate markdown and images, but not notebooks
+    translate -l "ko" -md -img
+    
+    # Translate only notebooks
+    translate -l "ko" -nb
     ```
 
     _(Replace `"ko ja fr"` with your desired space-separated language codes)_
@@ -251,7 +261,6 @@ Choose the approach that best fits your workflow:
 
 - [Command Reference](./getting_started/command-reference.md): Detailed guide to all available commands and options.
 - [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions for adding new ones.
-- [Markdown-Only Mode](./getting_started/markdown-only-mode.md): How to translate text only, without image translation.
 
 ## Video Presentations
 

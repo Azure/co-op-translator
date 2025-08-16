@@ -53,5 +53,145 @@ Run co-op translator with the [-d debug switch](https://github.com/Azure/co-op-t
   - AI Services Key or Subscription Key might belong to a different Azure resource (like Translator or OpenAI) instead of an **Azure AI Vision** resource.
 
  **Resource Type**
-   - Go to the [Azure Portal](https://portal.azure.com) or [Azure AI Foundry](https://ai.azure.com) and make sure the resource is of type `Azure AI services` → `Vision`.
-   - Validate the keys and ensure the correct key is being used.
+  - Go to the [Azure Portal](https://portal.azure.com) or [Azure AI Foundry](https://ai.azure.com) and make sure the resource is of type `Azure AI services` → `Vision`.
+  - Validate the keys and ensure the correct key is being used.
+
+## 5. Configuration Errors (New Error Handling)
+
+Starting with the new selective translation system, Co-op Translator now provides explicit error messages when required services are not configured.
+
+### 5.1. Azure AI Service Not Configured for Image Translation
+
+**Problem:** You requested image translation (`-img` flag) but Azure AI Service is not properly configured.
+
+**Error Message:**
+```
+Error: Image translation requested but Azure AI Service is not configured.
+Please add AZURE_AI_SERVICE_API_KEY and AZURE_AI_SERVICE_ENDPOINT to your .env file.
+Check Azure AI Service availability and configuration.
+```
+
+**Solution:**
+1. **Option 1**: Configure Azure AI Service
+   - Add `AZURE_AI_SERVICE_API_KEY` to your `.env` file
+   - Add `AZURE_AI_SERVICE_ENDPOINT` to your `.env` file
+   - Verify the service is accessible
+
+2. **Option 2**: Remove image translation request
+   ```bash
+   # Instead of: translate -l "ko" -img
+   # Use: translate -l "ko" -md
+   ```
+
+### 5.2. Missing Required Configuration
+
+**Problem:** Essential LLM configuration is missing.
+
+**Error Message:**
+```
+Error: No language model configuration found.
+Please configure either Azure OpenAI or OpenAI in your .env file.
+```
+
+**Solution:**
+1. Verify that your `.env` file has at least one of the following LLM configurations:
+   - **Azure OpenAI**: `AZURE_OPENAI_API_KEY` and `AZURE_OPENAI_ENDPOINT`
+   - **OpenAI**: `OPENAI_API_KEY`
+   
+   You need either Azure OpenAI OR OpenAI configured, not both.
+
+### 5.3. Selective Translation Confusion
+
+**Problem:** No files were translated even though the command succeeded.
+
+**Possible Causes:**
+- Wrong file type flags (`-md`, `-img`, `-nb`)
+- No matching files in the project
+- Incorrect directory structure
+
+**Solution:**
+1. **Use debug mode** to see what's happening:
+   ```bash
+   translate -l "ko" -md -d
+   ```
+
+2. **Check file types** in your project:
+   ```bash
+   # For markdown files
+   find . -name "*.md" -not -path "./translations/*"
+   
+   # For notebooks
+   find . -name "*.ipynb" -not -path "./translations/*"
+   
+   # For images
+   find . -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -not -path "./translations/*"
+   ```
+
+3. **Verify flag combinations**:
+   ```bash
+   # Translate everything (default)
+   translate -l "ko"
+   
+   # Translate specific types
+   translate -l "ko" -md -img
+   ```
+
+## 6. Migration from Old System
+
+### 6.1. Markdown-Only Mode Deprecated
+
+**Problem:** Commands that relied on automatic markdown-only fallback no longer work as expected.
+
+**Old Behavior:**
+```bash
+# This used to automatically switch to markdown-only mode
+translate -l "ko"  # (when Azure AI Vision was not configured)
+```
+
+**New Behavior:**
+```bash
+# This now produces an error if image translation is requested but not configured
+translate -l "ko" -img
+```
+
+**Solution:**
+- **Be explicit** about what you want to translate:
+  ```bash
+  translate -l "ko" -md        # Only markdown
+  translate -l "ko" -md -img   # Markdown and images
+  translate -l "ko"            # Everything (if all services configured)
+  ```
+
+### 6.2. Unexpected Link Behavior
+
+**Problem:** Links in translated files point to unexpected locations.
+
+**Cause:** Dynamic link processing changes based on selected file types.
+
+**Solution:**
+1. **Understand the new link behavior**:
+   - `-nb` included: Notebook links point to translated versions
+   - `-nb` excluded: Notebook links point to original files
+   - `-img` included: Image links point to translated versions
+   - `-img` excluded: Image links point to original files
+
+2. **Choose the right combination** for your use case:
+   ```bash
+   # All internal links point to translated versions
+   translate -l "ko" -md -img -nb
+   
+   # Only markdown translated, other links point to originals
+   translate -l "ko" -md
+   ```
+
+## Quick Debugging Checklist
+
+When troubleshooting translation issues:
+
+1. **Use debug mode**: Add `-d` flag to see detailed logs
+2. **Check your flags**: Ensure `-md`, `-img`, `-nb` match your intent
+3. **Verify configuration**: Check your `.env` file has required keys
+4. **Test incrementally**: Start with `-md` only, then add other types
+5. **Check file structure**: Ensure source files exist and are accessible
+
+For more detailed information about available commands and flags, see the [Command Reference](./command-reference.md).

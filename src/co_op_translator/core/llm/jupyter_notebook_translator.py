@@ -8,9 +8,12 @@ extracting markdown cells, translating them, and preserving code cells unchanged
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Any, List
 
 from .markdown_translator import MarkdownTranslator
+from co_op_translator.utils.common.metadata_utils import (
+    calculate_file_hash,
+    add_notebook_metadata,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +38,8 @@ class JupyterNotebookTranslator:
         self,
         notebook_path: str | Path,
         language_code: str,
-        markdown_only: bool = False,
+        use_translated_images: bool = True,
+        add_disclaimer: bool = True,
     ) -> str:
         """Translate a Jupyter Notebook file to the target language.
 
@@ -46,7 +50,8 @@ class JupyterNotebookTranslator:
         Args:
             notebook_path: Path to the .ipynb file
             language_code: Target language code
-            markdown_only: Skip embedded image translation if True
+            use_translated_images: Whether to use translated images (False = skip image translation)
+            add_disclaimer: Add disclaimer cell at the end of notebook if True
 
         Returns:
             str: The translated notebook content as JSON string
@@ -56,6 +61,9 @@ class JupyterNotebookTranslator:
         # Read the notebook file
         with open(notebook_path, "r", encoding="utf-8") as f:
             notebook = json.load(f)
+
+        # Compute notebook-level hash of the original file content
+        original_hash = calculate_file_hash(notebook_path)
 
         # Track which cells were translated for logging
         translated_cells = 0
@@ -84,12 +92,17 @@ class JupyterNotebookTranslator:
                 try:
                     # Translate the markdown content
                     # Don't add metadata and disclaimer to individual cells
+                    # For notebook translation, always enable notebook link processing
+                    notebook_translation_types = ["markdown", "notebook"]
+                    if use_translated_images:
+                        notebook_translation_types.append("images")
+
                     translated_content = (
                         await self.markdown_translator.translate_markdown(
                             markdown_content,
                             language_code,
                             notebook_path,
-                            markdown_only=markdown_only,
+                            translation_types=notebook_translation_types,
                             add_metadata=False,
                             add_disclaimer=False,
                         )
@@ -120,6 +133,28 @@ class JupyterNotebookTranslator:
             f"Translated {translated_cells}/{total_markdown_cells} markdown cells "
             f"in {notebook_path.name}"
         )
+
+        # Add disclaimer cell at the end if requested
+        if add_disclaimer:
+            disclaimer_text = await self.markdown_translator.generate_disclaimer(
+                language_code
+            )
+            if disclaimer_text:
+                disclaimer_cell = {
+                    "cell_type": "markdown",
+                    "metadata": {},
+                    "source": [f"\n---\n\n{disclaimer_text}\n"],
+                }
+                notebook["cells"].append(disclaimer_cell)
+                logger.debug(f"Added disclaimer cell to {notebook_path.name}")
+
+        # Add coopTranslator metadata to the notebook
+        notebook_path = Path(notebook_path)
+        notebook = add_notebook_metadata(
+            notebook, notebook_path, language_code, self.root_dir
+        )
+
+        logger.debug(f"Added coopTranslator metadata to {notebook_path.name}")
 
         # Return the modified notebook as JSON string
         return json.dumps(notebook, ensure_ascii=False, indent=1)

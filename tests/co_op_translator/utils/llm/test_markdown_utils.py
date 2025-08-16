@@ -4,7 +4,7 @@ import os
 from co_op_translator.utils.llm.markdown_utils import (
     update_links,
     update_image_links,
-    update_file_links,
+    update_untranslated_file_links,
     process_markdown,
     process_markdown_with_many_links,
     generate_prompt_template,
@@ -46,7 +46,11 @@ def test_update_links(temp_dir, sample_markdown):
     translated_images_dir = temp_dir / "translated_images"
 
     result = update_links(
-        md_file_path, sample_markdown, "ko", temp_dir, markdown_only=False
+        md_file_path,
+        sample_markdown,
+        "ko",
+        temp_dir,
+        translation_types=["markdown", "images", "notebook"],
     )
 
     assert "ko" in result
@@ -73,8 +77,8 @@ def test_update_image_links(temp_dir, sample_markdown):
     assert "test.png" not in result  # Original image links should be updated
 
 
-def test_update_file_links(temp_dir, sample_markdown):
-    """Test updating file links in markdown content."""
+def test_update_untranslated_file_links(temp_dir, sample_markdown):
+    """Test updating untranslated file links in markdown content."""
     # Create necessary directories and files
     md_file_path = temp_dir / "test.md"
     md_file_path.touch()
@@ -92,7 +96,7 @@ def test_update_file_links(temp_dir, sample_markdown):
     # Create test markdown with a text file link
     test_markdown = "# Test Document\nHere's a [link to text file](docs/example.txt)"
 
-    result = update_file_links(
+    result = update_untranslated_file_links(
         test_markdown, md_file_path, "ko", translations_dir, temp_dir
     )
 
@@ -221,11 +225,11 @@ Learn more here:
     return tmp_path
 
 
-def test_markdown_only_mode_image_paths(complex_dir_structure):
+def test_untranslated_images_mode_image_paths(complex_dir_structure):
     """
-    Test that image paths are correctly resolved in markdown-only mode.
+    Test that image paths are correctly resolved in untranslated images mode.
     This tests the specific issue where image paths were not correctly calculated
-    in markdown-only mode, especially with nested directory structures.
+    in untranslated images mode, especially with nested directory structures.
     """
     # Setup paths
     root_dir = complex_dir_structure
@@ -250,7 +254,7 @@ def test_markdown_only_mode_image_paths(complex_dir_structure):
         translations_dir,
         translated_images_dir,
         root_dir,
-        markdown_only=True,
+        use_translated_images=False,
     )
 
     # Calculate exact expected paths
@@ -308,15 +312,15 @@ def test_markdown_only_mode_image_paths(complex_dir_structure):
         expected_root_markup in result
     ), f"Expected root image markup: '{expected_root_markup}' not found"
 
-    # Make sure we're not referencing translated images in markdown-only mode
+    # Make sure we're not referencing translated images in untranslated images mode
     assert "translated_images" not in result
     assert ".ko.png" not in result
     assert ".ko.jpg" not in result
 
 
-def test_root_relative_paths_in_markdown_only_mode(complex_dir_structure):
+def test_root_relative_paths_in_untranslated_images_mode(complex_dir_structure):
     """
-    Test that root-relative image paths (starting with '/') are correctly resolved in markdown-only mode.
+    Test that root-relative image paths (starting with '/') are correctly resolved in untranslated images mode.
     This tests the specific issue where paths like '/imgs/image.jpg' were not correctly calculated.
     """
     # Setup paths
@@ -336,7 +340,7 @@ def test_root_relative_paths_in_markdown_only_mode(complex_dir_structure):
         translations_dir,
         translated_images_dir,
         root_dir,
-        markdown_only=True,
+        use_translated_images=False,
     )
 
     # Print paths for debugging
@@ -349,7 +353,7 @@ def test_root_relative_paths_in_markdown_only_mode(complex_dir_structure):
     print(f"\nOriginal content:\n{markdown_content}")
     print(f"\nResult content:\n{result}")
 
-    # In markdown-only mode with our updated code, root-relative paths should remain unchanged
+    # In untranslated images mode with our updated code, root-relative paths should remain unchanged
     assert (
         "![Logo](/imgs/logo.png)" in result
     ), "Root-relative logo path should remain unchanged"
@@ -361,7 +365,7 @@ def test_root_relative_paths_in_markdown_only_mode(complex_dir_structure):
 def test_root_relative_paths_in_regular_mode(complex_dir_structure):
     """
     Test that root-relative image paths (starting with '/') are correctly resolved in regular mode (non-markdown-only).
-    This tests the updated handling of root-relative paths in the non-markdown-only mode.
+    This tests the updated handling of root-relative paths in the non-untranslated images mode.
     """
     # Setup paths
     root_dir = complex_dir_structure
@@ -372,7 +376,7 @@ def test_root_relative_paths_in_regular_mode(complex_dir_structure):
     # Read the markdown content
     markdown_content = open(md_file_path, "r").read()
 
-    # Process with direct function call with markdown_only=False
+    # Process with direct function call with use_translated_images=True
     result = update_image_links(
         markdown_content,
         md_file_path,
@@ -380,7 +384,7 @@ def test_root_relative_paths_in_regular_mode(complex_dir_structure):
         translations_dir,
         translated_images_dir,
         root_dir,
-        markdown_only=False,
+        use_translated_images=True,
     )
 
     # Print paths for debugging
@@ -443,14 +447,14 @@ def test_image_paths_in_nested_structure(complex_dir_structure):
         translations_dir,
         translated_images_dir,
         root_dir,
-        markdown_only=False,  # Normal mode (not markdown-only)
+        use_translated_images=True,  # Translated images mode
     )
 
-    # Check that image paths reference the translated images directory in non-markdown-only mode
+    # Check that image paths reference the translated images directory in translated images mode
     assert "translated_images" in result
     assert ".ko." in result  # Should contain language code in filename
 
-    # Now test with markdown_only=True
+    # Now test with use_translated_images=False (original images mode)
     result_md_only = update_image_links(
         markdown_content,
         md_file_path,
@@ -458,7 +462,7 @@ def test_image_paths_in_nested_structure(complex_dir_structure):
         translations_dir,
         translated_images_dir,
         root_dir,
-        markdown_only=True,
+        use_translated_images=False,
     )
 
     # Print paths for debugging
@@ -495,7 +499,7 @@ def test_image_paths_in_nested_structure(complex_dir_structure):
     expected_parent_markup = f"![Parent Image]({parent_image_actual})"
     expected_root_markup = f"![Root Image]({root_image_actual})"
 
-    # In markdown-only mode, paths should be relative to the original images
+    # In untranslated images mode, paths should be relative to the original images
     assert "translated_images" not in result_md_only
     assert ".ko." not in result_md_only
 

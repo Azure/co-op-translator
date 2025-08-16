@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 )
 @click.option("--images", "-img", is_flag=True, help="Only translate image files.")
 @click.option("--markdown", "-md", is_flag=True, help="Only translate markdown files.")
-@click.option("--notebook", "-n", is_flag=True, help="Only translate notebook files.")
+@click.option("--notebook", "-nb", is_flag=True, help="Only translate notebook files.")
 @click.option("--debug", "-d", is_flag=True, help="Enable debug mode.")
 @click.option(
     "--fix",
@@ -91,7 +91,7 @@ def translate_command(
        translate -l "ko" -img
 
     3. Add only new Korean notebook translations:
-       translate -l "ko" -n
+       translate -l "ko" -nb
 
     4. Update all Korean translations (Warning: This deletes all existing Korean translations before re-translating):
        translate -l "ko" -u
@@ -122,44 +122,31 @@ def translate_command(
         # Check that the required environment variables are set
         Config.check_configuration()
 
-        # Initialize translation mode
-        cv_available = VisionConfig.check_configuration()
+        # Build translation types list based on user selection
+        translation_types = []
+        if markdown:
+            translation_types.append("markdown")
+        if images:
+            translation_types.append("images")
+        if notebook:
+            translation_types.append("notebook")
 
-        # Determine translation mode based on flags and CV availability
-        if not images and not markdown and not notebook:
-            # Default: translate markdown and notebook files, images if CV available
-            markdown = True
-            notebook = True
-            images = cv_available
-        elif images and not cv_available:
-            # User requested images but CV not available
-            images = False
-            click.echo(
-                "Computer Vision is not configured: Image translation will be disabled."
-            )
-            click.echo(
-                "To enable image translation, please add Computer Vision credentials to your environment variables."
-            )
-            click.echo("See the .env.template file for required variables.")
+        # Default: translate all supported file types if nothing specified
+        if not translation_types:
+            translation_types = ["markdown", "notebook", "images"]
+
+        # Check Azure AI Service availability if images are included
+        if "images" in translation_types:
+            cv_available = VisionConfig.check_configuration()
+            if not cv_available:
+                raise click.ClickException(
+                    "Image translation is enabled but Azure AI Service is not configured.\n"
+                    "Please add AZURE_AI_SERVICE_API_KEY to your environment variables or use --markdown and/or --notebook flags to exclude images.\n"
+                    "See the .env.template file for required variables."
+                )
 
         # Log selected translation mode
-        mode_msg = "🚀 Translation mode: "
-        if images and markdown and notebook:
-            mode_msg += "markdown, notebook and images"
-        elif images and markdown:
-            mode_msg += "markdown and images"
-        elif images and notebook:
-            mode_msg += "notebook and images"
-        elif markdown and notebook:
-            mode_msg += "markdown and notebook"
-        elif markdown:
-            mode_msg += "markdown only"
-        elif notebook:
-            mode_msg += "notebook only"
-        elif images:
-            mode_msg += "images only"
-        else:
-            mode_msg += "no files to translate"
+        mode_msg = f"🚀 Translation mode: {', '.join(translation_types)}"
         click.echo(mode_msg)
 
         if debug:
@@ -247,7 +234,7 @@ def translate_command(
 
         # Initialize ProjectTranslator with determined settings
         translator = ProjectTranslator(
-            language_codes, root_dir, markdown_only=markdown and not images
+            language_codes, root_dir, translation_types=translation_types
         )
 
         if fix:
@@ -312,9 +299,6 @@ def translate_command(
         else:
             # Call translate_project with determined settings
             translator.translate_project(
-                images=images,
-                markdown=markdown,
-                notebook=notebook,
                 update=update,
                 fast_mode=fast,
             )

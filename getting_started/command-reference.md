@@ -7,6 +7,7 @@ translate -l "language_codes"                 | Translates your project into spe
 translate -l "language_codes" -u              | Updates translations by deleting existing ones and re-creating them. Warning: This will delete all current translations for specified languages.
 translate -l "language_codes" -img            | Translates only image files.
 translate -l "language_codes" -md             | Translates only Markdown files.
+translate -l "language_codes" -nb             | Translates only Jupyter notebook files (.ipynb).
 translate -l "language_codes" -chk            | Checks translated files for errors and retries translation if needed.
 translate -l "language_codes" -d              | Enables debug mode for detailed logging.
 translate -l "language_codes" -r "root_dir"   | Specifies the root directory of the project

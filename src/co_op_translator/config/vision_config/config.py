@@ -3,7 +3,7 @@ from typing import Dict, Optional
 import logging
 from co_op_translator.config.vision_config.provider import VisionProvider
 from co_op_translator.config.vision_config.azure_computer_vision import (
-    AzureComputerVisionConfig,
+    AzureAIVisionConfig,
 )
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class VisionConfig:
     def get_available_provider(cls) -> Optional[VisionProvider]:
         """
         Check environment variables and return the available Vision provider.
-        Currently only supports Azure Computer Vision.
+        Currently only supports Azure AI Service.
 
         Returns:
             Optional[VisionProvider]: The available provider to use, or None if no provider is configured
@@ -51,7 +51,7 @@ class VisionConfig:
             Optional[VisionServiceConfig]: Service configuration if available, None if not configured
         """
         if provider == VisionProvider.AZURE_COMPUTER_VISION:
-            azure_config = AzureComputerVisionConfig()
+            azure_config = AzureAIVisionConfig()
             # If any required environment variable is missing, return None
             if not azure_config.get_api_key() or not azure_config.get_endpoint():
                 return None
@@ -68,9 +68,9 @@ class VisionConfig:
     @staticmethod
     def check_configuration() -> bool:
         """
-        Check if Computer Vision service is available and properly configured.
+        Check if Azure AI Service is available and properly configured.
 
         Returns:
-            bool: True if Computer Vision is available and configured, False otherwise
+            bool: True if Azure AI Service is available and configured, False otherwise
         """
         return VisionConfig.get_available_provider() is not None

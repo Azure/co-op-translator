@@ -306,7 +306,7 @@ def update_links(
 
     # Update README translation navigation links (language switcher links)
     markdown_string = update_readme_translation_links(
-        markdown_string, md_file_path, language_code, translations_dir, root_dir
+        markdown_string, language_code, translations_dir
     )
 
     return markdown_string
@@ -501,24 +501,20 @@ def update_file_links(
 
 def update_readme_translation_links(
     markdown_string: str,
-    md_file_path: Path,
     language_code: str,
     translations_dir: Path,
-    root_dir: Path,
 ) -> str:
     """Update README translation navigation links in markdown content.
-    
+
     Processes links that point to other language versions of README files
     (e.g., translations/ko/README.md, translations/es/README.md) and updates
     them to maintain correct relative paths in translated files.
-    
+
     Args:
         markdown_string (str): The markdown content to process
-        md_file_path (Path): Path to the markdown file being processed
         language_code (str): Target language code
         translations_dir (Path): Directory containing translations
-        root_dir (Path): Root directory of the project
-        
+
     Returns:
         str: Updated markdown content with corrected README translation links
     """

@@ -101,7 +101,7 @@ class TranslationManager:
         image_path = Path(image_path).resolve()
         if not self.image_translator:
             logger.info(
-                f"Image translation skipped for {image_path} due to missing Computer Vision configuration"
+                f"Image translation skipped for {image_path} due to missing Azure AI Service configuration"
             )
             return str(
                 image_path

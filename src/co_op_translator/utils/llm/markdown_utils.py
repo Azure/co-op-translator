@@ -331,7 +331,7 @@ def update_image_links(
     use_translated_images: bool = True,
 ) -> str:
     """
-    Update image links in markdown content based on mode and Azure Computer Vision availability.
+    Update image links in markdown content based on mode and Azure AI Service availability.
 
     Args:
         markdown_string (str): The markdown content to process

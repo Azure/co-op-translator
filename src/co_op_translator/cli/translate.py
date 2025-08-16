@@ -135,13 +135,13 @@ def translate_command(
         if not translation_types:
             translation_types = ["markdown", "notebook", "images"]
 
-        # Check Computer Vision availability if images are included
+        # Check Azure AI Service availability if images are included
         if "images" in translation_types:
             cv_available = VisionConfig.check_configuration()
             if not cv_available:
                 raise click.ClickException(
-                    "Image translation is enabled but Computer Vision is not configured.\n"
-                    "Please add AZURE_COMPUTER_VISION_KEY to your environment variables or use --markdown and/or --notebook flags to exclude images.\n"
+                    "Image translation is enabled but Azure AI Service is not configured.\n"
+                    "Please add AZURE_AI_SERVICE_API_KEY to your environment variables or use --markdown and/or --notebook flags to exclude images.\n"
                     "See the .env.template file for required variables."
                 )
 

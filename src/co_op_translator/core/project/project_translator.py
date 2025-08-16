@@ -59,11 +59,11 @@ class ProjectTranslator:
                 )
             except ValueError as e:
                 logger.error(
-                    f"Computer Vision not configured for project '{self.root_dir.name}' but image translation was requested. "
-                    f"Please configure AZURE_COMPUTER_VISION_KEY in your .env file."
+                    f"Azure AI Service not configured for project '{self.root_dir.name}' but image translation was requested. "
+                    f"Please configure AZURE_AI_SERVICE_API_KEY in your .env file."
                 )
                 raise ValueError(
-                    "Image translation requested but Computer Vision not configured"
+                    "Image translation requested but Azure AI Service not configured"
                 ) from e
         else:
             logger.info(
@@ -168,7 +168,7 @@ class ProjectTranslator:
         logger.info(f"Translated {image_count} image files")
         if image_errors:
             logger.warning(
-                f"Failed to translate {len(image_errors)} image files in project '{self.root_dir.name}': Verify Computer Vision API configuration and image file permissions."
+                f"Failed to translate {len(image_errors)} image files in project '{self.root_dir.name}': Verify Azure AI Service API configuration and image file permissions."
             )
 
         return (

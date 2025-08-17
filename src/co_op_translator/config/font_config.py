@@ -26,20 +26,6 @@ class FontConfig:
         Raises:
             ValueError: If the language code or font is not found in the mappings.
         """
-
-    def get_font_path(self, language_code):
-        """
-        Retrieve the font path for a given language code.
-
-        Args:
-            language_code (str): The language code.
-
-        Returns:
-            str: The full path to the corresponding font file.
-
-        Raises:
-            ValueError: If the language code or font is not found in the mappings.
-        """
         font_name = self.font_mappings.get(language_code, {}).get("font")
 
         if not font_name:

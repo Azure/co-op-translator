@@ -273,7 +273,7 @@ def test_is_notebook_up_to_date(tmp_path):
     # Create translated notebook with correct hash
     translated_file = tmp_path / "translated.ipynb"
     translated_content = {
-        "cells": [{"cell_type": "markdown", "source": ["# 번역됨"]}],
+        "cells": [{"cell_type": "markdown", "source": ["# Translated"]}],
         "metadata": {
             "coopTranslator": {
                 "original_hash": original_hash,
@@ -291,7 +291,7 @@ def test_is_notebook_up_to_date(tmp_path):
     # Create translated notebook with incorrect hash
     outdated_translated_file = tmp_path / "outdated.ipynb"
     outdated_content = {
-        "cells": [{"cell_type": "markdown", "source": ["# 오래된 번역"]}],
+        "cells": [{"cell_type": "markdown", "source": ["# Outdated translation"]}],
         "metadata": {
             "coopTranslator": {
                 "original_hash": "wrong_hash",

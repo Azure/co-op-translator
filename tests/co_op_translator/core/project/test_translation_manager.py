@@ -164,7 +164,7 @@ async def test_get_outdated_translations(mock_translation_manager, temp_project_
     test_md.write_text("# Test Document\nThis is a test.", encoding="utf-8")
     ko_test_md = ko_dir / "test.md"
     ko_test_md.parent.mkdir(parents=True, exist_ok=True)
-    ko_test_md.write_text("# 테스트 문서\n이것은 테스트입니다.", encoding="utf-8")
+    ko_test_md.write_text("# Test Document\nThis is a test.", encoding="utf-8")
 
     # Mock _is_translation_outdated to return True for our test file
     mock_translation_manager._is_translation_outdated = MagicMock(return_value=True)
@@ -195,7 +195,7 @@ async def test_retranslate_outdated_files(mock_translation_manager, temp_project
     ko_dir = temp_project_dir / "translations" / "ko"
     ko_dir.mkdir(parents=True, exist_ok=True)
     ko_test_md = ko_dir / "test.md"
-    ko_test_md.write_text("# 테스트 문서\n이것은 테스트입니다.", encoding="utf-8")
+    ko_test_md.write_text("# Test Document\nThis is a test.", encoding="utf-8")
 
     # Create a list of outdated files
     outdated_files = [(test_md, ko_test_md)]
@@ -203,7 +203,7 @@ async def test_retranslate_outdated_files(mock_translation_manager, temp_project
     # Mock translate_markdown
     mock_translation_manager.markdown_translator = MagicMock()
     mock_translation_manager.markdown_translator.translate_markdown = AsyncMock(
-        return_value="# 테스트 문서\n이것은 테스트입니다."
+        return_value="# Test Document\nThis is a test."
     )
     mock_translation_manager.markdown_translator.create_metadata = MagicMock(
         return_value={"file_hash": "test_hash"}
@@ -289,7 +289,7 @@ async def test_translate_notebook_basic(mock_translation_manager, temp_project_d
         return_value=json.dumps(
             {
                 "cells": [
-                    {"cell_type": "markdown", "source": ["# 테스트 노트북"]},
+                    {"cell_type": "markdown", "source": ["# Test Notebook"]},
                     {"cell_type": "code", "source": ["print('hello')"]},
                 ],
                 "metadata": {
@@ -385,7 +385,7 @@ async def test_translate_all_notebook_files_with_hash_check(temp_project_dir):
     # Create existing translated notebook (up-to-date)
     translated_notebook = ko_dir / "test.ipynb"
     translated_content = {
-        "cells": [{"cell_type": "markdown", "source": ["# 원본"]}],
+        "cells": [{"cell_type": "markdown", "source": ["# Original"]}],
         "metadata": {
             "coopTranslator": {
                 "original_hash": "current_hash",  # Will be mocked to match
@@ -468,7 +468,7 @@ async def test_translate_all_notebook_files_outdated(temp_project_dir):
     # Create existing translated notebook (outdated)
     translated_notebook = ko_dir / "test.ipynb"
     translated_content = {
-        "cells": [{"cell_type": "markdown", "source": ["# 이전 버전"]}],
+        "cells": [{"cell_type": "markdown", "source": ["# Previous version"]}],
         "metadata": {
             "coopTranslator": {
                 "original_hash": "old_hash",  # Different from current

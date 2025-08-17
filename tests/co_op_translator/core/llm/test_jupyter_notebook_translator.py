@@ -291,7 +291,7 @@ class TestJupyterNotebookTranslator:
         # Setup mock
         mock_translator = AsyncMock()
         mock_translator.translate_markdown = AsyncMock(
-            return_value="# 번역된 제목\n\n번역된 내용"
+            return_value="# Translated Title\n\nTranslated content"
         )
         mock_markdown_translator_class.create.return_value = mock_translator
 
@@ -332,10 +332,10 @@ class TestJupyterNotebookTranslator:
         # Setup mock translator
         mock_translator = AsyncMock()
         mock_translator.translate_markdown = AsyncMock(
-            return_value="# 번역된 제목\n\n번역된 내용"
+            return_value="# Translated Title\n\nTranslated content"
         )
         mock_translator.generate_disclaimer = AsyncMock(
-            return_value="**면책조항**: 이 문서는 AI 번역 서비스를 사용하여 번역되었습니다."
+            return_value="**Disclaimer**: This document has been translated using an AI translation service."
         )
         mock_markdown_translator_class.create.return_value = mock_translator
 
@@ -355,7 +355,7 @@ class TestJupyterNotebookTranslator:
         disclaimer_cell = cells[-1]  # Last cell should be disclaimer
         assert disclaimer_cell["cell_type"] == "markdown"
         disclaimer_content = "".join(disclaimer_cell["source"])
-        assert "면책조항" in disclaimer_content
+        assert "Disclaimer" in disclaimer_content
         assert "---" in disclaimer_content  # Separator line
 
         # Verify generate_disclaimer was called
@@ -370,10 +370,10 @@ class TestJupyterNotebookTranslator:
         # Setup mock translator
         mock_translator = AsyncMock()
         mock_translator.translate_markdown = AsyncMock(
-            return_value="# 번역된 제목\n\n번역된 내용"
+            return_value="# Translated Title\n\nTranslated content"
         )
         mock_translator.generate_disclaimer = AsyncMock(
-            return_value="**면책조항**: 이 문서는 AI 번역 서비스를 사용하여 번역되었습니다."
+            return_value="**Disclaimer**: This document has been translated using an AI translation service."
         )
         mock_markdown_translator_class.create.return_value = mock_translator
 
@@ -402,7 +402,7 @@ class TestJupyterNotebookTranslator:
         # Setup mock translator with failing disclaimer generation
         mock_translator = AsyncMock()
         mock_translator.translate_markdown = AsyncMock(
-            return_value="# 번역된 제목\n\n번역된 내용"
+            return_value="# Translated Title\n\nTranslated content"
         )
         mock_translator.generate_disclaimer = AsyncMock(
             return_value=""  # Empty disclaimer (failure case)

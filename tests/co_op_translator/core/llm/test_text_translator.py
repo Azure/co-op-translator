@@ -22,7 +22,7 @@ class MockTextTranslator(TextTranslator):
             MagicMock(
                 message=MagicMock(
                     parsed=TranslationResponse(
-                        translations=["번역된 라인 1", "번역된 라인 2"]
+                        translations=["Translated line 1", "Translated line 2"]
                     )
                 )
             )
@@ -88,7 +88,7 @@ def test_translate_image_text(text_translator):
     target_language = "ko"
     result = text_translator.translate_image_text(text_data, target_language)
 
-    assert result == ["번역된 라인 1", "번역된 라인 2"]
+    assert result == ["Translated line 1", "Translated line 2"]
     assert len(result) == len(text_data)
     # Verify structured output was used
     text_translator.client.chat.completions.parse.assert_called_once()

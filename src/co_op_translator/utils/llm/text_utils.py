@@ -5,13 +5,22 @@ Functions include generating translation prompts and processing responses from O
 
 import re
 import logging
+from typing import List
+from pydantic import BaseModel
+
+
+class TranslationResponse(BaseModel):
+    """Schema for structured translation output."""
+
+    translations: List[str]
+
 
 logger = logging.getLogger(__name__)
 
 
 def gen_image_translation_prompt(text_data, language_code, language_name):
     """
-    Generate a translation prompt for the given text data.
+    Generate a translation prompt for structured output.
 
     Args:
         text_data (list): List of text lines to be translated.
@@ -19,15 +28,11 @@ def gen_image_translation_prompt(text_data, language_code, language_name):
         language_name (str): Target language name for translation.
 
     Returns:
-        str: Generated translation prompt.
+        str: Generated translation prompt for structured output.
     """
-    prompt = f"""
-    You are a translator that receives a batch of lines in an image. Given the following yaml file, please translate each line into {language_name} ({language_code}).
-    For each line, fill it in with the translation, respecting the context of the text.
-    Return only the yaml file, fully filled in.
-    """
-    for line in text_data:
-        prompt += f"- {line}\n"
+    prompt = f"Translate each line to {language_name} ({language_code}). Keep exact same number of lines:\n\n"
+    for i, line in enumerate(text_data, 1):
+        prompt += f"{i}. {line}\n"
     return prompt
 
 
@@ -43,18 +48,3 @@ def remove_code_backticks(message):
     """
     match = re.match(r"```(?:\w+)?\n(.*?)\n```", message, re.DOTALL)
     return match.group(1) if match else message
-
-
-def extract_yaml_lines(message):
-    """
-    Extract YAML lines from a message.
-
-    Args:
-        message (str): The message containing YAML lines.
-
-    Returns:
-        list: List of extracted YAML lines.
-    """
-    lines = message.split("\n")
-    yaml_lines = [line[2:] for line in lines if line.startswith("- ")]
-    return yaml_lines

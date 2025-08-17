@@ -1,7 +1,7 @@
 from co_op_translator.utils.llm.text_utils import (
     remove_code_backticks,
-    extract_yaml_lines,
     gen_image_translation_prompt,
+    TranslationResponse,
 )
 
 
@@ -19,25 +19,8 @@ def test_remove_code_backticks():
         assert result == expected
 
 
-def test_extract_yaml_lines():
-    """Test extracting YAML lines from messages."""
-    test_cases = [
-        (
-            "- text: Hello\n- key: value\n---\nother content",
-            ["text: Hello", "key: value"],
-        ),
-        ("no yaml content", []),
-        ("- key1: value1\n- key2: value2", ["key1: value1", "key2: value2"]),
-    ]
-
-    for input_text, expected in test_cases:
-        result = extract_yaml_lines(input_text)
-        result = [line.strip() for line in result]  # Remove whitespace and newlines
-        assert result == expected
-
-
 def test_gen_image_translation_prompt():
-    """Test generating image translation prompts."""
+    """Test generating image translation prompts with numbered format."""
     text_data = ["Line 1", "Line 2", "Line 3"]
     language_code = "ko"
     language_name = "Korean"
@@ -47,7 +30,10 @@ def test_gen_image_translation_prompt():
     assert isinstance(prompt, str)
     assert language_code in prompt
     assert language_name in prompt
-    assert all(line in prompt for line in text_data)
+    assert "Keep exact same number of lines" in prompt
+    assert "1. Line 1" in prompt
+    assert "2. Line 2" in prompt
+    assert "3. Line 3" in prompt
 
 
 def test_gen_image_translation_prompt_empty():
@@ -69,3 +55,13 @@ def test_gen_image_translation_prompt_special_chars():
 
     assert isinstance(prompt, str)
     assert all(line in prompt for line in text_data)
+
+
+def test_translation_response():
+    """Test TranslationResponse Pydantic model."""
+    translations = ["번역된 라인 1", "번역된 라인 2", "번역된 라인 3"]
+    response = TranslationResponse(translations=translations)
+
+    assert response.translations == translations
+    assert len(response.translations) == 3
+    assert response.translations[0] == "번역된 라인 1"

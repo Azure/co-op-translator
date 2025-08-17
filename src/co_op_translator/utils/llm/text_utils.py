@@ -30,9 +30,9 @@ def gen_image_translation_prompt(text_data, language_code, language_name):
     Returns:
         str: Generated translation prompt for structured output.
     """
-    prompt = f"Translate each line to {language_name} ({language_code}). Keep exact same number of lines:\n\n"
-    for i, line in enumerate(text_data, 1):
-        prompt += f"{i}. {line}\n"
+    prompt = f"Translate each line to {language_name} ({language_code}). Keep exact same number of lines and preserve original formatting:\n\n"
+    for line in text_data:
+        prompt += f"{line}\n"
     return prompt
 
 

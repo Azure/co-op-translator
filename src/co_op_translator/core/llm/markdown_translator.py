@@ -80,7 +80,7 @@ class MarkdownTranslator(ABC):
         document: str,
         language_code: str,
         md_file_path: str | Path,
-        markdown_only: bool = False,
+        translation_types: list[str] = None,
         add_metadata: bool = True,
         add_disclaimer: bool = True,
     ) -> str:
@@ -93,7 +93,7 @@ class MarkdownTranslator(ABC):
             document: Content of the markdown file
             language_code: Target language code
             md_file_path: Path to the markdown file
-            markdown_only: Skip embedded image translation if True
+            translation_types: List of file types being translated (e.g., ["markdown", "images", "notebook"])
             add_metadata: Whether to add metadata comment at the beginning
             add_disclaimer: Whether to add disclaimer at the end
 
@@ -101,6 +101,10 @@ class MarkdownTranslator(ABC):
             str: The translated content with optional metadata and disclaimer.
         """
         md_file_path = Path(md_file_path)
+
+        # Default translation types if not specified
+        if translation_types is None:
+            translation_types = ["markdown", "notebook", "images"]
 
         # Create and format metadata (only if requested)
         metadata_comment = ""
@@ -136,7 +140,7 @@ class MarkdownTranslator(ABC):
             translated_content,
             language_code,
             self.root_dir,
-            markdown_only=markdown_only,
+            translation_types=translation_types,
         )
 
         # Step 6: Add metadata and disclaimer (only if requested)

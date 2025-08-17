@@ -3,10 +3,8 @@
 This module contains tests for the OpenAIMarkdownEvaluator class and related evaluation utilities.
 """
 
-import re
 import pytest
-from pathlib import Path
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import patch
 
 from co_op_translator.core.llm.providers.openai.markdown_evaluator import (
     OpenAIMarkdownEvaluator,

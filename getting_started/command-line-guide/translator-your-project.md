@@ -99,16 +99,6 @@ To translate only the markdown files in your project, use the `-md` option:
 translate -l "ko" -md
 ```
 
-### 7. Checking for Errors in Translated Files
-
-If you want to check translated files for errors and retry the translation if necessary, use the `-chk` option:
-
-```bash
-translate -l "ko" -chk
-```
-
-This command will scan the translated markdown files and retry translation for any files with errors.
-
 #### Example on Phi-3 CookBook
 
 In the **Phi-3 CookBook**, I used the following method to check for translation errors in the Korean files and automatically retry translation for any files with detected issues.

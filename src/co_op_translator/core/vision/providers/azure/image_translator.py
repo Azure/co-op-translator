@@ -3,7 +3,7 @@ from azure.ai.vision.imageanalysis import ImageAnalysisClient
 from azure.core.credentials import AzureKeyCredential
 from co_op_translator.core.vision.image_translator import ImageTranslator
 from co_op_translator.config.vision_config.azure_computer_vision import (
-    AzureComputerVisionConfig,
+    AzureAIVisionConfig,
 )
 
 logger = logging.getLogger(__name__)
@@ -20,12 +20,12 @@ class AzureImageTranslator(ImageTranslator):
     def get_image_analysis_client(self):
         """Create an Azure Image Analysis Client using configured credentials.
 
-        Retrieves endpoint and API key from AzureComputerVisionConfig to establish
+        Retrieves endpoint and API key from AzureAIVisionConfig to establish
         a connection to the Azure AI Vision service.
 
         Returns:
             Configured Azure ImageAnalysisClient instance
         """
-        endpoint = AzureComputerVisionConfig.get_endpoint()
-        subscription_key = AzureComputerVisionConfig.get_api_key()
+        endpoint = AzureAIVisionConfig.get_endpoint()
+        subscription_key = AzureAIVisionConfig.get_api_key()
         return ImageAnalysisClient(endpoint, AzureKeyCredential(subscription_key))

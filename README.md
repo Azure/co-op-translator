@@ -1,6 +1,6 @@
-![Logo](./imgs/logo.png)
-
 # Co-op Translator: Automate the Translation of Educational Documentation Effortlessly
+
+![Logo](./imgs/logo.png)
 
 _Easily automate the translation of your documentation into multiple languages to reach a global audience._
 
@@ -15,7 +15,7 @@ _Easily automate the translation of your documentation into multiple languages t
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-### Language Support Powered by Co-op Translator
+## Language Support Powered by Co-op Translator
 
 [French](./translations/fr/README.md) | [Spanish](./translations/es/README.md) | [German](./translations/de/README.md) | [Russian](./translations/ru/README.md) | [Arabic](./translations/ar/README.md) | [Persian (Farsi)](./translations/fa/README.md) | [Urdu](./translations/ur/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Chinese (Traditional, Macau)](./translations/mo/README.md) | [Chinese (Traditional, Hong Kong)](./translations/hk/README.md) | [Chinese (Traditional, Taiwan)](./translations/tw/README.md) | [Japanese](./translations/ja/README.md) | [Korean](./translations/ko/README.md) | [Hindi](./translations/hi/README.md) | [Bengali](./translations/bn/README.md) | [Marathi](./translations/mr/README.md) | [Nepali](./translations/ne/README.md) | [Punjabi (Gurmukhi)](./translations/pa/README.md) | [Portuguese (Portugal)](./translations/pt/README.md) | [Portuguese (Brazil)](./translations/br/README.md) | [Italian](./translations/it/README.md) | [Lithuanian](./translations/lt/README.md) | [Polish](./translations/pl/README.md) | [Turkish](./translations/tr/README.md) | [Greek](./translations/el/README.md) | [Thai](./translations/th/README.md) | [Swedish](./translations/sv/README.md) | [Danish](./translations/da/README.md) | [Norwegian](./translations/no/README.md) | [Finnish](./translations/fi/README.md) | [Dutch](./translations/nl/README.md) | [Hebrew](./translations/he/README.md) | [Vietnamese](./translations/vi/README.md) | [Indonesian](./translations/id/README.md) | [Malay](./translations/ms/README.md) | [Tagalog (Filipino)](./translations/tl/README.md) | [Swahili](./translations/sw/README.md) | [Hungarian](./translations/hu/README.md) | [Czech](./translations/cs/README.md) | [Slovak](./translations/sk/README.md) | [Romanian](./translations/ro/README.md) | [Bulgarian](./translations/bg/README.md) | [Serbian (Cyrillic)](./translations/sr/README.md) | [Croatian](./translations/hr/README.md) | [Slovenian](./translations/sl/README.md) | [Ukrainian](./translations/uk/README.md) | [Burmese (Myanmar)](./translations/my/README.md)
 
@@ -28,11 +28,13 @@ _Easily automate the translation of your documentation into multiple languages t
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
-## Overview: Streamline Your Educational Content Translation
+## Overview: Keep Your Educational Content Translations Always Up-to-Date
 
 Language barriers significantly hinder access to valuable educational resources and technical knowledge for learners and developers worldwide. This limits participation and slows down the pace of global innovation and learning.
 
 **Co-op Translator** was born from the need to address the inefficient manual translation process for Microsoft's own large-scale educational series (like the "For Beginners" guides). It has evolved into an easy-to-use, powerful tool designed to break down these barriers for everyone. By providing high-quality automated translations via CLI and GitHub Actions, Co-op Translator empowers educators, students, researchers, and developers globally to share and access knowledge without language constraints.
+
+**Co-op Translator** enables you to quickly translate your documentation into multiple languages, reaching a global audience effortlessly. When you update your Markdown files, images, or Jupyter notebooks, translations are automatically synchronized to ensure your documentation stays fresh and relevant for international users. For automated workflows, see our GitHub Actions guides: [Public Repositories](./getting_started/github-actions-guide/github-actions-guide-public.md) | [Organization Repositories](./getting_started/github-actions-guide/github-actions-guide-org.md).
 
 See how Co-op Translator organizes translated educational content:
 
@@ -137,7 +139,7 @@ translate -l "zh ja"
 | AI Vision       | ![Azure AI Vision](https://img.shields.io/badge/Azure_AI_Vision-blue?style=flat-square) |
 
 > [!NOTE]
-> If a AI vision service is not available, the co-op translator will switch to [Markdown-only mode](./getting_started/markdown-only-mode.md).
+> You can choose what to translate using command-line flags: `-md` for markdown files, `-img` for images, `-nb` for notebooks. If no flags are specified, all supported file types will be translated.
 
 ### Initial Setup
 
@@ -150,7 +152,7 @@ Before you begin, you'll need to set up the following resources:
 
 1. AI Vision Resource (Optional):
    - Azure AI Vision - Enables translation of text within images
-   - If not configured, the translator will automatically use [Markdown-only mode](./getting_started/markdown-only-mode.md)
+   - If not configured, you must explicitly specify what to translate using flags like `-md` or `-md -nb` (excluding `-img`)
    - Recommended for projects with images containing text that needs translation
 
 1. Configuration Steps:
@@ -220,7 +222,17 @@ For a fast start using the command line:
     - Execute the translate command, specifying target languages with the `-l` flag:
 
     ```bash
+    # Translate all file types (markdown, images, notebooks)
     translate -l "ko ja fr"
+    
+    # Translate only markdown files
+    translate -l "ko" -md
+    
+    # Translate markdown and images, but not notebooks
+    translate -l "ko" -md -img
+    
+    # Translate only notebooks
+    translate -l "ko" -nb
     ```
 
     _(Replace `"ko ja fr"` with your desired space-separated language codes)_
@@ -251,7 +263,6 @@ Choose the approach that best fits your workflow:
 
 - [Command Reference](./getting_started/command-reference.md): Detailed guide to all available commands and options.
 - [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions for adding new ones.
-- [Markdown-Only Mode](./getting_started/markdown-only-mode.md): How to translate text only, without image translation.
 
 ## Video Presentations
 

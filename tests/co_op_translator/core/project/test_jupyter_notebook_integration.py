@@ -4,7 +4,6 @@ Integration tests for Jupyter Notebook translation functionality.
 
 import json
 import pytest
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from co_op_translator.core.project.project_translator import ProjectTranslator
@@ -84,7 +83,9 @@ class TestJupyterNotebookIntegration:
 
         # Create translator
         translator = ProjectTranslator(
-            "ko", root_dir=temp_project_with_notebook, markdown_only=True
+            "ko",
+            root_dir=temp_project_with_notebook,
+            translation_types=["markdown", "notebook"],
         )
 
         # Verify notebook translator was created
@@ -129,7 +130,7 @@ class TestJupyterNotebookIntegration:
 
         # Create translator
         translator = ProjectTranslator(
-            "ko", root_dir=temp_project_with_notebook, markdown_only=True
+            "ko", root_dir=temp_project_with_notebook, translation_types=["markdown"]
         )
 
         # Mock the notebook translator's translate_notebook method
@@ -198,7 +199,7 @@ class TestJupyterNotebookIntegration:
 
         # Create translator
         translator = ProjectTranslator(
-            "ko", root_dir=temp_project_with_notebook, markdown_only=True
+            "ko", root_dir=temp_project_with_notebook, translation_types=["markdown"]
         )
 
         # Simulate missing notebook translator

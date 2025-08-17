@@ -28,7 +28,7 @@ _Easily automate the translation of your documentation into multiple languages t
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
-## Overview: Streamline Your Educational Content Translation
+## Overview: Automate Your Educational Content Translation
 
 Language barriers significantly hinder access to valuable educational resources and technical knowledge for learners and developers worldwide. This limits participation and slows down the pace of global innovation and learning.
 

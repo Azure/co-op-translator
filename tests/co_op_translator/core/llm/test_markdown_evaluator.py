@@ -64,7 +64,7 @@ class TestGenerateEvaluationPrompt:
         """Verify the prompt includes all required sections and formatting."""
         # Arrange
         original = "Test content"
-        translated = "테스트 콘텐츠"
+        translated = "Test content"
         language_code = "ko"
         language_name = "Korean"
 
@@ -114,7 +114,7 @@ class TestGenerateEvaluationPrompt:
     def test_basic_functionality(self):
         """Test basic functionality of generate_evaluation_prompt."""
         original = "# Hello World\nThis is a test document."
-        translated = "# 안녕 세상\n이것은 테스트 문서입니다."
+        translated = "# Hello World\nThis is a test document."
         language_code = "ko"
         language_name = "Korean"
 
@@ -187,7 +187,7 @@ class TestRuleBasedEvaluation:
     @pytest.mark.parametrize(
         "original,translated,expected_score,description",
         [
-            ("Short text", "짧은 텍스트", 1.0, "Similar length"),
+            ("Short text", "Short text", 1.0, "Similar length"),
             (
                 "Short text",
                 "This is a much longer translated text that might indicate issues",
@@ -197,13 +197,13 @@ class TestRuleBasedEvaluation:
             ("", "", 1.0, "Empty strings"),
             (
                 "Test with code: ```print('hi')```",
-                "테스트 코드: ```print('hi')```",
+                "Test code: ```print('hi')```",
                 1.0,
                 "Code block preservation",
             ),
             (
                 "Test with [link](test.md)",
-                "[링크](test.md) 테스트",
+                "[link](test.md) test",
                 1.0,
                 "Link preservation",
             ),
@@ -239,7 +239,7 @@ class TestRuleBasedEvaluation:
         )
 
         original = SAMPLE_MD_CONTENT
-        translated = SAMPLE_MD_CONTENT.replace("Sample Document", "샘플 문서")
+        translated = SAMPLE_MD_CONTENT.replace("Sample Document", "Sample Document")
 
         # Act
         result = evaluate_translation_rule_based(original, translated, "ko")

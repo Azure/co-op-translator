@@ -3,7 +3,7 @@ import logging
 from co_op_translator.utils.llm.text_utils import (
     gen_image_translation_prompt,
     remove_code_backticks,
-    extract_yaml_lines,
+    TranslationResponse,
 )
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.llm_config.provider import LLMProvider
@@ -39,32 +39,41 @@ class TextTranslator(ABC):
     def translate_image_text(self, text_data: list, target_language: str) -> list:
         """Translate extracted text from images to target language.
 
-        Processes text discovered through OCR and generates translations
-        formatted for placement back onto images.
+        Uses structured outputs to ensure 1:1 line mapping and prevent
+        Arabic ligature rendering issues.
 
         Args:
             text_data: List of text lines to translate
             target_language: Target language code
 
         Returns:
-            List of translated text lines
+            List of translated text lines with exact count matching input
         """
+        if not text_data:
+            return []
+
         language_name = self.font_config.get_language_name(target_language)
         prompt = gen_image_translation_prompt(text_data, target_language, language_name)
-        response = self.client.chat.completions.create(
+
+        response = self.client.chat.completions.parse(
             model=self.get_model_name(),
             messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
+                {
+                    "role": "system",
+                    "content": "You are a translator. Return exactly the same number of translations as input lines.",
+                },
                 {"role": "user", "content": prompt},
             ],
+            response_format=TranslationResponse,
             max_tokens=2000,
             temperature=0,
         )
-        translated_text = remove_code_backticks(response.choices[0].message.content)
-        logger.debug(f"Raw translation response: {translated_text}")
-        result = extract_yaml_lines(translated_text)
-        logger.debug(f"Extracted translation lines: {result}")
-        return result
+
+        translations = response.choices[0].message.parsed.translations
+        logger.debug(
+            f"Structured output: {len(translations)} translations for {len(text_data)} input lines"
+        )
+        return translations
 
     def translate_text(self, text: str, target_language: str) -> str:
         """Translate plain text to specified target language.

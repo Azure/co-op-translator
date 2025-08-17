@@ -203,7 +203,7 @@ def test_translate_batch_with_various_inputs():
         "Hello",
         "123",
         "Special !@#$%^&*() chars",
-        "한글도 테스트",
+        "Korean text test",
         " Leading and trailing spaces ",
     ]
     target_language = "ko"
@@ -233,7 +233,7 @@ def test_plot_annotated_image_with_multiple_boxes(image_translator, tmp_path):
             "confidence": 0.95,
         },
     ]
-    translated_texts = ["번역 1", "번역 2"]
+    translated_texts = ["Translation 1", "Translation 2"]
     target_language = "ko"
 
     result_path = image_translator.plot_annotated_image(

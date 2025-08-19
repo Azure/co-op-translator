@@ -12,6 +12,7 @@ from co_op_translator.utils.common.file_utils import (
     reset_translation_directories,
     delete_translated_markdown_files_by_language_code,
     delete_translated_images_by_language_code,
+    map_original_to_translated,
 )
 
 
@@ -203,3 +204,39 @@ def test_delete_translated_images(temp_dir):
     delete_translated_images_by_language_code("ko", image_dir)
     assert not (image_dir / "test.ko.png").exists()
     assert (image_dir / "test.en.png").exists()
+
+
+def test_map_original_to_translated_exists_and_missing(temp_dir):
+    """map_original_to_translated should return the translated path when it exists, else None."""
+    root_dir = temp_dir
+    translations_dir = root_dir / "translations"
+    lang = "ko"
+
+    # Create original structure
+    orig_nb = root_dir / "notebook" / "01" / "foo.ipynb"
+    orig_nb.parent.mkdir(parents=True)
+    orig_nb.touch()
+
+    # Case 1: missing translated counterpart -> None
+    mapped_missing = map_original_to_translated(
+        original_abs=orig_nb,
+        language_code=lang,
+        root_dir=root_dir,
+        translations_dir=translations_dir,
+    )
+    assert mapped_missing is None
+
+    # Case 2: exists translated counterpart -> Path
+    translated_nb = translations_dir / lang / "notebook" / "01" / "foo.ipynb"
+    translated_nb.parent.mkdir(parents=True)
+    translated_nb.touch()
+
+    mapped_exists = map_original_to_translated(
+        original_abs=orig_nb,
+        language_code=lang,
+        root_dir=root_dir,
+        translations_dir=translations_dir,
+    )
+    assert mapped_exists is not None
+    assert mapped_exists.exists()
+    assert mapped_exists == translated_nb.resolve()

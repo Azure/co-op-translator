@@ -100,6 +100,47 @@ def get_actual_image_path(
     return actual_image_path
 
 
+def map_original_to_translated(
+    original_abs: Path,
+    language_code: str,
+    root_dir: Path,
+    translations_dir: Path | None = None,
+) -> Path | None:
+    """
+    Map an absolute path of an original file under root_dir to its translated counterpart.
+
+    Rules:
+    - If original_abs is not under root_dir, return None.
+    - The translated candidate path is translations/<lang>/<original_rel_from_root>.
+    - If the candidate exists on disk, return it; otherwise return None.
+
+    Args:
+        original_abs (Path): Absolute path to the original file.
+        language_code (str): Language code (e.g., 'ko').
+        root_dir (Path): Project root.
+        translations_dir (Path | None): Override translations dir; default root_dir / 'translations'.
+
+    Returns:
+        Path | None: Absolute path to translated file if it exists, else None.
+    """
+    original_abs = Path(original_abs).resolve()
+    root_dir = Path(root_dir).resolve()
+    translations_dir = (
+        Path(translations_dir).resolve()
+        if translations_dir
+        else (root_dir / "translations").resolve()
+    )
+
+    try:
+        original_rel = original_abs.relative_to(root_dir)
+    except ValueError:
+        # Outside project root
+        return None
+
+    candidate = (translations_dir / language_code / original_rel).resolve()
+    return candidate if candidate.exists() else None
+
+
 def get_unique_id(file_path: str | Path, root_dir: Path) -> str:
     """
     Generate a unique identifier (hash) for the given file path, based on the relative path to the root directory.

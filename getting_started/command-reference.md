@@ -24,6 +24,7 @@ migrate-links -l "language_codes" -r          | Specify the project root directo
 migrate-links -l "language_codes" --dry-run   | Show which files would change without writing changes.
 migrate-links -l "language_codes" --no-fallback-to-original | Do not rewrite links to original notebooks when translated counterparts are missing (only update when translated exists).
 migrate-links -l "language_codes" -d          | Enable debug mode for detailed logging.
+migrate-links -l "all" -y                      | Process all languages and auto-confirm the warning prompt.
 
 ## Usage examples
 
@@ -54,6 +55,10 @@ migrate-links -l "language_codes" -d          | Enable debug mode for detailed l
   13. Migrate links with dry-run (no file writes):    migrate-links -l "ko" --dry-run
 
   14. Only update links when translated notebooks exist (do not fallback to originals):    migrate-links -l "ko" --no-fallback-to-original
+
+  15. Process all languages with confirmation prompt:    migrate-links -l "all"
+
+  16. Process all languages and auto-confirm:    migrate-links -l "all" -y
 
 ### Evaluation Examples
 

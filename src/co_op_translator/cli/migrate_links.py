@@ -13,6 +13,8 @@ import os
 import re
 from urllib.parse import urlparse
 from tqdm import tqdm
+import importlib.resources
+import yaml
 
 from co_op_translator.config.base_config import Config
 from co_op_translator.utils.llm.markdown_utils import (
@@ -29,7 +31,7 @@ logger = logging.getLogger(__name__)
     "--language-codes",
     "-l",
     required=True,
-    help='Space-separated language codes to process (e.g., "ko ja").',
+    help='Space-separated language codes to process (e.g., "ko ja" or "all").',
 )
 @click.option(
     "--root-dir",
@@ -52,8 +54,14 @@ logger = logging.getLogger(__name__)
     ),
 )
 @click.option("-d", "--debug", is_flag=True, help="Enable debug logging.")
+@click.option(
+    "--yes",
+    "-y",
+    is_flag=True,
+    help="Automatically confirm prompts (useful when using -l 'all').",
+)
 def migrate_links_command(
-    language_codes, root_dir, dry_run, fallback_to_original, debug
+    language_codes, root_dir, dry_run, fallback_to_original, debug, yes
 ):
     """
     Reprocess only translated markdown files that contain .ipynb links and
@@ -83,8 +91,57 @@ def migrate_links_command(
             click.echo(f"No translations directory found at: {translations_dir}")
             return
 
-        # Parse language codes list
-        lang_list = [code.strip() for code in language_codes.split() if code.strip()]
+        # Warning and confirmation when processing all languages
+        if isinstance(language_codes, str) and language_codes.lower() == "all":
+            click.echo(
+                "Warning: Processing 'all' languages can take significant time on large projects."
+            )
+            click.echo(
+                "For efficiency, contributors usually handle individual languages separately."
+            )
+            if not yes:
+                confirmation_all = click.prompt(
+                    "Do you still want to proceed with ALL languages? Type 'yes' to continue",
+                    type=str,
+                )
+                if confirmation_all.lower() != "yes":
+                    click.echo("Operation for 'all' languages cancelled.")
+                    return
+                else:
+                    click.echo("Proceeding with operation for all languages...")
+            else:
+                click.echo("Auto-confirming operation for all languages...")
+
+        # Parse language codes list (support "all")
+        if isinstance(language_codes, str) and language_codes.lower() == "all":
+            try:
+                with importlib.resources.path(
+                    "co_op_translator.fonts", "font_language_mappings.yml"
+                ) as mappings_path:
+                    with open(mappings_path, "r", encoding="utf-8") as file:
+                        font_mappings = yaml.safe_load(file)
+                        if not font_mappings:
+                            raise click.ClickException("Empty font mappings file")
+                        lang_list = [
+                            lang_code
+                            for lang_code in font_mappings
+                            if isinstance(font_mappings[lang_code], dict)
+                        ]
+                        if not lang_list:
+                            raise click.ClickException(
+                                "No valid language codes found in font mappings"
+                            )
+                        logging.debug(
+                            f"Expanded 'all' to language codes from font mapping: {lang_list}"
+                        )
+            except (FileNotFoundError, yaml.YAMLError) as e:
+                raise click.ClickException(
+                    f"Failed to load language codes for 'all': {str(e)}"
+                )
+        else:
+            lang_list = [
+                code.strip() for code in language_codes.split() if code.strip()
+            ]
         if not lang_list:
             raise click.ClickException("No valid language codes provided.")
 

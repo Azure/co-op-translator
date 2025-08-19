@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
         "Enabled by default."
     ),
 )
-@click.option("--debug", is_flag=True, help="Enable debug logging.")
+@click.option("-d", "--debug", is_flag=True, help="Enable debug logging.")
 def migrate_links_command(
     language_codes, root_dir, dry_run, fallback_to_original, debug
 ):
@@ -60,11 +60,12 @@ def migrate_links_command(
     update links to point to translated notebooks when available.
     """
     try:
-        # Basic logging setup
+        # Basic logging setup (align with translate.py)
         if debug:
             logging.basicConfig(level=logging.DEBUG)
+            logging.debug("Debug mode enabled.")
         else:
-            logging.basicConfig(level=logging.INFO)
+            logging.basicConfig(level=logging.CRITICAL)
 
         # Validate root directory and config
         Config.check_configuration()
@@ -79,7 +80,7 @@ def migrate_links_command(
 
         translations_dir = root_path / "translations"
         if not translations_dir.exists():
-            click.echo("No translations directory found. Nothing to migrate.")
+            click.echo(f"No translations directory found at: {translations_dir}")
             return
 
         # Parse language codes list

@@ -481,7 +481,7 @@ def update_notebook_links(
             or "@" in link
             or link.endswith((".com", ".org", ".net"))
         ):
-            logger.info(f"Skipped {link} as it is an email or web URL")
+            logger.debug(f"Skipped {link} as it is an email or web URL")
             continue
 
         path = parsed.path
@@ -534,12 +534,12 @@ def update_notebook_links(
             # Choose target (translated if available and enabled, else original)
             if use_translated_notebook and candidate_translated.exists():
                 target_abs = candidate_translated
-                logger.info(
+                logger.debug(
                     f"Using translated notebook link for {path} -> {candidate_translated}"
                 )
             else:
                 target_abs = original_linked_abs
-                logger.info(f"Using original notebook link for {path}")
+                logger.debug(f"Using original notebook link for {path}")
 
             # Build relative link from translated markdown dir to target
             updated_link = os.path.relpath(target_abs, translated_md_dir).replace(
@@ -555,7 +555,7 @@ def update_notebook_links(
             old_markup = f"[{alt_text}]({link})"
             new_markup = f"[{alt_text}]({updated_link})"
             markdown_string = markdown_string.replace(old_markup, new_markup)
-            logger.info(f"Updated notebook link: {new_markup}")
+            logger.debug(f"Updated notebook link: {new_markup}")
 
         except Exception as e:
             logger.error(f"Error processing notebook link {link}: {e}")

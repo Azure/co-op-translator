@@ -66,7 +66,7 @@ def test_translation_response():
     """Test TranslationResponse Pydantic model."""
     translations = ["Translated line 1", "Translated line 2", "Translated line 3"]
     response = TranslationResponse(translations=translations)
-    
+
     assert response.translations == translations
     assert len(response.translations) == 3
     assert response.translations[0] == "Translated line 1"

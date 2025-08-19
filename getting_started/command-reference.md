@@ -19,6 +19,11 @@ evaluate -l "language_code"                  | Evaluates translation quality for
 evaluate -l "language_code" -c 0.8           | Evaluates translations with custom confidence threshold
 evaluate -l "language_code" -f               | Fast evaluation mode (rule-based only, no LLM)
 evaluate -l "language_code" -D               | Deep evaluation mode (LLM-based only, more thorough but slower)
+migrate-links -l "language_codes"             | Reprocess translated Markdown files to update links to notebooks (.ipynb). Prefers translated notebooks when available; otherwise can fall back to original notebooks.
+migrate-links -l "language_codes" -r          | Specify the project root directory (default: current directory).
+migrate-links -l "language_codes" --dry-run   | Show which files would change without writing changes.
+migrate-links -l "language_codes" --no-fallback-to-original | Do not rewrite links to original notebooks when translated counterparts are missing (only update when translated exists).
+migrate-links -l "language_codes" -d          | Enable debug mode for detailed logging.
 
 ## Usage examples
 
@@ -43,6 +48,12 @@ evaluate -l "language_code" -D               | Deep evaluation mode (LLM-based o
   10. Fix low confidence translations with custom threshold: translate -l "ko" --fix -c 0.8
 
   11. Debug mode example: - translate -l "ko" -d: Enable debug logging.
+
+  12. Migrate notebook links for Korean translations (update links to translated notebooks when available):    migrate-links -l "ko"
+
+  13. Migrate links with dry-run (no file writes):    migrate-links -l "ko" --dry-run
+
+  14. Only update links when translated notebooks exist (do not fallback to originals):    migrate-links -l "ko" --no-fallback-to-original
 
 ### Evaluation Examples
 

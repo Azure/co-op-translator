@@ -149,7 +149,7 @@ class MarkdownTranslator(ABC):
             result = metadata_comment + result
         if add_disclaimer:
             disclaimer = await self.generate_disclaimer(language_code)
-            result = result + "\n\n" + disclaimer
+            result = result + "\n\n---\n\n" + disclaimer
 
         return result
 
@@ -219,7 +219,7 @@ class MarkdownTranslator(ABC):
         language_name = self.font_config.get_language_name(output_lang)
         disclaimer_prompt = f""" Translate the following text to {language_name} ({output_lang}).
 
-        **Disclaimer**: 
+        **Disclaimer**:
         This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation."""
 
         disclaimer = await self._run_prompt(disclaimer_prompt, "disclaimer prompt", 1)

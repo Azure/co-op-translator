@@ -160,13 +160,15 @@ def translate_command(
             logging.basicConfig(level=logging.CRITICAL)
 
         # Now run the LLM health check and display success when it passes
-        try:
-            LLMConfig.validate_connectivity()
-            logger.info("LLM health check passed.")
-            click.echo("✅ LLM health check passed.")
-        except Exception:
-            # Let the outer handler format the error; re-raise
-            raise
+        LLMConfig.validate_connectivity()
+        logger.info("LLM health check passed.")
+        click.echo("✅ LLM health check passed.")
+
+        # If images are selected, validate Vision connectivity as well
+        if "images" in translation_types:
+            VisionConfig.validate_connectivity()
+            logger.info("Vision health check passed.")
+            click.echo("✅ Vision health check passed.")
 
         # Validate root directory
         root_path = Path(root_dir).resolve()

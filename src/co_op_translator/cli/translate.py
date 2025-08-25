@@ -123,9 +123,6 @@ def translate_command(
         # Check that the required environment variables are set
         Config.check_configuration()
 
-        # LLM connectivity health check (fail fast with actionable message)
-        # Moved below after logging configuration to ensure messages are visible
-
         # Build translation types list based on user selection
         translation_types = []
         if markdown:

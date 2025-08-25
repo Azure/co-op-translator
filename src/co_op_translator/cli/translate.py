@@ -13,6 +13,7 @@ from pathlib import Path
 from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
+from co_op_translator.config.llm_config.config import LLMConfig
 
 logger = logging.getLogger(__name__)
 
@@ -154,6 +155,17 @@ def translate_command(
             logging.debug("Debug mode enabled.")
         else:
             logging.basicConfig(level=logging.CRITICAL)
+
+        # Now run the LLM health check and display success when it passes
+        LLMConfig.validate_connectivity()
+        logger.info("LLM health check passed.")
+        click.echo("✅ LLM health check passed.")
+
+        # If images are selected, validate Vision connectivity as well
+        if "images" in translation_types:
+            VisionConfig.validate_connectivity()
+            logger.info("Vision health check passed.")
+            click.echo("✅ Vision health check passed.")
 
         # Validate root directory
         root_path = Path(root_dir).resolve()

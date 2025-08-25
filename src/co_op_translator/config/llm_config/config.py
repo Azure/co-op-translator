@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Dict, Optional
 import logging
+import requests
+
+from openai import OpenAI
 
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
@@ -138,3 +141,113 @@ class LLMConfig:
         Raises ValueError if no LLM service is properly configured.
         """
         cls.get_available_provider()
+
+    @classmethod
+    def validate_connectivity(cls) -> None:
+        """
+        Perform a lightweight connectivity and credential validation for the configured LLM provider.
+
+        - Azure OpenAI: call Deployments list REST API (token-free) to validate endpoint, api key, and api-version.
+        - OpenAI: use SDK to retrieve the configured model (or list models) to validate api key (and base_url/org if set).
+
+        Raises:
+            ValueError: with actionable message if validation fails.
+        """
+        provider = cls.get_available_provider()
+
+        if provider == LLMProvider.AZURE_OPENAI:
+            endpoint = (AzureOpenAIConfig.get_endpoint() or "").rstrip("/")
+            api_version = AzureOpenAIConfig.get_api_version()
+            api_key = AzureOpenAIConfig.get_api_key()
+            deployment = AzureOpenAIConfig.get_chat_deployment_name()
+
+            if not endpoint or not api_version or not api_key or not deployment:
+                raise ValueError(
+                    "Azure OpenAI configuration missing required values. Ensure AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_VERSION, AZURE_OPENAI_API_KEY, and AZURE_OPENAI_CHAT_DEPLOYMENT_NAME are set."
+                )
+
+            base = endpoint.rstrip("/")
+            # Build chat completions URL as the primary health check (1-token call)
+            if base.endswith("/openai"):
+                chat_url = f"{base}/deployments/{deployment}/chat/completions?api-version={api_version}"
+            else:
+                chat_url = f"{base}/openai/deployments/{deployment}/chat/completions?api-version={api_version}"
+
+            headers = {"api-key": api_key, "Content-Type": "application/json"}
+            payload = {
+                "messages": [
+                    {"role": "system", "content": "health check"},
+                    {"role": "user", "content": "ping"},
+                ],
+                "max_tokens": 1,
+                "temperature": 0,
+            }
+
+            try:
+                resp = requests.post(
+                    chat_url, headers=headers, json=payload, timeout=10
+                )
+            except Exception as e:
+                logger.warning(
+                    f"Azure OpenAI health check: failed to reach endpoint. Proceeding (non-strict). Details: {e}"
+                )
+                return
+
+            if resp.status_code == 200:
+                return
+            elif resp.status_code in (401, 403):
+                raise ValueError(
+                    "Authentication failed for Azure OpenAI (401/403). Verify AZURE_OPENAI_API_KEY, endpoint, api-version, and deployment permissions."
+                )
+            else:
+                snippet = (resp.text or "")[:500]
+                logger.warning(
+                    f"Azure OpenAI health check returned HTTP {resp.status_code}. Response: {snippet}. Proceeding (non-strict)."
+                )
+                return
+
+        elif provider == LLMProvider.OPENAI:
+            api_key = OpenAIConfig.get_api_key()
+            base_url = OpenAIConfig.get_base_url()
+            org_id = OpenAIConfig.get_org_id()
+            model_id = OpenAIConfig.get_chat_model_id()
+
+            if not api_key:
+                raise ValueError("OPENAI_API_KEY must be set for OpenAI provider.")
+
+            client = OpenAI(api_key=api_key, organization=org_id, base_url=base_url)
+
+            # Perform minimal chat completion (1-token) as the primary check
+            if not model_id:
+                raise ValueError(
+                    "OPENAI_CHAT_MODEL_ID must be set for OpenAI provider."
+                )
+            try:
+                client.chat.completions.create(
+                    model=model_id,
+                    messages=[
+                        {"role": "system", "content": "health check"},
+                        {"role": "user", "content": "ping"},
+                    ],
+                    max_tokens=1,
+                    temperature=0,
+                )
+            except Exception as e:
+                # Try to extract an HTTP status code if present
+                status = getattr(e, "status_code", None)
+                if status in (401, 403):
+                    raise ValueError(
+                        "OpenAI authentication failed (401/403). Check OPENAI_API_KEY and OPENAI_BASE_URL (if customized)."
+                    )
+                elif status == 404 and model_id:
+                    raise ValueError(
+                        f"OpenAI model not found: '{model_id}'. Verify OPENAI_CHAT_MODEL_ID or permissions."
+                    )
+                else:
+                    logger.warning(
+                        f"OpenAI health check returned non-2xx status. Proceeding (non-strict). Details: {e}"
+                    )
+                    return
+        else:
+            # Should not happen because get_available_provider() would have raised earlier otherwise
+            raise ValueError("No LLM provider available for connectivity validation.")

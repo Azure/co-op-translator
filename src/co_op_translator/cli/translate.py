@@ -13,6 +13,7 @@ from pathlib import Path
 from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
+from co_op_translator.config.llm_config.config import LLMConfig
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +123,9 @@ def translate_command(
         # Check that the required environment variables are set
         Config.check_configuration()
 
+        # LLM connectivity health check (fail fast with actionable message)
+        # Moved below after logging configuration to ensure messages are visible
+
         # Build translation types list based on user selection
         translation_types = []
         if markdown:
@@ -154,6 +158,15 @@ def translate_command(
             logging.debug("Debug mode enabled.")
         else:
             logging.basicConfig(level=logging.CRITICAL)
+
+        # Now run the LLM health check and display success when it passes
+        try:
+            LLMConfig.validate_connectivity()
+            logger.info("LLM health check passed.")
+            click.echo("✅ LLM health check passed.")
+        except Exception:
+            # Let the outer handler format the error; re-raise
+            raise
 
         # Validate root directory
         root_path = Path(root_dir).resolve()

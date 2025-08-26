@@ -43,7 +43,7 @@ _Easily automate the translation of your documentation into multiple languages t
 > 
 > # All languages (auto-confirm)
 > migrate-links -l "all" -y
-> ``
+> ```
 
 ## Overview: Keep Your Educational Content Translations Always Up-to-Date
 

@@ -17,6 +17,7 @@ _Easily automate the translation of your documentation into multiple languages t
 
 > [!IMPORTANT]
 > New in v0.10.0: Notebook (.ipynb) translation is supported.
+>
 > If your repo was translated with an older version and links still point to original notebooks, use the tip below to migrate links.
 
 > [!TIP] 

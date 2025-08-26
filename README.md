@@ -16,7 +16,7 @@ _Easily automate the translation of your documentation into multiple languages t
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 > [!IMPORTANT]
-> New in v0.10.0: Notebook (.ipynb) translation is supported. Use `-nb` to translate only notebooks or combine with `-md`/`-img` as needed.
+> New in v0.10.0: Notebook (.ipynb) translation is supported.
 > If your repo was translated with an older version and links still point to original notebooks, use the tip below to migrate links.
 
 > [!TIP] 

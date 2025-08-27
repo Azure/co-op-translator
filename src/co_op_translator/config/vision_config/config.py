@@ -1,14 +1,11 @@
 from dataclasses import dataclass
 from typing import Dict, Optional
 import logging
-import base64
-from azure.core.credentials import AzureKeyCredential
-from azure.ai.vision.imageanalysis import ImageAnalysisClient
-from azure.ai.vision.imageanalysis.models import VisualFeatures
 from co_op_translator.config.vision_config.provider import VisionProvider
 from co_op_translator.config.vision_config.azure_computer_vision import (
     AzureAIVisionConfig,
 )
+from azure_ai_healthcheck import check_azure_ai_vision
 
 logger = logging.getLogger(__name__)
 
@@ -80,12 +77,14 @@ class VisionConfig:
         return VisionConfig.get_available_provider() is not None
 
     @staticmethod
-    def validate_connectivity() -> None:
+    def validate_connectivity() -> bool:
         """
         Perform a lightweight connectivity and credential validation for Azure AI Vision
-        using a tiny in-memory PNG and a minimal analysis feature.
+        using a tiny in-memory PNG via azure-ai-healthcheck helper.
 
-        Hard-fails on 401/403 (auth/permission). Other statuses will only warn and proceed.
+        Uses azure-ai-healthcheck's result directly:
+        - ok == True  -> return True
+        - ok == False -> raise ValueError with details
         """
         provider = VisionConfig.get_available_provider()
         if provider != VisionProvider.AZURE_COMPUTER_VISION:
@@ -98,27 +97,16 @@ class VisionConfig:
                 "Azure AI Service configuration missing required values. Ensure AZURE_AI_SERVICE_ENDPOINT and AZURE_AI_SERVICE_API_KEY are set."
             )
 
-        # 1x1 transparent PNG (base64)
-        tiny_png_b64 = b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHJgL9oS2s2wAAAABJRU5ErkJggg=="
-        image_bytes = base64.b64decode(tiny_png_b64)
+        # Use healthcheck helper with default 50x50 in-memory PNG to avoid 400s
+        res = check_azure_ai_vision(
+            endpoint=endpoint,
+            api_key=api_key,
+            timeout=10.0,
+        )
 
-        client = ImageAnalysisClient(endpoint, AzureKeyCredential(api_key))
-
-        try:
-            # Use a minimal feature such as CAPTION; if the service rejects tiny images with 4xx (not 401/403), warn and continue
-            result = client.analyze(
-                image_data=image_bytes, visual_features=[VisualFeatures.CAPTION]
-            )
-            # If SDK raises on non-2xx, this line may not be reached; otherwise treat as success
-            return
-        except Exception as e:
-            status = getattr(e, "status_code", None)
-            if status in (401, 403):
-                raise ValueError(
-                    "Authentication failed for Azure AI Service (Vision) (401/403). Verify AZURE_AI_SERVICE_API_KEY and endpoint permissions."
-                )
-            # Non-auth errors: warn and proceed
-            logger.warning(
-                f"Azure AI Vision health check returned non-2xx status. Proceeding (non-strict). Details: {e}"
-            )
-            return
+        if res.ok:
+            return True
+        # Fail on any non-ok with package-provided message
+        raise ValueError(
+            res.message
+        )

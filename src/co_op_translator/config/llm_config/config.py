@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import Dict, Optional
 import logging
-import requests
 
 from openai import OpenAI
+from azure_ai_healthcheck import check_azure_openai
 
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
@@ -143,12 +143,12 @@ class LLMConfig:
         cls.get_available_provider()
 
     @classmethod
-    def validate_connectivity(cls) -> None:
+    def validate_connectivity(cls) -> bool:
         """
         Perform a lightweight connectivity and credential validation for the configured LLM provider.
 
-        - Azure OpenAI: call Deployments list REST API (token-free) to validate endpoint, api key, and api-version.
-        - OpenAI: use SDK to retrieve the configured model (or list models) to validate api key (and base_url/org if set).
+        - Azure OpenAI: use azure-ai-healthcheck. Return True when ok; otherwise raise ValueError.
+        - OpenAI: perform minimal chat completion and raise on any failure; return True on success.
 
         Raises:
             ValueError: with actionable message if validation fails.
@@ -166,45 +166,22 @@ class LLMConfig:
                     "Azure OpenAI configuration missing required values. Ensure AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_VERSION, AZURE_OPENAI_API_KEY, and AZURE_OPENAI_CHAT_DEPLOYMENT_NAME are set."
                 )
 
-            base = endpoint.rstrip("/")
-            # Build chat completions URL as the primary health check (1-token call)
-            if base.endswith("/openai"):
-                chat_url = f"{base}/deployments/{deployment}/chat/completions?api-version={api_version}"
-            else:
-                chat_url = f"{base}/openai/deployments/{deployment}/chat/completions?api-version={api_version}"
+            # Use external healthcheck helper for minimal probe
 
-            headers = {"api-key": api_key, "Content-Type": "application/json"}
-            payload = {
-                "messages": [
-                    {"role": "system", "content": "health check"},
-                    {"role": "user", "content": "ping"},
-                ],
-                "max_tokens": 1,
-                "temperature": 0,
-            }
+            res = check_azure_openai(
+                endpoint=endpoint,
+                api_key=api_key,
+                api_version=api_version,
+                deployment=deployment,
+                timeout=10.0,
+            )
 
-            try:
-                resp = requests.post(
-                    chat_url, headers=headers, json=payload, timeout=10
+            if res.ok:
+                return True
+            # Fail on any non-ok with package-provided message
+            raise ValueError(
+                res.message
                 )
-            except Exception as e:
-                logger.warning(
-                    f"Azure OpenAI health check: failed to reach endpoint. Proceeding (non-strict). Details: {e}"
-                )
-                return
-
-            if resp.status_code == 200:
-                return
-            elif resp.status_code in (401, 403):
-                raise ValueError(
-                    "Authentication failed for Azure OpenAI (401/403). Verify AZURE_OPENAI_API_KEY, endpoint, api-version, and deployment permissions."
-                )
-            else:
-                snippet = (resp.text or "")[:500]
-                logger.warning(
-                    f"Azure OpenAI health check returned HTTP {resp.status_code}. Response: {snippet}. Proceeding (non-strict)."
-                )
-                return
 
         elif provider == LLMProvider.OPENAI:
             api_key = OpenAIConfig.get_api_key()

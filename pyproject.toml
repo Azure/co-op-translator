@@ -88,7 +88,8 @@ urllib3 = "^2.2.1"
 wcwidth = "^0.2.13"
 arabic-reshaper = "^3.0.0"
 python-bidi = "^0.6.6"
-azure-ai-healthcheck = { version = "^0.1.1", extras = ["vision"] }
+az-ai-healthcheck = { version = "^0.1.5", extras = ["vision"] }
+ai-healthcheck = "^0.1.0a1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"

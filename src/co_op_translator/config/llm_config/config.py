@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Dict, Optional
 import logging
 
-from openai import OpenAI
-from azure_ai_healthcheck import check_azure_openai
+from ai_healthcheck import check_openai
+from az_ai_healthcheck import check_azure_openai
 
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
@@ -147,8 +147,8 @@ class LLMConfig:
         """
         Perform a lightweight connectivity and credential validation for the configured LLM provider.
 
-        - Azure OpenAI: use azure-ai-healthcheck. Return True when ok; otherwise raise ValueError.
-        - OpenAI: perform minimal chat completion and raise on any failure; return True on success.
+        - Azure OpenAI: use az-ai-healthcheck. Return True when ok; otherwise raise ValueError.
+        - OpenAI: use ai-healthcheck. Return True when ok; otherwise raise ValueError with details.
 
         Raises:
             ValueError: with actionable message if validation fails.
@@ -185,46 +185,26 @@ class LLMConfig:
 
         elif provider == LLMProvider.OPENAI:
             api_key = OpenAIConfig.get_api_key()
-            base_url = OpenAIConfig.get_base_url()
-            org_id = OpenAIConfig.get_org_id()
+            base_url = (OpenAIConfig.get_base_url() or "").rstrip("/")
             model_id = OpenAIConfig.get_chat_model_id()
 
             if not api_key:
                 raise ValueError("OPENAI_API_KEY must be set for OpenAI provider.")
-
-            client = OpenAI(api_key=api_key, organization=org_id, base_url=base_url)
-
-            # Perform minimal chat completion (1-token) as the primary check
             if not model_id:
                 raise ValueError(
                     "OPENAI_CHAT_MODEL_ID must be set for OpenAI provider."
                 )
-            try:
-                client.chat.completions.create(
-                    model=model_id,
-                    messages=[
-                        {"role": "system", "content": "health check"},
-                        {"role": "user", "content": "ping"},
-                    ],
-                    max_tokens=1,
-                    temperature=0,
-                )
-            except Exception as e:
-                # Try to extract an HTTP status code if present
-                status = getattr(e, "status_code", None)
-                if status in (401, 403):
-                    raise ValueError(
-                        "OpenAI authentication failed (401/403). Check OPENAI_API_KEY and OPENAI_BASE_URL (if customized)."
-                    )
-                elif status == 404 and model_id:
-                    raise ValueError(
-                        f"OpenAI model not found: '{model_id}'. Verify OPENAI_CHAT_MODEL_ID or permissions."
-                    )
-                else:
-                    logger.warning(
-                        f"OpenAI health check returned non-2xx status. Proceeding (non-strict). Details: {e}"
-                    )
-                    return
+
+            res = check_openai(
+                endpoint=base_url,
+                api_key=api_key,
+                model=model_id,
+                timeout=10.0,
+            )
+
+            if res.ok:
+                return True
+            raise ValueError(res.message)
         else:
             # Should not happen because get_available_provider() would have raised earlier otherwise
             raise ValueError("No LLM provider available for connectivity validation.")

@@ -5,7 +5,7 @@ from co_op_translator.config.vision_config.provider import VisionProvider
 from co_op_translator.config.vision_config.azure_computer_vision import (
     AzureAIVisionConfig,
 )
-from azure_ai_healthcheck import check_azure_ai_vision
+from az_ai_healthcheck import check_azure_ai_vision
 
 logger = logging.getLogger(__name__)
 
@@ -80,9 +80,9 @@ class VisionConfig:
     def validate_connectivity() -> bool:
         """
         Perform a lightweight connectivity and credential validation for Azure AI Vision
-        using a tiny in-memory PNG via azure-ai-healthcheck helper.
+        using a tiny in-memory PNG via az-ai-healthcheck helper.
 
-        Uses azure-ai-healthcheck's result directly:
+        Uses az-ai-healthcheck's result directly:
         - ok == True  -> return True
         - ok == False -> raise ValueError with details
         """
@@ -97,7 +97,7 @@ class VisionConfig:
                 "Azure AI Service configuration missing required values. Ensure AZURE_AI_SERVICE_ENDPOINT and AZURE_AI_SERVICE_API_KEY are set."
             )
 
-        # Use healthcheck helper with default 50x50 in-memory PNG to avoid 400s
+        # Use healthcheck helper with default 50x50 in-memory PNG
         res = check_azure_ai_vision(
             endpoint=endpoint,
             api_key=api_key,

@@ -2,14 +2,14 @@
 
 [[package]]
 name = "ai-healthcheck"
-version = "0.1.0a1"
+version = "0.1.1"
 description = "Lightweight health checks for OpenAI"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "ai_healthcheck-0.1.0a1-py3-none-any.whl", hash = "sha256:0fab0e6be0d1d057181fd0ef67de63a7886315b4e42f2da2401543448156a508"},
-    {file = "ai_healthcheck-0.1.0a1.tar.gz", hash = "sha256:8c4281e8607f8e76f9345a2fe81b0c739b41f7fc75ccc7e7b4839dfdb1ceaa8e"},
+    {file = "ai_healthcheck-0.1.1-py3-none-any.whl", hash = "sha256:7f2a4356ec1b4381edb167a822cb459101aa04b2f674fffeee61823fd623704a"},
+    {file = "ai_healthcheck-0.1.1.tar.gz", hash = "sha256:ca008be5d11428a0150a28c95a8933ffce13729e4550d5fec1f47d6572dd71f1"},
 ]
 
 [package.dependencies]
@@ -4228,4 +4228,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "80871137c1b8ec824383456f55afa0dba4cc793c7e6825fb4fee94724b66c63f"
+content-hash = "097cd715b7560950d915075a7934f9ad2661d6e3f2d62877c400bd0c9cf7ef19"

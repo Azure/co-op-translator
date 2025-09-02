@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "co_op_translator"
-version = "0.10.0"
+version = "0.10.1"
 description = "Easily automate the translation of your documentation into multiple languages to reach a global audience."
 authors = [
-    "Minseok Song <skytin1004@gmail.com>",
+    "Minseok Song <minseok.song@mssong.com>",
     "timothychungd <timothychungd@gmail.com>"
 ]
 maintainers = [
-    "Minseok Song <skytin1004@gmail.com>",
+    "Minseok Song <minseok.song@mssong.com>",
     "timothychungd <timothychungd@gmail.com>"
 ]
 repository = "https://github.com/Azure/co-op-translator"

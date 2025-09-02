@@ -185,7 +185,8 @@ class LLMConfig:
 
         elif provider == LLMProvider.OPENAI:
             api_key = OpenAIConfig.get_api_key()
-            base_url = (OpenAIConfig.get_base_url() or "").rstrip("/")
+            base_url = OpenAIConfig.get_base_url()
+            org_id = OpenAIConfig.get_org_id()
             model_id = OpenAIConfig.get_chat_model_id()
 
             if not api_key:
@@ -199,6 +200,7 @@ class LLMConfig:
                 endpoint=base_url,
                 api_key=api_key,
                 model=model_id,
+                org_id=org_id,
                 timeout=10.0,
             )
 

@@ -184,6 +184,45 @@ translate -l "ko" -img
    translate -l "ko" -md
    ```
 
+## 7. GitHub Action ran but no Pull Request (PR) was created
+
+**Symptom:** The workflow logs for `peter-evans/create-pull-request` show:
+
+> Branch 'update-translations' is not ahead of base 'main' and will not be created
+
+**Likely causes:**
+- **No changes detected:** The translation step produced no diffs (repo already up to date).
+- **Ignored outputs:** `.gitignore` excludes files you expect to commit (e.g., `*.ipynb`, `translations/`, `translated_images/`).
+- **add-paths mismatch:** The paths provided to the action don’t match actual output locations.
+- **Workflow logic/conditions:** The translation step exited early or wrote to unexpected directories.
+
+**How to fix / verify:**
+1. **Confirm outputs exist:** After translation, check the workspace has new/changed files in `translations/` and/or `translated_images/`.
+   - If translating notebooks, ensure `.ipynb` files are actually written under `translations/<lang>/...`.
+2. **Review `.gitignore`:** Do not ignore generated outputs. Ensure you are NOT ignoring:
+   - `translations/`
+   - `translated_images/`
+   - `*.ipynb` (if translating notebooks)
+3. **Ensure add-paths matches outputs:** Use a multiline value and include both folders if applicable:
+   ```yaml
+   with:
+     add-paths: |
+       translations/
+       translated_images/
+   ```
+4. **Force a PR for debugging:** Temporarily allow empty commits to confirm wiring is correct:
+   ```yaml
+   with:
+     commit-empty: true
+   ```
+5. **Run with debug:** Add `-d` to the translate command to print what files were discovered and written.
+6. **Permissions (GITHUB_TOKEN):** Ensure the workflow has write permissions for creating commits and PRs:
+   ```yaml
+   permissions:
+     contents: write
+     pull-requests: write
+   ```
+
 ## Quick Debugging Checklist
 
 When troubleshooting translation issues:

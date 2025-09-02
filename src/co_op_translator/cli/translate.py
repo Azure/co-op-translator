@@ -156,13 +156,14 @@ def translate_command(
         else:
             logging.basicConfig(level=logging.CRITICAL)
 
-        # Now run the LLM health check and display success when it passes
+        # Now run the LLM health check; raises on failure
         LLMConfig.validate_connectivity()
         logger.info("LLM health check passed.")
         click.echo("✅ LLM health check passed.")
 
         # If images are selected, validate Vision connectivity as well
         if "images" in translation_types:
+            # Vision health check; raises on failure
             VisionConfig.validate_connectivity()
             logger.info("Vision health check passed.")
             click.echo("✅ Vision health check passed.")

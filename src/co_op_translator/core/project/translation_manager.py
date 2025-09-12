@@ -498,122 +498,53 @@ class TranslationManager:
         return modified_count, errors
 
     async def check_outdated_files(self, update: bool = False) -> tuple[int, List[str]]:
-        """Identify and update outdated translated files based on content hash comparison.
+        """Identify and update outdated translations (markdown + notebooks).
 
-        Retranslates files whose content has changed since last translation.
+        Delegates detection to get_outdated_translations() which supports both
+        markdown and notebook files, and then retranslates them via
+        retranslate_outdated_files().
 
         Args:
-            update: Whether to update existing translations regardless of hash values
+            update: When True, treat all existing translation files as outdated and
+                    retranslate them regardless of hash values.
 
         Returns:
-            Tuple containing (number_of_retranslated_files, error_messages_list)
+            Tuple containing (number_of_files_scheduled_for_retranslation, error_messages_list)
         """
-        modified_count = 0
-        errors = []
+        errors: List[str] = []
 
-        # Find all markdown files in root directory
-        markdown_files = [
-            f
-            for f in filter_files(self.root_dir, self.excluded_dirs)
-            if f.suffix.lower() == ".md"
-        ]
-
-        # Create progress bar
-        with tqdm(total=len(markdown_files) * len(self.language_codes)) as pbar:
-            # Process each markdown file
-            for md_file in markdown_files:
-                try:
-                    # Calculate relative path from root
-                    relative_path = md_file.relative_to(self.root_dir)
-
-                    # Translate to each language
-                    for lang_code in self.language_codes:
+        try:
+            # Build list of files to retranslate
+            if update:
+                files: list[tuple[Path, Path]] = []
+                for lang_code in self.language_codes:
+                    translation_dir = self.translations_dir / lang_code
+                    if not translation_dir.exists():
+                        continue
+                    for trans_file in list(translation_dir.rglob("*.md")) + list(
+                        translation_dir.rglob("*.ipynb")
+                    ):
                         try:
-                            # Calculate target path
-                            target_path = (
-                                self.translations_dir / lang_code / relative_path
-                            )
+                            rel = trans_file.relative_to(translation_dir)
+                            original = self.root_dir / rel
+                            if original.exists():
+                                files.append((original, trans_file))
+                        except Exception:
+                            continue
+                outdated_files = files
+            else:
+                outdated_files = self.get_outdated_translations()
 
-                            # Skip if target doesn't exist
-                            if not target_path.exists():
-                                pbar.update(1)
-                                continue
+            modified_count = len(outdated_files)
 
-                            # Read target file content and extract metadata
-                            target_content = target_path.read_text(encoding="utf-8")
+            if outdated_files:
+                await self.retranslate_outdated_files(outdated_files)
 
-                            # Create current metadata for comparison
-                            current_metadata = self.markdown_translator.create_metadata(
-                                md_file, lang_code
-                            )
-                            current_hash = current_metadata.get("file_hash")
-
-                            # Extract metadata from the target file using metadata_utils
-                            metadata_match = re.search(
-                                r"<!--\s*translation-metadata\s*(.*?)\s*-->",
-                                target_content,
-                                re.DOTALL,
-                            )
-                            if not metadata_match:
-                                logger.warning(f"No metadata found in {target_path}")
-                                pbar.update(1)
-                                continue
-
-                            try:
-                                stored_metadata = json.loads(metadata_match.group(1))
-                            except json.JSONDecodeError:
-                                logger.warning(f"Invalid metadata in {target_path}")
-                                pbar.update(1)
-                                continue
-
-                            # Get stored hash from metadata
-                            stored_hash = stored_metadata.get("file_hash")
-                            if not stored_hash:
-                                logger.warning(
-                                    f"No file hash in metadata of {target_path}"
-                                )
-                                pbar.update(1)
-                                continue
-
-                            # Compare hashes and retranslate if different
-                            if update or stored_hash != current_hash:
-                                # Read original content
-                                content = md_file.read_text(encoding="utf-8")
-
-                                # Translate content
-                                translated_content = (
-                                    await self.markdown_translator.translate_markdown(
-                                        content,
-                                        lang_code,
-                                        md_file,
-                                        translation_types=self.translation_types,
-                                    )
-                                )
-
-                                # Write translated content
-                                target_path.write_text(
-                                    translated_content, encoding="utf-8"
-                                )
-                                modified_count += 1
-                                logger.info(
-                                    f"Retranslated {md_file} to {lang_code} due to content changes"
-                                )
-
-                        except Exception as e:
-                            error_msg = f"Error checking/retranslating {md_file} to {lang_code}: {str(e)}"
-                            logger.error(error_msg)
-                            errors.append(error_msg)
-
-                        finally:
-                            pbar.update(1)
-
-                except Exception as e:
-                    error_msg = f"Error processing {md_file}: {str(e)}"
-                    logger.error(error_msg)
-                    errors.append(error_msg)
-                    pbar.update(len(self.language_codes))
-
-        return modified_count, errors
+            return modified_count, errors
+        except Exception as e:
+            logger.error(f"Failed to check outdated files: {e}")
+            errors.append(str(e))
+            return 0, errors
 
     async def translate_project_async(
         self,
@@ -648,6 +579,7 @@ class TranslationManager:
                 removed_count = self.directory_manager.cleanup_orphaned_translations(
                     markdown="markdown" in self.translation_types,
                     images="images" in self.translation_types,
+                    notebooks="notebook" in self.translation_types,
                 )
                 cleanup_progress.set_postfix_str(
                     "None" if removed_count == 0 else f"Removed: {removed_count}"
@@ -657,7 +589,11 @@ class TranslationManager:
             # Create and update directory structure to match source
             logger.info("Synchronizing directory structure...")
             with tqdm(total=1, desc="📁 Synchronizing directories") as sync_progress:
-                created, removed, _ = self.directory_manager.sync_directory_structure()
+                created, removed, _ = self.directory_manager.sync_directory_structure(
+                    markdown="markdown" in self.translation_types,
+                    images="images" in self.translation_types,
+                    notebooks="notebook" in self.translation_types,
+                )
                 sync_progress.set_postfix_str(
                     "None"
                     if (created == 0 and removed == 0)
@@ -788,17 +724,37 @@ class TranslationManager:
                 )
                 continue
 
-        with tqdm(
-            total=len(files_to_translate), desc="🔄 Retranslating outdated files"
-        ) as progress_bar:
-            for original_file, language_code in files_to_translate:
-                # Determine file type and use appropriate translation method
-                if original_file.suffix.lower() in self.supported_notebook_extensions:
+        # Split into notebook and markdown tasks for clearer progress reporting
+        notebook_items = [
+            (original_file, language_code)
+            for original_file, language_code in files_to_translate
+            if original_file.suffix.lower() in self.supported_notebook_extensions
+        ]
+        markdown_items = [
+            (original_file, language_code)
+            for original_file, language_code in files_to_translate
+            if original_file.suffix.lower() == ".md"
+        ]
+
+        # Notebooks
+        if notebook_items:
+            with tqdm(
+                total=len(notebook_items), desc="📓 Retranslating outdated notebooks"
+            ) as progress_bar:
+                for original_file, language_code in notebook_items:
                     await self.translate_notebook(original_file, language_code)
-                else:
+                    progress_bar.update(1)
+                    progress_bar.set_postfix_str(f"Current: {original_file.name}")
+
+        # Markdown files
+        if markdown_items:
+            with tqdm(
+                total=len(markdown_items), desc="📝 Retranslating outdated markdowns"
+            ) as progress_bar:
+                for original_file, language_code in markdown_items:
                     await self.translate_markdown(original_file, language_code)
-                progress_bar.update(1)
-                progress_bar.set_postfix_str(f"Current: {original_file.name}")
+                    progress_bar.update(1)
+                    progress_bar.set_postfix_str(f"Current: {original_file.name}")
 
     async def check_and_retry_translations(self):
         """Check translated files for formatting errors and retry failed translations.

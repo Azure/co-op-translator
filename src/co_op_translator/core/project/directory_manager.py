@@ -3,6 +3,9 @@ import logging
 import json
 from co_op_translator.utils.common.file_utils import get_unique_id
 from pathlib import PurePosixPath
+from co_op_translator.utils.common.metadata_utils import (
+    extract_metadata_from_content,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +36,7 @@ class DirectoryManager:
         self.excluded_dirs = excluded_dirs
 
     def sync_directory_structure(
-        self, markdown: bool = True, images: bool = True
+        self, markdown: bool = True, images: bool = True, notebooks: bool = True
     ) -> tuple[int, int, int]:
         """
         Synchronize the directory structure of translations with the original structure.
@@ -61,16 +64,18 @@ class DirectoryManager:
             if path.is_dir() and not any(
                 excluded in str(path) for excluded in self.excluded_dirs
             ):
-                # For image-only mode, only include image directories
-                if (
-                    not markdown
-                    and not any(path.glob("*.png"))
-                    and not any(path.glob("*.jpg"))
+                # Determine if this dir contains relevant file types per flags
+                has_md = any(path.glob("*.md"))
+                has_img = any(path.glob("*.png")) or any(path.glob("*.jpg"))
+                has_nb = any(path.glob("*.ipynb"))
+
+                if not (
+                    (markdown and has_md)
+                    or (images and has_img)
+                    or (notebooks and has_nb)
                 ):
                     continue
-                # For markdown-only mode, only include markdown directories
-                if not images and not any(path.glob("*.md")):
-                    continue
+
                 # Store relative path for comparison
                 original_dirs.add(path.relative_to(self.root_dir))
 
@@ -115,6 +120,8 @@ class DirectoryManager:
                             or any(target_dir.rglob("*.jpg"))
                         ):
                             has_relevant_files = True
+                        if notebooks and any(target_dir.rglob("*.ipynb")):
+                            has_relevant_files = True
 
                         if not has_relevant_files:
                             target_dir.rmdir()  # This will only remove empty directories
@@ -128,7 +135,7 @@ class DirectoryManager:
         return created_count, removed_count, len(self.language_codes)
 
     def cleanup_orphaned_translations(
-        self, markdown: bool = True, images: bool = True
+        self, markdown: bool = True, images: bool = True, notebooks: bool = True
     ) -> int:
         """Remove orphaned translation files that no longer have source files.
 
@@ -139,12 +146,15 @@ class DirectoryManager:
         Args:
             markdown: Whether to clean up markdown files
             images: Whether to clean up image files
+            notebooks: Whether to clean up notebook files
 
         Returns:
             Number of removed translation files
         """
         removed_count = 0
-        logger.info(f"Starting cleanup with markdown={markdown}, images={images}")
+        logger.info(
+            f"Starting cleanup with markdown={markdown}, images={images}, notebooks={notebooks}"
+        )
 
         # Handle markdown files
         if markdown:
@@ -170,28 +180,12 @@ class DirectoryManager:
                             continue
 
                         logger.info(f"Processing translation file: {trans_file}")
-                        # Read translation file and find metadata comment
+                        # Read translation file and extract metadata using utility
                         content = trans_file.read_text(encoding="utf-8")
-                        metadata_start = content.find("<!--")
-                        if metadata_start == -1:
+                        metadata = extract_metadata_from_content(content)
+                        if not metadata:
                             logger.warning(f"No metadata found in: {trans_file}")
                             continue
-
-                        metadata_end = content.find("-->", metadata_start)
-                        if metadata_end == -1:
-                            logger.warning(f"Incomplete metadata in: {trans_file}")
-                            continue
-
-                        metadata_str = content[
-                            metadata_start + 4 : metadata_end
-                        ].strip()
-                        if "CO_OP_TRANSLATOR_METADATA:" in metadata_str:
-                            _, json_str = metadata_str.split(
-                                "CO_OP_TRANSLATOR_METADATA:", 1
-                            )
-                            metadata = json.loads(json_str.strip())
-                        else:
-                            metadata = json.loads(metadata_str)
 
                         source_file = metadata.get("source_file")
                         if not source_file:
@@ -231,6 +225,74 @@ class DirectoryManager:
 
                     except (json.JSONDecodeError, KeyError, FileNotFoundError) as e:
                         logger.warning(f"Error processing {trans_file}: {e}")
+                        continue
+
+        # Handle notebook files
+        if notebooks:
+            for lang_code in self.language_codes:
+                translation_dir = self.translations_dir / lang_code
+                if not translation_dir.exists():
+                    logger.info(
+                        f"Notebook translation directory does not exist: {translation_dir}"
+                    )
+                    continue
+
+                logger.info(f"Checking translated notebooks in: {translation_dir}")
+
+                try:
+                    notebook_files = list(translation_dir.rglob("*.ipynb"))
+                except Exception as e:
+                    logger.warning(f"Error scanning for notebook files: {e}")
+                    notebook_files = []
+
+                for nb_file in notebook_files:
+                    try:
+                        if not nb_file.exists():
+                            continue
+
+                        with open(nb_file, "r", encoding="utf-8") as f:
+                            nb_json = json.load(f)
+
+                        coop_meta = nb_json.get("metadata", {}).get(
+                            "coopTranslator", {}
+                        )
+                        source_file = coop_meta.get("source_file")
+                        if not source_file:
+                            logger.warning(
+                                f"No source_file in notebook metadata: {nb_file}"
+                            )
+                            continue
+
+                        normalized_path = str(PurePosixPath(source_file))
+                        original_file = self.root_dir / normalized_path
+
+                        if not original_file.exists():
+                            logger.info(
+                                f"Original notebook not found, deleting: {nb_file}"
+                            )
+                            nb_file.unlink()
+                            removed_count += 1
+
+                            parent = nb_file.parent
+                            while parent != translation_dir:
+                                if parent.exists() and not any(parent.iterdir()):
+                                    try:
+                                        parent.rmdir()
+                                        logger.info(
+                                            f"Removed empty directory: {parent}"
+                                        )
+                                    except OSError as e:
+                                        logger.warning(
+                                            f"Could not remove directory {parent}: {e}"
+                                        )
+                                        break
+                                else:
+                                    break
+                                parent = parent.parent
+                        else:
+                            logger.info(f"Original notebook exists, keeping: {nb_file}")
+                    except (json.JSONDecodeError, KeyError, FileNotFoundError) as e:
+                        logger.warning(f"Error processing notebook {nb_file}: {e}")
                         continue
 
         # Handle image files

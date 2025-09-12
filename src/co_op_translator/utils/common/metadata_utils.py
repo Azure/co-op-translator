@@ -80,45 +80,56 @@ def extract_metadata_from_content(content: str) -> dict:
     """
     Extract metadata from the content of a markdown file.
 
-    This function looks for metadata embedded as an HTML comment in the format:
-    <!--
-    CO_OP_TRANSLATOR_METADATA:
-    {
-      "original_hash": "sample_hash",
-      "translation_date": "2025-01-30T13:02:53+00:00",
-      "source_file": "test.md",
-      "language_code": "ko"
-    }
-    -->
-
+    Supports both formats:
+    1) Labeled block used by Co-op Translator:
+       <!--\nCO_OP_TRANSLATOR_METADATA:\n{ ... }\n-->\n
+    2) Unlabeled JSON inside an HTML comment (legacy/tests):
+       <!--\n{ ... }\n-->\n
     Args:
         content (str): The content of the markdown file
 
     Returns:
         dict: Extracted metadata dictionary, or empty dict if no metadata found
     """
-    # Look for metadata comment
+    # First try the labeled metadata block for precision
     metadata_start = content.find("<!--\nCO_OP_TRANSLATOR_METADATA:")
-    if metadata_start == -1:
+    if metadata_start != -1:
+        json_start = content.find("{", metadata_start)
+        if json_start != -1:
+            comment_end = content.find("-->\n", json_start)
+            if comment_end != -1:
+                json_content = content[json_start:comment_end].strip()
+                try:
+                    return json.loads(json_content)
+                except json.JSONDecodeError:
+                    pass
+
+    # Fallback: find the first HTML comment and attempt to parse JSON inside
+    generic_start = content.find("<!--")
+    if generic_start == -1:
+        return {}
+    generic_end = content.find("-->", generic_start)
+    if generic_end == -1:
         return {}
 
-    # Find the start of the JSON content
-    json_start = content.find("{", metadata_start)
-    if json_start == -1:
-        return {}
+    inner = content[generic_start + 4 : generic_end].strip()
+    # If the inner starts with our label, strip it
+    label = "CO_OP_TRANSLATOR_METADATA:"
+    if inner.startswith(label):
+        inner = inner[len(label) :].strip()
 
-    # Find the end of the comment
-    comment_end = content.find("-->\n", json_start)
-    if comment_end == -1:
-        return {}
-
-    # Extract the JSON string
-    json_content = content[json_start:comment_end].strip()
-
+    # Try direct JSON
     try:
-        metadata = json.loads(json_content)
-        return metadata
+        return json.loads(inner)
     except json.JSONDecodeError:
+        # Try to extract JSON between the first '{' and last '}'
+        brace_start = inner.find("{")
+        brace_end = inner.rfind("}")
+        if brace_start != -1 and brace_end != -1 and brace_end > brace_start:
+            try:
+                return json.loads(inner[brace_start : brace_end + 1])
+            except json.JSONDecodeError:
+                return {}
         return {}
 
 

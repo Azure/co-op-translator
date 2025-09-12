@@ -579,6 +579,7 @@ class TranslationManager:
                 removed_count = self.directory_manager.cleanup_orphaned_translations(
                     markdown="markdown" in self.translation_types,
                     images="images" in self.translation_types,
+                    notebooks="notebook" in self.translation_types,
                 )
                 cleanup_progress.set_postfix_str(
                     "None" if removed_count == 0 else f"Removed: {removed_count}"
@@ -588,7 +589,11 @@ class TranslationManager:
             # Create and update directory structure to match source
             logger.info("Synchronizing directory structure...")
             with tqdm(total=1, desc="📁 Synchronizing directories") as sync_progress:
-                created, removed, _ = self.directory_manager.sync_directory_structure()
+                created, removed, _ = self.directory_manager.sync_directory_structure(
+                    markdown="markdown" in self.translation_types,
+                    images="images" in self.translation_types,
+                    notebooks="notebook" in self.translation_types,
+                )
                 sync_progress.set_postfix_str(
                     "None"
                     if (created == 0 and removed == 0)

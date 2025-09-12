@@ -107,6 +107,4 @@ class VisionConfig:
         if res.ok:
             return True
         # Fail on any non-ok with package-provided message
-        raise ValueError(
-            res.message
-        )
+        raise ValueError(res.message)

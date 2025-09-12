@@ -132,13 +132,9 @@ class ProjectTranslator:
         Returns:
             Tuple containing (total_translated_count, combined_errors_list)
         """
-        # Check outdated files first
+        # Check outdated files first (markdown + notebooks supported in manager)
         modified_count, errors = await self.translation_manager.check_outdated_files()
         logger.info(f"Found {modified_count} outdated files")
-        if errors:
-            logger.warning(
-                f"Failed to check {len(errors)} outdated files in project '{self.root_dir.name}': Common causes include file permission issues, corrupted metadata, or missing source files."
-            )
 
         # Translate all markdown files
         (

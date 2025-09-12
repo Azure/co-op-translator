@@ -179,9 +179,7 @@ class LLMConfig:
             if res.ok:
                 return True
             # Fail on any non-ok with package-provided message
-            raise ValueError(
-                res.message
-                )
+            raise ValueError(res.message)
 
         elif provider == LLMProvider.OPENAI:
             api_key = OpenAIConfig.get_api_key()

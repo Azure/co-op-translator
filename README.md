@@ -1,8 +1,8 @@
-# Co-op Translator: Automate the Translation of Educational Documentation Effortlessly
+# Co-op Translator: Automate the Translation of Educational GitHub Content Effortlessly
 
 ![Logo](./imgs/logo.png)
 
-_Easily automate the translation of your documentation into multiple languages to reach a global audience._
+_Easily automate the translation of your educational GitHub content into multiple languages to reach a global audience._
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
@@ -45,21 +45,21 @@ _Easily automate the translation of your documentation into multiple languages t
 > migrate-links -l "all" -y
 > ```
 
-## Overview: Keep Your Educational Content Translations Always Up-to-Date
+## Overview: Keep Your Educational GitHub Content Translations Always Up-to-Date
 
-Language barriers significantly hinder access to valuable educational resources and technical knowledge for learners and developers worldwide. This limits participation and slows down the pace of global innovation and learning.
+Language barriers significantly hinder access to valuable educational GitHub documentation and technical tutorials for learners and developers worldwide. This limits participation and slows down the pace of global innovation and learning.
 
 **Co-op Translator** was born from the need to address the inefficient manual translation process for Microsoft's own large-scale educational series (like the "For Beginners" guides). It has evolved into an easy-to-use, powerful tool designed to break down these barriers for everyone. By providing high-quality automated translations via CLI and GitHub Actions, Co-op Translator empowers educators, students, researchers, and developers globally to share and access knowledge without language constraints.
 
-**Co-op Translator** enables you to quickly translate your documentation into multiple languages, reaching a global audience effortlessly. When you update your Markdown files, images, or Jupyter notebooks, translations are automatically synchronized to ensure your documentation stays fresh and relevant for international users. For automated workflows, see our GitHub Actions guides: [Public Repositories](./getting_started/github-actions-guide/github-actions-guide-public.md) | [Organization Repositories](./getting_started/github-actions-guide/github-actions-guide-org.md).
+**Co-op Translator** enables you to quickly translate your educational GitHub content into multiple languages, reaching a global audience effortlessly. When you update your Markdown files, images, or Jupyter notebooks, translations are automatically synchronized to ensure your educational GitHub content stays fresh and relevant for international users. For automated workflows, see our GitHub Actions guides: [Public Repositories](./getting_started/github-actions-guide/github-actions-guide-public.md) | [Organization Repositories](./getting_started/github-actions-guide/github-actions-guide-org.md).
 
-See how Co-op Translator organizes translated educational content:
+See how Co-op Translator organizes translated educational GitHub content:
 
 ![Example](./imgs/translation-ex.png)
 
-Markdown files and image text are automatically translated and neatly organized into language-specific folders.
+Markdown files, Jupyter notebooks, and image text are automatically translated and neatly organized into language-specific folders.
 
-**Unlock global access to your educational content with Co-op Translator today!**
+**Unlock global access to your educational GitHub content with Co-op Translator today!**
 
 ## Supporting Global Access for Microsoft's Learning Resources
 

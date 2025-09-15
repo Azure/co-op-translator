@@ -90,6 +90,7 @@ arabic-reshaper = "^3.0.0"
 python-bidi = "^0.6.6"
 az-ai-healthcheck = { version = "^0.1.5", extras = ["vision"] }
 ai-healthcheck = "^0.1.1"
+markdown-it-py = "^3.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"

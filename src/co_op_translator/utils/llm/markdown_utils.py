@@ -10,6 +10,7 @@ import tiktoken
 from pathlib import Path
 from urllib.parse import urlparse
 import logging
+from markdown_it import MarkdownIt
 from co_op_translator.config.constants import (
     SUPPORTED_IMAGE_EXTENSIONS,
     LINE_BREAK_MARGIN,
@@ -110,11 +111,9 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
         list: A list of markdown chunks.
     """
     chunks = []
-    # Pattern for code blocks, HTML tags, and blockquotes
-    block_pattern = re.compile(
-        r"(```[\s\S]*?```|<.*?>|(?:>\s+.*(?:\n>.*|\n(?!\n))*\n?)+)"
-    )
-    parts = block_pattern.split(content)
+
+    # Use markdown-it-py to parse content into alternating text/code parts
+    parts = _parse_markdown_text_and_code_parts(content)
 
     current_chunk = []
     current_length = 0
@@ -124,32 +123,27 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
     line_break_margin = min(500, max_tokens * 0.1)  # 10% margin, capped at 500 tokens
     extended_max = max_tokens + line_break_margin
 
-    for part in parts:
-        part_tokens = count_tokens(part, tokenizer)
+    for part_text, part_type in parts:
+        part_tokens = count_tokens(part_text, tokenizer)
 
-        # If this part is a code block, HTML, or blockquote and fits within limits
-        if block_pattern.match(part):
+        if part_type == "code":
+            # Treat code blocks as atomic units
             if current_length + part_tokens <= max_tokens:
-                # Add the special block as is
-                current_chunk.append(part)
+                current_chunk.append(part_text)
                 current_length += part_tokens
             else:
-                # This block is too large, we need to split it
                 if current_chunk:
                     chunks.append("".join(current_chunk))
                     current_chunk = []
                     current_length = 0
-                # Add the large block as its own chunk
-                chunks.append(part)
+                chunks.append(part_text)
         else:
-            # This is regular text - try to preserve line breaks
+            # Regular text - try to preserve line breaks
             if current_length + part_tokens <= max_tokens:
-                # The whole part fits, add it entirely
-                current_chunk.append(part)
+                current_chunk.append(part_text)
                 current_length += part_tokens
             else:
-                # Need to split this part
-                lines = part.split("\n")
+                lines = part_text.split("\n")
                 current_line_buffer = []
                 current_line_tokens = 0
 
@@ -161,24 +155,17 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
                         current_length + current_line_tokens + line_tokens
                         <= extended_max
                     ):
-                        # Line fits within extended margin, add to current line buffer
                         current_line_buffer.append(line_with_break)
                         current_line_tokens += line_tokens
                     else:
-                        # Line would exceed limits, flush what we have so far
                         if current_chunk or current_line_buffer:
-                            # Add accumulated line buffer to current chunk
                             current_chunk.extend(current_line_buffer)
-                            # Save the chunk
                             chunks.append("".join(current_chunk))
 
-                        # Reset for next chunk
                         current_chunk = []
                         current_length = 0
 
-                        # Handle potentially long individual lines
                         if line_tokens > max_tokens:
-                            # This single line is too long, we need to split by words
                             words = line.split()
                             word_chunk = []
                             word_chunk_tokens = 0
@@ -191,22 +178,18 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
                                     word_chunk.append(word_with_space)
                                     word_chunk_tokens += word_tokens
                                 else:
-                                    # Flush word chunk
                                     chunks.append("".join(word_chunk))
                                     word_chunk = [word_with_space]
                                     word_chunk_tokens = word_tokens
 
                             if word_chunk:
-                                # Add final word chunk directly to chunks
                                 chunks.append("".join(word_chunk))
                         else:
-                            # Line is reasonable size but doesn't fit current chunk
                             current_chunk = [line_with_break]
                             current_length = line_tokens
                             current_line_buffer = []
                             current_line_tokens = 0
 
-                # Add any remaining lines from the buffer
                 if current_line_buffer:
                     current_chunk.extend(current_line_buffer)
                     current_length += current_line_tokens
@@ -242,6 +225,55 @@ def process_markdown(
             logger.warning("Warning: This chunk has reached the maximum token limit.")
 
     return chunks
+
+
+def _parse_markdown_text_and_code_parts(content: str) -> list[tuple[str, str]]:
+    """
+    Parse markdown into ordered segments of (text, type) where type is "text" or "code".
+    Uses markdown-it-py to detect well-formed fenced code blocks (``` or ~~~).
+
+    Unmatched/partial fences are treated as normal text and will not become code segments.
+
+    Args:
+        content: Markdown source text.
+
+    Returns:
+        List of tuples: [(segment_text, "text"|"code"), ...]
+    """
+    md = MarkdownIt("commonmark")
+    tokens = md.parse(content)
+
+    # Build mapping from line index to absolute character offset
+    lines = content.splitlines(keepends=True)
+    offsets = [0]
+    for ln in lines:
+        offsets.append(offsets[-1] + len(ln))
+
+    code_spans = []  # (start_char, end_char)
+    for tok in tokens:
+        if tok.type == "fence" and tok.map:
+            start_line, end_line = tok.map  # end is exclusive
+            start_char = offsets[start_line]
+            end_char = offsets[end_line]
+            code_spans.append((start_char, end_char))
+
+    code_spans.sort(key=lambda x: x[0])
+
+    parts: list[tuple[str, str]] = []
+    pos = 0
+    for start_char, end_char in code_spans:
+        if pos < start_char:
+            parts.append((content[pos:start_char], "text"))
+        parts.append((content[start_char:end_char], "code"))
+        pos = end_char
+
+    if pos < len(content):
+        parts.append((content[pos:], "text"))
+
+    if not parts:
+        return [(content, "text")]
+
+    return parts
 
 
 def process_markdown_with_many_links(content: str, max_links) -> list:
@@ -887,20 +919,22 @@ def replace_code_blocks(document: str):
             - The document with placeholders.
             - A dictionary mapping placeholders to their original code.
     """
-    code_block_pattern = r"```[\s\S]*?```"
-
-    # Replace code blocks
-    code_blocks = re.findall(code_block_pattern, document)
-
     placeholder_map = {}
 
-    # Replace code blocks with placeholders
-    for i, code_block in enumerate(code_blocks):
-        placeholder = f"@@CODE_BLOCK_{i}@@"
-        document = document.replace(code_block, placeholder)
-        placeholder_map[placeholder] = code_block
+    parts = _parse_markdown_text_and_code_parts(document)
 
-    return document, placeholder_map
+    output_segments = []
+    code_index = 0
+    for segment, seg_type in parts:
+        if seg_type == "code":
+            placeholder = f"@@CODE_BLOCK_{code_index}@@"
+            output_segments.append(placeholder)
+            placeholder_map[placeholder] = segment
+            code_index += 1
+        else:
+            output_segments.append(segment)
+
+    return "".join(output_segments), placeholder_map
 
 
 def restore_code_blocks(translated_document: str, placeholder_map: dict) -> str:

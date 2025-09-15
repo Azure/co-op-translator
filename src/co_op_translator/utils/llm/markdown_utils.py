@@ -25,6 +25,9 @@ from co_op_translator.utils.common.file_utils import (
 logger = logging.getLogger(__name__)
 
 
+SPLIT_DELIMITER = "\n\n===SYSTEM_USER_SPLIT===\n\n"
+
+
 def generate_prompt_template(
     language_code: str, language_name: str, document_chunk: str, is_rtl: bool
 ) -> str:
@@ -65,7 +68,9 @@ def generate_prompt_template(
     else:
         prompt += "Please write the output from left to right.\n"
 
-    prompt += "\n" + document_chunk
+    # Explicit delimiter between system rules and user content
+    prompt += SPLIT_DELIMITER
+    prompt += document_chunk
 
     return prompt
 

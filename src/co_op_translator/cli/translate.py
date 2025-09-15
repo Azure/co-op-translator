@@ -185,8 +185,6 @@ def translate_command(
             logger.info("Vision health check passed.")
             click.echo("✅ Vision health check passed.")
 
-        # Root directory has already been validated and logging configured above
-
         # Show warning if 'all' is selected
         if language_codes == "all":
             click.echo(

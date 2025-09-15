@@ -6,9 +6,11 @@ import asyncio
 import logging
 import click
 from pathlib import Path
+import os
 
 from co_op_translator.core.project.project_evaluator import ProjectEvaluator
 from co_op_translator.config.base_config import Config
+from co_op_translator.utils.common.logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +37,12 @@ logger = logging.getLogger(__name__)
 )
 @click.option("--debug", "-d", is_flag=True, help="Enable debug mode.")
 @click.option(
+    "--save-logs",
+    "-s",
+    is_flag=True,
+    help="Save logs to the logs/ directory under --root-dir (always at DEBUG level).",
+)
+@click.option(
     "--fast",
     "-f",
     is_flag=True,
@@ -46,7 +54,9 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help="Deep mode: Use only LLM-based evaluation without basic rules. More accurate but slower.",
 )
-def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep):
+def evaluate_command(
+    language_code, root_dir, min_confidence, debug, fast, deep, save_logs
+):
     """
     Evaluate translation quality for a specific language.
 
@@ -68,18 +78,20 @@ def evaluate_command(language_code, root_dir, min_confidence, debug, fast, deep)
         # Check that the required environment variables are set
         Config.check_configuration()
 
-        if debug:
-            logging.basicConfig(level=logging.DEBUG)
-            logging.debug("Debug mode enabled.")
-        else:
-            logging.basicConfig(level=logging.CRITICAL)
-
-        # Validate root directory
+        # Validate root directory and set up logging
         root_path = Path(root_dir).resolve()
         if not root_path.exists():
             raise click.ClickException(f"Root directory does not exist: {root_dir}")
         if not root_path.is_dir():
             raise click.ClickException(f"Root path is not a directory: {root_dir}")
+
+        log_file_path = setup_logging(
+            root_path, debug=debug, save_logs=save_logs, command_name="evaluate"
+        )
+        if debug:
+            logging.debug("Debug mode enabled.")
+        if save_logs and log_file_path is not None:
+            click.echo(f"📄 Logs will be saved to: {log_file_path}")
 
         click.echo(f"Evaluating {language_code} translations in {root_path}...")
 

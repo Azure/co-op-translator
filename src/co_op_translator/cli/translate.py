@@ -14,6 +14,7 @@ from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.config.llm_config.config import LLMConfig
+from co_op_translator.utils.common.logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,12 @@ logger = logging.getLogger(__name__)
 @click.option("--markdown", "-md", is_flag=True, help="Only translate markdown files.")
 @click.option("--notebook", "-nb", is_flag=True, help="Only translate notebook files.")
 @click.option("--debug", "-d", is_flag=True, help="Enable debug mode.")
+@click.option(
+    "--save-logs",
+    "-s",
+    is_flag=True,
+    help="Save logs to the logs/ directory under --root-dir (always at DEBUG level).",
+)
 @click.option(
     "--fix",
     "-x",
@@ -74,6 +81,7 @@ def translate_command(
     markdown,
     notebook,
     debug,
+    save_logs,
     fix,
     fast,
     yes,
@@ -150,11 +158,20 @@ def translate_command(
         mode_msg = f"🚀 Translation mode: {', '.join(translation_types)}"
         click.echo(mode_msg)
 
+        # Validate root directory early and set up logging
+        root_path = Path(root_dir).resolve()
+        if not root_path.exists():
+            raise click.ClickException(f"Root directory does not exist: {root_dir}")
+        if not root_path.is_dir():
+            raise click.ClickException(f"Root path is not a directory: {root_dir}")
+
+        log_file_path = setup_logging(
+            root_path, debug=debug, save_logs=save_logs, command_name="translate"
+        )
         if debug:
-            logging.basicConfig(level=logging.DEBUG)
             logging.debug("Debug mode enabled.")
-        else:
-            logging.basicConfig(level=logging.CRITICAL)
+        if save_logs and log_file_path is not None:
+            click.echo(f"📄 Logs will be saved to: {log_file_path}")
 
         # Now run the LLM health check; raises on failure
         LLMConfig.validate_connectivity()
@@ -167,17 +184,6 @@ def translate_command(
             VisionConfig.validate_connectivity()
             logger.info("Vision health check passed.")
             click.echo("✅ Vision health check passed.")
-
-        # Validate root directory
-        root_path = Path(root_dir).resolve()
-        if not root_path.exists():
-            raise click.ClickException(f"Root directory does not exist: {root_dir}")
-        if not root_path.is_dir():
-            raise click.ClickException(f"Root path is not a directory: {root_dir}")
-        if not os.access(root_path, os.R_OK | os.W_OK):
-            raise click.ClickException(
-                f"Insufficient permissions for directory: {root_dir}"
-            )
 
         # Show warning if 'all' is selected
         if language_codes == "all":

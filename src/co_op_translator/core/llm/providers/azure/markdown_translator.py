@@ -5,7 +5,12 @@ import time
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
 from semantic_kernel.prompt_template.prompt_template_config import PromptTemplateConfig
+from semantic_kernel.connectors.ai.chat_completion_client_base import (
+    ChatCompletionClientBase,
+)
+from semantic_kernel.contents.chat_history import ChatHistory
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
+from co_op_translator.utils.llm.markdown_utils import SPLIT_DELIMITER
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 
@@ -72,21 +77,26 @@ class AzureMarkdownTranslator(MarkdownTranslator):
 
             start_time = time.time()
 
-            prompt_template_config = PromptTemplateConfig(
-                template=prompt,
-                name="translate",
-                description="Translate a text to another language",
-                template_format="semantic-kernel",
-                execution_settings=req_settings,
-            )
+            # Build chat messages: system for rules, user for content
+            # Split using explicit delimiter inserted by generate_prompt_template
+            parts = prompt.split(SPLIT_DELIMITER, 1)
+            if len(parts) != 2:
+                raise ValueError(
+                    "Prompt did not contain expected system/user split (missing blank line separator)."
+                )
+            system_text, user_text = parts[0].strip(), parts[1]
 
-            function = self.kernel.add_function(
-                function_name="translate_function",
-                plugin_name="translate_plugin",
-                prompt_template_config=prompt_template_config,
-            )
+            chat = ChatHistory()
+            chat.add_system_message(system_text)
+            chat.add_user_message(user_text)
 
-            result = await self.kernel.invoke(function)
+            service: ChatCompletionClientBase = self.kernel.get_service(
+                LLMProvider.AZURE_OPENAI.value
+            )
+            result_contents = await service.get_chat_message_contents(
+                chat_history=chat, settings=req_settings
+            )
+            result = str(result_contents[0].content) if result_contents else ""
             end_time = time.time()
             logger.info(
                 f"Prompt {index}/{total} completed in {end_time - start_time} seconds"

@@ -22,6 +22,7 @@ from co_op_translator.utils.llm.markdown_utils import (
     update_notebook_links,
 )
 from co_op_translator.utils.common.file_utils import map_original_to_translated
+from co_op_translator.utils.common.logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -55,36 +56,39 @@ logger = logging.getLogger(__name__)
 )
 @click.option("-d", "--debug", is_flag=True, help="Enable debug logging.")
 @click.option(
+    "--save-logs",
+    "-s",
+    is_flag=True,
+    help="Save logs to the logs/ directory under --root-dir (always at DEBUG level).",
+)
+@click.option(
     "--yes",
     "-y",
     is_flag=True,
     help="Automatically confirm prompts (useful when using -l 'all').",
 )
 def migrate_links_command(
-    language_codes, root_dir, dry_run, fallback_to_original, debug, yes
+    language_codes, root_dir, dry_run, fallback_to_original, debug, yes, save_logs
 ):
     """
     Reprocess only translated markdown files that contain .ipynb links and
     update links to point to translated notebooks when available.
     """
     try:
-        # Basic logging setup (align with translate.py)
-        if debug:
-            logging.basicConfig(level=logging.DEBUG)
-            logging.debug("Debug mode enabled.")
-        else:
-            logging.basicConfig(level=logging.CRITICAL)
-
         # Validate root directory and config
         Config.check_configuration()
 
         root_path = Path(root_dir).resolve()
         if not root_path.exists() or not root_path.is_dir():
             raise click.ClickException(f"Invalid root directory: {root_dir}")
-        if not os.access(root_path, os.R_OK | os.W_OK):
-            raise click.ClickException(
-                f"Insufficient permissions for directory: {root_dir}"
-            )
+
+        log_file_path = setup_logging(
+            root_path, debug=debug, save_logs=save_logs, command_name="migrate-links"
+        )
+        if debug:
+            logging.debug("Debug mode enabled.")
+        if save_logs and log_file_path is not None:
+            click.echo(f"📄 Logs will be saved to: {log_file_path}")
 
         translations_dir = root_path / "translations"
         if not translations_dir.exists():

@@ -9,6 +9,7 @@ from co_op_translator.utils.llm.markdown_utils import (
     generate_prompt_template,
     replace_code_blocks,
     restore_code_blocks,
+    SPLIT_DELIMITER,
 )
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.llm_config.config import LLMConfig
@@ -217,10 +218,16 @@ class MarkdownTranslator(ABC):
             Translated disclaimer text
         """
         language_name = self.font_config.get_language_name(output_lang)
-        disclaimer_prompt = f""" Translate the following text to {language_name} ({output_lang}).
-
-        **Disclaimer**:
-        This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation."""
+        system_text = f"Translate the following text to {language_name} ({output_lang})."
+        user_text = (
+            "**Disclaimer**:\n"
+            "This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). "
+            "While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. "
+            "The original document in its native language should be considered the authoritative source. "
+            "For critical information, professional human translation is recommended. "
+            "We are not liable for any misunderstandings or misinterpretations arising from the use of this translation."
+        )
+        disclaimer_prompt = system_text + SPLIT_DELIMITER + user_text
 
         disclaimer = await self._run_prompt(disclaimer_prompt, "disclaimer prompt", 1)
 

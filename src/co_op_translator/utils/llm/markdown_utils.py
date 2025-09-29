@@ -725,6 +725,68 @@ def update_image_links(
                 logger.info(f"Skipping image {link}")
                 continue
 
+    # Also update HTML <img> tags inside markdown
+    html_img_pattern = re.compile(r"<img\s+[^>]*src=([\"\'])(.*?)\1[^>]*>", re.IGNORECASE)
+
+    def _replace_img_src(match: re.Match) -> str:
+        src = match.group(2)
+        parsed_url = urlparse(src)
+        if (
+            parsed_url.scheme in ("mailto", "http", "https")
+            or "@" in src
+            or src.endswith((".com", ".org", ".net"))
+        ):
+            return match.group(0)
+
+        path = parsed_url.path
+        _, file_ext = get_filename_and_extension(path)
+        if file_ext not in SUPPORTED_IMAGE_EXTENSIONS:
+            return match.group(0)
+
+        try:
+            translated_md_dir = (
+                translations_dir
+                / language_code
+                / md_file_path.relative_to(root_dir).parent
+            )
+
+            if not use_translated_images:
+                # Link to original image when using original images
+                if path.startswith("/"):
+                    updated_src = path
+                else:
+                    original_linked_file_path = (md_file_path.parent / path).resolve()
+                    updated_src = os.path.relpath(
+                        original_linked_file_path, translated_md_dir
+                    ).replace(os.path.sep, "/")
+            else:
+                # Link to translated image when using translated images
+                if path.startswith("/"):
+                    actual_image_path = get_actual_image_path(
+                        path, md_file_path, root_dir
+                    )
+                else:
+                    actual_image_path = get_actual_image_path(path, md_file_path)
+
+                rel_path = os.path.relpath(translated_images_dir, translated_md_dir)
+                new_filename = generate_translated_filename(
+                    actual_image_path, language_code, root_dir
+                )
+                updated_src = os.path.join(rel_path, new_filename).replace(
+                    os.path.sep, "/"
+                )
+        except Exception as e:
+            logger.error(f"Error processing HTML <img> path {src}: {e}")
+            updated_src = src
+
+        # Replace only the src value inside this tag while preserving other attributes
+        full_tag = match.group(0)
+        rel_start = match.start(2) - match.start(0)
+        rel_end = match.end(2) - match.start(0)
+        return full_tag[:rel_start] + updated_src + full_tag[rel_end:]
+
+    markdown_string = html_img_pattern.sub(_replace_img_src, markdown_string)
+
     return markdown_string
 
 

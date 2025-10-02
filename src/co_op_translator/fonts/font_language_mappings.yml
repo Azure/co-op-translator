@@ -148,3 +148,6 @@ uk:
 lt:
   name: "Lithuanian"
   font: "NotoSans-Medium.ttf"
+ta:
+  name: "Tamil"
+  font: "NotoSansTamil-Medium.ttf"

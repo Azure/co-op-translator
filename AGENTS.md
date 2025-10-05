@@ -4,6 +4,21 @@
 
 Co‑op Translator is a Python command‑line tool and GitHub Actions workflow that translates Markdown files, Jupyter notebooks, and image text into multiple languages. It organizes outputs under language‑specific folders and keeps translations synchronized with source content. The project is structured as a Poetry‑managed library with CLI entry points.
 
+### Architecture overview
+- CLI entry points (`translate`, `migrate-links`, `evaluate`) invoke a unified CLI that dispatches to translation, link migration, and evaluation flows.
+- Configuration loader reads `.env` and auto‑detects the LLM provider (Azure OpenAI or OpenAI) and, if requested, the vision provider (Azure AI Service) for image text extraction.
+- Translation core handles Markdown and notebooks; the vision pipeline extracts text from images when `-img` is used.
+- Outputs are organized into `translations/<lang>/` for text and `translated_images/` for images, preserving original structure.
+
+### Key technologies and frameworks
+- Python 3.10–3.12, Poetry for packaging
+- CLI: `click`
+- LLM/AI SDKs: Azure OpenAI, OpenAI
+- Vision: Azure AI Service (Computer Vision)
+- HTTP and data: `httpx`, `pydantic`
+- Imaging: `pillow`, `opencv-python`, `matplotlib`
+- Tooling: `pytest`, `black`, `ruff`
+
 ## Setup Commands
 
 ### Prerequisites

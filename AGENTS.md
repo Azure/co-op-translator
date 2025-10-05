@@ -5,12 +5,14 @@
 Co‑op Translator is a Python command‑line tool and GitHub Actions workflow that translates Markdown files, Jupyter notebooks, and image text into multiple languages. It organizes outputs under language‑specific folders and keeps translations synchronized with source content. The project is structured as a Poetry‑managed library with CLI entry points.
 
 ### Architecture overview
+
 - CLI entry points (`translate`, `migrate-links`, `evaluate`) invoke a unified CLI that dispatches to translation, link migration, and evaluation flows.
 - Configuration loader reads `.env` and auto‑detects the LLM provider (Azure OpenAI or OpenAI) and, if requested, the vision provider (Azure AI Service) for image text extraction.
 - Translation core handles Markdown and notebooks; the vision pipeline extracts text from images when `-img` is used.
 - Outputs are organized into `translations/<lang>/` for text and `translated_images/` for images, preserving original structure.
 
 ### Key technologies and frameworks
+
 - Python 3.10–3.12, Poetry for packaging
 - CLI: `click`
 - LLM/AI SDKs: Azure OpenAI, OpenAI
@@ -22,11 +24,13 @@ Co‑op Translator is a Python command‑line tool and GitHub Actions workflow t
 ## Setup Commands
 
 ### Prerequisites
+
 - Python 3.10–3.12
 - Azure subscription (optional, for Azure AI services)
 - Internet access for LLM/Vision APIs (e.g., Azure OpenAI/OpenAI, Azure AI Vision)
 
 ### Option A: Poetry (recommended)
+
 ```bash
 # From repository root
 pip install poetry
@@ -37,6 +41,7 @@ poetry run translate --help
 ```
 
 ### Option B: pip/venv
+
 ```bash
 # Create & activate virtual environment
 python -m venv .venv
@@ -53,6 +58,7 @@ pip install -e .
 ```
 
 ### Environment configuration
+
 Create a `.env` file at the repository root and provide credentials/endpoints for your chosen language model and (optionally) vision service. For provider‑specific setup, see `getting_started/set-up-azure-ai.md`.
 
 ### Required Environment Variables
@@ -77,6 +83,7 @@ At least one LLM provider must be configured. For image translation, Azure AI Se
   - `AZURE_AI_SERVICE_ENDPOINT`
 
 Example `.env` snippet:
+
 ```bash
 # Azure AI Service (for image translation)
 AZURE_AI_SERVICE_API_KEY="..."
@@ -97,6 +104,7 @@ OPENAI_BASE_URL="https://api.openai.com/v1" # optional
 ```
 
 Notes:
+
 - The tool auto-detects the available LLM provider; configure either Azure OpenAI or OpenAI.
 - Image translation requires both `AZURE_AI_SERVICE_API_KEY` and `AZURE_AI_SERVICE_ENDPOINT`.
 - The CLI will raise a clear error if required variables are missing.
@@ -137,6 +145,7 @@ pytest tests/co_op_translator -k "name_substring"
 ```
 
 Optional coverage (requires `coverage`):
+
 ```bash
 coverage run -m pytest -m "not api_key_required"
 coverage html  # outputs to ./htmlcov
@@ -149,6 +158,7 @@ coverage html  # outputs to ./htmlcov
 - Type checks: mypy (configuration present; enable if installed)
 
 Commands:
+
 ```bash
 # Via Poetry
 poetry run black .
@@ -165,6 +175,7 @@ Organize Python sources under `src/`, tests under `tests/`, and prefer explicit 
 ## Build and Deployment
 
 Build artifacts are published to `dist/`.
+
 ```bash
 # Build (Poetry)
 poetry build
@@ -174,6 +185,7 @@ pip install dist/*.whl
 ```
 
 Automation via GitHub Actions is supported; see:
+
 - `getting_started/github-actions-guide/github-actions-guide-public.md`
 - `getting_started/github-actions-guide/github-actions-guide-org.md`
 
@@ -185,11 +197,58 @@ Automation via GitHub Actions is supported; see:
 
 ## Pull Request Guidelines
 
-- Title format: `[co-op-translator] Brief, actionable summary`
-- Required checks before merge:
-  - Lint/format: `ruff check .`, `black --check .`
-  - Tests: `pytest` (or `pytest -m "not api_key_required"` if secrets unavailable)
-- Add/update tests when changing behavior; keep CLI help consistent.
+### Before Submitting
+
+1. **Test your changes:**
+   - Run affected notebooks completely
+   - Verify all cells execute without errors
+   - Check that outputs are appropriate
+
+2. **Documentation updates:**
+   - Update `README.md` if adding new concepts
+   - Add comments in notebooks for complex code
+   - Ensure markdown cells explain the purpose
+
+3. **File changes:**
+   - Avoid committing `.env` files (use `.env.example`)
+   - Don't commit `venv/` or `__pycache__/` directories
+   - Keep notebook outputs when they demonstrate concepts
+   - Remove temporary files and backup notebooks (`*-backup.ipynb`)
+
+4. **Style and formatting:**
+   - Follow the style and formatting guidelines
+   - Run `poetry run black .` and `poetry run ruff check .` to check for style and formatting issues
+
+5. **Add/update tests and CLI help:**
+   - Add or update tests when changing behavior
+   - Keep CLI help consistent with changes
+
+
+### Commit message and merge strategy
+
+We use Squash and Merge as the default. The final squash commit message should follow:
+
+```bash
+<type>: <description> (#<PR number>)
+```
+
+Allowed types:
+- `Docs` — documentation updates
+- `Build` — build system, dependencies, configuration/CI
+- `Core` — core functionality and features (e.g., `src/co_op_translator/core`)
+
+Examples:
+- `Docs: Update installation instructions for clarity (#50)`
+- `Core: Improve handling of image translation (#60)`
+
+Notes:
+- PR titles are often auto-prefixed based on labels; verify the generated prefix is correct.
+
+### PR Title Format
+
+Use clear, concise titles. Prefer the same structure as the final squash commit:
+- `Docs: Update installation instructions for clarity`
+- `Core: Improve handling of image translation`
 
 ## Debugging and Troubleshooting
 

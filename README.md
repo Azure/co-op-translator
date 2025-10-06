@@ -125,7 +125,7 @@ Co-op Translator supports a wide range of languages to help you reach a global a
 | Slovak | sk | Slovenian | sl | Spanish | es |
 | Swahili | sw | Swedish | sv | Tagalog (Filipino) | tl |
 | Thai | th | Turkish | tr | Ukrainian | uk |
-| Urdu | ur | Vietnamese | vi | — | — |
+| Urdu | ur | Vietnamese | vi | Tamil | ta |
 
 #### Using Language Codes
 

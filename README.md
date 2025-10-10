@@ -90,7 +90,7 @@ Get started quickly with the CLI or set up full automation with GitHub Actions. 
 
 ### Language Support
 
-Co-op Translator supports a wide range of languages to help you reach a global audience. For the canonical list and details (fonts, RTL, adding new languages), see [Supported Languages](./getting_started/supported-languages.md). To add links to translated READMEs, copy from the template: [README_languages_template.md](./README_languages_template.md).
+Co-op Translator supports a wide range of languages to help you reach a global audience. For the canonical list and details (fonts, RTL, adding new languages), see [Supported Languages](./getting_started/supported-languages.md).
 
 #### Using Language Codes
 
@@ -103,15 +103,6 @@ translate -l "fr es de"
 # Translate to Chinese (Simplified) and Japanese
 translate -l "zh ja"
 ```
-
-> [!NOTE]
-> For detailed technical information about language support, including:
->
-> - Font specifications for each language
-> - Known issues
-> - How to add new languages
->
-> See our [Supported Languages Documentation](./getting_started/supported-languages.md).
 
 ### Supported Models and Services
 

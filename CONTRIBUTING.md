@@ -199,6 +199,44 @@ To run Co-op Translator using Poetry in your environment, follow these steps:
 > [!NOTE]
 > Ensure your Poetry environment is activated (poetry shell) before running the command.
 
+## Contribute a new language
+
+We welcome contributions that add support for new languages. Before opening a PR, please complete the steps below to ensure a smooth review.
+
+1. Add the language to the font mapping
+   - Edit `src/co_op_translator/fonts/font_language_mappings.yml`
+   - Add an entry with:
+     - `code`: ISO-like language code (e.g., `vi`)
+     - `name`: Human-friendly display name
+     - `font`: A font shipped in `src/co_op_translator/fonts/` that supports the script
+     - `rtl`: `true` if right-to-left, otherwise `false`
+
+2. Include required font files (if needed)
+   - If a new font is required, verify license compatibility for open source distribution
+   - Add the font file to `src/co_op_translator/fonts/`
+
+3. Local verification
+   - Run translations for a small sample (Markdown, images, and notebooks as appropriate)
+   - Verify output renders correctly, including fonts and any RTL layout if applicable
+
+4. Update documentation
+   - Ensure the language appears in `getting_started/supported-languages.md`
+   - No changes to `README_languages_template.md` are needed; it is generated from the supported list
+
+5. Open a PR
+   - Describe the language added and any font/licensing considerations
+   - Attach screenshots of rendered outputs if possible
+
+Example YAML entry:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
 ## Maintainers
 
 ### Commit message and Merge strategy

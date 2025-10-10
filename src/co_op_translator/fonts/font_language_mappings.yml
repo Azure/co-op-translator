@@ -151,3 +151,6 @@ lt:
 ta:
   name: "Tamil"
   font: "NotoSansTamil-Medium.ttf"
+et:
+  name: "Estonian"
+  font: "NotoSans-Medium.ttf"  

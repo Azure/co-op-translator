@@ -17,6 +17,9 @@ _Easily automate the translation of your educational GitHub content into multipl
 `
 ## Language Support Powered by Co-op Translator
 
+> [!TIP]
+> Maintainers: Use the standardized language links template here: [README_languages_template.md](./README_languages_template.md)
+
 [French](./translations/fr/README.md) | [Spanish](./translations/es/README.md) | [German](./translations/de/README.md) | [Russian](./translations/ru/README.md) | [Arabic](./translations/ar/README.md) | [Persian (Farsi)](./translations/fa/README.md) | [Urdu](./translations/ur/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Chinese (Traditional, Macau)](./translations/mo/README.md) | [Chinese (Traditional, Hong Kong)](./translations/hk/README.md) | [Chinese (Traditional, Taiwan)](./translations/tw/README.md) | [Japanese](./translations/ja/README.md) | [Korean](./translations/ko/README.md) | [Hindi](./translations/hi/README.md) | [Bengali](./translations/bn/README.md) | [Marathi](./translations/mr/README.md) | [Nepali](./translations/ne/README.md) | [Punjabi (Gurmukhi)](./translations/pa/README.md) | [Portuguese (Portugal)](./translations/pt/README.md) | [Portuguese (Brazil)](./translations/br/README.md) | [Italian](./translations/it/README.md) | [Lithuanian](./translations/lt/README.md) | [Polish](./translations/pl/README.md) | [Turkish](./translations/tr/README.md) | [Greek](./translations/el/README.md) | [Thai](./translations/th/README.md) | [Swedish](./translations/sv/README.md) | [Danish](./translations/da/README.md) | [Norwegian](./translations/no/README.md) | [Finnish](./translations/fi/README.md) | [Dutch](./translations/nl/README.md) | [Hebrew](./translations/he/README.md) | [Vietnamese](./translations/vi/README.md) | [Indonesian](./translations/id/README.md) | [Malay](./translations/ms/README.md) | [Tagalog (Filipino)](./translations/tl/README.md) | [Swahili](./translations/sw/README.md) | [Hungarian](./translations/hu/README.md) | [Czech](./translations/cs/README.md) | [Slovak](./translations/sk/README.md) | [Romanian](./translations/ro/README.md) | [Bulgarian](./translations/bg/README.md) | [Serbian (Cyrillic)](./translations/sr/README.md) | [Croatian](./translations/hr/README.md) | [Slovenian](./translations/sl/README.md) | [Ukrainian](./translations/uk/README.md) | [Burmese (Myanmar)](./translations/my/README.md)
 
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
@@ -27,23 +30,6 @@ _Easily automate the translation of your educational GitHub content into multipl
 
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
-
-> [!IMPORTANT]
-> New in v0.10.0: Notebook (.ipynb) translation is supported.
->
-> If your repo was translated with an older version and links still point to original notebooks, use the tip below to migrate links.
-
-> [!TIP] 
-> Need to update links?
-> If your notebooks (.ipynb) were translated but Markdown links still point to the originals (from older translation runs), update them with:
->
-> ```bash
-> # Specific languages
-> migrate-links -l "ko ja"
-> 
-> # All languages (auto-confirm)
-> migrate-links -l "all" -y
-> ```
 
 ## Overview: Keep Your Educational GitHub Content Translations Always Up-to-Date
 
@@ -104,32 +90,11 @@ Get started quickly with the CLI or set up full automation with GitHub Actions. 
 
 ### Language Support
 
-Co-op Translator supports a wide range of languages to help you reach a global audience. Here's what you need to know:
-
-#### Quick Reference
-
-| Language | Code | Language | Code | Language | Code |
-|----------|------|----------|------|----------|------|
-| Arabic | ar | Bengali | bn | Bulgarian | bg |
-| Burmese (Myanmar) | my | Chinese (Simplified) | zh | Chinese (Traditional, HK) | hk |
-| Chinese (Traditional, Macau) | mo | Chinese (Traditional, TW) | tw | Croatian | hr |
-| Czech | cs | Danish | da | Dutch | nl |
-| Finnish | fi | French | fr | German | de |
-| Greek | el | Hebrew | he | Hindi | hi |
-| Hungarian | hu | Indonesian | id | Italian | it |
-| Japanese | ja | Korean | ko | Lithuanian | lt |
-| Malay | ms | Marathi | mr | Nepali | ne |
-| Norwegian | no | Persian (Farsi) | fa | Polish | pl |
-| Portuguese (Brazil) | br | Portuguese (Portugal) | pt | Punjabi (Gurmukhi) | pa |
-| Romanian | ro | Russian | ru | Serbian (Cyrillic) | sr |
-| Slovak | sk | Slovenian | sl | Spanish | es |
-| Swahili | sw | Swedish | sv | Tagalog (Filipino) | tl |
-| Thai | th | Turkish | tr | Ukrainian | uk |
-| Urdu | ur | Vietnamese | vi | Tamil | ta |
+Co-op Translator supports a wide range of languages to help you reach a global audience. For the canonical list and details (fonts, RTL, adding new languages), see [Supported Languages](./getting_started/supported-languages.md). To add links to translated READMEs, copy from the template: [README_languages_template.md](./README_languages_template.md).
 
 #### Using Language Codes
 
-When using Co-op Translator, you'll need to specify languages using their codes. For example:
+When using Co-op Translator, specify languages using their codes. For example:
 
 ```bash
 # Translate to French, Spanish, and German
@@ -183,15 +148,7 @@ Before starting the translation process, follow these steps to prepare your proj
 
 1. Prepare Your README:
    - Add a translations table to your README.md to link to translated versions
-   - Example format:
-
-     ```markdown
-
-     ### 🌐 Multi-Language Support
-     
-     [French](./translations/fr/README.md) | [Spanish](./translations/es/README.md) | [German](./translations/de/README.md) | [Russian](./translations/ru/README.md) | [Arabic](./translations/ar/README.md) | [Persian (Farsi)](./translations/fa/README.md) | [Urdu](./translations/ur/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Chinese (Traditional, Macau)](./translations/mo/README.md) | [Chinese (Traditional, Hong Kong)](./translations/hk/README.md) | [Chinese (Traditional, Taiwan)](./translations/tw/README.md) | [Japanese](./translations/ja/README.md) | [Korean](./translations/ko/README.md) | [Hindi](./translations/hi/README.md) | [Bengali](./translations/bn/README.md) | [Marathi](./translations/mr/README.md) | [Nepali](./translations/ne/README.md) | [Punjabi (Gurmukhi)](./translations/pa/README.md) | [Portuguese (Portugal)](./translations/pt/README.md) | [Portuguese (Brazil)](./translations/br/README.md) | [Italian](./translations/it/README.md) | [Lithuanian](./translations/lt/README.md) | [Polish](./translations/pl/README.md) | [Turkish](./translations/tr/README.md) | [Greek](./translations/el/README.md) | [Thai](./translations/th/README.md) | [Swedish](./translations/sv/README.md) | [Danish](./translations/da/README.md) | [Norwegian](./translations/no/README.md) | [Finnish](./translations/fi/README.md) | [Dutch](./translations/nl/README.md) | [Hebrew](./translations/he/README.md) | [Vietnamese](./translations/vi/README.md) | [Indonesian](./translations/id/README.md) | [Malay](./translations/ms/README.md) | [Tagalog (Filipino)](./translations/tl/README.md) | [Swahili](./translations/sw/README.md) | [Hungarian](./translations/hu/README.md) | [Czech](./translations/cs/README.md) | [Slovak](./translations/sk/README.md) | [Romanian](./translations/ro/README.md) | [Bulgarian](./translations/bg/README.md) | [Serbian (Cyrillic)](./translations/sr/README.md) | [Croatian](./translations/hr/README.md) | [Slovenian](./translations/sl/README.md) | [Ukrainian](./translations/uk/README.md) | [Burmese (Myanmar)](./translations/my/README.md) 
-    
-     ```
+   - Prefer copying from the canonical template: [README_languages_template.md](./README_languages_template.md)
 
 1. Clean Up Existing Translations (if needed):
    - Remove any existing translation folders (e.g., `translations/`)

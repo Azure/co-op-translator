@@ -15,6 +15,7 @@ from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.utils.common.logging_utils import setup_logging
+from co_op_translator.utils.common.file_utils import update_readme_languages_table
 
 logger = logging.getLogger(__name__)
 
@@ -186,7 +187,8 @@ def translate_command(
             click.echo("✅ Vision health check passed.")
 
         # Show warning if 'all' is selected
-        if language_codes == "all":
+        all_languages_selected = language_codes == "all"
+        if all_languages_selected:
             click.echo(
                 "Warning: Translating all languages at once can take a significant amount of time, especially when dealing with large markdown-based open-source projects that have many documents."
             )
@@ -255,6 +257,19 @@ def translate_command(
         translator = ProjectTranslator(
             language_codes, root_dir, translation_types=translation_types
         )
+
+        # If all languages are selected, update README languages table BEFORE translation
+        try:
+            if all_languages_selected:
+                readme_path = root_path / "README.md"
+                if update_readme_languages_table(readme_path):
+                    click.echo("✅ Updated README languages table from template.")
+                else:
+                    click.echo(
+                        "ℹ️ README languages table not updated (markers missing or template unavailable)."
+                    )
+        except Exception as e:
+            logger.warning(f"Failed to update README languages table: {e}")
 
         if fix:
             click.echo(f"Fixing translations with confidence below {min_confidence}...")

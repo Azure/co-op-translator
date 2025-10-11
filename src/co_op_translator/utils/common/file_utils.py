@@ -5,6 +5,7 @@ Functions include reading from files, writing to files, and handling empty docum
 
 import hashlib
 from pathlib import Path
+import re
 
 LANG_TABLE_START = "<!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->"
 LANG_TABLE_END = "<!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->"
@@ -62,6 +63,13 @@ def update_readme_languages_table(readme_path: Path) -> bool:
     template = load_languages_table_template()
     if not template:
         return False
+    # Strip markdownlint directives from template to avoid injecting them into user README
+    template = re.sub(
+        r"^\s*<!--\s*markdownlint-disable[^>]*-->\s*\n?",
+        "",
+        template,
+        flags=re.IGNORECASE,
+    )
     updated = replace_between_markers(original, template)
     if updated != original:
         readme_path.write_text(updated, encoding="utf-8", newline="\n")

@@ -726,7 +726,9 @@ def update_image_links(
                 continue
 
     # Also update HTML <img> tags inside markdown
-    html_img_pattern = re.compile(r"<img\s+[^>]*src=([\"\'])(.*?)\1[^>]*>", re.IGNORECASE)
+    html_img_pattern = re.compile(
+        r"<img\s+[^>]*src=([\"\'])(.*?)\1[^>]*>", re.IGNORECASE
+    )
 
     def _replace_img_src(match: re.Match) -> str:
         src = match.group(2)

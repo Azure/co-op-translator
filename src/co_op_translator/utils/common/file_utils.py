@@ -5,6 +5,70 @@ Functions include reading from files, writing to files, and handling empty docum
 
 import hashlib
 from pathlib import Path
+
+LANG_TABLE_START = "<!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->"
+LANG_TABLE_END = "<!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->"
+
+
+def replace_between_markers(readme_text: str, new_block: str) -> str:
+    """
+    Replace content between language table markers with the provided new block.
+    Markers are included in the replacement. If markers are missing, returns original text.
+    """
+    # Case-insensitive detection of markers so users can vary casing
+    lower_text = readme_text.lower()
+    start_idx = lower_text.find(LANG_TABLE_START.lower())
+    end_idx = lower_text.find(LANG_TABLE_END.lower())
+    if start_idx == -1 or end_idx == -1 or end_idx < start_idx:
+        return readme_text
+
+    # Expand end to include the end marker line completely
+    end_idx_inclusive = end_idx + len(LANG_TABLE_END)
+
+    before = readme_text[:start_idx].rstrip()
+    after = readme_text[end_idx_inclusive:].lstrip()
+
+    # Ensure surrounding newlines for readability
+    pieces = []
+    if before:
+        pieces.append(before)
+    pieces.append(new_block.strip())
+    if after:
+        pieces.append(after)
+    return "\n\n".join(pieces) + ("\n" if readme_text.endswith("\n") else "")
+
+
+def load_languages_table_template() -> str:
+    """Load the bundled languages table template markdown."""
+    try:
+        from importlib import resources
+
+        with resources.open_text(
+            "co_op_translator.templates", "languages_table.md", encoding="utf-8"
+        ) as f:
+            return f.read()
+    except Exception:
+        return ""
+
+
+def update_readme_languages_table(readme_path: Path) -> bool:
+    """
+    Update README languages table between markers using bundled template.
+    Returns True if updated, False otherwise.
+    """
+    if not readme_path.exists():
+        return False
+    original = readme_path.read_text(encoding="utf-8")
+    template = load_languages_table_template()
+    if not template:
+        return False
+    updated = replace_between_markers(original, template)
+    if updated != original:
+        readme_path.write_text(updated, encoding="utf-8", newline="\n")
+        return True
+    return False
+
+
 import shutil
 import os
 import logging

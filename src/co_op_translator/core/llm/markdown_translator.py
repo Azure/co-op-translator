@@ -218,7 +218,9 @@ class MarkdownTranslator(ABC):
             Translated disclaimer text
         """
         language_name = self.font_config.get_language_name(output_lang)
-        system_text = f"Translate the following text to {language_name} ({output_lang})."
+        system_text = (
+            f"Translate the following text to {language_name} ({output_lang})."
+        )
         user_text = (
             "**Disclaimer**:\n"
             "This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). "

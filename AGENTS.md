@@ -57,6 +57,32 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
+## End User Usage
+
+### Docker (published image)
+
+```bash
+# Pull public image from GHCR
+docker pull ghcr.io/azure/co-op-translator:latest
+
+# Run with current folder mounted and .env provided (Bash/Zsh)
+docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "fr es" -md
+
+# PowerShell
+docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translator:latest -l "fr es" -md
+```
+
+Notes:
+- Default entrypoint is `translate`. Override with `--entrypoint migrate-links` for link migration.
+- Ensure GHCR package visibility is Public for anonymous pulls.
+
+### CLI (pip)
+
+```bash
+pip install co-op-translator
+translate -l "fr es" -md
+```
+
 ### Environment configuration
 
 Create a `.env` file at the repository root and provide credentials/endpoints for your chosen language model and (optionally) vision service. For provider‑specific setup, see `getting_started/set-up-azure-ai.md`.
@@ -189,6 +215,14 @@ Automation via GitHub Actions is supported; see:
 - `getting_started/github-actions-guide/github-actions-guide-public.md`
 - `getting_started/github-actions-guide/github-actions-guide-org.md`
 
+### Container Image (GHCR)
+
+- Official image: `ghcr.io/azure/co-op-translator:<tag>`
+- Tags: `latest` (on main), semantic tags like `vX.Y.Z`, and a `sha` tag
+- Multi-arch: `linux/amd64, linux/arm64` supported via Buildx
+- Dockerfile pattern: build dependency wheels in builder (with `build-essential` and `python3-dev`) and install from local wheelhouse in runtime (`pip install --no-index --find-links=/wheels`)
+- Workflow: `.github/workflows/docker-publish.yml` builds and pushes to GHCR
+
 ## Security Considerations
 
 - Keep API keys and endpoints in `.env` or your CI secrets store; never commit secrets.
@@ -261,3 +295,6 @@ Use clear, concise titles. Prefer the same structure as the final squash commit:
 - Prefer Poetry for reproducible environments; otherwise use `requirements.txt`.
 - When invoking CLIs in CI, provide required secrets via environment variables or `.env` injection.
 - For monorepo consumers, this repo acts as a standalone package; no sub‑package coordination is required.
+
+- Multi-arch guidance: keep `linux/arm64` when ARM users (Apple Silicon/ARM servers) are a target; otherwise `linux/amd64` only is acceptable for simplicity.
+- Point users to Docker Quick Start in `README.md` when they prefer container usage; include Bash and PowerShell variants due to quoting differences.

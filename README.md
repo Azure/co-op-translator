@@ -204,31 +204,36 @@ For a fast start using the command line:
 
 ### Quick Start: Docker
 
-Build the image locally:
+Use the published image from GHCR:
 
 ```bash
-# From repository root
-docker build -t co-op-translator:local .
+docker pull ghcr.io/azure/co-op-translator:latest
 ```
 
 Run with your current folder mounted and `.env` provided:
 
 ```bash
 # Bash / Zsh
-docker run --rm -it --env-file .env -v "${PWD}:/work" co-op-translator:local -l "fr es" -md
+# Mounts the current directory (${PWD}) to /work and uses credentials from .env
+# Translates your project into French (fr) and Spanish (es)
+docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "fr es" -md
 ```
 
 ```powershell
 # PowerShell
-docker run --rm -it --env-file .env -v "${PWD}.Path:/work" co-op-translator:local -l "fr es" -md
+docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translator:latest -l "fr es" -md
 ```
 
 Notes:
 - The container’s default entrypoint is `translate`. To run other CLIs, override entrypoint, e.g.:
 
+- `-l "fr es"`: target languages (space-separated language codes)
+- `-md` / `-nb` / `-img`: translate only Markdown / Notebooks / Images
+- If no type flags are provided, all supported types are translated
+
 ```bash
 # migrate-links
-docker run --rm -it --env-file .env -v "${PWD}:/work" --entrypoint migrate-links co-op-translator:local -l "all" -y
+docker run --rm -it --env-file .env -v "${PWD}:/work" --entrypoint migrate-links ghcr.io/azure/co-op-translator:latest -l "all" -y
 ```
 
 - Image translation (`-img`) requires `AZURE_AI_SERVICE_API_KEY` and `AZURE_AI_SERVICE_ENDPOINT` in `.env`.

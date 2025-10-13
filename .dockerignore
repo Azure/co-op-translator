@@ -1,0 +1,38 @@
+# Python
+__pycache__/ 
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environments
+.venv/
+venv/
+
+# Builds
+build/
+dist/
+.eggs/
+*.egg-info/
+htmlcov/
+
+# Git/CI
+.git/
+.github/
+.gitignore
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+
+# Local config
+.env
+.env.*
+
+# Generated project outputs
+translated_images/
+translations/
+
+# OS
+.DS_Store
+Thumbs.db

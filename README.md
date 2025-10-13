@@ -202,6 +202,38 @@ For a fast start using the command line:
 
     _(Replace `"ko ja fr"` with your desired space-separated language codes)_
 
+### Quick Start: Docker
+
+Build the image locally:
+
+```bash
+# From repository root
+docker build -t co-op-translator:local .
+```
+
+Run with your current folder mounted and `.env` provided:
+
+```bash
+# Bash / Zsh
+docker run --rm -it --env-file .env -v "${PWD}:/work" co-op-translator:local -l "fr es" -md
+```
+
+```powershell
+# PowerShell
+docker run --rm -it --env-file .env -v "${PWD}.Path:/work" co-op-translator:local -l "fr es" -md
+```
+
+Notes:
+- The container’s default entrypoint is `translate`. To run other CLIs, override entrypoint, e.g.:
+
+```bash
+# migrate-links
+docker run --rm -it --env-file .env -v "${PWD}:/work" --entrypoint migrate-links co-op-translator:local -l "all" -y
+```
+
+- Image translation (`-img`) requires `AZURE_AI_SERVICE_API_KEY` and `AZURE_AI_SERVICE_ENDPOINT` in `.env`.
+- You may map a different working folder with `-v /path/to/repo:/work`.
+
 ### Detailed Usage Guides
 
 Choose the approach that best fits your workflow:

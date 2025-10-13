@@ -8,6 +8,7 @@ on:
       - "Dockerfile"
       - "pyproject.toml"
       - "poetry.lock"
+      - ".github/workflows/docker-publish.yml"
 
 permissions:
   contents: read

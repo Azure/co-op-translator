@@ -1,6 +1,4 @@
-# Co-op Translator: Automate the Translation of Educational GitHub Content Effortlessly
-
-![Logo](./imgs/logo.png)
+# Co-op Translator
 
 _Easily automate the translation of your educational GitHub content into multiple languages to reach a global audience._
 
@@ -8,17 +6,18 @@ _Easily automate the translation of your educational GitHub content into multipl
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
 [![Downloads](https://static.pepy.tech/badge/co-op-translator)](https://pepy.tech/project/co-op-translator)
 [![Downloads](https://static.pepy.tech/badge/co-op-translator/month)](https://pepy.tech/project/co-op-translator)
+[![Container: GHCR](https://img.shields.io/badge/Container-GHCR-2496ED?logo=docker&logoColor=fff)](https://github.com/azure/co-op-translator/pkgs/container/co-op-translator)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 [![GitHub contributors](https://img.shields.io/github/contributors/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/graphs/contributors/)
 [![GitHub issues](https://img.shields.io/github/issues/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/issues/)
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-`
+
 ## Language Support Powered by Co-op Translator
 
 > [!TIP]
-> Maintainers: Use the standardized language links template here: [README_languages_template.md](./README_languages_template.md)
+> Maintainers: Use the standardized language links template here: [README languages template](./README_languages_template.md)
 
 [French](./translations/fr/README.md) | [Spanish](./translations/es/README.md) | [German](./translations/de/README.md) | [Russian](./translations/ru/README.md) | [Arabic](./translations/ar/README.md) | [Persian (Farsi)](./translations/fa/README.md) | [Urdu](./translations/ur/README.md) | [Chinese (Simplified)](./translations/zh/README.md) | [Chinese (Traditional, Macau)](./translations/mo/README.md) | [Chinese (Traditional, Hong Kong)](./translations/hk/README.md) | [Chinese (Traditional, Taiwan)](./translations/tw/README.md) | [Japanese](./translations/ja/README.md) | [Korean](./translations/ko/README.md) | [Hindi](./translations/hi/README.md) | [Bengali](./translations/bn/README.md) | [Marathi](./translations/mr/README.md) | [Nepali](./translations/ne/README.md) | [Punjabi (Gurmukhi)](./translations/pa/README.md) | [Portuguese (Portugal)](./translations/pt/README.md) | [Portuguese (Brazil)](./translations/br/README.md) | [Italian](./translations/it/README.md) | [Lithuanian](./translations/lt/README.md) | [Polish](./translations/pl/README.md) | [Turkish](./translations/tr/README.md) | [Greek](./translations/el/README.md) | [Thai](./translations/th/README.md) | [Swedish](./translations/sv/README.md) | [Danish](./translations/da/README.md) | [Norwegian](./translations/no/README.md) | [Finnish](./translations/fi/README.md) | [Dutch](./translations/nl/README.md) | [Hebrew](./translations/he/README.md) | [Vietnamese](./translations/vi/README.md) | [Indonesian](./translations/id/README.md) | [Malay](./translations/ms/README.md) | [Tagalog (Filipino)](./translations/tl/README.md) | [Swahili](./translations/sw/README.md) | [Hungarian](./translations/hu/README.md) | [Czech](./translations/cs/README.md) | [Slovak](./translations/sk/README.md) | [Romanian](./translations/ro/README.md) | [Bulgarian](./translations/bg/README.md) | [Serbian (Cyrillic)](./translations/sr/README.md) | [Croatian](./translations/hr/README.md) | [Slovenian](./translations/sl/README.md) | [Ukrainian](./translations/uk/README.md) | [Burmese (Myanmar)](./translations/my/README.md)
 
@@ -27,244 +26,103 @@ _Easily automate the translation of your educational GitHub content into multipl
 [![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
 
 [![Microsoft Azure AI Foundry Discord](https://dcbadge.limes.pink/api/server/ByRwuEEgH4)](https://discord.com/invite/ByRwuEEgH4)
-
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
-[![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
-## Overview: Keep Your Educational GitHub Content Translations Always Up-to-Date
+## Overview
 
-Language barriers significantly hinder access to valuable educational GitHub documentation and technical tutorials for learners and developers worldwide. This limits participation and slows down the pace of global innovation and learning.
-
-**Co-op Translator** was born from the need to address the inefficient manual translation process for Microsoft's own large-scale educational series (like the "For Beginners" guides). It has evolved into an easy-to-use, powerful tool designed to break down these barriers for everyone. By providing high-quality automated translations via CLI and GitHub Actions, Co-op Translator empowers educators, students, researchers, and developers globally to share and access knowledge without language constraints.
-
-**Co-op Translator** enables you to quickly translate your educational GitHub content into multiple languages, reaching a global audience effortlessly. When you update your Markdown files, images, or Jupyter notebooks, translations are automatically synchronized to ensure your educational GitHub content stays fresh and relevant for international users. For automated workflows, see our GitHub Actions guides: [Public Repositories](./getting_started/github-actions-guide/github-actions-guide-public.md) | [Organization Repositories](./getting_started/github-actions-guide/github-actions-guide-org.md).
+**Co-op Translator** enables you to quickly translate your educational GitHub content into multiple languages, reaching a global audience effortlessly. When you update your Markdown files, images, or Jupyter notebooks, translations are automatically synchronized to ensure your educational GitHub content stays fresh and relevant for international users.
 
 See how Co-op Translator organizes translated educational GitHub content:
 
 ![Example](./imgs/translation-ex.png)
 
-Markdown files, Jupyter notebooks, and image text are automatically translated and neatly organized into language-specific folders.
-
-**Unlock global access to your educational GitHub content with Co-op Translator today!**
-
-## Supporting Global Access for Microsoft's Learning Resources
-
-Co-op Translator helps bridge the language gap for key Microsoft educational initiatives, automating the translation process for repositories that serve a global developer community. Examples currently using Co-op Translator include:
-
-[![Generative-AI-for-beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=Generative-AI-for-beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/Generative-AI-for-beginners)
-[![ML-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ML-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ML-For-Beginners)
-[![AI-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=AI-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/AI-For-Beginners)
-[![ai-agents-for-beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ai-agents-for-beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ai-agents-for-beginners)
-[![mcp-for-beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=mcp-for-beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/mcp-for-beginners)
-[![PhiCookBook](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=PhiCookBook&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/PhiCookBook)
-
-## Key Features
-
-- **Automated Translations**: Translate text into multiple languages effortlessly.
-- **GitHub Actions Integration**: Automate translations as part of your CI/CD pipeline.
-- **Markdown Preservation**: Maintain correct Markdown syntax during translation.
-- **Image Text Translation**: Extract and translate text within images.
-- **Advanced LLM Technology**: Use cutting-edge language models for high-quality translations.
-- **Easy Integration**: Seamlessly integrate with your existing project setup.
-- **Simplify Localization**: Streamline the process of localizing your project for international markets.
-
-## How It Works
-
-![Architecture](./imgs/architecture_241019.png)
-
-Co-op Translator takes Markdown files and images from your project folder and processes them as follows:
-
-1. **Text Extraction**: Extracts text from Markdown files and, if configured (e.g., with Azure AI Vision), text embedded within images.
-1. **AI Translation**: Sends the extracted text to the configured LLM (Azure OpenAI, OpenAI, etc.) for translation.
-1. **Result Saving**: Saves the translated Markdown files and images (with translated text) into language-specific folders, preserving the original formatting.
-
-## Getting Started
-
-Get started quickly with the CLI or set up full automation with GitHub Actions. Choose the approach that best fits your workflow:
-
-1. **Command Line (CLI)** - For one-time translations or manual control
-2. **GitHub Actions** - For automated translations on every push
-
-> [!NOTE]
-> While this tutorial focuses on Azure resources, you can use any supported language model.
-
-### Language Support
-
-Co-op Translator supports a wide range of languages to help you reach a global audience. For the canonical list and details (fonts, RTL, adding new languages), see [Supported Languages](./getting_started/supported-languages.md).
-
-#### Using Language Codes
-
-When using Co-op Translator, specify languages using their codes. For example:
+## Quick start
 
 ```bash
-# Translate to French, Spanish, and German
-translate -l "fr es de"
-
-# Translate to Chinese (Simplified) and Japanese
-translate -l "zh ja"
+pip install co-op-translator
+translate -l "ko ja fr" -md
 ```
 
-### Supported Models and Services
-
-| Type                  | Name                           |
-|-----------------------|--------------------------------|
-| Language Model        | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
-| AI Vision       | ![Azure AI Vision](https://img.shields.io/badge/Azure_AI_Vision-blue?style=flat-square) |
-
-> [!NOTE]
-> You can choose what to translate using command-line flags: `-md` for markdown files, `-img` for images, `-nb` for notebooks. If no flags are specified, all supported file types will be translated.
-
-### Initial Setup
-
-Before you begin, you'll need to set up the following resources:
-
-1. Language Model Resource (Required):
-   - Azure OpenAI (Recommended) - Provides high-quality translations with enterprise-grade reliability
-   - OpenAI - Alternative option if you don't have Azure access
-   - For detailed information about supported models, see [Supported Models and Services](#supported-models-and-services)
-
-1. AI Vision Resource (Optional):
-   - Azure AI Vision - Enables translation of text within images
-   - If not configured, you must explicitly specify what to translate using flags like `-md` or `-md -nb` (excluding `-img`)
-   - Recommended for projects with images containing text that needs translation
-
-1. Configuration Steps:
-   - Follow our [Azure AI setup guide](./getting_started/set-up-azure-ai.md) for detailed instructions
-   - Create a `.env` file with your API keys and endpoints (see [Quick Start](#quick-start-command-line) section)
-   - Ensure you have the necessary permissions and quotas for your chosen services
-
-### Project Setup Before Translation
-
-Before starting the translation process, follow these steps to prepare your project:
-
-1. Prepare Your README:
-   - Add a translations table to your README.md to link to translated versions
-   - Prefer copying from the canonical template: [README_languages_template.md](./README_languages_template.md)
-
-1. Clean Up Existing Translations (if needed):
-   - Remove any existing translation folders (e.g., `translations/`)
-   - Delete any old translation files to start fresh
-   - This ensures no conflicts with the new translation process
-
-### Quick Start: Command Line
-
-For a fast start using the command line:
-
-1. Create a virtual environment:
-
-    ```bash
-    python -m venv .venv
-    ```
-
-1. Activate the virtual environment:
-
-    - On Windows:
-
-    ```bash
-    .venv\scripts\activate
-    ```
-
-    - On Linux/macOS:
-
-    ```bash
-    source .venv/bin/activate
-    ```
-
-1. Install the package:
-
-    ```bash
-    pip install co-op-translator
-    ```
-
-1. Configure Credentials:
-
-    - Create a `.env` file in your project's root directory.
-    - Copy the contents from the [.env.template](./.env.template) file into your new `.env` file.
-    - Fill in the required API keys and endpoint information in your `.env` file.
-
-1. Run Translation:
-    - Navigate to your project's root directory in your terminal.
-    - Execute the translate command, specifying target languages with the `-l` flag:
-
-    ```bash
-    # Translate all file types (markdown, images, notebooks)
-    translate -l "ko ja fr"
-    
-    # Translate only markdown files
-    translate -l "ko" -md
-    
-    # Translate markdown and images, but not notebooks
-    translate -l "ko" -md -img
-    
-    # Translate only notebooks
-    translate -l "ko" -nb
-    ```
-
-    _(Replace `"ko ja fr"` with your desired space-separated language codes)_
-
-### Quick Start: Docker
-
-Use the published image from GHCR:
+Docker:
 
 ```bash
 docker pull ghcr.io/azure/co-op-translator:latest
+docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
 ```
 
-Run with your current folder mounted and `.env` provided:
+## Minimal setup
+
+- Create a `.env` using the template: [.env.template](./.env.template)
+- Configure one LLM provider (Azure OpenAI or OpenAI)
+- For image translation (`-img`), also set Azure AI Vision
+- Recommended: If you have translations generated by other tools, clean them up first to avoid conflicts (for example: `translations/`).
+- Recommended: Add a translations section to your README using the [README languages template](./README_languages_template.md)
+- See: [Set up Azure AI](./getting_started/set-up-azure-ai.md)
+
+## Usage
+
+Translate all supported types:
 
 ```bash
-# Bash / Zsh
-# Mounts the current directory (${PWD}) to /work and uses credentials from .env
-# Translates your project into French (fr) and Spanish (es)
-docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "fr es" -md
+translate -l "ko ja"
 ```
 
-```powershell
-# PowerShell
-docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translator:latest -l "fr es" -md
-```
-
-Notes:
-- The container’s default entrypoint is `translate`. To run other CLIs, override entrypoint, e.g.:
-
-- `-l "fr es"`: target languages (space-separated language codes)
-- `-md` / `-nb` / `-img`: translate only Markdown / Notebooks / Images
-- If no type flags are provided, all supported types are translated
+Only Markdown:
 
 ```bash
-# migrate-links
-docker run --rm -it --env-file .env -v "${PWD}:/work" --entrypoint migrate-links ghcr.io/azure/co-op-translator:latest -l "all" -y
+translate -l "de" -md
 ```
 
-- Image translation (`-img`) requires `AZURE_AI_SERVICE_API_KEY` and `AZURE_AI_SERVICE_ENDPOINT` in `.env`.
-- You may map a different working folder with `-v /path/to/repo:/work`.
+Markdown + images:
 
-### Detailed Usage Guides
+```bash
+translate -l "pt" -md -img
+```
 
-Choose the approach that best fits your workflow:
+Only notebooks:
 
-#### 1. Using the Command Line (CLI)
+```bash
+translate -l "zh" -nb
+```
 
-- Best for: One-time translations, manual control, or integration into custom scripts.
-- Requires: Local installation of Python and the `co-op-translator` package.
-- Guide: [Command Line Guide](./getting_started/command-line-guide/command-line-guide.md)
+More flags: [Command reference](./getting_started/command-reference.md)
 
-#### 2. Using GitHub Actions (Automation)
+## Features
 
-- Best for: Automatically translating content whenever changes are pushed to your repository. Keeps translations consistently up-to-date.
-- Requires: Setting up a workflow file (`.github/workflows`) in your repository. No local installation needed.
-- Guides:
-  - [GitHub Actions Guide (Public Repositories & Standard Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) - Use this for most public or personal repositories relying on standard repository secrets.
-  - [GitHub Actions Guide (Microsoft Organization Repos & Org-Level Setups)](./getting_started/github-actions-guide/github-actions-guide-org.md) - Use this guide if you are working within the Microsoft GitHub organization or need to leverage organization-level secrets or runners.
+- Automated translation for Markdown, notebooks, and images
+- Keeps translations in sync with source changes
+- Works locally (CLI) or in CI (GitHub Actions)
+- Uses Azure OpenAI or OpenAI; optional Azure AI Vision for images
+- Preserves Markdown formatting and structure
 
-### Troubleshooting and Tips
+## Docs
 
-- [Troubleshooting Guide](./getting_started/troubleshooting.md)
+- [Command-line guide](./getting_started/command-line-guide/command-line-guide.md)
+- [GitHub Actions guide (Public repositories & standard secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md)
+- [GitHub Actions guide (Microsoft organization repositories & org-level setups)](./getting_started/github-actions-guide/github-actions-guide-org.md)
+- [Supported languages](./getting_started/supported-languages.md)
+- [Troubleshooting](./getting_started/troubleshooting.md)
 
-### Additional Resources
+## Support Us and Foster Global Learning
 
-- [Command Reference](./getting_started/command-reference.md): Detailed guide to all available commands and options.
-- [Supported Languages](./getting_started/supported-languages.md): Check the list of supported languages and instructions for adding new ones.
+Join us in revolutionizing how educational content is shared globally! Give [Co-op Translator](https://github.com/azure/co-op-translator) a ⭐ on GitHub and support our mission to break down language barriers in learning and technology. Your interest and contributions make a significant impact! Code contributions and feature suggestions are always welcome.
+
+### Explore Microsoft educational content in your language
+
+- [AZD for Beginners](https://github.com/microsoft/AZD-for-beginners)
+- [Edge AI for Beginners](https://github.com/microsoft/edgeai-for-beginners)
+- [Model Context Protocol (MCP) For Beginners](https://github.com/microsoft/mcp-for-beginners)
+- [AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners)
+- [Generative AI for Beginners using .NET](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
+- [Generative AI for Beginners](https://github.com/microsoft/generative-ai-for-beginners)
+- [Generative AI for Beginners using Java](https://github.com/microsoft/generative-ai-for-beginners-java)
+- [ML for Beginners](https://aka.ms/ml-beginners)
+- [Data Science for Beginners](https://aka.ms/datascience-beginners)
+- [AI for Beginners](https://aka.ms/ai-beginners)
+- [Cybersecurity for Beginners](https://github.com/microsoft/Security-101)
+- [Web Dev for Beginners](https://aka.ms/webdev-beginners)
+- [IoT for Beginners](https://aka.ms/iot-beginners)
+- [PhiCookBook](https://github.com/microsoft/PhiCookBook)
 
 ## Video Presentations
 
@@ -273,10 +131,6 @@ Learn more about Co-op Translator through our presentations _(Click the image be
 - **Open at Microsoft**: A brief 18-minute introduction and quick guide on how to use Co-op Translator.
 
   [![Open at Microsoft](./imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
-
-## Support Us and Foster Global Learning
-
-Join us in revolutionizing how educational content is shared globally! Give [Co-op Translator](https://github.com/azure/co-op-translator) a ⭐ on GitHub and support our mission to break down language barriers in learning and technology. Your interest and contributions make a significant impact! Code contributions and feature suggestions are always welcome.
 
 ## Contributing
 

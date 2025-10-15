@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-07-04T08:14:27+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T02:39:48+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "ja"
 }
 -->
-# Co-op Translator GitHub Actionの使用 (パブリックセットアップ)
+# Co-op Translator GitHub Actionの利用方法（パブリックセットアップ）
 
-**対象読者:** このガイドは、標準のGitHub Actionsの権限が十分なほとんどのパブリックまたはプライベートリポジトリのユーザーを対象としています。組み込みの`GITHUB_TOKEN`を利用します。
+**対象者:** このガイドは、ほとんどのパブリックまたはプライベートリポジトリで、標準のGitHub Actions権限が十分なユーザー向けです。組み込みの`GITHUB_TOKEN`を利用します。
 
-Co-op Translator GitHub Actionを使用して、リポジトリのドキュメントの翻訳を自動化します。このガイドでは、ソースのMarkdownファイルや画像が変更されたときに、更新された翻訳を含むプルリクエストを自動的に作成するためのアクションの設定方法を説明します。
+Co-op Translator GitHub Actionを使えば、リポジトリのドキュメント翻訳を自動化できます。このガイドでは、ソースのMarkdownファイルや画像が変更された際に、翻訳を更新したプルリクエストを自動作成する設定方法を説明します。
 
 > [!IMPORTANT]
 >
-> **適切なガイドの選択:**
+> **ガイドの選び方:**
 >
-> このガイドは、**標準の`GITHUB_TOKEN`を使用した簡単なセットアップ**を詳述しています。これは、機密性の高いGitHub App Private Keysを管理する必要がないため、ほとんどのユーザーに推奨される方法です。
+> このガイドは**標準の`GITHUB_TOKEN`を使ったシンプルなセットアップ**について説明しています。ほとんどのユーザーに推奨される方法で、GitHub Appのプライベートキー管理が不要です。
 >
 
-## 前提条件
+## 事前準備
 
-GitHub Actionを設定する前に、必要なAIサービスの資格情報を用意してください。
+GitHub Actionの設定前に、必要なAIサービスの認証情報を用意してください。
 
-**1. 必須: AI言語モデルの資格情報**
-少なくとも1つのサポートされている言語モデルの資格情報が必要です:
+**1. 必須: AI言語モデルの認証情報**
+サポートされている言語モデルのいずれかの認証情報が必要です:
 
 - **Azure OpenAI**: エンドポイント、APIキー、モデル/デプロイメント名、APIバージョンが必要です。
-- **OpenAI**: APIキーが必要です。（オプション: 組織ID、ベースURL、モデルID）
-- 詳細は[サポートされているモデルとサービス](../../../../README.md)を参照してください。
+- **OpenAI**: APIキー（オプション: Org ID、Base URL、Model ID）。
+- 詳細は[サポートされているモデルとサービス](../../../../README.md)をご覧ください。
 
-**2. オプション: AIビジョンの資格情報（画像翻訳用）**
+**2. オプション: AI Vision認証情報（画像翻訳用）**
 
-- 画像内のテキストを翻訳する必要がある場合のみ必要です。
+- 画像内のテキストも翻訳したい場合のみ必要です。
 - **Azure AI Vision**: エンドポイントとサブスクリプションキーが必要です。
-- 提供されない場合、アクションは[Markdownのみモード](../markdown-only-mode.md)にデフォルトします。
+- 未設定の場合、アクションは[Markdownのみモード](../markdown-only-mode.md)で動作します。
 
 ## セットアップと設定
 
-標準の`GITHUB_TOKEN`を使用して、リポジトリにCo-op Translator GitHub Actionを設定する手順に従ってください。
+標準の`GITHUB_TOKEN`を使って、Co-op Translator GitHub Actionをリポジトリに設定する手順です。
 
-### ステップ1: 認証の理解 (`GITHUB_TOKEN`の使用)
+### ステップ1: 認証の仕組みを理解する（`GITHUB_TOKEN`の利用）
 
-このワークフローは、GitHub Actionsによって提供される組み込みの`GITHUB_TOKEN`を使用します。このトークンは、**ステップ3**で設定された設定に基づいて、リポジトリと対話するための権限をワークフローに自動的に付与します。
+このワークフローは、GitHub Actionsが提供する組み込みの`GITHUB_TOKEN`を利用します。このトークンは、**ステップ3**で設定した権限に基づき、リポジトリ操作の権限を自動的に付与します。
 
-### ステップ2: リポジトリのシークレットを設定する
+### ステップ2: リポジトリシークレットの設定
 
-**AIサービスの資格情報**をリポジトリ設定の暗号化されたシークレットとして追加するだけです。
+**AIサービスの認証情報**のみを、リポジトリの設定で暗号化されたシークレットとして追加します。
 
-1.  対象のGitHubリポジトリに移動します。
-2.  **Settings** > **Secrets and variables** > **Actions**に進みます。
-3.  **Repository secrets**の下で、以下にリストされた各必要なAIサービスシークレットのために**New repository secret**をクリックします。
+1. 対象のGitHubリポジトリにアクセスします。
+2. **Settings** > **Secrets and variables** > **Actions**に進みます。
+3. **Repository secrets**の下で、必要なAIサービスごとに**New repository secret**をクリックして追加します。
 
-    ![設定アクションの選択](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.ja.png) *(画像参照: シークレットを追加する場所を示しています)*
+    <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.ja.png" alt="Select setting action">（画像説明: シークレット追加箇所）
 
-**必要なAIサービスシークレット（前提条件に基づいて該当するすべてを追加）:**
+**必要なAIサービスシークレット（事前準備に応じてすべて追加してください）:**
 
-| シークレット名                         | 説明                               | 値のソース                     |
+| シークレット名                         | 説明                                   | 値の取得元                     |
 | :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Azure AIサービス（コンピュータビジョン）のキー  | あなたのAzure AI Foundry               |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AIサービス（コンピュータビジョン）のエンドポイント | あなたのAzure AI Foundry               |
-| `AZURE_OPENAI_API_KEY`              | Azure OpenAIサービスのキー              | あなたのAzure AI Foundry               |
-| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAIサービスのエンドポイント         | あなたのAzure AI Foundry               |
-| `AZURE_OPENAI_MODEL_NAME`           | あなたのAzure OpenAIモデル名              | あなたのAzure AI Foundry               |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | あなたのAzure OpenAIデプロイメント名         | あなたのAzure AI Foundry               |
-| `AZURE_OPENAI_API_VERSION`          | Azure OpenAIのAPIバージョン              | あなたのAzure AI Foundry               |
-| `OPENAI_API_KEY`                    | OpenAIのAPIキー                        | あなたのOpenAIプラットフォーム              |
-| `OPENAI_ORG_ID`                     | OpenAI組織ID（オプション）         | あなたのOpenAIプラットフォーム              |
-| `OPENAI_CHAT_MODEL_ID`              | 特定のOpenAIモデルID（オプション）       | あなたのOpenAIプラットフォーム              |
-| `OPENAI_BASE_URL`                   | カスタムOpenAI APIベースURL（オプション）     | あなたのOpenAIプラットフォーム              |
+| `AZURE_AI_SERVICE_API_KEY`            | Azure AI Service（Computer Vision）のキー  | Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI Service（Computer Vision）のエンドポイント | Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`              | Azure OpenAIサービスのキー              | Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAIサービスのエンドポイント         | Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`           | Azure OpenAIモデル名                    | Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Azure OpenAIデプロイメント名             | Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`          | Azure OpenAIのAPIバージョン              | Azure AI Foundry               |
+| `OPENAI_API_KEY`                    | OpenAIのAPIキー                        | OpenAI Platform              |
+| `OPENAI_ORG_ID`                     | OpenAI組織ID（オプション）              | OpenAI Platform              |
+| `OPENAI_CHAT_MODEL_ID`              | OpenAIモデルID（オプション）            | OpenAI Platform              |
+| `OPENAI_BASE_URL`                   | OpenAI APIのカスタムBase URL（オプション） | OpenAI Platform              |
 
-### ステップ3: ワークフローの権限を設定する
+### ステップ3: ワークフロー権限の設定
 
-GitHub Actionは、コードをチェックアウトし、プルリクエストを作成するために`GITHUB_TOKEN`を介して付与された権限を必要とします。
+GitHub Actionが`GITHUB_TOKEN`経由でコードのチェックアウトやプルリクエスト作成を行うための権限が必要です。
 
-1.  リポジトリで、**Settings** > **Actions** > **General**に進みます。
-2.  **Workflow permissions**セクションまでスクロールします。
-3.  **Read and write permissions**を選択します。これにより、このワークフローに必要な`contents: write`と`pull-requests: write`の権限が`GITHUB_TOKEN`に付与されます。
-4.  **Allow GitHub Actions to create and approve pull requests**のチェックボックスが**チェックされている**ことを確認します。
-5.  **Save**を選択します。
+1. リポジトリで**Settings** > **Actions** > **General**に進みます。
+2. **Workflow permissions**セクションまでスクロールします。
+3. **Read and write permissions**を選択します。これで`GITHUB_TOKEN`に`contents: write`と`pull-requests: write`権限が付与されます。
+4. **Allow GitHub Actions to create and approve pull requests**のチェックボックスが**オン**になっていることを確認します。
+5. **Save**をクリックします。
 
-![権限設定](../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.ja.png)
+<img src="../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.ja.png" alt="Permission setting">
 
-### ステップ4: ワークフローファイルを作成する
+### ステップ4: ワークフローファイルの作成
 
-最後に、`GITHUB_TOKEN`を使用して自動化されたワークフローを定義するYAMLファイルを作成します。
+最後に、`GITHUB_TOKEN`を使った自動化ワークフローのYAMLファイルを作成します。
 
-1.  リポジトリのルートディレクトリに、`.github/workflows/`ディレクトリが存在しない場合は作成します。
-2.  `.github/workflows/`内に`co-op-translator.yml`という名前のファイルを作成します。
-3.  以下の内容を`co-op-translator.yml`に貼り付けます。
+1. リポジトリのルートディレクトリに`.github/workflows/`ディレクトリがなければ作成します。
+2. `.github/workflows/`内に`co-op-translator.yml`というファイルを作成します。
+3. 下記の内容を`co-op-translator.yml`に貼り付けます。
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -169,9 +169,23 @@ jobs:
             translated_images/
 ```
 4.  **ワークフローのカスタマイズ:**
-  - **[!IMPORTANT] 対象言語:** `Run Co-op Translator`ステップで、プロジェクトの要件に合わせて`translate -l "..." -y`コマンド内の言語コードのリストを**必ず確認し、修正**してください。例のリスト（`ar de es...`）は置き換えるか調整する必要があります。
-  - **トリガー (`on:`):** 現在のトリガーは`main`へのプッシュごとに実行されます。大規模なリポジトリの場合、関連するファイル（例: ソースドキュメント）が変更されたときにのみワークフローを実行するために`paths:`フィルターを追加することを検討してください（YAMLのコメント例を参照）、ランナーミニッツを節約します。
-  - **PRの詳細:** 必要に応じて、`Create Pull Request`ステップで`commit-message`、`title`、`body`、`branch`名、`labels`をカスタマイズしてください。
+  - **[!IMPORTANT] 対象言語:** `Run Co-op Translator`ステップ内の`translate -l "..." -y`コマンドの言語コードリストは、必ずプロジェクトに合わせて見直し・修正してください。例のリスト（`ar de es...`）は置き換えや調整が必要です。
+  - **トリガー（`on:`）:** 現在の設定では`main`へのpushごとに実行されます。大規模リポジトリの場合は、YAML内のコメント例のように`paths:`フィルターを追加し、関連ファイル（例: ドキュメントソース）が変更された時のみ実行することで、ランナーの消費を抑えられます。
+  - **PR詳細:** `Create Pull Request`ステップの`commit-message`、`title`、`body`、`branch`名、`labels`なども必要に応じてカスタマイズしてください。
 
-**免責事項**:
-この文書はAI翻訳サービス[Co-op Translator](https://github.com/Azure/co-op-translator)を使用して翻訳されています。正確性を追求していますが、自動翻訳には誤りや不正確さが含まれる可能性があることにご注意ください。元の言語での文書が権威ある情報源と見なされるべきです。重要な情報については、専門の人間による翻訳をお勧めします。この翻訳の使用に起因する誤解や誤解について、当社は責任を負いません。
+## ワークフローの実行
+
+> [!WARNING]  
+> **GitHubホストランナーの時間制限:**  
+> `ubuntu-latest`などのGitHubホストランナーは**最大実行時間が6時間**です。  
+> ドキュメント量が多い場合、翻訳処理が6時間を超えるとワークフローは自動的に終了します。  
+> 対策として:  
+> - **セルフホストランナー**の利用（時間制限なし）  
+> - 実行ごとの対象言語数を減らす
+
+`co-op-translator.yml`ファイルがmainブランチ（または`on:`トリガーで指定したブランチ）にマージされると、そのブランチへの変更がpushされるたびに（`paths`フィルターを設定していれば該当ファイル変更時のみ）ワークフローが自動実行されます。
+
+---
+
+**免責事項**：
+本書類は、AI翻訳サービス [Co-op Translator](https://github.com/Azure/co-op-translator) を使用して翻訳されています。正確性には努めておりますが、自動翻訳には誤りや不正確な表現が含まれる場合がありますのでご注意ください。原文（元の言語の文書）が正式な情報源となります。重要な情報については、専門の人間による翻訳を推奨します。本翻訳の利用によって生じたいかなる誤解や誤認についても、当方は責任を負いかねます。

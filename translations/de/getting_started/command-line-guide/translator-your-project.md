@@ -1,42 +1,42 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:39:50+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T02:13:34+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "de"
 }
 -->
-# Übersetze dein Projekt mit Co-op Translator
+# Übersetzen Sie Ihr Projekt mit dem Co-op Translator
 
-Der **Co-op Translator** ist ein Kommandozeilen-Tool (CLI), das dir hilft, Markdown- und Bilddateien in deinem Projekt in mehrere Sprachen zu übersetzen. Dieser Abschnitt erklärt, wie du das Tool benutzt, stellt die verschiedenen CLI-Optionen vor und gibt Beispiele für unterschiedliche Anwendungsfälle.
+Der **Co-op Translator** ist ein Kommandozeilen-Tool (CLI), mit dem Sie Markdown- und Bilddateien in Ihrem Projekt in mehrere Sprachen übersetzen können. In diesem Abschnitt erfahren Sie, wie Sie das Tool verwenden, welche CLI-Optionen es gibt und erhalten Beispiele für verschiedene Anwendungsfälle.
 
 > [!NOTE]
-> Für eine vollständige Liste der Befehle und deren ausführliche Beschreibungen, siehe bitte die [Command reference](./command-reference.md).
+> Eine vollständige Liste aller Befehle und deren ausführliche Beschreibung finden Sie in der [Befehlsreferenz](./command-reference.md).
 
 ---
 
 ## Beispiel-Szenarien und Befehle
 
-Hier sind einige gängige Anwendungsfälle für den **Co-op Translator** mit den passenden Befehlen.
+Hier sind einige typische Anwendungsfälle für den **Co-op Translator** mit den passenden Befehlen.
 
-### 1. Grundlegende Übersetzung (Eine Sprache)
+### 1. Grundlegende Übersetzung (Einzelne Sprache)
 
-Um dein gesamtes Projekt (Markdown-Dateien und Bilder) in eine einzelne Sprache, z. B. Koreanisch, zu übersetzen, verwende den folgenden Befehl:
+Um Ihr gesamtes Projekt (Markdown-Dateien und Bilder) in eine einzelne Sprache, z. B. Koreanisch, zu übersetzen, verwenden Sie folgenden Befehl:
 
 ```bash
 translate -l "ko"
 ```
 
-Dieser Befehl übersetzt alle Markdown- und Bilddateien ins Koreanische und fügt neue Übersetzungen hinzu, ohne vorhandene zu löschen.
+Dieser Befehl übersetzt alle Markdown- und Bilddateien ins Koreanische und fügt neue Übersetzungen hinzu, ohne bestehende zu löschen.
 
 > [!TIP]
 >
-> Möchtest du wissen, welche Sprachcodes im **Co-op Translator** verfügbar sind? Schau dir den Abschnitt [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) im Repository an.
+> Sie möchten wissen, welche Sprachcodes im **Co-op Translator** verfügbar sind? Schauen Sie im Abschnitt [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) im Repository nach.
 
 #### Beispiel im Phi-3 CookBook
 
-Im **Phi-3 CookBook** habe ich die folgende Methode verwendet, um die koreanische Übersetzung für die bestehenden Markdown-Dateien und Bilder hinzuzufügen.
+Im **Phi-3 CookBook** habe ich folgende Methode verwendet, um die koreanische Übersetzung für die vorhandenen Markdown-Dateien und Bilder hinzuzufügen.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -46,7 +46,7 @@ Translating markdown files: 100%|███████████████�
 
 ### 2. Übersetzung in mehrere Sprachen
 
-Um dein Projekt in mehrere Sprachen zu übersetzen (z. B. Spanisch, Französisch und Deutsch), verwende diesen Befehl:
+Um Ihr Projekt in mehrere Sprachen (z. B. Spanisch, Französisch und Deutsch) zu übersetzen, verwenden Sie diesen Befehl:
 
 ```bash
 translate -l "es fr de"
@@ -56,7 +56,7 @@ Dieser Befehl übersetzt das Projekt in Spanisch, Französisch und Deutsch und f
 
 #### Beispiel im Phi-3 CookBook
 
-Im **Phi-3 CookBook** habe ich nach dem Einholen der neuesten Änderungen, um die aktuellsten Commits zu berücksichtigen, die folgende Methode genutzt, um neu hinzugefügte Markdown-Dateien und Bilder zu übersetzen.
+Im **Phi-3 CookBook** habe ich nach dem Aktualisieren auf die neuesten Änderungen folgende Methode verwendet, um neu hinzugefügte Markdown-Dateien und Bilder zu übersetzen.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,21 +65,21 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Obwohl es generell empfohlen wird, jeweils nur eine Sprache zu übersetzen, kann es in Situationen wie dieser, bei der bestimmte Änderungen hinzugefügt werden müssen, effizient sein, mehrere Sprachen gleichzeitig zu übersetzen.
+> Es wird generell empfohlen, jeweils nur eine Sprache zu übersetzen. In Fällen wie diesem, in denen gezielte Änderungen hinzugefügt werden müssen, kann die Übersetzung mehrerer Sprachen gleichzeitig jedoch effizient sein.
 
-### 3. Übersetzungen aktualisieren (löscht bestehende Übersetzungen)
+### 3. Übersetzungen aktualisieren (Löscht bestehende Übersetzungen)
 
-Um bestehende Übersetzungen zu aktualisieren (d.h. die aktuellen Übersetzungen zu löschen und durch neue zu ersetzen), benutze die Option `-u`. Dadurch werden alle bestehenden Übersetzungen für die angegebenen Sprachen gelöscht und neu übersetzt.
+Um bestehende Übersetzungen zu aktualisieren (d. h. die aktuellen Übersetzungen zu löschen und durch neue zu ersetzen), verwenden Sie die Option `-u`. Dadurch werden alle vorhandenen Übersetzungen für die angegebenen Sprachen gelöscht und neu übersetzt.
 
 ```bash
 translate -l "ko" -u
 ```
 
-Warnung: Dieser Befehl fordert dich vor dem Löschen der bestehenden Übersetzungen zur Bestätigung auf.
+Achtung: Dieser Befehl fordert Sie vor dem Löschen der bestehenden Übersetzungen zur Bestätigung auf.
 
 #### Beispiel im Phi-3 CookBook
 
-Im **Phi-3 CookBook** habe ich die folgende Methode verwendet, um alle übersetzten Dateien auf Spanisch zu aktualisieren. Ich empfehle diese Methode, wenn es größere Änderungen am Originalinhalt in mehreren Markdown-Dokumenten gibt. Sind nur wenige übersetzte Markdown-Dateien zu aktualisieren, ist es effizienter, diese Dateien manuell zu löschen und anschließend die `-a` Methode zu verwenden, um die aktualisierten Übersetzungen hinzuzufügen.
+Im **Phi-3 CookBook** habe ich folgende Methode verwendet, um alle übersetzten Dateien auf Spanisch zu aktualisieren. Ich empfehle diese Methode, wenn es größere Änderungen am Originalinhalt in mehreren Markdown-Dokumenten gibt. Wenn nur wenige übersetzte Markdown-Dateien aktualisiert werden müssen, ist es effizienter, diese gezielt zu löschen und dann mit der `-a` Methode die aktualisierten Übersetzungen hinzuzufügen.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -92,35 +92,25 @@ Translating markdown files: 100%|███████████████�
 
 ### 5. Nur Bilder übersetzen
 
-Um nur die Bilddateien in deinem Projekt zu übersetzen, benutze die Option `-img`:
+Um nur die Bilddateien in Ihrem Projekt zu übersetzen, verwenden Sie die Option `-img`:
 
 ```bash
 translate -l "ko" -img
 ```
 
-Dieser Befehl übersetzt nur die Bilder ins Koreanische, ohne die Markdown-Dateien zu beeinflussen.
+Dieser Befehl übersetzt ausschließlich die Bilder ins Koreanische, ohne die Markdown-Dateien zu verändern.
 
 ### 6. Nur Markdown-Dateien übersetzen
 
-Um nur die Markdown-Dateien in deinem Projekt zu übersetzen, benutze die Option `-md`:
+Um nur die Markdown-Dateien in Ihrem Projekt zu übersetzen, verwenden Sie die Option `-md`:
 
 ```bash
 translate -l "ko" -md
 ```
 
-### 7. Überprüfung auf Fehler in übersetzten Dateien
-
-Wenn du übersetzte Dateien auf Fehler überprüfen und die Übersetzung bei Bedarf erneut ausführen möchtest, benutze die Option `-chk`:
-
-```bash
-translate -l "ko" -chk
-```
-
-Dieser Befehl durchsucht die übersetzten Markdown-Dateien und versucht, fehlerhafte Dateien erneut zu übersetzen.
-
 #### Beispiel im Phi-3 CookBook
 
-Im **Phi-3 CookBook** habe ich die folgende Methode verwendet, um Übersetzungsfehler in den koreanischen Dateien zu überprüfen und automatisch für Dateien mit Problemen die Übersetzung erneut zu starten.
+Im **Phi-3 CookBook** habe ich folgende Methode verwendet, um Übersetzungsfehler in den koreanischen Dateien zu prüfen und die Übersetzung für fehlerhafte Dateien automatisch erneut auszuführen.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -129,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Diese Option prüft auf Übersetzungsfehler. Aktuell wird eine Datei als fehlerhaft markiert, wenn der Unterschied bei Zeilenumbrüchen zwischen Original und Übersetzung mehr als sechs beträgt. Ich plane, dieses Kriterium zukünftig flexibler zu gestalten.
+Diese Option prüft auf Übersetzungsfehler. Aktuell wird eine Datei als fehlerhaft markiert, wenn die Anzahl der Zeilenumbrüche im Original und in der Übersetzung um mehr als sechs abweicht. Ich plane, dieses Kriterium künftig flexibler zu gestalten.
 
-Diese Methode ist z.B. nützlich, um fehlende Abschnitte oder beschädigte Übersetzungen zu erkennen, und startet für diese Dateien automatisch die erneute Übersetzung.
+Diese Methode ist zum Beispiel hilfreich, um fehlende Abschnitte oder beschädigte Übersetzungen zu erkennen und die Übersetzung für diese Dateien automatisch zu wiederholen.
 
-Wenn du jedoch bereits weißt, welche Dateien problematisch sind, ist es effizienter, diese manuell zu löschen und dann die Option `-a` option to re-translate them.
+Wenn Sie jedoch bereits wissen, welche Dateien problematisch sind, ist es effizienter, diese gezielt zu löschen und mit der `-a` Option erneut zu übersetzen.
 
-### 8. Debug Mode
+### 8. Debug-Modus
 
-To enable detailed logging for troubleshooting, use the `-d` zu verwenden:
+Um detaillierte Protokolle zur Fehlerbehebung zu erhalten, verwenden Sie die Option `-d`:
 
 ```bash
 translate -l "ko" -d
 ```
 
-Dieser Befehl führt die Übersetzung im Debug-Modus aus und liefert zusätzliche Protokollinformationen, die bei der Fehlersuche helfen.
+Dieser Befehl führt die Übersetzung im Debug-Modus aus und liefert zusätzliche Protokollinformationen, die bei der Fehlersuche helfen können.
 
 #### Beispiel im Phi-3 CookBook
 
-Im **Phi-3 CookBook** bin ich auf ein Problem gestoßen, bei dem Übersetzungen mit vielen Links in Markdown-Dateien Formatierungsfehler verursachten, wie z. B. fehlerhafte Übersetzungen und ignorierte Zeilenumbrüche. Um das Problem zu analysieren, habe ich die Option `-d` genutzt, um den Übersetzungsprozess genauer zu beobachten.
+Im **Phi-3 CookBook** bin ich auf ein Problem gestoßen, bei dem Übersetzungen mit vielen Links in Markdown-Dateien zu Formatierungsfehlern führten, z. B. zu fehlerhaften Übersetzungen und ignorierten Zeilenumbrüchen. Um das Problem zu analysieren, habe ich die Option `-d` verwendet, um den Ablauf der Übersetzung zu beobachten.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -155,55 +145,59 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 ...
 ```
 
-### 9. Alle Sprachen übersetzen
+### 9. Übersetzung in alle Sprachen
 
-Wenn du das Projekt in alle unterstützten Sprachen übersetzen möchtest, verwende das Schlüsselwort all.
+Wenn Sie das Projekt in alle unterstützten Sprachen übersetzen möchten, verwenden Sie das Schlüsselwort all.
 
 > [!WARNING]
-> Die Übersetzung aller Sprachen auf einmal kann je nach Projektgröße sehr viel Zeit in Anspruch nehmen. Zum Beispiel hat die Übersetzung des **Phi-3 CookBook** ins Spanische etwa 2 Stunden gedauert. Angesichts des Umfangs ist es nicht praktikabel, dass eine Person 20 Sprachen alleine bearbeitet. Es empfiehlt sich, die Arbeit auf mehrere Mitwirkende aufzuteilen, die jeweils ein oder zwei Sprachen betreuen und die Übersetzungen schrittweise aktualisieren.
+> Die Übersetzung in alle Sprachen kann je nach Projektgröße sehr viel Zeit in Anspruch nehmen. Zum Beispiel hat die Übersetzung des **Phi-3 CookBook** ins Spanische etwa 2 Stunden gedauert. Bei diesem Umfang ist es nicht praktikabel, dass eine Person 20 Sprachen übernimmt. Es empfiehlt sich, die Arbeit auf mehrere Mitwirkende aufzuteilen, sodass jeder ein oder zwei Sprachen betreut und die Übersetzungen schrittweise aktualisiert werden.
 
 ```bash
 translate -l "all"
 ```
 
-Dieser Befehl übersetzt das Projekt in alle verfügbaren Sprachen. Wenn du fortfährst, kann die Übersetzung je nach Größe des Projekts viel Zeit benötigen.
+Dieser Befehl übersetzt das Projekt in alle verfügbaren Sprachen. Je nach Größe des Projekts kann die Übersetzung viel Zeit in Anspruch nehmen.
 
 > [!TIP]
 >
-> ### Manuelles Löschen übersetzter Dateien (optional)
+> ### Manuelles Löschen von übersetzten Dateien (optional)
 > Übersetzte Dateien werden jetzt automatisch erkannt und bereinigt, wenn eine Quelldatei aktualisiert wird.
 >
-> Möchtest du jedoch eine Übersetzung manuell aktualisieren – zum Beispiel eine bestimmte Datei neu machen oder das Systemverhalten überschreiben – kannst du den folgenden Befehl verwenden, um alle Versionen der Datei in den Sprachordnern zu löschen.
+> Wenn Sie jedoch eine Übersetzung manuell aktualisieren möchten – z. B. um eine bestimmte Datei neu zu übersetzen oder das Systemverhalten zu überschreiben – können Sie mit folgendem Befehl alle Versionen der Datei in den Sprachordnern löschen.
 >
 > ### Unter Windows:
 > 1. **Mit der Eingabeaufforderung**:
->    - Öffne die Eingabeaufforderung.
->    - Navigiere mit dem `cd`-Befehl in den Ordner, in dem sich die Dateien befinden.
->    - Verwende den folgenden Befehl, um Dateien zu löschen:
+>    - Öffnen Sie die Eingabeaufforderung.
+>    - Navigieren Sie mit dem Befehl `cd` in den Ordner, in dem sich die Dateien befinden.
+>    - Verwenden Sie folgenden Befehl zum Löschen:
 >      ```
 >      del /s *filename*
 >      ```
->      Die Option `/s` durchsucht auch Unterverzeichnisse.
+>      Ersetzen Sie `filename` durch den entsprechenden Teil des Dateinamens. Die Option `/s` durchsucht auch Unterordner.
 >
 > 2. **Mit PowerShell**:
->    - Öffne PowerShell.
->    - Führe diesen Befehl aus:
+>    - Öffnen Sie PowerShell.
+>    - Führen Sie diesen Befehl aus:
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      Ersetze `"C:\YourPath"` durch den Pfad zu deinem Ordner.
+>      Ersetzen Sie `"C:\YourPath"` durch den Ordnerpfad und `filename` durch den entsprechenden Namen.
 >
-> 3. **Mit `cd` und `find`**:
->    ```bash
+> ### Unter macOS/Linux:
+> 1. **Mit dem Terminal**:
+>   - Öffnen Sie das Terminal.
+>   - Navigieren Sie mit `cd` in das Verzeichnis.
+>   - Verwenden Sie den Befehl `find`:
+>     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
+>     Ersetzen Sie `filename` durch den entsprechenden Namen.
 >
-> 4. **Zum Aktualisieren der neuesten Dateiänderungen**:
->    Verwende den Befehl `filename` with the specific name.
+> Überprüfen Sie die Dateien immer sorgfältig, bevor Sie sie löschen, um versehentlichen Datenverlust zu vermeiden.
 >
-> Always double-check the files before deleting to avoid accidental loss. 
->
-> Once you have deleted the files which need to be replace simply rerun your `translate -l`.
+> Nachdem Sie die zu ersetzenden Dateien gelöscht haben, führen Sie einfach erneut Ihren `translate -l` Befehl aus, um die neuesten Änderungen zu aktualisieren.
+
+---
 
 **Haftungsausschluss**:  
-Dieses Dokument wurde mit dem KI-Übersetzungsdienst [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir uns um Genauigkeit bemühen, beachten Sie bitte, dass automatisierte Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner Ursprungssprache gilt als maßgebliche Quelle. Für wichtige Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die durch die Verwendung dieser Übersetzung entstehen.
+Dieses Dokument wurde mit dem KI-Übersetzungsdienst [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir uns um Genauigkeit bemühen, beachten Sie bitte, dass automatisierte Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner Ausgangssprache sollte als maßgebliche Quelle betrachtet werden. Für kritische Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die sich aus der Nutzung dieser Übersetzung ergeben.

@@ -1,42 +1,42 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:52:28+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T03:36:08+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "vi"
 }
 -->
 # Dịch dự án của bạn bằng Co-op Translator
 
-**Co-op Translator** là một công cụ dòng lệnh (CLI) giúp bạn dịch các tệp markdown và hình ảnh trong dự án sang nhiều ngôn ngữ khác nhau. Phần này giải thích cách sử dụng công cụ, trình bày các tùy chọn CLI và cung cấp các ví dụ cho các trường hợp sử dụng khác nhau.
+**Co-op Translator** là một công cụ dòng lệnh (CLI) giúp bạn dịch các file markdown và hình ảnh trong dự án sang nhiều ngôn ngữ khác nhau. Phần này sẽ hướng dẫn cách sử dụng công cụ, giải thích các tùy chọn CLI, và cung cấp ví dụ cho các trường hợp sử dụng khác nhau.
 
 > [!NOTE]
-> Để xem danh sách đầy đủ các lệnh cùng mô tả chi tiết, vui lòng tham khảo [Command reference](./command-reference.md).
+> Để xem danh sách đầy đủ các lệnh và mô tả chi tiết, hãy tham khảo [Command reference](./command-reference.md).
 
 ---
 
-## Các Tình Huống và Lệnh Ví Dụ
+## Các trường hợp ví dụ và lệnh sử dụng
 
-Dưới đây là một số trường hợp sử dụng phổ biến của **Co-op Translator**, kèm theo các lệnh thích hợp để chạy.
+Dưới đây là một số trường hợp sử dụng phổ biến của **Co-op Translator** cùng với các lệnh phù hợp.
 
-### 1. Dịch Cơ Bản (Một Ngôn Ngữ)
+### 1. Dịch cơ bản (Một ngôn ngữ)
 
-Để dịch toàn bộ dự án của bạn (các tệp markdown và hình ảnh) sang một ngôn ngữ duy nhất, ví dụ tiếng Hàn, hãy dùng lệnh sau:
+Để dịch toàn bộ dự án của bạn (file markdown và hình ảnh) sang một ngôn ngữ, ví dụ như tiếng Hàn, hãy dùng lệnh sau:
 
 ```bash
 translate -l "ko"
 ```
 
-Lệnh này sẽ dịch tất cả các tệp markdown và hình ảnh sang tiếng Hàn, thêm bản dịch mới mà không xóa bất kỳ bản dịch hiện có nào.
+Lệnh này sẽ dịch tất cả các file markdown và hình ảnh sang tiếng Hàn, thêm bản dịch mới mà không xóa các bản dịch đã có.
 
 > [!TIP]
 >
-> Muốn biết các mã ngôn ngữ được hỗ trợ trong **Co-op Translator**? Hãy xem phần [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) trong kho lưu trữ để biết thêm chi tiết.
+> Muốn biết mã ngôn ngữ nào có sẵn trong **Co-op Translator**? Hãy xem phần [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) trong kho lưu trữ để biết thêm chi tiết.
 
 #### Ví dụ trên Phi-3 CookBook
 
-Trong **Phi-3 CookBook**, tôi đã dùng phương pháp sau để thêm bản dịch tiếng Hàn cho các tệp markdown và hình ảnh hiện có.
+Trong **Phi-3 CookBook**, tôi đã dùng phương pháp sau để thêm bản dịch tiếng Hàn cho các file markdown và hình ảnh đã có.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -44,19 +44,19 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|████████████████████████████████████████████████| 153/153 [1:43:07<00:00, 241.31s/it]
 ```
 
-### 2. Dịch Nhiều Ngôn Ngữ
+### 2. Dịch nhiều ngôn ngữ
 
-Để dịch dự án sang nhiều ngôn ngữ (ví dụ: tiếng Tây Ban Nha, tiếng Pháp và tiếng Đức), sử dụng lệnh này:
+Để dịch dự án sang nhiều ngôn ngữ (ví dụ: tiếng Tây Ban Nha, tiếng Pháp và tiếng Đức), hãy dùng lệnh sau:
 
 ```bash
 translate -l "es fr de"
 ```
 
-Lệnh này sẽ dịch dự án sang tiếng Tây Ban Nha, Pháp và Đức, thêm bản dịch mới mà không ghi đè các bản dịch hiện có.
+Lệnh này sẽ dịch dự án sang tiếng Tây Ban Nha, tiếng Pháp và tiếng Đức, thêm bản dịch mới mà không ghi đè lên các bản dịch đã có.
 
 #### Ví dụ trên Phi-3 CookBook
 
-Trong **Phi-3 CookBook**, sau khi kéo các thay đổi mới nhất để cập nhật các cam kết gần đây, tôi đã dùng phương pháp sau để dịch các tệp markdown và hình ảnh mới được thêm.
+Trong **Phi-3 CookBook**, sau khi cập nhật các thay đổi mới nhất để phản ánh các commit gần đây, tôi đã dùng phương pháp sau để dịch các file markdown và hình ảnh mới được thêm vào.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,11 +65,11 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Mặc dù thường khuyến nghị dịch từng ngôn ngữ một, nhưng trong những trường hợp cần thêm các thay đổi cụ thể như thế này, việc dịch nhiều ngôn ngữ cùng lúc có thể hiệu quả hơn.
+> Mặc dù thường nên dịch từng ngôn ngữ một, nhưng trong những trường hợp cần thêm các thay đổi cụ thể như thế này, dịch nhiều ngôn ngữ cùng lúc sẽ hiệu quả hơn.
 
-### 3. Cập Nhật Bản Dịch (Xóa Bản Dịch Hiện Có)
+### 3. Cập nhật bản dịch (Xóa bản dịch cũ)
 
-Để cập nhật các bản dịch hiện có (tức là xóa các bản dịch hiện tại và thay thế bằng bản mới), hãy dùng tùy chọn `-u`. Tùy chọn này sẽ xóa tất cả bản dịch hiện có của các ngôn ngữ được chỉ định và dịch lại.
+Để cập nhật các bản dịch hiện có (tức là xóa các bản dịch hiện tại và thay thế bằng bản dịch mới), hãy dùng tùy chọn `-u`. Tùy chọn này sẽ xóa tất cả các bản dịch hiện có cho các ngôn ngữ được chỉ định và dịch lại từ đầu.
 
 ```bash
 translate -l "ko" -u
@@ -79,39 +79,38 @@ Cảnh báo: Lệnh này sẽ yêu cầu bạn xác nhận trước khi tiến h
 
 #### Ví dụ trên Phi-3 CookBook
 
-Trong **Phi-3 CookBook**, tôi đã dùng phương pháp sau để cập nhật tất cả các tệp đã dịch sang tiếng Tây Ban Nha. Tôi khuyên bạn nên dùng cách này khi có nhiều thay đổi lớn trong nội dung gốc trên nhiều tệp markdown. Nếu chỉ có vài tệp markdown đã dịch cần cập nhật, sẽ hiệu quả hơn khi xóa thủ công các tệp đó rồi dùng phương pháp `-a` để thêm bản dịch mới.
+Trong **Phi-3 CookBook**, tôi đã dùng phương pháp sau để cập nhật tất cả các file đã dịch sang tiếng Tây Ban Nha. Tôi khuyên bạn nên dùng cách này khi có nhiều thay đổi lớn trong nội dung gốc trên nhiều tài liệu markdown. Nếu chỉ có một vài file markdown đã dịch cần cập nhật, bạn nên xóa thủ công các file đó rồi dùng phương pháp `-a` để thêm bản dịch mới.
 
-### 5. Chỉ Dịch Hình Ảnh
+```bash
+(.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
+Warning: The update command will delete all existing translations for 'es' and re-translate everything.
+Do you want to continue? Type 'yes' to proceed: yes
+Proceeding with update...
+Translating images: 100%|████████████████████████████████████████████| 150/150 [43:46<00:00, 15.55s/it]
+Translating markdown files: 100%|███████████████████████████████████| 95/95 [1:40:27<00:00, 125.62s/it]
+```
 
-Để chỉ dịch các tệp hình ảnh trong dự án, dùng tùy chọn `-img`:
+### 5. Chỉ dịch hình ảnh
+
+Để chỉ dịch các file hình ảnh trong dự án, hãy dùng tùy chọn `-img`:
 
 ```bash
 translate -l "ko" -img
 ```
 
-Lệnh này chỉ dịch các hình ảnh sang tiếng Hàn mà không ảnh hưởng đến các tệp markdown.
+Lệnh này sẽ chỉ dịch các hình ảnh sang tiếng Hàn mà không ảnh hưởng đến các file markdown.
 
-### 6. Chỉ Dịch Các Tệp Markdown
+### 6. Chỉ dịch file Markdown
 
-Để chỉ dịch các tệp markdown trong dự án, dùng tùy chọn `-md`:
+Để chỉ dịch các file markdown trong dự án, hãy dùng tùy chọn `-md`:
 
 ```bash
 translate -l "ko" -md
 ```
 
-### 7. Kiểm Tra Lỗi Trong Các Tệp Đã Dịch
-
-Nếu bạn muốn kiểm tra lỗi trong các tệp đã dịch và thử dịch lại nếu cần, dùng tùy chọn `-chk`:
-
-```bash
-translate -l "ko" -chk
-```
-
-Lệnh này sẽ quét các tệp markdown đã dịch và thử dịch lại những tệp có lỗi.
-
 #### Ví dụ trên Phi-3 CookBook
 
-Trong **Phi-3 CookBook**, tôi đã dùng phương pháp sau để kiểm tra lỗi dịch trong các tệp tiếng Hàn và tự động thử dịch lại các tệp phát hiện có lỗi.
+Trong **Phi-3 CookBook**, tôi đã dùng phương pháp sau để kiểm tra lỗi dịch trong các file tiếng Hàn và tự động thử lại dịch cho các file phát hiện có vấn đề.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -120,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Tùy chọn này kiểm tra lỗi dịch. Hiện tại, nếu sự khác biệt về ngắt dòng giữa tệp gốc và tệp dịch vượt quá sáu dòng, tệp đó sẽ được đánh dấu là có lỗi dịch. Tôi dự định cải thiện tiêu chí này để linh hoạt hơn trong tương lai.
+Tùy chọn này sẽ kiểm tra lỗi dịch. Hiện tại, nếu số dòng xuống giữa file gốc và file dịch khác nhau quá 6 dòng, file đó sẽ bị đánh dấu là có lỗi dịch. Tôi dự định sẽ cải thiện tiêu chí này để linh hoạt hơn trong tương lai.
 
-Ví dụ, cách này hữu ích để phát hiện các phần bị thiếu hoặc bản dịch bị lỗi, và nó sẽ tự động thử dịch lại các tệp đó.
+Ví dụ, phương pháp này hữu ích để phát hiện các đoạn bị thiếu hoặc bản dịch bị lỗi, và sẽ tự động thử lại dịch cho các file đó.
 
-Tuy nhiên, nếu bạn đã biết chính xác tệp nào gặp vấn đề, hiệu quả hơn khi xóa thủ công các tệp đó và dùng tùy chọn `-a` option to re-translate them.
+Tuy nhiên, nếu bạn đã biết file nào có vấn đề, cách hiệu quả hơn là xóa thủ công các file đó rồi dùng tùy chọn `-a` để dịch lại.
 
-### 8. Debug Mode
+### 8. Chế độ debug
 
-To enable detailed logging for troubleshooting, use the `-d`:
+Để bật ghi log chi tiết phục vụ việc kiểm tra lỗi, hãy dùng tùy chọn `-d`:
 
 ```bash
 translate -l "ko" -d
 ```
 
-Lệnh này sẽ chạy bản dịch ở chế độ gỡ lỗi, cung cấp thêm thông tin ghi log giúp bạn xác định vấn đề trong quá trình dịch.
+Lệnh này sẽ chạy dịch ở chế độ debug, cung cấp thêm thông tin log giúp bạn xác định vấn đề trong quá trình dịch.
 
 #### Ví dụ trên Phi-3 CookBook
 
-Trong **Phi-3 CookBook**, tôi gặp vấn đề khi các bản dịch có nhiều liên kết trong tệp markdown gây lỗi định dạng, như bản dịch bị lỗi hoặc bỏ qua ngắt dòng. Để chẩn đoán, tôi đã dùng tùy chọn `-d` để xem quá trình dịch hoạt động thế nào.
+Trong **Phi-3 CookBook**, tôi gặp vấn đề khi dịch các file markdown có nhiều liên kết, dẫn đến lỗi định dạng như bản dịch bị hỏng và mất dòng xuống. Để kiểm tra nguyên nhân, tôi đã dùng tùy chọn `-d` để xem quá trình dịch hoạt động như thế nào.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -146,35 +145,35 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 ...
 ```
 
-### 9. Dịch Tất Cả Ngôn Ngữ
+### 9. Dịch tất cả ngôn ngữ
 
-Nếu bạn muốn dịch dự án sang tất cả các ngôn ngữ được hỗ trợ, hãy dùng từ khóa all.
+Nếu bạn muốn dịch dự án sang tất cả các ngôn ngữ hỗ trợ, hãy dùng từ khóa all.
 
 > [!WARNING]
-> Dịch tất cả ngôn ngữ cùng lúc có thể mất nhiều thời gian tùy theo kích thước dự án. Ví dụ, dịch **Phi-3 CookBook** sang tiếng Tây Ban Nha mất khoảng 2 giờ. Với quy mô này, không thực tế để một người xử lý 20 ngôn ngữ. Nên chia công việc cho nhiều người đóng góp, mỗi người quản lý một hoặc hai ngôn ngữ và cập nhật bản dịch dần dần.
+> Dịch tất cả ngôn ngữ cùng lúc có thể mất rất nhiều thời gian tùy vào kích thước dự án. Ví dụ, dịch **Phi-3 CookBook** sang tiếng Tây Ban Nha mất khoảng 2 tiếng. Với quy mô lớn, không thực tế để một người xử lý 20 ngôn ngữ. Nên chia nhỏ công việc cho nhiều người đóng góp, mỗi người quản lý một hoặc hai ngôn ngữ, và cập nhật bản dịch dần dần.
 
 ```bash
 translate -l "all"
 ```
 
-Lệnh này sẽ dịch dự án sang tất cả các ngôn ngữ có sẵn. Nếu bạn tiếp tục, quá trình dịch có thể mất nhiều thời gian tùy thuộc vào kích thước dự án.
+Lệnh này sẽ dịch dự án sang tất cả các ngôn ngữ có sẵn. Nếu bạn tiếp tục, quá trình dịch có thể mất nhiều thời gian tùy vào kích thước dự án.
 
 > [!TIP]
 >
-> ### Xóa Thủ Công Các Tệp Đã Dịch (Tùy Chọn)
-> Các tệp đã dịch hiện được tự động phát hiện và dọn dẹp khi tệp nguồn được cập nhật.
+> ### Xóa thủ công các file đã dịch (Tùy chọn)
+> Các file đã dịch hiện được tự động phát hiện và dọn dẹp khi file nguồn được cập nhật.
 >
-> Tuy nhiên, nếu bạn muốn cập nhật bản dịch thủ công — ví dụ, để làm lại một tệp cụ thể hoặc ghi đè hành vi hệ thống — bạn có thể dùng lệnh sau để xóa tất cả các phiên bản của tệp đó trong các thư mục ngôn ngữ.
+> Tuy nhiên, nếu bạn muốn cập nhật bản dịch thủ công - ví dụ, để dịch lại một file cụ thể hoặc ghi đè hành vi hệ thống - bạn có thể dùng lệnh sau để xóa tất cả phiên bản của file đó trong các thư mục ngôn ngữ.
 >
 > ### Trên Windows:
 > 1. **Dùng Command Prompt**:
 >    - Mở Command Prompt.
->    - Điều hướng đến thư mục chứa các tệp bằng lệnh `cd`.
->    - Dùng lệnh sau để xóa tệp:
+>    - Di chuyển đến thư mục chứa file bằng lệnh `cd`.
+>    - Dùng lệnh sau để xóa file:
 >      ```
 >      del /s *filename*
 >      ```
->      Tùy chọn `/s` tìm kiếm trong các thư mục con.
+>      Thay `filename` bằng phần tên file bạn muốn tìm. Tùy chọn `/s` sẽ tìm trong các thư mục con.
 >
 > 2. **Dùng PowerShell**:
 >    - Mở PowerShell.
@@ -182,19 +181,23 @@ Lệnh này sẽ dịch dự án sang tất cả các ngôn ngữ có sẵn. N�
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      Thay thế `"C:\YourPath"` bằng đường dẫn thực tế.
+>      Thay `"C:\YourPath"` bằng đường dẫn thư mục và `filename` bằng tên cụ thể.
 >
->    - Lệnh `cd`.
->   - Use the `find`:
->      ```bash
+> ### Trên macOS/Linux:
+> 1. **Dùng Terminal**:
+>   - Mở Terminal.
+>   - Di chuyển đến thư mục bằng `cd`.
+>   - Dùng lệnh `find`:
+>     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
+>     Thay `filename` bằng tên cụ thể.
 >
->    - Lệnh `filename` with the specific name.
+> Luôn kiểm tra kỹ file trước khi xóa để tránh mất dữ liệu ngoài ý muốn. 
 >
-> Always double-check the files before deleting to avoid accidental loss. 
->
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` để cập nhật các thay đổi tệp gần đây.
+> Sau khi xóa các file cần thay thế, chỉ cần chạy lại lệnh `translate -l` để cập nhật các thay đổi mới nhất cho file.
 
-**Tuyên bố từ chối trách nhiệm**:  
-Tài liệu này đã được dịch bằng dịch vụ dịch thuật AI [Co-op Translator](https://github.com/Azure/co-op-translator). Mặc dù chúng tôi cố gắng đảm bảo độ chính xác, xin lưu ý rằng các bản dịch tự động có thể chứa lỗi hoặc sai sót. Tài liệu gốc bằng ngôn ngữ bản địa nên được xem là nguồn chính xác và đáng tin cậy. Đối với các thông tin quan trọng, khuyến nghị sử dụng dịch vụ dịch thuật chuyên nghiệp do con người thực hiện. Chúng tôi không chịu trách nhiệm về bất kỳ sự hiểu nhầm hoặc giải thích sai nào phát sinh từ việc sử dụng bản dịch này.
+---
+
+**Tuyên bố miễn trừ trách nhiệm**:
+Tài liệu này đã được dịch bằng dịch vụ dịch thuật AI [Co-op Translator](https://github.com/Azure/co-op-translator). Mặc dù chúng tôi cố gắng đảm bảo độ chính xác, xin lưu ý rằng bản dịch tự động có thể chứa lỗi hoặc không chính xác. Tài liệu gốc bằng ngôn ngữ bản địa nên được xem là nguồn tham khảo chính thức. Đối với các thông tin quan trọng, khuyến nghị sử dụng dịch vụ dịch thuật chuyên nghiệp bởi con người. Chúng tôi không chịu trách nhiệm về bất kỳ sự hiểu lầm hoặc diễn giải sai nào phát sinh từ việc sử dụng bản dịch này.

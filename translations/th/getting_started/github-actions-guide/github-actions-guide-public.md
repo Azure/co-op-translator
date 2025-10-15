@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:29:18+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T03:17:56+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "th"
 }
 -->
-# การใช้ Co-op Translator GitHub Action (การตั้งค่าสาธารณะ)
+# การใช้งาน Co-op Translator GitHub Action (การตั้งค่าสำหรับสาธารณะ)
 
-**กลุ่มเป้าหมาย:** คู่มือนี้เหมาะสำหรับผู้ใช้ในที่เก็บข้อมูลสาธารณะหรือส่วนตัวส่วนใหญ่ที่มีสิทธิ์ GitHub Actions มาตรฐานเพียงพอ โดยใช้ `GITHUB_TOKEN` ที่มีอยู่ในตัว
+**กลุ่มเป้าหมาย:** คู่มือนี้เหมาะสำหรับผู้ใช้ใน repository สาธารณะหรือส่วนตัวส่วนใหญ่ที่สิทธิ์ GitHub Actions มาตรฐานเพียงพอ โดยใช้ `GITHUB_TOKEN` ที่มีมาให้
 
-ช่วยให้การแปลเอกสารในที่เก็บของคุณเป็นไปโดยอัตโนมัติอย่างง่ายดายด้วย Co-op Translator GitHub Action คู่มือนี้จะแนะนำวิธีตั้งค่าการทำงานเพื่อสร้าง pull request โดยอัตโนมัติพร้อมการแปลที่อัปเดตทุกครั้งที่ไฟล์ Markdown หรือรูปภาพต้นทางของคุณเปลี่ยนแปลง
+แปลเอกสารใน repository ของคุณโดยอัตโนมัติอย่างง่ายดายด้วย Co-op Translator GitHub Action คู่มือนี้จะแนะนำขั้นตอนการตั้งค่า action เพื่อสร้าง pull request พร้อมการแปลที่อัปเดตโดยอัตโนมัติทุกครั้งที่ไฟล์ Markdown ต้นทางหรือรูปภาพของคุณมีการเปลี่ยนแปลง
 
 > [!IMPORTANT]
 >
-> **การเลือกคู่มือที่เหมาะสม:**
+> **เลือกคู่มือให้ถูกต้อง:**
 >
-> คู่มือนี้อธิบายการตั้งค่าที่ง่ายกว่าโดยใช้ `GITHUB_TOKEN` มาตรฐาน ซึ่งเป็นวิธีที่แนะนำสำหรับผู้ใช้ส่วนใหญ่เพราะไม่ต้องจัดการกับ GitHub App Private Keys ที่มีความละเอียดอ่อน
+> คู่มือนี้อธิบาย **การตั้งค่าที่ง่ายกว่าด้วย `GITHUB_TOKEN` มาตรฐาน** ซึ่งเป็นวิธีที่แนะนำสำหรับผู้ใช้ส่วนใหญ่ เพราะไม่ต้องจัดการกับ GitHub App Private Key ที่มีความอ่อนไหว
 >
 
-## สิ่งที่ต้องเตรียม
+## ข้อกำหนดเบื้องต้น
 
-ก่อนตั้งค่า GitHub Action ให้ตรวจสอบว่าคุณมีข้อมูลรับรองบริการ AI ที่จำเป็นพร้อมแล้ว
+ก่อนตั้งค่า GitHub Action โปรดเตรียมข้อมูลรับรองของบริการ AI ที่จำเป็นให้พร้อม
 
-**1. จำเป็น: ข้อมูลรับรองโมเดลภาษา AI**  
-คุณต้องมีข้อมูลรับรองสำหรับโมเดลภาษาอย่างน้อยหนึ่งตัวที่รองรับ:
+**1. จำเป็น: ข้อมูลรับรอง AI Language Model**
+คุณต้องมีข้อมูลรับรองสำหรับ Language Model ที่รองรับอย่างน้อยหนึ่งตัว:
 
-- **Azure OpenAI**: ต้องมี Endpoint, API Key, ชื่อ Model/Deployment, API Version  
-- **OpenAI**: ต้องมี API Key, (ไม่บังคับ: Org ID, Base URL, Model ID)  
-- ดูรายละเอียดได้ที่ [Supported Models and Services](../../../../README.md)
+- **Azure OpenAI**: ต้องใช้ Endpoint, API Key, ชื่อ Model/Deployment, API Version
+- **OpenAI**: ต้องใช้ API Key, (ถ้ามี: Org ID, Base URL, Model ID)
+- ดูรายละเอียดที่ [Supported Models and Services](../../../../README.md)
 
-**2. ไม่จำเป็น: ข้อมูลรับรอง AI Vision (สำหรับแปลข้อความในรูปภาพ)**
+**2. ไม่บังคับ: ข้อมูลรับรอง AI Vision (สำหรับแปลข้อความในรูปภาพ)**
 
-- จำเป็นเฉพาะเมื่อคุณต้องแปลข้อความในรูปภาพเท่านั้น  
-- **Azure AI Vision**: ต้องมี Endpoint และ Subscription Key  
-- หากไม่ระบุ จะใช้ [โหมด Markdown เท่านั้น](../markdown-only-mode.md) เป็นค่าเริ่มต้น
+- ต้องใช้เฉพาะเมื่อคุณต้องการแปลข้อความในรูปภาพ
+- **Azure AI Vision**: ต้องใช้ Endpoint และ Subscription Key
+- หากไม่ระบุ Action จะทำงานใน [Markdown-only mode](../markdown-only-mode.md) โดยอัตโนมัติ
 
 ## การตั้งค่าและกำหนดค่า
 
-ทำตามขั้นตอนเหล่านี้เพื่อกำหนดค่า Co-op Translator GitHub Action ในที่เก็บของคุณโดยใช้ `GITHUB_TOKEN` มาตรฐาน
+ทำตามขั้นตอนเหล่านี้เพื่อกำหนดค่า Co-op Translator GitHub Action ใน repository ของคุณโดยใช้ `GITHUB_TOKEN` มาตรฐาน
 
-### ขั้นตอนที่ 1: ทำความเข้าใจการตรวจสอบสิทธิ์ (ใช้ `GITHUB_TOKEN`)
+### ขั้นตอนที่ 1: ทำความเข้าใจการยืนยันตัวตน (ใช้ `GITHUB_TOKEN`)
 
-เวิร์กโฟลว์นี้ใช้ `GITHUB_TOKEN` ที่มีอยู่ใน GitHub Actions ซึ่งโทเค็นนี้จะให้สิทธิ์เวิร์กโฟลว์ในการเข้าถึงที่เก็บของคุณโดยอัตโนมัติตามการตั้งค่าที่กำหนดไว้ใน **ขั้นตอนที่ 3**
+Workflow นี้ใช้ `GITHUB_TOKEN` ที่ GitHub Actions ให้มาโดยอัตโนมัติ ซึ่ง token นี้จะให้สิทธิ์กับ workflow ในการทำงานกับ repository ของคุณตามการตั้งค่าที่กำหนดใน **ขั้นตอนที่ 3**
 
 ### ขั้นตอนที่ 2: กำหนดค่า Repository Secrets
 
-คุณเพียงแค่เพิ่ม **ข้อมูลรับรองบริการ AI** เป็นความลับที่เข้ารหัสในการตั้งค่าที่เก็บของคุณ
+คุณเพียงแค่เพิ่ม **ข้อมูลรับรองบริการ AI** ของคุณเป็น secrets ที่เข้ารหัสใน settings ของ repository
 
-1. เข้าไปที่ที่เก็บ GitHub เป้าหมายของคุณ  
-2. ไปที่ **Settings** > **Secrets and variables** > **Actions**  
-3. ภายใต้ **Repository secrets** คลิก **New repository secret** สำหรับแต่ละข้อมูลรับรองบริการ AI ที่จำเป็นดังนี้
+1.  ไปที่ repository เป้าหมายของคุณใน GitHub
+2.  ไปที่ **Settings** > **Secrets and variables** > **Actions**
+3.  ใต้ **Repository secrets** คลิก **New repository secret** สำหรับแต่ละ secret ของบริการ AI ที่จำเป็นตามรายการด้านล่าง
 
-    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.th.png) *(ภาพอ้างอิง: แสดงตำแหน่งเพิ่มความลับ)*
+    <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.th.png" alt="Select setting action"> *(อ้างอิงภาพ: ตำแหน่งที่เพิ่ม secrets)*
 
-**ข้อมูลรับรองบริการ AI ที่จำเป็น (เพิ่มทั้งหมดที่เกี่ยวข้องตามที่คุณเตรียมไว้):**
+**AI Service Secrets ที่จำเป็น (เพิ่มทุกตัวที่เกี่ยวข้องตามข้อกำหนดเบื้องต้น):**
 
-| ชื่อความลับ                         | คำอธิบาย                               | แหล่งข้อมูล                     |
+| Secret Name                         | คำอธิบาย                                 | แหล่งที่มาของค่า                  |
 | :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | คีย์สำหรับ Azure AI Service (Computer Vision)  | Azure AI Foundry ของคุณ               |
+| `AZURE_AI_SERVICE_API_KEY`            | คีย์สำหรับ Azure AI Service (Computer Vision)  | Azure AI Foundry ของคุณ               |
 | `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint สำหรับ Azure AI Service (Computer Vision) | Azure AI Foundry ของคุณ               |
-| `AZURE_OPENAI_API_KEY`              | คีย์สำหรับบริการ Azure OpenAI              | Azure AI Foundry ของคุณ               |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint สำหรับบริการ Azure OpenAI         | Azure AI Foundry ของคุณ               |
-| `AZURE_OPENAI_MODEL_NAME`           | ชื่อโมเดล Azure OpenAI ของคุณ              | Azure AI Foundry ของคุณ               |
+| `AZURE_OPENAI_API_KEY`              | คีย์สำหรับ Azure OpenAI service              | Azure AI Foundry ของคุณ               |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint สำหรับ Azure OpenAI service         | Azure AI Foundry ของคุณ               |
+| `AZURE_OPENAI_MODEL_NAME`           | ชื่อ Model ของ Azure OpenAI ของคุณ              | Azure AI Foundry ของคุณ               |
 | `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | ชื่อ Deployment ของ Azure OpenAI ของคุณ         | Azure AI Foundry ของคุณ               |
-| `AZURE_OPENAI_API_VERSION`          | เวอร์ชัน API สำหรับ Azure OpenAI              | Azure AI Foundry ของคุณ               |
-| `OPENAI_API_KEY`                    | API Key สำหรับ OpenAI                        | แพลตฟอร์ม OpenAI ของคุณ              |
-| `OPENAI_ORG_ID`                     | รหัสองค์กร OpenAI (ไม่บังคับ)         | แพลตฟอร์ม OpenAI ของคุณ              |
-| `OPENAI_CHAT_MODEL_ID`              | รหัสโมเดล OpenAI เฉพาะ (ไม่บังคับ)       | แพลตฟอร์ม OpenAI ของคุณ              |
-| `OPENAI_BASE_URL`                   | URL ฐาน API OpenAI แบบกำหนดเอง (ไม่บังคับ)     | แพลตฟอร์ม OpenAI ของคุณ              |
+| `AZURE_OPENAI_API_VERSION`          | API Version สำหรับ Azure OpenAI              | Azure AI Foundry ของคุณ               |
+| `OPENAI_API_KEY`                    | API Key สำหรับ OpenAI                        | OpenAI Platform ของคุณ              |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID (ไม่บังคับ)         | OpenAI Platform ของคุณ              |
+| `OPENAI_CHAT_MODEL_ID`              | รหัส model เฉพาะของ OpenAI (ไม่บังคับ)       | OpenAI Platform ของคุณ              |
+| `OPENAI_BASE_URL`                   | OpenAI API Base URL แบบกำหนดเอง (ไม่บังคับ)     | OpenAI Platform ของคุณ              |
 
-### ขั้นตอนที่ 3: กำหนดค่าสิทธิ์เวิร์กโฟลว์
+### ขั้นตอนที่ 3: กำหนดสิทธิ์ Workflow
 
-GitHub Action ต้องได้รับสิทธิ์ผ่าน `GITHUB_TOKEN` เพื่อดึงโค้ดและสร้าง pull request
+GitHub Action ต้องการสิทธิ์ผ่าน `GITHUB_TOKEN` เพื่อ checkout โค้ดและสร้าง pull request
 
-1. ในที่เก็บของคุณ ไปที่ **Settings** > **Actions** > **General**  
-2. เลื่อนลงไปที่ส่วน **Workflow permissions**  
-3. เลือก **Read and write permissions** เพื่อให้ `GITHUB_TOKEN` มีสิทธิ์ `contents: write` และ `pull-requests: write` ที่จำเป็นสำหรับเวิร์กโฟลว์นี้  
-4. ตรวจสอบให้แน่ใจว่าเลือกช่อง **Allow GitHub Actions to create and approve pull requests**  
-5. คลิก **Save**
+1.  ใน repository ของคุณ ไปที่ **Settings** > **Actions** > **General**
+2.  เลื่อนลงไปที่ส่วน **Workflow permissions**
+3.  เลือก **Read and write permissions** เพื่อให้ `GITHUB_TOKEN` มีสิทธิ์ `contents: write` และ `pull-requests: write` สำหรับ workflow นี้
+4.  ตรวจสอบให้แน่ใจว่าได้ติ๊กถูกที่ **Allow GitHub Actions to create and approve pull requests**
+5.  กด **Save**
 
-![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.th.png)
+<img src="../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.th.png" alt="Permission setting">
 
-### ขั้นตอนที่ 4: สร้างไฟล์เวิร์กโฟลว์
+### ขั้นตอนที่ 4: สร้าง Workflow File
 
-สุดท้าย สร้างไฟล์ YAML ที่กำหนดเวิร์กโฟลว์อัตโนมัติที่ใช้ `GITHUB_TOKEN`
+สุดท้าย สร้างไฟล์ YAML ที่กำหนด workflow อัตโนมัติด้วย `GITHUB_TOKEN`
 
-1. ในไดเรกทอรีหลักของที่เก็บ สร้างโฟลเดอร์ `.github/workflows/` หากยังไม่มี  
-2. ภายใน `.github/workflows/` สร้างไฟล์ชื่อ `co-op-translator.yml`  
-3. วางเนื้อหาต่อไปนี้ลงใน `co-op-translator.yml`
+1.  ที่ root ของ repository ให้สร้างโฟลเดอร์ `.github/workflows/` หากยังไม่มี
+2.  ใน `.github/workflows/` สร้างไฟล์ชื่อ `co-op-translator.yml`
+3.  วางเนื้อหาต่อไปนี้ลงใน `co-op-translator.yml`
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4. **ปรับแต่งเวิร์กโฟลว์:**  
-  - **[!IMPORTANT] ภาษาที่ต้องการ:** ในขั้นตอน `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` ปรับแก้ตามต้องการได้เลย
+```
+4.  **ปรับแต่ง Workflow:**
+  - **[!IMPORTANT] ภาษาที่ต้องการ:** ในขั้นตอน `Run Co-op Translator` คุณ **ต้องตรวจสอบและแก้ไขรายชื่อรหัสภาษา** ในคำสั่ง `translate -l "..." -y` ให้ตรงกับความต้องการของโปรเจกต์ รายการตัวอย่าง (`ar de es...`) ต้องเปลี่ยนหรือปรับให้เหมาะสม
+  - **Trigger (`on:`):** ปัจจุบัน trigger จะทำงานทุกครั้งที่มี push ไปที่ `main` สำหรับ repository ขนาดใหญ่ แนะนำให้เพิ่ม `paths:` filter (ดูตัวอย่างที่คอมเมนต์ไว้ใน YAML) เพื่อให้ workflow ทำงานเฉพาะเมื่อไฟล์ที่เกี่ยวข้อง (เช่น เอกสารต้นทาง) เปลี่ยนแปลง จะช่วยประหยัด runner minutes
+  - **รายละเอียด PR:** ปรับแต่ง `commit-message`, `title`, `body`, ชื่อ `branch` และ `labels` ในขั้นตอน `Create Pull Request` ได้ตามต้องการ
 
-**ข้อจำกัดความรับผิดชอบ**:  
-เอกสารนี้ได้รับการแปลโดยใช้บริการแปลภาษาด้วย AI [Co-op Translator](https://github.com/Azure/co-op-translator) แม้เราจะพยายามให้ความถูกต้องสูงสุด แต่โปรดทราบว่าการแปลอัตโนมัติอาจมีข้อผิดพลาดหรือความไม่ถูกต้อง เอกสารต้นฉบับในภาษาต้นทางถือเป็นแหล่งข้อมูลที่เชื่อถือได้ สำหรับข้อมูลที่สำคัญ ขอแนะนำให้ใช้การแปลโดยมนุษย์มืออาชีพ เราไม่รับผิดชอบต่อความเข้าใจผิดหรือการตีความผิดใด ๆ ที่เกิดจากการใช้การแปลนี้
+## การทำงานของ Workflow
+
+> [!WARNING]  
+> **ขีดจำกัดเวลา Runner ที่ GitHub ให้บริการ:**  
+> Runner ที่ GitHub ให้บริการ เช่น `ubuntu-latest` **มีขีดจำกัดเวลาในการทำงานสูงสุด 6 ชั่วโมง**  
+> สำหรับ repository เอกสารขนาดใหญ่ หากกระบวนการแปลใช้เวลานานเกิน 6 ชั่วโมง workflow จะถูกยกเลิกโดยอัตโนมัติ  
+> เพื่อป้องกันปัญหานี้ แนะนำให้:  
+> - ใช้ **self-hosted runner** (ไม่มีขีดจำกัดเวลา)  
+> - ลดจำนวนภาษาที่แปลต่อรอบ
+
+เมื่อไฟล์ `co-op-translator.yml` ถูก merge เข้าสู่ main branch (หรือ branch ที่ระบุใน trigger `on:`) workflow จะทำงานโดยอัตโนมัติทุกครั้งที่มีการ push ไปยัง branch นั้น (และตรงกับ filter `paths` หากตั้งค่าไว้)
+
+---
+
+**ข้อจำกัดความรับผิดชอบ**:
+เอกสารฉบับนี้ได้รับการแปลโดยใช้บริการแปลภาษา AI [Co-op Translator](https://github.com/Azure/co-op-translator) แม้เราจะพยายามให้การแปลมีความถูกต้อง แต่โปรดทราบว่าการแปลโดยอัตโนมัติอาจมีข้อผิดพลาดหรือความไม่ถูกต้อง เอกสารต้นฉบับในภาษาต้นทางควรถือเป็นแหล่งข้อมูลที่เชื่อถือได้ สำหรับข้อมูลสำคัญ แนะนำให้ใช้บริการแปลโดยนักแปลมืออาชีพ ทางเราจะไม่รับผิดชอบต่อความเข้าใจผิดหรือการตีความที่คลาดเคลื่อนซึ่งเกิดจากการใช้การแปลนี้

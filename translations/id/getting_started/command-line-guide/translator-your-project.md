@@ -1,18 +1,18 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:52:50+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T03:38:36+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "id"
 }
 -->
-# Terjemahkan proyek Anda menggunakan Co-op Translator
+# Terjemahkan proyek Anda dengan Co-op Translator
 
-**Co-op Translator** adalah alat baris perintah (CLI) yang membantu Anda menerjemahkan file markdown dan gambar dalam proyek Anda ke berbagai bahasa. Bagian ini menjelaskan cara menggunakan alat ini, membahas berbagai opsi CLI, dan memberikan contoh untuk berbagai kasus penggunaan.
+**Co-op Translator** adalah alat antarmuka baris perintah (CLI) yang membantu Anda menerjemahkan file markdown dan gambar dalam proyek Anda ke berbagai bahasa. Bagian ini menjelaskan cara menggunakan alat ini, membahas berbagai opsi CLI, dan memberikan contoh untuk berbagai skenario penggunaan.
 
 > [!NOTE]
-> Untuk daftar lengkap perintah dan deskripsi detailnya, silakan lihat [Command reference](./command-reference.md).
+> Untuk daftar lengkap perintah dan penjelasan detailnya, silakan lihat [Referensi Perintah](./command-reference.md).
 
 ---
 
@@ -22,7 +22,7 @@ Berikut beberapa kasus penggunaan umum untuk **Co-op Translator**, beserta perin
 
 ### 1. Terjemahan Dasar (Satu Bahasa)
 
-Untuk menerjemahkan seluruh proyek Anda (file markdown dan gambar) ke satu bahasa, seperti Korea, gunakan perintah berikut:
+Untuk menerjemahkan seluruh proyek Anda (file markdown dan gambar) ke satu bahasa, misalnya Korea, gunakan perintah berikut:
 
 ```bash
 translate -l "ko"
@@ -32,7 +32,7 @@ Perintah ini akan menerjemahkan semua file markdown dan gambar ke bahasa Korea, 
 
 > [!TIP]
 >
-> Ingin tahu kode bahasa apa saja yang tersedia di **Co-op Translator**? Kunjungi bagian [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) di repositori untuk informasi lebih lanjut.
+> Ingin tahu kode bahasa apa saja yang tersedia di **Co-op Translator**? Kunjungi bagian [Bahasa yang Didukung](https://github.com/Azure/co-op-translator#supported-languages) di repositori untuk info lebih lanjut.
 
 #### Contoh pada Phi-3 CookBook
 
@@ -44,7 +44,7 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|████████████████████████████████████████████████| 153/153 [1:43:07<00:00, 241.31s/it]
 ```
 
-### 2. Menerjemahkan Beberapa Bahasa
+### 2. Menerjemahkan ke Banyak Bahasa
 
 Untuk menerjemahkan proyek Anda ke beberapa bahasa sekaligus (misalnya Spanyol, Prancis, dan Jerman), gunakan perintah ini:
 
@@ -56,7 +56,7 @@ Perintah ini akan menerjemahkan proyek ke bahasa Spanyol, Prancis, dan Jerman, m
 
 #### Contoh pada Phi-3 CookBook
 
-Di **Phi-3 CookBook**, setelah menarik perubahan terbaru untuk mencerminkan commit terbaru, saya menggunakan metode berikut untuk menerjemahkan file markdown dan gambar yang baru ditambahkan.
+Di **Phi-3 CookBook**, setelah menarik perubahan terbaru untuk mencerminkan commit terakhir, saya menggunakan metode berikut untuk menerjemahkan file markdown dan gambar yang baru ditambahkan.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -69,17 +69,17 @@ Translating markdown files: 100%|███████████████�
 
 ### 3. Memperbarui Terjemahan (Menghapus Terjemahan Lama)
 
-Untuk memperbarui terjemahan yang sudah ada (yaitu menghapus terjemahan lama dan menggantinya dengan yang baru), gunakan opsi `-u`. Ini akan menghapus semua terjemahan yang ada untuk bahasa yang ditentukan dan menerjemahkannya ulang.
+Untuk memperbarui terjemahan yang sudah ada (yaitu menghapus terjemahan saat ini dan menggantinya dengan yang baru), gunakan opsi `-u`. Opsi ini akan menghapus semua terjemahan yang ada untuk bahasa yang ditentukan dan menerjemahkan ulang.
 
 ```bash
 translate -l "ko" -u
 ```
 
-Peringatan: Perintah ini akan meminta konfirmasi sebelum melanjutkan penghapusan terjemahan yang ada.
+Peringatan: Perintah ini akan meminta konfirmasi sebelum melanjutkan penghapusan terjemahan yang sudah ada.
 
 #### Contoh pada Phi-3 CookBook
 
-Di **Phi-3 CookBook**, saya menggunakan metode berikut untuk memperbarui semua file terjemahan dalam bahasa Spanyol. Saya sarankan menggunakan metode ini ketika ada perubahan besar pada konten asli di banyak dokumen markdown. Jika hanya ada beberapa file markdown terjemahan yang perlu diperbarui, lebih efisien menghapus file-file tersebut secara manual lalu menggunakan metode `-a` untuk menambahkan terjemahan terbaru.
+Di **Phi-3 CookBook**, saya menggunakan metode berikut untuk memperbarui semua file terjemahan dalam bahasa Spanyol. Saya sarankan menggunakan metode ini jika ada perubahan besar pada konten asli di banyak dokumen markdown. Jika hanya ada beberapa file markdown terjemahan yang perlu diperbarui, lebih efisien untuk menghapus file tersebut secara manual lalu menggunakan metode `-a` untuk menambahkan terjemahan terbaru.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -108,19 +108,9 @@ Untuk menerjemahkan hanya file markdown dalam proyek Anda, gunakan opsi `-md`:
 translate -l "ko" -md
 ```
 
-### 7. Memeriksa Kesalahan pada File Terjemahan
-
-Jika Anda ingin memeriksa file terjemahan untuk kesalahan dan mencoba ulang terjemahan jika diperlukan, gunakan opsi `-chk`:
-
-```bash
-translate -l "ko" -chk
-```
-
-Perintah ini akan memindai file markdown terjemahan dan mencoba ulang terjemahan untuk file yang memiliki kesalahan.
-
 #### Contoh pada Phi-3 CookBook
 
-Di **Phi-3 CookBook**, saya menggunakan metode berikut untuk memeriksa kesalahan terjemahan pada file bahasa Korea dan secara otomatis mencoba ulang terjemahan untuk file yang bermasalah.
+Di **Phi-3 CookBook**, saya menggunakan metode berikut untuk memeriksa kesalahan terjemahan pada file Korea dan secara otomatis mencoba ulang terjemahan untuk file yang terdeteksi bermasalah.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -129,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Opsi ini memeriksa kesalahan terjemahan. Saat ini, jika perbedaan jumlah baris antara file asli dan terjemahan lebih dari enam, file tersebut dianggap memiliki kesalahan terjemahan. Saya berencana meningkatkan kriteria ini agar lebih fleksibel ke depannya.
+Opsi ini memeriksa kesalahan terjemahan. Saat ini, jika perbedaan jumlah baris antara file asli dan terjemahan lebih dari enam, file tersebut dianggap bermasalah. Saya berencana memperbaiki kriteria ini agar lebih fleksibel di masa depan.
 
-Misalnya, metode ini berguna untuk mendeteksi bagian yang hilang atau terjemahan yang rusak, dan akan secara otomatis mencoba ulang terjemahan untuk file-file tersebut.
+Misalnya, metode ini berguna untuk mendeteksi bagian yang hilang atau terjemahan yang rusak, dan akan otomatis mencoba ulang terjemahan untuk file tersebut.
 
-Namun, jika Anda sudah tahu file mana yang bermasalah, lebih efisien menghapus file tersebut secara manual dan menggunakan opsi `-a` option to re-translate them.
+Namun, jika Anda sudah tahu file mana yang bermasalah, lebih efisien untuk menghapus file tersebut secara manual dan menggunakan opsi `-a` untuk menerjemahkan ulang.
 
-### 8. Debug Mode
+### 8. Mode Debug
 
-To enable detailed logging for troubleshooting, use the `-d`:
+Untuk mengaktifkan log detail guna pemecahan masalah, gunakan opsi `-d`:
 
 ```bash
 translate -l "ko" -d
 ```
 
-Perintah ini akan menjalankan terjemahan dalam mode debug, memberikan informasi logging tambahan yang dapat membantu Anda mengidentifikasi masalah selama proses terjemahan.
+Perintah ini akan menjalankan proses terjemahan dalam mode debug, memberikan informasi log tambahan yang dapat membantu Anda mengidentifikasi masalah selama proses terjemahan.
 
 #### Contoh pada Phi-3 CookBook
 
-Di **Phi-3 CookBook**, saya pernah mengalami masalah di mana terjemahan dengan banyak tautan dalam file markdown menyebabkan kesalahan format, seperti terjemahan yang rusak dan pemecahan baris yang diabaikan. Untuk mendiagnosis masalah ini, saya menggunakan opsi `-d` untuk melihat bagaimana proses terjemahan berjalan.
+Di **Phi-3 CookBook**, saya mengalami masalah di mana terjemahan dengan banyak tautan pada file markdown menyebabkan kesalahan format, seperti terjemahan yang rusak dan baris yang terlewat. Untuk mendiagnosis masalah ini, saya menggunakan opsi `-d` untuk melihat bagaimana proses terjemahan berjalan.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -155,35 +145,35 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 ...
 ```
 
-### 9. Menerjemahkan Semua Bahasa
+### 9. Menerjemahkan ke Semua Bahasa
 
 Jika Anda ingin menerjemahkan proyek ke semua bahasa yang didukung, gunakan kata kunci all.
 
 > [!WARNING]
-> Menerjemahkan semua bahasa sekaligus bisa memakan waktu yang sangat lama tergantung ukuran proyek. Contohnya, menerjemahkan **Phi-3 CookBook** ke bahasa Spanyol memakan waktu sekitar 2 jam. Mengingat skala tersebut, tidak praktis jika satu orang menangani 20 bahasa sekaligus. Disarankan untuk membagi pekerjaan di antara beberapa kontributor, masing-masing mengelola satu atau dua bahasa, dan memperbarui terjemahan secara bertahap.
+> Menerjemahkan ke semua bahasa sekaligus bisa memakan waktu lama tergantung ukuran proyek. Misalnya, menerjemahkan **Phi-3 CookBook** ke bahasa Spanyol memakan waktu sekitar 2 jam. Dengan skala seperti ini, tidak praktis jika satu orang menangani 20 bahasa. Disarankan untuk membagi pekerjaan ke beberapa kontributor, masing-masing mengelola satu atau dua bahasa, dan memperbarui terjemahan secara bertahap.
 
 ```bash
 translate -l "all"
 ```
 
-Perintah ini akan menerjemahkan proyek ke semua bahasa yang tersedia. Jika Anda melanjutkan, proses terjemahan mungkin memakan waktu lama tergantung ukuran proyek.
+Perintah ini akan menerjemahkan proyek ke semua bahasa yang tersedia. Jika Anda melanjutkan, proses terjemahan bisa memakan waktu lama tergantung ukuran proyek.
 
 > [!TIP]
 >
 > ### Menghapus File Terjemahan Secara Manual (Opsional)
 > File terjemahan sekarang otomatis terdeteksi dan dibersihkan saat file sumber diperbarui.
 >
-> Namun, jika Anda ingin memperbarui terjemahan secara manual — misalnya untuk mengulang file tertentu atau mengganti perilaku sistem — Anda dapat menggunakan perintah berikut untuk menghapus semua versi file tersebut di seluruh folder bahasa.
+> Namun, jika Anda ingin memperbarui terjemahan secara manual - misalnya untuk mengulang terjemahan file tertentu atau menimpa perilaku sistem - Anda bisa menggunakan perintah berikut untuk menghapus semua versi file di folder bahasa.
 >
 > ### Di Windows:
 > 1. **Menggunakan Command Prompt**:
 >    - Buka Command Prompt.
->    - Arahkan ke folder tempat file berada menggunakan perintah `cd`.
+>    - Arahkan ke folder tempat file berada dengan perintah `cd`.
 >    - Gunakan perintah berikut untuk menghapus file:
 >      ```
 >      del /s *filename*
 >      ```
->      Opsi `/s` mencari juga di subdirektori.
+>      Ganti `filename` dengan bagian nama file yang Anda cari. Opsi `/s` akan mencari di subdirektori juga.
 >
 > 2. **Menggunakan PowerShell**:
 >    - Buka PowerShell.
@@ -191,21 +181,23 @@ Perintah ini akan menerjemahkan proyek ke semua bahasa yang tersedia. Jika Anda 
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      Ganti `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>      Ganti `"C:\YourPath"` dengan path folder dan `filename` dengan nama spesifik.
 >
-> ### On macOS/Linux:
-> 1. **Using Terminal**:
->   - Open Terminal.
->   - Navigate to the directory with `cd`.
->   - Use the `find` dengan perintah yang sesuai:
+> ### Di macOS/Linux:
+> 1. **Menggunakan Terminal**:
+>   - Buka Terminal.
+>   - Arahkan ke direktori dengan `cd`.
+>   - Gunakan perintah `find`:
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->     Ganti `filename` with the specific name.
+>     Ganti `filename` dengan nama spesifik.
 >
-> Always double-check the files before deleting to avoid accidental loss. 
+> Selalu periksa file dengan teliti sebelum menghapus untuk menghindari kehilangan data secara tidak sengaja. 
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` untuk memperbarui perubahan file terbaru.
+> Setelah Anda menghapus file yang perlu diganti, cukup jalankan ulang perintah `translate -l` untuk memperbarui perubahan file terbaru.
 
-**Penafian**:  
-Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berupaya untuk mencapai akurasi, harap diingat bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sahih. Untuk informasi penting, disarankan menggunakan terjemahan profesional oleh manusia. Kami tidak bertanggung jawab atas kesalahpahaman atau penafsiran yang keliru yang timbul dari penggunaan terjemahan ini.
+---
+
+**Penafian**:
+Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berupaya untuk memberikan terjemahan yang akurat, harap diketahui bahwa terjemahan otomatis dapat mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang berwenang. Untuk informasi yang bersifat kritis, disarankan menggunakan jasa penerjemah profesional. Kami tidak bertanggung jawab atas kesalahpahaman atau penafsiran yang timbul dari penggunaan terjemahan ini.

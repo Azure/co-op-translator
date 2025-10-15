@@ -1,27 +1,27 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:35:42+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T03:30:26+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "nl"
 }
 -->
-# Installeer het Co-op translator pakket
+# Installeer het Co-op Translator pakket
 
-De **Co-op Translator** is een command-line interface (CLI) tool die je helpt om alle markdown-bestanden en afbeeldingen in je project naar meerdere talen te vertalen. Deze handleiding leidt je door het configureren van de translator en het uitvoeren ervan voor verschillende toepassingen.
+De **Co-op Translator** is een command-line interface (CLI) tool die je helpt om alle markdown-bestanden en afbeeldingen in je project naar meerdere talen te vertalen. Deze handleiding laat zien hoe je de vertaler configureert en gebruikt voor verschillende scenario's.
 
 ### Maak een virtuele omgeving aan
 
-Je kunt een virtuele omgeving aanmaken met `pip` of `Poetry`. Typ een van de volgende commando’s in je terminal.
+Je kunt een virtuele omgeving aanmaken met `pip` of `Poetry`. Typ een van de volgende commando's in je terminal.
 
-#### Gebruik van pip
+#### Met pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Gebruik van Poetry
+#### Met Poetry
 
 ```bash
 poetry init
@@ -29,7 +29,7 @@ poetry init
 
 ### Activeer de virtuele omgeving
 
-Nadat je de virtuele omgeving hebt aangemaakt, moet je deze activeren. De stappen verschillen per besturingssysteem. Typ het volgende commando in je terminal.
+Na het aanmaken van de virtuele omgeving moet je deze activeren. De stappen verschillen per besturingssysteem. Typ het volgende commando in je terminal.
 
 #### Voor zowel pip als Poetry
 
@@ -45,7 +45,7 @@ Nadat je de virtuele omgeving hebt aangemaakt, moet je deze activeren. De stappe
     source .venv/bin/activate
     ```
 
-#### Gebruik van Poetry
+#### Met Poetry
 
 1. Als je de omgeving met Poetry hebt aangemaakt, typ dan het volgende commando in je terminal om deze te activeren.
 
@@ -53,9 +53,9 @@ Nadat je de virtuele omgeving hebt aangemaakt, moet je deze activeren. De stappe
     poetry shell
     ```
 
-### Installeren van het pakket en benodigde pakketten
+### Het pakket en benodigde pakketten installeren
 
-Zodra je virtuele omgeving is ingesteld en geactiveerd, is de volgende stap het installeren van de benodigde dependencies.
+Zodra je virtuele omgeving is opgezet en geactiveerd, is de volgende stap het installeren van de benodigde afhankelijkheden.
 
 ### Snelle installatie
 
@@ -63,31 +63,34 @@ Installeer Co-Op Translator via pip
 
 ```
 pip install co-op-translator
-```  
-Of
+```
+Of 
 
-Installeer via poetry  
+Installeer via poetry
 ```
 poetry add co-op-translator
 ```
 
-#### Gebruik van pip (via requirements.txt) als je deze repo clonet
+#### Met pip (vanuit requirements.txt) als je deze repo kloont
 
-![NOTE] Doe dit NIET als je co-op translator via de snelle installatie installeert.
+> [!NOTE]
+> Doe dit NIET als je co-op translator via de snelle installatie hebt geïnstalleerd.
 
-1. Als je pip gebruikt, typ dan het volgende commando in je terminal. Dit installeert automatisch de benodigde pakketten die zijn gespecificeerd in het `requirements.txt` bestand:
+1. Als je pip gebruikt, typ dan het volgende commando in je terminal. Hiermee worden automatisch de benodigde pakketten geïnstalleerd die in het bestand `requirements.txt` staan:
 
     ```bash
     pip install -r requirements.txt
     ```
 
-#### Gebruik van Poetry (via pyproject.toml)
+#### Met Poetry (vanuit pyproject.toml)
 
-1. Als je Poetry gebruikt, typ dan het volgende commando in je terminal. Dit installeert automatisch de benodigde pakketten die zijn gespecificeerd in het `pyproject.toml` bestand:
+1. Als je Poetry gebruikt, typ dan het volgende commando in je terminal. Hiermee worden automatisch de benodigde pakketten geïnstalleerd die in het bestand `pyproject.toml` staan:
 
     ```bash
     poetry install
     ```
 
-**Disclaimer**:  
-Dit document is vertaald met behulp van de AI-vertalingsdienst [Co-op Translator](https://github.com/Azure/co-op-translator). Hoewel we streven naar nauwkeurigheid, dient u er rekening mee te houden dat automatische vertalingen fouten of onnauwkeurigheden kunnen bevatten. Het originele document in de oorspronkelijke taal geldt als de gezaghebbende bron. Voor cruciale informatie wordt professionele menselijke vertaling aanbevolen. Wij zijn niet aansprakelijk voor eventuele misverstanden of verkeerde interpretaties die voortvloeien uit het gebruik van deze vertaling.
+---
+
+**Disclaimer**:
+Dit document is vertaald met behulp van de AI-vertalingsdienst [Co-op Translator](https://github.com/Azure/co-op-translator). Hoewel we streven naar nauwkeurigheid, dient u zich ervan bewust te zijn dat geautomatiseerde vertalingen fouten of onnauwkeurigheden kunnen bevatten. Het originele document in de oorspronkelijke taal moet worden beschouwd als de gezaghebbende bron. Voor kritieke informatie wordt professionele menselijke vertaling aanbevolen. Wij zijn niet aansprakelijk voor eventuele misverstanden of verkeerde interpretaties die voortvloeien uit het gebruik van deze vertaling.

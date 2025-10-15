@@ -1,23 +1,27 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:42:38+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:56:38+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "ro"
 }
 -->
-# Contribuția la Co-op Translator
+# Contribuie la Co-op Translator
 
-Acest proiect primește cu plăcere contribuții și sugestii. Majoritatea contribuțiilor necesită să fiți de acord cu un Acord de Licență pentru Contribuitori (CLA) care declară că aveți dreptul și efectiv ne acordați drepturile de a folosi contribuția dumneavoastră. Pentru detalii, vizitați https://cla.opensource.microsoft.com.
+Acest proiect acceptă contribuții și sugestii. Majoritatea contribuțiilor necesită să fii de acord cu un
+Acord de Licență pentru Contribuitori (CLA) care declară că ai dreptul și chiar acorzi drepturile
+de a folosi contribuția ta. Pentru detalii, vizitează https://cla.opensource.microsoft.com.
 
-Când trimiteți un pull request, un bot CLA va determina automat dacă trebuie să furnizați un CLA și va marca PR-ul corespunzător (de ex., verificare stare, comentariu). Urmați pur și simplu instrucțiunile oferite de bot. Trebuie să faceți acest lucru o singură dată pentru toate depozitele care folosesc CLA-ul nostru.
+Când trimiți un pull request, un bot CLA va determina automat dacă trebuie să furnizezi
+un CLA și va marca PR-ul corespunzător (de exemplu, status check, comentariu). Urmează pur și simplu instrucțiunile
+oferite de bot. Trebuie să faci acest lucru o singură dată pentru toate repo-urile care folosesc CLA-ul nostru.
 
 ## Configurarea mediului de dezvoltare
 
-Pentru a configura mediul de dezvoltare pentru acest proiect, recomandăm folosirea Poetry pentru gestionarea dependențelor. Folosim `pyproject.toml` pentru gestionarea dependențelor proiectului, așadar, pentru instalarea dependențelor, ar trebui să folosiți Poetry.
+Pentru a configura mediul de dezvoltare pentru acest proiect, recomandăm folosirea Poetry pentru gestionarea dependențelor. Folosim `pyproject.toml` pentru a gestiona dependențele proiectului, așa că pentru instalarea dependențelor ar trebui să folosești Poetry.
 
-### Crearea unui mediu virtual
+### Creează un mediu virtual
 
 #### Folosind pip
 
@@ -31,7 +35,7 @@ python -m venv .venv
 poetry init
 ```
 
-### Activarea mediului virtual
+### Activează mediul virtual
 
 #### Pentru pip și Poetry
 
@@ -63,77 +67,77 @@ poetry install
 
 ### Testare manuală
 
-Înainte de a trimite un PR, este important să testați funcționalitatea traducerii cu documentație reală:
+Înainte de a trimite un PR, este important să testezi funcționalitatea de traducere cu documentație reală:
 
-1. Creați un director de test în directorul rădăcină:
+1. Creează un director de test în directorul rădăcină:
     ```bash
     mkdir test_docs
     ```
 
-2. Copiați în directorul de test documentația markdown și imaginile pe care doriți să le traduceți. De exemplu:
+2. Copiază câteva fișiere markdown și imagini pe care vrei să le traduci în directorul de test. De exemplu:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. Instalați pachetul local:
+3. Instalează pachetul local:
     ```bash
     pip install -e .
     ```
 
-4. Rulați Co-op Translator pe documentele de test:
+4. Rulează Co-op Translator pe documentele tale de test:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Verificați fișierele traduse în `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. Verifică fișierele traduse din `test_docs/translations` și `test_docs/translated_images` pentru a te asigura că:
+   - Calitatea traducerii este bună
+   - Comentariile de metadate sunt corecte
+   - Structura originală a markdown-ului este păstrată
+   - Link-urile și imaginile funcționează corect
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+Această testare manuală te ajută să te asiguri că modificările tale funcționează bine în scenarii reale.
 
-### Environment variables
+### Variabile de mediu
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template`.
-1. Completați variabilele de mediu conform indicațiilor.
+1. Creează un fișier `.env` în directorul rădăcină, copiind fișierul `.env.template` furnizat.
+1. Completează variabilele de mediu conform instrucțiunilor.
 
 > [!TIP]
 >
 > ### Opțiuni suplimentare pentru mediul de dezvoltare
 >
-> Pe lângă rularea proiectului local, puteți folosi și GitHub Codespaces sau VS Code Dev Containers pentru o configurare alternativă a mediului de dezvoltare.
+> Pe lângă rularea proiectului local, poți folosi și GitHub Codespaces sau VS Code Dev Containers ca alternativă pentru configurarea mediului de dezvoltare.
 >
 > #### GitHub Codespaces
 >
-> Puteți rula aceste exemple virtual folosind GitHub Codespaces fără setări sau configurări suplimentare.
+> Poți rula aceste exemple virtual folosind GitHub Codespaces, fără setări sau configurări suplimentare.
 >
-> Butonul va deschide o instanță VS Code bazată pe web în browserul dvs.:
+> Butonul va deschide o instanță VS Code bazată pe web direct în browserul tău:
 >
-> 1. Deschideți șablonul (poate dura câteva minute):
+> 1. Deschide template-ul (poate dura câteva minute):
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
 > #### Rulare locală folosind VS Code Dev Containers
 >
-> ⚠️ Această opțiune funcționează doar dacă Docker Desktop are alocați cel puțin 16 GB RAM. Dacă aveți mai puțin de 16 GB RAM, puteți încerca opțiunea [GitHub Codespaces](../..) sau [configurați local](../..).
+> ⚠️ Această opțiune funcționează doar dacă Docker Desktop are alocat cel puțin 16 GB RAM. Dacă ai mai puțin de 16 GB RAM, poți încerca opțiunea [GitHub Codespaces](../..) sau [să configurezi local](../..).
 >
-> O opțiune asociată este VS Code Dev Containers, care va deschide proiectul în VS Code local folosind [extensia Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> O opțiune similară este VS Code Dev Containers, care va deschide proiectul în VS Code local folosind [extensia Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Porniți Docker Desktop (instalați-l dacă nu este deja instalat)
-> 2. Deschideți proiectul:
+> 1. Pornește Docker Desktop (instalează-l dacă nu este deja instalat)
+> 2. Deschide proiectul:
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
 
 ### Stilul codului
 
-Folosim [Black](https://github.com/psf/black) ca formatter pentru codul Python pentru a menține un stil consistent pe tot proiectul. Black este un formatter strict care reformatează automat codul Python pentru a respecta stilul Black.
+Folosim [Black](https://github.com/psf/black) ca formatter pentru codul Python, pentru a menține un stil consistent în tot proiectul. Black este un formatter strict care reformatează automat codul Python conform stilului Black.
 
 #### Configurare
 
-Configurarea Black este specificată în `pyproject.toml`:
+Configurația Black este specificată în `pyproject.toml`:
 
 ```toml
 [tool.black]
@@ -144,18 +148,18 @@ include = '\.pyi?$'
 
 #### Instalarea Black
 
-Puteți instala Black folosind fie Poetry (recomandat), fie pip:
+Poți instala Black fie cu Poetry (recomandat), fie cu pip:
 
 ##### Folosind Poetry
 
-Black se instalează automat când configurați mediul de dezvoltare:
+Black se instalează automat când configurezi mediul de dezvoltare:
 ```bash
 poetry install
 ```
 
 ##### Folosind pip
 
-Dacă folosiți pip, puteți instala Black direct:
+Dacă folosești pip, poți instala Black direct:
 ```bash
 pip install black
 ```
@@ -164,53 +168,91 @@ pip install black
 
 ##### Cu Poetry
 
-1. Formatați toate fișierele Python din proiect:
+1. Formatează toate fișierele Python din proiect:
     ```bash
     poetry run black .
     ```
 
-2. Formatați un fișier sau director specific:
+2. Formatează un fișier sau director specific:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
 ##### Cu pip
 
-1. Formatați toate fișierele Python din proiect:
+1. Formatează toate fișierele Python din proiect:
     ```bash
     black .
     ```
 
-2. Formatați un fișier sau director specific:
+2. Formatează un fișier sau director specific:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> Recomandăm să configurați editorul pentru a formata automat codul cu Black la salvare. Majoritatea editorilor moderni suportă asta prin extensii sau pluginuri.
+> Îți recomandăm să configurezi editorul să formateze automat codul cu Black la salvare. Majoritatea editorilor moderne suportă acest lucru prin extensii sau plugin-uri.
 
 ## Rularea Co-op Translator
 
-Pentru a rula Co-op Translator folosind Poetry în mediul dvs., urmați acești pași:
+Pentru a rula Co-op Translator folosind Poetry în mediul tău, urmează pașii de mai jos:
 
-1. Navigați la directorul unde doriți să efectuați testele de traducere sau creați un folder temporar pentru teste.
+1. Navighează în directorul unde vrei să faci teste de traducere sau creează un folder temporar pentru testare.
 
-2. Executați comanda de mai jos. Flag-ul `-l ko` with the language code you wish to translate into. The `-d` indică modul debug.
+2. Execută următoarea comandă. Înlocuiește `-l ko` cu codul limbii în care vrei să traduci. Flag-ul `-d` activează modul debug.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Asigurați-vă că mediul Poetry este activat (poetry shell) înainte de a rula comanda.
+> Asigură-te că mediul Poetry este activat (poetry shell) înainte de a rula comanda.
 
-## Maintainers
+## Contribuie cu o limbă nouă
 
-### Mesajul commit-ului și strategia de merge
+Acceptăm contribuții care adaugă suport pentru limbi noi. Înainte de a deschide un PR, te rugăm să parcurgi pașii de mai jos pentru a facilita procesul de review.
 
-Pentru a asigura consistența și claritatea în istoricul commit-urilor proiectului nostru, urmăm un format specific pentru mesajele de commit **pentru mesajul final de commit** când folosim strategia **Squash and Merge**.
+1. Adaugă limba în maparea fonturilor
+   - Editează `src/co_op_translator/fonts/font_language_mappings.yml`
+   - Adaugă o intrare cu:
+     - `code`: cod de limbă tip ISO (ex: `vi`)
+     - `name`: denumire afișată prietenoasă
+     - `font`: un font inclus în `src/co_op_translator/fonts/` care suportă scrierea respectivă
+     - `rtl`: `true` dacă limba se scrie de la dreapta la stânga, altfel `false`
 
-Când un pull request (PR) este fuzionat, commit-urile individuale vor fi combinate într-un singur commit. Mesajul final de commit trebuie să urmeze formatul de mai jos pentru a menține un istoric curat și consistent.
+2. Include fișierele de font necesare (dacă este cazul)
+   - Dacă este nevoie de un font nou, verifică compatibilitatea licenței pentru distribuție open source
+   - Adaugă fișierul de font în `src/co_op_translator/fonts/`
+
+3. Verificare locală
+   - Rulează traduceri pentru un eșantion mic (Markdown, imagini și notebook-uri, după caz)
+   - Verifică dacă rezultatul se afișează corect, inclusiv fonturile și layout-ul RTL dacă este relevant
+
+4. Actualizează documentația
+   - Asigură-te că limba apare în `getting_started/supported-languages.md`
+   - Nu sunt necesare modificări la `README_languages_template.md`; acesta se generează automat din lista de limbi suportate
+
+5. Deschide un PR
+   - Descrie limba adăugată și orice detalii despre font/licență
+   - Atașează capturi de ecran cu rezultatele afișate, dacă este posibil
+
+Exemplu de intrare YAML:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
+## Maintaineri
+
+### Formatul mesajului de commit și strategia de îmbinare
+
+Pentru a asigura consistența și claritatea istoricului de commit-uri al proiectului, urmăm un format specific **pentru mesajul final de commit** când folosim strategia **Squash and Merge**.
+
+Când un pull request (PR) este îmbinat, commit-urile individuale vor fi unite într-un singur commit. Mesajul final de commit trebuie să urmeze formatul de mai jos pentru a menține un istoric curat și consistent.
 
 #### Formatul mesajului de commit (pentru squash and merge)
 
@@ -221,42 +263,44 @@ Folosim următorul format pentru mesajele de commit:
 ```
 
 - **type**: Specifică categoria commit-ului. Folosim următoarele tipuri:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+  - `Docs`: Pentru actualizări de documentație.
+  - `Build`: Pentru modificări legate de sistemul de build sau dependențe, inclusiv actualizări la fișiere de configurare, workflow-uri CI sau Dockerfile.
+  - `Core`: Pentru modificări ale funcționalității de bază a proiectului, în special cele care implică fișiere din directorul `src/co_op_translator/core`.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: Un rezumat concis al modificării.
+- **PR number**: Numărul pull request-ului asociat commit-ului.
 
-**Examples**:
+**Exemple**:
 
-- `Docs: Actualizare instrucțiuni de instalare pentru claritate (#50)`
-- `Core: Îmbunătățire manipulare traducere imagini (#60)`
+- `Docs: Update installation instructions for clarity (#50)`
+- `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> În prezent, prefixurile **`Docs`**, **`Core`** și **`Build`** sunt adăugate automat la titlurile PR-urilor pe baza etichetelor aplicate codului sursă modificat. Atât timp cât eticheta corectă este aplicată, de obicei nu trebuie să actualizezi manual titlul PR-ului. Trebuie doar să verifici că totul este corect și prefixul a fost generat corespunzător.
 
-#### Merge strategy
+#### Strategia de îmbinare
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+Folosim **Squash and Merge** ca strategie implicită pentru pull request-uri. Această strategie asigură că mesajele de commit respectă formatul nostru, chiar dacă commit-urile individuale nu o fac.
 
-**Reasons**:
+**Motive**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- Istoric de proiect curat și liniar.
+- Consistență în mesajele de commit.
+- Mai puțin zgomot din commit-uri minore (ex: "fix typo").
 
-When merging, ensure the final commit message follows the commit message format described above.
+La îmbinare, asigură-te că mesajul final de commit respectă formatul descris mai sus.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**Exemplu de Squash and Merge**
+Dacă un PR conține următoarele commit-uri:
 
-- `corectare typo`
-- `actualizare README`
-- `ajustare format`
+- `fix typo`
+- `update README`
+- `adjust formatting`
 
-They should be squashed into:
-`Docs: Îmbunătățire claritate și format documentație (#65)`
+Acestea trebuie unite într-un singur commit:
+`Docs: Improve documentation clarity and formatting (#65)`
 
-**Declinare a responsabilității**:  
-Acest document a fost tradus folosind serviciul de traducere AI [Co-op Translator](https://github.com/Azure/co-op-translator). Deși ne străduim pentru acuratețe, vă rugăm să țineți cont că traducerile automate pot conține erori sau inexactități. Documentul original în limba sa nativă trebuie considerat sursa autorizată. Pentru informații critice, se recomandă traducerea profesională realizată de un specialist uman. Nu ne asumăm responsabilitatea pentru eventualele neînțelegeri sau interpretări greșite rezultate din utilizarea acestei traduceri.
+---
+
+**Declarație de responsabilitate**:
+Acest document a fost tradus folosind serviciul de traducere AI [Co-op Translator](https://github.com/Azure/co-op-translator). Deși ne străduim să asigurăm acuratețea, vă rugăm să rețineți că traducerile automate pot conține erori sau inexactități. Documentul original, în limba sa nativă, trebuie considerat sursa autoritară. Pentru informații critice, se recomandă traducerea profesională realizată de oameni. Nu ne asumăm răspunderea pentru orice neînțelegeri sau interpretări greșite care pot apărea din utilizarea acestei traduceri.

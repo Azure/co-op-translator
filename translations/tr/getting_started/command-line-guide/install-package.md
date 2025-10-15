@@ -1,37 +1,37 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:34:28+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T03:11:14+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "tr"
 }
 -->
-# Co-op çevirmen paketini kurma
+# Co-op translator paketini yükleyin
 
-**Co-op Translator**, projenizdeki tüm markdown dosyalarını ve görselleri birden fazla dile çevirmeye yardımcı olan bir komut satırı arayüzü (CLI) aracıdır. Bu rehber, çevirmeni yapılandırmanızı ve farklı kullanım senaryoları için çalıştırmanızı adım adım gösterecektir.
+**Co-op Translator**, projenizdeki tüm markdown dosyalarını ve görselleri birden fazla dile çevirmek için tasarlanmış bir komut satırı arayüzü (CLI) aracıdır. Bu eğitimde, çeviriciyi nasıl yapılandıracağınızı ve farklı kullanım senaryoları için nasıl çalıştıracağınızı öğreneceksiniz.
 
-### Sanal ortam oluşturma
+### Sanal ortam oluşturun
 
-Sanal ortamı `pip` veya `Poetry` kullanarak oluşturabilirsiniz. Terminalinize aşağıdaki komutlardan birini yazın.
+Sanal ortamı `pip` veya `Poetry` kullanarak oluşturabilirsiniz. Terminalinizde aşağıdaki komutlardan birini yazın.
 
-#### pip kullanarak
+#### pip ile
 
 ```bash
 python -m venv .venv
 ```
 
-#### Poetry kullanarak
+#### Poetry ile
 
 ```bash
 poetry init
 ```
 
-### Sanal ortamı etkinleştirme
+### Sanal ortamı etkinleştirin
 
-Sanal ortamı oluşturduktan sonra etkinleştirmeniz gerekir. İşletim sisteminize göre adımlar farklılık gösterir. Terminalinize aşağıdaki komutu yazın.
+Sanal ortamı oluşturduktan sonra etkinleştirmeniz gerekir. Adımlar işletim sisteminize göre değişir. Terminalinizde aşağıdaki komutu yazın.
 
-#### Hem pip hem Poetry için
+#### Hem pip hem de Poetry için
 
 - Windows:
 
@@ -45,49 +45,52 @@ Sanal ortamı oluşturduktan sonra etkinleştirmeniz gerekir. İşletim sistemin
     source .venv/bin/activate
     ```
 
-#### Poetry kullanarak
+#### Poetry ile
 
-1. Sanal ortamı Poetry ile oluşturduysanız, etkinleştirmek için terminalinize aşağıdaki komutu yazın.
+1. Ortamı Poetry ile oluşturduysanız, etkinleştirmek için terminalinizde aşağıdaki komutu yazın.
 
     ```bash
     poetry shell
     ```
 
-### Paket ve gerekli bağımlılıkların kurulumu
+### Paketi ve gerekli paketleri yükleme
 
-Sanal ortamınız kurulduktan ve etkinleştirildikten sonra, bir sonraki adım gerekli bağımlılıkları yüklemektir.
+Sanal ortamınızı kurup etkinleştirdikten sonra, gerekli bağımlılıkları yüklemeniz gerekir.
 
 ### Hızlı kurulum
 
-Co-Op Translator'ı pip ile kurun
+Co-Op Translator'ı pip ile yükleyin
 
 ```
 pip install co-op-translator
 ```
-Veya
+Ya da 
 
-Poetry ile kurun
+Poetry ile yükleyin
 ```
 poetry add co-op-translator
 ```
 
-#### Eğer bu depoyu klonladıysanız pip kullanarak (requirements.txt dosyasından)
+#### Bu repoyu klonladıysanız pip ile (requirements.txt üzerinden) 
 
-![NOTE] Co-op translator'ı hızlı kurulum ile yüklüyorsanız, bunu yapmayın.
+> [!NOTE]
+> Hızlı kurulum ile co-op translator yüklediyseniz lütfen bunu yapmayın.
 
-1. Pip kullanıyorsanız, terminalinize aşağıdaki komutu yazın. Bu komut, `requirements.txt` dosyasında belirtilen gerekli paketleri otomatik olarak yükleyecektir:
+1. pip kullanıyorsanız, terminalinizde aşağıdaki komutu yazın. Bu komut, `requirements.txt` dosyasında belirtilen gerekli paketleri otomatik olarak yükler:
 
     ```bash
     pip install -r requirements.txt
     ```
 
-#### Poetry kullanarak (pyproject.toml dosyasından)
+#### Poetry ile (pyproject.toml üzerinden)
 
-1. Poetry kullanıyorsanız, terminalinize aşağıdaki komutu yazın. Bu komut, `pyproject.toml` dosyasında belirtilen gerekli paketleri otomatik olarak yükleyecektir:
+1. Poetry kullanıyorsanız, terminalinizde aşağıdaki komutu yazın. Bu komut, `pyproject.toml` dosyasında belirtilen gerekli paketleri otomatik olarak yükler:
 
     ```bash
     poetry install
     ```
 
-**Feragatname**:  
-Bu belge, AI çeviri servisi [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba göstermemize rağmen, otomatik çevirilerin hatalar veya yanlışlıklar içerebileceğini lütfen unutmayın. Orijinal belge, kendi ana dilinde yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımı sonucu oluşabilecek yanlış anlamalar veya yorum hatalarından sorumlu değiliz.
+---
+
+**Feragatname**:
+Bu belge, AI çeviri hizmeti [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba göstersek de, otomatik çevirilerde hata veya yanlışlıklar olabileceğini lütfen unutmayın. Belgenin orijinal dili, yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımından doğabilecek herhangi bir yanlış anlama veya yanlış yorumlamadan sorumlu değiliz.

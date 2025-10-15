@@ -1,42 +1,42 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:48:31+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T03:11:22+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "tr"
 }
 -->
 # Projenizi Co-op Translator ile Çevirin
 
-**Co-op Translator**, projenizdeki markdown ve resim dosyalarını birden fazla dile çevirmeye yardımcı olan bir komut satırı arayüzü (CLI) aracıdır. Bu bölüm, aracın nasıl kullanılacağını açıklar, çeşitli CLI seçeneklerini kapsar ve farklı kullanım senaryoları için örnekler sunar.
+**Co-op Translator**, projenizdeki markdown ve görsel dosyalarını birden fazla dile çevirmeye yardımcı olan bir komut satırı aracı (CLI)dır. Bu bölümde aracın nasıl kullanılacağı, çeşitli CLI seçenekleri ve farklı kullanım senaryoları için örnekler anlatılmaktadır.
 
 > [!NOTE]
-> Komutların tam listesi ve detaylı açıklamaları için lütfen [Command reference](./command-reference.md) sayfasına bakınız.
+> Tüm komutların ve detaylı açıklamalarının tam listesi için lütfen [Komut referansı](./command-reference.md) sayfasına bakın.
 
 ---
 
 ## Örnek Senaryolar ve Komutlar
 
-İşte **Co-op Translator** için birkaç yaygın kullanım durumu ve çalıştırılacak uygun komutlar.
+**Co-op Translator** için sık karşılaşılan bazı kullanım senaryoları ve uygun komutlar aşağıda yer almaktadır.
 
 ### 1. Temel Çeviri (Tek Dil)
 
-Tüm projenizi (markdown dosyaları ve resimler) tek bir dile, örneğin Koreceye çevirmek için aşağıdaki komutu kullanın:
+Tüm projenizi (markdown dosyaları ve görseller) tek bir dile, örneğin Korece'ye çevirmek için aşağıdaki komutu kullanın:
 
 ```bash
 translate -l "ko"
 ```
 
-Bu komut, tüm markdown ve resim dosyalarını Koreceye çevirecek ve mevcut çevirileri silmeden yeni çeviriler ekleyecektir.
+Bu komut, tüm markdown ve görsel dosyalarını Korece'ye çevirecek ve mevcut çevirileri silmeden yeni çeviriler ekleyecektir.
 
 > [!TIP]
 >
-> **Co-op Translator**’da hangi dil kodlarının mevcut olduğunu görmek ister misiniz? Daha fazla bilgi için depodaki [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) bölümünü ziyaret edin.
+> **Co-op Translator**'da hangi dil kodlarının mevcut olduğunu görmek ister misiniz? Daha fazla bilgi için depo içindeki [Desteklenen Diller](https://github.com/Azure/co-op-translator#supported-languages) bölümünü ziyaret edin.
 
 #### Phi-3 CookBook Üzerinde Örnek
 
-**Phi-3 CookBook**’ta, mevcut markdown dosyaları ve resimler için Korece çeviriyi eklemek için aşağıdaki yöntemi kullandım.
+**Phi-3 CookBook**'ta, mevcut markdown dosyaları ve görseller için Korece çevirisini eklemek amacıyla aşağıdaki yöntemi kullandım.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -44,19 +44,19 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|████████████████████████████████████████████████| 153/153 [1:43:07<00:00, 241.31s/it]
 ```
 
-### 2. Birden Fazla Dil Çevirisi
+### 2. Birden Fazla Dile Çeviri
 
-Projenizi birden fazla dile (örneğin İspanyolca, Fransızca ve Almanca) çevirmek için şu komutu kullanın:
+Projenizi birden fazla dile (örneğin İspanyolca, Fransızca ve Almanca) çevirmek için bu komutu kullanın:
 
 ```bash
 translate -l "es fr de"
 ```
 
-Bu komut, projeyi İspanyolca, Fransızca ve Almancaya çevirecek ve mevcut çevirileri üzerine yazmadan yeni çeviriler ekleyecektir.
+Bu komut, projeyi İspanyolca, Fransızca ve Almanca'ya çevirecek ve mevcut çevirileri silmeden yeni çeviriler ekleyecektir.
 
 #### Phi-3 CookBook Üzerinde Örnek
 
-**Phi-3 CookBook**’ta, en son commitleri yansıtmak için değişiklikleri çektikten sonra, yeni eklenen markdown dosyaları ve resimleri çevirmek için aşağıdaki yöntemi kullandım.
+**Phi-3 CookBook**'ta, en son commitleri yansıtmak için güncellemeleri çektikten sonra, yeni eklenen markdown dosyaları ve görselleri çevirmek için aşağıdaki yöntemi kullandım.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,21 +65,21 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Genellikle bir dili bir seferde çevirmek önerilir, ancak belirli değişikliklerin eklenmesi gereken durumlarda, birden fazla dili aynı anda çevirmek daha verimli olabilir.
+> Genellikle bir seferde tek bir dili çevirmek önerilir, ancak bu gibi özel değişikliklerin eklenmesi gereken durumlarda birden fazla dili aynı anda çevirmek verimli olabilir.
 
 ### 3. Çevirileri Güncelleme (Mevcut Çevirileri Siler)
 
-Mevcut çevirileri güncellemek (yani mevcut çevirileri silip yenileriyle değiştirmek) için `-u` seçeneğini kullanın. Bu, belirtilen diller için tüm mevcut çevirileri silecek ve yeniden çevirecektir.
+Mevcut çevirileri güncellemek (yani mevcut çevirileri silip yenileriyle değiştirmek) için `-u` seçeneğini kullanın. Bu, belirtilen dillerdeki tüm mevcut çevirileri silecek ve yeniden çevirecektir.
 
 ```bash
 translate -l "ko" -u
 ```
 
-Uyarı: Bu komut, mevcut çevirileri silmeden önce onayınızı isteyecektir.
+Uyarı: Bu komut, mevcut çevirileri silmeden önce sizden onay isteyecektir.
 
 #### Phi-3 CookBook Üzerinde Örnek
 
-**Phi-3 CookBook**’ta, İspanyolca çevrilmiş tüm dosyaları güncellemek için aşağıdaki yöntemi kullandım. Orijinal içerikte birden fazla markdown dosyasında önemli değişiklikler varsa bu yöntemi kullanmanızı öneririm. Sadece birkaç çevrilmiş markdown dosyasını güncellemeniz gerekiyorsa, bu dosyaları manuel olarak silip ardından `-a` yöntemini kullanarak güncellenmiş çevirileri eklemek daha verimlidir.
+**Phi-3 CookBook**'ta, İspanyolca'daki tüm çevrilmiş dosyaları güncellemek için aşağıdaki yöntemi kullandım. Orijinal içerikte birden fazla markdown belgesinde önemli değişiklikler varsa bu yöntemi kullanmanızı öneririm. Sadece birkaç çevrilmiş markdown dosyasını güncellemek gerekiyorsa, o dosyaları manuel olarak silip ardından `-a` yöntemiyle güncellenmiş çevirileri eklemek daha verimli olur.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -90,37 +90,27 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|███████████████████████████████████| 95/95 [1:40:27<00:00, 125.62s/it]
 ```
 
-### 5. Sadece Resimleri Çevirme
+### 5. Sadece Görselleri Çevirme
 
-Projede sadece resim dosyalarını çevirmek için `-img` seçeneğini kullanın:
+Projenizde sadece görsel dosyalarını çevirmek için `-img` seçeneğini kullanın:
 
 ```bash
 translate -l "ko" -img
 ```
 
-Bu komut, sadece resimleri Koreceye çevirecek, markdown dosyalarına dokunmayacaktır.
+Bu komut, sadece görselleri Korece'ye çevirecek ve markdown dosyalarına dokunmayacaktır.
 
 ### 6. Sadece Markdown Dosyalarını Çevirme
 
-Projede sadece markdown dosyalarını çevirmek için `-md` seçeneğini kullanın:
+Projenizde sadece markdown dosyalarını çevirmek için `-md` seçeneğini kullanın:
 
 ```bash
 translate -l "ko" -md
 ```
 
-### 7. Çevrilmiş Dosyalarda Hata Kontrolü
-
-Çevrilmiş dosyaları hatalar için kontrol etmek ve gerekirse çeviriyi yeniden denemek istiyorsanız `-chk` seçeneğini kullanın:
-
-```bash
-translate -l "ko" -chk
-```
-
-Bu komut, çevrilmiş markdown dosyalarını tarar ve hata bulunan dosyalar için çeviriyi tekrar dener.
-
 #### Phi-3 CookBook Üzerinde Örnek
 
-**Phi-3 CookBook**’ta, Korece dosyalarda çeviri hatalarını kontrol etmek ve sorunlu dosyalar için otomatik olarak çeviriyi tekrar denemek için aşağıdaki yöntemi kullandım.
+**Phi-3 CookBook**'ta, Korece dosyalardaki çeviri hatalarını kontrol etmek ve tespit edilen sorunlu dosyalar için otomatik olarak yeniden çeviri yapmak amacıyla aşağıdaki yöntemi kullandım.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -129,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Bu seçenek çeviri hatalarını kontrol eder. Şu anda, orijinal ve çevrilmiş dosyalar arasındaki satır sonu farkı altıdan fazla ise dosya çeviri hatası olarak işaretleniyor. Gelecekte daha esnek bir kriterle bunu geliştirmeyi planlıyorum.
+Bu seçenek çeviri hatalarını kontrol eder. Şu anda, orijinal ve çevrilmiş dosyalar arasındaki satır sonu farkı altıdan fazlaysa dosya çeviri hatası olarak işaretleniyor. Gelecekte bu kriteri daha esnek hale getirmeyi planlıyorum.
 
-Örneğin, bu yöntem eksik parçaları veya bozuk çevirileri tespit etmek için faydalıdır ve bu dosyalar için otomatik olarak çeviriyi yeniden dener.
+Örneğin, bu yöntem eksik bölümleri veya bozulmuş çevirileri tespit etmek için faydalıdır ve bu dosyalar için otomatik olarak yeniden çeviri yapılır.
 
-Ancak hangi dosyaların sorunlu olduğunu zaten biliyorsanız, bu dosyaları manuel olarak silmek ve ardından `-a` option to re-translate them.
+Ancak, sorunlu dosyaların hangileri olduğunu zaten biliyorsanız, o dosyaları manuel olarak silip `-a` seçeneğiyle yeniden çevirmek daha verimli olur.
 
-### 8. Debug Mode
+### 8. Hata Ayıklama Modu
 
-To enable detailed logging for troubleshooting, use the `-d` seçeneğini kullanmak daha verimlidir:
+Sorunları gidermek için ayrıntılı günlük kaydını etkinleştirmek için `-d` seçeneğini kullanın:
 
 ```bash
 translate -l "ko" -d
 ```
 
-Bu komut, çeviriyi hata ayıklama modunda çalıştırır ve çeviri sürecinde karşılaşabileceğiniz sorunları tespit etmenize yardımcı olacak ek günlük bilgileri sağlar.
+Bu komut, çeviriyi hata ayıklama modunda çalıştırır ve çeviri sürecinde karşılaşılan sorunları tespit etmenize yardımcı olacak ek günlük bilgileri sağlar.
 
 #### Phi-3 CookBook Üzerinde Örnek
 
-**Phi-3 CookBook**’ta, markdown dosyalarındaki çok sayıda bağlantı içeren çevirilerde biçimlendirme hataları (bozuk çeviriler ve göz ardı edilen satır sonları gibi) yaşadım. Bu sorunu teşhis etmek için `-d` seçeneğini kullanarak çeviri sürecinin nasıl işlediğini inceledim.
+**Phi-3 CookBook**'ta, markdown dosyalarında çok fazla bağlantı olduğunda çevirilerde biçimlendirme hataları (bozuk çeviriler, göz ardı edilen satır sonları gibi) yaşadım. Bu sorunu teşhis etmek için çeviri sürecinin nasıl işlediğini görmek amacıyla `-d` seçeneğini kullandım.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -155,57 +145,59 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 ...
 ```
 
-### 9. Tüm Dillerde Çeviri
+### 9. Tüm Dillere Çeviri
 
-Projeyi desteklenen tüm dillere çevirmek istiyorsanız, all anahtar kelimesini kullanın.
+Projeyi tüm desteklenen dillere çevirmek istiyorsanız, all anahtar kelimesini kullanın.
 
 > [!WARNING]
-> Tüm dillerde aynı anda çeviri yapmak, projenin büyüklüğüne bağlı olarak ciddi zaman alabilir. Örneğin, **Phi-3 CookBook**’un İspanyolcaya çevrilmesi yaklaşık 2 saat sürdü. Ölçek göz önüne alındığında, 20 dili tek bir kişinin yönetmesi pratik değildir. Çalışmanın birden fazla katılımcıya bölünmesi, her birinin bir veya iki dili yönetmesi ve çevirilerin kademeli olarak güncellenmesi önerilir.
+> Tüm dilleri aynı anda çevirmek, projenin boyutuna bağlı olarak oldukça uzun sürebilir. Örneğin, **Phi-3 CookBook**'u İspanyolca'ya çevirmek yaklaşık 2 saat sürdü. Bu ölçekle, 20 dili tek bir kişinin yönetmesi pratik değildir. Çeviri işini birden fazla katkıcıya bölmek, her birinin bir veya iki dili yönetmesi ve çevirileri kademeli olarak güncellemesi önerilir.
 
 ```bash
 translate -l "all"
 ```
 
-Bu komut, projeyi mevcut tüm dillere çevirecektir. Devam ederseniz, projenin büyüklüğüne bağlı olarak çeviri önemli ölçüde zaman alabilir.
+Bu komut, projeyi tüm mevcut dillere çevirecektir. Devam ederseniz, çeviri projenin boyutuna bağlı olarak oldukça uzun sürebilir.
 
 > [!TIP]
 >
-> ### Çevrilmiş Dosyaları Manuel Olarak Silme (İsteğe Bağlı)
-> Kaynak dosya güncellendiğinde çevrilmiş dosyalar artık otomatik olarak algılanıp temizleniyor.
+> ### Çevrilmiş Dosyaları Manuel Olarak Silmek (İsteğe Bağlı)
+> Artık çevrilmiş dosyalar, kaynak dosya güncellendiğinde otomatik olarak algılanıp temizleniyor.
 >
-> Ancak, belirli bir dosyayı yeniden yapmak veya sistem davranışını geçersiz kılmak gibi manuel bir güncelleme yapmak istiyorsanız, dosyanın tüm dil klasörlerindeki sürümlerini silmek için aşağıdaki komutu kullanabilirsiniz.
+> Ancak, bir çeviriyi manuel olarak güncellemek isterseniz - örneğin, belirli bir dosyayı yeniden çevirmek veya sistem davranışını geçersiz kılmak için - aşağıdaki komutu kullanarak dosyanın tüm dil klasörlerindeki sürümlerini silebilirsiniz.
 >
-> ### Windows’ta:
-> 1. **Komut İstemi Kullanarak**:
->    - Komut İstemi’ni açın.
+> ### Windows'ta:
+> 1. **Komut İstemcisi ile**:
+>    - Komut İstemcisini açın.
 >    - `cd` komutunu kullanarak dosyaların bulunduğu klasöre gidin.
 >    - Dosyaları silmek için aşağıdaki komutu kullanın:
 >      ```
 >      del /s *filename*
 >      ```
->      `filename` with the specific part of the file name you're looking for. The `/s` seçeneği alt dizinlerde de arama yapar.
+>      `filename` kısmını aradığınız dosya adıyla değiştirin. `/s` seçeneği alt klasörlerde de arama yapar.
 >
-> 2. **PowerShell Kullanarak**:
->    - PowerShell’i açın.
->    - Bu komutu çalıştırın:
+> 2. **PowerShell ile**:
+>    - PowerShell'i açın.
+>    - Şu komutu çalıştırın:
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>      `"C:\YourPath"` kısmını klasör yolu ile, `filename` kısmını ise dosya adıyla değiştirin.
 >
-> ### On macOS/Linux:
-> 1. **Using Terminal**:
->   - Open Terminal.
->   - Navigate to the directory with `cd`.
->   - Use the `find` komutunu değiştirin:
+> ### macOS/Linux'ta:
+> 1. **Terminal ile**:
+>   - Terminali açın.
+>   - `cd` ile dizine gidin.
+>   - `find` komutunu kullanın:
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->     En güncel dosya değişikliklerini güncellemek için `filename` with the specific name.
+>     `filename` kısmını dosya adıyla değiştirin.
 >
-> Always double-check the files before deleting to avoid accidental loss. 
+> Silmeden önce dosyaları iki kez kontrol edin, yanlışlıkla veri kaybı yaşamamak için. 
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` komutunu değiştirin.
+> Silinmesi gereken dosyaları sildikten sonra, en güncel dosya değişikliklerini güncellemek için `translate -l` komutunuzu tekrar çalıştırmanız yeterlidir.
 
-**Feragatname**:  
-Bu belge, AI çeviri servisi [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba gösterilse de, otomatik çevirilerin hatalar veya yanlışlıklar içerebileceğini lütfen unutmayınız. Orijinal belge, kendi dilinde yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımı sonucunda ortaya çıkabilecek herhangi bir yanlış anlama veya yorumlama nedeniyle sorumluluk kabul edilmemektedir.
+---
+
+**Feragatname**:
+Bu belge, AI çeviri hizmeti [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba göstersek de, otomatik çevirilerde hata veya yanlışlıklar olabileceğini lütfen unutmayın. Belgenin orijinal dili, yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımından doğabilecek herhangi bir yanlış anlama veya yanlış yorumdan sorumlu değiliz.

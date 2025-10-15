@@ -1,43 +1,39 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:43:47+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T04:02:06+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "sr"
 }
 -->
-# Doprinos Co-op Translator-u
+# Допринос Co-op Translator-у
 
-Ovaj projekat pozdravlja doprinose i sugestije. Većina doprinosa zahteva da se složite sa  
-Contributor License Agreement (CLA) koji potvrđuje da imate pravo i zaista nam dajete  
-prava za korišćenje vašeg doprinosa. Za detalje, posetite https://cla.opensource.microsoft.com.
+Овај пројекат је отворен за доприносе и предлоге. Већина доприноса захтева да прихватите Споразум о лиценци за доприносиоце (CLA), којим потврђујете да имате право да нам уступите права на ваш допринос. Више информација можете наћи на https://cla.opensource.microsoft.com.
 
-Kada pošaljete pull request, CLA bot će automatski utvrditi da li treba da dostavite  
-CLA i odgovarajuće označiti PR (npr. status provera, komentar). Jednostavno pratite uputstva  
-koja daje bot. Ovo je potrebno uraditi samo jednom za sve repozitorijume koji koriste naš CLA.
+Када пошаљете pull request, CLA бот ће аутоматски проверити да ли треба да прихватите CLA и обележиће PR одговарајуће (нпр. статусна провера, коментар). Само следите упутства која вам бот даје. Ово треба да урадите само једном за све репозиторијуме који користе наш CLA.
 
-## Podešavanje razvojne sredine
+## Подешавање развојног окружења
 
-Za podešavanje razvojne sredine za ovaj projekat, preporučujemo korišćenje Poetry za upravljanje zavisnostima. Koristimo `pyproject.toml` za upravljanje zavisnostima projekta, pa je za instalaciju zavisnosti potrebno koristiti Poetry.
+За подешавање развојног окружења за овај пројекат препоручујемо да користите Poetry за управљање зависностима. Користимо `pyproject.toml` за управљање зависностима, па је за инсталацију потребно користити Poetry.
 
-### Kreiranje virtuelnog okruženja
+### Креирање виртуелног окружења
 
-#### Korišćenje pip-a
+#### Коришћење pip-а
 
 ```bash
 python -m venv .venv
 ```
 
-#### Korišćenje Poetry-ja
+#### Коришћење Poetry-а
 
 ```bash
 poetry init
 ```
 
-### Aktiviranje virtuelnog okruženja
+### Активирање виртуелног окружења
 
-#### Za pip i Poetry
+#### За pip и Poetry
 
 - Windows:
 
@@ -51,93 +47,93 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Korišćenje Poetry-ja
+#### Коришћење Poetry-а
 
 ```bash
 poetry shell
 ```
 
-### Instalacija paketa i potrebnih zavisnosti
+### Инсталација пакета и потребних зависности
 
-#### Korišćenje Poetry-ja (iz pyproject.toml)
+#### Коришћење Poetry-а (из pyproject.toml)
 
 ```bash
 poetry install
 ```
 
-### Ručno testiranje
+### Ручно тестирање
 
-Pre nego što pošaljete PR, važno je da testirate funkcionalnost prevoda na stvarnoj dokumentaciji:
+Пре слања PR-а, важно је да тестирате функционалност превођења на стварној документацији:
 
-1. Kreirajte test direktorijum u korenskom direktorijumu:
+1. Креирајте тест директоријум у корену пројекта:
     ```bash
     mkdir test_docs
     ```
 
-2. Kopirajte markdown dokumentaciju i slike koje želite da prevedete u test direktorijum. Na primer:
+2. Копирајте неку markdown документацију и слике које желите да преведете у тест директоријум. На пример:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. Instalirajte paket lokalno:
+3. Локално инсталирајте пакет:
     ```bash
     pip install -e .
     ```
 
-4. Pokrenite Co-op Translator na vašim test dokumentima:
+4. Покрените Co-op Translator на вашим тест документима:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Proverite prevedene fajlove u `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. Проверите преведене фајлове у `test_docs/translations` и `test_docs/translated_images` да бисте се уверили:
+   - Да је квалитет превода добар
+   - Да су мета-коментари тачни
+   - Да је оригинална markdown структура очувана
+   - Да линкови и слике раде исправно
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+Ово ручно тестирање помаже да се уверите да ваше измене добро функционишу у пракси.
 
-### Environment variables
+### Енвиронмент променљиве
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template` fajlu.
-1. Popunite promenljive okruženja prema uputstvu.
+1. Креирајте `.env` фајл у корену пројекта тако што ћете копирати дати `.env.template` фајл.
+1. Попуните енвиронмент променљиве по упутству.
 
 > [!TIP]
 >
-> ### Dodatne opcije za razvojnu sredinu
+> ### Додатне опције за развојно окружење
 >
-> Pored pokretanja projekta lokalno, možete koristiti i GitHub Codespaces ili VS Code Dev Containers kao alternativno rešenje za razvojnu sredinu.
+> Поред локалног покретања пројекта, можете користити и GitHub Codespaces или VS Code Dev Containers као алтернативу за развојно окружење.
 >
 > #### GitHub Codespaces
 >
-> Možete virtuelno pokrenuti ove primere koristeći GitHub Codespaces bez potrebe za dodatnim podešavanjima.
+> Овај пример можете покренути виртуелно преко GitHub Codespaces без додатних подешавања.
 >
-> Dugme će otvoriti VS Code instancu u vašem pregledaču:
+> Ово дугме ће отворити VS Code у вашем претраживачу:
 >
-> 1. Otvorite šablon (može potrajati nekoliko minuta):
+> 1. Отворите шаблон (може потрајати неколико минута):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
 >
-> #### Lokalno pokretanje koristeći VS Code Dev Containers
+> #### Локално покретање преко VS Code Dev Containers
 >
-> ⚠️ Ova opcija funkcioniše samo ako vaš Docker Desktop ima dodeljeno najmanje 16 GB RAM-a. Ako imate manje od 16 GB RAM-a, možete probati [GitHub Codespaces opciju](../..) ili [podesiti lokalno](../..).
+> ⚠️ Ова опција ради само ако је вашем Docker Desktop-у додељено најмање 16 GB RAM-а. Ако имате мање од 16 GB, пробајте [GitHub Codespaces опцију](../..) или [локално подешавање](../..).
 >
-> Srodna opcija su VS Code Dev Containers, koji otvaraju projekat u vašem lokalnom VS Code koristeći [Dev Containers ekstenziju](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Слична опција је VS Code Dev Containers, која отвара пројекат у вашем локалном VS Code-у преко [Dev Containers екстензије](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Pokrenite Docker Desktop (instalirajte ako već nije instaliran)
-> 2. Otvorite projekat:
+> 1. Покрените Docker Desktop (инсталирајте ако већ нисте)
+> 2. Отворите пројекат:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
 
 
-### Stil koda
+### Стил кода
 
-Koristimo [Black](https://github.com/psf/black) kao Python formatter da bismo održali konzistentan stil koda u projektu. Black je rigorozan formatter koji automatski preformatira Python kod da bude u skladu sa Black stilom.
+Користимо [Black](https://github.com/psf/black) као форматер Python кода ради доследног стила кроз цео пројекат. Black је алат који аутоматски форматира Python код по својим правилима.
 
-#### Konfiguracija
+#### Конфигурација
 
-Black konfiguracija je definisana u našem `pyproject.toml`:
+Black конфигурација је дефинисана у нашем `pyproject.toml`:
 
 ```toml
 [tool.black]
@@ -146,121 +142,161 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-#### Instalacija Black-a
+#### Инсталација Black-а
 
-Black možete instalirati koristeći Poetry (preporučeno) ili pip:
+Black можете инсталирати преко Poetry-а (препоручено) или pip-а:
 
-##### Korišćenje Poetry-ja
+##### Преко Poetry-а
 
-Black se automatski instalira kada podesite razvojnu sredinu:
+Black се аутоматски инсталира када подесите развојно окружење:
 ```bash
 poetry install
 ```
 
-##### Korišćenje pip-a
+##### Преко pip-а
 
-Ako koristite pip, Black možete instalirati direktno:
+Ако користите pip, можете директно инсталирати Black:
 ```bash
 pip install black
 ```
 
-#### Korišćenje Black-a
+#### Коришћење Black-а
 
-##### Sa Poetry-jem
+##### Са Poetry-ем
 
-1. Formatirajte sve Python fajlove u projektu:
+1. Форматирајте све Python фајлове у пројекту:
     ```bash
     poetry run black .
     ```
 
-2. Formatirajte određeni fajl ili direktorijum:
+2. Форматирајте одређени фајл или директоријум:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
-##### Sa pip-om
+##### Са pip-ом
 
-1. Formatirajte sve Python fajlove u projektu:
+1. Форматирајте све Python фајлове у пројекту:
     ```bash
     black .
     ```
 
-2. Formatirajte određeni fajl ili direktorijum:
+2. Форматирајте одређени фајл или директоријум:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> Preporučujemo da podesite vaš editor da automatski formatira kod sa Black prilikom čuvanja. Većina modernih editora podržava ovo preko ekstenzija ili plugina.
+> Препоручујемо да подесите ваш едитор да аутоматски форматира код са Black-ом при сваком чувању. Већина савремених едитора то подржава преко екстензија или додатака.
 
-## Pokretanje Co-op Translator-a
+## Покретање Co-op Translator-а
 
-Da biste pokrenuli Co-op Translator koristeći Poetry u vašem okruženju, pratite sledeće korake:
+Да бисте покренули Co-op Translator преко Poetry-а у вашем окружењу, следите ове кораке:
 
-1. Pređite u direktorijum gde želite da obavite testove prevoda ili napravite privremeni folder za testiranje.
+1. Идите у директоријум где желите да тестирате превођење или направите привремени фолдер за тестирање.
 
-2. Pokrenite sledeću komandu. Zamena `-l ko` with the language code you wish to translate into. The `-d` zastavica označava debug režim.
+2. Покрените следећу команду. Замените `-l ko` са кодом језика на који желите да преведете. Опција `-d` укључује debug режим.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Proverite da li je vaše Poetry okruženje aktivirano (poetry shell) pre pokretanja komande.
+> Проверите да ли је ваше Poetry окружење активно (poetry shell) пре покретања команде.
 
-## Održavaoci
+## Додавање новог језика
 
-### Poruka komita i strategija spajanja
+Радо прихватамо доприносе који додају подршку за нове језике. Пре отварања PR-а, завршите кораке испод ради лакше ревизије.
 
-Da bismo osigurali doslednost i jasnoću u istoriji komita našeg projekta, koristimo specifičan format poruke komita **za finalnu poruku komita** pri korišćenju **Squash and Merge** strategije.
+1. Додајте језик у мапирање фонтова
+   - Уредите `src/co_op_translator/fonts/font_language_mappings.yml`
+   - Додајте унос са:
+     - `code`: ISO-код језика (нпр. `vi`)
+     - `name`: Назив језика за приказ
+     - `font`: Фонт који се налази у `src/co_op_translator/fonts/` и подржава писмо
+     - `rtl`: `true` ако је писмо здесна налево, иначе `false`
 
-Kada se pull request (PR) spoji, pojedinačni komiti se spajaju u jedan komit. Finalna poruka komita treba da prati format ispod kako bismo održali urednu i doslednu istoriju.
+2. Додајте потребне фонт фајлове (ако је потребно)
+   - Ако је потребан нови фонт, проверите да ли је лиценца компатибилна са open source дистрибуцијом
+   - Додајте фонт у `src/co_op_translator/fonts/`
 
-#### Format poruke komita (za squash and merge)
+3. Локална провера
+   - Покрените превод за мали узорак (Markdown, слике и бележнице по потреби)
+   - Проверите да ли се излаз исправно приказује, укључујући фонтове и RTL распоред ако је применљиво
 
-Koristimo sledeći format za poruke komita:
+4. Ажурирајте документацију
+   - Проверите да ли се језик појављује у `getting_started/supported-languages.md`
+   - Не мењајте `README_languages_template.md`; он се генерише из листе подржаних језика
+
+5. Отворите PR
+   - Описати додати језик и све фонт/лиценцне напомене
+   - Додајте снимке екрана приказаних резултата ако је могуће
+
+Пример YAML уноса:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
+## Одржаваоци
+
+### Формат commit поруке и стратегија спајања
+
+Ради доследности и прегледности историје commit-а, користимо одређени формат commit поруке **за финалну commit поруку** када користимо стратегију **Squash and Merge**.
+
+Када се pull request (PR) споји, појединачни commit-и се спајају у један. Финална commit порука треба да прати формат испод ради чисте и доследне историје.
+
+#### Формат commit поруке (за squash and merge)
+
+Користимо следећи формат commit порука:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: Određuje kategoriju komita. Koristimo sledeće tipove:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+- **type**: Категорија commit-а. Користимо следеће типове:
+  - `Docs`: За измене документације.
+  - `Build`: За измене у build систему или зависностима, укључујући конфигурационе фајлове, CI workflow-ове или Dockerfile.
+  - `Core`: За измене у основној функционалности пројекта, посебно у фајловима у `src/co_op_translator/core` директоријуму.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: Кратак опис измене.
+- **PR number**: Број pull request-а који је повезан са commit-ом.
 
-**Examples**:
+**Примери**:
 
 - `Docs: Update installation instructions for clarity (#50)`
 - `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> Тренутно се **`Docs`**, **`Core`** и **`Build`** префикси аутоматски додају на PR наслове на основу label-а који су примењени на измењени изворни код. Ако је исправан label примењен, обично не морате ручно да мењате PR наслов. Само проверите да ли је све исправно и да је префикс генерисан како треба.
 
-#### Merge strategy
+#### Стратегија спајања
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+Користимо **Squash and Merge** као подразумевану стратегију за pull request-ове. Ова стратегија обезбеђује да commit поруке прате наш формат, чак и ако појединачни commit-и то не чине.
 
-**Reasons**:
+**Разлози**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- Чиста, линеарна историја пројекта.
+- Доследност commit порука.
+- Мање "шумова" од ситних commit-а (нпр. "fix typo").
 
-When merging, ensure the final commit message follows the commit message format described above.
+При спајању, проверите да ли финална commit порука прати горе описани формат.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**Пример Squash and Merge**
+Ако PR садржи следеће commit-е:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-They should be squashed into:
+Треба да буду спојени у:
 `Docs: Improve documentation clarity and formatting (#65)`
 
+---
+
 **Одрицање од одговорности**:  
-Овај документ је преведен помоћу AI сервиса за превођење [Co-op Translator](https://github.com/Azure/co-op-translator). Иако тежимо прецизности, имајте у виду да аутоматски преводи могу садржати грешке или нетачности. Оригинални документ на његовом изворном језику треба сматрати ауторитетним извором. За критичне информације препоручује се професионални превод од стране стручног људског преводиоца. Нисмо одговорни за било каква неспоразума или погрешна тумачења настала употребом овог превода.
+Овај документ је преведен коришћењем AI услуге за превођење [Co-op Translator](https://github.com/Azure/co-op-translator). Иако настојимо да обезбедимо тачност, имајте у виду да аутоматски преводи могу садржати грешке или нетачности. Оригинални документ на изворном језику треба сматрати меродавним извором. За критичне информације препоручује се професионални људски превод. Не сносимо одговорност за било каква погрешна тумачења или неспоразуме који могу настати коришћењем овог превода.

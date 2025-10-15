@@ -1,19 +1,19 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:36:46+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T03:46:15+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "sw"
 }
 -->
-# Sakinisha kifurushi cha Co-op translator
+# Sakinisha kifurushi cha Co-op Translator
 
-**Co-op Translator** ni zana ya kiolesura cha amri (CLI) iliyoundwa kusaidia kutafsiri faili zote za markdown na picha katika mradi wako kwa lugha nyingi. Mafunzo haya yatakuongoza jinsi ya kusanidi translator na kuiendesha kwa matumizi mbalimbali.
+**Co-op Translator** ni zana ya mstari wa amri (CLI) iliyoundwa kukusaidia kutafsiri faili zote za markdown na picha kwenye mradi wako kwenda katika lugha mbalimbali. Mafunzo haya yatakuongoza jinsi ya kusanidi translator na kuiendesha kwa matumizi tofauti.
 
-### Unda mazingira ya virtual
+### Tengeneza mazingira ya virtual
 
-Unaweza kuunda mazingira ya virtual ukitumia ama `pip` au `Poetry`. Andika moja ya amri zifuatazo ndani ya terminal yako.
+Unaweza kutengeneza mazingira ya virtual kwa kutumia `pip` au `Poetry`. Andika mojawapo ya amri zifuatazo kwenye terminal yako.
 
 #### Kutumia pip
 
@@ -29,9 +29,9 @@ poetry init
 
 ### Washa mazingira ya virtual
 
-Baada ya kuunda mazingira ya virtual, utahitaji kuyawezesha. Hatua hutofautiana kulingana na mfumo wako wa uendeshaji. Andika amri ifuatayo ndani ya terminal yako.
+Baada ya kutengeneza mazingira ya virtual, utahitaji kuyaamsha. Hatua zinatofautiana kulingana na mfumo wa uendeshaji unaotumia. Andika amri ifuatayo kwenye terminal yako.
 
-#### Kwa pip na Poetry zote mbili
+#### Kwa pip na Poetry zote
 
 - Windows:
 
@@ -47,19 +47,19 @@ Baada ya kuunda mazingira ya virtual, utahitaji kuyawezesha. Hatua hutofautiana 
 
 #### Kutumia Poetry
 
-1. Ikiwa umeunda mazingira na Poetry, andika amri ifuatayo ndani ya terminal yako kuyawezesha.
+1. Kama umetengeneza mazingira kwa Poetry, andika amri ifuatayo kwenye terminal yako ili kuyaamsha.
 
     ```bash
     poetry shell
     ```
 
-### Kusakinisha Kifurushi na vifurushi vinavyohitajika
+### Kusakinisha Kifurushi na Vifurushi vinavyohitajika
 
-Mara mazingira yako ya virtual yatakapowekwa na kuyawezesha, hatua inayofuata ni kusakinisha utegemezi unaohitajika.
+Mara mazingira yako ya virtual yakishatengenezwa na kuwashwa, hatua inayofuata ni kusakinisha utegemezi unaohitajika.
 
 ### Usakinishaji wa haraka
 
-Sakinisha kupitia Co-Op Translator kwa pip
+Sakinisha Co-Op Translator kupitia pip
 
 ```
 pip install co-op-translator
@@ -71,11 +71,12 @@ Sakinisha kupitia poetry
 poetry add co-op-translator
 ```
 
-#### Kutumia pip (kutoka requirements.txt) ikiwa unakopa repo hii
+#### Kutumia pip (kutoka requirements.txt) kama umeclone repo hii 
 
-![NOTE] Tafadhali USIFANYE hivi ikiwa unasakinisha co-op translator kupitia usakinishaji wa haraka.
+> [!NOTE]
+> Tafadhali USIFANYE hivi kama umesakinisha co-op translator kupitia usakinishaji wa haraka.
 
-1. Ikiwa unatumia pip, andika amri ifuatayo ndani ya terminal yako. Itasakinisha moja kwa moja vifurushi vinavyohitajika vilivyoainishwa katika faili la `requirements.txt`:
+1. Kama unatumia pip, andika amri ifuatayo kwenye terminal yako. Itaweka moja kwa moja vifurushi vinavyohitajika vilivyoainishwa kwenye faili `requirements.txt`:
 
     ```bash
     pip install -r requirements.txt
@@ -83,11 +84,13 @@ poetry add co-op-translator
 
 #### Kutumia Poetry (kutoka pyproject.toml)
 
-1. Ikiwa unatumia Poetry, andika amri ifuatayo ndani ya terminal yako. Itasakinisha moja kwa moja vifurushi vinavyohitajika vilivyoainishwa katika faili la `pyproject.toml`:
+1. Kama unatumia Poetry, andika amri ifuatayo kwenye terminal yako. Itaweka moja kwa moja vifurushi vinavyohitajika vilivyoainishwa kwenye faili `pyproject.toml`:
 
     ```bash
     poetry install
     ```
 
-**Angalizo**:  
-Hati hii imetafsiriwa kwa kutumia huduma ya tafsiri ya AI [Co-op Translator](https://github.com/Azure/co-op-translator). Ingawa tunajitahidi kupata usahihi, tafadhali fahamu kwamba tafsiri za moja kwa moja zinaweza kuwa na makosa au upungufu wa usahihi. Hati ya asili katika lugha yake ya asili inapaswa kuchukuliwa kama chanzo cha mamlaka. Kwa taarifa muhimu, tafsiri ya kitaalamu inayofanywa na binadamu inapendekezwa. Hatubebei wajibu wowote kwa kutoelewana au tafsiri potofu zinazotokana na matumizi ya tafsiri hii.
+---
+
+**Kanusho**:
+Hati hii imetafsiriwa kwa kutumia huduma ya kutafsiri ya AI [Co-op Translator](https://github.com/Azure/co-op-translator). Ingawa tunajitahidi kwa usahihi, tafadhali fahamu kwamba tafsiri za kiotomatiki zinaweza kuwa na makosa au kutokuwa sahihi. Hati asili katika lugha yake ya asili inapaswa kuchukuliwa kama chanzo rasmi. Kwa taarifa muhimu, inashauriwa kutumia huduma ya mtaalamu wa kutafsiri binadamu. Hatutawajibika kwa kutoelewana au tafsiri potofu zinazotokana na matumizi ya tafsiri hii.

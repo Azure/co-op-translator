@@ -1,121 +1,121 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:11:30+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T03:22:48+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "da"
 }
 -->
 # Brug af Co-op Translator GitHub Action (Organisationsvejledning)
 
-**Målgruppe:** Denne vejledning er rettet mod **Microsoft interne brugere** eller **teams, der har adgang til de nødvendige legitimationsoplysninger til den færdigbyggede Co-op Translator GitHub App** eller kan oprette deres egen brugerdefinerede GitHub App.
+**Målgruppe:** Denne vejledning er til **Microsoft interne brugere** eller **teams, der har adgang til de nødvendige legitimationsoplysninger til den færdigbyggede Co-op Translator GitHub App** eller kan oprette deres egen tilpassede GitHub App.
 
-Automatiser oversættelsen af din repositories dokumentation nemt ved hjælp af Co-op Translator GitHub Action. Denne vejledning guider dig gennem opsætningen af action, så den automatisk opretter pull requests med opdaterede oversættelser, hver gang dine kilde Markdown-filer eller billeder ændres.
+Automatiser oversættelsen af dit repositories dokumentation nemt med Co-op Translator GitHub Action. Denne vejledning guider dig igennem opsætningen, så der automatisk oprettes pull requests med opdaterede oversættelser, hver gang dine kilde-Markdown-filer eller billeder ændres.
 
 > [!IMPORTANT]
 > 
-> **Valg af den rette vejledning:**
+> **Vælg den rigtige vejledning:**
 >
-> Denne vejledning beskriver opsætning ved brug af **GitHub App ID og en Privat Nøgle**. Du har typisk brug for denne "Organisationsvejledning"-metode, hvis: **`GITHUB_TOKEN` Rettigheder er Begrænsede:** Din organisation eller repository-indstillinger begrænser de standardrettigheder, der gives til den normale `GITHUB_TOKEN`. Specifikt, hvis `GITHUB_TOKEN` ikke har de nødvendige `write` rettigheder (som `contents: write` eller `pull-requests: write`), vil workflowet i [Public Setup Guide](./github-actions-guide-public.md) fejle på grund af manglende rettigheder. Brug af en dedikeret GitHub App med eksplicit tildelte rettigheder omgår denne begrænsning.
+> Denne vejledning beskriver opsætning med **GitHub App ID og en Private Key**. Du har typisk brug for denne "Organisationsvejledning", hvis: **`GITHUB_TOKEN`-tilladelser er begrænsede:** Din organisation eller repository-indstillinger begrænser de standardtilladelser, som den normale `GITHUB_TOKEN` giver. Specifikt, hvis `GITHUB_TOKEN` ikke har de nødvendige `write`-tilladelser (som `contents: write` eller `pull-requests: write`), vil workflowet i [Public Setup Guide](./github-actions-guide-public.md) fejle på grund af manglende tilladelser. Ved at bruge en dedikeret GitHub App med eksplicitte tilladelser undgår du denne begrænsning.
 >
 > **Hvis ovenstående ikke gælder for dig:**
 >
-> Hvis den standard `GITHUB_TOKEN` har tilstrækkelige rettigheder i dit repository (dvs. du ikke er blokeret af organisationsbegrænsninger), bedes du bruge **[Public Setup Guide ved brug af GITHUB_TOKEN](./github-actions-guide-public.md)**. Den offentlige vejledning kræver ikke at hente eller administrere App IDs eller Private Nøgler og baserer sig udelukkende på den standard `GITHUB_TOKEN` og repository rettigheder.
+> Hvis den normale `GITHUB_TOKEN` har tilstrækkelige tilladelser i dit repository (dvs. du ikke er blokeret af organisatoriske begrænsninger), så brug **[Public Setup Guide med GITHUB_TOKEN](./github-actions-guide-public.md)**. Den offentlige vejledning kræver ikke App ID eller Private Key og bruger kun den normale `GITHUB_TOKEN` og repository-tilladelser.
 
 ## Forudsætninger
 
-Før du konfigurerer GitHub Action, skal du sikre dig, at du har de nødvendige AI service legitimationsoplysninger klar.
+Før du konfigurerer GitHub Action, skal du sikre dig, at du har de nødvendige AI-service-legitimationsoplysninger klar.
 
-**1. Påkrævet: Legitimation til AI sprogmodel**  
-Du skal have legitimationsoplysninger til mindst én understøttet Sprogmodel:
+**1. Krævet: AI Language Model-legitimationsoplysninger**
+Du skal have legitimationsoplysninger til mindst én understøttet Language Model:
 
-- **Azure OpenAI**: Kræver Endpoint, API-nøgle, Model-/Deploymentsnavne, API-version.  
-- **OpenAI**: Kræver API-nøgle, (Valgfrit: Org ID, Base URL, Model ID).  
-- Se [Supported Models and Services](../../../../README.md) for detaljer.  
+- **Azure OpenAI**: Kræver Endpoint, API Key, Model/Deployment-navne, API Version.
+- **OpenAI**: Kræver API Key, (Valgfrit: Org ID, Base URL, Model ID).
+- Se [Understøttede modeller og tjenester](../../../../README.md) for detaljer.
 - Opsætningsvejledning: [Opsæt Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
 
-**2. Valgfrit: Legitimation til Computer Vision (til billedoversættelse)**
+**2. Valgfrit: Computer Vision-legitimationsoplysninger (til billedoversættelse)**
 
-- Kræves kun, hvis du skal oversætte tekst i billeder.  
-- **Azure Computer Vision**: Kræver Endpoint og Abonnementsnøgle.  
-- Hvis ikke angivet, anvender action standard [Markdown-only mode](../markdown-only-mode.md).  
+- Kun nødvendigt, hvis du skal oversætte tekst i billeder.
+- **Azure Computer Vision**: Kræver Endpoint og Subscription Key.
+- Hvis ikke angivet, kører actionen i [Markdown-only mode](../markdown-only-mode.md).
 - Opsætningsvejledning: [Opsæt Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
 
-## Opsætning og Konfiguration
+## Opsætning og konfiguration
 
 Følg disse trin for at konfigurere Co-op Translator GitHub Action i dit repository:
 
-### Trin 1: Installer og Konfigurer GitHub App Autentificering
+### Trin 1: Installer og konfigurer GitHub App-autentificering
 
-Workflowet bruger GitHub App autentificering til sikkert at interagere med dit repository (fx oprette pull requests) på dine vegne. Vælg én af mulighederne:
+Workflowet bruger GitHub App-autentificering til sikkert at interagere med dit repository (f.eks. oprette pull requests) på dine vegne. Vælg én mulighed:
 
-#### **Mulighed A: Installer den færdigbyggede Co-op Translator GitHub App (til Microsoft Intern Brug)**
+#### **Mulighed A: Installer den færdigbyggede Co-op Translator GitHub App (til Microsoft intern brug)**
 
-1. Gå til [Co-op Translator GitHub App](https://github.com/apps/co-op-translator) siden.
+1. Gå til [Co-op Translator GitHub App](https://github.com/apps/co-op-translator)-siden.
 
-1. Vælg **Installér** og vælg den konto eller organisation, hvor dit målrepository ligger.
+1. Vælg **Installér** og vælg den konto eller organisation, hvor dit repository ligger.
 
-    ![Installér app](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.da.png)
+    ![Installér app](../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.da.png)
 
-1. Vælg **Vælg kun specifikke repositories** og vælg dit målrepository (fx `PhiCookBook`). Klik **Installér**. Du kan blive bedt om at godkende.
+1. Vælg **Kun udvalgte repositories** og vælg dit repository (f.eks. `PhiCookBook`). Klik på **Installér**. Du kan blive bedt om at godkende.
 
-    ![Installér godkend](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.da.png)
+    ![Installér godkendelse](../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.da.png)
 
-1. **Indhent App-legitimationsoplysninger (Intern proces påkrævet):** For at workflowet kan autentificere som appen, skal du bruge to oplysninger fra Co-op Translator teamet:  
-  - **App ID:** Den unikke identifikator for Co-op Translator appen. App ID er: `1164076`.  
-  - **Privat Nøgle:** Du skal have **hele indholdet** af `.pem` private nøglefilen fra vedligeholderkontakt. **Behandl denne nøgle som en adgangskode og hold den sikker.**
+1. **Få App-legitimationsoplysninger (intern proces krævet):** For at workflowet kan autentificere som appen, skal du bruge to oplysninger fra Co-op Translator-teamet:
+  - **App ID:** Det unikke ID for Co-op Translator-appen. App ID er: `1164076`.
+  - **Private Key:** Du skal få **hele indholdet** af `.pem` private key-filen fra kontaktpersonen. **Behandl denne nøgle som en adgangskode og hold den sikker.**
 
 1. Fortsæt til Trin 2.
 
-#### **Mulighed B: Brug din egen brugerdefinerede GitHub App**
+#### **Mulighed B: Brug din egen tilpassede GitHub App**
 
-- Hvis du foretrækker det, kan du oprette og konfigurere din egen GitHub App. Sørg for, at den har Læs & skriv adgang til Contents og Pull requests. Du skal bruge dens App ID og en genereret Privat Nøgle.
+- Hvis du foretrækker det, kan du oprette og konfigurere din egen GitHub App. Sørg for, at den har læse- og skrivetilladelse til Contents og Pull requests. Du skal bruge dens App ID og en genereret Private Key.
 
-### Trin 2: Konfigurer Repository Secrets
+### Trin 2: Konfigurer repository-secrets
 
-Du skal tilføje GitHub App legitimationsoplysninger og dine AI service legitimationsoplysninger som krypterede secrets i dine repository-indstillinger.
+Du skal tilføje GitHub App-legitimationsoplysninger og dine AI-service-legitimationsoplysninger som krypterede secrets i repository-indstillingerne.
 
-1. Gå til dit mål GitHub repository (fx `PhiCookBook`).
+1. Gå til dit repository (f.eks. `PhiCookBook`).
 
 1. Gå til **Settings** > **Secrets and variables** > **Actions**.
 
-1. Under **Repository secrets** klik **New repository secret** for hver af de nedenstående secrets.
+1. Under **Repository secrets**, klik på **New repository secret** for hver secret nedenfor.
 
-   ![Vælg indstilling action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.da.png)
+   ![Vælg indstilling action](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.da.png)
 
-**Påkrævede Secrets (til GitHub App autentificering):**
+**Nødvendige secrets (til GitHub App-autentificering):**
 
-| Secret Name          | Beskrivelse                                      | Værdi Kilde                                     |
+| Secret Name          | Beskrivelse                                      | Værdi-kilde                                     |
 | :------------------- | :----------------------------------------------- | :----------------------------------------------- |
-| `GH_APP_ID`          | App ID for GitHub App (fra Trin 1).               | GitHub App Indstillinger                         |
-| `GH_APP_PRIVATE_KEY` | **Hele indholdet** af den downloadede `.pem` fil. | `.pem` fil (fra Trin 1)              |
+| `GH_APP_ID`          | App ID for GitHub App (fra Trin 1).              | GitHub App-indstillinger                        |
+| `GH_APP_PRIVATE_KEY` | **Hele indholdet** af den downloadede `.pem`-fil. | `.pem`-fil (fra Trin 1)                         |
 
-**AI Service Secrets (Tilføj ALLE relevante baseret på dine forudsætninger):**
+**AI-service-secrets (Tilføj ALLE relevante ud fra dine forudsætninger):**
 
-| Secret Name                         | Beskrivelse                               | Værdi Kilde                     |
-| :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Nøgle til Azure AI Service (Computer Vision)  | Azure AI Foundry                    |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint for Azure AI Service (Computer Vision) | Azure AI Foundry                     |
-| `AZURE_OPENAI_API_KEY`              | Nøgle til Azure OpenAI service              | Azure AI Foundry                     |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint for Azure OpenAI service         | Azure AI Foundry                     |
-| `AZURE_OPENAI_MODEL_NAME`           | Dit Azure OpenAI Modelnavn              | Azure AI Foundry                     |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Dit Azure OpenAI Deploymentsnavn         | Azure AI Foundry                     |
-| `AZURE_OPENAI_API_VERSION`          | API-version til Azure OpenAI              | Azure AI Foundry                     |
-| `OPENAI_API_KEY`                    | API-nøgle til OpenAI                        | OpenAI Platform                  |
-| `OPENAI_ORG_ID`                     | OpenAI Organisations ID                    | OpenAI Platform                  |
-| `OPENAI_CHAT_MODEL_ID`              | Specifik OpenAI model ID                  | OpenAI Platform                    |
-| `OPENAI_BASE_URL`                   | Brugerdefineret OpenAI API Base URL                | OpenAI Platform                    |
+| Secret Name                         | Beskrivelse                               | Værdi-kilde                     |
+| :---------------------------------- | :---------------------------------------- | :------------------------------ |
+| `AZURE_AI_SERVICE_API_KEY`            | Nøgle til Azure AI Service (Computer Vision)  | Azure AI Foundry                |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint til Azure AI Service (Computer Vision) | Azure AI Foundry                |
+| `AZURE_OPENAI_API_KEY`              | Nøgle til Azure OpenAI service            | Azure AI Foundry                |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint til Azure OpenAI service         | Azure AI Foundry                |
+| `AZURE_OPENAI_MODEL_NAME`           | Dit Azure OpenAI Model Name               | Azure AI Foundry                |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Dit Azure OpenAI Deployment Name          | Azure AI Foundry                |
+| `AZURE_OPENAI_API_VERSION`          | API Version til Azure OpenAI              | Azure AI Foundry                |
+| `OPENAI_API_KEY`                    | API Key til OpenAI                        | OpenAI Platform                 |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID                    | OpenAI Platform                 |
+| `OPENAI_CHAT_MODEL_ID`              | Specifikt OpenAI model ID                 | OpenAI Platform                 |
+| `OPENAI_BASE_URL`                   | Tilpasset OpenAI API Base URL             | OpenAI Platform                 |
 
-![Indtast miljøvariabelnavn](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.da.png)
+![Indtast miljøvariabelnavn](../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.da.png)
 
-### Trin 3: Opret Workflow-filen
+### Trin 3: Opret workflow-filen
 
-Til sidst opret YAML-filen, der definerer den automatiserede workflow.
+Til sidst skal du oprette YAML-filen, der definerer det automatiserede workflow.
 
-1. I rodkataloget af dit repository, opret `.github/workflows/` mappen, hvis den ikke allerede findes.
+1. I roden af dit repository, opret mappen `.github/workflows/`, hvis den ikke findes.
 
-1. Inde i `.github/workflows/` opret en fil med navnet `co-op-translator.yml`.
+1. Inde i `.github/workflows/`, opret en fil med navnet `co-op-translator.yml`.
 
 1. Indsæt følgende indhold i co-op-translator.yml.
 
@@ -155,7 +155,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +209,31 @@ jobs:
 
 ```
 
-4.  **Tilpas Workflowet:**  
-  - **[!IMPORTANT] Mål-sprog:** I `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+4.  **Tilpas workflowet:**
+  - **[!IMPORTANT] Mål-sprog:** I `Run Co-op Translator`-trinnet skal du **gennemgå og tilpasse listen af sprogkoder** i kommandoen `translate -l "..." -y`, så den passer til dit projekt. Eksempellisten (`ar de es...`) skal udskiftes eller justeres.
+  - **Trigger (`on:`):** Den nuværende trigger kører ved hvert push til `main`. For store repositories kan du tilføje et `paths:`-filter (se kommenteret eksempel i YAML) for kun at køre workflowet, når relevante filer (f.eks. kilde-dokumentation) ændres, og dermed spare runner-minutter.
+  - **PR-detaljer:** Tilpas `commit-message`, `title`, `body`, `branch`-navn og `labels` i `Create Pull Request`-trinnet efter behov.
 
-## Credential Management and Renewal
+## Håndtering og fornyelse af legitimationsoplysninger
 
-- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` nøglerne) **før de udløber** for at forhindre fejl i workflowet.
+- **Sikkerhed:** Opbevar altid følsomme legitimationsoplysninger (API-nøgler, private keys) som GitHub Actions-secrets. Udgiv dem aldrig i workflow-filen eller repository-koden.
+- **[!IMPORTANT] Nøglefornyelse (Microsoft interne brugere):** Vær opmærksom på, at Azure OpenAI-nøglen, der bruges internt i Microsoft, kan have en obligatorisk fornyelsespolitik (f.eks. hver 5. måned). Sørg for at opdatere de tilsvarende GitHub-secrets (`AZURE_OPENAI_...`-nøgler) **inden de udløber** for at undgå workflow-fejl.
 
-## Kørsel af Workflowet
+## Kørsel af workflowet
 
-Når `co-op-translator.yml` filen er flettet ind i din main branch (eller den branch, der er angivet i `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` filteret, hvis konfigureret).
+> [!WARNING]  
+> **Tidsbegrænsning for GitHub-hostede runners:**  
+> GitHub-hostede runners som `ubuntu-latest` har en **maksimal køretid på 6 timer**.  
+> For store dokumentationsrepositories, hvis oversættelsesprocessen overstiger 6 timer, vil workflowet automatisk blive afbrudt.  
+> For at undgå dette kan du:  
+> - Bruge en **self-hosted runner** (ingen tidsbegrænsning)  
+> - Reducere antallet af mål-sprog pr. kørsel
 
-Hvis der genereres eller opdateres oversættelser, vil action automatisk oprette en Pull Request med ændringerne, klar til din gennemgang og sammensmeltning.
+Når `co-op-translator.yml`-filen er flettet ind i din main-branch (eller den branch, der er angivet i `on:`-triggeren), vil workflowet automatisk køre, hver gang der pushes ændringer til den branch (og matcher `paths`-filteret, hvis det er konfigureret).
 
-**Ansvarsfraskrivelse**:  
-Dette dokument er blevet oversat ved hjælp af AI-oversættelsestjenesten [Co-op Translator](https://github.com/Azure/co-op-translator). Selvom vi bestræber os på nøjagtighed, bedes du være opmærksom på, at automatiserede oversættelser kan indeholde fejl eller unøjagtigheder. Det oprindelige dokument på dets modersmål bør betragtes som den autoritative kilde. For kritisk information anbefales professionel menneskelig oversættelse. Vi påtager os intet ansvar for misforståelser eller fejltolkninger, der måtte opstå som følge af brugen af denne oversættelse.
+Hvis der genereres eller opdateres oversættelser, opretter actionen automatisk et Pull Request med ændringerne, klar til din gennemgang og fletning.
+
+---
+
+**Ansvarsfraskrivelse**:
+Dette dokument er blevet oversat ved hjælp af AI-oversættelsestjenesten [Co-op Translator](https://github.com/Azure/co-op-translator). Selvom vi bestræber os på nøjagtighed, skal du være opmærksom på, at automatiserede oversættelser kan indeholde fejl eller unøjagtigheder. Det originale dokument på dets oprindelige sprog bør betragtes som den autoritative kilde. For kritisk information anbefales professionel menneskelig oversættelse. Vi påtager os intet ansvar for misforståelser eller fejltolkninger, der måtte opstå ved brug af denne oversættelse.

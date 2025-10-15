@@ -1,64 +1,250 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "0788d7ebe4876c9be89132f48e09b26d",
-  "translation_date": "2025-06-12T12:31:10+00:00",
+  "original_hash": "6e626bef5ed78a1cc55b0dbf44f01d47",
+  "translation_date": "2025-10-15T04:03:32+00:00",
   "source_file": "getting_started/troubleshooting.md",
   "language_code": "sr"
 }
 -->
-# Microsoft Co-op Translator Vodič za rešavanje problema
+# Microsoft Co-op Translator Водич за решавање проблема
 
-## Pregled
-Microsoft Co-Op Translator je moćan alat za besprekornu prevodjenje Markdown dokumenata. Ovaj vodič će vam pomoći da rešite uobičajene probleme koji se javljaju prilikom korišćenja ovog alata.
+## Преглед
+Microsoft Co-Op Translator је моћан алат за беспрекорно превођење Markdown докумената. Овај водич ће вам помоћи да решите најчешће проблеме који се јављају приликом коришћења алата.
 
-## Česti problemi i rešenja
+## Најчешћи проблеми и решења
 
-### 1. Problem sa Markdown tagom
-**Problem:** Prevedeni Markdown dokument sadrži `markdown` tag na vrhu, što izaziva probleme pri prikazu.
+### 1. Проблем са Markdown ознаком
+**Проблем:** Преведени Markdown документ садржи `markdown` ознаку на врху, што узрокује проблеме са приказом.
 
-**Rešenje:** Da biste to rešili, jednostavno obrišite `markdown` tag na vrhu fajla. To će omogućiti ispravan prikaz Markdown fajla.
+**Решење:** Да бисте решили ово, једноставно обришите `markdown` ознаку са врха фајла. Ово ће омогућити да се Markdown фајл правилно приказује.
 
-**Koraci:**
-1. Otvorite prevedeni Markdown (`.md`) fajl.
-2. Pronađite `markdown` tag na vrhu dokumenta.
-3. Obrišite `markdown` tag.
-4. Sačuvajte izmene u fajlu.
-5. Ponovo otvorite fajl da biste proverili da li se pravilno prikazuje.
+**Кораци:**
+1. Отворите преведени Markdown (`.md`) фајл.
+2. Пронађите `markdown` ознаку на врху документа.
+3. Обришите ту ознаку.
+4. Сачувајте измене.
+5. Поново отворите фајл да проверите да ли се правилно приказује.
 
-### 2. Problem sa URL-ovima ugrađenih slika
-**Problem:** URL-ovi ugrađenih slika ne odgovaraju jezičkoj lokalizaciji, što dovodi do nepravilnih ili nedostajućih slika.
+### 2. Проблем са URL-ом уграђених слика
+**Проблем:** URL-ови уграђених слика не одговарају језичком локалу, што доводи до погрешних или недостајућих слика.
 
-**Rešenje:** Proverite URL-ove ugrađenih slika i uverite se da odgovaraju jezičkoj lokalizaciji. Sve slike se nalaze u `translated_images` folderu, a svaka slika u nazivu fajla ima oznaku jezičke lokalizacije.
+**Решење:** Проверите URL-ове уграђених слика и уверите се да одговарају језичком локалу. Све слике се налазе у фолдеру `translated_images`, а свака слика има ознаку језичког локала у имену фајла.
 
-**Koraci:**
-1. Otvorite prevedeni Markdown dokument.
-2. Identifikujte ugrađene slike i njihove URL-ove.
-3. Proverite da li jezička lokalizacija u nazivu slike odgovara jeziku dokumenta.
-4. Ažurirajte URL-ove ako je potrebno.
-5. Sačuvajte izmene i ponovo otvorite dokument da potvrdite da se slike pravilno prikazuju.
+**Кораци:**
+1. Отворите преведени Markdown документ.
+2. Пронађите уграђене слике и њихове URL-ове.
+3. Проверите да ли језички локал у имену слике одговара језику документа.
+4. Ако је потребно, ажурирајте URL-ове.
+5. Сачувајте измене и поново отворите документ да проверите да ли се слике правилно приказују.
 
-### 3. Tačnost prevoda
-**Problem:** Prevedeni sadržaj nije tačan ili zahteva dodatne izmene.
+### 3. Тачност превода
+**Проблем:** Преведени садржај није тачан или захтева додатно уређивање.
 
-**Rešenje:** Pregledajte prevedeni dokument i izvršite neophodne izmene kako biste poboljšali tačnost i čitljivost.
+**Решење:** Прегледајте преведени документ и уредите га по потреби ради боље тачности и читљивости.
 
-**Koraci:**
-1. Otvorite prevedeni dokument.
-2. Pažljivo pregledajte sadržaj.
-3. Napravite potrebne izmene za poboljšanje tačnosti prevoda.
-4. Sačuvajte izmene.
+**Кораци:**
+1. Отворите преведени документ.
+2. Пажљиво прегледајте садржај.
+3. Извршите потребне измене ради боље тачности превода.
+4. Сачувајте измене.
 
-### 4. Problemi sa formatiranjem fajla
-**Problem:** Formatiranje prevedenog dokumenta nije ispravno. Ovo se može desiti kod tabela, ovde dodatni ``` are added.
+## 4. Грешка са дозволама Redacted или 404
 
-**Solution:** Adjust the formatting of the document to match the original structure. Simply deleting the ``` će rešiti probleme sa tabelama.
+Ако слике или текст нису преведени на прави језик и приликом рада у -d debug режиму добијате 401 грешку, то је класичан проблем са аутентификацијом—кључ је неважећи, истекао или није повезан са регионом ендпоинта.
 
-**Koraci:**
-1. Otvorite prevedeni dokument.
-2. Uporedite ga sa originalnim dokumentom da biste identifikovali probleme sa formatiranjem.
-3. Prilagodite formatiranje da odgovara originalnom dokumentu.
-4. Sačuvajte izmene.
+Покрените co-op translator са [-d debug switch](https://github.com/Azure/co-op-translator/blob/main/getting_started/command-reference.md) да бисте добили више информација о узроку проблема.
 
-**Ограничење одговорности**:  
-Овај документ је преведен коришћењем AI преводилачке услуге [Co-op Translator](https://github.com/Azure/co-op-translator). Иако се трудимо да превод буде прецизан, имајте у виду да аутоматски преводи могу садржати грешке или нетачности. Изворни документ на оригиналном језику треба сматрати ауторитетним извором. За критичне информације препоручује се професионални људски превод. Нисмо одговорни за било каква неспоразума или погрешна тумачења која могу настати употребом овог превода.
+- **Порука о грешци**: `Access denied due to invalid subscription key or wrong API endpoint.`
+- **Могући узроци**:
+  - Subscription key је редактован или погрешан у захтеву.
+  - AI Services Key или Subscription Key припада другом Azure ресурсу (нпр. Translator или OpenAI) уместо **Azure AI Vision** ресурсу.
+
+ **Тип ресурса**
+  - Идите на [Azure Portal](https://portal.azure.com) или [Azure AI Foundry](https://ai.azure.com) и проверите да ли је ресурс типа `Azure AI services` → `Vision`.
+  - Проверите кључеве и уверите се да користите прави кључ.
+
+## 5. Грешке у конфигурацији (Ново руковање грешкама)
+
+Са новим системом селективног превођења, Co-op Translator сада даје јасне поруке о грешкама када потребне услуге нису конфигурисане.
+
+### 5.1. Azure AI Service није конфигурисан за превођење слика
+
+**Проблем:** Захтевали сте превођење слика (`-img` ознака), али Azure AI Service није правилно конфигурисан.
+
+**Порука о грешци:**
+```
+Error: Image translation requested but Azure AI Service is not configured.
+Please add AZURE_AI_SERVICE_API_KEY and AZURE_AI_SERVICE_ENDPOINT to your .env file.
+Check Azure AI Service availability and configuration.
+```
+
+**Решење:**
+1. **Опција 1**: Конфигуришите Azure AI Service
+   - Додајте `AZURE_AI_SERVICE_API_KEY` у ваш `.env` фајл
+   - Додајте `AZURE_AI_SERVICE_ENDPOINT` у ваш `.env` фајл
+   - Проверите да ли је услуга доступна
+
+2. **Опција 2**: Уклоните захтев за превођење слика
+   ```bash
+   # Instead of: translate -l "ko" -img
+   # Use: translate -l "ko" -md
+   ```
+
+### 5.2. Недостаје неопходна конфигурација
+
+**Проблем:** Недостаје основна LLM конфигурација.
+
+**Порука о грешци:**
+```
+Error: No language model configuration found.
+Please configure either Azure OpenAI or OpenAI in your .env file.
+```
+
+**Решење:**
+1. Проверите да ли ваш `.env` фајл садржи бар једну од следећих LLM конфигурација:
+   - **Azure OpenAI**: `AZURE_OPENAI_API_KEY` и `AZURE_OPENAI_ENDPOINT`
+   - **OpenAI**: `OPENAI_API_KEY`
+   
+   Потребно је да конфигуришете или Azure OpenAI ИЛИ OpenAI, не оба.
+
+### 5.3. Забуна око селективног превођења
+
+**Проблем:** Ниједан фајл није преведен иако је команда успешно извршена.
+
+**Могући узроци:**
+- Погрешне ознаке типа фајла (`-md`, `-img`, `-nb`)
+- Нема одговарајућих фајлова у пројекту
+- Погрешна структура директоријума
+
+**Решење:**
+1. **Користите debug режим** да видите шта се дешава:
+   ```bash
+   translate -l "ko" -md -d
+   ```
+
+2. **Проверите типове фајлова** у вашем пројекту:
+   ```bash
+   # For markdown files
+   find . -name "*.md" -not -path "./translations/*"
+   
+   # For notebooks
+   find . -name "*.ipynb" -not -path "./translations/*"
+   
+   # For images
+   find . -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -not -path "./translations/*"
+   ```
+
+3. **Потврдите комбинације ознака**:
+   ```bash
+   # Translate everything (default)
+   translate -l "ko"
+   
+   # Translate specific types
+   translate -l "ko" -md -img
+   ```
+
+## 6. Миграција са старог система
+
+### 6.1. Markdown-Only режим је укинут
+
+**Проблем:** Команде које су се ослањале на аутоматски markdown-only fallback више не раде као раније.
+
+**Старо понашање:**
+```bash
+# This used to automatically switch to markdown-only mode
+translate -l "ko"  # (when Azure AI Vision was not configured)
+```
+
+**Ново понашање:**
+```bash
+# This now produces an error if image translation is requested but not configured
+translate -l "ko" -img
+```
+
+**Решење:**
+- **Будите прецизни** шта желите да преведете:
+  ```bash
+  translate -l "ko" -md        # Only markdown
+  translate -l "ko" -md -img   # Markdown and images
+  translate -l "ko"            # Everything (if all services configured)
+  ```
+
+### 6.2. Неочекивано понашање линкова
+
+**Проблем:** Линкови у преведеним фајловима воде на неочекиване локације.
+
+**Узрок:** Динамичка обрада линкова се мења у зависности од изабраних типова фајлова.
+
+**Решење:**
+1. **Разумите ново понашање линкова**:
+   - `-nb` укључен: Линкови ка notebook-у воде на преведене верзије
+   - `-nb` искључен: Линкови ка notebook-у воде на оригиналне фајлове
+   - `-img` укључен: Линкови ка сликама воде на преведене верзије
+   - `-img` искључен: Линкови ка сликама воде на оригиналне фајлове
+
+2. **Изаберите праву комбинацију** за ваш случај:
+   ```bash
+   # All internal links point to translated versions
+   translate -l "ko" -md -img -nb
+   
+   # Only markdown translated, other links point to originals
+   translate -l "ko" -md
+   ```
+
+## 7. GitHub Action је покренут али није направљен Pull Request (PR)
+
+**Симптом:** Логови workflow-а за `peter-evans/create-pull-request` показују:
+
+> Branch 'update-translations' is not ahead of base 'main' and will not be created
+
+**Могући узроци:**
+- **Нема промена:** Превод није направио разлике (репозиторијум је већ ажуран).
+- **Игнорисани излази:** `.gitignore` искључује фајлове које очекујете да се комитују (нпр. `*.ipynb`, `translations/`, `translated_images/`).
+- **add-paths не одговара:** Путање наведене у акцији не одговарају стварним излазним локацијама.
+- **Логика workflow-а/услови:** Превод је раније завршен или је писао у неочекиване директоријуме.
+
+**Како да решите / проверите:**
+1. **Потврдите да излази постоје:** Након превођења, проверите да ли у workspace-у има нових/измењених фајлова у `translations/` и/или `translated_images/`.
+   - Ако преводите notebook-ове, проверите да ли су `.ipynb` фајлови заиста написани у `translations/<lang>/...`.
+2. **Проверите `.gitignore`:** Не игноришите генерисане излазе. Проверите да НЕ игноришете:
+   - `translations/`
+   - `translated_images/`
+   - `*.ipynb` (ако преводите notebook-ове)
+3. **Потврдите да add-paths одговара излазима:** Користите вишелинијску вредност и укључите оба фолдера ако је потребно:
+   ```yaml
+   with:
+     add-paths: |
+       translations/
+       translated_images/
+   ```
+4. **Привремено форсирајте PR ради дебаговања:** Омогућите празне комите да проверите да ли је све повезано:
+   ```yaml
+   with:
+     commit-empty: true
+   ```
+5. **Покрените са debug:** Додајте `-d` у translate команду да видите који су фајлови пронађени и написани.
+6. **Дозволе (GITHUB_TOKEN):** Проверите да workflow има дозволу за писање комита и PR-ова:
+   ```yaml
+   permissions:
+     contents: write
+     pull-requests: write
+   ```
+
+
+## Брза листа за дебаговање
+
+Када решавате проблеме са превођењем:
+
+1. **Користите debug режим**: Додајте `-d` ознаку за детаљне логове
+2. **Проверите ознаке**: Уверите се да `-md`, `-img`, `-nb` одговарају вашем захтеву
+3. **Потврдите конфигурацију**: Проверите да ли ваш `.env` фајл садржи потребне кључеве
+4. **Тестирајте корак по корак**: Почните са само `-md`, па додајте друге типове
+5. **Проверите структуру фајлова**: Уверите се да изворни фајлови постоје и да су доступни
+
+За више информација о доступним командама и ознакама, погледајте [Command Reference](./command-reference.md).
+
+---
+
+**Одрицање од одговорности**:  
+Овај документ је преведен коришћењем AI услуге за превођење [Co-op Translator](https://github.com/Azure/co-op-translator). Иако тежимо тачности, молимо вас да имате у виду да аутоматски преводи могу садржати грешке или нетачности. Оригинални документ на изворном језику треба сматрати ауторитативним извором. За критичне информације препоручује се професионални људски превод. Не сносимо одговорност за било каква неспоразума или погрешна тумачења настала коришћењем овог превода.

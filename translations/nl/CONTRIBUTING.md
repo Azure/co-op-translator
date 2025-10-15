@@ -1,23 +1,23 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:37:42+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:28:57+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "nl"
 }
 -->
 # Bijdragen aan Co-op Translator
 
-Dit project verwelkomt bijdragen en suggesties. De meeste bijdragen vereisen dat je akkoord gaat met een Contributor License Agreement (CLA) waarin je verklaart dat je het recht hebt om, en daadwerkelijk, ons de rechten verleent om je bijdrage te gebruiken. Voor meer details, bezoek https://cla.opensource.microsoft.com.
+Dit project verwelkomt bijdragen en suggesties. Voor de meeste bijdragen moet je akkoord gaan met een Contributor License Agreement (CLA) waarin je verklaart dat je het recht hebt om je bijdrage te leveren en ons de rechten geeft om deze te gebruiken. Voor meer informatie, ga naar https://cla.opensource.microsoft.com.
 
-Wanneer je een pull request indient, zal een CLA-bot automatisch bepalen of je een CLA moet aanleveren en het PR dienovereenkomstig markeren (bijvoorbeeld statuscontrole, commentaar). Volg gewoon de instructies van de bot. Dit hoef je slechts één keer te doen voor alle repositories die onze CLA gebruiken.
+Wanneer je een pull request indient, zal een CLA-bot automatisch bepalen of je een CLA moet ondertekenen en het PR op de juiste manier markeren (bijvoorbeeld met een statuscontrole of opmerking). Volg gewoon de instructies van de bot. Je hoeft dit maar één keer te doen voor alle repositories die onze CLA gebruiken.
 
-## Ontwikkelomgeving opzetten
+## Ontwikkelomgeving instellen
 
-Voor het opzetten van de ontwikkelomgeving voor dit project raden we aan Poetry te gebruiken voor het beheren van afhankelijkheden. We gebruiken `pyproject.toml` om projectafhankelijkheden te beheren, en daarom moet je Poetry gebruiken om afhankelijkheden te installeren.
+Om de ontwikkelomgeving voor dit project op te zetten, raden we aan om Poetry te gebruiken voor het beheren van afhankelijkheden. We gebruiken `pyproject.toml` om de afhankelijkheden van het project te beheren. Daarom moet je Poetry gebruiken om de afhankelijkheden te installeren.
 
-### Een virtuele omgeving aanmaken
+### Maak een virtuele omgeving aan
 
 #### Met pip
 
@@ -31,7 +31,7 @@ python -m venv .venv
 poetry init
 ```
 
-### De virtuele omgeving activeren
+### Activeer de virtuele omgeving
 
 #### Voor zowel pip als Poetry
 
@@ -70,7 +70,7 @@ Voordat je een PR indient, is het belangrijk om de vertaalfunctionaliteit te tes
     mkdir test_docs
     ```
 
-2. Kopieer enkele markdown-documenten en afbeeldingen die je wilt vertalen naar de testmap. Bijvoorbeeld:
+2. Kopieer wat markdown-documentatie en afbeeldingen die je wilt vertalen naar de testmap. Bijvoorbeeld:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -86,28 +86,28 @@ Voordat je een PR indient, is het belangrijk om de vertaalfunctionaliteit te tes
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Controleer de vertaalde bestanden in `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. Controleer de vertaalde bestanden in `test_docs/translations` en `test_docs/translated_images` om te verifiëren:
+   - De kwaliteit van de vertaling
+   - Of de metadata-opmerkingen kloppen
+   - Of de originele markdown-structuur behouden is
+   - Of links en afbeeldingen goed werken
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+Deze handmatige test helpt om te zorgen dat je wijzigingen goed werken in praktijksituaties.
 
-### Environment variables
+### Omgevingsvariabelen
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template` bestand.
+1. Maak een `.env`-bestand aan in de hoofdmap door het meegeleverde `.env.template`-bestand te kopiëren.
 1. Vul de omgevingsvariabelen in zoals aangegeven.
 
 > [!TIP]
 >
 > ### Extra opties voor de ontwikkelomgeving
 >
-> Naast het lokaal draaien van het project, kun je ook GitHub Codespaces of VS Code Dev Containers gebruiken voor een alternatieve ontwikkelomgeving.
+> Naast het lokaal draaien van het project kun je ook GitHub Codespaces of VS Code Dev Containers gebruiken als alternatieve ontwikkelomgeving.
 >
 > #### GitHub Codespaces
 >
-> Je kunt deze voorbeelden virtueel draaien met GitHub Codespaces, zonder extra instellingen of configuratie.
+> Je kunt deze voorbeelden virtueel draaien met GitHub Codespaces, zonder extra instellingen of installatie.
 >
 > De knop opent een webgebaseerde VS Code in je browser:
 >
@@ -117,9 +117,9 @@ This manual testing helps ensure that your changes work well in real-world scena
 >
 > #### Lokaal draaien met VS Code Dev Containers
 >
-> ⚠️ Deze optie werkt alleen als Docker Desktop minimaal 16 GB RAM toegewezen heeft. Heb je minder dan 16 GB RAM, probeer dan de [GitHub Codespaces optie](../..) of [zet het lokaal op](../..).
+> ⚠️ Deze optie werkt alleen als je Docker Desktop minstens 16 GB RAM heeft toegewezen. Heb je minder dan 16 GB RAM, probeer dan de [GitHub Codespaces-optie](../..) of [stel het lokaal in](../..).
 >
-> Een gerelateerde optie is VS Code Dev Containers, die het project opent in je lokale VS Code met de [Dev Containers extensie](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Een andere optie is VS Code Dev Containers, waarmee je het project opent in je lokale VS Code met de [Dev Containers-extensie](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
 > 1. Start Docker Desktop (installeer het als het nog niet geïnstalleerd is)
 > 2. Open het project:
@@ -127,13 +127,13 @@ This manual testing helps ensure that your changes work well in real-world scena
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
 
-### Code stijl
+### Code Stijl
 
-We gebruiken [Black](https://github.com/psf/black) als onze Python code formatter om een consistente code stijl in het project te behouden. Black is een compromisloze code formatter die Python code automatisch aanpast aan de Black code stijl.
+We gebruiken [Black](https://github.com/psf/black) als Python code formatter om een consistente code stijl in het project te behouden. Black is een compromisloze formatter die Python-code automatisch herformatteert volgens de Black-stijl.
 
 #### Configuratie
 
-De Black configuratie staat in onze `pyproject.toml`:
+De Black-configuratie staat in onze `pyproject.toml`:
 
 ```toml
 [tool.black]
@@ -144,11 +144,11 @@ include = '\.pyi?$'
 
 #### Black installeren
 
-Je kunt Black installeren via Poetry (aanbevolen) of pip:
+Je kunt Black installeren met Poetry (aanbevolen) of pip:
 
 ##### Met Poetry
 
-Black wordt automatisch geïnstalleerd bij het opzetten van de ontwikkelomgeving:
+Black wordt automatisch geïnstalleerd als je de ontwikkelomgeving opzet:
 ```bash
 poetry install
 ```
@@ -164,7 +164,7 @@ pip install black
 
 ##### Met Poetry
 
-1. Formatteer alle Python bestanden in het project:
+1. Formatteer alle Python-bestanden in het project:
     ```bash
     poetry run black .
     ```
@@ -176,7 +176,7 @@ pip install black
 
 ##### Met pip
 
-1. Formatteer alle Python bestanden in het project:
+1. Formatteer alle Python-bestanden in het project:
     ```bash
     black .
     ```
@@ -187,76 +187,116 @@ pip install black
     ```
 
 > [!TIP]
-> We raden aan je editor zo in te stellen dat code automatisch met Black wordt geformatteerd bij het opslaan. De meeste moderne editors ondersteunen dit via extensies of plugins.
+> We raden aan om je editor zo in te stellen dat code automatisch met Black wordt geformatteerd bij het opslaan. De meeste moderne editors ondersteunen dit via extensies of plugins.
 
 ## Co-op Translator uitvoeren
 
-Om Co-op Translator met Poetry in je omgeving uit te voeren, volg je deze stappen:
+Om Co-op Translator met Poetry in je omgeving te draaien, volg je deze stappen:
 
-1. Navigeer naar de map waarin je vertaaltests wilt uitvoeren of maak een tijdelijke map aan voor testdoeleinden.
+1. Navigeer naar de map waar je vertaaltests wilt uitvoeren of maak een tijdelijke map aan voor testdoeleinden.
 
-2. Voer het volgende commando uit. De `-l ko` with the language code you wish to translate into. The `-d` vlag geeft aan dat debugmodus aanstaat.
+2. Voer het volgende commando uit. Vervang `-l ko` door de taalcode waarin je wilt vertalen. De `-d` vlag zet de debugmodus aan.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Zorg dat je Poetry omgeving geactiveerd is (poetry shell) voordat je het commando uitvoert.
+> Zorg dat je Poetry-omgeving geactiveerd is (poetry shell) voordat je het commando uitvoert.
+
+## Een nieuwe taal bijdragen
+
+We verwelkomen bijdragen die ondersteuning voor nieuwe talen toevoegen. Voltooi de onderstaande stappen voordat je een PR opent, zodat de review soepel verloopt.
+
+1. Voeg de taal toe aan de font mapping
+   - Bewerk `src/co_op_translator/fonts/font_language_mappings.yml`
+   - Voeg een item toe met:
+     - `code`: ISO-achtige taalcode (bijv. `vi`)
+     - `name`: Duidelijke naam
+     - `font`: Een font uit `src/co_op_translator/fonts/` die het schrift ondersteunt
+     - `rtl`: `true` als het rechts-naar-links is, anders `false`
+
+2. Voeg benodigde fontbestanden toe (indien nodig)
+   - Als een nieuw font nodig is, controleer dan of de licentie geschikt is voor open source distributie
+   - Voeg het fontbestand toe aan `src/co_op_translator/fonts/`
+
+3. Lokale verificatie
+   - Voer vertalingen uit voor een kleine sample (Markdown, afbeeldingen en notebooks indien van toepassing)
+   - Controleer of de output correct wordt weergegeven, inclusief fonts en eventuele RTL-layout
+
+4. Documentatie bijwerken
+   - Zorg dat de taal voorkomt in `getting_started/supported-languages.md`
+   - Geen aanpassingen aan `README_languages_template.md` nodig; deze wordt gegenereerd uit de ondersteunde lijst
+
+5. Open een PR
+   - Beschrijf de toegevoegde taal en eventuele font/licentie-overwegingen
+   - Voeg indien mogelijk screenshots toe van de weergegeven resultaten
+
+Voorbeeld YAML-item:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
 
 ## Beheerders
 
-### Commitbericht en Merge strategie
+### Commitbericht en Merge-strategie
 
-Om consistentie en duidelijkheid in de commitgeschiedenis van ons project te waarborgen, volgen we een specifiek commitberichtformaat **voor het uiteindelijke commitbericht** bij het gebruik van de **Squash and Merge** strategie.
+Om consistentie en duidelijkheid in de commitgeschiedenis van ons project te waarborgen, hanteren we een specifiek format voor commitberichten **voor het uiteindelijke commitbericht** bij gebruik van de **Squash and Merge**-strategie.
 
-Wanneer een pull request (PR) wordt gemerged, worden de individuele commits samengevoegd tot één commit. Het uiteindelijke commitbericht moet het onderstaande formaat volgen om een schone en consistente geschiedenis te behouden.
+Wanneer een pull request (PR) wordt samengevoegd, worden de individuele commits samengevoegd tot één commit. Het uiteindelijke commitbericht moet het onderstaande format volgen om een schone en consistente geschiedenis te behouden.
 
-#### Commitberichtformaat (voor squash en merge)
+#### Commitbericht-format (voor squash and merge)
 
-We gebruiken het volgende formaat voor commitberichten:
+We gebruiken het volgende format voor commitberichten:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: Specificeert de categorie van de commit. We gebruiken de volgende types:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+- **type**: Geeft de categorie van de commit aan. We gebruiken de volgende types:
+  - `Docs`: Voor updates aan de documentatie.
+  - `Build`: Voor wijzigingen aan het build-systeem of afhankelijkheden, inclusief updates aan configuratiebestanden, CI-workflows of de Dockerfile.
+  - `Core`: Voor aanpassingen aan de kernfunctionaliteit of features van het project, vooral in de map `src/co_op_translator/core`.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: Een korte samenvatting van de wijziging.
+- **PR number**: Het nummer van de pull request die bij de commit hoort.
 
-**Examples**:
+**Voorbeelden**:
 
-- `Docs: Update installatie-instructies voor duidelijkheid (#50)`
-- `Core: Verbeter afhandeling van afbeeldingsvertaling (#60)`
+- `Docs: Installatie-instructies verduidelijkt (#50)`
+- `Core: Verbeterde verwerking van afbeeldingvertaling (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> Momenteel worden de **`Docs`**, **`Core`** en **`Build`**-voorvoegsels automatisch toegevoegd aan PR-titels op basis van de labels die aan de gewijzigde broncode zijn toegekend. Zolang het juiste label is toegepast, hoef je meestal de PR-titel niet handmatig aan te passen. Je hoeft alleen te controleren of alles klopt en het voorvoegsel correct is gegenereerd.
 
-#### Merge strategy
+#### Merge-strategie
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+We gebruiken **Squash and Merge** als standaardstrategie voor pull requests. Deze strategie zorgt ervoor dat commitberichten ons format volgen, zelfs als individuele commits dat niet doen.
 
-**Reasons**:
+**Redenen**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- Een schone, lineaire projectgeschiedenis.
+- Consistentie in commitberichten.
+- Minder ruis door kleine commits (zoals "fix typo").
 
-When merging, ensure the final commit message follows the commit message format described above.
+Zorg bij het samenvoegen dat het uiteindelijke commitbericht het hierboven beschreven format volgt.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**Voorbeeld van Squash and Merge**
+Als een PR de volgende commits bevat:
 
-- `fix typefout`
+- `fix typo`
 - `update README`
-- `pas opmaak aan`
+- `adjust formatting`
 
-They should be squashed into:
-`Docs: Verbeter documentatie duidelijkheid en opmaak (#65)`
+Dan worden ze samengevoegd tot:
+`Docs: Documentatie verduidelijkt en opmaak verbeterd (#65)`
 
-**Disclaimer**:  
-Dit document is vertaald met behulp van de AI-vertalingsdienst [Co-op Translator](https://github.com/Azure/co-op-translator). Hoewel we streven naar nauwkeurigheid, dient u er rekening mee te houden dat automatische vertalingen fouten of onnauwkeurigheden kunnen bevatten. Het originele document in de oorspronkelijke taal geldt als de gezaghebbende bron. Voor cruciale informatie wordt professionele menselijke vertaling aanbevolen. Wij zijn niet aansprakelijk voor misverstanden of verkeerde interpretaties die voortvloeien uit het gebruik van deze vertaling.
+---
+
+**Disclaimer**:
+Dit document is vertaald met behulp van de AI-vertalingsdienst [Co-op Translator](https://github.com/Azure/co-op-translator). Hoewel we streven naar nauwkeurigheid, dient u er rekening mee te houden dat geautomatiseerde vertalingen fouten of onnauwkeurigheden kunnen bevatten. Het originele document in de oorspronkelijke taal moet als de gezaghebbende bron worden beschouwd. Voor kritische informatie wordt professionele menselijke vertaling aanbevolen. Wij zijn niet aansprakelijk voor eventuele misverstanden of verkeerde interpretaties die voortvloeien uit het gebruik van deze vertaling.

@@ -1,301 +1,180 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "044724537b57868117aadae8e7728c7c",
-  "translation_date": "2025-06-12T10:54:47+00:00",
+  "original_hash": "8f776df01855a3a659c8eb6f16a5de74",
+  "translation_date": "2025-10-15T04:02:32+00:00",
   "source_file": "README.md",
   "language_code": "sr"
 }
 -->
-![Logo](../../translated_images/logo.1d3fc925341d99d6b16418721c0de21f1df6f1366b93d55dc2b5a996f55ade5f.sr.png)
+# Ко-оп Преводилац
 
-# Co-op Translator: Automatski prevod obrazovne dokumentacije bez napora
+_Аутоматизујте превођење вашег едукативног GitHub садржаја на више језика и доприте до глобалне публике._
 
-_Lako automatizujte prevod vaše dokumentacije na više jezika kako biste dopreli do globalne publike._
+### 🌐 Подршка за више језика
 
-[![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
-[![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
-[![Downloads](https://static.pepy.tech/badge/co-op-translator)](https://pepy.tech/project/co-op-translator)
-[![Downloads](https://static.pepy.tech/badge/co-op-translator/month)](https://pepy.tech/project/co-op-translator)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+#### Подржава [Co-op Translator](https://github.com/Azure/Co-op-Translator)
 
-[![GitHub contributors](https://img.shields.io/github/contributors/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/graphs/contributors/)
-[![GitHub issues](https://img.shields.io/github/issues/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/issues/)
-[![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+<!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
+[Арапски](../ar/README.md) | [Бенгалски](../bn/README.md) | [Бугарски](../bg/README.md) | [Бурмански (Мјанмар)](../my/README.md) | [Кинески (поједностављени)](../zh/README.md) | [Кинески (традиционални, Хонг Конг)](../hk/README.md) | [Кинески (традиционални, Макао)](../mo/README.md) | [Кинески (традиционални, Тајван)](../tw/README.md) | [Хрватски](../hr/README.md) | [Чешки](../cs/README.md) | [Дански](../da/README.md) | [Холандски](../nl/README.md) | [Естонски](../et/README.md) | [Фински](../fi/README.md) | [Француски](../fr/README.md) | [Немачки](../de/README.md) | [Грчки](../el/README.md) | [Хебрејски](../he/README.md) | [Хинди](../hi/README.md) | [Мађарски](../hu/README.md) | [Индонежански](../id/README.md) | [Италијански](../it/README.md) | [Јапански](../ja/README.md) | [Корејски](../ko/README.md) | [Литвански](../lt/README.md) | [Малајски](../ms/README.md) | [Марати](../mr/README.md) | [Непалски](../ne/README.md) | [Норвешки](../no/README.md) | [Персијски (фарси)](../fa/README.md) | [Пољски](../pl/README.md) | [Португалски (Бразил)](../br/README.md) | [Португалски (Португалија)](../pt/README.md) | [Пунџаби (Гурмуки)](../pa/README.md) | [Румунски](../ro/README.md) | [Руски](../ru/README.md) | [Српски (ћирилица)](./README.md) | [Словачки](../sk/README.md) | [Словеначки](../sl/README.md) | [Шпански](../es/README.md) | [Свахили](../sw/README.md) | [Шведски](../sv/README.md) | [Тагалог (Филипински)](../tl/README.md) | [Тамилски](../ta/README.md) | [Тајландски](../th/README.md) | [Турски](../tr/README.md) | [Украјински](../uk/README.md) | [Урду](../ur/README.md) | [Вијетнамски](../vi/README.md)
+<!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 
-### Podrška za jezike koju pokreće Co-op Translator
+## Преглед
 
-> [!NOTE]
-> Ovo su trenutni prevodi sadržaja ovog repozitorijuma. Za kompletnu listu jezika koje podržava Co-op Translator, pogledajte sekciju [Language Support](../..).
+**Co-op Translator** вам омогућава да брзо преведете ваш едукативни GitHub садржај на више језика и лако допрете до светске публике. Када ажурирате ваше Markdown датотеке, слике или Jupyter свеске, преводи се аутоматски синхронизују како би ваш едукативни садржај увек био свеж и релевантан за кориснике широм света.
 
-[![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
-[![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
-[![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
+Погледајте како Co-op Translator организује преведени едукативни GitHub садржај:
 
-[![Azure AI Community Discord](https://dcbadge.vercel.app/api/server/ByRwuEEgH4)](https://discord.com/invite/ByRwuEEgH4)
+![Пример](../../translated_images/translation-ex.0c8aa6a7ee0aad2b35cddcc110c719baf0afc640e8c5a45540e6c166b9907d91.sr.png)
 
-[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
-[![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=VS%20Code%20Dev%20Containers&message=Open&color=007ACC&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
-
-## Pregled: Pojednostavite Prevođenje Vašeg Edukativnog Sadržaja
-
-Jezičke barijere značajno otežavaju pristup vrednim edukativnim materijalima i tehničkom znanju za učenike i programere širom sveta. To ograničava učešće i usporava tempo globalnih inovacija i učenja.
-
-**Co-op Translator** je nastao iz potrebe da se reši neefikasan ručni proces prevođenja velikih obrazovnih serijala Microsofta (kao što su vodiči "For Beginners"). Razvio se u jednostavan i moćan alat dizajniran da ukloni ove prepreke za sve. Omogućavajući visokokvalitetne automatske prevode putem CLI i GitHub Actions, Co-op Translator osnažuje edukatore, studente, istraživače i programere širom sveta da dele i pristupaju znanju bez jezičkih ograničenja.
-
-Pogledajte kako Co-op Translator organizuje prevedeni edukativni sadržaj:
-
-![Example](../../translated_images/translation-ex.e97fcdf09d27f56060939080a0b3e491e92b67e047ca005826cb3de11399907c.sr.png)
-
-Markdown fajlovi i tekst sa slika se automatski prevode i uredno raspoređuju u foldere specifične za jezik.
-
-**Omogućite globalni pristup vašem edukativnom sadržaju već danas uz Co-op Translator!**
-
-## Podrška Globalnom Pristupu Microsoftovim Obrazovnim Resursima
-
-Co-op Translator pomaže da se premosti jezička barijera za ključne Microsoftove obrazovne inicijative, automatizujući proces prevođenja repozitorijuma koji služe globalnoj zajednici programera. Primeri koji trenutno koriste Co-op Translator uključuju:
-
-[![Generative-AI-for-beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=Generative-AI-for-beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/Generative-AI-for-beginners)
-[![ML-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ML-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ML-For-Beginners)
-[![AI-For-Beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=AI-For-Beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/AI-For-Beginners)
-[![ai-agents-for-beginners](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=ai-agents-for-beginners&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/ai-agents-for-beginners)
-[![PhiCookBook](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=PhiCookBook&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/PhiCookBook)
-[![Generative-AI-for-beginners-dotnet](https://github-readme-stats.vercel.app/api/pin/?username=microsoft&repo=Generative-AI-for-beginners-dotnet&bg_color=ffffff&title_color=0078D4&text_color=333333&border_color=c0d8f0&border_radius=10)](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
-
-## Ključne Karakteristike
-
-- **Automatski prevodi**: Lako prevedite tekst na više jezika.
-- **Integracija sa GitHub Actions**: Automatizujte prevode kao deo vašeg CI/CD procesa.
-- **Očuvanje Markdown sintakse**: Sačuvajte ispravan Markdown format tokom prevođenja.
-- **Prevođenje teksta na slikama**: Izvlači i prevodi tekst unutar slika.
-- **Napredna LLM tehnologija**: Koristi najsavremenije jezičke modele za kvalitetne prevode.
-- **Jednostavna integracija**: Lako se uklapa u postojeći projekat.
-- **Pojednostavljenje lokalizacije**: Ubrzava proces lokalizacije vašeg projekta za međunarodna tržišta.
-
-## Kako Radi
-
-![Architecture](../../translated_images/architecture_241019.15de09d63bf3f7065d5da8ac1e08948c9d3bf795aae3b7f6f8d3cce53c95d00b.sr.png)
-
-Co-op Translator uzima Markdown fajlove i slike iz vašeg projekt foldera i obrađuje ih na sledeći način:
-
-1. **Ekstrakcija teksta**: Izvlači tekst iz Markdown fajlova i, ako je podešeno (npr. sa Azure AI Vision), tekst ugrađen u slike.
-1. **AI Prevod**: Šalje izvučeni tekst na podešeni LLM (Azure OpenAI, OpenAI itd.) na prevođenje.
-1. **Čuvanje rezultata**: Sačuva prevedene Markdown fajlove i slike (sa prevedenim tekstom) u foldere specifične za jezik, uz očuvanje originalnog formata.
-
-## Početak Rada
-
-Brzo započnite sa CLI ili podesite potpunu automatizaciju sa GitHub Actions. Izaberite pristup koji vam najviše odgovara:
-
-1. **Command Line (CLI)** – za jednokratne prevode ili ručnu kontrolu
-2. **GitHub Actions** – za automatske prevode pri svakom push-u
-
-> [!NOTE]
-> Iako ovaj tutorijal naglašava Azure resurse, možete koristiti bilo koji podržani jezički model.
-
-### Podrška za Jezike
-
-Co-op Translator podržava širok spektar jezika kako biste dosegli globalnu publiku. Evo šta treba da znate:
-
-#### Brzi Pregled
-
-| Jezik | Kod | Jezik | Kod | Jezik | Kod |
-|-------|-----|-------|-----|-------|-----|
-| Arabic | ar | Bengali | bn | Bulgarian | bg |
-| Burmese (Myanmar) | my | Chinese (Simplified) | zh | Chinese (Traditional, HK) | hk |
-| Chinese (Traditional, Macau) | mo | Chinese (Traditional, TW) | tw | Croatian | hr |
-| Czech | cs | Danish | da | Dutch | nl |
-| Finnish | fi | French | fr | German | de |
-| Greek | el | Hebrew | he | Hindi | hi |
-| Hungarian | hu | Indonesian | id | Italian | it |
-| Japanese | ja | Korean | ko | Malay | ms |
-| Marathi | mr | Nepali | ne | Norwegian | no |
-| Persian (Farsi) | fa | Polish | pl | Portuguese (Brazil) | br |
-| Portuguese (Portugal) | pt | Punjabi (Gurmukhi) | pa | Romanian | ro |
-| Russian | ru | Serbian (Cyrillic) | sr | Slovak | sk |
-| Slovenian | sl | Spanish | es | Swahili | sw |
-| Swedish | sv | Tagalog (Filipino) | tl | Thai | th |
-| Turkish | tr | Ukrainian | uk | Urdu | ur |
-| Vietnamese | vi | — | — | — | — |
-
-#### Korišćenje Jezičkih Kodova
-
-Kada koristite Co-op Translator, potrebno je da navedete jezike pomoću njihovih kodova. Na primer:
+## Брзи почетак
 
 ```bash
-# Translate to French, Spanish, and German
-translate -l "fr es de"
-
-# Translate to Chinese (Simplified) and Japanese
-translate -l "zh ja"
+# Create and activate a virtual environment (recommended)
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+# Install the package
+pip install co-op-translator
+# Translate
+translate -l "ko ja fr" -md
 ```
 
-> [!NOTE]
-> Za detaljne tehničke informacije o podršci jezika, uključujući:
->
-> - Specifikacije fontova za svaki jezik
-> - Poznate probleme
-> - Kako dodati nove jezike
->
-> pogledajte našu [Supported Languages Documentation](./getting_started/supported-languages.md).
+Docker:
 
-### Podržani Modeli i Servisi
+```bash
+# Pull the public image from GHCR
+docker pull ghcr.io/azure/co-op-translator:latest
+# Run with current folder mounted and .env provided (Bash/Zsh)
+docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
+```
 
-| Tip                  | Naziv                           |
-|----------------------|--------------------------------|
-| Language Model        | ![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-blue?style=flat-square) ![OpenAI](https://img.shields.io/badge/OpenAI-green?style=flat-square&logo=openai) |
-| AI Vision             | ![Azure AI Vision](https://img.shields.io/badge/Azure_AI_Vision-blue?style=flat-square) |
+## Минимална подешавања
 
-> [!NOTE]
-> Ako AI vision servis nije dostupan, co-op translator će preći u [Markdown-only mode](./getting_started/markdown-only-mode.md).
+- Креирајте `.env` користећи шаблон: [.env.template](../../.env.template)
+- Подесите једног LLM провајдера (Azure OpenAI или OpenAI)
+- За превођење слика (`-img`), подесите и Azure AI Vision
+- Препорука: Ако већ имате преводе направљене другим алатима, прво их уклоните да избегнете конфликте (на пример: `translations/`).
+- Препорука: Додајте секцију са преводима у ваш README користећи [README шаблон за језике](./README_languages_template.md)
+- Погледајте: [Подешавање Azure AI](./getting_started/set-up-azure-ai.md)
 
-### Početno Podešavanje
+## Коришћење
 
-Pre nego što počnete, potrebno je da podesite sledeće resurse:
+Преведите све подржане типове:
 
-1. Language Model Resource (Obavezno):
-   - Azure OpenAI (Preporučeno) – obezbeđuje kvalitetne prevode sa enterprise pouzdanošću
-   - OpenAI – alternativa ako nemate pristup Azure-u
-   - Za detaljne informacije o podržanim modelima, pogledajte [Supported Models and Services](../..)
+```bash
+translate -l "ko ja"
+```
 
-1. AI Vision Resource (Opcionalno):
-   - Azure AI Vision – omogućava prevođenje teksta unutar slika
-   - Ako nije podešen, prevodilac će automatski koristiti [Markdown-only mode](./getting_started/markdown-only-mode.md)
-   - Preporučuje se za projekte sa slikama koje sadrže tekst koji treba prevesti
+Само Markdown:
 
-1. Koraci za konfiguraciju:
-   - Pratite naš [Azure AI setup guide](./getting_started/set-up-azure-ai.md) za detaljna uputstva
-   - Kreirajte `.env` fajl sa vašim API ključevima i endpoint-ovima (pogledajte sekciju [Quick Start](../..))
-   - Osigurajte da imate potrebna dopuštenja i kvote za odabrane servise
+```bash
+translate -l "de" -md
+```
 
-### Priprema Projekta Pre Prevođenja
+Markdown + слике:
 
-Pre nego što započnete prevod, sledite ove korake da pripremite projekat:
+```bash
+translate -l "pt" -md -img
+```
 
-1. Pripremite README:
-   - Dodajte tabelu prevoda u README.md da povežete prevedene verzije
-   - Primer formata:
+Само свеске:
 
-     ```markdown
+```bash
+translate -l "zh" -nb
+```
 
-     ### 🌐 Multi-Language Support
-     
-     [French](../fr/README.md) | [Spanish](../es/README.md) | [German](../de/README.md) | [Russian](../ru/README.md) | [Arabic](../ar/README.md) | [Persian (Farsi)](../fa/README.md) | [Urdu](../ur/README.md) | [Chinese (Simplified)](../zh/README.md) | [Chinese (Traditional, Macau)](../mo/README.md) | [Chinese (Traditional, Hong Kong)](../hk/README.md) | [Chinese (Traditional, Taiwan)](../tw/README.md) | [Japanese](../ja/README.md) | [Korean](../ko/README.md) | [Hindi](../hi/README.md) | [Bengali](../bn/README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Portuguese (Portugal)](../pt/README.md) | [Portuguese (Brazil)](../br/README.md) | [Italian](../it/README.md) | [Polish](../pl/README.md) | [Turkish](../tr/README.md) | [Greek](../el/README.md) | [Thai](../th/README.md) | [Swedish](../sv/README.md) | [Danish](../da/README.md) | [Norwegian](../no/README.md) | [Finnish](../fi/README.md) | [Dutch](../nl/README.md) | [Hebrew](../he/README.md) | [Vietnamese](../vi/README.md) | [Indonesian](../id/README.md) | [Malay](../ms/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Swahili](../sw/README.md) | [Hungarian](../hu/README.md) | [Czech](../cs/README.md) | [Slovak](../sk/README.md) | [Romanian](../ro/README.md) | [Bulgarian](../bg/README.md) | [Serbian (Cyrillic)](./README.md) | [Croatian](../hr/README.md) | [Slovenian](../sl/README.md) | [Ukrainian](../uk/README.md) | [Burmese (Myanmar)](../my/README.md) 
-    
-     ```
+Више опција: [Референца команди](./getting_started/command-reference.md)
 
-1. Očistite postojeće prevode (ako je potrebno):
-   - Uklonite postojeće foldere sa prevodima (npr. `translations/`)
-   - Obrišite stare fajlove prevoda da počnete iz početka
-   - Ovo sprečava konflikte sa novim procesom prevođenja
+## Могућности
 
-### Brzi Početak: Command Line
+- Аутоматско превођење Markdown-а, свески и слика
+- Држи преводе усклађене са изворним изменама
+- Ради локално (CLI) или у CI (GitHub Actions)
+- Користи Azure OpenAI или OpenAI; опционо Azure AI Vision за слике
+- Чува Markdown формат и структуру
 
-Za brz početak korišćenjem komandne linije:
+## Документација
 
-1. Kreirajte virtuelno okruženje:
+- [Водич за командну линију](./getting_started/command-line-guide/command-line-guide.md)
+- [Водич за GitHub Actions (Јавни репозиторијуми и стандардне лозинке)](./getting_started/github-actions-guide/github-actions-guide-public.md)
+- [Водич за GitHub Actions (Microsoft организациони репозиторијуми и организациона подешавања)](./getting_started/github-actions-guide/github-actions-guide-org.md)
+- [Подржани језици](./getting_started/supported-languages.md)
+- [Решавање проблема](./getting_started/troubleshooting.md)
 
-    ```bash
-    python -m venv .venv
-    ```
+## Подржите нас и ширите глобално учење
 
-1. Aktivirajte virtuelno okruženje:
+Придружите нам се у револуционисању начина на који се едукативни садржај дели широм света! Дајте [Co-op Translator](https://github.com/azure/co-op-translator) ⭐ на GitHub-у и подржите нашу мисију рушења језичких баријера у учењу и технологији. Ваш интересовање и доприноси имају велики значај! Доприноси у коду и предлози за нове функције су увек добродошли.
 
-    - Na Windows-u:
+### Истражите Microsoft едукативни садржај на вашем језику
 
-    ```bash
-    .venv\scripts\activate
-    ```
+- [AZD за почетнике](https://github.com/microsoft/AZD-for-beginners)
+- [Edge AI за почетнике](https://github.com/microsoft/edgeai-for-beginners)
+- [Model Context Protocol (MCP) за почетнике](https://github.com/microsoft/mcp-for-beginners)
+- [AI агенти за почетнике](https://github.com/microsoft/ai-agents-for-beginners)
+- [Генеративни AI за почетнике уз .NET](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
+- [Генеративни AI за почетнике](https://github.com/microsoft/generative-ai-for-beginners)
+- [Генеративни AI за почетнике уз Java](https://github.com/microsoft/generative-ai-for-beginners-java)
+- [Машинско учење за почетнике](https://aka.ms/ml-beginners)
+- [Наука о подацима за почетнике](https://aka.ms/datascience-beginners)
+- [AI за почетнике](https://aka.ms/ai-beginners)
+- [Кибер безбедност за почетнике](https://github.com/microsoft/Security-101)
+- [Веб развој за почетнике](https://aka.ms/webdev-beginners)
+- [IoT за почетнике](https://aka.ms/iot-beginners)
+- [PhiCookBook](https://github.com/microsoft/PhiCookBook)
 
-    - Na Linux/macOS-u:
+## Видео презентације
 
-    ```bash
-    source .venv/bin/activate
-    ```
+Сазнајте више о Co-op Translator-у кроз наше презентације _(Кликните на слику испод да гледате на YouTube.)_:
 
-1. Instalirajte paket:
+- **Open at Microsoft**: Кратак 18-минутни увод и брзи водич за коришћење Co-op Translator-а.
 
-    ```bash
-    pip install co-op-translator
-    ```
+  [![Open at Microsoft](../../translated_images/open-ms-thumbnail.946b356b89bc5f0e33dcebb852f7926b98c33f54c1a49ce01c36ae7f35e2443a.sr.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
-1. Konfigurišite kredencijale:
+## Допринос
 
-    - Kreirajte `.env` file in your project's root directory.
-    - Copy the contents from the [.env.template](../../.env.template) file into your new `.env` file.
-    - Fill in the required API keys and endpoint information in your `.env` file.
+Овај пројекат је отворен за доприносе и предлоге. Желите да допринесете Azure Co-op Translator-у? Погледајте наш [CONTRIBUTING.md](./CONTRIBUTING.md) за смернице како можете помоћи да Co-op Translator буде приступачнији.
 
-1. Run Translation:
-    - Navigate to your project's root directory in your terminal.
-    - Execute the translate command, specifying target languages with the `-l` flag:
-
-    ```bash
-    translate -l "ko ja fr"
-    ```
-
-_(Nastavak nije prikazan zbog ograničenja, ali uputstva su prevedena do ovog dela.)_
-
-### GitHub Actions Integracija
-
-Za automatsku integraciju sa GitHub Actions, koristite sledeće vodiče u zavisnosti od vašeg repozitorijuma:
-
-- [GitHub Actions Guide (Public Repositories & Standard Secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md) – za većinu javnih ili ličnih repozitorijuma koji koriste standardne tajne repozitorijuma.
-- [GitHub Actions Guide (Microsoft Organization Repos & Org-Level Setups)](./getting_started/github-actions-guide/github-actions-guide-org.md) – za rad unutar Microsoft GitHub organizacije ili ako koristite tajne ili izvršioce na nivou organizacije.
-
-### Otklanjanje Problema i Saveti
-
-- [Troubleshooting Guide](./getting_started/troubleshooting.md)
-
-### Dodatni Resursi
-
-- [Command Reference](./getting_started/command-reference.md): Detaljni vodič za sve dostupne komande i opcije.
-- [Supported Languages](./getting_started/supported-languages.md): Lista podržanih jezika i uputstva za dodavanje novih.
-- [Markdown-Only Mode](./getting_started/markdown-only-mode.md): Kako prevoditi samo tekst, bez prevođenja slika.
-
-## Video Prezentacije
-
-Saznajte više o Co-op Translator-u kroz naše prezentacije _(kliknite na sliku ispod da gledate na YouTube-u)_:
-
-- **Open at Microsoft**: Kratki 18-minutni uvod i brz vodič kako koristiti Co-op Translator.
-[![Open at Microsoft](../../translated_images/open-ms-thumbnail.efccad9ffa49d0d5ba770919408384be68c6f5ea7e79c06e22cea5a54db3110c.sr.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
-
-## Podržite nas i podstaknite globalno učenje
-
-Pridružite nam se u revoluciji načina na koji se obrazovni sadržaji dele širom sveta! Dajte [Co-op Translator](https://github.com/azure/co-op-translator) ⭐ na GitHub-u i podržite našu misiju uklanjanja jezičkih barijera u učenju i tehnologiji. Vaše interesovanje i doprinosi imaju veliki značaj! Kod i predlozi za nove funkcije su uvek dobrodošli.
-
-## Doprinos
-
-Ovaj projekat prihvata doprinose i sugestije. Zainteresovani ste da doprinesete Azure Co-op Translator-u? Pogledajte naš [CONTRIBUTING.md](./CONTRIBUTING.md) za smernice o tome kako možete pomoći da Co-op Translator postane dostupniji.
-
-## Saradnici
+## Доприносиоци
 
 [![co-op-translator contributors](https://contrib.rocks/image?repo=Azure/co-op-translator)](https://github.com/Azure/co-op-translator/graphs/contributors)
 
-## Kodeks ponašanja
+## Кодекс понашања
 
-Ovaj projekat je usvojio [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-Za više informacija pogledajte [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) ili
-kontaktirajte [opencode@microsoft.com](mailto:opencode@microsoft.com) za dodatna pitanja ili komentare.
+Овај пројекат је усвојио [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+За више информација погледајте [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) или
+контактирајте [opencode@microsoft.com](mailto:opencode@microsoft.com) за додатна питања или коментаре.
 
-## Odgovorna AI
+## Одговорна AI
 
-Microsoft je posvećen tome da pomogne korisnicima da koriste naše AI proizvode na odgovoran način, deleći svoja saznanja i gradeći poverenje kroz alate kao što su Transparency Notes i Impact Assessments. Mnogi od ovih resursa dostupni su na [https://aka.ms/RAI](https://aka.ms/RAI).
-Microsoftov pristup odgovornoj AI zasnovan je na našim principima AI: pravičnost, pouzdanost i bezbednost, privatnost i sigurnost, inkluzivnost, transparentnost i odgovornost.
+Microsoft је посвећен томе да помогне корисницима да одговорно користе наше AI производе, дели наша искуства и гради партнерства заснована на поверењу кроз алате као што су Transparency Notes и Impact Assessments. Многи од ових ресурса су доступни на [https://aka.ms/RAI](https://aka.ms/RAI).
+Microsoft-ов приступ одговорној AI заснива се на нашим AI принципима: правичност, поузданост и безбедност, приватност и сигурност, инклузивност, транспарентност и одговорност.
 
-Veliki modeli za prirodni jezik, slike i govor – poput onih korišćenih u ovom primeru – mogu se ponašati na načine koji nisu pravični, pouzdani ili mogu biti uvredljivi, što može dovesti do štete. Molimo vas da pogledate [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) da biste se informisali o rizicima i ograničenjima.
+Велики језички, сликовни и говорни модели – као они који се користе у овом примеру – могу понекад да се понашају непредвидиво, непоуздано или увредљиво, што може довести до штетних последица. Молимо вас да прочитате [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) како бисте били информисани о ризицима и ограничењима.
 
-Preporučeni pristup za ublažavanje ovih rizika je uključivanje sistema bezbednosti u vašu arhitekturu koji može otkriti i sprečiti štetno ponašanje. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) pruža nezavisni sloj zaštite, sposoban da detektuje štetni sadržaj koji generišu korisnici ili AI u aplikacijama i uslugama. Azure AI Content Safety uključuje API-je za tekst i slike koji omogućavaju otkrivanje štetnog materijala. Takođe imamo interaktivni Content Safety Studio koji vam omogućava da pregledate, istražite i isprobate primer koda za detekciju štetnog sadržaja u različitim modalitetima. Sledeća [quickstart dokumentacija](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) vodi vas kroz pravljenje zahteva servisu.
+Препоручени начин за ублажавање ових ризика је да у архитектуру укључите систем безбедности који може да открије и спречи штетно понашање. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) пружа независан слој заштите, способан да открије штетан садржај који генеришу корисници или AI у апликацијама и сервисима. Azure AI Content Safety укључује API-је за текст и слике који вам омогућавају да откријете штетан материјал. Такође имамо интерактивни Content Safety Studio који вам омогућава да видите, истражите и испробате пример кода за откривање штетног садржаја у различитим форматима. Следећа [брза документација](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) води вас кроз слање захтева сервису.
 
-Još jedan aspekt koji treba uzeti u obzir je ukupna performansa aplikacije. Kod multimodalnih i multimodelskih aplikacija, performanse podrazumevaju da sistem radi onako kako vi i vaši korisnici očekujete, uključujući i to da ne generiše štetne rezultate. Važno je proceniti performanse vaše aplikacije koristeći [generation quality and risk and safety metrics](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in).
+Још један аспект који треба узети у обзир је укупне перформансе апликације. Код мултимодалних и мултимоделских апликација, под перформансама подразумевамо да систем ради онако како ви и ваши корисници очекујете, укључујући и то да не генерише штетне излазе. Важно је да процените перформансе ваше апликације користећи [метрике квалитета генерисања, ризика и безбедности](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in).
 
-Možete evaluirati vašu AI aplikaciju u razvojnom okruženju koristeći [prompt flow SDK](https://microsoft.github.io/promptflow/index.html). Sa test skupom podataka ili ciljem, generacije vaše generativne AI aplikacije se kvantitativno mere pomoću ugrađenih evaluatora ili vaših prilagođenih evaluatora. Da biste započeli sa prompt flow sdk za evaluaciju sistema, pratite [quickstart vodič](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). Nakon što izvršite evaluaciju, možete [vizualizovati rezultate u Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
+Своју AI апликацију можете проценити у развојном окружењу користећи [prompt flow SDK](https://microsoft.github.io/promptflow/index.html). На основу тест скупа података или циља, генерисања ваше генеративне AI апликације се квантитативно мере уграђеним или прилагођеним евалуаторима по вашем избору. Да бисте започели са prompt flow sdk-ом за евалуацију вашег система, можете пратити [брзи водич](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). Када покренете евалуацију, можете [визуелизовати резултате у Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
 
-## Zaštitni znakovi
+## Жигови
 
-Ovaj projekat može sadržati zaštitne znakove ili logoe za projekte, proizvode ili usluge. Ovlašćena upotreba Microsoft zaštitnih znakova ili logotipa podložna je i mora slediti
-[Microsoft-ovim smernicama za zaštitne znakove i brend](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Upotreba Microsoft zaštitnih znakova ili logotipa u modifikovanim verzijama ovog projekta ne sme izazvati zabunu niti sugerisati Microsoft-ovu sponzorstvo.
-Svaka upotreba zaštitnih znakova ili logotipa trećih strana podložna je politikama tih trećih strana.
+Овај пројекат може садржати жигове или логотипе пројеката, производа или услуга. Овлашћена употреба Microsoft жигова или логотипа подлеже и мора бити у складу са [Microsoft смерницама за жигове и бренд](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Употреба Microsoft жигова или логотипа у измењеним верзијама овог пројекта не сме изазвати забуну или имплицирати да је Microsoft спонзор. Свака употреба жигова или логотипа трећих страна подлеже политикама тих трећих страна.
+
+## Помоћ
+
+Ако запнете или имате питања у вези са развојем AI апликација, придружите се:
+
+[![Azure AI Foundry Discord](https://img.shields.io/badge/Discord-Azure_AI_Foundry_Community_Discord-blue?style=for-the-badge&logo=discord&color=5865f2&logoColor=fff)](https://aka.ms/foundry/discord)
+
+Ако имате повратне информације о производу или наиђете на грешке током развоја, посетите:
+
+[![Azure AI Foundry Developer Forum](https://img.shields.io/badge/GitHub-Azure_AI_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
+
+---
 
 **Одрицање од одговорности**:  
-Овај документ је преведен коришћењем AI сервиса за превођење [Co-op Translator](https://github.com/Azure/co-op-translator). Иако тежимо прецизности, имајте у виду да аутоматски преводи могу садржати грешке или нетачности. Изворни документ на оригиналном језику треба сматрати ауторитетним извором. За критичне информације препоручује се професионални превод од стране људског преводиоца. Нисмо одговорни за било какве неспоразуме или погрешне тумачења настала коришћењем овог превода.
+Овај документ је преведен коришћењем AI услуге за превођење [Co-op Translator](https://github.com/Azure/co-op-translator). Иако настојимо да обезбедимо тачност, имајте у виду да аутоматски преводи могу садржати грешке или нетачности. Оригинални документ на изворном језику треба сматрати ауторитативним извором. За критичне информације препоручује се професионални људски превод. Не сносимо одговорност за било какве неспоразуме или погрешна тумачења настала употребом овог превода.

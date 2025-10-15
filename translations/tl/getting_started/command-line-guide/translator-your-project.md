@@ -1,42 +1,42 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:53:29+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T03:43:36+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "tl"
 }
 -->
 # Isalin ang iyong proyekto gamit ang Co-op Translator
 
-Ang **Co-op Translator** ay isang command-line interface (CLI) na tool na tumutulong sa iyo na isalin ang mga markdown at image files sa iyong proyekto sa iba't ibang wika. Ipinaliwanag sa seksyong ito kung paano gamitin ang tool, mga iba't ibang opsyon ng CLI, at mga halimbawa para sa iba't ibang sitwasyon.
+Ang **Co-op Translator** ay isang command-line interface (CLI) tool na tumutulong sa iyo na isalin ang mga markdown at image file sa iyong proyekto sa iba’t ibang wika. Sa seksyong ito, ipapaliwanag kung paano gamitin ang tool, tatalakayin ang iba’t ibang CLI options, at magbibigay ng mga halimbawa para sa iba’t ibang sitwasyon.
 
 > [!NOTE]
-> Para sa kumpletong listahan ng mga command at kanilang detalyadong paglalarawan, pakitingnan ang [Command reference](./command-reference.md).
+> Para sa kumpletong listahan ng mga command at detalyadong paliwanag, bisitahin ang [Command reference](./command-reference.md).
 
 ---
 
-## Mga Halimbawa ng Sitwasyon at Mga Command
+## Mga Halimbawa ng Sitwasyon at Command
 
-Narito ang ilang karaniwang gamit ng **Co-op Translator**, kasama ang mga angkop na command na dapat patakbuhin.
+Narito ang ilang karaniwang gamit ng **Co-op Translator** at ang tamang command para dito.
 
 ### 1. Pangunahing Pagsasalin (Isang Wika)
 
-Para isalin ang buong proyekto (mga markdown file at mga larawan) sa isang wika lamang, tulad ng Korean, gamitin ang sumusunod na command:
+Para isalin ang buong proyekto mo (markdown files at images) sa isang wika, halimbawa Korean, gamitin ang command na ito:
 
 ```bash
 translate -l "ko"
 ```
 
-Isasalin ng command na ito ang lahat ng markdown at image files sa Korean, magdadagdag ng mga bagong pagsasalin nang hindi binubura ang mga dati nang nasa sistema.
+Ang command na ito ay magsasalin ng lahat ng markdown at image file sa Korean, at magdadagdag ng bagong salin nang hindi binubura ang mga dati nang salin.
 
 > [!TIP]
 >
-> Gusto mo bang malaman kung anong mga language code ang available sa **Co-op Translator**? Bisitahin ang seksyong [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) sa repository para sa karagdagang detalye.
+> Gusto mo bang malaman kung anong mga language code ang available sa **Co-op Translator**? Bisitahin ang [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) section sa repository para sa karagdagang detalye.
 
 #### Halimbawa sa Phi-3 CookBook
 
-Sa **Phi-3 CookBook**, ginamit ko ang sumusunod na paraan para idagdag ang pagsasalin sa Korean para sa mga umiiral na markdown file at mga larawan.
+Sa **Phi-3 CookBook**, ginamit ko ang pamamaraang ito para idagdag ang Korean translation sa mga existing na markdown files at images.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -46,17 +46,17 @@ Translating markdown files: 100%|███████████████�
 
 ### 2. Pagsasalin sa Maramihang Wika
 
-Para isalin ang proyekto sa maramihang wika (halimbawa, Spanish, French, at German), gamitin ang command na ito:
+Para isalin ang proyekto mo sa maraming wika (hal. Spanish, French, at German), gamitin ang command na ito:
 
 ```bash
 translate -l "es fr de"
 ```
 
-Isasalin ng command na ito ang proyekto sa Spanish, French, at German, magdadagdag ng mga bagong pagsasalin nang hindi nire-replace ang mga dati nang nasa sistema.
+Ang command na ito ay magsasalin ng proyekto sa Spanish, French, at German, at magdadagdag ng bagong salin nang hindi pinapalitan ang mga dati nang salin.
 
 #### Halimbawa sa Phi-3 CookBook
 
-Sa **Phi-3 CookBook**, pagkatapos i-pull ang mga pinakabagong pagbabago para maipakita ang mga pinaka-sariwang commit, ginamit ko ang sumusunod na paraan para isalin ang mga bagong idinagdag na markdown file at mga larawan.
+Sa **Phi-3 CookBook**, pagkatapos kunin ang pinakabagong update para makita ang mga bagong commit, ginamit ko ang pamamaraang ito para isalin ang mga bagong markdown files at images.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,21 +65,21 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Bagamat karaniwang inirerekomenda na isang wika lang ang isalin sa isang pagkakataon, sa mga sitwasyon tulad nito kung saan kailangang idagdag ang mga tiyak na pagbabago, mas epektibo ang pagsasalin ng maramihang wika nang sabay-sabay.
+> Bagama’t mas mainam na isalin ang isang wika sa bawat pagkakataon, sa mga sitwasyon tulad nito na may partikular na pagbabago, mas mabilis ang pagsasalin sa maraming wika nang sabay-sabay.
 
-### 3. Pag-update ng mga Pagsasalin (Binubura ang Umiiral na mga Pagsasalin)
+### 3. Pag-update ng Salin (Binubura ang Dating Salin)
 
-Para i-update ang mga umiiral na pagsasalin (ibig sabihin, burahin ang kasalukuyang mga pagsasalin at palitan ng bago), gamitin ang opsyong `-u`. Buburahin nito lahat ng umiiral na pagsasalin para sa mga tinukoy na wika at isasalin muli.
+Para i-update ang mga dating salin (ibig sabihin, burahin ang kasalukuyang salin at palitan ng bago), gamitin ang `-u` option. Buburahin nito ang lahat ng dating salin para sa mga tinukoy na wika at isasalin muli.
 
 ```bash
 translate -l "ko" -u
 ```
 
-Babala: Hihingin ng command na ito ang iyong kumpirmasyon bago tuluyang burahin ang mga umiiral na pagsasalin.
+Babala: Magpapakita ang command na ito ng kumpirmasyon bago magpatuloy sa pagbura ng mga dating salin.
 
 #### Halimbawa sa Phi-3 CookBook
 
-Sa **Phi-3 CookBook**, ginamit ko ang sumusunod na paraan para i-update ang lahat ng isinaling file sa Spanish. Inirerekomenda kong gamitin ang pamamaraang ito kapag may malalaking pagbabago sa orihinal na nilalaman sa maraming markdown na dokumento. Kung iilan lang naman ang kailangang i-update na isinaling markdown file, mas mabilis na manu-manong burahin ang mga partikular na file at pagkatapos ay gamitin ang `-a` na paraan para idagdag ang mga na-update na pagsasalin.
+Sa **Phi-3 CookBook**, ginamit ko ang pamamaraang ito para i-update ang lahat ng translated files sa Spanish. Inirerekomenda ko ang pamamaraang ito kapag malaki ang pagbabago sa orihinal na content sa maraming markdown documents. Kung iilan lang ang kailangang i-update, mas mabilis na mano-manong burahin ang mga partikular na file at gamitin ang `-a` method para idagdag ang updated na salin.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -90,37 +90,27 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|███████████████████████████████████| 95/95 [1:40:27<00:00, 125.62s/it]
 ```
 
-### 5. Pagsasalin ng Mga Larawan Lamang
+### 5. Pagsasalin ng Images Lang
 
-Para isalin lamang ang mga image file sa iyong proyekto, gamitin ang opsyong `-img`:
+Para isalin lang ang mga image file sa iyong proyekto, gamitin ang `-img` option:
 
 ```bash
 translate -l "ko" -img
 ```
 
-Isasalin lamang ng command na ito ang mga larawan sa Korean, nang hindi naaapektuhan ang mga markdown file.
+Ang command na ito ay magsasalin lang ng mga images sa Korean, nang hindi naaapektuhan ang mga markdown file.
 
-### 6. Pagsasalin ng Mga Markdown File Lamang
+### 6. Pagsasalin ng Markdown Files Lang
 
-Para isalin lamang ang mga markdown file sa iyong proyekto, gamitin ang opsyong `-md`:
+Para isalin lang ang mga markdown file sa iyong proyekto, gamitin ang `-md` option:
 
 ```bash
 translate -l "ko" -md
 ```
 
-### 7. Pagsusuri ng Mga Mali sa Isinaling Mga File
-
-Kung nais mong suriin ang mga isinaling file para sa mga error at subukang muli ang pagsasalin kung kinakailangan, gamitin ang opsyong `-chk`:
-
-```bash
-translate -l "ko" -chk
-```
-
-Susuriin ng command na ito ang mga isinaling markdown file at muling isasalin ang anumang file na may mga error.
-
 #### Halimbawa sa Phi-3 CookBook
 
-Sa **Phi-3 CookBook**, ginamit ko ang sumusunod na paraan para suriin ang mga error sa pagsasalin ng mga Korean na file at awtomatikong subukang muli ang pagsasalin para sa anumang file na may natukoy na problema.
+Sa **Phi-3 CookBook**, ginamit ko ang pamamaraang ito para i-check ang mga error sa salin ng Korean files at awtomatikong subukan ulit ang pagsasalin sa mga file na may problema.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -129,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Sinusuri ng opsyong ito ang mga error sa pagsasalin. Sa kasalukuyan, kung ang pagkakaiba sa mga line break sa pagitan ng orihinal at isinaling file ay higit sa anim, itinuturing na may error ang file sa pagsasalin. Plano kong pagbutihin ang pamantayang ito para sa mas malawak na kakayahang umangkop sa hinaharap.
+Ang option na ito ay nagche-check ng mga error sa salin. Sa ngayon, kung ang pagkakaiba ng line breaks sa orihinal at salin ay higit sa anim, itinuturing na may error ang file. Plano kong gawing mas flexible pa ang criterion na ito sa hinaharap.
 
-Halimbawa, kapaki-pakinabang ang pamamaraang ito para matukoy ang mga nawawalang bahagi o sirang pagsasalin, at awtomatikong susubukan muli ang pagsasalin para sa mga file na iyon.
+Halimbawa, magagamit ang pamamaraang ito para makita ang mga kulang na bahagi o sirang salin, at awtomatikong uulitin ang pagsasalin para sa mga file na iyon.
 
-Gayunpaman, kung alam mo na kung alin ang mga problemadong file, mas mabilis na manu-manong burahin ang mga ito at gamitin ang opsyong `-a` option to re-translate them.
+Pero kung alam mo na kung aling mga file ang may problema, mas mabilis na mano-manong burahin ang mga iyon at gamitin ang `-a` option para isalin ulit.
 
 ### 8. Debug Mode
 
-To enable detailed logging for troubleshooting, use the `-d`:
+Para makita ang mas detalyadong log para sa troubleshooting, gamitin ang `-d` option:
 
 ```bash
 translate -l "ko" -d
 ```
 
-Patatakbuhin ng command na ito ang pagsasalin sa debug mode, na nagbibigay ng karagdagang impormasyon sa pag-log na makakatulong sa iyo na tuklasin ang mga isyu habang isinasagawa ang pagsasalin.
+Ang command na ito ay magpapatakbo ng pagsasalin sa debug mode, na magbibigay ng dagdag na impormasyon para matukoy ang mga isyu habang nagsasalin.
 
 #### Halimbawa sa Phi-3 CookBook
 
-Sa **Phi-3 CookBook**, nakaranas ako ng isyu kung saan ang mga pagsasalin na maraming link sa mga markdown file ay nagdulot ng mga error sa format, tulad ng sirang pagsasalin at hindi pinapansin na mga line break. Para ma-diagnose ang problemang ito, ginamit ko ang opsyong `-d` para makita kung paano gumagana ang proseso ng pagsasalin.
+Sa **Phi-3 CookBook**, naranasan ko ang isyu na kapag maraming links sa markdown files, nagkakaroon ng formatting errors tulad ng sirang salin at nawawalang line breaks. Para ma-diagnose ang problema, ginamit ko ang `-d` option para makita kung paano tumatakbo ang proseso ng pagsasalin.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -157,33 +147,33 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 
 ### 9. Pagsasalin sa Lahat ng Wika
 
-Kung nais mong isalin ang proyekto sa lahat ng suportadong wika, gamitin ang keyword na all.
+Kung gusto mong isalin ang proyekto sa lahat ng suportadong wika, gamitin ang all keyword.
 
 > [!WARNING]
-> Ang pagsasalin sa lahat ng wika nang sabay-sabay ay maaaring tumagal ng malaking oras depende sa laki ng proyekto. Halimbawa, ang pagsasalin ng **Phi-3 CookBook** sa Spanish ay tumagal ng halos 2 oras. Dahil sa lawak nito, hindi praktikal na isang tao lang ang humawak ng 20 wika. Inirerekomenda na hatiin ang trabaho sa maraming contributor, bawat isa ay namamahala ng isa o dalawang wika, at unti-unting ina-update ang mga pagsasalin.
+> Ang pagsasalin sa lahat ng wika nang sabay-sabay ay maaaring tumagal depende sa laki ng proyekto. Halimbawa, ang pagsasalin ng **Phi-3 CookBook** sa Spanish ay umabot ng halos 2 oras. Dahil sa dami, hindi praktikal para sa isang tao ang magsalin sa 20 wika. Mas mainam na hati-hatiin ang trabaho sa maraming contributors, bawat isa ay mag-manage ng isa o dalawang wika, at dahan-dahang i-update ang mga salin.
 
 ```bash
 translate -l "all"
 ```
 
-Isasalin ng command na ito ang proyekto sa lahat ng available na wika. Kapag nagpursige ka, maaaring tumagal nang matagal ang pagsasalin depende sa laki ng proyekto.
+Ang command na ito ay magsasalin ng proyekto sa lahat ng available na wika. Kapag nagpatuloy ka, maaaring tumagal ang pagsasalin depende sa laki ng proyekto.
 
 > [!TIP]
 >
-> ### Manu-manong Pagbura ng Mga Isinaling File (Opsyonal)
-> Awtomatikong natutukoy at nililinis ang mga isinaling file kapag na-update ang source file.
+> ### Mano-manong Pagbura ng Translated Files (Opsyonal)
+> Awtomatikong nade-detect at nililinis na ang mga translated files kapag may update sa source file.
 >
-> Gayunpaman, kung gusto mong manu-manong i-update ang isang pagsasalin — halimbawa, upang ulitin ang isang partikular na file o i-override ang sistema — maaari mong gamitin ang sumusunod na command para burahin ang lahat ng bersyon ng file sa iba't ibang language folder.
+> Pero kung gusto mong mano-manong i-update ang salin—halimbawa, para ulitin ang isang partikular na file o i-override ang system behavior—pwede mong gamitin ang command na ito para burahin ang lahat ng bersyon ng file sa mga language folder.
 >
 > ### Sa Windows:
 > 1. **Gamit ang Command Prompt**:
 >    - Buksan ang Command Prompt.
->    - Pumunta sa folder kung saan naroroon ang mga file gamit ang command na `cd`.
->    - Gamitin ang sumusunod na command para burahin ang mga file:
+>    - Pumunta sa folder kung saan naroon ang mga file gamit ang `cd` command.
+>    - Gamitin ang command na ito para burahin ang mga file:
 >      ```
 >      del /s *filename*
 >      ```
->      Ang opsyong `/s` ay naghahanap din sa mga subdirectory.
+>      Palitan ang `filename` ng partikular na bahagi ng pangalan ng file na hinahanap mo. Ang `/s` option ay maghahanap sa mga subdirectory.
 >
 > 2. **Gamit ang PowerShell**:
 >    - Buksan ang PowerShell.
@@ -191,21 +181,23 @@ Isasalin ng command na ito ang proyekto sa lahat ng available na wika. Kapag nag
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      Palitan ang `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>      Palitan ang `"C:\YourPath"` ng path ng folder at `filename` ng partikular na pangalan.
 >
-> ### On macOS/Linux:
-> 1. **Using Terminal**:
->   - Open Terminal.
->   - Navigate to the directory with `cd`.
->   - Use the `find` command:
+> ### Sa macOS/Linux:
+> 1. **Gamit ang Terminal**:
+>   - Buksan ang Terminal.
+>   - Pumunta sa directory gamit ang `cd`.
+>   - Gamitin ang `find` command:
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->     Palitan ang `filename` with the specific name.
+>     Palitan ang `filename` ng partikular na pangalan.
 >
-> Always double-check the files before deleting to avoid accidental loss. 
+> Laging i-double check ang mga file bago burahin para maiwasan ang aksidenteng pagkawala.
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` command para i-update ang pinakabagong mga pagbabago sa file.
+> Kapag nabura mo na ang mga file na kailangang palitan, i-rerun lang ang iyong `translate -l` command para ma-update ang pinakabagong pagbabago sa file.
 
-**Paunawa**:  
-Ang dokumentong ito ay isinalin gamit ang AI translation service na [Co-op Translator](https://github.com/Azure/co-op-translator). Bagamat nagsusumikap kami para sa katumpakan, pakatandaan na ang mga awtomatikong pagsasalin ay maaaring maglaman ng mga pagkakamali o hindi pagkakatugma. Ang orihinal na dokumento sa orihinal nitong wika ang dapat ituring na pangunahing sanggunian. Para sa mga mahalagang impormasyon, inirerekomenda ang propesyonal na pagsasalin ng tao. Hindi kami mananagot sa anumang hindi pagkakaunawaan o maling interpretasyon na maaaring magmula sa paggamit ng pagsasaling ito.
+---
+
+**Paunawa**:
+Ang dokumentong ito ay isinalin gamit ang AI translation service na [Co-op Translator](https://github.com/Azure/co-op-translator). Bagaman nagsusumikap kami para sa katumpakan, pakatandaan na ang mga awtomatikong pagsasalin ay maaaring maglaman ng mga pagkakamali o hindi eksaktong salin. Ang orihinal na dokumento sa kanyang sariling wika ang dapat ituring na pangunahing sanggunian. Para sa mahalagang impormasyon, inirerekomenda ang propesyonal na pagsasalin ng tao. Hindi kami mananagot sa anumang hindi pagkakaintindihan o maling interpretasyon na maaaring lumitaw mula sa paggamit ng pagsasaling ito.

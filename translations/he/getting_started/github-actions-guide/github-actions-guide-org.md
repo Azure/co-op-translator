@@ -1,123 +1,123 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:13:20+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T03:33:37+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "he"
 }
 -->
-# שימוש ב-Co-op Translator GitHub Action (מדריך לארגון)
+# שימוש ב-GitHub Action של Co-op Translator (מדריך לארגונים)
 
-**קהל יעד:** מדריך זה מיועד ל**משתמשים פנימיים של מיקרוסופט** או **לצוותים שיש להם גישה לאישורים הדרושים עבור אפליקציית Co-op Translator המובנית ב-GitHub** או שיכולים ליצור אפליקציית GitHub מותאמת אישית משלהם.
+**קהל יעד:** מדריך זה מיועד ל**משתמשים פנימיים של Microsoft** או **צוותים שיש להם גישה לאישורים הנדרשים עבור Co-op Translator GitHub App המובנה** או שיכולים ליצור GitHub App מותאם אישית משלהם.
 
-אוטומט את תרגום התיעוד של המאגר שלך בקלות בעזרת Co-op Translator GitHub Action. מדריך זה מלווה אותך בתהליך הגדרת האקשן ליצירת בקשות משיכה אוטומטיות עם תרגומים מעודכנים בכל פעם שקבצי Markdown המקוריים או התמונות משתנים.
+הפכו את תהליך תרגום התיעוד במאגר שלכם לאוטומטי בקלות בעזרת Co-op Translator GitHub Action. מדריך זה יסביר כיצד להגדיר את הפעולה כך שתיצור Pull Requests עם תרגומים מעודכנים בכל פעם שקבצי Markdown או תמונות במקור משתנים.
 
 > [!IMPORTANT]
 > 
-> **בחירת המדריך המתאים:**
+> **בחירת המדריך הנכון:**
 >
-> מדריך זה מפרט את ההגדרה באמצעות **GitHub App ID ומפתח פרטי**. בדרך כלל תזדקק לשיטת "מדריך הארגון" אם: **`GITHUB_TOKEN` הרשאות מוגבלות:** הארגון או הגדרות המאגר שלך מגבילות את ההרשאות המוגדרות כברירת מחדל ל-`GITHUB_TOKEN` הסטנדרטי. במיוחד, אם ל-`GITHUB_TOKEN` אין הרשאות `write` הנדרשות (כמו `contents: write` או `pull-requests: write`), תהליך העבודה במדריך [Public Setup Guide](./github-actions-guide-public.md) ייכשל עקב חוסר הרשאות. שימוש באפליקציית GitHub ייעודית עם הרשאות מפורשות עוקף את המגבלה הזו.
+> מדריך זה מפרט הגדרה באמצעות **GitHub App ID ומפתח פרטי**. בדרך כלל תצטרכו את שיטת "מדריך הארגון" הזו אם: **`GITHUB_TOKEN` מוגבל בהרשאות:** ההגדרות בארגון או במאגר שלכם מגבילות את ההרשאות המוגדרות כברירת מחדל ל-`GITHUB_TOKEN`. במיוחד, אם ל-`GITHUB_TOKEN` אין הרשאות `write` הנדרשות (כמו `contents: write` או `pull-requests: write`), תהליך העבודה במדריך הציבורי ([Public Setup Guide](./github-actions-guide-public.md)) ייכשל עקב חוסר הרשאות. שימוש ב-GitHub App ייעודי עם הרשאות מפורשות עוקף מגבלה זו.
 >
-> **אם זה לא רלוונטי עבורך:**
+> **אם זה לא רלוונטי עבורכם:**
 >
-> אם ל-`GITHUB_TOKEN` הסטנדרטי יש הרשאות מספקות במאגר שלך (כלומר, אין חסימות על ידי הגבלות ארגוניות), אנא השתמש ב**[מדריך ההגדרה הציבורי עם GITHUB_TOKEN](./github-actions-guide-public.md)**. המדריך הציבורי אינו דורש קבלת או ניהול App ID או מפתחות פרטיים ומתבסס רק על הרשאות ה-`GITHUB_TOKEN` הסטנדרטי והמאגר.
+> אם ל-`GITHUB_TOKEN` הסטנדרטי יש הרשאות מספקות במאגר שלכם (כלומר, אין מגבלות ארגוניות), השתמשו ב**[מדריך ההגדרה הציבורי עם GITHUB_TOKEN](./github-actions-guide-public.md)**. המדריך הציבורי אינו דורש קבלת App ID או מפתח פרטי, ומסתמך רק על `GITHUB_TOKEN` וההרשאות במאגר.
 
-## דרישות מוקדמות
+## דרישות מקדימות
 
-לפני הגדרת GitHub Action, ודא שיש ברשותך את האישורים הדרושים לשירותי ה-AI.
+לפני הגדרת ה-GitHub Action, ודאו שיש לכם את האישורים לשירותי ה-AI הדרושים.
 
-**1. דרוש: אישורי מודל שפה מבוסס AI**  
-יש צורך באישורים לפחות עבור מודל שפה אחד נתמך:
+**1. חובה: אישורי מודל שפה (AI)**
+יש צורך באישורים לפחות לאחד ממודלי השפה הנתמכים:
 
-- **Azure OpenAI**: דורש Endpoint, מפתח API, שמות מודל/פריסה, גרסת API.  
-- **OpenAI**: דורש מפתח API, (אופציונלי: מזהה ארגון, URL בסיס, מזהה מודל).  
-- עיין ב-[Supported Models and Services](../../../../README.md) לפרטים.  
-- מדריך הגדרה: [Set up Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
+- **Azure OpenAI**: דורש Endpoint, API Key, שמות מודל/פריסה, גרסת API.
+- **OpenAI**: דורש API Key, (אופציונלי: Org ID, Base URL, Model ID).
+- ראו [מודלים ושירותים נתמכים](../../../../README.md) לפרטים.
+- מדריך הגדרה: [הגדרת Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
 
-**2. אופציונלי: אישורי Computer Vision (לתרגום תמונות)**
+**2. אופציונלי: אישורי Computer Vision (לתרגום טקסט בתמונות)**
 
-- דרוש רק אם יש צורך לתרגם טקסט בתוך תמונות.  
-- **Azure Computer Vision**: דורש Endpoint ומפתח מנוי.  
-- אם לא יסופקו, האקשן יפעל במצב [Markdown בלבד](../markdown-only-mode.md).  
-- מדריך הגדרה: [Set up Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
+- דרוש רק אם יש צורך לתרגם טקסט מתוך תמונות.
+- **Azure Computer Vision**: דורש Endpoint ו-Subscription Key.
+- אם לא תספקו, הפעולה תעבוד ב[מצב Markdown בלבד](../markdown-only-mode.md).
+- מדריך הגדרה: [הגדרת Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
 
 ## הגדרה וקונפיגורציה
 
-עקוב אחרי השלבים הבאים כדי להגדיר את Co-op Translator GitHub Action במאגר שלך:
+בצעו את השלבים הבאים כדי להגדיר את Co-op Translator GitHub Action במאגר שלכם:
 
-### שלב 1: התקן והגדר אימות אפליקציית GitHub
+### שלב 1: התקנה והגדרת אימות GitHub App
 
-תהליך העבודה משתמש באימות אפליקציית GitHub כדי לתקשר בצורה מאובטחת עם המאגר שלך (למשל, ליצירת בקשות משיכה) בשמך. בחר באפשרות אחת:
+ה-Workflow משתמש באימות GitHub App כדי לפעול בבטחה מול המאגר (למשל, יצירת Pull Requests) בשמכם. בחרו אחת מהאפשרויות:
 
-#### **אפשרות א: התקנת אפליקציית Co-op Translator המובנית (לשימוש פנימי במיקרוסופט)**
+#### **אפשרות א': התקנת Co-op Translator GitHub App המובנה (לשימוש פנימי ב-Microsoft)**
 
-1. עבור לעמוד [Co-op Translator GitHub App](https://github.com/apps/co-op-translator).
+1. עברו לעמוד [Co-op Translator GitHub App](https://github.com/apps/co-op-translator).
 
-1. בחר **Install** ובחר את החשבון או הארגון שבו נמצא המאגר הרצוי.
+1. בחרו **Install** ובחרו את החשבון או הארגון שבו נמצא המאגר שלכם.
 
-    ![התקן אפליקציה](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.he.png)
+    ![התקנת האפליקציה](../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.he.png)
 
-1. בחר **Only select repositories** וסמן את המאגר הרצוי (למשל `PhiCookBook`). לחץ על **Install**. ייתכן שתתבקש לאמת.
+1. בחרו **Only select repositories** ובחרו את המאגר הרלוונטי (למשל, `PhiCookBook`). לחצו **Install**. ייתכן שתידרשו לאימות.
 
-    ![אשר התקנה](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.he.png)
+    ![אישור התקנה](../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.he.png)
 
-1. **קבל את אישורי האפליקציה (תהליך פנימי נדרש):** כדי לאפשר לאקשן לאמת את עצמו כאפליקציה, עליך לקבל שני פרטים מהצוות של Co-op Translator:  
-  - **App ID:** מזהה ייחודי לאפליקציית Co-op Translator. App ID הוא: `1164076`.  
-  - **מפתח פרטי:** עליך לקבל את **התוכן המלא** של קובץ המפתח הפרטי `.pem` מהאחראי. **טפל במפתח זה כמו בסיסמה ושמור עליו בקפידה.**
+1. **קבלת אישורי האפליקציה (נדרש תהליך פנימי):** כדי לאפשר ל-Workflow להזדהות כאפליקציה, תצטרכו שני פרטים מהצוות של Co-op Translator:
+  - **App ID:** מזהה ייחודי של האפליקציה. ה-App ID הוא: `1164076`.
+  - **Private Key:** יש לקבל את **כל תוכן** קובץ המפתח הפרטי `.pem` מאיש הקשר של המתחזק. **התייחסו למפתח זה כסיסמה ושמרו עליו בסודיות.**
 
-1. המשך לשלב 2.
+1. המשיכו לשלב 2.
 
-#### **אפשרות ב: השתמש באפליקציית GitHub מותאמת אישית משלך**
+#### **אפשרות ב': שימוש ב-GitHub App מותאם אישית משלכם**
 
-- אם תרצה, תוכל ליצור ולהגדיר אפליקציית GitHub משלך. ודא שיש לה גישה קריאה וכתיבה לתוכן ולקשות משיכה. תזדקק ל-App ID ולמפתח פרטי שנוצר.
+- אם תרצו, תוכלו ליצור ולהגדיר GitHub App משלכם. ודאו שיש לו הרשאות קריאה וכתיבה ל-Contents ול-Pull requests. תצטרכו את ה-App ID ואת המפתח הפרטי שנוצר.
 
-### שלב 2: הגדרת סודות המאגר
+### שלב 2: הגדרת Secrets במאגר
 
-עליך להוסיף את אישורי אפליקציית GitHub ואת אישורי שירות ה-AI כסודות מוצפנים בהגדרות המאגר שלך.
+יש להוסיף את האישורים של GitHub App ושל שירותי ה-AI כ-Secrets מוצפנים בהגדרות המאגר.
 
-1. עבור למאגר היעד שלך (למשל `PhiCookBook`).
+1. עברו למאגר היעד שלכם ב-GitHub (למשל, `PhiCookBook`).
 
-1. עבור אל **Settings** > **Secrets and variables** > **Actions**.
+1. גשו ל-**Settings** > **Secrets and variables** > **Actions**.
 
-1. תחת **Repository secrets**, לחץ על **New repository secret** עבור כל סוד מהרשימה הבאה.
+1. תחת **Repository secrets**, לחצו **New repository secret** עבור כל Secret מהרשימה למטה.
 
-   ![בחר הגדרות אקשן](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.he.png)
+   ![בחירת הגדרות Action](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.he.png)
 
-**סודות דרושים (לאימות אפליקציית GitHub):**
+**Secrets נדרשים (לאימות GitHub App):**
 
-| שם הסוד            | תיאור                                    | מקור הערך                                  |
-| :----------------- | :--------------------------------------- | :----------------------------------------- |
-| `GH_APP_ID`          | App ID של אפליקציית GitHub (משלב 1).    | הגדרות אפליקציית GitHub                    |
-| `GH_APP_PRIVATE_KEY` | **התוכן המלא** של קובץ `.pem` שהורדת. | קובץ `.pem` (משלב 1)             |
+| שם ה-Secret         | תיאור                                            | מקור הערך                                    |
+| :------------------- | :----------------------------------------------- | :------------------------------------------- |
+| `GH_APP_ID`          | App ID של ה-GitHub App (משלב 1).                | הגדרות GitHub App                           |
+| `GH_APP_PRIVATE_KEY` | **כל תוכן** קובץ ה-`.pem` שהורדתם.              | קובץ `.pem` (משלב 1)                        |
 
-**סודות שירות AI (הוסף את כל המתאימים בהתאם לדרישותיך):**
+**Secrets לשירותי AI (הוסיפו את כל הרלוונטיים לפי הדרישות):**
 
-| שם הסוד                         | תיאור                                     | מקור הערך                          |
-| :------------------------------ | :---------------------------------------- | :--------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | מפתח לשירות Azure AI (Computer Vision)     | Azure AI Foundry                   |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint לשירות Azure AI (Computer Vision)  | Azure AI Foundry                   |
-| `AZURE_OPENAI_API_KEY`              | מפתח לשירות Azure OpenAI                   | Azure AI Foundry                   |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint לשירות Azure OpenAI                | Azure AI Foundry                   |
-| `AZURE_OPENAI_MODEL_NAME`           | שם המודל שלך ב-Azure OpenAI                  | Azure AI Foundry                   |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | שם הפריסה שלך ב-Azure OpenAI                   | Azure AI Foundry                   |
-| `AZURE_OPENAI_API_VERSION`          | גרסת API לשירות Azure OpenAI                  | Azure AI Foundry                   |
-| `OPENAI_API_KEY`                    | מפתח API לשירות OpenAI                      | OpenAI Platform                   |
-| `OPENAI_ORG_ID`                     | מזהה ארגון OpenAI                            | OpenAI Platform                   |
-| `OPENAI_CHAT_MODEL_ID`              | מזהה מודל ספציפי ב-OpenAI                    | OpenAI Platform                   |
-| `OPENAI_BASE_URL`                   | כתובת בסיס API מותאמת אישית ל-OpenAI         | OpenAI Platform                   |
+| שם ה-Secret                        | תיאור                                    | מקור הערך                        |
+| :---------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | מפתח ל-Azure AI Service (Computer Vision)   | Azure AI Foundry                 |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint ל-Azure AI Service (Computer Vision) | Azure AI Foundry                 |
+| `AZURE_OPENAI_API_KEY`              | מפתח ל-Azure OpenAI                       | Azure AI Foundry                 |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint ל-Azure OpenAI                   | Azure AI Foundry                 |
+| `AZURE_OPENAI_MODEL_NAME`           | שם המודל שלכם ב-Azure OpenAI              | Azure AI Foundry                 |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | שם הפריסה שלכם ב-Azure OpenAI             | Azure AI Foundry                 |
+| `AZURE_OPENAI_API_VERSION`          | גרסת API ל-Azure OpenAI                   | Azure AI Foundry                 |
+| `OPENAI_API_KEY`                    | API Key ל-OpenAI                          | OpenAI Platform                  |
+| `OPENAI_ORG_ID`                     | מזהה ארגון OpenAI                         | OpenAI Platform                  |
+| `OPENAI_CHAT_MODEL_ID`              | מזהה מודל OpenAI מסוים                    | OpenAI Platform                  |
+| `OPENAI_BASE_URL`                   | כתובת בסיס מותאמת ל-OpenAI API            | OpenAI Platform                  |
 
-![הזן שם משתנה סביבה](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.he.png)
+![הזנת שם משתנה סביבה](../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.he.png)
 
-### שלב 3: צור את קובץ תהליך העבודה
+### שלב 3: יצירת קובץ Workflow
 
-לבסוף, צור את קובץ ה-YAML שמגדיר את תהליך העבודה האוטומטי.
+לבסוף, צרו את קובץ ה-YAML שמגדיר את תהליך העבודה האוטומטי.
 
-1. בתיקיית השורש של המאגר, צור את התיקייה `.github/workflows/` אם אינה קיימת.
+1. בתיקיית השורש של המאגר, צרו את התיקיה `.github/workflows/` אם אינה קיימת.
 
-1. בתוך `.github/workflows/`, צור קובץ בשם `co-op-translator.yml`.
+1. בתוך `.github/workflows/`, צרו קובץ בשם `co-op-translator.yml`.
 
-1. הדבק את התוכן הבא בקובץ co-op-translator.yml.
+1. הדביקו את התוכן הבא ל-co-op-translator.yml.
 
 ```
 name: Co-op Translator
@@ -155,7 +155,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +209,31 @@ jobs:
 
 ```
 
-4.  **התאם אישית את תהליך העבודה:**  
-  - **[!IMPORTANT] שפות יעד:** בפקודה `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+4.  **התאמת ה-Workflow:**
+  - **[!IMPORTANT] שפות יעד:** בשלב `Run Co-op Translator`, **חובה לעבור על רשימת קודי השפות** בפקודת `translate -l "..." -y` ולהתאים אותה לצרכי הפרויקט שלכם. הרשימה בדוגמה (`ar de es...`) היא להמחשה בלבד ויש להחליף או לעדכן.
+  - **Trigger (`on:`):** כרגע ה-Workflow רץ על כל Push ל-`main`. במאגרים גדולים, שקלו להוסיף מסנן `paths:` (ראו דוגמה בהערה ב-YAML) כדי להריץ את ה-Workflow רק כאשר קבצים רלוונטיים משתנים, וכך לחסוך זמן ריצה.
+  - **פרטי PR:** ניתן להתאים את ה-`commit-message`, `title`, `body`, שם ה-`branch` וה-`labels` בשלב יצירת ה-Pull Request לפי הצורך.
 
-## Credential Management and Renewal
+## ניהול אישורים וחידוש
 
-- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` יש לעדכן את שפות היעד הרצויות **לפני שפג תוקפן** כדי למנוע כשלים בתהליך העבודה.
+- **אבטחה:** תמיד שמרו אישורים רגישים (API Keys, מפתחות פרטיים) כ-Secrets של GitHub Actions. לעולם אל תחשפו אותם בקובץ ה-Workflow או בקוד המאגר.
+- **[!IMPORTANT] חידוש מפתחות (למשתמשי Microsoft פנימיים):** שימו לב שמפתח Azure OpenAI בשימוש פנימי ב-Microsoft עשוי לדרוש חידוש תקופתי (למשל, כל 5 חודשים). ודאו שאתם מעדכנים את ה-Secrets הרלוונטיים (`AZURE_OPENAI_...`) **לפני פקיעתם** כדי למנוע כשלי Workflow.
 
-## הפעלת תהליך העבודה
+## הרצת ה-Workflow
 
-לאחר שקובץ `co-op-translator.yml` מאוחד לענף הראשי שלך (או לענף שצויין במסנן `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths`, אם הוגדר).
+> [!WARNING]  
+> **מגבלת זמן ריצה ב-GitHub-hosted Runner:**  
+> ל-GitHub-hosted runners כמו `ubuntu-latest` יש **מגבלת זמן ריצה של 6 שעות**.  
+> במאגרים גדולים, אם תהליך התרגום יחרוג מ-6 שעות, ה-Workflow יופסק אוטומטית.  
+> כדי למנוע זאת, שקלו:  
+> - שימוש ב-**self-hosted runner** (ללא מגבלת זמן)  
+> - הפחתת מספר שפות היעד בכל הרצה
 
-אם התרגומים נוצרים או מתעדכנים, האקשן ייצור אוטומטית בקשת משיכה המכילה את השינויים, מוכנה לסקירה ולמיזוג מצדך.
+לאחר שמיזגתם את קובץ `co-op-translator.yml` לענף הראשי (או לענף המוגדר ב-`on:`), ה-Workflow ירוץ אוטומטית בכל פעם שיש שינוי בענף זה (ובהתאם למסנן `paths`, אם הוגדר).
 
-**כתב ויתור**:  
-מסמך זה תורגם באמצעות שירות תרגום מבוסס בינה מלאכותית [Co-op Translator](https://github.com/Azure/co-op-translator). למרות שאנו שואפים לדיוק, יש לקחת בחשבון כי תרגומים אוטומטיים עלולים להכיל שגיאות או אי-דיוקים. יש להתייחס למסמך המקורי בשפתו המקורית כמקור הסמכותי. למידע קריטי מומלץ תרגום מקצועי על ידי אדם. אנו לא נושאים באחריות לכל אי-הבנה או פרשנות שגויה הנובעים משימוש בתרגום זה.
+אם נוצרו או עודכנו תרגומים, הפעולה תיצור אוטומטית Pull Request עם השינויים, מוכן לסקירה ומיזוג שלכם.
+
+---
+
+**הצהרת אחריות**:
+מסמך זה תורגם באמצעות שירות תרגום מבוסס בינה מלאכותית [Co-op Translator](https://github.com/Azure/co-op-translator). למרות שאנו שואפים לדיוק, יש לקחת בחשבון כי תרגומים אוטומטיים עשויים להכיל טעויות או אי-דיוקים. המסמך המקורי בשפתו המקורית הוא המקור הסמכותי. למידע קריטי, מומלץ לפנות לתרגום מקצועי על ידי אדם. איננו אחראים לכל אי-הבנה או פירוש שגוי הנובעים מהשימוש בתרגום זה.

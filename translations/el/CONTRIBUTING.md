@@ -1,35 +1,35 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:34:51+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:12:23+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "el"
 }
 -->
 # Συμβολή στο Co-op Translator
 
-Αυτό το έργο καλωσορίζει συνεισφορές και προτάσεις. Οι περισσότερες συνεισφορές απαιτούν να συμφωνήσετε με μια  
-Συμφωνία Άδειας Συμβολής (CLA) που δηλώνει ότι έχετε το δικαίωμα και πράγματι παραχωρείτε σε εμάς  
-τα δικαιώματα χρήσης της συνεισφοράς σας. Για λεπτομέρειες, επισκεφθείτε το https://cla.opensource.microsoft.com.
+Αυτό το έργο καλωσορίζει συνεισφορές και προτάσεις. Οι περισσότερες συνεισφορές απαιτούν να συμφωνήσετε με μια
+Συμφωνία Άδειας Συνεισφέροντα (CLA), δηλώνοντας ότι έχετε το δικαίωμα και πράγματι παραχωρείτε σε εμάς
+τα δικαιώματα να χρησιμοποιήσουμε τη συνεισφορά σας. Για λεπτομέρειες, επισκεφθείτε το https://cla.opensource.microsoft.com.
 
-Όταν υποβάλλετε ένα pull request, ένας bot CLA θα καθορίσει αυτόματα αν χρειάζεται να παρέχετε  
-μια CLA και θα προσθέσει τα κατάλληλα στοιχεία στο PR (π.χ. έλεγχο κατάστασης, σχόλιο). Απλώς ακολουθήστε τις οδηγίες  
-που παρέχει ο bot. Θα χρειαστεί να το κάνετε μόνο μία φορά για όλα τα repos που χρησιμοποιούν την CLA μας.
+Όταν υποβάλετε ένα pull request, ένα bot CLA θα καθορίσει αυτόματα αν χρειάζεται να παρέχετε
+CLA και θα διακοσμήσει το PR κατάλληλα (π.χ. status check, σχόλιο). Απλώς ακολουθήστε τις οδηγίες
+που παρέχει το bot. Θα χρειαστεί να το κάνετε μόνο μία φορά για όλα τα repos που χρησιμοποιούν το CLA μας.
 
 ## Ρύθμιση περιβάλλοντος ανάπτυξης
 
-Για να ρυθμίσετε το περιβάλλον ανάπτυξης για αυτό το έργο, προτείνουμε τη χρήση του Poetry για τη διαχείριση εξαρτήσεων. Χρησιμοποιούμε `pyproject.toml` για τη διαχείριση των εξαρτήσεων του έργου, και επομένως, για να εγκαταστήσετε τις εξαρτήσεις, θα πρέπει να χρησιμοποιήσετε το Poetry.
+Για να ρυθμίσετε το περιβάλλον ανάπτυξης για αυτό το έργο, προτείνουμε να χρησιμοποιήσετε το Poetry για τη διαχείριση των εξαρτήσεων. Χρησιμοποιούμε το `pyproject.toml` για τη διαχείριση των εξαρτήσεων του έργου, επομένως για να εγκαταστήσετε εξαρτήσεις, θα πρέπει να χρησιμοποιήσετε το Poetry.
 
 ### Δημιουργία εικονικού περιβάλλοντος
 
-#### Χρήση pip
+#### Με χρήση pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Χρήση Poetry
+#### Με χρήση Poetry
 
 ```bash
 poetry init
@@ -51,7 +51,7 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Χρήση Poetry
+#### Με χρήση Poetry
 
 ```bash
 poetry shell
@@ -59,7 +59,7 @@ poetry shell
 
 ### Εγκατάσταση του πακέτου και των απαιτούμενων πακέτων
 
-#### Χρήση Poetry (από pyproject.toml)
+#### Με χρήση Poetry (από το pyproject.toml)
 
 ```bash
 poetry install
@@ -67,14 +67,14 @@ poetry install
 
 ### Χειροκίνητος έλεγχος
 
-Πριν υποβάλετε ένα PR, είναι σημαντικό να δοκιμάσετε τη λειτουργία μετάφρασης με πραγματική τεκμηρίωση:
+Πριν υποβάλετε PR, είναι σημαντικό να δοκιμάσετε τη λειτουργία μετάφρασης με πραγματική τεκμηρίωση:
 
-1. Δημιουργήστε έναν φάκελο δοκιμών στον ριζικό κατάλογο:
+1. Δημιουργήστε έναν φάκελο δοκιμών στον ριζικό φάκελο:
     ```bash
     mkdir test_docs
     ```
 
-2. Αντιγράψτε κάποια αρχεία markdown και εικόνες που θέλετε να μεταφράσετε στον φάκελο δοκιμών. Για παράδειγμα:
+2. Αντιγράψτε κάποια markdown τεκμηρίωση και εικόνες που θέλετε να μεταφράσετε στον φάκελο δοκιμών. Για παράδειγμα:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -85,59 +85,59 @@ poetry install
     pip install -e .
     ```
 
-4. Εκτελέστε το Co-op Translator στα αρχεία δοκιμών σας:
+4. Εκτελέστε το Co-op Translator στα δοκιμαστικά σας έγγραφα:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Ελέγξτε τα μεταφρασμένα αρχεία στο `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. Ελέγξτε τα μεταφρασμένα αρχεία στα `test_docs/translations` και `test_docs/translated_images` για να επαληθεύσετε:
+   - Την ποιότητα της μετάφρασης
+   - Ότι τα σχόλια μεταδεδομένων είναι σωστά
+   - Ότι η αρχική δομή markdown διατηρείται
+   - Ότι οι σύνδεσμοι και οι εικόνες λειτουργούν σωστά
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+Αυτός ο χειροκίνητος έλεγχος βοηθά να διασφαλιστεί ότι οι αλλαγές σας λειτουργούν καλά σε πραγματικές συνθήκες.
 
-### Environment variables
+### Μεταβλητές περιβάλλοντος
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template`.
-1. Συμπληρώστε τις μεταβλητές περιβάλλοντος όπως υποδεικνύεται.
+1. Δημιουργήστε ένα αρχείο `.env` στον ριζικό φάκελο αντιγράφοντας το παρεχόμενο αρχείο `.env.template`.
+1. Συμπληρώστε τις μεταβλητές περιβάλλοντος σύμφωνα με τις οδηγίες.
 
 > [!TIP]
 >
 > ### Επιπλέον επιλογές περιβάλλοντος ανάπτυξης
 >
-> Εκτός από την εκτέλεση του έργου τοπικά, μπορείτε επίσης να χρησιμοποιήσετε GitHub Codespaces ή VS Code Dev Containers για εναλλακτική ρύθμιση περιβάλλοντος ανάπτυξης.
+> Εκτός από την τοπική εκτέλεση του έργου, μπορείτε επίσης να χρησιμοποιήσετε το GitHub Codespaces ή τα VS Code Dev Containers για εναλλακτική ρύθμιση περιβάλλοντος ανάπτυξης.
 >
 > #### GitHub Codespaces
 >
-> Μπορείτε να τρέξετε αυτά τα δείγματα εικονικά χρησιμοποιώντας το GitHub Codespaces χωρίς επιπλέον ρυθμίσεις ή εγκαταστάσεις.
+> Μπορείτε να εκτελέσετε αυτά τα παραδείγματα εικονικά χρησιμοποιώντας το GitHub Codespaces χωρίς επιπλέον ρυθμίσεις ή εγκατάσταση.
 >
 > Το κουμπί θα ανοίξει μια web-based έκδοση του VS Code στον browser σας:
 >
-> 1. Ανοίξτε το πρότυπο (μπορεί να χρειαστούν μερικά λεπτά):
+> 1. Ανοίξτε το template (αυτό μπορεί να πάρει μερικά λεπτά):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
 >
-> #### Τοπική εκτέλεση με VS Code Dev Containers
+> #### Τοπική εκτέλεση με χρήση VS Code Dev Containers
 >
-> ⚠️ Αυτή η επιλογή λειτουργεί μόνο αν το Docker Desktop έχει τουλάχιστον 16 GB RAM διαθέσιμα. Αν έχετε λιγότερα από 16 GB RAM, μπορείτε να δοκιμάσετε την επιλογή [GitHub Codespaces](../..) ή να την [ρυθμίσετε τοπικά](../..).
+> ⚠️ Αυτή η επιλογή λειτουργεί μόνο αν το Docker Desktop σας έχει τουλάχιστον 16 GB RAM. Αν έχετε λιγότερη RAM, δοκιμάστε την επιλογή [GitHub Codespaces](../..) ή [ρυθμίστε το τοπικά](../..).
 >
-> Μια σχετική επιλογή είναι τα VS Code Dev Containers, που ανοίγουν το έργο στο τοπικό VS Code χρησιμοποιώντας την [επέκταση Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Μια σχετική επιλογή είναι τα VS Code Dev Containers, που ανοίγουν το έργο στο τοπικό σας VS Code με το [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Ξεκινήστε το Docker Desktop (εγκαταστήστε το αν δεν είναι ήδη εγκατεστημένο)
+> 1. Εκκινήστε το Docker Desktop (εγκαταστήστε το αν δεν είναι ήδη εγκατεστημένο)
 > 2. Ανοίξτε το έργο:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
 
 
 ### Στυλ Κώδικα
 
-Χρησιμοποιούμε το [Black](https://github.com/psf/black) ως formatter κώδικα Python για να διατηρήσουμε συνεπή στυλ κώδικα σε όλο το έργο. Το Black είναι ένας αμείλικτος formatter που αναμορφώνει αυτόματα τον κώδικα Python ώστε να ακολουθεί το στυλ του Black.
+Χρησιμοποιούμε το [Black](https://github.com/psf/black) ως formatter για τον Python κώδικα μας ώστε να διατηρούμε συνεπές στυλ σε όλο το έργο. Το Black είναι ένας αυστηρός formatter που αναδιαμορφώνει αυτόματα τον Python κώδικα ώστε να ακολουθεί το στυλ του Black.
 
-#### Ρυθμίσεις
+#### Ρύθμιση
 
-Η ρύθμιση του Black καθορίζεται στο `pyproject.toml` μας:
+Η ρύθμιση του Black ορίζεται στο `pyproject.toml` μας:
 
 ```toml
 [tool.black]
@@ -146,25 +146,25 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-#### Εγκατάσταση Black
+#### Εγκατάσταση του Black
 
-Μπορείτε να εγκαταστήσετε το Black είτε με Poetry (προτεινόμενο) είτε με pip:
+Μπορείτε να εγκαταστήσετε το Black είτε με Poetry (προτείνεται) είτε με pip:
 
-##### Χρήση Poetry
+##### Με χρήση Poetry
 
 Το Black εγκαθίσταται αυτόματα όταν ρυθμίζετε το περιβάλλον ανάπτυξης:
 ```bash
 poetry install
 ```
 
-##### Χρήση pip
+##### Με χρήση pip
 
 Αν χρησιμοποιείτε pip, μπορείτε να εγκαταστήσετε το Black απευθείας:
 ```bash
 pip install black
 ```
 
-#### Χρήση Black
+#### Χρήση του Black
 
 ##### Με Poetry
 
@@ -191,76 +191,116 @@ pip install black
     ```
 
 > [!TIP]
-> Συνιστούμε να ρυθμίσετε τον επεξεργαστή σας ώστε να μορφοποιεί αυτόματα τον κώδικα με το Black κατά την αποθήκευση. Οι περισσότεροι σύγχρονοι επεξεργαστές υποστηρίζουν αυτό μέσω επεκτάσεων ή plugins.
+> Προτείνουμε να ρυθμίσετε τον editor σας ώστε να μορφοποιεί αυτόματα τον κώδικα με το Black κατά την αποθήκευση. Οι περισσότεροι σύγχρονοι editors το υποστηρίζουν μέσω extensions ή plugins.
 
-## Εκτέλεση Co-op Translator
+## Εκτέλεση του Co-op Translator
 
-Για να τρέξετε το Co-op Translator χρησιμοποιώντας το Poetry στο περιβάλλον σας, ακολουθήστε τα εξής βήματα:
+Για να εκτελέσετε το Co-op Translator με Poetry στο περιβάλλον σας, ακολουθήστε τα παρακάτω βήματα:
 
-1. Μεταβείτε στον φάκελο όπου θέλετε να εκτελέσετε δοκιμές μετάφρασης ή δημιουργήστε έναν προσωρινό φάκελο για δοκιμές.
+1. Μεταβείτε στον φάκελο όπου θέλετε να κάνετε δοκιμές μετάφρασης ή δημιουργήστε έναν προσωρινό φάκελο για δοκιμές.
 
-2. Εκτελέστε την παρακάτω εντολή. Η παράμετρος `-l ko` with the language code you wish to translate into. The `-d` σημαίνει λειτουργία αποσφαλμάτωσης.
+2. Εκτελέστε την παρακάτω εντολή. Αντικαταστήστε το `-l ko` με τον κωδικό γλώσσας που θέλετε να μεταφράσετε. Η παράμετρος `-d` ενεργοποιεί τη λειτουργία debug.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Βεβαιωθείτε ότι το περιβάλλον Poetry είναι ενεργοποιημένο (poetry shell) πριν τρέξετε την εντολή.
+> Βεβαιωθείτε ότι το περιβάλλον Poetry είναι ενεργοποιημένο (poetry shell) πριν εκτελέσετε την εντολή.
+
+## Προσθήκη νέας γλώσσας
+
+Δεχόμαστε συνεισφορές που προσθέτουν υποστήριξη για νέες γλώσσες. Πριν ανοίξετε PR, παρακαλούμε ολοκληρώστε τα παρακάτω βήματα για ομαλή αξιολόγηση.
+
+1. Προσθέστε τη γλώσσα στη χαρτογράφηση γραμματοσειρών
+   - Επεξεργαστείτε το `src/co_op_translator/fonts/font_language_mappings.yml`
+   - Προσθέστε μια εγγραφή με:
+     - `code`: Κωδικός γλώσσας τύπου ISO (π.χ. `vi`)
+     - `name`: Φιλικό όνομα εμφάνισης
+     - `font`: Μια γραμματοσειρά που περιλαμβάνεται στο `src/co_op_translator/fonts/` και υποστηρίζει το script
+     - `rtl`: `true` αν είναι δεξιά προς αριστερά, αλλιώς `false`
+
+2. Συμπεριλάβετε τα απαραίτητα αρχεία γραμματοσειράς (αν χρειάζεται)
+   - Αν απαιτείται νέα γραμματοσειρά, ελέγξτε τη συμβατότητα άδειας για διανομή ως open source
+   - Προσθέστε το αρχείο γραμματοσειράς στο `src/co_op_translator/fonts/`
+
+3. Τοπική επαλήθευση
+   - Εκτελέστε μεταφράσεις σε μικρό δείγμα (Markdown, εικόνες και notebooks όπου χρειάζεται)
+   - Επαληθεύστε ότι το αποτέλεσμα εμφανίζεται σωστά, συμπεριλαμβανομένων γραμματοσειρών και διάταξης RTL αν ισχύει
+
+4. Ενημερώστε την τεκμηρίωση
+   - Βεβαιωθείτε ότι η γλώσσα εμφανίζεται στο `getting_started/supported-languages.md`
+   - Δεν χρειάζονται αλλαγές στο `README_languages_template.md`· αυτό δημιουργείται από τη λίστα υποστηριζόμενων
+
+5. Ανοίξτε PR
+   - Περιγράψτε τη γλώσσα που προστέθηκε και τυχόν θέματα γραμματοσειράς/άδειας
+   - Επισυνάψτε screenshots των αποτελεσμάτων αν είναι δυνατόν
+
+Παράδειγμα εγγραφής YAML:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
 
 ## Συντηρητές
 
 ### Μήνυμα commit και στρατηγική συγχώνευσης
 
-Για να διασφαλίσουμε τη συνέπεια και την καθαρότητα στο ιστορικό commit του έργου μας, ακολουθούμε ένα συγκεκριμένο format μηνύματος commit **για το τελικό μήνυμα commit** όταν χρησιμοποιούμε τη στρατηγική **Squash and Merge**.
+Για να διασφαλίσουμε συνέπεια και σαφήνεια στο ιστορικό των commits του έργου, ακολουθούμε συγκεκριμένη μορφή μηνύματος commit **για το τελικό μήνυμα commit** όταν χρησιμοποιούμε τη στρατηγική **Squash and Merge**.
 
-Όταν ένα pull request (PR) συγχωνεύεται, τα επιμέρους commits συμπιέζονται σε ένα ενιαίο commit. Το τελικό μήνυμα commit πρέπει να ακολουθεί το παρακάτω format για να διατηρείται ένα καθαρό και συνεπές ιστορικό.
+Όταν ένα pull request (PR) συγχωνεύεται, τα επιμέρους commits θα συμπιεστούν σε ένα μόνο commit. Το τελικό μήνυμα commit πρέπει να ακολουθεί τη μορφή παρακάτω για να διατηρείται καθαρό και συνεπές ιστορικό.
 
-#### Format μηνύματος commit (για squash and merge)
+#### Μορφή μηνύματος commit (για squash and merge)
 
-Χρησιμοποιούμε το ακόλουθο format για τα μηνύματα commit:
+Χρησιμοποιούμε την παρακάτω μορφή για τα μηνύματα commit:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: Καθορίζει την κατηγορία του commit. Χρησιμοποιούμε τους εξής τύπους:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+- **type**: Καθορίζει την κατηγορία του commit. Χρησιμοποιούμε τις εξής κατηγορίες:
+  - `Docs`: Για ενημερώσεις τεκμηρίωσης.
+  - `Build`: Για αλλαγές που σχετίζονται με το σύστημα build ή εξαρτήσεις, συμπεριλαμβανομένων ενημερώσεων σε αρχεία ρυθμίσεων, CI workflows ή Dockerfile.
+  - `Core`: Για τροποποιήσεις στη βασική λειτουργικότητα ή χαρακτηριστικά του έργου, ειδικά σε αρχεία του `src/co_op_translator/core`.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: Μια σύντομη περίληψη της αλλαγής.
+- **PR number**: Ο αριθμός του pull request που σχετίζεται με το commit.
 
-**Examples**:
+**Παραδείγματα**:
 
 - `Docs: Ενημέρωση οδηγιών εγκατάστασης για μεγαλύτερη σαφήνεια (#50)`
-- `Core: Βελτίωση χειρισμού μετάφρασης εικόνων (#60)`
+- `Core: Βελτίωση διαχείρισης μετάφρασης εικόνων (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> Αυτή τη στιγμή, τα προθέματα **`Docs`**, **`Core`** και **`Build`** προστίθενται αυτόματα στους τίτλους των PR με βάση τα labels που εφαρμόζονται στον τροποποιημένο πηγαίο κώδικα. Εφόσον έχει εφαρμοστεί το σωστό label, συνήθως δεν χρειάζεται να ενημερώσετε χειροκίνητα τον τίτλο του PR. Απλώς ελέγξτε ότι όλα είναι σωστά και το πρόθεμα έχει δημιουργηθεί σωστά.
 
-#### Merge strategy
+#### Στρατηγική συγχώνευσης
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+Χρησιμοποιούμε το **Squash and Merge** ως προεπιλεγμένη στρατηγική για pull requests. Αυτή η στρατηγική διασφαλίζει ότι τα μηνύματα commit ακολουθούν τη μορφή μας, ακόμα κι αν τα επιμέρους commits δεν το κάνουν.
 
-**Reasons**:
+**Λόγοι**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- Καθαρό, γραμμικό ιστορικό έργου.
+- Συνέπεια στα μηνύματα commit.
+- Λιγότερος "θόρυβος" από μικρά commits (π.χ. "διόρθωση τυπογραφικού").
 
-When merging, ensure the final commit message follows the commit message format described above.
+Κατά τη συγχώνευση, βεβαιωθείτε ότι το τελικό μήνυμα commit ακολουθεί τη μορφή που περιγράφεται παραπάνω.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**Παράδειγμα Squash and Merge**
+Αν ένα PR περιέχει τα παρακάτω commits:
 
-- `διόρθωση ορθογραφικού λάθους`
-- `ενημέρωση README`
-- `προσαρμογή μορφοποίησης`
+- `fix typo`
+- `update README`
+- `adjust formatting`
 
-They should be squashed into:
+Πρέπει να συμπιεστούν σε:
 `Docs: Βελτίωση σαφήνειας και μορφοποίησης τεκμηρίωσης (#65)`
 
-**Αποποίηση ευθυνών**:  
-Αυτό το έγγραφο έχει μεταφραστεί χρησιμοποιώντας την υπηρεσία αυτόματης μετάφρασης AI [Co-op Translator](https://github.com/Azure/co-op-translator). Παρόλο που προσπαθούμε για ακρίβεια, παρακαλούμε να έχετε υπόψη ότι οι αυτόματες μεταφράσεις ενδέχεται να περιέχουν λάθη ή ανακρίβειες. Το πρωτότυπο έγγραφο στη μητρική του γλώσσα πρέπει να θεωρείται η επίσημη πηγή. Για κρίσιμες πληροφορίες, συνιστάται επαγγελματική ανθρώπινη μετάφραση. Δεν φέρουμε ευθύνη για τυχόν παρεξηγήσεις ή λανθασμένες ερμηνείες που προκύπτουν από τη χρήση αυτής της μετάφρασης.
+---
+
+**Αποποίηση Ευθύνης**:  
+Αυτό το έγγραφο έχει μεταφραστεί χρησιμοποιώντας την υπηρεσία αυτόματης μετάφρασης AI [Co-op Translator](https://github.com/Azure/co-op-translator). Παρότι καταβάλλουμε προσπάθειες για ακρίβεια, παρακαλούμε να γνωρίζετε ότι οι αυτόματες μεταφράσεις ενδέχεται να περιέχουν σφάλματα ή ανακρίβειες. Το πρωτότυπο έγγραφο στη μητρική του γλώσσα πρέπει να θεωρείται η αυθεντική πηγή. Για κρίσιμες πληροφορίες, συνιστάται επαγγελματική ανθρώπινη μετάφραση. Δεν φέρουμε ευθύνη για τυχόν παρανοήσεις ή εσφαλμένες ερμηνείες που προκύπτουν από τη χρήση αυτής της μετάφρασης.

@@ -1,42 +1,42 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:54:16+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T03:49:33+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "hu"
 }
 -->
-# Projekted fordítása a Co-op Translatorral
+# Fordítsd le a projektedet a Co-op Translator segítségével
 
-A **Co-op Translator** egy parancssoros eszköz (CLI), amely segít a projekted markdown és képfájljainak több nyelvre történő fordításában. Ebben a részben bemutatjuk az eszköz használatát, ismertetjük a különböző CLI opciókat, és példákat adunk különféle felhasználási esetekre.
+A **Co-op Translator** egy parancssori eszköz (CLI), amely segít a projektedben található markdown és képfájlokat több nyelvre lefordítani. Ez a szakasz bemutatja az eszköz használatát, ismerteti a különböző CLI opciókat, és példákat ad különféle felhasználási esetekre.
 
 > [!NOTE]
-> A parancsok teljes listájáért és részletes leírásáért kérjük, tekintsd meg a [Command reference](./command-reference.md) dokumentumot.
+> Az összes parancs és részletes leírásuk teljes listájáért lásd a [Parancsreferencia](./command-reference.md) oldalt.
 
 ---
 
-## Példák és parancsok
+## Példa szcenáriók és parancsok
 
-Az alábbiakban néhány gyakori használati esetet mutatunk be a **Co-op Translator** eszközhöz, valamint a megfelelő parancsokat.
+Íme néhány gyakori felhasználási eset a **Co-op Translator**-hoz, a megfelelő parancsokkal együtt.
 
-### 1. Alap fordítás (egy nyelv)
+### 1. Alapfordítás (egy nyelvre)
 
-Ha az egész projektedet (markdown fájlok és képek) egyetlen nyelvre, például koreaira szeretnéd fordítani, használd a következő parancsot:
+Ha a teljes projektedet (markdown fájlokat és képeket) egyetlen nyelvre, például koreaira szeretnéd lefordítani, használd a következő parancsot:
 
 ```bash
 translate -l "ko"
 ```
 
-Ez a parancs minden markdown és képfájlt lefordít koreaira, miközben megőrzi a meglévő fordításokat, és hozzáadja az újakokat.
+Ez a parancs minden markdown és képfájlt lefordít koreaira, új fordításokat adva hozzá anélkül, hogy a meglévőket törölné.
 
 > [!TIP]
 >
-> Szeretnéd látni, milyen nyelvkódok érhetők el a **Co-op Translator**-ban? Nézd meg a [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) szekciót a tárolóban további részletekért.
+> Szeretnéd tudni, hogy milyen nyelvkódok érhetők el a **Co-op Translator**-ban? Nézd meg a [Támogatott nyelvek](https://github.com/Azure/co-op-translator#supported-languages) szekciót a repóban a részletekért.
 
-#### Példa a Phi-3 CookBook-on
+#### Példa a Phi-3 CookBook-ban
 
-A **Phi-3 CookBook** esetében a következő módszert használtam a koreai fordítás hozzáadására a meglévő markdown fájlokhoz és képekhez.
+A **Phi-3 CookBook**-ban a következő módszert használtam, hogy hozzáadjam a koreai fordítást a meglévő markdown fájlokhoz és képekhez.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -44,19 +44,19 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|████████████████████████████████████████████████| 153/153 [1:43:07<00:00, 241.31s/it]
 ```
 
-### 2. Több nyelv fordítása
+### 2. Fordítás több nyelvre
 
-Ha a projektedet több nyelvre (például spanyolra, franciára és németre) szeretnéd fordítani, használd ezt a parancsot:
+Ha a projektedet több nyelvre (például spanyolra, franciára és németre) szeretnéd lefordítani, használd ezt a parancsot:
 
 ```bash
 translate -l "es fr de"
 ```
 
-Ez a parancs a projektet spanyolra, franciára és németre fordítja, miközben megőrzi a meglévő fordításokat, és hozzáadja az újakokat.
+Ez a parancs lefordítja a projektet spanyolra, franciára és németre, új fordításokat adva hozzá anélkül, hogy a meglévőket felülírná.
 
-#### Példa a Phi-3 CookBook-on
+#### Példa a Phi-3 CookBook-ban
 
-A **Phi-3 CookBook** esetében, miután lehúztam a legfrissebb változtatásokat, a következő módszert alkalmaztam az újonnan hozzáadott markdown fájlok és képek fordítására.
+A **Phi-3 CookBook**-ban, miután lehúztam a legfrissebb változtatásokat, hogy tükrözzék a legutóbbi commitokat, a következő módszert használtam az újonnan hozzáadott markdown fájlok és képek fordítására.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,11 +65,11 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Általánosságban ajánlott egy nyelvet egyszerre fordítani, de olyan helyzetekben, amikor specifikus változtatásokat kell hozzáadni, hatékony lehet több nyelv egyszerre történő fordítása.
+> Bár általában ajánlott egyszerre csak egy nyelvre fordítani, ilyen esetekben, amikor konkrét változtatásokat kell hozzáadni, hatékony lehet több nyelvet egyszerre fordítani.
 
 ### 3. Fordítások frissítése (meglévő fordítások törlése)
 
-Ha a meglévő fordításokat szeretnéd frissíteni (azaz törölni a jelenlegi fordításokat, és újakkal helyettesíteni őket), használd a `-u` opciót. Ez törli az adott nyelvek összes meglévő fordítását, majd újrafordítja azokat.
+Ha a meglévő fordításokat szeretnéd frissíteni (azaz törölni a jelenlegi fordításokat, és újakkal helyettesíteni), használd a `-u` opciót. Ez törli az összes meglévő fordítást a megadott nyelveken, majd újrafordítja őket.
 
 ```bash
 translate -l "ko" -u
@@ -77,9 +77,9 @@ translate -l "ko" -u
 
 Figyelem: Ez a parancs megerősítést kér, mielőtt törölné a meglévő fordításokat.
 
-#### Példa a Phi-3 CookBook-on
+#### Példa a Phi-3 CookBook-ban
 
-A **Phi-3 CookBook** esetében a következő módszert használtam az összes spanyol fordított fájl frissítésére. Ezt a módszert ajánlom, ha jelentős változások történtek az eredeti tartalomban több markdown dokumentumban. Ha csak néhány fordított markdown fájlt kell frissíteni, hatékonyabb, ha kézzel törlöd az adott fájlokat, majd az `-a` módszerrel hozzáadod az új fordításokat.
+A **Phi-3 CookBook**-ban a következő módszert használtam az összes spanyol fordítású fájl frissítésére. Ezt a módszert akkor ajánlom, ha jelentős változások történtek az eredeti tartalomban több markdown dokumentumban is. Ha csak néhány fordított markdown fájlt kell frissíteni, hatékonyabb manuálisan törölni azokat a fájlokat, majd az `-a` módszerrel hozzáadni a frissített fordításokat.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -92,35 +92,25 @@ Translating markdown files: 100%|███████████████�
 
 ### 5. Csak képek fordítása
 
-Ha csak a projekt képfájljait szeretnéd lefordítani, használd a `-img` opciót:
+Ha csak a projekted képfájljait szeretnéd lefordítani, használd a `-img` opciót:
 
 ```bash
 translate -l "ko" -img
 ```
 
-Ez a parancs csak a képeket fordítja koreaira, anélkül, hogy a markdown fájlokat érintené.
+Ez a parancs csak a képeket fordítja le koreaira, a markdown fájlokat nem érinti.
 
 ### 6. Csak markdown fájlok fordítása
 
-Ha csak a markdown fájlokat szeretnéd lefordítani, használd a `-md` opciót:
+Ha csak a markdown fájlokat szeretnéd lefordítani a projektedben, használd a `-md` opciót:
 
 ```bash
 translate -l "ko" -md
 ```
 
-### 7. Fordított fájlok hibáinak ellenőrzése
+#### Példa a Phi-3 CookBook-ban
 
-Ha szeretnéd ellenőrizni a fordított fájlokat hibák után, és szükség esetén újrapróbálni a fordítást, használd a `-chk` opciót:
-
-```bash
-translate -l "ko" -chk
-```
-
-Ez a parancs átvizsgálja a fordított markdown fájlokat, és újrapróbálja a fordítást azoknál, amelyek hibát jeleznek.
-
-#### Példa a Phi-3 CookBook-on
-
-A **Phi-3 CookBook** esetében a következő módszert használtam a koreai fájlok fordítási hibáinak ellenőrzésére, és automatikusan újrapróbáltam a fordítást az érintett fájloknál.
+A **Phi-3 CookBook**-ban a következő módszert használtam, hogy ellenőrizzem a fordítási hibákat a koreai fájlokban, és automatikusan újrapróbáljam a fordítást azoknál a fájloknál, ahol hibát találtam.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -129,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Ez az opció fordítási hibákat keres. Jelenleg, ha az eredeti és a fordított fájl sorainak törése közötti különbség több mint hat, a fájlt fordítási hibával jelöli meg. Ezt a kritériumot a jövőben tervezem rugalmasabbá tenni.
+Ez az opció ellenőrzi a fordítási hibákat. Jelenleg, ha a sortörések száma az eredeti és a fordított fájl között több mint hat, a fájl hibásnak minősül. Ezt a feltételt a jövőben rugalmasabbá szeretném tenni.
 
-Például ez a módszer hasznos hiányzó részek vagy sérült fordítások felismerésére, és automatikusan újrapróbálja az ilyen fájlok fordítását.
+Ez a módszer például hasznos hiányzó részek vagy sérült fordítások észlelésére, és automatikusan újrapróbálja a fordítást az érintett fájloknál.
 
-Ha azonban már tudod, mely fájlok problémásak, hatékonyabb kézzel törölni azokat, majd az `-a` option to re-translate them.
+Ha azonban már tudod, mely fájlok problémásak, hatékonyabb manuálisan törölni azokat, majd az `-a` opcióval újrafordítani őket.
 
-### 8. Debug Mode
+### 8. Hibakeresési mód
 
-To enable detailed logging for troubleshooting, use the `-d` opcióval futtatni a fordítást:
+Ha részletes naplózást szeretnél bekapcsolni a hibakereséshez, használd a `-d` opciót:
 
 ```bash
 translate -l "ko" -d
 ```
 
-Ez a parancs debug módban futtatja a fordítást, további naplózási információkat szolgáltatva, amelyek segíthetnek az esetleges problémák azonosításában.
+Ez a parancs hibakeresési módban futtatja a fordítást, és további naplózási információkat ad, amelyek segíthetnek a fordítási folyamat során felmerülő problémák azonosításában.
 
-#### Példa a Phi-3 CookBook-on
+#### Példa a Phi-3 CookBook-ban
 
-A **Phi-3 CookBook** esetében előfordult olyan probléma, hogy a sok linket tartalmazó markdown fájlok fordításánál formázási hibák jelentkeztek, például törött fordítások és figyelmen kívül hagyott sortörések. A probléma diagnosztizálásához a `-d` opciót használtam, hogy lássam, hogyan működik a fordítási folyamat.
+A **Phi-3 CookBook**-ban olyan problémába ütköztem, hogy a sok linket tartalmazó markdown fájlok fordításánál formázási hibák jelentkeztek, például megszakadt fordítások és figyelmen kívül hagyott sortörések. Ennek diagnosztizálásához a `-d` opciót használtam, hogy lássam, hogyan működik a fordítási folyamat.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -155,57 +145,59 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 ...
 ```
 
-### 9. Minden nyelv fordítása
+### 9. Fordítás minden nyelvre
 
-Ha a projektet az összes támogatott nyelvre szeretnéd lefordítani, használd az all kulcsszót.
+Ha a projektet az összes támogatott nyelvre le szeretnéd fordítani, használd az all kulcsszót.
 
 > [!WARNING]
-> Az összes nyelv egyszerre történő fordítása jelentős időt vehet igénybe a projekt méretétől függően. Például a **Phi-3 CookBook** spanyol fordítása körülbelül 2 órát vett igénybe. Figyelembe véve a méretet, nem praktikus, hogy egyetlen személy kezelje a 20 nyelvet. Ajánlott a munkát több közreműködőre bontani, akik egy-egy vagy két nyelvet kezelnek, és fokozatosan frissítik a fordításokat.
+> Az összes nyelvre történő fordítás egyszerre jelentős időt vehet igénybe a projekt méretétől függően. Például a **Phi-3 CookBook** spanyolra fordítása körülbelül 2 órát vett igénybe. Ekkora léptékben nem életszerű, hogy egy ember 20 nyelvet kezeljen. Ajánlott a munkát több közreműködő között megosztani, mindegyikük 1-2 nyelvet kezeljen, és fokozatosan frissítsék a fordításokat.
 
 ```bash
 translate -l "all"
 ```
 
-Ez a parancs a projektet az összes elérhető nyelvre lefordítja. Ha folytatod, a fordítás jelentős időt vehet igénybe a projekt méretétől függően.
+Ez a parancs a projektet az összes elérhető nyelvre lefordítja. Ha folytatod, a fordítás a projekt méretétől függően jelentős időt vehet igénybe.
 
 > [!TIP]
 >
-> ### Fordított fájlok kézi törlése (opcionális)
-> A fordított fájlok most automatikusan felismerésre és törlésre kerülnek, amikor egy forrásfájl frissül.
+> ### Fordított fájlok manuális törlése (opcionális)
+> A fordított fájlokat mostantól automatikusan felismeri és tisztítja a rendszer, ha egy forrásfájl frissül.
 >
-> Ha azonban manuálisan szeretnél frissíteni egy fordítást – például egy adott fájl újrafordításához vagy a rendszer viselkedésének felülírásához – használhatod a következő parancsot az adott fájl összes nyelvi mappában történő törlésére.
+> Ha azonban manuálisan szeretnéd frissíteni a fordítást – például egy adott fájlt újra lefordítani vagy felülírni a rendszer viselkedését –, a következő parancsokkal törölheted a fájl összes verzióját a nyelvi mappákból.
 >
-> ### Windows rendszeren:
+> ### Windows alatt:
 > 1. **Parancssor használata**:
 >    - Nyisd meg a Parancssort.
->    - Navigálj a fájlok helyére a `cd` paranccsal.
+>    - Navigálj a fájlokat tartalmazó mappába a `cd` paranccsal.
 >    - Használd a következő parancsot a fájlok törléséhez:
 >      ```
 >      del /s *filename*
 >      ```
->      A `filename` with the specific part of the file name you're looking for. The `/s` opció a almappákban is keres.
+>      Cseréld ki a `filename` részt arra a fájlnévrészre, amit keresel. A `/s` opció az almappákban is keres.
 >
 > 2. **PowerShell használata**:
->    - Nyisd meg a PowerShell-t.
+>    - Nyisd meg a PowerShellt.
 >    - Futtasd ezt a parancsot:
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      A `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>      Cseréld ki a `"C:\YourPath"` részt a mappa elérési útjára, a `filename`-t pedig a konkrét névre.
 >
-> ### On macOS/Linux:
-> 1. **Using Terminal**:
->   - Open Terminal.
->   - Navigate to the directory with `cd`.
->   - Use the `find` parancs:
+> ### macOS/Linux alatt:
+> 1. **Terminál használata**:
+>   - Nyisd meg a Terminált.
+>   - Navigálj a könyvtárba a `cd` paranccsal.
+>   - Használd a `find` parancsot:
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->     A `filename` with the specific name.
+>     Cseréld ki a `filename`-t a konkrét névre.
 >
-> Always double-check the files before deleting to avoid accidental loss. 
+> Mindig ellenőrizd a fájlokat törlés előtt, hogy elkerüld a véletlen adatvesztést.
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` parancs az utolsó fájlváltozások frissítésére szolgál.
+> Miután törölted a cserélendő fájlokat, egyszerűen futtasd újra a `translate -l` parancsodat, hogy frissítsd a legutóbbi fájlváltozásokat.
 
-**Felelősségkizárás**:  
-Ezt a dokumentumot az AI fordító szolgáltatás, a [Co-op Translator](https://github.com/Azure/co-op-translator) segítségével fordítottuk. Bár a pontosságra törekszünk, kérjük, vegye figyelembe, hogy az automatikus fordítások hibákat vagy pontatlanságokat tartalmazhatnak. Az eredeti dokumentum az anyanyelvén tekintendő hiteles forrásnak. Kritikus információk esetén professzionális emberi fordítást javaslunk. Nem vállalunk felelősséget az ebből eredő félreértésekért vagy téves értelmezésekért.
+---
+
+**Jogi nyilatkozat**:
+Ez a dokumentum az AI fordítási szolgáltatás, a [Co-op Translator](https://github.com/Azure/co-op-translator) segítségével készült. Bár törekszünk a pontosságra, kérjük, vegye figyelembe, hogy az automatikus fordítások hibákat vagy pontatlanságokat tartalmazhatnak. Az eredeti dokumentum eredeti nyelvén tekintendő hiteles forrásnak. Kritikus információk esetén javasoljuk a professzionális, emberi fordítást. Nem vállalunk felelősséget a fordítás használatából eredő félreértésekért vagy félreértelmezésekért.

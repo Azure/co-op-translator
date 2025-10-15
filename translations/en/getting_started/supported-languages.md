@@ -1,15 +1,15 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b4ed48f23ec418b31e90a02fe629fcde",
-  "translation_date": "2025-06-12T12:00:37+00:00",
+  "original_hash": "badae5ee6451cc1a6e367cfe5ba92efa",
+  "translation_date": "2025-10-15T02:05:59+00:00",
   "source_file": "getting_started/supported-languages.md",
   "language_code": "en"
 }
 -->
 # Supported languages
 
-The table below shows the languages currently supported by **Co-op Translator**. It includes language codes, language names, and any known issues for each language. If you want to add support for a new language, please add the corresponding language code, name, and appropriate font in the `font_language_mappings.yml` file located at `src/co_op_translator/fonts/` and submit a pull request after testing.
+The table below shows the languages that **Co-op Translator** currently supports. It lists language codes, language names, and any known issues for each language. If you want to add a new language, please add the language code, name, and the correct font to the `font_language_mappings.yml` file in `src/co_op_translator/fonts/` and submit a pull request after testing.
 
 | Language Code | Language Name        | Font                              | RTL Support | Known Issues |
 |---------------|----------------------|-----------------------------------|-------------|--------------|
@@ -19,8 +19,8 @@ The table below shows the languages currently supported by **Co-op Translator**.
 | de            | German               | NotoSans-Medium.ttf               | No          | No           |
 | ru            | Russian              | NotoSans-Medium.ttf               | No          | No           |
 | ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | No          | No           |
-| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | No          | No           |
+| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | Yes         | No           |
+| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | Yes         | No           |
 | zh            | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
 | mo            | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc    | No          | No           |
 | hk            | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc| No          | No           |
@@ -35,6 +35,7 @@ The table below shows the languages currently supported by **Co-op Translator**.
 | pt            | Portuguese (Portugal)| NotoSans-Medium.ttf               | No          | No           |
 | br            | Portuguese (Brazil)  | NotoSans-Medium.ttf               | No          | No           |
 | it            | Italian              | NotoSans-Medium.ttf               | No          | No           |
+| lt            | Lithuanian           | NotoSans-Medium.ttf               | No          | No           |
 | pl            | Polish               | NotoSans-Medium.ttf               | No          | No           |
 | tr            | Turkish              | NotoSans-Medium.ttf               | No          | No           |
 | el            | Greek                | NotoSans-Medium.ttf               | No          | No           |
@@ -44,7 +45,7 @@ The table below shows the languages currently supported by **Co-op Translator**.
 | no            | Norwegian            | NotoSans-Medium.ttf               | No          | No           |
 | fi            | Finnish              | NotoSans-Medium.ttf               | No          | No           |
 | nl            | Dutch                | NotoSans-Medium.ttf               | No          | No           |
-| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | No          | No           |
+| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | Yes         | No           |
 | vi            | Vietnamese           | NotoSans-Medium.ttf               | No          | No           |
 | id            | Indonesian           | NotoSans-Medium.ttf               | No          | No           |
 | ms            | Malay                | NotoSans-Medium.ttf               | No          | No           |
@@ -59,26 +60,17 @@ The table below shows the languages currently supported by **Co-op Translator**.
 | hr            | Croatian             | NotoSans-Medium.ttf               | No          | No           |
 | sl            | Slovenian            | NotoSans-Medium.ttf               | No          | No           |
 | uk            | Ukrainian            | NotoSans-Medium.ttf               | No          | No           |
-| my            | Burmese (Myanmar)    | NotoSans-Medium.ttf               | No          | No           |
+| my            | Burmese (Myanmar)    | NotoSansMyanmar-Medium.ttf        | No          | No           |
+| ta            | Tamil                | NotoSansTamil-Medium.ttf          | No          | No           |
+| et            | Estonian             | NotoSans-Medium.ttf               | No          | No           |
 
 ## Adding a new language
 
-To add support for a new language:
+Want to add a new language? Please follow the contribution guide:
 
-1. Go to [src/co_op_translator/fonts/font_language_mappings.yml](https://github.com/Azure/co-op-translator/blob/main/src/co_op_translator/fonts/font_language_mappings.yml).
-2. Add the language code, name, and the appropriate font file name. Be sure to include the `rtl` attribute if the language is right-to-left.
-3. If you need to use a new font, verify that it’s free for use in open-source projects by checking its license and copyright terms. Once confirmed, add the font file to the `src/co_op_translator/fonts/` directory.
-4. Test your changes locally to make sure the new language is supported correctly.
-5. Submit a Pull Request with your changes and mention the new language addition in the PR description.
+- See Contributing: <a href="../CONTRIBUTING.md#contribute-a-new-language">Contribute a new language</a>
 
-Example:
+---
 
-```yaml
-new_lang:
-  name: "New Language"
-  font: "NotoSans-Medium.ttf"
-  rtl: false
-```
-
-**Disclaimer**:  
+**Disclaimer**:
 This document has been translated using the AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.

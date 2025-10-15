@@ -1,49 +1,94 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b38d8f042530a4bc872def7cb2c141cd",
-  "translation_date": "2025-06-12T11:32:42+00:00",
+  "original_hash": "a6cddf5e9648ef0bba0de7eb07e74cf1",
+  "translation_date": "2025-10-15T03:51:39+00:00",
   "source_file": "getting_started/command-reference.md",
   "language_code": "cs"
 }
 -->
-# Command reference
-The **Co-op Translator** CLI ofrece varias opciones para personalizar el proceso de traducción:
+# Referenční příručka příkazů
 
-Command                                       | Description
+CLI **Co-op Translator** nabízí několik možností, jak přizpůsobit proces překladu:
+
+Příkaz                                       | Popis
 ----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-translate -l "language_codes"                 | Traduce tu proyecto a los idiomas especificados. Ejemplo: translate -l "es fr de" traduce a español, francés y alemán. Usa translate -l "all" para traducir a todos los idiomas soportados.
-translate -l "language_codes" -u              | Actualiza las traducciones eliminando las existentes y recreándolas. Warning: Esto eliminará todas las traducciones actuales para los idiomas especificados.
-translate -l "language_codes" -img            | Traduce solo archivos de imagen.
-translate -l "language_codes" -md             | Traduce solo archivos Markdown.
-translate -l "language_codes" -chk            | Revisa los archivos traducidos en busca de errores y reintenta la traducción si es necesario.
-translate -l "language_codes" -d              | Activa el modo debug para registros detallados.
-translate -l "language_codes" -r "root_dir"   | Especifica el directorio raíz del proyecto.
-translate -l "language_codes" -f              | Usa modo rápido para la traducción de imágenes (hasta 3x más rápido, con una ligera pérdida en calidad y alineación).
-translate -l "language_codes" -y              | Confirma automáticamente todas las solicitudes (útil para pipelines CI/CD).
-translate -l "language_codes" --help          | Detalles de ayuda dentro del CLI mostrando los comandos disponibles.
+translate -l "jazykové_kódy"                 | Přeloží váš projekt do zadaných jazyků. Příklad: translate -l "es fr de" přeloží do španělštiny, francouzštiny a němčiny. Použijte translate -l "all" pro překlad do všech podporovaných jazyků.
+translate -l "jazykové_kódy" -u              | Aktualizuje překlady tím, že smaže stávající a vytvoří je znovu. Upozornění: Tímto smažete všechny aktuální překlady pro zadané jazyky.
+translate -l "jazykové_kódy" -img            | Překládá pouze obrazové soubory.
+translate -l "jazykové_kódy" -md             | Překládá pouze Markdown soubory.
+translate -l "jazykové_kódy" -nb             | Překládá pouze Jupyter notebooky (.ipynb).
+translate -l "jazykové_kódy" --fix           | Překládá znovu soubory s nízkým skóre jistoty na základě předchozích výsledků hodnocení.
+translate -l "jazykové_kódy" -d              | Zapne režim ladění pro podrobné logování.
+translate -l "jazykové_kódy" --save-logs, -s | Uloží DEBUG logy do souborů pod <root_dir>/logs/ (konzole zůstává řízena pomocí -d)
+translate -l "jazykové_kódy" -r "root_dir"   | Určí kořenový adresář projektu
+translate -l "jazykové_kódy" -f              | Použije rychlý režim pro překlad obrázků (až 3x rychlejší vykreslování s mírnou ztrátou kvality a zarovnání).
+translate -l "jazykové_kódy" -y              | Automaticky potvrdí všechny výzvy (vhodné pro CI/CD)
+translate -l "jazykové_kódy" --help          | Zobrazí nápovědu v CLI s dostupnými příkazy
+evaluate -l "jazykový_kód"                  | Vyhodnotí kvalitu překladu pro konkrétní jazyk a zobrazí skóre jistoty
+evaluate -l "jazykový_kód" -c 0.8           | Vyhodnotí překlady s vlastním prahem jistoty
+evaluate -l "jazykový_kód" -f               | Rychlý režim hodnocení (pouze pravidla, bez LLM)
+evaluate -l "jazykový_kód" -D               | Hloubkové hodnocení (pouze LLM, důkladnější, ale pomalejší)
+evaluate -l "jazykový_kód" --save-logs, -s  | Uloží DEBUG logy do souborů pod <root_dir>/logs/
+migrate-links -l "jazykové_kódy"             | Znovu zpracuje přeložené Markdown soubory a aktualizuje odkazy na notebooky (.ipynb). Preferuje přeložené notebooky, pokud jsou dostupné; jinak může použít původní notebooky.
+migrate-links -l "jazykové_kódy" -r          | Určí kořenový adresář projektu (výchozí: aktuální adresář).
+migrate-links -l "jazykové_kódy" --dry-run   | Ukáže, které soubory by se změnily, bez zápisu změn.
+migrate-links -l "jazykové_kódy" --no-fallback-to-original | Nepřepisuje odkazy na původní notebooky, pokud chybí překlad (aktualizuje pouze, když existuje překlad).
+migrate-links -l "jazykové_kódy" -d          | Zapne režim ladění pro podrobné logování.
+migrate-links -l "jazykové_kódy" --save-logs, -s | Uloží DEBUG logy do souborů pod <root_dir>/logs/
+migrate-links -l "all" -y                      | Zpracuje všechny jazyky a automaticky potvrdí varování.
 
-### Usage examples:
+## Příklady použití
 
-  1. Comportamiento por defecto (agrega nuevas traducciones sin eliminar las existentes):   translate -l "ko"    translate -l "es fr de" -r "./my_project"
+  1. Výchozí chování (přidá nové překlady bez mazání stávajících):   translate -l "ko"    translate -l "es fr de" -r "./my_project"
 
-  2. Agrega solo nuevas traducciones de imágenes en coreano (no se eliminan traducciones existentes):    translate -l "ko" -img
+  2. Přidá pouze nové korejské překlady obrázků (stávající překlady se nemažou):    translate -l "ko" -img
 
-  3. Actualiza todas las traducciones en coreano (Warning: Esto elimina todas las traducciones coreanas existentes antes de traducir de nuevo):    translate -l "ko" -u
+  3. Aktualizuje všechny korejské překlady (Upozornění: Smaže všechny stávající korejské překlady před opětovným překladem):    translate -l "ko" -u
 
-  4. Actualiza solo imágenes coreanas (Warning: Esto elimina todas las imágenes coreanas existentes antes de traducir de nuevo):    translate -l "ko" -img -u
+  4. Aktualizuje pouze korejské obrázky (Upozornění: Smaže všechny stávající korejské obrázky před opětovným překladem):    translate -l "ko" -img -u
 
-  5. Agrega nuevas traducciones markdown para coreano sin afectar otras traducciones:    translate -l "ko" -md
+  5. Přidá nové markdown překlady pro korejštinu bez ovlivnění ostatních překladů:    translate -l "ko" -md
 
-  6. Revisa archivos traducidos en busca de errores y reintenta traducciones si es necesario: translate -l "ko" -chk
+  6. Opraví překlady s nízkou jistotou na základě předchozího hodnocení: translate -l "ko" --fix
 
-  7. Revisa archivos traducidos en busca de errores y reintenta traducciones (solo markdown): translate -l "ko" -chk -md
+  7. Opraví překlady s nízkou jistotou pouze pro konkrétní soubory (markdown): translate -l "ko" --fix -md
 
-  8. Revisa archivos traducidos en busca de errores y reintenta traducciones (solo imágenes): translate -l "ko" -chk -img
+  8. Opraví překlady s nízkou jistotou pouze pro konkrétní soubory (obrázky): translate -l "ko" --fix -img
 
-  9. Usa modo rápido para la traducción de imágenes:    translate -l "ko" -img -f
+  9. Použije rychlý režim pro překlad obrázků:    translate -l "ko" -img -f
 
-  10. Ejemplo de modo debug: - translate -l "ko" -d: Activa registros de depuración.
+  10. Opraví překlady s nízkou jistotou s vlastním prahem: translate -l "ko" --fix -c 0.8
 
-**Prohlášení o vyloučení odpovědnosti**:  
-Tento dokument byl přeložen pomocí AI překladatelské služby [Co-op Translator](https://github.com/Azure/co-op-translator). I když usilujeme o přesnost, mějte prosím na paměti, že automatické překlady mohou obsahovat chyby nebo nepřesnosti. Původní dokument v jeho mateřském jazyce by měl být považován za autoritativní zdroj. Pro důležité informace se doporučuje profesionální lidský překlad. Nejsme odpovědní za jakékoli nedorozumění nebo nesprávné výklady vyplývající z použití tohoto překladu.
+  11. Příklad režimu ladění: - translate -l "ko" -d: Zapne ladící logování.
+  12. Uložení logů do souborů: translate -l "ko" -s
+  13. DEBUG na konzoli i v souborech: translate -l "ko" -d -s
+
+  14. Migrace odkazů na notebooky pro korejské překlady (aktualizuje odkazy na přeložené notebooky, pokud jsou dostupné):    migrate-links -l "ko"
+
+  15. Migrace odkazů s dry-run (bez zápisu do souborů):    migrate-links -l "ko" --dry-run
+
+  16. Aktualizuje odkazy pouze pokud existují přeložené notebooky (nepoužívá původní):    migrate-links -l "ko" --no-fallback-to-original
+
+  17. Zpracuje všechny jazyky s potvrzovací výzvou:    migrate-links -l "all"
+
+  18. Zpracuje všechny jazyky a automaticky potvrdí:    migrate-links -l "all" -y
+  19. Uložení logů do souborů pro migrate-links:    migrate-links -l "ko ja" -s
+
+### Příklady hodnocení
+
+> [!WARNING]  
+> **Beta funkce**: Funkcionalita hodnocení je aktuálně v beta verzi. Tato funkce byla vydána pro hodnocení přeložených dokumentů, přičemž metody hodnocení a detailní implementace se stále vyvíjejí a mohou se měnit.
+
+  1. Hodnocení korejských překladů: evaluate -l "ko"
+
+  2. Hodnocení s vlastním prahem jistoty: evaluate -l "ko" -c 0.8
+
+  3. Rychlé hodnocení (pouze pravidla): evaluate -l "ko" -f
+
+  4. Hloubkové hodnocení (pouze LLM): evaluate -l "ko" -D
+
+---
+
+**Prohlášení**:
+Tento dokument byl přeložen pomocí AI překladatelské služby [Co-op Translator](https://github.com/Azure/co-op-translator). Přestože usilujeme o přesnost, mějte prosím na paměti, že automatizované překlady mohou obsahovat chyby nebo nepřesnosti. Za autoritativní zdroj by měl být považován původní dokument v jeho rodném jazyce. Pro kritické informace doporučujeme profesionální lidský překlad. Neneseme odpovědnost za jakékoli nedorozumění nebo nesprávné výklady vzniklé v důsledku použití tohoto překladu.

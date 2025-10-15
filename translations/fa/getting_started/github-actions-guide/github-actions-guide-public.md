@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:22:23+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T02:22:14+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "fa"
 }
 -->
-# استفاده از اکشن Co-op Translator در گیت‌هاب (تنظیمات عمومی)
+# استفاده از اکشن Co-op Translator در گیت‌هاب (راه‌اندازی عمومی)
 
-**مخاطب هدف:** این راهنما برای کاربران در بیشتر مخازن عمومی یا خصوصی که مجوزهای استاندارد GitHub Actions برایشان کافی است، نوشته شده است. این روش از `GITHUB_TOKEN` داخلی استفاده می‌کند.
+**مخاطبان هدف:** این راهنما برای کاربران اکثر مخازن عمومی یا خصوصی مناسب است که مجوزهای استاندارد GitHub Actions کافی هستند. این راه‌اندازی از `GITHUB_TOKEN` داخلی استفاده می‌کند.
 
-با استفاده از اکشن Co-op Translator گیت‌هاب، مستندات مخزن خود را به‌صورت خودکار ترجمه کنید. این راهنما شما را در راه‌اندازی اکشن برای ایجاد خودکار درخواست‌های pull با ترجمه‌های به‌روز شده هر زمان که فایل‌های Markdown یا تصاویر منبع تغییر کنند، همراهی می‌کند.
+مستندات مخزن خود را به‌راحتی با اکشن Co-op Translator در گیت‌هاب ترجمه کنید. این راهنما مراحل راه‌اندازی اکشن را توضیح می‌دهد تا هر زمان که فایل‌های مارک‌داون یا تصاویر منبع شما تغییر کنند، به‌طور خودکار درخواست Pull با ترجمه‌های به‌روزرسانی‌شده ایجاد شود.
 
 > [!IMPORTANT]
 >
 > **انتخاب راهنمای مناسب:**
 >
-> این راهنما تنظیم ساده‌تر با استفاده از `GITHUB_TOKEN` استاندارد را توضیح می‌دهد. این روش برای اکثر کاربران توصیه می‌شود زیرا نیازی به مدیریت کلیدهای خصوصی حساس GitHub App ندارد.
+> این راهنما **راه‌اندازی ساده‌تر با استفاده از `GITHUB_TOKEN` استاندارد** را توضیح می‌دهد. این روش برای اکثر کاربران توصیه می‌شود چون نیازی به مدیریت کلید خصوصی GitHub App ندارد.
 >
 
 ## پیش‌نیازها
 
-قبل از پیکربندی اکشن گیت‌هاب، مطمئن شوید اطلاعات لازم برای سرویس‌های هوش مصنوعی را آماده دارید.
+قبل از پیکربندی اکشن گیت‌هاب، مطمئن شوید که اطلاعات لازم برای سرویس هوش مصنوعی را آماده دارید.
 
-**1. ضروری: اطلاعات مدل زبان هوش مصنوعی**  
-شما به اطلاعات احراز هویت حداقل یکی از مدل‌های زبانی پشتیبانی شده نیاز دارید:
+**۱. ضروری: اطلاعات مدل زبان هوش مصنوعی**
+شما باید اطلاعات یکی از مدل‌های زبان پشتیبانی‌شده را داشته باشید:
 
-- **Azure OpenAI**: نیاز به Endpoint، کلید API، نام مدل/استقرار، نسخه API دارد.  
-- **OpenAI**: نیاز به کلید API، (اختیاری: شناسه سازمان، آدرس پایه، شناسه مدل).  
-- برای جزئیات بیشتر به [مدل‌ها و سرویس‌های پشتیبانی شده](../../../../README.md) مراجعه کنید.
+- **Azure OpenAI**: نیازمند Endpoint، API Key، نام مدل/استقرار، نسخه API.
+- **OpenAI**: نیازمند API Key، (اختیاری: Org ID، Base URL، Model ID).
+- برای جزئیات بیشتر به [مدل‌ها و سرویس‌های پشتیبانی‌شده](../../../../README.md) مراجعه کنید.
 
-**2. اختیاری: اطلاعات سرویس بینایی هوش مصنوعی (برای ترجمه تصویر)**
+**۲. اختیاری: اطلاعات AI Vision (برای ترجمه تصویر)**
 
-- فقط در صورتی نیاز است که بخواهید متن داخل تصاویر را ترجمه کنید.  
-- **Azure AI Vision**: نیاز به Endpoint و کلید اشتراک دارد.  
-- در صورت عدم ارائه، اکشن به حالت [فقط Markdown](../markdown-only-mode.md) برمی‌گردد.
+- فقط اگر نیاز به ترجمه متن داخل تصاویر دارید لازم است.
+- **Azure AI Vision**: نیازمند Endpoint و Subscription Key.
+- اگر وارد نشود، اکشن به حالت [فقط مارک‌داون](../markdown-only-mode.md) می‌رود.
 
 ## راه‌اندازی و پیکربندی
 
 برای پیکربندی اکشن Co-op Translator در مخزن خود با استفاده از `GITHUB_TOKEN` استاندارد، مراحل زیر را دنبال کنید.
 
-### مرحله 1: آشنایی با احراز هویت (استفاده از `GITHUB_TOKEN`)
+### مرحله ۱: آشنایی با احراز هویت (استفاده از `GITHUB_TOKEN`)
 
-این گردش کار از `GITHUB_TOKEN` داخلی که توسط GitHub Actions ارائه شده استفاده می‌کند. این توکن به‌طور خودکار به گردش کار اجازه می‌دهد تا بر اساس تنظیمات مرحله 3 با مخزن شما تعامل داشته باشد.
+این گردش‌کار از `GITHUB_TOKEN` داخلی که توسط GitHub Actions ارائه می‌شود استفاده می‌کند. این توکن به‌طور خودکار مجوزهای لازم را برای تعامل با مخزن شما بر اساس تنظیمات مرحله ۳ فراهم می‌کند.
 
-### مرحله 2: پیکربندی مخفی‌گاه‌های مخزن
+### مرحله ۲: پیکربندی اسرار مخزن
 
-شما فقط باید **اطلاعات سرویس هوش مصنوعی** را به‌صورت مخفی‌گاه رمزگذاری شده در تنظیمات مخزن خود اضافه کنید.
+فقط کافی است اطلاعات سرویس هوش مصنوعی خود را به‌عنوان اسرار رمزگذاری‌شده در تنظیمات مخزن وارد کنید.
 
-1. به مخزن هدف در گیت‌هاب بروید.  
-2. به مسیر **Settings** > **Secrets and variables** > **Actions** بروید.  
-3. در بخش **Repository secrets**، برای هر یک از اسرار مورد نیاز سرویس هوش مصنوعی زیر، روی **New repository secret** کلیک کنید.
+۱.  به مخزن موردنظر خود در گیت‌هاب بروید.
+۲.  به **Settings** > **Secrets and variables** > **Actions** بروید.
+۳.  زیر بخش **Repository secrets**، برای هر سرویس هوش مصنوعی موردنیاز، روی **New repository secret** کلیک کنید.
 
-    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.fa.png) *(تصویر راهنما: محل اضافه کردن مخفی‌گاه‌ها را نشان می‌دهد)*
+    <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.fa.png" alt="Select setting action"> *(مرجع تصویر: محل افزودن اسرار را نشان می‌دهد)*
 
-**اسرار ضروری سرویس هوش مصنوعی (تمام موارد مرتبط با پیش‌نیازهای شما را اضافه کنید):**
+**اسرار موردنیاز سرویس هوش مصنوعی (همه موارد مرتبط با پیش‌نیازها را اضافه کنید):**
 
-| نام مخفی‌گاه                        | توضیح                                     | منبع مقدار                        |
-| :--------------------------------- | :---------------------------------------- | :-------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | کلید سرویس Azure AI (بینایی ماشین)          | Azure AI Foundry شما               |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint سرویس Azure AI (بینایی ماشین)       | Azure AI Foundry شما               |
-| `AZURE_OPENAI_API_KEY`              | کلید سرویس Azure OpenAI                      | Azure AI Foundry شما               |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint سرویس Azure OpenAI                   | Azure AI Foundry شما               |
-| `AZURE_OPENAI_MODEL_NAME`           | نام مدل Azure OpenAI شما                       | Azure AI Foundry شما               |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | نام استقرار Azure OpenAI شما                     | Azure AI Foundry شما               |
-| `AZURE_OPENAI_API_VERSION`          | نسخه API برای Azure OpenAI                     | Azure AI Foundry شما               |
-| `OPENAI_API_KEY`                    | کلید API برای OpenAI                          | پلتفرم OpenAI شما                 |
-| `OPENAI_ORG_ID`                     | شناسه سازمان OpenAI (اختیاری)                 | پلتفرم OpenAI شما                 |
-| `OPENAI_CHAT_MODEL_ID`              | شناسه مدل خاص OpenAI (اختیاری)                 | پلتفرم OpenAI شما                 |
-| `OPENAI_BASE_URL`                   | آدرس پایه سفارشی API OpenAI (اختیاری)         | پلتفرم OpenAI شما                 |
+| نام راز                             | توضیحات                                   | منبع مقدار                        |
+| :---------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | کلید سرویس Azure AI (Computer Vision)      | Azure AI Foundry شما               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint سرویس Azure AI (Computer Vision)  | Azure AI Foundry شما               |
+| `AZURE_OPENAI_API_KEY`              | کلید سرویس Azure OpenAI                   | Azure AI Foundry شما               |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint سرویس Azure OpenAI                | Azure AI Foundry شما               |
+| `AZURE_OPENAI_MODEL_NAME`           | نام مدل Azure OpenAI شما                   | Azure AI Foundry شما               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | نام استقرار Azure OpenAI شما               | Azure AI Foundry شما               |
+| `AZURE_OPENAI_API_VERSION`          | نسخه API برای Azure OpenAI                 | Azure AI Foundry شما               |
+| `OPENAI_API_KEY`                    | کلید API برای OpenAI                       | پلتفرم OpenAI شما                  |
+| `OPENAI_ORG_ID`                     | شناسه سازمان OpenAI (اختیاری)              | پلتفرم OpenAI شما                  |
+| `OPENAI_CHAT_MODEL_ID`              | شناسه مدل خاص OpenAI (اختیاری)             | پلتفرم OpenAI شما                  |
+| `OPENAI_BASE_URL`                   | Base URL سفارشی API OpenAI (اختیاری)       | پلتفرم OpenAI شما                  |
 
-### مرحله 3: پیکربندی مجوزهای گردش کار
+### مرحله ۳: پیکربندی مجوزهای گردش‌کار
 
-اکشن گیت‌هاب برای بررسی کد و ایجاد درخواست pull نیاز به مجوزهای ارائه شده توسط `GITHUB_TOKEN` دارد.
+اکشن گیت‌هاب برای بررسی کد و ایجاد Pull Request به مجوزهایی از طریق `GITHUB_TOKEN` نیاز دارد.
 
-1. در مخزن خود به مسیر **Settings** > **Actions** > **General** بروید.  
-2. به بخش **Workflow permissions** اسکرول کنید.  
-3. گزینه **Read and write permissions** را انتخاب کنید. این کار به `GITHUB_TOKEN` مجوزهای لازم `contents: write` و `pull-requests: write` برای این گردش کار را می‌دهد.  
-4. اطمینان حاصل کنید که گزینه **Allow GitHub Actions to create and approve pull requests** فعال باشد.  
-5. روی **Save** کلیک کنید.
+۱.  در مخزن خود به **Settings** > **Actions** > **General** بروید.
+۲.  به بخش **Workflow permissions** بروید.
+۳.  گزینه **Read and write permissions** را انتخاب کنید. این گزینه مجوزهای `contents: write` و `pull-requests: write` را برای این گردش‌کار فعال می‌کند.
+۴.  مطمئن شوید که گزینه **Allow GitHub Actions to create and approve pull requests** فعال باشد.
+۵.  روی **Save** کلیک کنید.
 
-![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.fa.png)
+<img src="../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.fa.png" alt="Permission setting">
 
-### مرحله 4: ایجاد فایل گردش کار
+### مرحله ۴: ساخت فایل گردش‌کار
 
-در نهایت، فایل YAML را که گردش کار خودکار را با استفاده از `GITHUB_TOKEN` تعریف می‌کند، ایجاد کنید.
+در نهایت، فایل YAML گردش‌کار را با استفاده از `GITHUB_TOKEN` بسازید.
 
-1. در شاخه اصلی مخزن خود، اگر وجود ندارد، پوشه `.github/workflows/` را ایجاد کنید.  
-2. داخل پوشه `.github/workflows/`، فایلی به نام `co-op-translator.yml` بسازید.  
-3. محتوای زیر را در `co-op-translator.yml` جای‌گذاری کنید.
+۱.  در ریشه مخزن خود، اگر پوشه `.github/workflows/` وجود ندارد، آن را بسازید.
+۲.  داخل `.github/workflows/`، فایلی با نام `co-op-translator.yml` بسازید.
+۳.  محتوای زیر را داخل `co-op-translator.yml` قرار دهید.
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4. **سفارشی‌سازی گردش کار:**  
-  - **[!IMPORTANT] زبان‌های هدف:** در مرحله `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` در صورت نیاز تغییر دهید.
+```
+4.  **شخصی‌سازی گردش‌کار:**
+  - **[!IMPORTANT] زبان‌های هدف:** در مرحله `Run Co-op Translator`، **حتماً لیست کدهای زبان** داخل دستور `translate -l "..." -y` را بررسی و مطابق نیاز پروژه خود تغییر دهید. لیست نمونه (`ar de es...`) باید جایگزین یا اصلاح شود.
+  - **Trigger (`on:`):** در حال حاضر گردش‌کار با هر push به `main` اجرا می‌شود. برای مخازن بزرگ، می‌توانید فیلتر `paths:` را اضافه کنید (نمونه کامنت‌شده در YAML را ببینید) تا فقط هنگام تغییر فایل‌های مرتبط (مثلاً مستندات منبع) اجرا شود و زمان اجرای Runner را ذخیره کنید.
+  - **جزئیات PR:** در مرحله `Create Pull Request`، پیام commit، عنوان، توضیحات، نام شاخه و برچسب‌ها را در صورت نیاز شخصی‌سازی کنید.
 
-**سلب مسئولیت**:  
-این سند با استفاده از سرویس ترجمه ماشینی [Co-op Translator](https://github.com/Azure/co-op-translator) ترجمه شده است. در حالی که ما برای دقت تلاش می‌کنیم، لطفاً توجه داشته باشید که ترجمه‌های خودکار ممکن است شامل خطاها یا نادرستی‌هایی باشند. سند اصلی به زبان بومی خود به عنوان منبع معتبر در نظر گرفته شود. برای اطلاعات حیاتی، استفاده از ترجمه حرفه‌ای انسانی توصیه می‌شود. ما مسئول هیچ گونه سوءتفاهم یا برداشت نادرستی که از استفاده از این ترجمه ناشی شود، نیستیم.
+## اجرای گردش‌کار
+
+> [!WARNING]  
+> **محدودیت زمان اجرای Runner گیت‌هاب:**  
+> Runnerهای میزبانی‌شده توسط گیت‌هاب مثل `ubuntu-latest` حداکثر **۶ ساعت زمان اجرا** دارند.  
+> اگر ترجمه مخزن‌های بزرگ‌تر بیش از ۶ ساعت طول بکشد، گردش‌کار به‌طور خودکار متوقف می‌شود.  
+> برای جلوگیری از این مشکل:  
+> - از **Runner شخصی** استفاده کنید (بدون محدودیت زمانی)  
+> - تعداد زبان‌های هدف در هر اجرا را کاهش دهید
+
+پس از ادغام فایل `co-op-translator.yml` در شاخه اصلی (یا شاخه‌ای که در trigger `on:` مشخص شده)، گردش‌کار به‌طور خودکار هر زمان که تغییراتی به آن شاخه push شود (و با فیلتر `paths` مطابقت داشته باشد، اگر تنظیم شده باشد) اجرا خواهد شد.
+
+---
+
+**سلب مسئولیت**:
+این سند با استفاده از سرویس ترجمه هوش مصنوعی [Co-op Translator](https://github.com/Azure/co-op-translator) ترجمه شده است. اگرچه ما برای دقت تلاش می‌کنیم، لطفاً توجه داشته باشید که ترجمه‌های خودکار ممکن است شامل خطا یا نادقتی باشند. نسخه اصلی سند به زبان مادری آن باید به عنوان منبع معتبر در نظر گرفته شود. برای اطلاعات حساس، ترجمه انسانی حرفه‌ای توصیه می‌شود. ما هیچ مسئولیتی در قبال سوءتفاهم یا تفسیر نادرست ناشی از استفاده از این ترجمه نداریم.

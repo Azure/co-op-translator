@@ -1,8 +1,8 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:38:50+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T02:06:32+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "en"
 }
@@ -108,16 +108,6 @@ To translate only the markdown files in your project, use the `-md` option:
 translate -l "ko" -md
 ```
 
-### 7. Checking for Errors in Translated Files
-
-If you want to check translated files for errors and retry the translation if necessary, use the `-chk` option:
-
-```bash
-translate -l "ko" -chk
-```
-
-This command will scan the translated markdown files and retry translation for any files with errors.
-
 #### Example on Phi-3 CookBook
 
 In the **Phi-3 CookBook**, I used the following method to check for translation errors in the Korean files and automatically retry translation for any files with detected issues.
@@ -207,5 +197,7 @@ This command will translate the project into all available languages. If you pro
 >
 > Once you have deleted the files which need to be replace simply rerun your `translate -l` command to update the most recent file changes.
 
-**Disclaimer**:  
+---
+
+**Disclaimer**:
 This document has been translated using the AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.

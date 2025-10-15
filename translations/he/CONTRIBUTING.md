@@ -1,37 +1,37 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:38:02+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:31:25+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "he"
 }
 -->
 # תרומה ל-Co-op Translator
 
-הפרויקט הזה מקבל תרומות והצעות. רוב התרומות דורשות שתסכים להסכם רישיון תורם (CLA) המצהיר שיש לך את הזכות, ושאתה אכן מעניק לנו את הזכויות להשתמש בתרומתך. לפרטים, בקר בכתובת https://cla.opensource.microsoft.com.
+הפרויקט הזה מזמין תרומות והצעות. רוב התרומות דורשות שתאשר הסכם רישיון תורם (CLA) שמצהיר שיש לך את הזכות, ואתה אכן מעניק לנו את הזכויות להשתמש בתרומה שלך. לפרטים, בקר בכתובת https://cla.opensource.microsoft.com.
 
-כשאתה מגיש בקשת משיכה, בוט CLA יזהה אוטומטית אם עליך לספק CLA ויעטר את בקשת המשיכה בהתאם (למשל, בדיקת סטטוס, תגובה). פשוט עקוב אחרי ההוראות שהבוט מספק. תצטרך לעשות זאת רק פעם אחת בכל הרפוזיטוריות שמשתמשות ב-CLA שלנו.
+כשאתה מגיש Pull Request, בוט ה-CLA יבדוק אוטומטית אם אתה צריך לספק CLA ויעטר את ה-PR בהתאם (למשל, בדיקת סטטוס, תגובה). פשוט עקוב אחרי ההוראות של הבוט. תצטרך לעשות זאת רק פעם אחת בכל הרפוז שמשתמשים ב-CLA שלנו.
 
 ## הגדרת סביבת פיתוח
 
-כדי להגדיר את סביבת הפיתוח לפרויקט הזה, אנו ממליצים להשתמש ב-Poetry לניהול תלותים. אנחנו משתמשים ב-`pyproject.toml` לניהול תלותות הפרויקט, ולכן, להתקנת תלותות, יש להשתמש ב-Poetry.
+להגדרת סביבת הפיתוח לפרויקט הזה, מומלץ להשתמש ב-Poetry לניהול התלויות. אנחנו משתמשים ב-`pyproject.toml` לניהול התלויות, ולכן כדי להתקין תלויות, יש להשתמש ב-Poetry.
 
 ### יצירת סביבת וירטואלית
 
-#### שימוש ב-pip
+#### באמצעות pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### שימוש ב-Poetry
+#### באמצעות Poetry
 
 ```bash
 poetry init
 ```
 
-### הפעלת סביבת הווירטואלית
+### הפעלת הסביבה הווירטואלית
 
 #### עבור pip ו-Poetry
 
@@ -47,7 +47,7 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### שימוש ב-Poetry
+#### באמצעות Poetry
 
 ```bash
 poetry shell
@@ -55,7 +55,7 @@ poetry shell
 
 ### התקנת החבילה והחבילות הנדרשות
 
-#### שימוש ב-Poetry (מהקובץ pyproject.toml)
+#### באמצעות Poetry (מה- pyproject.toml)
 
 ```bash
 poetry install
@@ -63,14 +63,14 @@ poetry install
 
 ### בדיקות ידניות
 
-לפני הגשת בקשת משיכה, חשוב לבדוק את פונקציונליות התרגום עם תיעוד אמיתי:
+לפני הגשת PR, חשוב לבדוק את פונקציית התרגום עם תיעוד אמיתי:
 
 1. צור תיקיית בדיקה בתיקיית השורש:
     ```bash
     mkdir test_docs
     ```
 
-2. העתק לתיקיית הבדיקה תיעוד Markdown ותמונות שברצונך לתרגם. לדוגמה:
+2. העתק מסמכי Markdown ותמונות שתרצה לתרגם לתיקיית הבדיקה. לדוגמה:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -86,54 +86,53 @@ poetry install
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. בדוק את הקבצים המתורגמים ב-`test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. בדוק את הקבצים המתורגמים ב-`test_docs/translations` וב-`test_docs/translated_images` כדי לוודא:
+   - איכות התרגום
+   - ההערות במטא-דאטה נכונות
+   - מבנה ה-Markdown המקורי נשמר
+   - קישורים ותמונות עובדים כראוי
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+הבדיקה הידנית הזו עוזרת לוודא שהשינויים שלך עובדים טוב בתרחישים אמיתיים.
 
-### Environment variables
+### משתני סביבה
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template`.
+1. צור קובץ `.env` בתיקיית השורש על ידי העתקת הקובץ `.env.template` שסופק.
 1. מלא את משתני הסביבה לפי ההנחיות.
 
 > [!TIP]
 >
 > ### אפשרויות נוספות לסביבת פיתוח
 >
-> בנוסף להרצת הפרויקט מקומית, ניתן להשתמש גם ב-GitHub Codespaces או VS Code Dev Containers להגדרת סביבת פיתוח חלופית.
+> בנוסף להרצת הפרויקט מקומית, אפשר גם להשתמש ב-GitHub Codespaces או VS Code Dev Containers כאפשרות חלופית להגדרת סביבת פיתוח.
 >
 > #### GitHub Codespaces
 >
-> ניתן להפעיל את הדוגמאות האלה וירטואלית באמצעות GitHub Codespaces, ואין צורך בהגדרות נוספות.
+> אפשר להריץ את הדוגמאות האלה באופן וירטואלי באמצעות GitHub Codespaces ללא הגדרות או התקנות נוספות.
 >
-> הכפתור יפתח מופע VS Code מבוסס דפדפן:
+> הכפתור יפתח VS Code מבוסס דפדפן:
 >
-> 1. פתח את התבנית (יכול לקחת מספר דקות):
+> 1. פתח את התבנית (זה עשוי לקחת כמה דקות):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
 >
-> #### הרצה מקומית באמצעות VS Code Dev Containers
+> #### הרצה מקומית עם VS Code Dev Containers
 >
-> ⚠️ אפשרות זו תעבוד רק אם ל-Docker Desktop שלך מוקצה לפחות 16GB זיכרון RAM. אם יש לך פחות מ-16GB RAM, תוכל לנסות את אפשרות [GitHub Codespaces](../..) או [להגדיר זאת מקומית](../..).
+> ⚠️ אפשרות זו תעבוד רק אם Docker Desktop שלך מוקצה לפחות 16GB RAM. אם יש לך פחות מ-16GB RAM, אפשר לנסות את [אפשרות GitHub Codespaces](../..) או [להגדיר מקומית](../..).
 >
-> אפשרות קשורה היא VS Code Dev Containers, שיפתח את הפרויקט ב-VS Code המקומי שלך באמצעות [הרחבת Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> אפשרות קשורה היא VS Code Dev Containers, שפותחת את הפרויקט ב-VS Code המקומי שלך באמצעות [הרחבת Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. הפעל את Docker Desktop (התקן אם עדיין לא מותקן)
+> 1. הפעל את Docker Desktop (התקן אם לא מותקן)
 > 2. פתח את הפרויקט:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
-
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
 
 ### סגנון קוד
 
-אנו משתמשים ב-[Black](https://github.com/psf/black) כפורמטור הקוד שלנו בפייתון לשמירה על סגנון קוד אחיד בפרויקט. Black הוא פורמטור קוד נוקשה שמבצע עיצוב אוטומטי של קוד פייתון בהתאם לסגנון Black.
+אנחנו משתמשים ב-[Black](https://github.com/psf/black) כמעצב קוד Python כדי לשמור על אחידות הסגנון בפרויקט. Black הוא מעצב קוד בלתי מתפשר שמעצב אוטומטית קוד Python לפי הסגנון של Black.
 
-#### קונפיגורציה
+#### הגדרות
 
-הגדרות Black מצוינות בקובץ `pyproject.toml` שלנו:
+ההגדרות של Black נמצאות ב-`pyproject.toml` שלנו:
 
 ```toml
 [tool.black]
@@ -144,18 +143,18 @@ include = '\.pyi?$'
 
 #### התקנת Black
 
-ניתן להתקין את Black באמצעות Poetry (מומלץ) או pip:
+אפשר להתקין את Black באמצעות Poetry (מומלץ) או pip:
 
-##### שימוש ב-Poetry
+##### באמצעות Poetry
 
-Black מותקן אוטומטית כשמגדירים את סביבת הפיתוח:
+Black מותקן אוטומטית כשאתה מגדיר את סביבת הפיתוח:
 ```bash
 poetry install
 ```
 
-##### שימוש ב-pip
+##### באמצעות pip
 
-אם אתה משתמש ב-pip, ניתן להתקין את Black ישירות:
+אם אתה משתמש ב-pip, אפשר להתקין את Black ישירות:
 ```bash
 pip install black
 ```
@@ -164,38 +163,38 @@ pip install black
 
 ##### עם Poetry
 
-1. עצב את כל קבצי הפייתון בפרויקט:
+1. עיצוב כל קבצי ה-Python בפרויקט:
     ```bash
     poetry run black .
     ```
 
-2. עצב קובץ או תיקייה ספציפיים:
+2. עיצוב קובץ או תיקייה מסוימים:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
 ##### עם pip
 
-1. עצב את כל קבצי הפייתון בפרויקט:
+1. עיצוב כל קבצי ה-Python בפרויקט:
     ```bash
     black .
     ```
 
-2. עצב קובץ או תיקייה ספציפיים:
+2. עיצוב קובץ או תיקייה מסוימים:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> מומלץ להגדיר את העורך שלך לעצב קוד אוטומטית עם Black בעת שמירה. רוב העורכים המודרניים תומכים בכך באמצעות תוספים או הרחבות.
+> מומלץ להגדיר את העורך שלך לעצב אוטומטית קוד עם Black בשמירה. רוב העורכים המודרניים תומכים בזה דרך הרחבות או תוספים.
 
 ## הרצת Co-op Translator
 
-כדי להריץ את Co-op Translator באמצעות Poetry בסביבתך, בצע את השלבים הבאים:
+כדי להריץ את Co-op Translator באמצעות Poetry בסביבה שלך, בצע את השלבים הבאים:
 
-1. עבור לתיקייה שבה ברצונך לבצע בדיקות תרגום או צור תיקייה זמנית למטרות בדיקה.
+1. עבור לתיקייה שבה תרצה לבצע בדיקות תרגום או צור תיקייה זמנית למטרות בדיקה.
 
-2. הרץ את הפקודה הבאה. הדגל `-l ko` with the language code you wish to translate into. The `-d` מציין מצב דיבאג.
+2. הרץ את הפקודה הבאה. החלף את `-l ko` בקוד השפה שאליה תרצה לתרגם. הדגל `-d` מפעיל מצב דיבאג.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -204,59 +203,99 @@ pip install black
 > [!NOTE]
 > ודא שסביבת Poetry שלך מופעלת (poetry shell) לפני הרצת הפקודה.
 
-## אחראים על הפרויקט
+## תרומה לשפה חדשה
 
-### הודעת קומיט ואסטרטגיית מיזוג
+נשמח לקבל תרומות שמוסיפות תמיכה בשפות חדשות. לפני פתיחת PR, יש להשלים את השלבים הבאים כדי להבטיח סקירה חלקה.
 
-כדי להבטיח אחידות ובהירות בהיסטוריית הקומיטים של הפרויקט, אנו משתמשים בפורמט הודעת קומיט ספציפי **להודעת הקומיט הסופית** בעת שימוש באסטרטגיית **Squash and Merge**.
+1. הוסף את השפה למיפוי הגופנים
+   - ערוך את `src/co_op_translator/fonts/font_language_mappings.yml`
+   - הוסף ערך עם:
+     - `code`: קוד שפה בסגנון ISO (למשל, `vi`)
+     - `name`: שם תצוגה ידידותי
+     - `font`: גופן שנמצא ב-`src/co_op_translator/fonts/` שתומך בכתב
+     - `rtl`: `true` אם מימין לשמאל, אחרת `false`
 
-כאשר בקשת משיכה (PR) מתמזגת, הקומיטים האישיים ישולבו לקומיט יחיד. הודעת הקומיט הסופית צריכה לעקוב אחרי הפורמט הבא לשמירה על היסטוריה נקייה ואחידה.
+2. כלול קבצי גופן נדרשים (אם צריך)
+   - אם נדרש גופן חדש, ודא שהרישיון מתאים להפצה בקוד פתוח
+   - הוסף את קובץ הגופן ל-`src/co_op_translator/fonts/`
 
-#### פורמט הודעת קומיט (ל-squash and merge)
+3. אימות מקומי
+   - הרץ תרגומים לדוגמה קטנה (Markdown, תמונות, ו-notebooks לפי הצורך)
+   - ודא שהתוצאה מוצגת נכון, כולל גופנים וכל פריסת RTL אם רלוונטי
 
-אנו משתמשים בפורמט הבא להודעות קומיט:
+4. עדכן תיעוד
+   - ודא שהשפה מופיעה ב-`getting_started/supported-languages.md`
+   - אין צורך לשנות את `README_languages_template.md`; הוא נוצר אוטומטית מהרשימה הנתמכת
+
+5. פתח PR
+   - תאר את השפה שנוספה וכל שיקולי גופן/רישוי
+   - צרף צילומי מסך של התוצאות אם אפשר
+
+דוגמה לערך YAML:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
+## מתחזקים
+
+### פורמט הודעת Commit ואסטרטגיית מיזוג
+
+כדי לשמור על אחידות ובהירות בהיסטוריית ה-commit של הפרויקט, אנחנו עוקבים אחרי פורמט הודעת commit מסוים **להודעת ה-commit הסופית** כשמשתמשים באסטרטגיית **Squash and Merge**.
+
+כש-Pull Request (PR) מתמזג, ה-commits הבודדים יאוחדו ל-commit אחד. הודעת ה-commit הסופית צריכה להיות לפי הפורמט למטה כדי לשמור על היסטוריה נקייה ואחידה.
+
+#### פורמט הודעת Commit (ל-squash and merge)
+
+אנחנו משתמשים בפורמט הבא להודעות commit:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: מציין את קטגוריית הקומיט. אנו משתמשים בסוגים הבאים:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+- **type**: מציין את קטגוריית ה-commit. אנחנו משתמשים בסוגים הבאים:
+  - `Docs`: לעדכוני תיעוד.
+  - `Build`: לשינויים שקשורים למערכת הבנייה או לתלויות, כולל עדכונים לקבצי קונפיגורציה, CI, או Dockerfile.
+  - `Core`: לשינויים בפונקציונליות הליבה של הפרויקט, במיוחד בקבצים שב-`src/co_op_translator/core`.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: סיכום קצר של השינוי.
+- **PR number**: מספר ה-Pull Request שקשור ל-commit.
 
-**Examples**:
+**דוגמאות**:
 
-- `Docs: Update installation instructions for clarity (#50)`
-- `Core: Improve handling of image translation (#60)`
+- `Docs: עדכון הוראות התקנה להבהרה (#50)`
+- `Core: שיפור טיפול בתרגום תמונות (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> כרגע, הקידומות **`Docs`**, **`Core`**, ו-**`Build`** מתווספות אוטומטית לכותרות PR לפי התוויות שמוחלות על קוד המקור ששונה. כל עוד התווית הנכונה מוחלת, בדרך כלל אין צורך לעדכן ידנית את כותרת ה-PR. רק צריך לוודא שהכול נכון והקידומת נוצרה כראוי.
 
-#### Merge strategy
+#### אסטרטגיית מיזוג
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+אנחנו משתמשים ב-**Squash and Merge** כאסטרטגיית ברירת מחדל ל-Pull Requests. אסטרטגיה זו מבטיחה שהודעות ה-commit יעקבו אחרי הפורמט שלנו, גם אם ה-commits הבודדים לא.
 
-**Reasons**:
+**סיבות**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- היסטוריה נקייה וליניארית של הפרויקט.
+- אחידות בהודעות commit.
+- פחות רעש מ-commits קטנים (למשל, "fix typo").
 
-When merging, ensure the final commit message follows the commit message format described above.
+בעת המיזוג, ודא שהודעת ה-commit הסופית עוקבת אחרי הפורמט שתואר למעלה.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**דוגמה ל-Squash and Merge**
+אם PR מכיל את ה-commits הבאים:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-They should be squashed into:
-`Docs: Improve documentation clarity and formatting (#65)`
+הם צריכים להתאחד ל:
+`Docs: שיפור בהירות התיעוד והעיצוב (#65)`
 
-**כתב ויתור**:  
-מסמך זה תורגם באמצעות שירות תרגום מבוסס בינה מלאכותית [Co-op Translator](https://github.com/Azure/co-op-translator). למרות שאנו שואפים לדיוק, יש להיות מודעים לכך שתירגומים אוטומטיים עלולים להכיל שגיאות או אי-דיוקים. המסמך המקורי בשפת המקור שלו הוא המקור הסמכותי. למידע קריטי מומלץ להשתמש בתרגום מקצועי של אדם. אנו לא נושאים באחריות לכל אי-הבנה או פרשנות שגויה הנובעת משימוש בתרגום זה.
+---
+
+**הצהרת אחריות**:  
+מסמך זה תורגם באמצעות שירות תרגום מבוסס בינה מלאכותית [Co-op Translator](https://github.com/Azure/co-op-translator). למרות שאנו שואפים לדיוק, יש לקחת בחשבון כי תרגומים אוטומטיים עשויים להכיל טעויות או אי-דיוקים. יש לראות במסמך המקורי בשפתו המקורית כמקור הסמכותי. למידע קריטי, מומלץ לפנות לתרגום מקצועי על ידי אדם. איננו אחראים לכל אי-הבנה או פירוש שגוי הנובעים מהשימוש בתרגום זה.

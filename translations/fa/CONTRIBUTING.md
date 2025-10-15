@@ -1,31 +1,31 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:25:53+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T02:19:37+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "fa"
 }
 -->
 # مشارکت در Co-op Translator
 
-این پروژه از مشارکت‌ها و پیشنهادات استقبال می‌کند. بیشتر مشارکت‌ها مستلزم موافقت شما با قرارداد مجوز مشارکت‌کننده (CLA) است که اعلام می‌کند شما حق دارید و واقعاً این حق را به ما می‌دهید که از مشارکت شما استفاده کنیم. برای جزئیات بیشتر به https://cla.opensource.microsoft.com مراجعه کنید.
+این پروژه از مشارکت‌ها و پیشنهادات استقبال می‌کند. اکثر مشارکت‌ها نیاز دارند که شما یک توافق‌نامه مجوز مشارکت‌کننده (CLA) را بپذیرید که اعلام می‌کند شما حق دارید و واقعاً به ما اجازه می‌دهید از مشارکت شما استفاده کنیم. برای جزئیات بیشتر به https://cla.opensource.microsoft.com مراجعه کنید.
 
-هنگامی که درخواست pull ارسال می‌کنید، ربات CLA به‌طور خودکار تعیین می‌کند که آیا نیاز به ارائه CLA دارید و درخواست را به‌طور مناسب علامت‌گذاری می‌کند (مثلاً بررسی وضعیت، نظر). کافی است دستورالعمل‌های ارائه‌شده توسط ربات را دنبال کنید. تنها یک بار برای همه مخازن استفاده‌کننده از CLA ما باید این کار را انجام دهید.
+وقتی یک Pull Request ارسال می‌کنید، یک ربات CLA به طور خودکار بررسی می‌کند که آیا نیاز به ارائه CLA دارید یا نه و PR را به طور مناسب نشانه‌گذاری می‌کند (مثلاً با وضعیت یا کامنت). کافی است دستورالعمل‌های ارائه‌شده توسط ربات را دنبال کنید. این کار را فقط یک بار برای همه مخازنی که از CLA ما استفاده می‌کنند باید انجام دهید.
 
 ## راه‌اندازی محیط توسعه
 
 برای راه‌اندازی محیط توسعه این پروژه، توصیه می‌کنیم از Poetry برای مدیریت وابستگی‌ها استفاده کنید. ما از `pyproject.toml` برای مدیریت وابستگی‌های پروژه استفاده می‌کنیم، بنابراین برای نصب وابستگی‌ها باید از Poetry استفاده کنید.
 
-### ایجاد محیط مجازی
+### ساخت محیط مجازی
 
-#### استفاده از pip
+#### با استفاده از pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### استفاده از Poetry
+#### با استفاده از Poetry
 
 ```bash
 poetry init
@@ -47,15 +47,15 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### استفاده از Poetry
+#### با استفاده از Poetry
 
 ```bash
 poetry shell
 ```
 
-### نصب بسته و بسته‌های مورد نیاز
+### نصب پکیج و پکیج‌های مورد نیاز
 
-#### استفاده از Poetry (از pyproject.toml)
+#### با استفاده از Poetry (از pyproject.toml)
 
 ```bash
 poetry install
@@ -65,75 +65,75 @@ poetry install
 
 قبل از ارسال PR، مهم است که عملکرد ترجمه را با مستندات واقعی تست کنید:
 
-1. یک دایرکتوری تست در دایرکتوری اصلی ایجاد کنید:
+1. یک پوشه تست در دایرکتوری اصلی بسازید:
     ```bash
     mkdir test_docs
     ```
 
-2. برخی از مستندات مارک‌داون و تصاویر مورد نظر برای ترجمه را در دایرکتوری تست کپی کنید. برای مثال:
+2. مقداری مستندات مارک‌داون و تصاویری که می‌خواهید ترجمه کنید را به پوشه تست کپی کنید. برای مثال:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. بسته را به صورت محلی نصب کنید:
+3. پکیج را به صورت محلی نصب کنید:
     ```bash
     pip install -e .
     ```
 
-4. Co-op Translator را روی مستندات تست خود اجرا کنید:
+4. Co-op Translator را روی اسناد تست خود اجرا کنید:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. فایل‌های ترجمه‌شده را در `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. فایل‌های ترجمه‌شده را در `test_docs/translations` و `test_docs/translated_images` بررسی کنید تا مطمئن شوید:
+   - کیفیت ترجمه مناسب است
+   - کامنت‌های متادیتا صحیح هستند
+   - ساختار اصلی مارک‌داون حفظ شده است
+   - لینک‌ها و تصاویر به درستی کار می‌کنند
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+این تست دستی کمک می‌کند مطمئن شوید تغییرات شما در شرایط واقعی به خوبی کار می‌کند.
 
-### Environment variables
+### متغیرهای محیطی
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template` بررسی کنید.
-1. متغیرهای محیطی را مطابق راهنمایی پر کنید.
+1. یک فایل `.env` در دایرکتوری اصلی با کپی کردن فایل `.env.template` بسازید.
+1. متغیرهای محیطی را طبق راهنما پر کنید.
 
 > [!TIP]
 >
-> ### گزینه‌های اضافی محیط توسعه
+> ### گزینه‌های اضافی برای محیط توسعه
 >
-> علاوه بر اجرای پروژه به‌صورت محلی، می‌توانید از GitHub Codespaces یا VS Code Dev Containers برای راه‌اندازی جایگزین محیط توسعه استفاده کنید.
+> علاوه بر اجرای پروژه به صورت محلی، می‌توانید از GitHub Codespaces یا VS Code Dev Containers برای راه‌اندازی محیط توسعه جایگزین استفاده کنید.
 >
 > #### GitHub Codespaces
 >
 > می‌توانید این نمونه‌ها را به صورت مجازی با استفاده از GitHub Codespaces اجرا کنید و نیازی به تنظیمات اضافی نیست.
 >
-> این دکمه یک نمونه VS Code مبتنی بر وب را در مرورگر شما باز می‌کند:
+> این دکمه یک VS Code مبتنی بر وب را در مرورگر شما باز می‌کند:
 >
 > 1. قالب را باز کنید (ممکن است چند دقیقه طول بکشد):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
 >
 > #### اجرای محلی با استفاده از VS Code Dev Containers
 >
-> ⚠️ این گزینه فقط در صورتی کار می‌کند که Docker Desktop شما حداقل ۱۶ گیگابایت رم اختصاص داده باشد. اگر کمتر از ۱۶ گیگابایت رم دارید، می‌توانید گزینه [GitHub Codespaces](../..) را امتحان کنید یا [به‌صورت محلی راه‌اندازی کنید](../..).
+> ⚠️ این گزینه فقط زمانی کار می‌کند که Docker Desktop شما حداقل ۱۶ گیگابایت رم داشته باشد. اگر کمتر از ۱۶ گیگابایت رم دارید، می‌توانید گزینه [GitHub Codespaces](../..) را امتحان کنید یا [به صورت محلی راه‌اندازی کنید](../..).
 >
-> گزینه مرتبط VS Code Dev Containers است که پروژه را در VS Code محلی شما با استفاده از [افزونه Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) باز می‌کند:
+> یک گزینه مرتبط VS Code Dev Containers است که پروژه را در VS Code محلی شما با استفاده از [افزونه Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) باز می‌کند:
 >
-> 1. Docker Desktop را راه‌اندازی کنید (اگر نصب نیست، نصب کنید)
+> 1. Docker Desktop را اجرا کنید (در صورت نیاز نصب کنید)
 > 2. پروژه را باز کنید:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
 
 
 ### سبک کدنویسی
 
-ما از [Black](https://github.com/psf/black) به عنوان فرمت‌کننده کد پایتون استفاده می‌کنیم تا سبک کد در سراسر پروژه یکدست بماند. Black یک فرمت‌کننده کد بدون مصالحه است که به‌طور خودکار کد پایتون را بازفرمت می‌کند تا با سبک کد Black هماهنگ شود.
+ما از [Black](https://github.com/psf/black) به عنوان فرمت‌کننده کد پایتون برای حفظ یکدستی سبک کد در پروژه استفاده می‌کنیم. Black یک فرمت‌کننده بی‌تعارف است که کد پایتون را به طور خودکار مطابق با سبک Black بازنویسی می‌کند.
 
 #### پیکربندی
 
-پیکربندی Black در `pyproject.toml` ما مشخص شده است:
+پیکربندی Black در فایل `pyproject.toml` ما مشخص شده است:
 
 ```toml
 [tool.black]
@@ -144,16 +144,16 @@ include = '\.pyi?$'
 
 #### نصب Black
 
-می‌توانید Black را با استفاده از Poetry (توصیه شده) یا pip نصب کنید:
+می‌توانید Black را با Poetry (توصیه‌شده) یا pip نصب کنید:
 
-##### استفاده از Poetry
+##### با استفاده از Poetry
 
-Black به‌صورت خودکار هنگام راه‌اندازی محیط توسعه نصب می‌شود:
+Black به طور خودکار هنگام راه‌اندازی محیط توسعه نصب می‌شود:
 ```bash
 poetry install
 ```
 
-##### استفاده از pip
+##### با استفاده از pip
 
 اگر از pip استفاده می‌کنید، می‌توانید Black را مستقیماً نصب کنید:
 ```bash
@@ -164,38 +164,38 @@ pip install black
 
 ##### با Poetry
 
-1. تمام فایل‌های پایتون پروژه را فرمت کنید:
+1. همه فایل‌های پایتون پروژه را فرمت کنید:
     ```bash
     poetry run black .
     ```
 
-2. یک فایل یا دایرکتوری خاص را فرمت کنید:
+2. یک فایل یا پوشه خاص را فرمت کنید:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
 ##### با pip
 
-1. تمام فایل‌های پایتون پروژه را فرمت کنید:
+1. همه فایل‌های پایتون پروژه را فرمت کنید:
     ```bash
     black .
     ```
 
-2. یک فایل یا دایرکتوری خاص را فرمت کنید:
+2. یک فایل یا پوشه خاص را فرمت کنید:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> توصیه می‌کنیم ویرایشگر خود را طوری تنظیم کنید که هنگام ذخیره به‌طور خودکار کد را با Black فرمت کند. بیشتر ویرایشگرهای مدرن این قابلیت را از طریق افزونه یا پلاگین پشتیبانی می‌کنند.
+> توصیه می‌کنیم ویرایشگر خود را طوری تنظیم کنید که هنگام ذخیره، کد را به طور خودکار با Black فرمت کند. اکثر ویرایشگرهای مدرن این قابلیت را از طریق افزونه‌ها دارند.
 
 ## اجرای Co-op Translator
 
-برای اجرای Co-op Translator با استفاده از Poetry در محیط خود، مراحل زیر را دنبال کنید:
+برای اجرای Co-op Translator با Poetry در محیط خود، مراحل زیر را دنبال کنید:
 
-1. به دایرکتوری‌ای بروید که می‌خواهید تست‌های ترجمه را در آن انجام دهید یا یک پوشه موقت برای تست بسازید.
+1. به دایرکتوری‌ای بروید که می‌خواهید تست ترجمه انجام دهید یا یک پوشه موقت برای تست بسازید.
 
-2. دستور زیر را اجرا کنید. پرچم `-l ko` with the language code you wish to translate into. The `-d` حالت اشکال‌زدایی را نشان می‌دهد.
+2. دستور زیر را اجرا کنید. `-l ko` را با کد زبان مورد نظر خود جایگزین کنید. فلگ `-d` حالت دیباگ را فعال می‌کند.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -204,59 +204,99 @@ pip install black
 > [!NOTE]
 > مطمئن شوید محیط Poetry شما فعال است (poetry shell) قبل از اجرای دستور.
 
+## افزودن زبان جدید
+
+ما از مشارکت‌هایی که پشتیبانی از زبان‌های جدید را اضافه می‌کنند استقبال می‌کنیم. قبل از باز کردن PR، لطفاً مراحل زیر را کامل کنید تا بازبینی راحت‌تر انجام شود.
+
+1. افزودن زبان به نگاشت فونت‌ها
+   - فایل `src/co_op_translator/fonts/font_language_mappings.yml` را ویرایش کنید
+   - یک ورودی با این موارد اضافه کنید:
+     - `code`: کد زبان مشابه ISO (مثلاً `vi`)
+     - `name`: نام نمایشی قابل فهم برای انسان
+     - `font`: فونتی که در `src/co_op_translator/fonts/` وجود دارد و از اسکریپت پشتیبانی می‌کند
+     - `rtl`: اگر راست به چپ است `true`، در غیر این صورت `false`
+
+2. افزودن فایل‌های فونت مورد نیاز (در صورت نیاز)
+   - اگر فونت جدیدی لازم است، سازگاری مجوز آن برای توزیع متن‌باز را بررسی کنید
+   - فایل فونت را به `src/co_op_translator/fonts/` اضافه کنید
+
+3. بررسی محلی
+   - ترجمه را برای یک نمونه کوچک (مارک‌داون، تصاویر و نوت‌بوک‌ها در صورت نیاز) اجرا کنید
+   - مطمئن شوید خروجی به درستی نمایش داده می‌شود، از جمله فونت و هرگونه چیدمان RTL در صورت نیاز
+
+4. به‌روزرسانی مستندات
+   - مطمئن شوید زبان در `getting_started/supported-languages.md` آمده است
+   - نیازی به تغییر `README_languages_template.md` نیست؛ این فایل از لیست پشتیبانی‌شده تولید می‌شود
+
+5. باز کردن PR
+   - زبان اضافه‌شده و هرگونه ملاحظات مربوط به فونت/مجوز را توضیح دهید
+   - در صورت امکان اسکرین‌شات خروجی‌های رندرشده را ضمیمه کنید
+
+نمونه ورودی YAML:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
 ## نگهدارندگان
 
-### پیام کامیت و استراتژی ادغام
+### فرمت پیام کامیت و استراتژی ادغام
 
-برای اطمینان از ثبات و وضوح در تاریخچه کامیت پروژه، ما از قالب خاصی برای پیام کامیت **کامیت نهایی** هنگام استفاده از استراتژی **Squash and Merge** پیروی می‌کنیم.
+برای اطمینان از یکدستی و شفافیت در تاریخچه کامیت‌های پروژه، ما از یک فرمت خاص برای پیام کامیت **در پیام نهایی کامیت** هنگام استفاده از استراتژی **Squash and Merge** پیروی می‌کنیم.
 
-وقتی یک pull request (PR) ادغام می‌شود، کامیت‌های جداگانه به یک کامیت واحد فشرده می‌شوند. پیام کامیت نهایی باید قالب زیر را داشته باشد تا تاریخچه‌ای تمیز و منسجم حفظ شود.
+وقتی یک Pull Request (PR) ادغام می‌شود، کامیت‌های جداگانه در یک کامیت ادغام می‌شوند. پیام نهایی کامیت باید مطابق فرمت زیر باشد تا تاریخچه تمیز و یکدست بماند.
 
-#### قالب پیام کامیت (برای squash and merge)
+#### فرمت پیام کامیت (برای squash and merge)
 
-ما از قالب زیر برای پیام‌های کامیت استفاده می‌کنیم:
+ما از فرمت زیر برای پیام‌های کامیت استفاده می‌کنیم:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: دسته‌بندی کامیت را مشخص می‌کند. ما از انواع زیر استفاده می‌کنیم:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+- **type**: دسته‌بندی کامیت را مشخص می‌کند. ما از این دسته‌ها استفاده می‌کنیم:
+  - `Docs`: برای به‌روزرسانی مستندات.
+  - `Build`: برای تغییرات مربوط به سیستم ساخت یا وابستگی‌ها، شامل به‌روزرسانی فایل‌های پیکربندی، CI، یا Dockerfile.
+  - `Core`: برای تغییرات در عملکرد اصلی پروژه یا ویژگی‌ها، به ویژه فایل‌های موجود در دایرکتوری `src/co_op_translator/core`.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: خلاصه‌ای کوتاه از تغییر.
+- **PR number**: شماره Pull Request مرتبط با کامیت.
 
-**Examples**:
+**نمونه‌ها**:
 
 - `Docs: Update installation instructions for clarity (#50)`
 - `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> در حال حاضر، پیشوندهای **`Docs`**، **`Core`** و **`Build`** به طور خودکار بر اساس برچسب‌های اعمال‌شده روی کد منبع به عناوین PR اضافه می‌شوند. تا زمانی که برچسب صحیح اعمال شده باشد، معمولاً نیازی به تغییر دستی عنوان PR ندارید. فقط کافی است بررسی کنید که همه چیز درست است و پیشوند به درستی تولید شده است.
 
-#### Merge strategy
+#### استراتژی ادغام
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+ما از **Squash and Merge** به عنوان استراتژی پیش‌فرض برای Pull Requestها استفاده می‌کنیم. این استراتژی تضمین می‌کند که پیام‌های کامیت مطابق فرمت ما باشند، حتی اگر کامیت‌های جداگانه اینطور نباشند.
 
-**Reasons**:
+**دلایل**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- تاریخچه پروژه تمیز و خطی می‌ماند.
+- یکدستی در پیام‌های کامیت.
+- کاهش نویز ناشی از کامیت‌های جزئی (مثلاً "fix typo").
 
-When merging, ensure the final commit message follows the commit message format described above.
+هنگام ادغام، مطمئن شوید پیام نهایی کامیت مطابق فرمت توضیح داده‌شده باشد.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**نمونه Squash and Merge**
+اگر یک PR شامل کامیت‌های زیر باشد:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-They should be squashed into:
+باید به این صورت ادغام شوند:
 `Docs: Improve documentation clarity and formatting (#65)`
 
-**سلب مسئولیت**:  
-این سند با استفاده از سرویس ترجمه ماشینی [Co-op Translator](https://github.com/Azure/co-op-translator) ترجمه شده است. در حالی که ما در تلاش برای دقت هستیم، لطفاً توجه داشته باشید که ترجمه‌های خودکار ممکن است شامل خطاها یا نادرستی‌هایی باشند. سند اصلی به زبان بومی آن باید به عنوان منبع معتبر در نظر گرفته شود. برای اطلاعات حیاتی، توصیه می‌شود از ترجمه حرفه‌ای انسانی استفاده شود. ما مسئول هیچ گونه سوءتفاهم یا تفسیر نادرستی که ناشی از استفاده از این ترجمه باشد، نیستیم.
+---
+
+**سلب مسئولیت**:
+این سند با استفاده از سرویس ترجمه هوش مصنوعی [Co-op Translator](https://github.com/Azure/co-op-translator) ترجمه شده است. اگرچه ما برای دقت تلاش می‌کنیم، لطفاً توجه داشته باشید که ترجمه‌های خودکار ممکن است شامل خطا یا نادقتی باشند. نسخه اصلی سند به زبان مادری آن باید به عنوان منبع معتبر در نظر گرفته شود. برای اطلاعات حساس، ترجمه انسانی حرفه‌ای توصیه می‌شود. ما هیچ مسئولیتی در قبال سوءتفاهم یا تفسیر نادرست ناشی از استفاده از این ترجمه نداریم.

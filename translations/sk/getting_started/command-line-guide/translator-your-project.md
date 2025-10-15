@@ -1,42 +1,42 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:55:09+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T03:55:41+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "sk"
 }
 -->
 # Preložte svoj projekt pomocou Co-op Translator
 
-**Co-op Translator** je nástroj s príkazovým riadkom (CLI), ktorý vám pomôže preložiť markdown a obrázkové súbory vo vašom projekte do viacerých jazykov. Táto časť vysvetľuje, ako nástroj používať, popisuje rôzne možnosti CLI a poskytuje príklady pre rôzne použitia.
+**Co-op Translator** je nástroj s príkazovým riadkom (CLI), ktorý vám pomôže preložiť markdown a obrazové súbory vo vašom projekte do viacerých jazykov. Táto sekcia vysvetľuje, ako nástroj používať, popisuje rôzne možnosti CLI a uvádza príklady pre rôzne situácie.
 
 > [!NOTE]
-> Pre kompletný zoznam príkazov a ich podrobný popis si pozrite [Command reference](./command-reference.md).
+> Kompletný zoznam príkazov a ich podrobné popisy nájdete v [Referencii príkazov](./command-reference.md).
 
 ---
 
 ## Príkladové scenáre a príkazy
 
-Tu je niekoľko bežných prípadov použitia **Co-op Translator** spolu s vhodnými príkazmi.
+Tu je niekoľko bežných spôsobov použitia **Co-op Translator** spolu s vhodnými príkazmi.
 
 ### 1. Základný preklad (jeden jazyk)
 
-Ak chcete preložiť celý projekt (markdown súbory a obrázky) do jedného jazyka, napríklad kórejčiny, použite nasledujúci príkaz:
+Ak chcete preložiť celý projekt (markdown súbory a obrázky) do jedného jazyka, napríklad kórejčiny, použite tento príkaz:
 
 ```bash
 translate -l "ko"
 ```
 
-Tento príkaz preloží všetky markdown a obrázkové súbory do kórejčiny a pridá nové preklady bez odstránenia existujúcich.
+Tento príkaz preloží všetky markdown a obrazové súbory do kórejčiny, pričom pridá nové preklady bez vymazania existujúcich.
 
 > [!TIP]
 >
-> Chcete vedieť, ktoré jazykové kódy sú dostupné v **Co-op Translator**? Navštívte sekciu [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) v repozitári pre viac informácií.
+> Chcete zistiť, aké jazykové kódy sú dostupné v **Co-op Translator**? Pozrite si sekciu [Podporované jazyky](https://github.com/Azure/co-op-translator#supported-languages) v repozitári pre viac informácií.
 
 #### Príklad na Phi-3 CookBook
 
-V **Phi-3 CookBook** som použil nasledujúci spôsob na pridanie kórejského prekladu pre existujúce markdown súbory a obrázky.
+V **Phi-3 CookBook** som použil nasledujúci postup na pridanie kórejského prekladu existujúcich markdown súborov a obrázkov.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -56,7 +56,7 @@ Tento príkaz preloží projekt do španielčiny, francúzštiny a nemčiny, pri
 
 #### Príklad na Phi-3 CookBook
 
-V **Phi-3 CookBook**, po stiahnutí najnovších zmien, aby sa zohľadnili posledné commity, som použil nasledujúci spôsob na preklad novo pridaných markdown súborov a obrázkov.
+V **Phi-3 CookBook** som po stiahnutí najnovších zmien, aby sa zohľadnili posledné commity, použil tento postup na preklad novo pridaných markdown súborov a obrázkov.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,31 +65,40 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Aj keď sa všeobecne odporúča prekladať jeden jazyk naraz, v situáciách, kde je potrebné pridať konkrétne zmeny, môže byť efektívnejšie prekladať viaceré jazyky naraz.
+> Vo všeobecnosti sa odporúča prekladať jeden jazyk naraz, ale v situáciách, keď je potrebné pridať konkrétne zmeny, môže byť efektívne prekladať viac jazykov naraz.
 
 ### 3. Aktualizácia prekladov (vymaže existujúce preklady)
 
-Ak chcete aktualizovať existujúce preklady (t. j. vymazať súčasné preklady a nahradiť ich novými), použite možnosť `-u`. Táto možnosť vymaže všetky existujúce preklady pre zvolené jazyky a znovu ich preloží.
+Ak chcete aktualizovať existujúce preklady (t.j. vymazať aktuálne preklady a nahradiť ich novými), použite možnosť `-u`. Táto voľba vymaže všetky existujúce preklady pre zvolené jazyky a preloží ich nanovo.
 
 ```bash
 translate -l "ko" -u
 ```
 
-Upozornenie: Tento príkaz vás pred vymazaním existujúcich prekladov vyzve na potvrdenie.
+Upozornenie: Tento príkaz vás pred pokračovaním vyzve na potvrdenie vymazania existujúcich prekladov.
 
 #### Príklad na Phi-3 CookBook
 
-V **Phi-3 CookBook** som použil tento spôsob na aktualizáciu všetkých preložených súborov v španielčine. Odporúčam použiť túto metódu, keď sú výrazné zmeny v pôvodnom obsahu viacerých markdown dokumentov. Ak je potrebné aktualizovať len niekoľko preložených markdown súborov, je efektívnejšie tieto súbory manuálne vymazať a potom použiť metódu `-a` na pridanie aktualizovaných prekladov.
+V **Phi-3 CookBook** som použil tento postup na aktualizáciu všetkých preložených súborov v španielčine. Odporúčam tento spôsob, ak došlo k výrazným zmenám v pôvodnom obsahu vo viacerých markdown dokumentoch. Ak je potrebné aktualizovať len niekoľko preložených markdown súborov, je efektívnejšie tieto konkrétne súbory manuálne vymazať a potom použiť metódu `-a` na pridanie aktualizovaných prekladov.
+
+```bash
+(.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
+Warning: The update command will delete all existing translations for 'es' and re-translate everything.
+Do you want to continue? Type 'yes' to proceed: yes
+Proceeding with update...
+Translating images: 100%|████████████████████████████████████████████| 150/150 [43:46<00:00, 15.55s/it]
+Translating markdown files: 100%|███████████████████████████████████| 95/95 [1:40:27<00:00, 125.62s/it]
+```
 
 ### 5. Preklad iba obrázkov
 
-Ak chcete preložiť iba obrázkové súbory vo vašom projekte, použite možnosť `-img`:
+Ak chcete preložiť iba obrazové súbory vo vašom projekte, použite možnosť `-img`:
 
 ```bash
 translate -l "ko" -img
 ```
 
-Tento príkaz preloží iba obrázky do kórejčiny bez zásahu do markdown súborov.
+Tento príkaz preloží iba obrázky do kórejčiny bez ovplyvnenia markdown súborov.
 
 ### 6. Preklad iba markdown súborov
 
@@ -99,19 +108,9 @@ Ak chcete preložiť iba markdown súbory vo vašom projekte, použite možnosť
 translate -l "ko" -md
 ```
 
-### 7. Kontrola chýb v preložených súboroch
-
-Ak chcete skontrolovať preložené súbory na chyby a v prípade potreby preklad zopakovať, použite možnosť `-chk`:
-
-```bash
-translate -l "ko" -chk
-```
-
-Tento príkaz prehľadá preložené markdown súbory a v prípade chýb v preklade ich automaticky znova preloží.
-
 #### Príklad na Phi-3 CookBook
 
-V **Phi-3 CookBook** som použil tento spôsob na kontrolu chýb v kórejských prekladoch a automatické opakovanie prekladu pre súbory s detegovanými problémami.
+V **Phi-3 CookBook** som použil tento postup na kontrolu chýb v preklade kórejských súborov a automatické opätovné preloženie súborov, kde boli zistené problémy.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -120,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Táto možnosť kontroluje chyby v preklade. Momentálne, ak je rozdiel v počte zalomení riadkov medzi originálnym a preloženým súborom väčší ako šesť, súbor je označený ako chybný preklad. Plánujem tento kritérium v budúcnosti zlepšiť pre väčšiu flexibilitu.
+Táto voľba kontroluje chyby v preklade. Momentálne, ak je rozdiel v počte zalomení riadkov medzi originálom a prekladom väčší ako šesť, súbor je označený ako chybný preklad. Plánujem toto kritérium v budúcnosti upraviť pre väčšiu flexibilitu.
 
-Napríklad táto metóda je užitočná na detekciu chýbajúcich častí alebo poškodených prekladov a automaticky zopakuje preklad týchto súborov.
+Tento spôsob je užitočný na odhalenie chýbajúcich častí alebo poškodených prekladov a automaticky opätovne preloží tieto súbory.
 
-Ak však už viete, ktoré súbory sú problémové, je efektívnejšie tieto súbory manuálne vymazať a použiť možnosť `-a` option to re-translate them.
+Ak však už viete, ktoré súbory sú problematické, je efektívnejšie ich manuálne vymazať a použiť možnosť `-a` na ich opätovný preklad.
 
-### 8. Debug Mode
+### 8. Režim ladenia (Debug Mode)
 
-To enable detailed logging for troubleshooting, use the `-d`:
+Ak chcete zapnúť podrobné logovanie pre účely diagnostiky, použite možnosť `-d`:
 
 ```bash
 translate -l "ko" -d
 ```
 
-Tento príkaz spustí preklad v debug móde, ktorý poskytuje ďalšie logovacie informácie, ktoré vám môžu pomôcť identifikovať problémy počas prekladu.
+Tento príkaz spustí preklad v debug režime a poskytne podrobnejšie informácie o priebehu, ktoré vám môžu pomôcť identifikovať problémy počas prekladu.
 
 #### Príklad na Phi-3 CookBook
 
-V **Phi-3 CookBook** som narazil na problém, kde preklady s mnohými odkazmi v markdown súboroch spôsobovali chyby formátovania, ako sú poškodené preklady a ignorované zalomenia riadkov. Na diagnostiku tohto problému som použil možnosť `-d`, aby som videl, ako prekladový proces funguje.
+V **Phi-3 CookBook** som narazil na problém, kde preklady s veľkým počtom odkazov v markdown súboroch spôsobovali chyby vo formátovaní, napríklad rozbité preklady a ignorované zalomenia riadkov. Na diagnostiku som použil možnosť `-d`, aby som videl, ako preklad prebieha.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -151,30 +150,30 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 Ak chcete preložiť projekt do všetkých podporovaných jazykov, použite kľúčové slovo all.
 
 > [!WARNING]
-> Preklad všetkých jazykov naraz môže trvať výrazne dlho v závislosti od veľkosti projektu. Napríklad preklad **Phi-3 CookBook** do španielčiny trval približne 2 hodiny. Vzhľadom na rozsah nie je praktické, aby jedna osoba spravovala 20 jazykov. Odporúča sa rozdeliť prácu medzi viacerých prispievateľov, pričom každý spravuje jeden alebo dva jazyky a preklady sa aktualizujú postupne.
+> Preklad do všetkých jazykov naraz môže trvať veľmi dlho v závislosti od veľkosti projektu. Napríklad preklad **Phi-3 CookBook** do španielčiny trval asi 2 hodiny. Pri takomto rozsahu nie je praktické, aby jeden človek spravoval 20 jazykov. Odporúča sa rozdeliť prácu medzi viacerých prispievateľov, pričom každý spravuje jeden alebo dva jazyky, a preklady aktualizovať postupne.
 
 ```bash
 translate -l "all"
 ```
 
-Tento príkaz preloží projekt do všetkých dostupných jazykov. Ak budete pokračovať, preklad môže trvať výrazne dlho v závislosti od veľkosti projektu.
+Tento príkaz preloží projekt do všetkých dostupných jazykov. Ak budete pokračovať, preklad môže trvať dlho v závislosti od veľkosti projektu.
 
 > [!TIP]
 >
 > ### Manuálne vymazanie preložených súborov (voliteľné)
-> Preložené súbory sú teraz automaticky detegované a vyčistené pri aktualizácii zdrojového súboru.
+> Preložené súbory sa teraz automaticky detegujú a čistia, keď sa zdrojový súbor aktualizuje.
 >
-> Ak však chcete manuálne aktualizovať preklad – napríklad znovu preložiť konkrétny súbor alebo prepísať správanie systému – môžete použiť nasledujúci príkaz na vymazanie všetkých verzií súboru vo všetkých jazykových priečinkoch.
+> Ak však chcete manuálne aktualizovať preklad – napríklad opätovne preložiť konkrétny súbor alebo prepísať systémové správanie – môžete použiť nasledujúci príkaz na vymazanie všetkých verzií súboru vo všetkých jazykových priečinkoch.
 >
-> ### Na Windows:
+> ### Vo Windows:
 > 1. **Použitie Command Prompt**:
 >    - Otvorte Command Prompt.
->    - Pomocou príkazu `cd` prejdite do priečinka, kde sa súbory nachádzajú.
+>    - Prejdite do priečinka, kde sa súbory nachádzajú, pomocou príkazu `cd`.
 >    - Použite nasledujúci príkaz na vymazanie súborov:
 >      ```
 >      del /s *filename*
 >      ```
->      Voľba `/s` vyhľadáva aj v podpriečinkoch.
+>      Nahraďte `filename` konkrétnou časťou názvu súboru, ktorú hľadáte. Voľba `/s` prehľadáva aj podpriečinky.
 >
 > 2. **Použitie PowerShell**:
 >    - Otvorte PowerShell.
@@ -182,21 +181,23 @@ Tento príkaz preloží projekt do všetkých dostupných jazykov. Ak budete pok
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      Nahraďte `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>      Nahraďte `"C:\YourPath"` cestou k priečinku a `filename` konkrétnym názvom.
 >
-> ### On macOS/Linux:
-> 1. **Using Terminal**:
->   - Open Terminal.
->   - Navigate to the directory with `cd`.
->   - Use the `find` príkazom:
+> ### Na macOS/Linux:
+> 1. **Použitie Terminálu**:
+>   - Otvorte Terminál.
+>   - Prejdite do adresára pomocou `cd`.
+>   - Použite príkaz `find`:
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->     Nahraďte `filename` with the specific name.
+>     Nahraďte `filename` konkrétnym názvom.
 >
-> Always double-check the files before deleting to avoid accidental loss. 
+> Vždy si pred vymazaním súborov skontrolujte, čo mažete, aby ste predišli nechceným stratám.
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` príkazom na aktualizáciu najnovších zmien súborov.
+> Po vymazaní súborov, ktoré chcete nahradiť, jednoducho znova spustite príkaz `translate -l`, aby ste aktualizovali najnovšie zmeny súborov.
 
-**Vyhlásenie o zodpovednosti**:  
-Tento dokument bol preložený pomocou AI prekladateľskej služby [Co-op Translator](https://github.com/Azure/co-op-translator). Aj keď sa snažíme o presnosť, majte prosím na pamäti, že automatické preklady môžu obsahovať chyby alebo nepresnosti. Originálny dokument v jeho pôvodnom jazyku by mal byť považovaný za autoritatívny zdroj. Pre dôležité informácie sa odporúča profesionálny ľudský preklad. Nezodpovedáme za akékoľvek nedorozumenia alebo nesprávne interpretácie vyplývajúce z použitia tohto prekladu.
+---
+
+**Vyhlásenie o vylúčení zodpovednosti**:
+Tento dokument bol preložený pomocou AI prekladovej služby [Co-op Translator](https://github.com/Azure/co-op-translator). Hoci sa snažíme o presnosť, upozorňujeme, že automatizované preklady môžu obsahovať chyby alebo nepresnosti. Za autoritatívny zdroj sa považuje pôvodný dokument v jeho pôvodnom jazyku. Pre kritické informácie odporúčame profesionálny ľudský preklad. Nenesieme zodpovednosť za akékoľvek nedorozumenia alebo nesprávne interpretácie vzniknuté použitím tohto prekladu.

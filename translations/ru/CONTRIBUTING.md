@@ -1,31 +1,31 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:25:07+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T02:14:27+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "ru"
 }
 -->
 # Вклад в Co-op Translator
 
-Этот проект приветствует вклад и предложения. Большинство вкладов требуют вашего согласия с Contributor License Agreement (CLA), в котором вы подтверждаете, что имеете право и действительно предоставляете нам права на использование вашего вклада. Для подробностей посетите https://cla.opensource.microsoft.com.
+Этот проект открыт для ваших вкладов и предложений. Для большинства вкладов потребуется согласиться с Contributor License Agreement (CLA), подтверждающим, что вы имеете право предоставлять нам права на использование вашего вклада. Подробнее: https://cla.opensource.microsoft.com.
 
-При отправке pull request, бот CLA автоматически определит, нужно ли вам предоставить CLA, и отметит PR соответствующим образом (например, проверкой статуса или комментарием). Просто следуйте инструкциям бота. Это нужно сделать только один раз для всех репозиториев, использующих наш CLA.
+Когда вы отправляете pull request, бот CLA автоматически определит, нужно ли вам подписать CLA, и отметит PR соответствующим образом (например, статус-проверка, комментарий). Просто следуйте инструкциям бота. Это потребуется сделать только один раз для всех репозиториев, использующих наш CLA.
 
 ## Настройка среды разработки
 
-Для настройки среды разработки этого проекта мы рекомендуем использовать Poetry для управления зависимостями. Мы используем `pyproject.toml` для управления зависимостями проекта, поэтому для установки зависимостей следует использовать Poetry.
+Для работы над проектом мы рекомендуем использовать Poetry для управления зависимостями. Мы используем `pyproject.toml` для управления зависимостями, поэтому для их установки используйте Poetry.
 
 ### Создание виртуального окружения
 
-#### С помощью pip
+#### Через pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### С помощью Poetry
+#### Через Poetry
 
 ```bash
 poetry init
@@ -47,7 +47,7 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### С помощью Poetry
+#### Через Poetry
 
 ```bash
 poetry shell
@@ -55,7 +55,7 @@ poetry shell
 
 ### Установка пакета и необходимых зависимостей
 
-#### С помощью Poetry (из pyproject.toml)
+#### Через Poetry (из pyproject.toml)
 
 ```bash
 poetry install
@@ -63,14 +63,14 @@ poetry install
 
 ### Ручное тестирование
 
-Перед отправкой PR важно протестировать функциональность перевода на реальной документации:
+Перед отправкой PR важно протестировать функцию перевода на реальной документации:
 
-1. Создайте папку test в корневом каталоге:
+1. Создайте тестовую папку в корне проекта:
     ```bash
     mkdir test_docs
     ```
 
-2. Скопируйте в папку test markdown-документацию и изображения, которые хотите перевести. Например:
+2. Скопируйте туда несколько markdown-документов и изображений, которые хотите перевести. Например:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -81,59 +81,58 @@ poetry install
     pip install -e .
     ```
 
-4. Запустите Co-op Translator для ваших тестовых документов:
+4. Запустите Co-op Translator на ваших тестовых документах:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Проверьте переведённые файлы в `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. Проверьте переведённые файлы в `test_docs/translations` и `test_docs/translated_images`, чтобы убедиться:
+   - В качестве перевода
+   - В корректности метаданных в комментариях
+   - В сохранении исходной структуры markdown
+   - В работоспособности ссылок и изображений
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+Такое ручное тестирование помогает убедиться, что ваши изменения хорошо работают в реальных условиях.
 
-### Environment variables
+### Переменные окружения
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template`.
-1. Заполните переменные окружения согласно инструкциям.
+1. Создайте файл `.env` в корне проекта, скопировав шаблон `.env.template`.
+1. Заполните переменные окружения согласно инструкции.
 
 > [!TIP]
 >
-> ### Дополнительные варианты настройки среды разработки
+> ### Дополнительные варианты среды разработки
 >
-> Помимо локального запуска проекта, вы можете использовать GitHub Codespaces или VS Code Dev Containers для альтернативной настройки среды разработки.
+> Помимо локального запуска, вы можете использовать GitHub Codespaces или VS Code Dev Containers для альтернативной настройки среды разработки.
 >
 > #### GitHub Codespaces
 >
-> Вы можете запускать эти примеры виртуально с помощью GitHub Codespaces без дополнительной настройки.
+> Вы можете запускать примеры виртуально через GitHub Codespaces без дополнительной настройки.
 >
-> Кнопка откроет веб-версию VS Code в вашем браузере:
+> Кнопка откроет веб-версию VS Code прямо в браузере:
 >
 > 1. Откройте шаблон (это может занять несколько минут):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Открыть в GitHub Codespaces"></a>
 >
-> #### Локальный запуск с использованием VS Code Dev Containers
+> #### Локальный запуск через VS Code Dev Containers
 >
-> ⚠️ Этот вариант работает только если в Docker Desktop выделено минимум 16 ГБ оперативной памяти. Если у вас меньше 16 ГБ, попробуйте вариант с [GitHub Codespaces](../..) или [настройте локально](../..).
+> ⚠️ Этот вариант работает только если Docker Desktop выделено минимум 16 ГБ оперативной памяти. Если у вас меньше, попробуйте [GitHub Codespaces](../..) или [локальную настройку](../..).
 >
-> Связанный вариант — VS Code Dev Containers, который откроет проект в вашем локальном VS Code с помощью [расширения Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Похожий вариант — VS Code Dev Containers, который откроет проект в вашем локальном VS Code с помощью [расширения Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Запустите Docker Desktop (установите, если ещё не установлен)
+> 1. Запустите Docker Desktop (установите, если не установлен)
 > 2. Откройте проект:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
-
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Открыть в Dev Containers"></a>
 
 ### Стиль кода
 
-Мы используем [Black](https://github.com/psf/black) в качестве форматтера кода Python для поддержания единообразного стиля кода по всему проекту. Black — это строгий форматтер, который автоматически форматирует Python-код в соответствии с принятым стилем Black.
+Мы используем [Black](https://github.com/psf/black) как форматтер Python-кода для единообразия стиля во всём проекте. Black — это строгий форматтер, который автоматически приводит код к стандарту Black.
 
 #### Конфигурация
 
-Конфигурация Black указана в нашем `pyproject.toml`:
+Настройки Black указаны в нашем `pyproject.toml`:
 
 ```toml
 [tool.black]
@@ -144,18 +143,18 @@ include = '\.pyi?$'
 
 #### Установка Black
 
-Вы можете установить Black с помощью Poetry (рекомендуется) или pip:
+Установить Black можно через Poetry (рекомендуется) или pip:
 
-##### С помощью Poetry
+##### Через Poetry
 
 Black устанавливается автоматически при настройке среды разработки:
 ```bash
 poetry install
 ```
 
-##### С помощью pip
+##### Через pip
 
-Если вы используете pip, можно установить Black напрямую:
+Если используете pip, установите Black напрямую:
 ```bash
 pip install black
 ```
@@ -187,76 +186,116 @@ pip install black
     ```
 
 > [!TIP]
-> Рекомендуем настроить ваш редактор на автоматическое форматирование кода с помощью Black при сохранении. Большинство современных редакторов поддерживают это через расширения или плагины.
+> Рекомендуем настроить ваш редактор на автоматическое форматирование кода Black при сохранении. Большинство современных редакторов поддерживают это через расширения или плагины.
 
 ## Запуск Co-op Translator
 
-Чтобы запустить Co-op Translator с помощью Poetry в вашей среде, выполните следующие шаги:
+Чтобы запустить Co-op Translator через Poetry в вашей среде, выполните следующие шаги:
 
 1. Перейдите в папку, где хотите провести тесты перевода, или создайте временную папку для тестирования.
 
-2. Выполните следующую команду. Флаг `-l ko` with the language code you wish to translate into. The `-d` означает режим отладки.
+2. Выполните следующую команду. Замените `-l ko` на нужный вам языковой код. Флаг `-d` включает режим отладки.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Убедитесь, что среда Poetry активирована (poetry shell) перед запуском команды.
+> Перед запуском убедитесь, что среда Poetry активирована (poetry shell).
 
-## Поддерживающие проект
+## Добавление нового языка
 
-### Формат сообщений коммитов и стратегия слияния
+Мы приветствуем вклад, расширяющий поддержку новых языков. Перед созданием PR выполните следующие шаги для ускорения проверки.
 
-Для обеспечения последовательности и ясности истории коммитов в нашем проекте мы используем определённый формат сообщений коммитов **для итогового сообщения коммита** при использовании стратегии **Squash and Merge**.
+1. Добавьте язык в сопоставление шрифтов
+   - Отредактируйте `src/co_op_translator/fonts/font_language_mappings.yml`
+   - Добавьте запись с:
+     - `code`: Языковой код в стиле ISO (например, `vi`)
+     - `name`: Человеко-понятное название
+     - `font`: Шрифт из `src/co_op_translator/fonts/`, поддерживающий нужный алфавит
+     - `rtl`: `true` для письма справа налево, иначе `false`
 
-При слиянии pull request (PR) все отдельные коммиты объединяются в один. Итоговое сообщение коммита должно иметь следующий формат для поддержания чистой и понятной истории.
+2. Добавьте необходимые файлы шрифтов (если нужно)
+   - Если требуется новый шрифт, проверьте лицензию на совместимость с open source
+   - Добавьте файл шрифта в `src/co_op_translator/fonts/`
+
+3. Локальная проверка
+   - Запустите перевод на небольшом примере (Markdown, изображения, ноутбуки — по необходимости)
+   - Проверьте корректность вывода, включая шрифты и RTL-верстку, если применимо
+
+4. Обновите документацию
+   - Убедитесь, что язык появился в `getting_started/supported-languages.md`
+   - В `README_languages_template.md` ничего менять не нужно — он генерируется из списка поддерживаемых языков
+
+5. Создайте PR
+   - Опишите добавленный язык и вопросы по шрифту/лицензии
+   - Приложите скриншоты результата, если возможно
+
+Пример YAML-записи:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
+## Мейнтейнеры
+
+### Формат коммитов и стратегия слияния
+
+Для единообразия и понятности истории коммитов мы используем определённый формат **итогового коммита** при стратегии **Squash and Merge**.
+
+Когда PR сливается, отдельные коммиты объединяются в один. Итоговое сообщение коммита должно соответствовать формату ниже для чистой и понятной истории.
 
 #### Формат сообщения коммита (для squash and merge)
 
-Мы используем следующий формат сообщений коммитов:
+Используем такой формат:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: указывает категорию коммита. Мы используем следующие типы:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+- **type**: Категория коммита. Используем такие типы:
+  - `Docs`: Обновления документации.
+  - `Build`: Изменения, связанные со сборкой или зависимостями, включая конфигурационные файлы, CI, Dockerfile.
+  - `Core`: Изменения основной функциональности или фич, особенно в `src/co_op_translator/core`.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: Краткое описание изменений.
+- **PR number**: Номер pull request, связанного с коммитом.
 
-**Examples**:
+**Примеры**:
 
-- `Docs: Обновление инструкции по установке для ясности (#50)`
-- `Core: Улучшение обработки перевода изображений (#60)`
+- `Docs: Обновить инструкции по установке для ясности (#50)`
+- `Core: Улучшить обработку перевода изображений (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> В настоящее время префиксы **`Docs`**, **`Core`** и **`Build`** автоматически добавляются к заголовкам PR на основе меток, применённых к изменённому исходному коду. Если метка выбрана правильно, обычно не нужно вручную менять заголовок PR — просто проверьте, что всё корректно и префикс сгенерирован верно.
 
-#### Merge strategy
+#### Стратегия слияния
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+Мы используем **Squash and Merge** как основную стратегию для pull request. Это гарантирует, что сообщения коммитов соответствуют нашему формату, даже если отдельные коммиты — нет.
 
-**Reasons**:
+**Причины**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- Чистая, линейная история проекта.
+- Единообразие сообщений коммитов.
+- Меньше "шума" от мелких коммитов (например, "fix typo").
 
-When merging, ensure the final commit message follows the commit message format described above.
+При слиянии убедитесь, что итоговое сообщение коммита соответствует описанному формату.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**Пример Squash and Merge**
+Если в PR такие коммиты:
 
-- `исправление опечатки`
-- `обновление README`
-- `корректировка форматирования`
+- `fix typo`
+- `update README`
+- `adjust formatting`
 
-They should be squashed into:
-`Docs: Улучшение ясности и форматирования документации (#65)`
+Они должны быть объединены в:
+`Docs: Улучшить ясность и форматирование документации (#65)`
 
-**Отказ от ответственности**:  
-Этот документ был переведен с использованием сервиса автоматического перевода [Co-op Translator](https://github.com/Azure/co-op-translator). Несмотря на наши усилия обеспечить точность, имейте в виду, что автоматический перевод может содержать ошибки или неточности. Оригинальный документ на его исходном языке следует считать авторитетным источником. Для получения критически важной информации рекомендуется обращаться к профессиональному переводу, выполненному человеком. Мы не несем ответственности за любые недоразумения или неправильные толкования, возникшие в результате использования данного перевода.
+---
+
+**Отказ от ответственности**:
+Этот документ был переведен с помощью сервиса автоматического перевода [Co-op Translator](https://github.com/Azure/co-op-translator). Несмотря на стремление к точности, автоматические переводы могут содержать ошибки или неточности. Оригинальный документ на исходном языке следует считать авторитетным источником. Для получения критически важной информации рекомендуется профессиональный перевод человеком. Мы не несём ответственности за любые недоразумения или неправильные толкования, возникшие в результате использования данного перевода.

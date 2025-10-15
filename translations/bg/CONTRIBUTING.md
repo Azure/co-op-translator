@@ -1,35 +1,31 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:43:12+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:59:16+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "bg"
 }
 -->
 # Принос към Co-op Translator
 
-Този проект приема приноси и предложения. Повечето приноси изискват да се съгласите с
-Contributor License Agreement (CLA), който декларира, че имате правото и действително предоставяте
-правата ни да използваме вашия принос. За подробности посетете https://cla.opensource.microsoft.com.
+Този проект приветства приноси и предложения. Повечето приноси изискват да се съгласите с Contributor License Agreement (CLA), с което декларирате, че имате право да предоставите и наистина предоставяте правата да използваме вашия принос. За подробности посетете https://cla.opensource.microsoft.com.
 
-Когато подадете pull request, CLA бот автоматично ще определи дали трябва да предоставите
-CLA и ще маркира PR съответно (напр. статус проверка, коментар). Просто следвайте инструкциите,
-предоставени от бота. Това трябва да се направи само веднъж за всички репозитории, използващи нашия CLA.
+Когато изпратите pull request, CLA ботът автоматично ще определи дали трябва да предоставите CLA и ще отбележи PR-а съответно (например със статус, коментар). Просто следвайте инструкциите на бота. Това се прави само веднъж за всички репозитории, които използват нашия CLA.
 
 ## Настройка на среда за разработка
 
-За да настроите средата за разработка на този проект, препоръчваме да използвате Poetry за управление на зависимости. Използваме `pyproject.toml` за управление на зависимостите на проекта и затова за инсталиране на зависимости трябва да използвате Poetry.
+За да настроите средата за разработка на този проект, препоръчваме да използвате Poetry за управление на зависимостите. Използваме `pyproject.toml` за управление на зависимостите, затова за инсталиране трябва да използвате Poetry.
 
 ### Създаване на виртуална среда
 
-#### Използване на pip
+#### С pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Използване на Poetry
+#### С Poetry
 
 ```bash
 poetry init
@@ -51,15 +47,15 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Използване на Poetry
+#### С Poetry
 
 ```bash
 poetry shell
 ```
 
-### Инсталиране на пакета и необходимите пакети
+### Инсталиране на пакета и нужните пакети
 
-#### Използване на Poetry (от pyproject.toml)
+#### С Poetry (от pyproject.toml)
 
 ```bash
 poetry install
@@ -67,9 +63,9 @@ poetry install
 
 ### Ръчно тестване
 
-Преди да подадете PR, е важно да тествате функционалността за превод с реална документация:
+Преди да изпратите PR, е важно да тествате функционалността за превод с реална документация:
 
-1. Създайте тестова директория в главната директория:
+1. Създайте тестова директория в основната директория:
     ```bash
     mkdir test_docs
     ```
@@ -90,54 +86,54 @@ poetry install
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Проверете преведените файлове в `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. Проверете преведените файлове в `test_docs/translations` и `test_docs/translated_images`, за да се уверите:
+   - Качеството на превода
+   - Метаданните в коментарите са коректни
+   - Оригиналната markdown структура е запазена
+   - Връзките и изображенията работят правилно
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+Това ръчно тестване помага да се гарантира, че промените ви работят добре в реални ситуации.
 
-### Environment variables
+### Променливи на средата
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template` файла.
+1. Създайте `.env` файл в основната директория, като копирате предоставения `.env.template` файл.
 1. Попълнете променливите на средата според указанията.
 
 > [!TIP]
 >
 > ### Допълнителни опции за среда за разработка
 >
-> Освен да стартирате проекта локално, можете да използвате GitHub Codespaces или VS Code Dev Containers за алтернативна настройка на среда за разработка.
+> Освен локално стартиране, можете да използвате GitHub Codespaces или VS Code Dev Containers като алтернативна среда за разработка.
 >
 > #### GitHub Codespaces
 >
-> Можете да стартирате тези примери виртуално чрез GitHub Codespaces без нужда от допълнителни настройки.
+> Можете да стартирате примерите виртуално чрез GitHub Codespaces без допълнителни настройки.
 >
-> Бутонът ще отвори уеб базиран VS Code във вашия браузър:
+> Бутонът ще отвори VS Code в браузъра ви:
 >
 > 1. Отворете шаблона (може да отнеме няколко минути):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
 >
-> #### Стартиране локално чрез VS Code Dev Containers
+> #### Локално стартиране с VS Code Dev Containers
 >
-> ⚠️ Тази опция работи само ако Docker Desktop има поне 16 GB RAM. Ако имате по-малко, можете да опитате [GitHub Codespaces опцията](../..) или [да я настроите локално](../..).
+> ⚠️ Тази опция работи само ако Docker Desktop има поне 16 GB RAM. Ако имате по-малко, пробвайте [GitHub Codespaces](../..) или [локална настройка](../..).
 >
-> Свързана опция е VS Code Dev Containers, който ще отвори проекта във вашия локален VS Code с помощта на [Dev Containers разширението](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Свързана опция е VS Code Dev Containers, която отваря проекта във вашия локален VS Code чрез [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Стартирайте Docker Desktop (инсталирайте, ако не е инсталиран)
+> 1. Стартирайте Docker Desktop (инсталирайте го, ако не е инсталиран)
 > 2. Отворете проекта:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
 
 
 ### Стил на кода
 
-Използваме [Black](https://github.com/psf/black) като наш Python code formatter, за да поддържаме единен стил на кода в целия проект. Black е безкомпромисен форматиращ инструмент, който автоматично преформатира Python кода, за да отговаря на стандарта на Black.
+Използваме [Black](https://github.com/psf/black) като форматер за Python код, за да поддържаме последователен стил в проекта. Black автоматично форматира Python кода според своите стандарти.
 
 #### Конфигурация
 
-Конфигурацията на Black е описана в нашия `pyproject.toml`:
+Конфигурацията на Black е зададена в нашия `pyproject.toml`:
 
 ```toml
 [tool.black]
@@ -148,16 +144,16 @@ include = '\.pyi?$'
 
 #### Инсталиране на Black
 
-Можете да инсталирате Black с помощта на Poetry (препоръчително) или pip:
+Можете да инсталирате Black с Poetry (препоръчително) или pip:
 
-##### Използване на Poetry
+##### С Poetry
 
-Black се инсталира автоматично при настройка на средата за разработка:
+Black се инсталира автоматично при настройка на средата:
 ```bash
 poetry install
 ```
 
-##### Използване на pip
+##### С pip
 
 Ако използвате pip, можете да инсталирате Black директно:
 ```bash
@@ -191,76 +187,116 @@ pip install black
     ```
 
 > [!TIP]
-> Препоръчваме да настроите редактора си да форматира автоматично кода с Black при запис. Повечето съвременни редактори поддържат това чрез разширения или плъгини.
+> Препоръчваме да настроите редактора си да форматира автоматично с Black при запис. Повечето съвременни редактори го поддържат чрез разширения или плъгини.
 
 ## Стартиране на Co-op Translator
 
-За да стартирате Co-op Translator с Poetry във вашата среда, следвайте следните стъпки:
+За да стартирате Co-op Translator с Poetry във вашата среда, следвайте тези стъпки:
 
-1. Отидете в директорията, където искате да правите тестове на превода, или създайте временна папка за тестване.
+1. Отидете в директорията, където искате да тествате преводи, или създайте временна папка за тестове.
 
-2. Изпълнете следната команда. Флагът `-l ko` with the language code you wish to translate into. The `-d` означава debug режим.
+2. Изпълнете следната команда. Заменете `-l ko` с кода на езика, на който искате да превеждате. Флагът `-d` активира debug режим.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Уверете се, че вашата Poetry среда е активирана (poetry shell) преди да изпълните командата.
+> Уверете се, че средата на Poetry е активирана (poetry shell) преди да стартирате командата.
 
-## Поддържащи
+## Добавяне на нов език
+
+Приемаме приноси за добавяне на нови езици. Преди да отворите PR, изпълнете стъпките по-долу за по-лесен преглед.
+
+1. Добавете езика към font mapping
+   - Редактирайте `src/co_op_translator/fonts/font_language_mappings.yml`
+   - Добавете запис с:
+     - `code`: ISO-подобен код на езика (например `vi`)
+     - `name`: Човеко-четимо име
+     - `font`: Шрифт от `src/co_op_translator/fonts/`, който поддържа скрипта
+     - `rtl`: `true` ако е отдясно-наляво, иначе `false`
+
+2. Включете нужните файлове за шрифт (ако е необходимо)
+   - Ако е нужен нов шрифт, проверете лиценза за open source разпространение
+   - Добавете файла на шрифта в `src/co_op_translator/fonts/`
+
+3. Локална проверка
+   - Стартирайте преводи на малък пример (Markdown, изображения, notebooks)
+   - Проверете дали изходът се визуализира правилно, включително шрифтове и RTL оформление, ако е приложимо
+
+4. Обновете документацията
+   - Уверете се, че езикът е в `getting_started/supported-languages.md`
+   - Не променяйте `README_languages_template.md`; той се генерира от списъка с поддържани езици
+
+5. Отворете PR
+   - Описвайте добавения език и лицензионни съображения за шрифта
+   - Прикачете скрийншоти на визуализирания изход, ако е възможно
+
+Примерен YAML запис:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
+## Поддръжници
 
 ### Формат на commit съобщенията и стратегия за сливане
 
-За да осигурим консистентност и яснота в историята на commit-ите в нашия проект, следваме специфичен формат за commit съобщения **за крайното commit съобщение** при използване на стратегията **Squash and Merge**.
+За да поддържаме последователност и яснота в историята на commit-ите, следваме специфичен формат **за финалното commit съобщение** при използване на **Squash and Merge** стратегия.
 
-Когато pull request (PR) бъде слят, отделните commit-и се обединяват в един commit. Крайното commit съобщение трябва да следва формата по-долу, за да се поддържа чиста и ясна история.
+Когато PR се слива, отделните commit-и се обединяват в един. Финалното commit съобщение трябва да следва формата по-долу за чиста и последователна история.
 
-#### Формат на commit съобщението (за squash and merge)
+#### Формат на commit съобщенията (за squash and merge)
 
-Използваме следния формат за commit съобщения:
+Използваме следния формат:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: Определя категорията на commit-а. Използваме следните типове:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+- **type**: Категория на commit-а. Използваме:
+  - `Docs`: За промени в документацията.
+  - `Build`: За промени, свързани със системата за билд или зависимости, включително конфигурационни файлове, CI workflows или Dockerfile.
+  - `Core`: За промени в основната функционалност или функции на проекта, особено във файлове от `src/co_op_translator/core`.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: Кратко описание на промяната.
+- **PR number**: Номерът на pull request-а, свързан с commit-а.
 
-**Examples**:
+**Примери**:
 
 - `Docs: Update installation instructions for clarity (#50)`
 - `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> В момента префиксите **`Docs`**, **`Core`** и **`Build`** се добавят автоматично към заглавията на PR според етикетите на променения код. Ако етикетът е правилен, обикновено не е нужно ръчно да редактирате заглавието. Просто проверете дали всичко е коректно и префиксът е генериран правилно.
 
-#### Merge strategy
+#### Стратегия за сливане
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+Използваме **Squash and Merge** като стандартна стратегия за pull request-и. Това гарантира, че commit съобщенията следват нашия формат, дори ако отделните commit-и не го правят.
 
-**Reasons**:
+**Причини**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- Чиста, линейна история на проекта.
+- Последователност в commit съобщенията.
+- По-малко шум от дребни commit-и (например "fix typo").
 
-When merging, ensure the final commit message follows the commit message format described above.
+При сливане се уверете, че финалното commit съобщение следва описания формат.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**Пример за Squash and Merge**
+Ако PR съдържа следните commit-и:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-They should be squashed into:
+Те трябва да се обединят в:
 `Docs: Improve documentation clarity and formatting (#65)`
 
-**Отказ от отговорност**:  
-Този документ е преведен с помощта на AI преводаческа услуга [Co-op Translator](https://github.com/Azure/co-op-translator). Въпреки че се стремим към точност, моля, имайте предвид, че автоматизираните преводи могат да съдържат грешки или неточности. Оригиналният документ на неговия роден език трябва да се счита за авторитетен източник. За критична информация се препоръчва професионален човешки превод. Ние не носим отговорност за каквито и да е недоразумения или неправилни тълкувания, произтичащи от използването на този превод.
+---
+
+**Отказ от отговорност**:
+Този документ е преведен с помощта на AI услуга за превод [Co-op Translator](https://github.com/Azure/co-op-translator). Въпреки че се стремим към точност, имайте предвид, че автоматизираните преводи могат да съдържат грешки или неточности. Оригиналният документ на неговия роден език трябва да се счита за авторитетен източник. За критична информация се препоръчва професионален човешки превод. Не носим отговорност за недоразумения или погрешни тълкувания, възникнали в резултат на използването на този превод.

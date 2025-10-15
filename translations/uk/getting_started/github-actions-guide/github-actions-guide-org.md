@@ -1,119 +1,119 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:20:04+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T04:17:56+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "uk"
 }
 -->
-# Використання GitHub Action Co-op Translator (Керівництво для організацій)
+# Використання GitHub Action Co-op Translator (Інструкція для організацій)
 
-**Цільова аудиторія:** Це керівництво призначене для **внутрішніх користувачів Microsoft** або **команд, які мають доступ до необхідних облікових даних для готового GitHub App Co-op Translator** або можуть створити власний кастомний GitHub App.
+**Цільова аудиторія:** Ця інструкція призначена для **внутрішніх користувачів Microsoft** або **команд, які мають доступ до необхідних облікових даних для попередньо створеного Co-op Translator GitHub App** або можуть створити власний GitHub App.
 
-Автоматизуйте переклад документації вашого репозиторію без зусиль за допомогою GitHub Action Co-op Translator. Це керівництво допоможе налаштувати дію для автоматичного створення pull request-ів з оновленими перекладами щоразу, коли змінюються ваші вихідні Markdown-файли або зображення.
+Автоматизуйте переклад документації вашого репозиторію за допомогою Co-op Translator GitHub Action. Ця інструкція допоможе налаштувати дію так, щоб автоматично створювались pull request із оновленими перекладами щоразу, коли змінюються вихідні Markdown-файли або зображення.
 
 > [!IMPORTANT]
 > 
-> **Вибір правильного керівництва:**
+> **Вибір правильної інструкції:**
 >
-> Це керівництво описує налаштування за допомогою **GitHub App ID та приватного ключа**. Зазвичай вам потрібен цей метод "Керівництво для організацій", якщо: **`GITHUB_TOKEN` Права обмежені:** Налаштування вашої організації або репозиторію обмежують стандартні права, які надаються стандартному `GITHUB_TOKEN`. Зокрема, якщо `GITHUB_TOKEN` не має необхідних прав `write` (наприклад, `contents: write` або `pull-requests: write`), робочий процес із [Публічного керівництва з налаштування](./github-actions-guide-public.md) не спрацює через недостатні права. Використання спеціального GitHub App з явно наданими правами обминає це обмеження.
+> Тут описано налаштування через **GitHub App ID та Private Key**. Зазвичай вам потрібен саме цей "Організаційний спосіб", якщо: **`GITHUB_TOKEN` має обмежені права:** Ваша організація або налаштування репозиторію обмежують стандартні права, які надає `GITHUB_TOKEN`. Зокрема, якщо `GITHUB_TOKEN` не має необхідних прав `write` (наприклад, `contents: write` або `pull-requests: write`), робочий процес із [Публічної інструкції](./github-actions-guide-public.md) не спрацює через недостатні права. Використання окремого GitHub App із явно наданими правами обходить це обмеження.
 >
-> **Якщо це вас не стосується:**
+> **Якщо це не про вас:**
 >
-> Якщо стандартний `GITHUB_TOKEN` має достатні права у вашому репозиторії (тобто вас не обмежують організаційні налаштування), будь ласка, використовуйте **[Публічне керівництво з налаштування з GITHUB_TOKEN](./github-actions-guide-public.md)**. Публічне керівництво не вимагає отримання або керування App ID чи приватними ключами і покладається виключно на стандартний `GITHUB_TOKEN` та права репозиторію.
+> Якщо стандартний `GITHUB_TOKEN` має достатньо прав у вашому репозиторії (тобто немає організаційних обмежень), скористайтеся **[Публічною інструкцією з використанням GITHUB_TOKEN](./github-actions-guide-public.md)**. Публічна інструкція не потребує отримання чи зберігання App ID або Private Key і використовує лише стандартний `GITHUB_TOKEN` та права репозиторію.
 
-## Передумови
+## Необхідне
 
-Перед налаштуванням GitHub Action переконайтеся, що у вас є необхідні облікові дані AI-сервісів.
+Перед налаштуванням GitHub Action переконайтеся, що у вас є потрібні облікові дані AI-сервісу.
 
-**1. Обов’язково: облікові дані AI мовної моделі**  
-Вам потрібні облікові дані принаймні для однієї підтримуваної мовної моделі:
+**1. Обов’язково: Облікові дані AI Language Model**
+Потрібні облікові дані для хоча б однієї з підтримуваних мовних моделей:
 
-- **Azure OpenAI**: Потрібні Endpoint, API Key, імена моделей/деплойментів, версія API.  
-- **OpenAI**: Потрібен API Key, (за бажанням: Org ID, Base URL, Model ID).  
-- Див. [Підтримувані моделі та сервіси](../../../../README.md) для деталей.  
-- Керівництво з налаштування: [Налаштування Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
+- **Azure OpenAI**: Потрібен Endpoint, API Key, назви моделі/деплойменту, версія API.
+- **OpenAI**: Потрібен API Key, (опціонально: Org ID, Base URL, Model ID).
+- Деталі дивіться у [Підтримувані моделі та сервіси](../../../../README.md).
+- Інструкція: [Налаштування Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
 
-**2. За бажанням: облікові дані Computer Vision (для перекладу зображень)**
+**2. Опціонально: Облікові дані Computer Vision (для перекладу тексту на зображеннях)**
 
-- Потрібно лише, якщо потрібно перекладати текст на зображеннях.  
-- **Azure Computer Vision**: Потрібні Endpoint та Subscription Key.  
-- Якщо не вказано, дія переходить у [режим лише Markdown](../markdown-only-mode.md).  
-- Керівництво з налаштування: [Налаштування Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
+- Потрібно лише, якщо треба перекладати текст на зображеннях.
+- **Azure Computer Vision**: Потрібен Endpoint та Subscription Key.
+- Якщо не вказано, дія працює у [режимі лише Markdown](../markdown-only-mode.md).
+- Інструкція: [Налаштування Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
 
 ## Налаштування та конфігурація
 
-Виконайте ці кроки для налаштування GitHub Action Co-op Translator у вашому репозиторії:
+Виконайте ці кроки для налаштування Co-op Translator GitHub Action у вашому репозиторії:
 
-### Крок 1: Встановлення та налаштування автентифікації GitHub App
+### Крок 1: Встановіть і налаштуйте автентифікацію GitHub App
 
-Робочий процес використовує автентифікацію GitHub App для безпечної взаємодії з вашим репозиторієм (наприклад, створення pull request-ів) від вашого імені. Оберіть один із варіантів:
+Робочий процес використовує автентифікацію через GitHub App для безпечної взаємодії з вашим репозиторієм (наприклад, створення pull request) від вашого імені. Виберіть один із варіантів:
 
-#### **Варіант A: Встановити готовий GitHub App Co-op Translator (для внутрішнього використання Microsoft)**
+#### **Варіант A: Встановити попередньо створений Co-op Translator GitHub App (для внутрішнього використання Microsoft)**
 
 1. Перейдіть на сторінку [Co-op Translator GitHub App](https://github.com/apps/co-op-translator).
 
-1. Оберіть **Install** та виберіть акаунт або організацію, де розташований ваш цільовий репозиторій.
+1. Натисніть **Install** і виберіть акаунт або організацію, де знаходиться ваш цільовий репозиторій.
 
-    ![Встановити додаток](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.uk.png)
+    ![Install app](../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.uk.png)
 
-1. Оберіть **Only select repositories** та виберіть ваш цільовий репозиторій (наприклад, `PhiCookBook`). Натисніть **Install**. Можливо, буде потрібно пройти автентифікацію.
+1. Виберіть **Only select repositories** і оберіть ваш цільовий репозиторій (наприклад, `PhiCookBook`). Натисніть **Install**. Може знадобитися автентифікація.
 
-    ![Авторизація встановлення](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.uk.png)
+    ![Install authorize](../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.uk.png)
 
-1. **Отримайте облікові дані додатка (внутрішній процес):** Щоб дозволити робочому процесу автентифікуватися як додаток, вам потрібні дві інформації, які надає команда Co-op Translator:  
-  - **App ID:** Унікальний ідентифікатор додатка Co-op Translator. App ID: `1164076`.  
-  - **Приватний ключ:** Ви маєте отримати **повний вміст** приватного ключа `.pem` від контактної особи підтримки. **Ставтеся до ключа як до пароля і зберігайте його у безпеці.**
+1. **Отримайте облікові дані App (потрібна внутрішня процедура):** Щоб робочий процес міг автентифікуватися як додаток, вам потрібно отримати два параметри від команди Co-op Translator:
+  - **App ID:** Унікальний ідентифікатор Co-op Translator app. App ID: `1164076`.
+  - **Private Key:** Потрібно отримати **повний вміст** файлу приватного ключа `.pem` у відповідальної особи. **Зберігайте цей ключ як пароль і не розголошуйте.**
 
 1. Перейдіть до Кроку 2.
 
-#### **Варіант B: Використати власний кастомний GitHub App**
+#### **Варіант B: Використати власний GitHub App**
 
-- Якщо бажаєте, можете створити і налаштувати власний GitHub App. Переконайтеся, що він має права Read & write на Contents та Pull requests. Вам знадобиться його App ID та згенерований приватний ключ.
+- За бажанням, можете створити і налаштувати власний GitHub App. Переконайтеся, що він має права Read & write до Contents і Pull requests. Вам знадобиться його App ID і згенерований Private Key.
 
-### Крок 2: Налаштування секретів репозиторію
+### Крок 2: Налаштуйте секрети репозиторію
 
-Вам потрібно додати облікові дані GitHub App та AI-сервісів як зашифровані секрети у налаштуваннях репозиторію.
+Потрібно додати облікові дані GitHub App і AI-сервісу як зашифровані секрети у налаштуваннях репозиторію.
 
-1. Перейдіть до цільового репозиторію (наприклад, `PhiCookBook`).
+1. Перейдіть у ваш цільовий GitHub репозиторій (наприклад, `PhiCookBook`).
 
 1. Відкрийте **Settings** > **Secrets and variables** > **Actions**.
 
-1. У розділі **Repository secrets** натисніть **New repository secret** для кожного з перерахованих нижче секретів.
+1. У розділі **Repository secrets** натисніть **New repository secret** для кожного секрету зі списку нижче.
 
-   ![Вибрати налаштування дії](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.uk.png)
+   ![Select setting action](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.uk.png)
 
 **Обов’язкові секрети (для автентифікації GitHub App):**
 
-| Назва секрету          | Опис                                       | Джерело значення                                |
-| :--------------------- | :----------------------------------------- | :---------------------------------------------- |
-| `GH_APP_ID`           | App ID GitHub App (з Кроку 1).              | Налаштування GitHub App                         |
-| `GH_APP_PRIVATE_KEY` | **Повний вміст** завантаженого файлу `.pem`. | Файл `.pem` (з Кроку 1)             |
+| Назва секрету        | Опис                                            | Джерело значення                                 |
+| :------------------- | :---------------------------------------------- | :----------------------------------------------- |
+| `GH_APP_ID`          | App ID GitHub App (з Кроку 1)                   | Налаштування GitHub App                          |
+| `GH_APP_PRIVATE_KEY` | **Повний вміст** завантаженого `.pem` файлу     | `.pem` файл (з Кроку 1)                          |
 
-**Секрети AI-сервісів (додайте ВСІ, що потрібні відповідно до передумов):**
+**Секрети AI-сервісу (Додайте ВСІ, які потрібні згідно з вашими вимогами):**
 
-| Назва секрету                         | Опис                                      | Джерело значення                   |
-| :------------------------------------ | :---------------------------------------- | :--------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Ключ для Azure AI Service (Computer Vision)  | Azure AI Foundry                  |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint для Azure AI Service (Computer Vision) | Azure AI Foundry                  |
-| `AZURE_OPENAI_API_KEY`              | Ключ для Azure OpenAI service              | Azure AI Foundry                  |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint для Azure OpenAI service          | Azure AI Foundry                  |
-| `AZURE_OPENAI_MODEL_NAME`           | Назва вашої моделі Azure OpenAI             | Azure AI Foundry                  |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Назва вашого деплойменту Azure OpenAI       | Azure AI Foundry                  |
-| `AZURE_OPENAI_API_VERSION`          | Версія API для Azure OpenAI                  | Azure AI Foundry                  |
-| `OPENAI_API_KEY`                    | API Key для OpenAI                         | OpenAI Platform                  |
-| `OPENAI_ORG_ID`                     | Ідентифікатор організації OpenAI           | OpenAI Platform                  |
-| `OPENAI_CHAT_MODEL_ID`              | Конкретний ID моделі OpenAI                  | OpenAI Platform                  |
-| `OPENAI_BASE_URL`                   | Кастомна базова URL OpenAI API               | OpenAI Platform                  |
+| Назва секрету                         | Опис                                         | Джерело значення                 |
+| :------------------------------------ | :-------------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Ключ для Azure AI Service (Computer Vision)   | Azure AI Foundry                 |
+| `AZURE_AI_SERVICE_ENDPOINT`           | Endpoint для Azure AI Service (Computer Vision) | Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`                | Ключ для Azure OpenAI service                 | Azure AI Foundry                 |
+| `AZURE_OPENAI_ENDPOINT`               | Endpoint для Azure OpenAI service             | Azure AI Foundry                 |
+| `AZURE_OPENAI_MODEL_NAME`             | Назва вашої моделі Azure OpenAI               | Azure AI Foundry                 |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`   | Назва деплойменту Azure OpenAI                | Azure AI Foundry                 |
+| `AZURE_OPENAI_API_VERSION`            | Версія API для Azure OpenAI                   | Azure AI Foundry                 |
+| `OPENAI_API_KEY`                      | API Key для OpenAI                            | OpenAI Platform                  |
+| `OPENAI_ORG_ID`                       | OpenAI Organization ID                        | OpenAI Platform                  |
+| `OPENAI_CHAT_MODEL_ID`                | ID конкретної моделі OpenAI                   | OpenAI Platform                  |
+| `OPENAI_BASE_URL`                     | Кастомний базовий URL OpenAI API              | OpenAI Platform                  |
 
-![Введення імені змінної середовища](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.uk.png)
+![Enter environment variable name](../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.uk.png)
 
-### Крок 3: Створення файлу робочого процесу
+### Крок 3: Створіть файл workflow
 
-Нарешті, створіть YAML-файл, який визначає автоматизований робочий процес.
+Останній крок — створити YAML-файл, який описує автоматизований робочий процес.
 
-1. У кореневій директорії вашого репозиторію створіть папку `.github/workflows/`, якщо її немає.
+1. У корені вашого репозиторію створіть директорію `.github/workflows/`, якщо її ще немає.
 
 1. Всередині `.github/workflows/` створіть файл з назвою `co-op-translator.yml`.
 
@@ -155,7 +155,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +209,31 @@ jobs:
 
 ```
 
-4.  **Налаштуйте робочий процес:**  
-  - **[!IMPORTANT] Цільові мови:** У `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+4.  **Налаштуйте workflow:**
+  - **[!IMPORTANT] Цільові мови:** У кроці `Run Co-op Translator` **ОБОВ’ЯЗКОВО перегляньте і змініть список мовних кодів** у команді `translate -l "..." -y` відповідно до потреб вашого проекту. Прикладовий список (`ar de es...`) потрібно замінити або скоригувати.
+  - **Тригер (`on:`):** Зараз workflow запускається при кожному push у `main`. Для великих репозиторіїв рекомендується додати фільтр `paths:` (див. закоментований приклад у YAML), щоб workflow запускався лише при зміні релевантних файлів (наприклад, документації), що дозволить зекономити час runner.
+  - **Деталі PR:** За потреби змініть `commit-message`, `title`, `body`, назву `branch` та `labels` у кроці `Create Pull Request`.
 
-## Credential Management and Renewal
+## Управління обліковими даними та їх оновлення
 
-- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` ключах) **до їхнього закінчення терміну дії**, щоб уникнути збоїв робочого процесу.
+- **Безпека:** Завжди зберігайте чутливі облікові дані (API ключі, приватні ключі) як секрети GitHub Actions. Ніколи не розміщуйте їх у workflow-файлі чи коді репозиторію.
+- **[!IMPORTANT] Оновлення ключів (для внутрішніх користувачів Microsoft):** Зверніть увагу, що ключ Azure OpenAI, який використовується всередині Microsoft, може мати політику обов’язкового оновлення (наприклад, кожні 5 місяців). Оновлюйте відповідні секрети GitHub (`AZURE_OPENAI_...` ключі) **до закінчення терміну дії**, щоб уникнути збоїв workflow.
 
-## Запуск робочого процесу
+## Запуск workflow
 
-Як тільки файл `co-op-translator.yml` буде змерджений у вашу основну гілку (або в гілку, вказану у фільтрі `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths`, якщо налаштовано),
+> [!WARNING]  
+> **Ліміт часу для GitHub-hosted runner:**  
+> GitHub-hosted runner, такі як `ubuntu-latest`, мають **максимальний ліміт виконання 6 годин**.  
+> Для великих репозиторіїв документації, якщо процес перекладу перевищить 6 годин, workflow буде автоматично завершено.  
+> Щоб уникнути цього, розгляньте:  
+> - Використання **self-hosted runner** (без ліміту часу)  
+> - Зменшення кількості цільових мов за один запуск
 
-Якщо будуть створені або оновлені переклади, дія автоматично створить Pull Request з цими змінами, готовий до вашого перегляду та злиття.
+Після того, як файл `co-op-translator.yml` буде додано у вашу основну гілку (або гілку, вказану у тригері `on:`), workflow автоматично запускатиметься при кожному push у цю гілку (і при збігу з фільтром `paths`, якщо налаштовано).
 
-**Відмова від відповідальності**:  
-Цей документ був перекладений за допомогою сервісу автоматичного перекладу [Co-op Translator](https://github.com/Azure/co-op-translator). Хоча ми прагнемо до точності, будь ласка, майте на увазі, що автоматичні переклади можуть містити помилки або неточності. Оригінальний документ рідною мовою слід вважати авторитетним джерелом. Для критично важливої інформації рекомендується професійний людський переклад. Ми не несемо відповідальності за будь-які непорозуміння або неправильні тлумачення, що виникли внаслідок використання цього перекладу.
+Якщо будуть створені або оновлені переклади, дія автоматично створить Pull Request із цими змінами, готовий до вашого перегляду та злиття.
+
+---
+
+**Застереження**:
+Цей документ було перекладено за допомогою сервісу автоматичного перекладу [Co-op Translator](https://github.com/Azure/co-op-translator). Хоча ми прагнемо до точності, звертаємо вашу увагу, що автоматичний переклад може містити помилки або неточності. Оригінальний документ мовою оригіналу слід вважати авторитетним джерелом. Для критично важливої інформації рекомендується професійний людський переклад. Ми не несемо відповідальності за будь-які непорозуміння або неправильне тлумачення, що виникли внаслідок використання цього перекладу.

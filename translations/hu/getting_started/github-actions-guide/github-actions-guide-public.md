@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:33:32+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T03:50:20+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "hu"
 }
 -->
 # A Co-op Translator GitHub Action használata (Nyilvános beállítás)
 
-**Célközönség:** Ez az útmutató azoknak szól, akik többségében nyilvános vagy privát repókban dolgoznak, ahol az alapértelmezett GitHub Actions jogosultságok elegendőek. A beépített `GITHUB_TOKEN`-t használja.
+**Célközönség:** Ez az útmutató azoknak szól, akik nyilvános vagy privát repókban dolgoznak, ahol a szokásos GitHub Actions jogosultságok elegendőek. A beépített `GITHUB_TOKEN`-t használja.
 
-Automatizáld könnyedén a repód dokumentációjának fordítását a Co-op Translator GitHub Action segítségével. Ez az útmutató végigvezet a beállításon, hogy a forrás Markdown fájlok vagy képek módosulásakor automatikusan létrejöjjenek a frissített fordításokat tartalmazó pull requestek.
+Automatizáld a repód dokumentációjának fordítását egyszerűen a Co-op Translator GitHub Action segítségével. Ez az útmutató lépésről lépésre bemutatja, hogyan állítsd be az actiont, hogy automatikusan létrehozzon pull requesteket a frissített fordításokkal, amikor a forrás Markdown fájlok vagy képek módosulnak.
 
 > [!IMPORTANT]
 >
 > **A megfelelő útmutató kiválasztása:**
 >
-> Ez az útmutató a **könnyebb beállítást mutatja be a standard `GITHUB_TOKEN` használatával**. Ez a legtöbb felhasználó számára ajánlott módszer, mert nem igényel érzékeny GitHub App Private Key kezelését.
+> Ez az útmutató a **egyszerűbb beállítást mutatja be a szokásos `GITHUB_TOKEN` használatával**. Ez a legtöbb felhasználónak ajánlott, mivel nem kell érzékeny GitHub App Private Key-eket kezelni.
 >
 
 ## Előfeltételek
 
-Mielőtt konfigurálnád a GitHub Actiont, győződj meg róla, hogy megvannak a szükséges AI szolgáltatási hitelesítő adataid.
+Mielőtt beállítanád a GitHub Actiont, győződj meg róla, hogy rendelkezel a szükséges AI szolgáltatás hitelesítő adataival.
 
-**1. Kötelező: AI nyelvi modell hitelesítő adatok**  
-Legalább egy támogatott nyelvi modellhez szükséges hitelesítő adatok:
+**1. Szükséges: AI nyelvi modell hitelesítő adatok**
+Legalább egy támogatott nyelvi modellhez szükséged lesz hitelesítő adatokra:
 
-- **Azure OpenAI**: Endpoint, API kulcs, modell/deployment nevek, API verzió szükséges.
-- **OpenAI**: API kulcs, (opcionálisan: szervezet ID, alap URL, modell ID).
-- Részletekért lásd a [Supported Models and Services](../../../../README.md) részt.
+- **Azure OpenAI**: Endpoint, API kulcs, Modell/Deployment nevek, API verzió szükséges.
+- **OpenAI**: API kulcs, (Opcionális: Org ID, Base URL, Modell ID).
+- Részletekért lásd: [Támogatott modellek és szolgáltatások](../../../../README.md).
 
-**2. Opcionális: AI Vision hitelesítő adatok (képfordításhoz)**
+**2. Opcionális: AI Vision hitelesítő adatok (képek fordításához)**
 
-- Csak akkor kell, ha képeken belüli szöveget is szeretnél fordítani.
-- **Azure AI Vision**: Endpoint és előfizetési kulcs szükséges.
-- Ha nem adod meg, az action [Markdown-only módba](../markdown-only-mode.md) vált.
+- Csak akkor szükséges, ha képeken lévő szöveget is fordítani szeretnél.
+- **Azure AI Vision**: Endpoint és Subscription Key szükséges.
+- Ha nem adod meg, az action [csak Markdown módot](../markdown-only-mode.md) használ.
 
 ## Beállítás és konfiguráció
 
-Kövesd az alábbi lépéseket a Co-op Translator GitHub Action beállításához a repódon a standard `GITHUB_TOKEN` használatával.
+Kövesd az alábbi lépéseket a Co-op Translator GitHub Action beállításához a repódban a szokásos `GITHUB_TOKEN` használatával.
 
-### 1. lépés: Ismerd meg az autentikációt (`GITHUB_TOKEN` használata)
+### 1. lépés: Hitelesítés megértése (`GITHUB_TOKEN` használata)
 
-Ez a workflow a GitHub Actions által biztosított beépített `GITHUB_TOKEN`-t használja. Ez a token automatikusan megadja a workflow-nak a repóval való interakcióhoz szükséges jogosultságokat a **3. lépésben** beállított engedélyek alapján.
+Ez a workflow a GitHub Actions által biztosított beépített `GITHUB_TOKEN`-t használja. Ez a token automatikusan megadja a szükséges jogosultságokat a workflow-nak, hogy a repóddal dolgozzon, a **3. lépésben** beállítottak szerint.
 
-### 2. lépés: Repository titkok konfigurálása
+### 2. lépés: Repó titkok konfigurálása
 
-Csak az **AI szolgáltatás hitelesítő adataidat** kell titkosított titkokként hozzáadnod a repód beállításaiban.
+Csak az **AI szolgáltatás hitelesítő adataidat** kell titkosított titokként hozzáadni a repó beállításaihoz.
 
-1. Nyisd meg a cél GitHub repódat.
-2. Menj a **Settings** > **Secrets and variables** > **Actions** menüpontra.
-3. A **Repository secrets** alatt kattints a **New repository secret** gombra minden szükséges AI szolgáltatás titok esetén, az alábbi lista alapján.
+1.  Nyisd meg a cél GitHub repódat.
+2.  Menj a **Settings** > **Secrets and variables** > **Actions** menüpontra.
+3.  A **Repository secrets** alatt kattints a **New repository secret** gombra minden szükséges AI szolgáltatás titokhoz az alábbiak közül.
 
-    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.hu.png) *(Kép hivatkozás: Hol lehet titkokat hozzáadni)*
+    <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.hu.png" alt="Select setting action"> *(Kép: Itt tudsz titkokat hozzáadni)*
 
-**Szükséges AI szolgáltatás titkok (add hozzá az összeset, ami az előfeltételek alapján vonatkozik rád):**
+**Szükséges AI szolgáltatás titkok (Add hozzá mindet, ami az előfeltételeid alapján kell):**
 
-| Titok neve                         | Leírás                                  | Érték forrása                    |
-| :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Kulcs az Azure AI szolgáltatáshoz (Computer Vision)  | Az Azure AI Foundryd             |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint az Azure AI szolgáltatáshoz (Computer Vision) | Az Azure AI Foundryd             |
-| `AZURE_OPENAI_API_KEY`              | Kulcs az Azure OpenAI szolgáltatáshoz              | Az Azure AI Foundryd             |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint az Azure OpenAI szolgáltatáshoz         | Az Azure AI Foundryd             |
-| `AZURE_OPENAI_MODEL_NAME`           | Azure OpenAI modell neve              | Az Azure AI Foundryd             |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Azure OpenAI deployment neve         | Az Azure AI Foundryd             |
-| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI API verzió              | Az Azure AI Foundryd             |
-| `OPENAI_API_KEY`                    | OpenAI API kulcs                        | Az OpenAI platformod             |
-| `OPENAI_ORG_ID`                     | OpenAI szervezet ID (opcionális)         | Az OpenAI platformod             |
-| `OPENAI_CHAT_MODEL_ID`              | Specifikus OpenAI modell ID (opcionális)       | Az OpenAI platformod             |
-| `OPENAI_BASE_URL`                   | Egyedi OpenAI API alap URL (opcionális)     | Az OpenAI platformod             |
+| Titok neve                         | Leírás                               | Érték forrása                     |
+| :---------------------------------- | :----------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Azure AI Service kulcs (Computer Vision)  | Azure AI Foundry-dban találod               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI Service endpoint (Computer Vision) | Azure AI Foundry-dban találod               |
+| `AZURE_OPENAI_API_KEY`              | Azure OpenAI szolgáltatás kulcsa              | Azure AI Foundry-dban találod               |
+| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI szolgáltatás endpointja         | Azure AI Foundry-dban találod               |
+| `AZURE_OPENAI_MODEL_NAME`           | Azure OpenAI modell neve              | Azure AI Foundry-dban találod               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Azure OpenAI deployment neve         | Azure AI Foundry-dban találod               |
+| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI API verzió              | Azure AI Foundry-dban találod               |
+| `OPENAI_API_KEY`                    | OpenAI API kulcs                        | OpenAI Platformodon              |
+| `OPENAI_ORG_ID`                     | OpenAI szervezet ID (Opcionális)         | OpenAI Platformodon              |
+| `OPENAI_CHAT_MODEL_ID`              | Konkrét OpenAI modell ID (Opcionális)       | OpenAI Platformodon              |
+| `OPENAI_BASE_URL`                   | Egyedi OpenAI API Base URL (Opcionális)     | OpenAI Platformodon              |
 
 ### 3. lépés: Workflow jogosultságok beállítása
 
-A GitHub Actionnak szüksége van a `GITHUB_TOKEN` által biztosított jogosultságokra, hogy ki tudja ellenőrizni a kódot és létrehozhasson pull requesteket.
+A GitHub Actionnek jogosultságot kell adni a `GITHUB_TOKEN`-on keresztül, hogy ki tudja csekkolni a kódot és pull requesteket tudjon létrehozni.
 
-1. A repódban menj a **Settings** > **Actions** > **General** menüpontra.
-2. Görgess le a **Workflow permissions** szekcióhoz.
-3. Válaszd a **Read and write permissions** opciót. Ez megadja a `GITHUB_TOKEN`-nak a szükséges `contents: write` és `pull-requests: write` jogosultságokat ehhez a workflow-hoz.
-4. Győződj meg róla, hogy be van jelölve a **Allow GitHub Actions to create and approve pull requests** opció.
-5. Kattints a **Save** gombra.
+1.  A repódban menj a **Settings** > **Actions** > **General** menüpontra.
+2.  Görgess le a **Workflow permissions** szekcióhoz.
+3.  Válaszd a **Read and write permissions** lehetőséget. Ez megadja a szükséges `contents: write` és `pull-requests: write` jogosultságokat a workflow-nak.
+4.  Győződj meg róla, hogy a **Allow GitHub Actions to create and approve pull requests** jelölőnégyzet **be van pipálva**.
+5.  Kattints a **Save** gombra.
 
-![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.hu.png)
+<img src="../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.hu.png" alt="Permission setting">
 
 ### 4. lépés: Workflow fájl létrehozása
 
-Végül hozd létre a YAML fájlt, amely definiálja az automatizált workflow-t a `GITHUB_TOKEN` használatával.
+Végül hozd létre a YAML fájlt, ami definiálja az automatizált workflow-t a `GITHUB_TOKEN` használatával.
 
-1. A repód gyökérkönyvtárában hozd létre a `.github/workflows/` mappát, ha még nem létezik.
-2. A `.github/workflows/` mappán belül hozz létre egy `co-op-translator.yml` nevű fájlt.
-3. Illeszd be az alábbi tartalmat a `co-op-translator.yml` fájlba.
+1.  A repód gyökérkönyvtárában hozd létre a `.github/workflows/` mappát, ha még nincs.
+2.  A `.github/workflows/` mappában hozz létre egy `co-op-translator.yml` nevű fájlt.
+3.  Illeszd be az alábbi tartalmat a `co-op-translator.yml`-be.
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4. **Workflow testreszabása:**  
-  - **[!IMPORTANT] Cél nyelvek:** A `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` lépésben szükség szerint állítsd be.
+```
+4.  **Workflow testreszabása:**
+  - **[!IMPORTANT] Cél nyelvek:** A `Run Co-op Translator` lépésben **FELTÉTLENÜL ellenőrizd és módosítsd a nyelvi kódok listáját** a `translate -l "..." -y` parancsban, hogy megfeleljen a projekted igényeinek. A példa lista (`ar de es...`) csak minta, cseréld vagy egészítsd ki.
+  - **Trigger (`on:`):** Jelenleg minden `main` branchre történő pushra fut le. Nagy repók esetén érdemes `paths:` szűrőt hozzáadni (lásd a YAML-ban a kommentelt példát), hogy csak releváns fájlok (pl. forrás dokumentáció) módosításakor fusson, így spórolhatsz runner perceket.
+  - **PR részletek:** Testreszabhatod a `commit-message`, `title`, `body`, `branch` nevét és a `labels`-t a `Create Pull Request` lépésben, ha szükséges.
 
-**Nyilatkozat**:  
-Ezt a dokumentumot az AI fordító szolgáltatás, a [Co-op Translator](https://github.com/Azure/co-op-translator) segítségével fordítottuk. Bár igyekszünk a pontosságra, kérjük, vegye figyelembe, hogy az automatikus fordítások hibákat vagy pontatlanságokat tartalmazhatnak. Az eredeti dokumentum az anyanyelvén tekintendő hiteles forrásnak. Fontos információk esetén szakmai, emberi fordítást javaslunk. Nem vállalunk felelősséget az ebből a fordításból eredő félreértésekért vagy téves értelmezésekért.
+## A workflow futtatása
+
+> [!WARNING]  
+> **GitHub-hosted Runner időkorlát:**  
+> A GitHub által biztosított futtatók, mint az `ubuntu-latest`, **maximum 6 óráig futtathatók**.  
+> Ha a fordítás nagy dokumentációs repóban 6 óránál tovább tart, a workflow automatikusan leáll.  
+> Ennek elkerülésére:  
+> - Használj **saját futtatót** (nincs időkorlát)  
+> - Csökkentsd a futtatott cél nyelvek számát
+
+Miután a `co-op-translator.yml` fájlt beolvasztottad a main branchbe (vagy abba, amit a `on:` triggerben megadtál), a workflow automatikusan lefut, amikor változásokat pusholsz abba a branchbe (és megfelel a `paths` szűrőnek, ha beállítottad).
+
+---
+
+**Jogi nyilatkozat**:
+Ez a dokumentum az AI fordítási szolgáltatás, a [Co-op Translator](https://github.com/Azure/co-op-translator) segítségével készült. Bár törekszünk a pontosságra, kérjük, vegye figyelembe, hogy az automatikus fordítások hibákat vagy pontatlanságokat tartalmazhatnak. Az eredeti dokumentum eredeti nyelvén tekintendő hiteles forrásnak. Kritikus információk esetén javasoljuk a professzionális, emberi fordítást. Nem vállalunk felelősséget a fordítás használatából eredő félreértésekért vagy félreértelmezésekért.

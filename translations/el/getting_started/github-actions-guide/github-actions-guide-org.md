@@ -1,123 +1,123 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:10:03+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T03:14:39+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "el"
 }
 -->
-# Χρήση του Co-op Translator GitHub Action (Οδηγός Οργάνωσης)
+# Χρήση του Co-op Translator GitHub Action (Οδηγός για Οργανισμούς)
 
-**Προοριζόμενο κοινό:** Αυτός ο οδηγός απευθύνεται σε **εσωτερικούς χρήστες της Microsoft** ή **ομάδες που έχουν πρόσβαση στα απαραίτητα διαπιστευτήρια για την προεγκατεστημένη εφαρμογή Co-op Translator GitHub App** ή μπορούν να δημιουργήσουν τη δική τους προσαρμοσμένη εφαρμογή GitHub.
+**Απευθύνεται σε:** Αυτός ο οδηγός προορίζεται για **εσωτερικούς χρήστες της Microsoft** ή **ομάδες που έχουν πρόσβαση στα απαραίτητα διαπιστευτήρια για την προεγκατεστημένη εφαρμογή Co-op Translator GitHub App** ή μπορούν να δημιουργήσουν τη δική τους προσαρμοσμένη GitHub App.
 
-Αυτοματοποιήστε εύκολα τη μετάφραση της τεκμηρίωσης του αποθετηρίου σας χρησιμοποιώντας το Co-op Translator GitHub Action. Αυτός ο οδηγός σας καθοδηγεί στη ρύθμιση του action ώστε να δημιουργεί αυτόματα pull requests με ενημερωμένες μεταφράσεις κάθε φορά που αλλάζουν τα αρχικά αρχεία Markdown ή οι εικόνες σας.
+Αυτοματοποιήστε τη μετάφραση της τεκμηρίωσης του αποθετηρίου σας εύκολα με το Co-op Translator GitHub Action. Αυτός ο οδηγός σας καθοδηγεί στη ρύθμιση της ενέργειας ώστε να δημιουργεί αυτόματα pull requests με ενημερωμένες μεταφράσεις κάθε φορά που αλλάζουν τα αρχεία Markdown ή οι εικόνες πηγής σας.
 
 > [!IMPORTANT]
 > 
-> **Επιλογή του κατάλληλου οδηγού:**
+> **Επιλογή του σωστού οδηγού:**
 >
-> Αυτός ο οδηγός περιγράφει τη ρύθμιση χρησιμοποιώντας **GitHub App ID και Ιδιωτικό Κλειδί**. Συνήθως χρειάζεστε αυτή τη μέθοδο "Οδηγός Οργάνωσης" αν: **`GITHUB_TOKEN` Οι Άδειες είναι Περιορισμένες:** Οι ρυθμίσεις του οργανισμού ή του αποθετηρίου σας περιορίζουν τις προεπιλεγμένες άδειες που δίνονται στο τυπικό `GITHUB_TOKEN`. Συγκεκριμένα, αν το `GITHUB_TOKEN` δεν έχει τις απαραίτητες άδειες `write` (όπως `contents: write` ή `pull-requests: write`), η ροή εργασίας στον [Δημόσιο Οδηγό Ρύθμισης](./github-actions-guide-public.md) θα αποτύχει λόγω ανεπαρκών αδειών. Η χρήση μιας ειδικής εφαρμογής GitHub με ρητά παραχωρημένες άδειες παρακάμπτει αυτόν τον περιορισμό.
+> Αυτός ο οδηγός περιγράφει τη ρύθμιση χρησιμοποιώντας **GitHub App ID και Private Key**. Συνήθως χρειάζεστε αυτή τη μέθοδο "Οδηγός για Οργανισμούς" αν: **`GITHUB_TOKEN` Περιορισμένα Δικαιώματα:** Οι ρυθμίσεις του οργανισμού ή του αποθετηρίου σας περιορίζουν τα προεπιλεγμένα δικαιώματα που παρέχονται στο τυπικό `GITHUB_TOKEN`. Συγκεκριμένα, αν το `GITHUB_TOKEN` δεν επιτρέπεται να έχει τα απαραίτητα δικαιώματα `write` (όπως `contents: write` ή `pull-requests: write`), το workflow στον [Δημόσιο Οδηγό Ρύθμισης](./github-actions-guide-public.md) θα αποτύχει λόγω ανεπαρκών δικαιωμάτων. Η χρήση μιας ειδικής GitHub App με ρητά παραχωρημένα δικαιώματα παρακάμπτει αυτόν τον περιορισμό.
 >
 > **Αν τα παραπάνω δεν ισχύουν για εσάς:**
 >
-> Αν το τυπικό `GITHUB_TOKEN` έχει επαρκείς άδειες στο αποθετήριό σας (δηλαδή δεν εμποδίζεστε από περιορισμούς οργανισμού), παρακαλούμε χρησιμοποιήστε τον **[Δημόσιο Οδηγό Ρύθμισης με χρήση GITHUB_TOKEN](./github-actions-guide-public.md)**. Ο δημόσιος οδηγός δεν απαιτεί απόκτηση ή διαχείριση App IDs ή Ιδιωτικών Κλειδιών και βασίζεται αποκλειστικά στο τυπικό `GITHUB_TOKEN` και τις άδειες του αποθετηρίου.
+> Αν το τυπικό `GITHUB_TOKEN` έχει επαρκή δικαιώματα στο αποθετήριό σας (δηλαδή δεν εμποδίζεστε από περιορισμούς του οργανισμού), παρακαλούμε χρησιμοποιήστε τον **[Δημόσιο Οδηγό Ρύθμισης με χρήση GITHUB_TOKEN](./github-actions-guide-public.md)**. Ο δημόσιος οδηγός δεν απαιτεί απόκτηση ή διαχείριση App IDs ή Private Keys και βασίζεται μόνο στο τυπικό `GITHUB_TOKEN` και τα δικαιώματα του αποθετηρίου.
 
 ## Προαπαιτούμενα
 
-Πριν ρυθμίσετε το GitHub Action, βεβαιωθείτε ότι έχετε έτοιμα τα απαραίτητα διαπιστευτήρια υπηρεσιών AI.
+Πριν ρυθμίσετε το GitHub Action, βεβαιωθείτε ότι έχετε έτοιμα τα απαραίτητα διαπιστευτήρια για την υπηρεσία AI.
 
-**1. Απαιτούμενο: Διαπιστευτήρια Μοντέλου Γλώσσας AI**  
-Χρειάζεστε διαπιστευτήρια για τουλάχιστον ένα υποστηριζόμενο Μοντέλο Γλώσσας:
+**1. Απαραίτητα: Διαπιστευτήρια AI Language Model**
+Χρειάζεστε διαπιστευτήρια για τουλάχιστον ένα υποστηριζόμενο Language Model:
 
-- **Azure OpenAI**: Απαιτούνται Endpoint, API Key, Ονόματα Μοντέλου/Ανάπτυξης, Έκδοση API.  
-- **OpenAI**: Απαιτείται API Key, (Προαιρετικά: Org ID, Βασικό URL, Model ID).  
-- Δείτε [Υποστηριζόμενα Μοντέλα και Υπηρεσίες](../../../../README.md) για λεπτομέρειες.  
+- **Azure OpenAI**: Απαιτεί Endpoint, API Key, Model/Deployment Names, API Version.
+- **OpenAI**: Απαιτεί API Key, (Προαιρετικά: Org ID, Base URL, Model ID).
+- Δείτε [Υποστηριζόμενα Μοντέλα και Υπηρεσίες](../../../../README.md) για λεπτομέρειες.
 - Οδηγός Ρύθμισης: [Ρύθμιση Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
 
-**2. Προαιρετικό: Διαπιστευτήρια Computer Vision (για μετάφραση εικόνων)**
+**2. Προαιρετικά: Διαπιστευτήρια Computer Vision (για Μετάφραση Εικόνων)**
 
-- Απαιτείται μόνο αν θέλετε να μεταφράσετε κείμενο μέσα σε εικόνες.  
-- **Azure Computer Vision**: Απαιτούνται Endpoint και Subscription Key.  
-- Αν δεν δοθούν, το action θα λειτουργήσει σε [μόνο Markdown mode](../markdown-only-mode.md).  
+- Απαιτούνται μόνο αν θέλετε να μεταφράσετε κείμενο μέσα σε εικόνες.
+- **Azure Computer Vision**: Απαιτεί Endpoint και Subscription Key.
+- Αν δεν δοθούν, η ενέργεια λειτουργεί σε [λειτουργία μόνο Markdown](../markdown-only-mode.md).
 - Οδηγός Ρύθμισης: [Ρύθμιση Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
 
-## Ρύθμιση και Παραμετροποίηση
+## Ρύθμιση και Διαμόρφωση
 
-Ακολουθήστε τα βήματα για να ρυθμίσετε το Co-op Translator GitHub Action στο αποθετήριό σας:
+Ακολουθήστε τα παρακάτω βήματα για να ρυθμίσετε το Co-op Translator GitHub Action στο αποθετήριό σας:
 
-### Βήμα 1: Εγκατάσταση και Ρύθμιση Πιστοποίησης GitHub App
+### Βήμα 1: Εγκατάσταση και Ρύθμιση Επαλήθευσης GitHub App
 
-Η ροή εργασίας χρησιμοποιεί πιστοποίηση GitHub App για ασφαλή αλληλεπίδραση με το αποθετήριό σας (π.χ., δημιουργία pull requests) εκ μέρους σας. Επιλέξτε μία από τις επιλογές:
+Το workflow χρησιμοποιεί επαλήθευση GitHub App για να αλληλεπιδρά με ασφάλεια με το αποθετήριό σας (π.χ. δημιουργία pull requests) εκ μέρους σας. Επιλέξτε μία επιλογή:
 
-#### **Επιλογή Α: Εγκατάσταση της Προεγκατεστημένης Εφαρμογής Co-op Translator GitHub App (για εσωτερική χρήση Microsoft)**
+#### **Επιλογή Α: Εγκατάσταση της Προεγκατεστημένης Co-op Translator GitHub App (για Εσωτερική Χρήση Microsoft)**
 
 1. Μεταβείτε στη σελίδα [Co-op Translator GitHub App](https://github.com/apps/co-op-translator).
 
-1. Επιλέξτε **Install** και επιλέξτε τον λογαριασμό ή την οργάνωση όπου βρίσκεται το αποθετήριο στόχος σας.
+1. Επιλέξτε **Install** και διαλέξτε τον λογαριασμό ή τον οργανισμό όπου βρίσκεται το αποθετήριό σας.
 
-    ![Εγκατάσταση εφαρμογής](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.el.png)
+    ![Εγκατάσταση εφαρμογής](../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.el.png)
 
-1. Επιλέξτε **Only select repositories** και επιλέξτε το αποθετήριο στόχος (π.χ. `PhiCookBook`). Πατήστε **Install**. Ενδέχεται να σας ζητηθεί να πιστοποιηθείτε.
+1. Επιλέξτε **Only select repositories** και διαλέξτε το αποθετήριό σας (π.χ. `PhiCookBook`). Κάντε κλικ στο **Install**. Ίσως σας ζητηθεί να επαληθεύσετε την ταυτότητά σας.
 
-    ![Εξουσιοδότηση εγκατάστασης](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.el.png)
+    ![Εξουσιοδότηση εγκατάστασης](../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.el.png)
 
-1. **Απόκτηση Διαπιστευτηρίων Εφαρμογής (Απαιτείται εσωτερική διαδικασία):** Για να επιτρέψετε στη ροή εργασίας να πιστοποιηθεί ως η εφαρμογή, χρειάζεστε δύο στοιχεία που παρέχονται από την ομάδα Co-op Translator:  
-  - **App ID:** Το μοναδικό αναγνωριστικό της εφαρμογής Co-op Translator. Το App ID είναι: `1164076`.  
-  - **Ιδιωτικό Κλειδί:** Πρέπει να λάβετε **όλο το περιεχόμενο** του αρχείου ιδιωτικού κλειδιού `.pem` από τον υπεύθυνο συντήρησης. **Φυλάξτε αυτό το κλειδί σαν κωδικό πρόσβασης και κρατήστε το ασφαλές.**
+1. **Λήψη Διαπιστευτηρίων App (Απαιτείται Εσωτερική Διαδικασία):** Για να επιτρέψετε στο workflow να επαληθευτεί ως η εφαρμογή, χρειάζεστε δύο στοιχεία που παρέχονται από την ομάδα Co-op Translator:
+  - **App ID:** Ο μοναδικός αναγνωριστικός αριθμός της εφαρμογής Co-op Translator. Το App ID είναι: `1164076`.
+  - **Private Key:** Πρέπει να λάβετε το **πλήρες περιεχόμενο** του αρχείου private key `.pem` από τον υπεύθυνο επικοινωνίας. **Χειριστείτε αυτό το κλειδί όπως έναν κωδικό πρόσβασης και διατηρήστε το ασφαλές.**
 
 1. Συνεχίστε στο Βήμα 2.
 
-#### **Επιλογή Β: Χρήση της δικής σας Προσαρμοσμένης Εφαρμογής GitHub**
+#### **Επιλογή Β: Χρησιμοποιήστε τη Δική σας Προσαρμοσμένη GitHub App**
 
-- Αν προτιμάτε, μπορείτε να δημιουργήσετε και να ρυθμίσετε τη δική σας εφαρμογή GitHub. Βεβαιωθείτε ότι έχει δικαιώματα Ανάγνωσης & Εγγραφής σε Περιεχόμενο και Pull requests. Θα χρειαστείτε το App ID και ένα παραγόμενο Ιδιωτικό Κλειδί.
+- Αν προτιμάτε, μπορείτε να δημιουργήσετε και να ρυθμίσετε τη δική σας GitHub App. Βεβαιωθείτε ότι έχει Read & write πρόσβαση σε Contents και Pull requests. Θα χρειαστείτε το App ID και ένα παραγόμενο Private Key.
 
 ### Βήμα 2: Ρύθμιση Μυστικών του Αποθετηρίου
 
-Πρέπει να προσθέσετε τα διαπιστευτήρια της εφαρμογής GitHub και τα διαπιστευτήρια της υπηρεσίας AI ως κρυπτογραφημένα μυστικά στις ρυθμίσεις του αποθετηρίου σας.
+Πρέπει να προσθέσετε τα διαπιστευτήρια της GitHub App και της υπηρεσίας AI ως κρυπτογραφημένα secrets στις ρυθμίσεις του αποθετηρίου σας.
 
-1. Μεταβείτε στο αποθετήριο στόχο σας (π.χ. `PhiCookBook`).
+1. Μεταβείτε στο αποθετήριο στόχο στο GitHub (π.χ. `PhiCookBook`).
 
-1. Πλοηγηθείτε στο **Settings** > **Secrets and variables** > **Actions**.
+1. Πηγαίνετε στις **Settings** > **Secrets and variables** > **Actions**.
 
-1. Στην ενότητα **Repository secrets**, κάντε κλικ στο **New repository secret** για κάθε μυστικό που αναφέρεται παρακάτω.
+1. Κάτω από **Repository secrets**, κάντε κλικ στο **New repository secret** για κάθε secret που αναφέρεται παρακάτω.
 
-   ![Επιλογή ρύθμισης action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.el.png)
+   ![Επιλογή ρυθμίσεων actions](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.el.png)
 
-**Απαιτούμενα Μυστικά (για Πιστοποίηση GitHub App):**
+**Απαραίτητα Secrets (για Επαλήθευση GitHub App):**
 
-| Όνομα Μυστικού         | Περιγραφή                                    | Πηγή Τιμής                                      |
-| :--------------------- | :------------------------------------------- | :----------------------------------------------- |
-| `GH_APP_ID`          | Το App ID της εφαρμογής GitHub (από Βήμα 1). | Ρυθμίσεις Εφαρμογής GitHub                      |
-| `GH_APP_PRIVATE_KEY` | Το **ολόκληρο περιεχόμενο** του κατεβασμένου αρχείου `.pem`. | Αρχείο `.pem` (από Βήμα 1)          |
+| Όνομα Secret         | Περιγραφή                                         | Πηγή Τιμής                                        |
+| :------------------- | :----------------------------------------------- | :----------------------------------------------- |
+| `GH_APP_ID`          | Το App ID της GitHub App (από το Βήμα 1).        | Ρυθμίσεις GitHub App                             |
+| `GH_APP_PRIVATE_KEY` | Το **πλήρες περιεχόμενο** του ληφθέντος αρχείου `.pem`. | Αρχείο `.pem` (από το Βήμα 1)                  |
 
-**Μυστικά Υπηρεσίας AI (Προσθέστε ΟΛΑ που ισχύουν ανάλογα με τα Προαπαιτούμενα):**
+**Secrets Υπηρεσίας AI (Προσθέστε ΟΛΑ όσα ισχύουν με βάση τα Προαπαιτούμενα):**
 
-| Όνομα Μυστικού                         | Περιγραφή                              | Πηγή Τιμής                     |
-| :------------------------------------ | :------------------------------------ | :------------------------------ |
-| `AZURE_SUBSCRIPTION_KEY`            | Κλειδί για Azure AI Service (Computer Vision) | Azure AI Foundry                |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint για Azure AI Service (Computer Vision) | Azure AI Foundry                |
-| `AZURE_OPENAI_API_KEY`              | Κλειδί για Azure OpenAI υπηρεσία         | Azure AI Foundry                |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint για Azure OpenAI υπηρεσία        | Azure AI Foundry                |
-| `AZURE_OPENAI_MODEL_NAME`           | Το όνομα του Azure OpenAI μοντέλου σας     | Azure AI Foundry                |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Το όνομα ανάπτυξης Azure OpenAI σας         | Azure AI Foundry                |
-| `AZURE_OPENAI_API_VERSION`          | Έκδοση API για Azure OpenAI               | Azure AI Foundry                |
-| `OPENAI_API_KEY`                    | API Key για OpenAI                        | OpenAI Platform                |
-| `OPENAI_ORG_ID`                     | OpenAI Organization ID                    | OpenAI Platform                |
-| `OPENAI_CHAT_MODEL_ID`              | Συγκεκριμένο OpenAI model ID               | OpenAI Platform                |
-| `OPENAI_BASE_URL`                   | Προσαρμοσμένο OpenAI API Base URL           | OpenAI Platform                |
+| Όνομα Secret                        | Περιγραφή                                 | Πηγή Τιμής                        |
+| :---------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Κλειδί για Azure AI Service (Computer Vision)  | Azure AI Foundry                    |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint για Azure AI Service (Computer Vision) | Azure AI Foundry                     |
+| `AZURE_OPENAI_API_KEY`              | Κλειδί για την υπηρεσία Azure OpenAI      | Azure AI Foundry                     |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint για την υπηρεσία Azure OpenAI    | Azure AI Foundry                     |
+| `AZURE_OPENAI_MODEL_NAME`           | Όνομα μοντέλου Azure OpenAI               | Azure AI Foundry                     |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Όνομα ανάπτυξης Azure OpenAI              | Azure AI Foundry                     |
+| `AZURE_OPENAI_API_VERSION`          | Έκδοση API για Azure OpenAI               | Azure AI Foundry                     |
+| `OPENAI_API_KEY`                    | API Key για OpenAI                        | OpenAI Platform                  |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID                    | OpenAI Platform                  |
+| `OPENAI_CHAT_MODEL_ID`              | Συγκεκριμένο OpenAI model ID              | OpenAI Platform                    |
+| `OPENAI_BASE_URL`                   | Προσαρμοσμένο OpenAI API Base URL         | OpenAI Platform                    |
 
-![Εισαγωγή ονόματος μεταβλητής περιβάλλοντος](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.el.png)
+![Εισαγωγή ονόματος μεταβλητής περιβάλλοντος](../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.el.png)
 
-### Βήμα 3: Δημιουργία του Αρχείου Ροής Εργασίας
+### Βήμα 3: Δημιουργία του Αρχείου Workflow
 
-Τέλος, δημιουργήστε το αρχείο YAML που ορίζει τη ροή εργασίας αυτοματοποίησης.
+Τέλος, δημιουργήστε το αρχείο YAML που ορίζει το αυτοματοποιημένο workflow.
 
 1. Στον ριζικό φάκελο του αποθετηρίου σας, δημιουργήστε τον φάκελο `.github/workflows/` αν δεν υπάρχει ήδη.
 
-1. Μέσα στον `.github/workflows/`, δημιουργήστε ένα αρχείο με όνομα `co-op-translator.yml`.
+1. Μέσα στο `.github/workflows/`, δημιουργήστε ένα αρχείο με όνομα `co-op-translator.yml`.
 
-1. Επικολλήστε το ακόλουθο περιεχόμενο στο co-op-translator.yml.
+1. Επικολλήστε το παρακάτω περιεχόμενο στο co-op-translator.yml.
 
 ```
 name: Co-op Translator
@@ -155,7 +155,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +209,31 @@ jobs:
 
 ```
 
-4.  **Προσαρμογή της Ροής Εργασίας:**  
-  - **[!IMPORTANT] Γλώσσες-στόχοι:** Στην εντολή `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+4.  **Εξατομίκευση του Workflow:**
+  - **[!IMPORTANT] Γλώσσες Στόχοι:** Στο βήμα `Run Co-op Translator`, **ΠΡΕΠΕΙ να ελέγξετε και να τροποποιήσετε τη λίστα των κωδικών γλωσσών** μέσα στην εντολή `translate -l "..." -y` ώστε να ταιριάζει με τις ανάγκες του έργου σας. Η ενδεικτική λίστα (`ar de es...`) πρέπει να αντικατασταθεί ή να προσαρμοστεί.
+  - **Trigger (`on:`):** Η τρέχουσα ρύθμιση ενεργοποιείται σε κάθε push στο `main`. Για μεγάλα αποθετήρια, σκεφτείτε να προσθέσετε ένα φίλτρο `paths:` (δείτε το σχολιασμένο παράδειγμα στο YAML) ώστε το workflow να τρέχει μόνο όταν αλλάζουν σχετικά αρχεία (π.χ. τεκμηρίωση πηγής), εξοικονομώντας χρόνο εκτέλεσης.
+  - **Λεπτομέρειες PR:** Εξατομικεύστε το `commit-message`, `title`, `body`, το όνομα του `branch` και τα `labels` στο βήμα `Create Pull Request` αν χρειάζεται.
 
-## Credential Management and Renewal
+## Διαχείριση και Ανανέωση Διαπιστευτηρίων
 
-- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` προσθέστε τις γλώσσες που θέλετε **πριν λήξουν** για να αποφύγετε αποτυχίες της ροής εργασίας.
+- **Ασφάλεια:** Αποθηκεύετε πάντα ευαίσθητα διαπιστευτήρια (API keys, private keys) ως secrets του GitHub Actions. Μην τα εκθέτετε ποτέ στο αρχείο workflow ή στον κώδικα του αποθετηρίου σας.
+- **[!IMPORTANT] Ανανέωση Κλειδιών (Εσωτερικοί Χρήστες Microsoft):** Έχετε υπόψη ότι το Azure OpenAI key που χρησιμοποιείται εντός Microsoft μπορεί να έχει υποχρεωτική πολιτική ανανέωσης (π.χ. κάθε 5 μήνες). Βεβαιωθείτε ότι ενημερώνετε τα αντίστοιχα secrets του GitHub (`AZURE_OPENAI_...` keys) **πριν λήξουν** για να αποφύγετε αποτυχίες του workflow.
 
-## Εκτέλεση της Ροής Εργασίας
+## Εκτέλεση του Workflow
 
-Μόλις το αρχείο `co-op-translator.yml` συγχωνευτεί στο κύριο branch σας (ή στο branch που ορίζεται στο φίλτρο `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths`, αν έχει ρυθμιστεί).
+> [!WARNING]  
+> **Χρονικό Όριο Εκτέλεσης GitHub-hosted Runner:**  
+> Τα GitHub-hosted runners όπως το `ubuntu-latest` έχουν **μέγιστο χρονικό όριο εκτέλεσης 6 ωρών**.  
+> Για μεγάλα αποθετήρια τεκμηρίωσης, αν η διαδικασία μετάφρασης ξεπεράσει τις 6 ώρες, το workflow θα τερματιστεί αυτόματα.  
+> Για να το αποφύγετε, σκεφτείτε:  
+> - Να χρησιμοποιήσετε **self-hosted runner** (χωρίς χρονικό όριο)  
+> - Να μειώσετε τον αριθμό των γλωσσών στόχων ανά εκτέλεση
 
-Εάν δημιουργηθούν ή ενημερωθούν μεταφράσεις, το action θα δημιουργήσει αυτόματα ένα Pull Request με τις αλλαγές, έτοιμο για την ανασκόπηση και τη συγχώνευσή σας.
+Μόλις το αρχείο `co-op-translator.yml` συγχωνευτεί στο κύριο branch σας (ή στο branch που ορίζεται στο trigger `on:`), το workflow θα εκτελείται αυτόματα κάθε φορά που γίνονται αλλαγές σε αυτό το branch (και ταιριάζουν με το φίλτρο `paths`, αν έχει ρυθμιστεί).
 
-**Αποποίηση ευθυνών**:  
-Αυτό το έγγραφο έχει μεταφραστεί χρησιμοποιώντας την υπηρεσία αυτόματης μετάφρασης AI [Co-op Translator](https://github.com/Azure/co-op-translator). Παρόλο που προσπαθούμε για ακρίβεια, παρακαλούμε να γνωρίζετε ότι οι αυτόματες μεταφράσεις ενδέχεται να περιέχουν σφάλματα ή ανακρίβειες. Το πρωτότυπο έγγραφο στη γλώσσα του θεωρείται η επίσημη πηγή. Για κρίσιμες πληροφορίες, συνιστάται η επαγγελματική ανθρώπινη μετάφραση. Δεν φέρουμε ευθύνη για τυχόν παρεξηγήσεις ή λανθασμένες ερμηνείες που προκύπτουν από τη χρήση αυτής της μετάφρασης.
+Αν παραχθούν ή ενημερωθούν μεταφράσεις, η ενέργεια θα δημιουργήσει αυτόματα ένα Pull Request με τις αλλαγές, έτοιμο για έλεγχο και συγχώνευση.
+
+---
+
+**Αποποίηση Ευθύνης**:
+Αυτό το έγγραφο έχει μεταφραστεί χρησιμοποιώντας την υπηρεσία αυτόματης μετάφρασης AI [Co-op Translator](https://github.com/Azure/co-op-translator). Παρότι καταβάλλουμε προσπάθειες για ακρίβεια, παρακαλούμε να γνωρίζετε ότι οι αυτόματες μεταφράσεις ενδέχεται να περιέχουν σφάλματα ή ανακρίβειες. Το πρωτότυπο έγγραφο στη μητρική του γλώσσα πρέπει να θεωρείται η αυθεντική πηγή. Για κρίσιμες πληροφορίες, συνιστάται επαγγελματική ανθρώπινη μετάφραση. Δεν φέρουμε ευθύνη για τυχόν παρανοήσεις ή εσφαλμένες ερμηνείες που προκύπτουν από τη χρήση αυτής της μετάφρασης.

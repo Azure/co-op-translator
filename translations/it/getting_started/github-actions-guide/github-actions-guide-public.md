@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:27:36+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T03:06:23+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "it"
 }
 -->
 # Utilizzo della GitHub Action Co-op Translator (Configurazione Pubblica)
 
-**Pubblico di riferimento:** Questa guida è pensata per utenti in repository pubblici o privati dove i permessi standard di GitHub Actions sono sufficienti. Utilizza il `GITHUB_TOKEN` integrato.
+**Destinatari:** Questa guida è pensata per utenti nella maggior parte dei repository pubblici o privati dove le autorizzazioni standard di GitHub Actions sono sufficienti. Utilizza il `GITHUB_TOKEN` integrato.
 
-Automatizza facilmente la traduzione della documentazione del tuo repository usando la GitHub Action Co-op Translator. Questa guida ti accompagna nella configurazione dell’action per creare automaticamente pull request con traduzioni aggiornate ogni volta che cambiano i tuoi file Markdown di origine o le immagini.
+Automatizza la traduzione della documentazione del tuo repository in modo semplice con la GitHub Action Co-op Translator. Questa guida ti accompagna nella configurazione dell’action per creare automaticamente pull request con traduzioni aggiornate ogni volta che i tuoi file Markdown sorgente o le immagini vengono modificati.
 
 > [!IMPORTANT]
 >
 > **Scegliere la guida giusta:**
 >
-> Questa guida illustra la **configurazione più semplice usando il `GITHUB_TOKEN` standard**. È il metodo consigliato per la maggior parte degli utenti perché non richiede la gestione di chiavi private sensibili di GitHub App.
+> Questa guida spiega la **configurazione più semplice usando il `GITHUB_TOKEN` standard**. È il metodo consigliato per la maggior parte degli utenti perché non richiede la gestione di chiavi private sensibili di GitHub App.
 >
 
 ## Prerequisiti
 
-Prima di configurare la GitHub Action, assicurati di avere pronte le credenziali necessarie per il servizio AI.
+Prima di configurare la GitHub Action, assicurati di avere pronti le credenziali del servizio AI necessario.
 
-**1. Obbligatorio: Credenziali per il modello di linguaggio AI**  
-Ti servono le credenziali per almeno un modello di linguaggio supportato:
+**1. Obbligatorio: Credenziali del Modello Linguistico AI**
+Hai bisogno delle credenziali per almeno uno dei modelli linguistici supportati:
 
-- **Azure OpenAI**: Richiede Endpoint, API Key, nomi Modello/Deployment, versione API.  
-- **OpenAI**: Richiede API Key, (Opzionale: Org ID, Base URL, Model ID).  
-- Consulta [Supported Models and Services](../../../../README.md) per i dettagli.
+- **Azure OpenAI**: Richiede Endpoint, API Key, Nomi di Modello/Deployment, Versione API.
+- **OpenAI**: Richiede API Key, (Opzionale: Org ID, Base URL, Model ID).
+- Consulta [Modelli e Servizi Supportati](../../../../README.md) per i dettagli.
 
-**2. Facoltativo: Credenziali AI Vision (per traduzione immagini)**
+**2. Opzionale: Credenziali AI Vision (per la traduzione delle immagini)**
 
-- Necessarie solo se devi tradurre testi all’interno di immagini.  
-- **Azure AI Vision**: Richiede Endpoint e Subscription Key.  
-- Se non fornite, l’action userà la [modalità solo Markdown](../markdown-only-mode.md).
+- Necessarie solo se vuoi tradurre il testo all’interno delle immagini.
+- **Azure AI Vision**: Richiede Endpoint e Subscription Key.
+- Se non fornite, l’action funzionerà in [modalità solo Markdown](../markdown-only-mode.md).
 
-## Configurazione e Setup
+## Configurazione
 
 Segui questi passaggi per configurare la GitHub Action Co-op Translator nel tuo repository usando il `GITHUB_TOKEN` standard.
 
-### Passo 1: Comprendere l’autenticazione (Usando `GITHUB_TOKEN`)
+### Passo 1: Comprendere l’Autenticazione (Uso di `GITHUB_TOKEN`)
 
-Questo workflow usa il `GITHUB_TOKEN` integrato fornito da GitHub Actions. Questo token concede automaticamente i permessi al workflow per interagire con il tuo repository in base alle impostazioni configurate nel **Passo 3**.
+Questo workflow utilizza il `GITHUB_TOKEN` integrato fornito da GitHub Actions. Questo token concede automaticamente i permessi necessari al workflow per interagire con il tuo repository in base alle impostazioni configurate nel **Passo 3**.
 
-### Passo 2: Configurare i segreti del repository
+### Passo 2: Configurare i Segreti del Repository
 
-Devi solo aggiungere le tue **credenziali del servizio AI** come segreti criptati nelle impostazioni del repository.
+Devi solo aggiungere le **credenziali del servizio AI** come segreti criptati nelle impostazioni del tuo repository.
 
-1.  Vai al repository GitHub di destinazione.  
-2.  Accedi a **Settings** > **Secrets and variables** > **Actions**.  
-3.  Sotto **Repository secrets**, clicca su **New repository secret** per ogni segreto AI richiesto elencato qui sotto.
+1.  Vai al repository GitHub di destinazione.
+2.  Vai su **Settings** > **Secrets and variables** > **Actions**.
+3.  Sotto **Repository secrets**, clicca su **New repository secret** per ogni segreto richiesto elencato qui sotto.
 
-    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.it.png) *(Riferimento immagine: mostra dove aggiungere i segreti)*
+    ![Seleziona impostazione action](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.it.png) *(Riferimento immagine: mostra dove aggiungere i segreti)*
 
-**Segreti del servizio AI richiesti (aggiungi TUTTI quelli che ti servono in base ai Prerequisiti):**
+**Segreti richiesti per i servizi AI (Aggiungi TUTTI quelli che servono in base ai tuoi Prerequisiti):**
 
-| Nome Segreto                      | Descrizione                                | Fonte del valore                 |
-| :------------------------------- | :---------------------------------------- | :------------------------------ |
-| `AZURE_SUBSCRIPTION_KEY`                 | Chiave per Azure AI Service (Computer Vision) | Il tuo Azure AI Foundry          |
-| `AZURE_AI_SERVICE_ENDPOINT`                 | Endpoint per Azure AI Service (Computer Vision) | Il tuo Azure AI Foundry          |
-| `AZURE_OPENAI_API_KEY`                 | Chiave per servizio Azure OpenAI           | Il tuo Azure AI Foundry          |
-| `AZURE_OPENAI_ENDPOINT`                 | Endpoint per servizio Azure OpenAI          | Il tuo Azure AI Foundry          |
-| `AZURE_OPENAI_MODEL_NAME`                 | Nome modello Azure OpenAI                   | Il tuo Azure AI Foundry          |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`                | Nome deployment Azure OpenAI                | Il tuo Azure AI Foundry          |
-| `AZURE_OPENAI_API_VERSION`                | Versione API per Azure OpenAI                | Il tuo Azure AI Foundry          |
-| `OPENAI_API_KEY`                | API Key per OpenAI                           | La tua piattaforma OpenAI        |
-| `OPENAI_ORG_ID`                | ID Organizzazione OpenAI (Opzionale)         | La tua piattaforma OpenAI        |
-| `OPENAI_CHAT_MODEL_ID`                | ID modello OpenAI specifico (Opzionale)      | La tua piattaforma OpenAI        |
-| `OPENAI_BASE_URL`                | URL base API OpenAI personalizzato (Opzionale) | La tua piattaforma OpenAI        |
+| Nome Segreto                         | Descrizione                               | Fonte Valore                     |
+| :----------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`           | Chiave per Azure AI Service (Computer Vision)  | Il tuo Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`          | Endpoint per Azure AI Service (Computer Vision) | Il tuo Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`               | Chiave per Azure OpenAI service              | Il tuo Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`              | Endpoint per Azure OpenAI service         | Il tuo Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`            | Nome del tuo modello Azure OpenAI         | Il tuo Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`  | Nome del deployment Azure OpenAI          | Il tuo Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`           | Versione API per Azure OpenAI             | Il tuo Azure AI Foundry               |
+| `OPENAI_API_KEY`                     | API Key per OpenAI                        | La tua piattaforma OpenAI             |
+| `OPENAI_ORG_ID`                      | ID Organizzazione OpenAI (Opzionale)      | La tua piattaforma OpenAI             |
+| `OPENAI_CHAT_MODEL_ID`               | ID modello OpenAI specifico (Opzionale)   | La tua piattaforma OpenAI             |
+| `OPENAI_BASE_URL`                    | Base URL API OpenAI personalizzata (Opzionale) | La tua piattaforma OpenAI             |
 
-### Passo 3: Configurare i permessi del workflow
+### Passo 3: Configurare i Permessi del Workflow
 
-La GitHub Action ha bisogno dei permessi concessi tramite il `GITHUB_TOKEN` per eseguire il checkout del codice e creare pull request.
+La GitHub Action necessita dei permessi concessi tramite il `GITHUB_TOKEN` per effettuare il checkout del codice e creare pull request.
 
-1.  Nel repository, vai su **Settings** > **Actions** > **General**.  
-2.  Scorri fino alla sezione **Workflow permissions**.  
-3.  Seleziona **Read and write permissions**. Questo concede al `GITHUB_TOKEN` i permessi `contents: write` e `pull-requests: write` necessari per questo workflow.  
-4.  Assicurati che la casella **Allow GitHub Actions to create and approve pull requests** sia **spuntata**.  
+1.  Nel tuo repository, vai su **Settings** > **Actions** > **General**.
+2.  Scorri fino alla sezione **Workflow permissions**.
+3.  Seleziona **Read and write permissions**. Questo concede al `GITHUB_TOKEN` i permessi necessari `contents: write` e `pull-requests: write` per questo workflow.
+4.  Assicurati che la casella **Allow GitHub Actions to create and approve pull requests** sia **selezionata**.
 5.  Clicca su **Save**.
 
-![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.it.png)
+![Impostazione permessi](../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.it.png)
 
-### Passo 4: Creare il file del workflow
+### Passo 4: Crea il File del Workflow
 
-Infine, crea il file YAML che definisce il workflow automatico usando `GITHUB_TOKEN`.
+Infine, crea il file YAML che definisce il workflow automatizzato usando `GITHUB_TOKEN`.
 
-1.  Nella directory principale del repository, crea la cartella `.github/workflows/` se non esiste già.  
-2.  All’interno di `.github/workflows/`, crea un file chiamato `co-op-translator.yml`.  
-3.  Incolla il contenuto seguente in `co-op-translator.yml`.
+1.  Nella directory principale del tuo repository, crea la cartella `.github/workflows/` se non esiste già.
+2.  All’interno di `.github/workflows/`, crea un file chiamato `co-op-translator.yml`.
+3.  Incolla il seguente contenuto in `co-op-translator.yml`.
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4.  **Personalizza il workflow:**  
-  - **[!IMPORTANT] Lingue target:** Nel passaggio `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` se necessario.
+```
+4.  **Personalizza il Workflow:**
+  - **[!IMPORTANT] Lingue di destinazione:** Nel passaggio `Run Co-op Translator`, **DEVI controllare e modificare la lista dei codici lingua** all’interno del comando `translate -l "..." -y` per adattarla alle esigenze del tuo progetto. La lista di esempio (`ar de es...`) va sostituita o aggiornata.
+  - **Trigger (`on:`):** Il trigger attuale si attiva ad ogni push su `main`. Per repository grandi, valuta di aggiungere un filtro `paths:` (vedi esempio commentato nello YAML) per eseguire il workflow solo quando cambiano i file rilevanti (es. documentazione sorgente), risparmiando minuti di esecuzione.
+  - **Dettagli PR:** Personalizza il `commit-message`, `title`, `body`, nome del `branch` e le `labels` nel passaggio `Create Pull Request` se necessario.
 
-**Disclaimer**:  
-Questo documento è stato tradotto utilizzando il servizio di traduzione automatica [Co-op Translator](https://github.com/Azure/co-op-translator). Pur impegnandoci per garantire accuratezza, si prega di considerare che le traduzioni automatiche possono contenere errori o imprecisioni. Il documento originale nella sua lingua originale deve essere considerato la fonte autorevole. Per informazioni critiche, si raccomanda una traduzione professionale effettuata da un essere umano. Non siamo responsabili per eventuali incomprensioni o interpretazioni errate derivanti dall’uso di questa traduzione.
+## Esecuzione del Workflow
+
+> [!WARNING]  
+> **Limite di tempo dei runner GitHub-hosted:**  
+> I runner GitHub-hosted come `ubuntu-latest` hanno un **limite massimo di esecuzione di 6 ore**.  
+> Per repository di documentazione molto grandi, se il processo di traduzione supera le 6 ore, il workflow verrà terminato automaticamente.  
+> Per evitarlo, valuta:  
+> - L’uso di un **runner self-hosted** (senza limiti di tempo)  
+> - La riduzione del numero di lingue di destinazione per ogni esecuzione
+
+Una volta che il file `co-op-translator.yml` è stato inserito nel tuo branch principale (o nel branch specificato nel trigger `on:`), il workflow verrà eseguito automaticamente ogni volta che vengono apportate modifiche a quel branch (e corrispondono al filtro `paths`, se configurato).
+
+---
+
+**Disclaimer**:
+Questo documento è stato tradotto utilizzando il servizio di traduzione AI [Co-op Translator](https://github.com/Azure/co-op-translator). Pur impegnandoci per garantire l’accuratezza, si prega di notare che le traduzioni automatiche possono contenere errori o imprecisioni. Il documento originale nella sua lingua nativa deve essere considerato la fonte autorevole. Per informazioni critiche, si raccomanda una traduzione professionale effettuata da un umano. Non siamo responsabili per eventuali fraintendimenti o interpretazioni errate derivanti dall’uso di questa traduzione.

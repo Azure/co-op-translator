@@ -1,27 +1,27 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:37:16+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T03:55:30+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "sk"
 }
 -->
-# Inštalácia balíka Co-op translator
+# Inštalácia balíka Co-op Translator
 
-**Co-op Translator** je nástroj s príkazovým riadkom (CLI), ktorý vám pomôže preložiť všetky markdown súbory a obrázky vo vašom projekte do viacerých jazykov. Tento návod vás prevedie konfiguráciou prekladača a jeho spustením pre rôzne prípady použitia.
+**Co-op Translator** je nástroj príkazového riadku (CLI), ktorý vám pomôže preložiť všetky markdown súbory a obrázky vo vašom projekte do viacerých jazykov. Tento návod vás prevedie nastavením prekladača a jeho používaním v rôznych situáciách.
 
 ### Vytvorenie virtuálneho prostredia
 
-Virtuálne prostredie môžete vytvoriť pomocou `pip` alebo `Poetry`. Zadajte jeden z nasledujúcich príkazov v termináli.
+Virtuálne prostredie môžete vytvoriť pomocou `pip` alebo `Poetry`. Zadajte jeden z nasledujúcich príkazov do svojho terminálu.
 
-#### Použitie pip
+#### Pomocou pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Použitie Poetry
+#### Pomocou Poetry
 
 ```bash
 poetry init
@@ -29,7 +29,7 @@ poetry init
 
 ### Aktivácia virtuálneho prostredia
 
-Po vytvorení virtuálneho prostredia ho musíte aktivovať. Postup sa líši podľa operačného systému. Zadajte nasledujúci príkaz v termináli.
+Po vytvorení virtuálneho prostredia ho musíte aktivovať. Postup sa líši podľa operačného systému. Zadajte nasledujúci príkaz do svojho terminálu.
 
 #### Pre pip aj Poetry
 
@@ -45,9 +45,9 @@ Po vytvorení virtuálneho prostredia ho musíte aktivovať. Postup sa líši po
     source .venv/bin/activate
     ```
 
-#### Použitie Poetry
+#### Pomocou Poetry
 
-1. Ak ste prostredie vytvorili pomocou Poetry, zadajte v termináli nasledujúci príkaz na jeho aktiváciu.
+1. Ak ste prostredie vytvorili pomocou Poetry, zadajte nasledujúci príkaz do svojho terminálu na jeho aktiváciu.
 
     ```bash
     poetry shell
@@ -59,35 +59,38 @@ Keď máte virtuálne prostredie nastavené a aktivované, ďalším krokom je i
 
 ### Rýchla inštalácia
 
-Nainštalujte Co-Op Translator cez pip
+Inštalujte Co-Op Translator cez pip
 
 ```
 pip install co-op-translator
 ```
-Alebo
+Alebo 
 
-Nainštalujte cez Poetry
+Inštalujte cez poetry
 ```
 poetry add co-op-translator
 ```
 
-#### Použitie pip (z requirements.txt), ak ste naklonovali tento repozitár
+#### Pomocou pip (zo súboru requirements.txt) ak ste klonovali tento repozitár 
 
-![NOTE] Prosím, nerobte to, ak inštalujete co-op translator cez rýchlu inštaláciu.
+> [!NOTE]
+> Toto nerobte, ak ste nainštalovali co-op translator cez rýchlu inštaláciu.
 
-1. Ak používate pip, zadajte v termináli nasledujúci príkaz. Automaticky nainštaluje potrebné balíky uvedené v súbore `requirements.txt`:
+1. Ak používate pip, zadajte nasledujúci príkaz do svojho terminálu. Automaticky nainštaluje požadované balíky uvedené v súbore `requirements.txt`:
 
     ```bash
     pip install -r requirements.txt
     ```
 
-#### Použitie Poetry (z pyproject.toml)
+#### Pomocou Poetry (zo súboru pyproject.toml)
 
-1. Ak používate Poetry, zadajte v termináli nasledujúci príkaz. Automaticky nainštaluje potrebné balíky uvedené v súbore `pyproject.toml`:
+1. Ak používate Poetry, zadajte nasledujúci príkaz do svojho terminálu. Automaticky nainštaluje požadované balíky uvedené v súbore `pyproject.toml`:
 
     ```bash
     poetry install
     ```
 
-**Vyhlásenie o zodpovednosti**:  
-Tento dokument bol preložený pomocou AI prekladateľskej služby [Co-op Translator](https://github.com/Azure/co-op-translator). Hoci sa snažíme o presnosť, prosím, berte na vedomie, že automatické preklady môžu obsahovať chyby alebo nepresnosti. Pôvodný dokument v jeho rodnom jazyku by mal byť považovaný za autoritatívny zdroj. Pre kritické informácie sa odporúča profesionálny ľudský preklad. Nie sme zodpovední za akékoľvek nedorozumenia alebo nesprávne výklady vyplývajúce z použitia tohto prekladu.
+---
+
+**Vyhlásenie o vylúčení zodpovednosti**:
+Tento dokument bol preložený pomocou AI prekladovej služby [Co-op Translator](https://github.com/Azure/co-op-translator). Hoci sa snažíme o presnosť, upozorňujeme, že automatizované preklady môžu obsahovať chyby alebo nepresnosti. Za autoritatívny zdroj by sa mal považovať pôvodný dokument v jeho pôvodnom jazyku. Pre kritické informácie odporúčame profesionálny ľudský preklad. Nenesieme zodpovednosť za akékoľvek nedorozumenia alebo nesprávne interpretácie vzniknuté použitím tohto prekladu.

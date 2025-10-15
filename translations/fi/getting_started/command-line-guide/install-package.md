@@ -1,27 +1,27 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:35:33+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T03:27:41+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "fi"
 }
 -->
-# Asenna Co-op translator -paketti
+# Asenna Co-op Translator -paketti
 
-**Co-op Translator** on komentorivityökalu (CLI), joka auttaa sinua kääntämään kaikki projektisi markdown-tiedostot ja kuvat useille kielille. Tämä opas ohjaa sinut läpi kääntäjän konfiguroinnin ja sen käyttämisen eri tilanteissa.
+**Co-op Translator** on komentorivikäyttöliittymä (CLI) -työkalu, jonka avulla voit kääntää kaikki projektisi markdown-tiedostot ja kuvat useille kielille. Tämä opas neuvoo, miten kääntäjä konfiguroidaan ja käytetään eri tilanteissa.
 
 ### Luo virtuaaliympäristö
 
-Voit luoda virtuaaliympäristön käyttämällä joko `pip` tai `Poetry`. Kirjoita jompikumpi seuraavista komennoista terminaaliisi.
+Voit luoda virtuaaliympäristön joko `pip`- tai `Poetry`-työkalulla. Kirjoita jokin seuraavista komennoista terminaaliin.
 
-#### Pipin käyttäminen
+#### Pipin käyttö
 
 ```bash
 python -m venv .venv
 ```
 
-#### Poetryn käyttäminen
+#### Poetryn käyttö
 
 ```bash
 poetry init
@@ -29,9 +29,9 @@ poetry init
 
 ### Aktivoi virtuaaliympäristö
 
-Virtuaaliympäristön luomisen jälkeen sinun täytyy aktivoida se. Vaiheet riippuvat käyttöjärjestelmästäsi. Kirjoita seuraava komento terminaaliisi.
+Kun virtuaaliympäristö on luotu, se täytyy aktivoida. Vaiheet riippuvat käyttöjärjestelmästäsi. Kirjoita seuraava komento terminaaliin.
 
-#### Sekä pipille että Poetrylle
+#### Pipille ja Poetrylle
 
 - Windows:
 
@@ -45,49 +45,52 @@ Virtuaaliympäristön luomisen jälkeen sinun täytyy aktivoida se. Vaiheet riip
     source .venv/bin/activate
     ```
 
-#### Poetryn käyttäminen
+#### Poetryn käyttö
 
-1. Jos loit ympäristön Poetrylla, kirjoita seuraava komento terminaaliisi aktivoidaksesi sen.
+1. Jos loit ympäristön Poetrylla, aktivoi se kirjoittamalla seuraava komento terminaaliin.
 
     ```bash
     poetry shell
     ```
 
-### Paketin ja vaadittavien pakettien asentaminen
+### Paketin ja tarvittavien pakettien asennus
 
-Kun virtuaaliympäristö on luotu ja aktivoitu, seuraava vaihe on asentaa tarvittavat riippuvuudet.
+Kun virtuaaliympäristö on luotu ja aktivoitu, seuraava vaihe on tarvittavien riippuvuuksien asentaminen.
 
-### Pikainen asennus
+### Nopea asennus
 
 Asenna Co-Op Translator pipin kautta
 
 ```
 pip install co-op-translator
-```  
-Tai  
+```
+Tai 
 
-Asenna Poetrylla  
+Asenna Poetryn kautta
 ```
 poetry add co-op-translator
 ```
 
-#### Pipin käyttäminen (requirements.txt-tiedostosta), jos kloonaat tämän repositorion
+#### Pipin käyttö (requirements.txt-tiedostosta), jos kloonaat tämän repopaketin
 
-![NOTE] Älä tee tätä, jos asennat co-op translatorin pikaisen asennuksen kautta.
+> [!NOTE]
+> Älä tee tätä, jos asennat co-op translatorin nopean asennuksen kautta.
 
-1. Jos käytät pipiä, kirjoita seuraava komento terminaaliisi. Se asentaa automaattisesti `requirements.txt`-tiedostossa määritellyt pakolliset paketit:
+1. Jos käytät pipiä, kirjoita seuraava komento terminaaliin. Se asentaa automaattisesti kaikki `requirements.txt`-tiedostossa määritetyt paketit:
 
     ```bash
     pip install -r requirements.txt
     ```
 
-#### Poetryn käyttäminen (pyproject.toml-tiedostosta)
+#### Poetryn käyttö (pyproject.toml-tiedostosta)
 
-1. Jos käytät Poetrya, kirjoita seuraava komento terminaaliisi. Se asentaa automaattisesti `pyproject.toml`-tiedostossa määritellyt pakolliset paketit:
+1. Jos käytät Poetrya, kirjoita seuraava komento terminaaliin. Se asentaa automaattisesti kaikki `pyproject.toml`-tiedostossa määritetyt paketit:
 
     ```bash
     poetry install
     ```
 
-**Vastuuvapauslauseke**:  
-Tämä asiakirja on käännetty tekoälypohjaisella käännöspalvelulla [Co-op Translator](https://github.com/Azure/co-op-translator). Vaikka pyrimme tarkkuuteen, huomioithan, että automaattikäännöksissä voi esiintyä virheitä tai epätarkkuuksia. Alkuperäinen asiakirja sen alkuperäiskielellä on katsottava auktoriteettiseksi lähteeksi. Tärkeissä tiedoissa suositellaan ammattimaista ihmiskäännöstä. Emme ole vastuussa tämän käännöksen käytöstä johtuvista väärinymmärryksistä tai virhetulkinnoista.
+---
+
+**Vastuuvapauslauseke**:
+Tämä asiakirja on käännetty käyttämällä tekoälypohjaista käännöspalvelua [Co-op Translator](https://github.com/Azure/co-op-translator). Vaikka pyrimme tarkkuuteen, huomioithan, että automaattiset käännökset voivat sisältää virheitä tai epätarkkuuksia. Alkuperäistä asiakirjaa sen alkuperäisellä kielellä tulee pitää ensisijaisena lähteenä. Kriittisissä tapauksissa suositellaan ammattimaista ihmiskääntäjää. Emme ole vastuussa tämän käännöksen käytöstä johtuvista väärinkäsityksistä tai tulkintavirheistä.

@@ -1,42 +1,42 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:53:51+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T03:46:23+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "sw"
 }
 -->
 # Tafsiri mradi wako kwa kutumia Co-op Translator
 
-**Co-op Translator** ni chombo cha mstari wa amri (CLI) kinachokusaidia kutafsiri faili za markdown na picha katika mradi wako kwa lugha mbalimbali. Sehemu hii inaelezea jinsi ya kutumia chombo hiki, inafafanua chaguzi mbalimbali za CLI, na kutoa mifano kwa matumizi tofauti.
+**Co-op Translator** ni zana ya mstari wa amri (CLI) inayokusaidia kutafsiri faili za markdown na picha kwenye mradi wako kwenda lugha mbalimbali. Sehemu hii inaelezea jinsi ya kutumia zana hii, inaeleza chaguzi mbalimbali za CLI, na inatoa mifano kwa matumizi tofauti.
 
 > [!NOTE]
-> Kwa orodha kamili ya amri na maelezo yao ya kina, tafadhali rejea [Command reference](./command-reference.md).
+> Kwa orodha kamili ya amri na maelezo yake, tafadhali angalia [Command reference](./command-reference.md).
 
 ---
 
-## Mifano ya Matukio na Amri
+## Mifano ya Matumizi na Amri
 
-Hapa kuna baadhi ya matumizi ya kawaida ya **Co-op Translator**, pamoja na amri zinazofaa kutekeleza.
+Hapa kuna baadhi ya matumizi ya kawaida ya **Co-op Translator**, pamoja na amri zinazofaa kutumia.
 
-### 1. Tafsiri ya Msingi (Lugha Moja)
+### 1. Tafsiri ya Kawaida (Lugha Moja)
 
-Ili kutafsiri mradi wako mzima (faili za markdown na picha) kwa lugha moja, kama Kikorea, tumia amri ifuatayo:
+Ili kutafsiri mradi wako mzima (faili za markdown na picha) kwenda lugha moja, kama vile Kikorea, tumia amri ifuatayo:
 
 ```bash
 translate -l "ko"
 ```
 
-Amri hii itatafsiri faili zote za markdown na picha kwa Kikorea, ikiongeza tafsiri mpya bila kufuta zilizopo.
+Amri hii itatafsiri faili zote za markdown na picha kwenda Kikorea, na kuongeza tafsiri mpya bila kufuta zilizopo.
 
 > [!TIP]
 >
-> Unataka kuona ni vipi nambari za lugha zinavyopatikana katika **Co-op Translator**? Tembelea sehemu ya [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) kwenye hifadhidata kwa maelezo zaidi.
+> Ungependa kujua ni nambari zipi za lugha zinapatikana kwenye **Co-op Translator**? Tembelea sehemu ya [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) kwenye hazina kwa maelezo zaidi.
 
 #### Mfano kwenye Phi-3 CookBook
 
-Katika **Phi-3 CookBook**, nilitumia njia ifuatayo kuongeza tafsiri ya Kikorea kwa faili zilizopo za markdown na picha.
+Katika **Phi-3 CookBook**, nilitumia njia hii kuongeza tafsiri ya Kikorea kwa faili za markdown na picha zilizopo.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -46,17 +46,17 @@ Translating markdown files: 100%|███████████████�
 
 ### 2. Kutafsiri Lugha Nyingi
 
-Ili kutafsiri mradi wako kwa lugha nyingi (mfano, Kihispania, Kifaransa, na Kijerumani), tumia amri hii:
+Ili kutafsiri mradi wako kwenda lugha nyingi (mfano, Kihispania, Kifaransa, na Kijerumani), tumia amri hii:
 
 ```bash
 translate -l "es fr de"
 ```
 
-Amri hii itatafsiri mradi kwa Kihispania, Kifaransa, na Kijerumani, ikiongeza tafsiri mpya bila kuandika juu zilizopo.
+Amri hii itatafsiri mradi kwenda Kihispania, Kifaransa, na Kijerumani, na kuongeza tafsiri mpya bila kuandika upya zilizopo.
 
 #### Mfano kwenye Phi-3 CookBook
 
-Katika **Phi-3 CookBook**, baada ya kuvuta mabadiliko ya hivi karibuni ili kuonyesha marekebisho ya hivi punde, nilitumia njia ifuatayo kutafsiri faili mpya za markdown na picha.
+Katika **Phi-3 CookBook**, baada ya kuvuta mabadiliko ya hivi karibuni ili kuonyesha marekebisho mapya, nilitumia njia hii kutafsiri faili mpya za markdown na picha.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,21 +65,21 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Ingawa kwa kawaida inapendekezwa kutafsiri lugha moja kwa wakati, katika hali kama hii ambapo mabadiliko maalum yanahitajika, kutafsiri lugha nyingi kwa pamoja kunaweza kuwa na ufanisi zaidi.
+> Ingawa inashauriwa kutafsiri lugha moja kwa wakati, katika hali kama hii ambapo mabadiliko maalum yanahitaji kuongezwa, kutafsiri lugha nyingi kwa mara moja kunaweza kuwa haraka.
 
 ### 3. Kusasisha Tafsiri (Hufuta Tafsiri Zilizopo)
 
-Ili kusasisha tafsiri zilizopo (yaani, kufuta tafsiri za sasa na kuzibadilisha na mpya), tumia chaguo la `-u`. Hii itafuta tafsiri zote zilizopo kwa lugha zilizotajwa na kuzitafsiri upya.
+Ili kusasisha tafsiri zilizopo (yaani, kufuta tafsiri za sasa na kuzibadilisha na mpya), tumia chaguo la `-u`. Hii itafuta tafsiri zote zilizopo kwa lugha ulizochagua na kuzitafsiri upya.
 
 ```bash
 translate -l "ko" -u
 ```
 
-Onyo: Amri hii itakuomba uthibitisho kabla ya kuendelea na kufuta tafsiri zilizopo.
+Tahadhari: Amri hii itakuuliza uthibitisho kabla ya kuendelea na kufuta tafsiri zilizopo.
 
 #### Mfano kwenye Phi-3 CookBook
 
-Katika **Phi-3 CookBook**, nilitumia njia ifuatayo kusasisha faili zote zilizotafsiriwa kwa Kihispania. Ninapendekeza kutumia njia hii wakati kuna mabadiliko makubwa katika maudhui ya asili kwenye nyaraka nyingi za markdown. Ikiwa kuna faili chache tu za markdown zilizotafsiriwa kusasisha, ni bora kufuta faili hizo kwa mkono kisha kutumia njia ya `-a` kuongeza tafsiri zilizosasishwa.
+Katika **Phi-3 CookBook**, nilitumia njia hii kusasisha faili zote zilizotafsiriwa kwa Kihispania. Ninapendekeza kutumia njia hii pale ambapo kuna mabadiliko makubwa kwenye yaliyomo asili kwenye hati nyingi za markdown. Kama kuna faili chache tu za markdown zilizotafsiriwa zinazohitaji kusasishwa, ni bora kufuta faili hizo moja kwa moja na kisha kutumia njia ya `-a` kuongeza tafsiri mpya.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -92,35 +92,25 @@ Translating markdown files: 100%|███████████████�
 
 ### 5. Kutafsiri Picha Pekee
 
-Ili kutafsiri picha pekee katika mradi wako, tumia chaguo la `-img`:
+Ili kutafsiri faili za picha pekee kwenye mradi wako, tumia chaguo la `-img`:
 
 ```bash
 translate -l "ko" -img
 ```
 
-Amri hii itatafsiri picha pekee kwa Kikorea, bila kuathiri faili zozote za markdown.
+Amri hii itatafsiri picha pekee kwenda Kikorea, bila kugusa faili za markdown.
 
 ### 6. Kutafsiri Faili za Markdown Pekee
 
-Ili kutafsiri faili za markdown pekee katika mradi wako, tumia chaguo la `-md`:
+Ili kutafsiri faili za markdown pekee kwenye mradi wako, tumia chaguo la `-md`:
 
 ```bash
 translate -l "ko" -md
 ```
 
-### 7. Kukagua Makosa katika Faili Zilizotafsiriwa
-
-Kama unataka kukagua faili zilizotafsiriwa kwa makosa na kujaribu kutafsiri tena ikiwa inahitajika, tumia chaguo la `-chk`:
-
-```bash
-translate -l "ko" -chk
-```
-
-Amri hii itapitia faili za markdown zilizotafsiriwa na kujaribu tena kutafsiri faili zozote zenye makosa.
-
 #### Mfano kwenye Phi-3 CookBook
 
-Katika **Phi-3 CookBook**, nilitumia njia ifuatayo kukagua makosa ya tafsiri katika faili za Kikorea na kujaribu tena kutafsiri kwa otomatiki faili zozote zilizo na matatizo.
+Katika **Phi-3 CookBook**, nilitumia njia hii kukagua makosa ya tafsiri kwenye faili za Kikorea na kujaribu tena kutafsiri faili zozote zilizoonekana kuwa na matatizo.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -129,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Chaguo hili linakagua makosa ya tafsiri. Kwa sasa, kama tofauti ya mapumziko ya mistari kati ya faili ya asili na ile iliyotafsiriwa ni zaidi ya sita, faili hiyo huwekwa kama yenye hitilafu ya tafsiri. Ninapanga kuboresha kigezo hiki ili kuwa na ufanisi zaidi siku za usoni.
+Chaguo hili hukagua makosa ya tafsiri. Kwa sasa, kama tofauti ya mapumziko ya mistari kati ya faili asili na iliyotafsiriwa ni zaidi ya sita, faili hiyo inaonekana ina tatizo la tafsiri. Ninapanga kuboresha kigezo hiki ili kiwe na ufanisi zaidi siku zijazo.
 
 Kwa mfano, njia hii ni muhimu kugundua sehemu zilizokosekana au tafsiri zilizoharibika, na itajaribu tena kutafsiri faili hizo moja kwa moja.
 
-Hata hivyo, kama tayari unajua faili gani zina matatizo, ni bora kufuta faili hizo kwa mkono na kutumia chaguo la `-a` option to re-translate them.
+Hata hivyo, kama tayari unajua ni faili zipi zina matatizo, ni bora kufuta faili hizo moja kwa moja na kutumia chaguo la `-a` kuzitafsiri upya.
 
-### 8. Debug Mode
+### 8. Hali ya Utatuzi (Debug Mode)
 
-To enable detailed logging for troubleshooting, use the `-d`:
+Ili kuwezesha taarifa za kina za utatuzi, tumia chaguo la `-d`:
 
 ```bash
 translate -l "ko" -d
 ```
 
-Amri hii itafanya tafsiri katika hali ya ufuatiliaji wa makosa (debug mode), ikitoa taarifa za ziada za kumbukumbu zinazoweza kusaidia kugundua matatizo wakati wa mchakato wa tafsiri.
+Amri hii itaendesha tafsiri katika hali ya utatuzi, na kutoa taarifa zaidi za logi zitakazokusaidia kutambua matatizo wakati wa mchakato wa tafsiri.
 
 #### Mfano kwenye Phi-3 CookBook
 
-Katika **Phi-3 CookBook**, nilikumbana na tatizo ambapo tafsiri zilizo na viungo vingi katika faili za markdown zilisababisha makosa ya muundo, kama tafsiri zilizovunjika na kupuuzwa kwa mapumziko ya mistari. Ili kuchunguza tatizo hili, nilitumia chaguo la `-d` kuona jinsi mchakato wa tafsiri unavyofanya kazi.
+Katika **Phi-3 CookBook**, nilikutana na tatizo ambapo tafsiri zenye viungo vingi kwenye faili za markdown zilisababisha makosa ya muundo, kama vile tafsiri zilizovunjika na mapumziko ya mistari kupuuzwa. Ili kuchunguza tatizo hili, nilitumia chaguo la `-d` kuona jinsi mchakato wa tafsiri unavyofanya kazi.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -157,33 +147,33 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 
 ### 9. Kutafsiri Lugha Zote
 
-Ikiwa unataka kutafsiri mradi kwa lugha zote zinazounga mkono, tumia neno kuu all.
+Kama unataka kutafsiri mradi kwenda lugha zote zinazopatikana, tumia neno all.
 
 > [!WARNING]
-> Kutafsiri lugha zote kwa pamoja kunaweza kuchukua muda mrefu kulingana na ukubwa wa mradi. Kwa mfano, kutafsiri **Phi-3 CookBook** kwa Kihispania kulichukua takriban saa 2. Kwa wingi huu, si rahisi mtu mmoja kushughulikia lugha 20. Inapendekezwa kugawanya kazi kwa washiriki wengi, kila mmoja akisimamia lugha moja au mbili, na kusasisha tafsiri polepole.
+> Kutafsiri lugha zote kwa mara moja kunaweza kuchukua muda mrefu kulingana na ukubwa wa mradi. Kwa mfano, kutafsiri **Phi-3 CookBook** kwenda Kihispania kulichukua takriban saa 2. Kwa ukubwa huu, si rahisi kwa mtu mmoja kushughulikia lugha 20. Inashauriwa kugawanya kazi kati ya wachangiaji wengi, kila mmoja akisimamia lugha moja au mbili, na kusasisha tafsiri kidogo kidogo.
 
 ```bash
 translate -l "all"
 ```
 
-Amri hii itatafsiri mradi kwa lugha zote zinazopatikana. Ikiwa utaendelea, tafsiri inaweza kuchukua muda mrefu kulingana na ukubwa wa mradi.
+Amri hii itatafsiri mradi kwenda lugha zote zinazopatikana. Ukichagua kuendelea, tafsiri inaweza kuchukua muda mrefu kulingana na ukubwa wa mradi.
 
 > [!TIP]
 >
 > ### Kufuta Faili Zilizotafsiriwa kwa Mkono (Hiari)
-> Faili zilizotafsiriwa sasa hutambuliwa na kusafishwa moja kwa moja wakati faili ya chanzo inaposasishwa.
+> Faili zilizotafsiriwa sasa zinatambuliwa na kusafishwa moja kwa moja pale faili asili inaposasishwa.
 >
-> Hata hivyo, kama unataka kusasisha tafsiri kwa mkono - kwa mfano, kufanya upya faili fulani au kubadili tabia ya mfumo - unaweza kutumia amri ifuatayo kufuta matoleo yote ya faili hiyo katika folda za lugha.
+> Hata hivyo, kama unataka kusasisha tafsiri kwa mkono - kwa mfano, kurudia faili maalum au kubadilisha tabia ya mfumo - unaweza kutumia amri ifuatayo kufuta matoleo yote ya faili kwenye folda za lugha.
 >
 > ### Kwenye Windows:
 > 1. **Kutumia Command Prompt**:
 >    - Fungua Command Prompt.
->    - Elekea kwenye folda inayohifadhi faili kwa kutumia amri ya `cd`.
->    - Tumia amri ifuatayo kufuta faili:
+>    - Nenda kwenye folda yenye faili kwa kutumia amri ya `cd`.
+>    - Tumia amri hii kufuta faili:
 >      ```
 >      del /s *filename*
 >      ```
->      Chaguo `filename` with the specific part of the file name you're looking for. The `/s` kinatafuta pia katika saraka ndogo.
+>      Badilisha `filename` na sehemu maalum ya jina la faili unayotafuta. Chaguo la `/s` linatafuta kwenye folda ndogo pia.
 >
 > 2. **Kutumia PowerShell**:
 >    - Fungua PowerShell.
@@ -191,21 +181,23 @@ Amri hii itatafsiri mradi kwa lugha zote zinazopatikana. Ikiwa utaendelea, tafsi
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      Badilisha `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>      Badilisha `"C:\YourPath"` na njia ya folda na `filename` na jina maalum.
 >
-> ### On macOS/Linux:
-> 1. **Using Terminal**:
->   - Open Terminal.
->   - Navigate to the directory with `cd`.
->   - Use the `find` kwa amri ifuatayo:
+> ### Kwenye macOS/Linux:
+> 1. **Kutumia Terminal**:
+>   - Fungua Terminal.
+>   - Nenda kwenye folda kwa kutumia `cd`.
+>   - Tumia amri ya `find`:
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->     Badilisha `filename` with the specific name.
+>     Badilisha `filename` na jina maalum.
 >
-> Always double-check the files before deleting to avoid accidental loss. 
+> Hakikisha unakagua faili kabla ya kufuta ili kuepuka kupoteza data kwa bahati mbaya. 
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` ili kusasisha mabadiliko ya faili za hivi karibuni.
+> Baada ya kufuta faili unazotaka kubadilisha, endesha tena amri yako ya `translate -l` ili kusasisha mabadiliko ya faili za hivi karibuni.
 
-**Kiasi cha majibu**:  
-Hati hii imetafsiriwa kwa kutumia huduma ya tafsiri ya AI [Co-op Translator](https://github.com/Azure/co-op-translator). Ingawa tunajitahidi kwa usahihi, tafadhali fahamu kwamba tafsiri za moja kwa moja zinaweza kuwa na makosa au upungufu wa usahihi. Hati ya asili katika lugha yake ya asili inapaswa kuchukuliwa kama chanzo cha mamlaka. Kwa taarifa muhimu, tafsiri ya kitaalamu ya binadamu inashauriwa. Hatubeba dhima yoyote kwa kutoelewana au tafsiri potofu zinazotokana na matumizi ya tafsiri hii.
+---
+
+**Kanusho**:  
+Hati hii imetafsiriwa kwa kutumia huduma ya kutafsiri ya AI [Co-op Translator](https://github.com/Azure/co-op-translator). Ingawa tunajitahidi kuhakikisha usahihi, tafadhali fahamu kwamba tafsiri za kiotomatiki zinaweza kuwa na makosa au kutokuwa sahihi. Hati asili katika lugha yake ya awali inapaswa kuchukuliwa kama chanzo cha mamlaka. Kwa taarifa muhimu, inashauriwa kutumia huduma ya utafsiri wa kibinadamu wa kitaalamu. Hatutawajibika kwa kutoelewana au tafsiri potofu zitakazotokana na matumizi ya tafsiri hii.

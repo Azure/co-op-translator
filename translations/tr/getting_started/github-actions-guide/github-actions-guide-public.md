@@ -1,94 +1,94 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:28:18+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T03:12:06+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "tr"
 }
 -->
-# Co-op Translator GitHub Action Kullanımı (Genel Kurulum)
+# Co-op Translator GitHub Action'ı Kullanma (Genel Kurulum)
 
-**Hedef Kitle:** Bu rehber, standart GitHub Actions izinlerinin yeterli olduğu çoğu genel veya özel depo kullanıcıları için hazırlanmıştır. Yerleşik `GITHUB_TOKEN` kullanır.
+**Hedef Kitle:** Bu rehber, standart GitHub Actions izinlerinin yeterli olduğu çoğu genel veya özel depoda kullanılmak üzere hazırlanmıştır. Dahili `GITHUB_TOKEN` kullanılır.
 
-Depo dokümantasyonunuzun çevirisini Co-op Translator GitHub Action ile zahmetsizce otomatikleştirin. Bu rehber, kaynak Markdown dosyalarınız veya resimleriniz değiştiğinde otomatik olarak güncellenmiş çevirilerle pull request oluşturacak şekilde action'ı kurmanıza yardımcı olur.
+Depo dokümantasyonunuzu otomatik olarak çevirmek için Co-op Translator GitHub Action'ı kolayca kurabilirsiniz. Bu rehber, kaynak Markdown dosyalarınız veya görselleriniz değiştiğinde otomatik olarak güncellenmiş çevirilerle pull request oluşturan action'ın kurulumunu adım adım anlatır.
 
 > [!IMPORTANT]
 >
 > **Doğru Rehberi Seçmek:**
 >
-> Bu rehber, **standart `GITHUB_TOKEN` kullanılarak yapılan daha basit kurulumu** detaylandırır. Çoğu kullanıcı için önerilen yöntem budur çünkü hassas GitHub App Private Key’lerini yönetmenizi gerektirmez.
+> Bu rehber, **standart `GITHUB_TOKEN` ile yapılan daha basit kurulumu** anlatır. Hassas GitHub App Private Key'leriyle uğraşmak gerekmediği için çoğu kullanıcı için önerilen yöntem budur.
 >
 
-## Ön Koşullar
+## Ön Gereksinimler
 
-GitHub Action’ı yapılandırmadan önce gerekli AI servis kimlik bilgilerine sahip olduğunuzdan emin olun.
+GitHub Action'ı yapılandırmadan önce gerekli yapay zeka servis kimlik bilgilerine sahip olduğunuzdan emin olun.
 
-**1. Gerekli: AI Dil Modeli Kimlik Bilgileri**  
-En az bir desteklenen Dil Modeli için kimlik bilgilerine ihtiyacınız var:
+**1. Zorunlu: Yapay Zeka Dil Modeli Kimlik Bilgileri**
+Desteklenen dil modellerinden en az biri için kimlik bilgilerine ihtiyacınız var:
 
-- **Azure OpenAI**: Endpoint, API Anahtarı, Model/Deployment İsimleri, API Versiyonu gerektirir.
-- **OpenAI**: API Anahtarı, (İsteğe bağlı: Org ID, Base URL, Model ID).
-- Detaylar için [Supported Models and Services](../../../../README.md) sayfasına bakın.
+- **Azure OpenAI**: Endpoint, API Key, Model/Deployment Adları, API Versiyonu gerektirir.
+- **OpenAI**: API Key gereklidir, (İsteğe bağlı: Org ID, Base URL, Model ID).
+- Detaylar için [Desteklenen Modeller ve Servisler](../../../../README.md) bölümüne bakabilirsiniz.
 
-**2. İsteğe Bağlı: AI Vision Kimlik Bilgileri (Resim Çevirisi için)**
+**2. İsteğe Bağlı: Yapay Zeka Görsel Kimlik Bilgileri (Görsel Çevirisi için)**
 
-- Sadece resimlerdeki metni çevirmek istiyorsanız gereklidir.
-- **Azure AI Vision**: Endpoint ve Abonelik Anahtarı gerektirir.
-- Sağlanmazsa, action [Markdown-only mode](../markdown-only-mode.md) modunda çalışır.
+- Sadece görsellerdeki metni çevirmek istiyorsanız gereklidir.
+- **Azure AI Vision**: Endpoint ve Subscription Key gerektirir.
+- Sağlanmazsa, action [Sadece Markdown modu](../markdown-only-mode.md) ile çalışır.
 
 ## Kurulum ve Yapılandırma
 
-Standart `GITHUB_TOKEN` kullanarak Co-op Translator GitHub Action’ı deponuzda yapılandırmak için şu adımları izleyin.
+Standart `GITHUB_TOKEN` kullanarak Co-op Translator GitHub Action'ı deponuzda yapılandırmak için aşağıdaki adımları izleyin.
 
-### Adım 1: Kimlik Doğrulamayı Anlayın ( `GITHUB_TOKEN` Kullanımı )
+### 1. Adım: Kimlik Doğrulamayı Anlayın (`GITHUB_TOKEN` Kullanımı)
 
-Bu iş akışı, GitHub Actions tarafından sağlanan yerleşik `GITHUB_TOKEN`’u kullanır. Bu token, **Adım 3**’te yapılandırılan ayarlara bağlı olarak iş akışına deponuzla etkileşim için gerekli izinleri otomatik olarak verir.
+Bu iş akışı, GitHub Actions tarafından sağlanan dahili `GITHUB_TOKEN` kullanır. Bu token, **3. Adımda** yapılandırılan ayarlara göre workflow'un deponuzla etkileşime geçmesi için otomatik olarak izin verir.
 
-### Adım 2: Depo Secret’larını Yapılandırın
+### 2. Adım: Depo Gizli Anahtarlarını Yapılandırın
 
-Sadece **AI servis kimlik bilgilerinizi** şifreli secret olarak depo ayarlarınıza eklemeniz yeterlidir.
+Sadece **yapay zeka servis kimlik bilgilerinizi** depo ayarlarında şifreli gizli anahtarlar olarak eklemeniz gerekir.
 
 1.  Hedef GitHub deponuza gidin.
-2.  **Settings** > **Secrets and variables** > **Actions** sekmesine geçin.
-3.  Aşağıda listelenen gerekli AI servis secret’ları için **New repository secret** butonuna tıklayarak her birini ekleyin.
+2.  **Settings** > **Secrets and variables** > **Actions** yolunu izleyin.
+3.  **Repository secrets** altında, aşağıda listelenen her bir gerekli yapay zeka servisi için **New repository secret** butonuna tıklayın.
 
-    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.tr.png) *(Görsel Referans: Secret ekleme yeri)*
+    <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.tr.png" alt="Select setting action"> *(Görsel Açıklaması: Gizli anahtarların nereden ekleneceğini gösterir)*
 
-**Gerekli AI Servis Secret’ları (Ön Koşullarınıza göre TÜM ilgili olanları ekleyin):**
+**Gerekli Yapay Zeka Servis Gizli Anahtarları (Ön Gereksinimlerinize göre UYGUN OLANLARIN HEPSİNİ ekleyin):**
 
-| Secret Adı                         | Açıklama                               | Değer Kaynağı                     |
-| :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Azure AI Servisi (Computer Vision) Anahtarı  | Azure AI Foundry hesabınız               |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI Servisi (Computer Vision) Endpoint’i | Azure AI Foundry hesabınız               |
-| `AZURE_OPENAI_API_KEY`              | Azure OpenAI servisi Anahtarı              | Azure AI Foundry hesabınız               |
-| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI servisi Endpoint’i         | Azure AI Foundry hesabınız               |
-| `AZURE_OPENAI_MODEL_NAME`           | Azure OpenAI Model Adı              | Azure AI Foundry hesabınız               |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Azure OpenAI Deployment Adı         | Azure AI Foundry hesabınız               |
-| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI API Versiyonu              | Azure AI Foundry hesabınız               |
-| `OPENAI_API_KEY`                    | OpenAI API Anahtarı                        | OpenAI Platform hesabınız              |
-| `OPENAI_ORG_ID`                     | OpenAI Organizasyon ID (İsteğe bağlı)         | OpenAI Platform hesabınız              |
-| `OPENAI_CHAT_MODEL_ID`              | Belirli OpenAI model ID (İsteğe bağlı)       | OpenAI Platform hesabınız              |
-| `OPENAI_BASE_URL`                   | Özel OpenAI API Base URL (İsteğe bağlı)     | OpenAI Platform hesabınız              |
+| Gizli Anahtar Adı                         | Açıklama                               | Değer Kaynağı                     |
+| :---------------------------------------- | :------------------------------------- | :--------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`                | Azure AI Servisi için anahtar (Computer Vision)  | Azure AI Foundry'niz               |
+| `AZURE_AI_SERVICE_ENDPOINT`               | Azure AI Servisi için endpoint (Computer Vision) | Azure AI Foundry'niz               |
+| `AZURE_OPENAI_API_KEY`                    | Azure OpenAI servisi için anahtar              | Azure AI Foundry'niz               |
+| `AZURE_OPENAI_ENDPOINT`                   | Azure OpenAI servisi için endpoint             | Azure AI Foundry'niz               |
+| `AZURE_OPENAI_MODEL_NAME`                 | Azure OpenAI Model Adınız                      | Azure AI Foundry'niz               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`       | Azure OpenAI Deployment Adınız                 | Azure AI Foundry'niz               |
+| `AZURE_OPENAI_API_VERSION`                | Azure OpenAI için API Versiyonu                | Azure AI Foundry'niz               |
+| `OPENAI_API_KEY`                          | OpenAI için API Anahtarı                       | OpenAI Platformunuz                |
+| `OPENAI_ORG_ID`                           | OpenAI Organizasyon ID (İsteğe bağlı)          | OpenAI Platformunuz                |
+| `OPENAI_CHAT_MODEL_ID`                    | Belirli OpenAI model ID (İsteğe bağlı)         | OpenAI Platformunuz                |
+| `OPENAI_BASE_URL`                         | Özel OpenAI API Base URL (İsteğe bağlı)        | OpenAI Platformunuz                |
 
-### Adım 3: İş Akışı İzinlerini Yapılandırın
+### 3. Adım: Workflow İzinlerini Yapılandırın
 
-GitHub Action’ın kodu çekip pull request oluşturabilmesi için `GITHUB_TOKEN` aracılığıyla izinlere ihtiyacı vardır.
+GitHub Action'ın kodu çekebilmesi ve pull request oluşturabilmesi için `GITHUB_TOKEN` ile izin verilmesi gerekir.
 
-1.  Deponuzda **Settings** > **Actions** > **General** bölümüne gidin.
-2.  Aşağı kaydırarak **Workflow permissions** kısmını bulun.
-3.  **Read and write permissions** seçeneğini işaretleyin. Bu, `GITHUB_TOKEN`’a bu iş akışı için gerekli `contents: write` ve `pull-requests: write` izinlerini verir.
-4.  **Allow GitHub Actions to create and approve pull requests** seçeneğinin işaretli olduğundan emin olun.
-5.  **Save** butonuna tıklayın.
+1.  Deponuzda **Settings** > **Actions** > **General** yolunu izleyin.
+2.  **Workflow permissions** bölümüne kadar aşağı kaydırın.
+3.  **Read and write permissions** seçeneğini işaretleyin. Bu, workflow için gerekli olan `contents: write` ve `pull-requests: write` izinlerini verir.
+4.  **Allow GitHub Actions to create and approve pull requests** kutusunun **işaretli** olduğundan emin olun.
+5.  **Save** seçeneğine tıklayın.
 
-![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.tr.png)
+<img src="../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.tr.png" alt="Permission setting">
 
-### Adım 4: İş Akışı Dosyasını Oluşturun
+### 4. Adım: Workflow Dosyasını Oluşturun
 
-Son olarak, otomatik iş akışını tanımlayan YAML dosyasını `GITHUB_TOKEN` kullanarak oluşturun.
+Son olarak, `GITHUB_TOKEN` kullanarak otomatik workflow'u tanımlayan YAML dosyasını oluşturun.
 
-1.  Depo kök dizininde `.github/workflows/` klasörü yoksa oluşturun.
-2.  `.github/workflows/` içinde `co-op-translator.yml` adlı bir dosya oluşturun.
+1.  Depo kök dizininde `.github/workflows/` klasörünü oluşturun (yoksa).
+2.  `.github/workflows/` içinde `co-op-translator.yml` adında bir dosya oluşturun.
 3.  Aşağıdaki içeriği `co-op-translator.yml` dosyasına yapıştırın.
 
 ```yaml
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4.  **İş Akışını Özelleştirin:**  
-  - **[!IMPORTANT] Hedef Diller:** `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` adımında gerekirse hedef dilleri belirleyin.
+```
+4.  **Workflow'u Özelleştirin:**
+  - **[!IMPORTANT] Hedef Diller:** `Run Co-op Translator` adımında, `translate -l "..." -y` komutundaki dil kodları listesini **projenizin gereksinimlerine göre gözden geçirip düzenlemeniz gerekir**. Örnek listedeki (`ar de es...`) dilleri değiştirmeniz veya ayarlamanız gerekir.
+  - **Tetikleyici (`on:`):** Mevcut tetikleyici her `main` dalına yapılan push'ta çalışır. Büyük depolarda, workflow'un sadece ilgili dosyalar (örneğin kaynak dokümantasyon) değiştiğinde çalışması için bir `paths:` filtresi eklemeyi düşünebilirsiniz (YAML'deki yorumlu örneğe bakın), böylece runner dakikalarından tasarruf edersiniz.
+  - **PR Detayları:** Gerekirse `Create Pull Request` adımındaki `commit-message`, `title`, `body`, `branch` adı ve `labels` alanlarını özelleştirin.
 
-**Feragatname**:  
-Bu belge, AI çeviri hizmeti [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba gösterilse de, otomatik çevirilerin hatalar veya yanlışlıklar içerebileceğini lütfen unutmayınız. Orijinal belge, kendi dilinde yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımı sonucu ortaya çıkabilecek yanlış anlamalar veya yanlış yorumlamalar için sorumluluk kabul edilmemektedir.
+## Workflow'u Çalıştırmak
+
+> [!WARNING]  
+> **GitHub-hosted Runner Zaman Sınırı:**  
+> `ubuntu-latest` gibi GitHub tarafından barındırılan runner'lar için **maksimum çalışma süresi 6 saattir**.  
+> Büyük dokümantasyon depolarında, çeviri işlemi 6 saati aşarsa workflow otomatik olarak sonlandırılır.  
+> Bunu önlemek için:  
+> - **Kendi runner'ınızı** kullanabilirsiniz (süre sınırı yok)  
+> - Her çalıştırmada hedef dil sayısını azaltabilirsiniz
+
+`co-op-translator.yml` dosyası ana dalınıza (veya `on:` tetikleyicisinde belirtilen dala) eklendikten sonra, bu dala yapılan değişikliklerde (ve varsa `paths` filtresiyle eşleşen dosyalarda) workflow otomatik olarak çalışacaktır.
+
+---
+
+**Feragatname**:
+Bu belge, AI çeviri hizmeti [Co-op Translator](https://github.com/Azure/co-op-translator) kullanılarak çevrilmiştir. Doğruluk için çaba göstersek de, otomatik çevirilerde hata veya yanlışlıklar olabileceğini lütfen unutmayın. Belgenin orijinal dili, yetkili kaynak olarak kabul edilmelidir. Kritik bilgiler için profesyonel insan çevirisi önerilir. Bu çevirinin kullanımından doğabilecek herhangi bir yanlış anlama veya yanlış yorumlamadan sorumlu değiliz.

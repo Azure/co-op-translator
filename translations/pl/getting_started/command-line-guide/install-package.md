@@ -1,27 +1,27 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:34:17+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T03:08:23+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "pl"
 }
 -->
-# Instalacja pakietu Co-op translator
+# Zainstaluj pakiet Co-op translator
 
-**Co-op Translator** to narzędzie wiersza poleceń (CLI) stworzone, aby pomóc Ci przetłumaczyć wszystkie pliki markdown oraz obrazy w Twoim projekcie na wiele języków. Ten przewodnik pokaże Ci, jak skonfigurować translator i uruchomić go w różnych scenariuszach.
+**Co-op Translator** to narzędzie wiersza poleceń (CLI), które pomaga tłumaczyć wszystkie pliki markdown oraz obrazy w Twoim projekcie na wiele języków. Ten poradnik przeprowadzi Cię przez konfigurację translatora i uruchomienie go w różnych scenariuszach.
 
 ### Utwórz środowisko wirtualne
 
-Możesz utworzyć środowisko wirtualne za pomocą `pip` lub `Poetry`. Wpisz jedną z poniższych komend w terminalu.
+Możesz utworzyć środowisko wirtualne za pomocą `pip` lub `Poetry`. Wpisz jedno z poniższych poleceń w swoim terminalu.
 
-#### Korzystając z pip
+#### Używając pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Korzystając z Poetry
+#### Używając Poetry
 
 ```bash
 poetry init
@@ -29,9 +29,9 @@ poetry init
 
 ### Aktywuj środowisko wirtualne
 
-Po utworzeniu środowiska wirtualnego musisz je aktywować. Kroki różnią się w zależności od systemu operacyjnego. Wpisz następującą komendę w terminalu.
+Po utworzeniu środowiska wirtualnego musisz je aktywować. Kroki różnią się w zależności od systemu operacyjnego. Wpisz poniższe polecenie w swoim terminalu.
 
-#### Dla pip i Poetry
+#### Zarówno dla pip, jak i Poetry
 
 - Windows:
 
@@ -45,9 +45,9 @@ Po utworzeniu środowiska wirtualnego musisz je aktywować. Kroki różnią się
     source .venv/bin/activate
     ```
 
-#### Korzystając z Poetry
+#### Używając Poetry
 
-1. Jeśli utworzyłeś środowisko za pomocą Poetry, wpisz w terminalu poniższą komendę, aby je aktywować.
+1. Jeśli utworzyłeś środowisko za pomocą Poetry, wpisz poniższe polecenie w swoim terminalu, aby je aktywować.
 
     ```bash
     poetry shell
@@ -55,7 +55,7 @@ Po utworzeniu środowiska wirtualnego musisz je aktywować. Kroki różnią się
 
 ### Instalacja pakietu i wymaganych zależności
 
-Gdy środowisko wirtualne jest już gotowe i aktywne, kolejnym krokiem jest instalacja niezbędnych zależności.
+Gdy Twoje środowisko wirtualne jest już gotowe i aktywowane, kolejnym krokiem jest instalacja niezbędnych zależności.
 
 ### Szybka instalacja
 
@@ -66,28 +66,31 @@ pip install co-op-translator
 ```
 Lub
 
-Zainstaluj za pomocą Poetry
+Zainstaluj za pomocą poetry
 ```
 poetry add co-op-translator
 ```
 
-#### Korzystając z pip (z pliku requirements.txt), jeśli sklonujesz to repozytorium
+#### Używając pip (z requirements.txt) jeśli sklonujesz to repozytorium
 
-![NOTE] Proszę NIE rób tego, jeśli instalujesz co-op translator przez szybki instalator.
+> [!NOTE]
+> Proszę NIE robić tego, jeśli instalujesz co-op translator przez szybką instalację.
 
-1. Jeśli używasz pip, wpisz w terminalu następującą komendę. Automatycznie zainstaluje wymagane pakiety określone w pliku `requirements.txt`:
+1. Jeśli używasz pip, wpisz poniższe polecenie w swoim terminalu. Automatycznie zainstaluje ono wymagane pakiety określone w pliku `requirements.txt`:
 
     ```bash
     pip install -r requirements.txt
     ```
 
-#### Korzystając z Poetry (z pliku pyproject.toml)
+#### Używając Poetry (z pyproject.toml)
 
-1. Jeśli używasz Poetry, wpisz w terminalu następującą komendę. Automatycznie zainstaluje wymagane pakiety określone w pliku `pyproject.toml`:
+1. Jeśli używasz Poetry, wpisz poniższe polecenie w swoim terminalu. Automatycznie zainstaluje ono wymagane pakiety określone w pliku `pyproject.toml`:
 
     ```bash
     poetry install
     ```
 
+---
+
 **Zastrzeżenie**:  
-Niniejszy dokument został przetłumaczony za pomocą usługi tłumaczeń AI [Co-op Translator](https://github.com/Azure/co-op-translator). Chociaż dążymy do jak największej dokładności, prosimy mieć na uwadze, że tłumaczenia automatyczne mogą zawierać błędy lub nieścisłości. Oryginalny dokument w języku źródłowym powinien być traktowany jako źródło autorytatywne. W przypadku informacji o kluczowym znaczeniu zaleca się skorzystanie z profesjonalnego tłumaczenia wykonanego przez człowieka. Nie ponosimy odpowiedzialności za jakiekolwiek nieporozumienia lub błędne interpretacje wynikające z korzystania z tego tłumaczenia.
+Ten dokument został przetłumaczony przy użyciu usługi tłumaczenia AI [Co-op Translator](https://github.com/Azure/co-op-translator). Chociaż dokładamy wszelkich starań, aby tłumaczenie było dokładne, należy pamiętać, że automatyczne tłumaczenia mogą zawierać błędy lub nieścisłości. Za autorytatywne źródło należy uznać oryginalny dokument w jego języku ojczystym. W przypadku informacji o znaczeniu krytycznym zalecane jest skorzystanie z profesjonalnego tłumaczenia wykonanego przez człowieka. Nie ponosimy odpowiedzialności za wszelkie nieporozumienia lub błędne interpretacje wynikające z korzystania z tego tłumaczenia.

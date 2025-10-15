@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:36:32+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T04:15:08+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "my"
 }
 -->
-# Co-op Translator GitHub Action ကို အသုံးပြုခြင်း (အများပြည်သူ စနစ်တကျ)
+# Co-op Translator GitHub Action ကို အသုံးပြုခြင်း (Public Setup)
 
-**ပစ်မှတ် အသုံးပြုသူများ:** ဒီလမ်းညွှန်ကို ပုံမှန် GitHub Actions ခွင့်ပြုချက်များလုံလောက်သည့် အများပြည်သူ သို့မဟုတ် ကိုယ်ပိုင် repository များအတွက် ရည်ရွယ်ထားပါသည်။ ၎င်းသည် စံပြ `GITHUB_TOKEN` ကို အသုံးပြုပါသည်။
+**အသုံးပြုသူအတွက်:** ဒီလမ်းညွှန်ကို GitHub Actions ရဲ့ ပုံမှန်ခွင့်ပြုချက်နဲ့ အလုပ်လုပ်နိုင်တဲ့ public သို့မဟုတ် private repository များအတွက် ရည်ရွယ်ထားပါတယ်။ ဒီမှာ built-in `GITHUB_TOKEN` ကို အသုံးပြုပါတယ်။
 
-သင့် repository ၏ စာတမ်းများကို Co-op Translator GitHub Action ဖြင့် အလိုအလျောက် ဘာသာပြန်ပေးနိုင်သည်။ သင်၏ မူရင်း Markdown ဖိုင်များ သို့မဟုတ် ပုံများ ပြောင်းလဲသည့်အခါ အလိုအလျောက် ဘာသာပြန်ထားသော pull request များကို ဖန်တီးရန် ဒီလမ်းညွှန်က အဆင့်ဆင့် ပြသပေးပါသည်။
+သင့် repository ရဲ့ documentation ကို Co-op Translator GitHub Action နဲ့ အလိုအလျောက် ဘာသာပြန်ပေးနိုင်အောင် automate လုပ်ပါ။ ဒီလမ်းညွှန်မှာ source Markdown ဖိုင်များ သို့မဟုတ် image များ ပြောင်းလဲသွားတိုင်း updated translation တွေပါဝင်တဲ့ pull request ကို အလိုအလျောက် ဖန်တီးပေးအောင် action ကို စနစ်တကျ တပ်ဆင်နည်းကို လမ်းညွှန်ပေးထားပါတယ်။
 
 > [!IMPORTANT]
 >
-> **မှန်ကန်သော လမ်းညွှန်ကို ရွေးချယ်ခြင်း:**
+> **မှန်ကန်တဲ့ လမ်းညွှန် ရွေးချယ်ခြင်း:**
 >
-> ဒီလမ်းညွှန်တွင် **စံပြ `GITHUB_TOKEN` ကို အသုံးပြု၍ ပိုမိုလွယ်ကူသော စနစ်တကျ ထားရှိမှု** ကို ဖော်ပြထားသည်။ အများစု အသုံးပြုသူများအတွက် GitHub App Private Key မလိုအပ်ဘဲ အသုံးပြုနိုင်သော နည်းလမ်း ဖြစ်သည်။
+> ဒီလမ်းညွှန်မှာ **ပုံမှန် `GITHUB_TOKEN` ကို အသုံးပြုတဲ့ setup** ကို အသေးစိတ် ရှင်းပြထားပါတယ်။ GitHub App Private Key တွေကို စီမံခန့်ခွဲဖို့ မလိုအပ်တဲ့အတွက် အသုံးပြုသူအများစုအတွက် အကြံပြုတဲ့ နည်းလမ်းပါ။
 >
 
-## မတိုင်မီ ပြင်ဆင်ရန်
+## လိုအပ်ချက်များ
 
-GitHub Action ကို ပြင်ဆင်မတိုင်မီ သင့်မှာ လိုအပ်သော AI ဝန်ဆောင်မှု အချက်အလက်များရှိနေကြောင်း သေချာပါစေ။
+GitHub Action ကို တပ်ဆင်မယ်ဆိုရင် AI service credentials တွေကို ကြိုတင်ပြင်ဆင်ထားဖို့ လိုအပ်ပါတယ်။
 
-**1. လိုအပ်ချက်: AI ဘာသာစကား မော်ဒယ် အချက်အလက်များ**  
-သင့်မှာ တစ်ခုခု သို့မဟုတ် ထောက်ပံ့ထားသော ဘာသာစကား မော်ဒယ်အတွက် အချက်အလက်ရှိရပါမည် -
+**၁။ မဖြစ်မနေလိုအပ်သော - AI Language Model Credentials**
+Support လုပ်ထားတဲ့ Language Model တစ်ခုခုအတွက် credentials လိုအပ်ပါတယ် -
 
-- **Azure OpenAI**: Endpoint, API Key, Model/Deployment နာမည်များ၊ API Version လိုအပ်သည်။
-- **OpenAI**: API Key, (ရွေးချယ်စရာ: Org ID, Base URL, Model ID) လိုအပ်သည်။
-- အသေးစိတ်အတွက် [Supported Models and Services](../../../../README.md) ကို ကြည့်ပါ။
+- **Azure OpenAI**: Endpoint, API Key, Model/Deployment Name, API Version လိုအပ်ပါတယ်။
+- **OpenAI**: API Key လိုအပ်ပါတယ်။ (Optional: Org ID, Base URL, Model ID)
+- အသေးစိတ်ကို [Supported Models and Services](../../../../README.md) မှာ ကြည့်နိုင်ပါတယ်။
 
-**2. ရွေးချယ်စရာ: AI Vision အချက်အလက်များ (ပုံဘာသာပြန်ရန်)**
+**၂။ Optional - AI Vision Credentials (Image Translation အတွက်)**
 
-- ပုံများထဲရှိ စာသားများကို ဘာသာပြန်ရန်သာ လိုအပ်ပါကသာ ရှိရမည်။
-- **Azure AI Vision**: Endpoint နှင့် Subscription Key လိုအပ်သည်။
-- မထည့်ပါက ဒီ Action သည် [Markdown-only mode](../markdown-only-mode.md) ဖြင့် အလိုအလျောက် ဆောင်ရွက်မည် ဖြစ်သည်။
+- Image ထဲကစာသားကို ဘာသာပြန်ချင်ရင်သာ လိုအပ်ပါတယ်။
+- **Azure AI Vision**: Endpoint နဲ့ Subscription Key လိုအပ်ပါတယ်။
+- မထည့်ပေးရင် [Markdown-only mode](../markdown-only-mode.md) ကို default အနေနဲ့ အသုံးပြုပါလိမ့်မယ်။
 
-## စနစ်တကျ ပြင်ဆင်ခြင်း
+## တပ်ဆင်ခြင်းနှင့် ပြင်ဆင်ခြင်း
 
-စံပြ `GITHUB_TOKEN` ကို အသုံးပြုပြီး သင့် repository တွင် Co-op Translator GitHub Action ကို ပြင်ဆင်ရန် အောက်ပါအဆင့်များကို လိုက်နာပါ။
+ပုံမှန် `GITHUB_TOKEN` ကို အသုံးပြုပြီး Co-op Translator GitHub Action ကို repository မှာ configure လုပ်နည်းအဆင့်ဆင့် လုပ်ဆောင်ပါ။
 
-### အဆင့် ၁: အတည်ပြုခြင်း နားလည်ခြင်း (`GITHUB_TOKEN` အသုံးပြုခြင်း)
+### အဆင့် ၁ - Authentication ကို နားလည်ပါ (`GITHUB_TOKEN` အသုံးပြုခြင်း)
 
-ဒီ workflow သည် GitHub Actions မှ ပေးထားသော စံပြ `GITHUB_TOKEN` ကို အသုံးပြုသည်။ ဒီ token က workflow ကို သင့် repository နှင့် ပတ်သက်သော လုပ်ဆောင်ခွင့်များကို **အဆင့် ၃** တွင် သတ်မှတ်ထားသည့် အတိုင်း အလိုအလျောက် ခွင့်ပြုပါသည်။
+ဒီ workflow မှာ GitHub Actions မှာ built-in အနေနဲ့ ပါဝင်တဲ့ `GITHUB_TOKEN` ကို အသုံးပြုပါတယ်။ ဒီ token က **အဆင့် ၃** မှာ ပြင်ဆင်ထားတဲ့ settings အပေါ် မူတည်ပြီး repository နဲ့ ဆက်သွယ်ခွင့်ကို အလိုအလျောက် ပေးပါတယ်။
 
-### အဆင့် ၂: Repository Secrets ကို ပြင်ဆင်ခြင်း
+### အဆင့် ၂ - Repository Secrets ကို ပြင်ဆင်ပါ
 
-သင့် AI ဝန်ဆောင်မှု အချက်အလက်များကို သင့် repository ၏ အချက်အလက်လုံခြုံမှု စနစ် (encrypted secrets) အဖြစ် ထည့်သွင်းရမည် ဖြစ်သည်။
+သင့် **AI service credentials** တွေကို repository settings မှာ encrypted secrets အနေနဲ့ ထည့်ပေးရုံပါပဲ။
 
-1. သင့် GitHub repository သို့ ဝင်ရောက်ပါ။
-2. **Settings** > **Secrets and variables** > **Actions** သို့ သွားပါ။
-3. **Repository secrets** အောက်တွင် လိုအပ်သည့် AI ဝန်ဆောင်မှု secret အသစ်တိုင်းအတွက် **New repository secret** ကို နှိပ်ပါ။
+၁။  သွားပါ - သင့် GitHub repository ကို။
+၂။  **Settings** > **Secrets and variables** > **Actions** ကို သွားပါ။
+၃။  **Repository secrets** အောက်မှာ လိုအပ်တဲ့ AI service secret တစ်ခုစီအတွက် **New repository secret** ကို နှိပ်ပါ။
 
-    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.my.png) *(ပုံရိပ်ကို ပြသထားသည်: Secret များ ထည့်သွင်းရာနေရာ)*
+    ![Select setting action](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.my.png) *(Image Reference: Secrets ထည့်ရာနေရာ)*
 
-**လိုအပ်သော AI ဝန်ဆောင်မှု Secret များ (မတိုင်မီ ပြင်ဆင်ထားသည့်အတိုင်း အားလုံး ထည့်သွင်းပါ):**
+**လိုအပ်တဲ့ AI Service Secrets (သင့်လိုအပ်ချက်အပေါ် မူတည်ပြီး အားလုံးထည့်ပါ):**
 
-| Secret Name                         | ဖော်ပြချက်                                   | တန်ဖိုး ရင်းမြစ်                |
+| Secret Name                         | Description                               | Value Source                     |
 | :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Azure AI ဝန်ဆောင်မှု (Computer Vision) အတွက် Key  | သင့် Azure AI Foundry             |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI ဝန်ဆောင်မှု (Computer Vision) အတွက် Endpoint | သင့် Azure AI Foundry             |
-| `AZURE_OPENAI_API_KEY`              | Azure OpenAI ဝန်ဆောင်မှုအတွက် Key             | သင့် Azure AI Foundry             |
-| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI ဝန်ဆောင်မှုအတွက် Endpoint        | သင့် Azure AI Foundry             |
-| `AZURE_OPENAI_MODEL_NAME`           | သင့် Azure OpenAI Model နာမည်                  | သင့် Azure AI Foundry             |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | သင့် Azure OpenAI Deployment နာမည်              | သင့် Azure AI Foundry             |
-| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI အတွက် API Version                   | သင့် Azure AI Foundry             |
-| `OPENAI_API_KEY`                    | OpenAI အတွက် API Key                           | သင့် OpenAI Platform              |
-| `OPENAI_ORG_ID`                     | OpenAI အဖွဲ့အစည်း ID (ရွေးချယ်စရာ)              | သင့် OpenAI Platform              |
-| `OPENAI_CHAT_MODEL_ID`              | အထူး OpenAI မော်ဒယ် ID (ရွေးချယ်စရာ)               | သင့် OpenAI Platform              |
-| `OPENAI_BASE_URL`                   | စိတ်ကြိုက် OpenAI API Base URL (ရွေးချယ်စရာ)        | သင့် OpenAI Platform              |
+| `AZURE_AI_SERVICE_API_KEY`            | Azure AI Service (Computer Vision) အတွက် Key  | သင့် Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI Service (Computer Vision) အတွက် Endpoint | သင့် Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`              | Azure OpenAI service အတွက် Key              | သင့် Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI service အတွက် Endpoint         | သင့် Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`           | Azure OpenAI Model Name                    | သင့် Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Azure OpenAI Deployment Name               | သင့် Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI အတွက် API Version              | သင့် Azure AI Foundry               |
+| `OPENAI_API_KEY`                    | OpenAI အတွက် API Key                        | သင့် OpenAI Platform              |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID (Optional)         | သင့် OpenAI Platform              |
+| `OPENAI_CHAT_MODEL_ID`              | OpenAI model ID (Optional)                | သင့် OpenAI Platform              |
+| `OPENAI_BASE_URL`                   | OpenAI API Base URL (Optional)            | သင့် OpenAI Platform              |
 
-### အဆင့် ၃: Workflow ခွင့်ပြုချက်များ ပြင်ဆင်ခြင်း
+### အဆင့် ၃ - Workflow Permissions ကို ပြင်ဆင်ပါ
 
-GitHub Action သည် ကုဒ်များ စစ်ဆေးခြင်းနှင့် pull request များ ဖန်တီးခြင်းအတွက် `GITHUB_TOKEN` မှ ခွင့်ပြုချက်များ လိုအပ်ပါသည်။
+GitHub Action မှာ `GITHUB_TOKEN` နဲ့ code ကို checkout လုပ်ခြင်း၊ pull request ဖန်တီးခြင်းတို့အတွက် ခွင့်ပြုချက်လိုအပ်ပါတယ်။
 
-1. သင့် repository တွင် **Settings** > **Actions** > **General** သို့ သွားပါ။
-2. **Workflow permissions** အပိုင်းသို့ အောက်သို့ ဆင်းပါ။
-3. **Read and write permissions** ကို ရွေးပါ။ ၎င်းက `GITHUB_TOKEN` ကို လိုအပ်သော `contents: write` နှင့် `pull-requests: write` ခွင့်များ ပေးပါသည်။
-4. **Allow GitHub Actions to create and approve pull requests** ကို မှတ်ပုံတင်ထားပါ။
-5. **Save** ကို နှိပ်ပါ။
+၁။  Repository မှာ **Settings** > **Actions** > **General** ကို သွားပါ။
+၂။  **Workflow permissions** အပိုင်းကို အောက်သို့ scroll လုပ်ပါ။
+၃။  **Read and write permissions** ကို ရွေးပါ။ ဒီအတွက် `GITHUB_TOKEN` မှာ `contents: write` နဲ့ `pull-requests: write` ခွင့်ပြုချက်တွေ ရရှိပါလိမ့်မယ်။
+၄။  **Allow GitHub Actions to create and approve pull requests** ဆိုတဲ့ checkbox ကို **အမှန်ခြစ်ထားပါ**။
+၅။  **Save** ကို နှိပ်ပါ။
 
-![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.my.png)
+![Permission setting](../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.my.png)
 
-### အဆင့် ၄: Workflow ဖိုင် ဖန်တီးခြင်း
+### အဆင့် ၄ - Workflow File ကို ဖန်တီးပါ
 
-နောက်ဆုံးတွင် `GITHUB_TOKEN` ကို အသုံးပြု၍ အလိုအလျောက် ဆောင်ရွက်မည့် workflow ကို သတ်မှတ်ထားသည့် YAML ဖိုင်ကို ဖန်တီးပါ။
+နောက်ဆုံးအနေနဲ့ `GITHUB_TOKEN` ကို အသုံးပြုတဲ့ automated workflow ကို YAML ဖိုင်အနေနဲ့ ဖန်တီးပါ။
 
-1. သင့် repository ၏ root ဖိုလ်ဒါတွင် `.github/workflows/` ဖိုလ်ဒါ မရှိသေးပါက ဖန်တီးပါ။
-2. `.github/workflows/` ဖိုလ်ဒါအတွင်း `co-op-translator.yml` ဟု အမည်ပေးထားသော ဖိုင်ကို ဖန်တီးပါ။
-3. အောက်ပါ အကြောင်းအရာကို `co-op-translator.yml` ထဲသို့ ကူးထည့်ပါ။
+၁။  Repository ရဲ့ root directory မှာ `.github/workflows/` directory မရှိသေးရင် ဖန်တီးပါ။
+၂။  `.github/workflows/` ထဲမှာ `co-op-translator.yml` ဆိုတဲ့ ဖိုင်တစ်ခု ဖန်တီးပါ။
+၃။  အောက်ပါအကြောင်းအရာကို `co-op-translator.yml` ထဲမှာ paste လုပ်ပါ။
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4. **Workflow ကို ကိုယ်တိုင် ပြင်ဆင်ရန်:**  
-  - **[!IMPORTANT] ပစ်မှတ် ဘာသာစကားများ:** `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` အဆင့်တွင် လိုအပ်သလို ပြင်ဆင်နိုင်ပါသည်။
+```
+၄။  **Workflow ကို Customize လုပ်ပါ:**
+  - **[!IMPORTANT] Target Languages:** `Run Co-op Translator` အဆင့်မှာ `translate -l "..." -y` command ထဲက language code list ကို သင့် project အတွက် သင့်တော်အောင် ပြင်ဆင်ဖို့ **သေချာစစ်ဆေးပြီး ပြင်ပါ**။ ဥပမာ list (`ar de es...`) ကို သင့်လိုအပ်ချက်အတိုင်း ပြောင်းပါ။
+  - **Trigger (`on:`):** အခု trigger က `main` branch ကို push လုပ်တိုင်း run ဖြစ်ပါတယ်။ Repository ကြီးများအတွက် `paths:` filter (YAML မှာ comment ထည့်ထားတဲ့ ဥပမာ) ကို အသုံးပြုပြီး source documentation ပြောင်းလဲတဲ့အခါသာ workflow run ဖြစ်အောင် ပြင်နိုင်ပါတယ်။ ဒါက runner minutes ကို သက်သာစေပါတယ်။
+  - **PR Details:** `Create Pull Request` အဆင့်မှာ `commit-message`, `title`, `body`, `branch` name, `labels` စတာတွေကို လိုအပ်ရင် ပြင်နိုင်ပါတယ်။
 
-**ပယ်ချခြင်း**  
-ဤစာရွက်စာတမ်းကို AI ဘာသာပြန်ဝန်ဆောင်မှုဖြစ်သော [Co-op Translator](https://github.com/Azure/co-op-translator) ကို အသုံးပြု၍ ဘာသာပြန်ထားပါသည်။ ကျွန်ုပ်တို့သည် တိကျမှုအတွက် ကြိုးပမ်းသည်မှာမှန်သော်လည်း အလိုအလျောက်ဘာသာပြန်ခြင်းများတွင် အမှားများ သို့မဟုတ် မှားယွင်းမှုများ ပါဝင်နိုင်ကြောင်း သတိပြုပါရန် မေတ္တာရပ်ခံအပ်ပါသည်။ မူလစာရွက်စာတမ်းကို မူရင်းဘာသာဖြင့်သာ တရားဝင်အရင်းအမြစ်အဖြစ် ယူဆရမည် ဖြစ်သည်။ အရေးကြီးသော သတင်းအချက်အလက်များအတွက် ကောင်းမွန်သော လူ့ဘာသာပြန်ခြင်းကို အကြံပြုပါသည်။ ဤဘာသာပြန်မှုကို အသုံးပြုရာမှ ဖြစ်ပေါ်လာနိုင်သည့် နားလည်မှုအမှားများ သို့မဟုတ် မှားယွင်းဖတ်ရှုမှုများအတွက် ကျွန်ုပ်တို့ တာဝန်မယူပါ။
+## Workflow ကို အသုံးပြုခြင်း
+
+> [!WARNING]  
+> **GitHub-hosted Runner Time Limit:**  
+> GitHub-hosted runner တွေ (`ubuntu-latest` စတဲ့) မှာ **အများဆုံး ၆ နာရီ** အလုပ်လုပ်ခွင့်ရှိပါတယ်။  
+> Documentation repository ကြီးများအတွက် ဘာသာပြန်လုပ်ငန်း ၆ နာရီကျော်သွားရင် workflow ကို အလိုအလျောက် ရပ်တန့်သွားပါလိမ့်မယ်။  
+> ဒီပြဿနာကို ရှောင်ရှားဖို့ -  
+> - **self-hosted runner** ကို အသုံးပြုပါ (အချိန်ကန့်သတ်မရှိ)  
+> - တစ်ခါ run တစ်ခါ target language အရေအတွက်ကို လျှော့ပါ
+
+`co-op-translator.yml` ဖိုင်ကို main branch (သို့မဟုတ် `on:` trigger မှာ သတ်မှတ်ထားတဲ့ branch) ထဲ merge လုပ်ပြီးသွားရင်၊ အဲဒီ branch ကို changes push လုပ်တိုင်း (နဲ့ `paths` filter ကို configure လုပ်ထားရင် အဲဒီ filter ကို ကိုက်ညီတဲ့ changes ဖြစ်ရင်) workflow က အလိုအလျောက် run ဖြစ်သွားပါလိမ့်မယ်။
+
+---
+
+**သတိပေးချက်**:
+ဤစာရွက်စာတမ်းကို AI ဘာသာပြန်ဝန်ဆောင်မှု [Co-op Translator](https://github.com/Azure/co-op-translator) ကို အသုံးပြု၍ ဘာသာပြန်ထားပါသည်။ ကျွန်ုပ်တို့သည် တိကျမှုအတွက် ကြိုးစားနေသော်လည်း၊ အလိုအလျောက် ဘာသာပြန်မှုများတွင် အမှားများ သို့မဟုတ် မတိကျမှုများ ပါဝင်နိုင်သည်ကို သတိပြုပါ။ မူရင်းစာရွက်စာတမ်းသည် မူလဘာသာစကားဖြင့် အာဏာရှိသော ရင်းမြစ်အဖြစ် ယူဆသင့်ပါသည်။ အရေးကြီးသော အချက်အလက်များအတွက် လူ့ဘာသာပြန်ပညာရှင်များမှ ဘာသာပြန်ခြင်းကို အကြံပြုပါသည်။ ဤဘာသာပြန်မှုကို အသုံးပြုခြင်းကြောင့် ဖြစ်ပေါ်လာသော နားလည်မှုမှားခြင်း သို့မဟုတ် အနားလည်မှုမှားခြင်းများအတွက် ကျွန်ုပ်တို့သည် တာဝန်ယူမည်မဟုတ်ပါ။

@@ -1,28 +1,28 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:56:50+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T04:07:02+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "hr"
 }
 -->
 # Prevedite svoj projekt pomoću Co-op Translatora
 
-**Co-op Translator** je alat za naredbeni redak (CLI) koji vam pomaže prevesti markdown i slikovne datoteke u vašem projektu na više jezika. Ovaj odjeljak objašnjava kako koristiti alat, obuhvaća različite CLI opcije i daje primjere za različite slučajeve upotrebe.
+**Co-op Translator** je alat za naredbeni redak (CLI) koji vam pomaže prevesti markdown i slikovne datoteke u vašem projektu na više jezika. Ovaj odjeljak objašnjava kako koristiti alat, opisuje različite CLI opcije i daje primjere za razne scenarije korištenja.
 
 > [!NOTE]
-> Za potpuni popis naredbi i njihovih detaljnih opisa, pogledajte [Command reference](./command-reference.md).
+> Za potpuni popis naredbi i njihova detaljna objašnjenja, pogledajte [Referencu naredbi](./command-reference.md).
 
 ---
 
 ## Primjeri scenarija i naredbi
 
-Evo nekoliko uobičajenih primjera upotrebe **Co-op Translatora**, zajedno s odgovarajućim naredbama za pokretanje.
+Ovdje su neki uobičajeni primjeri korištenja **Co-op Translatora** s odgovarajućim naredbama.
 
 ### 1. Osnovni prijevod (jedan jezik)
 
-Za prevođenje cijelog projekta (markdown datoteka i slika) na jedan jezik, poput korejskog, upotrijebite sljedeću naredbu:
+Za prijevod cijelog projekta (markdown datoteka i slika) na jedan jezik, primjerice korejski, upotrijebite sljedeću naredbu:
 
 ```bash
 translate -l "ko"
@@ -36,7 +36,7 @@ Ova naredba će prevesti sve markdown i slikovne datoteke na korejski, dodajući
 
 #### Primjer na Phi-3 CookBooku
 
-U **Phi-3 CookBooku** koristio sam sljedeću metodu za dodavanje korejskog prijevoda za postojeće markdown datoteke i slike.
+U **Phi-3 CookBooku** koristio/la sam sljedeću metodu za dodavanje korejskog prijevoda postojećih markdown datoteka i slika.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -44,9 +44,9 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|████████████████████████████████████████████████| 153/153 [1:43:07<00:00, 241.31s/it]
 ```
 
-### 2. Prevođenje na više jezika
+### 2. Prijevod na više jezika
 
-Za prevođenje projekta na više jezika (npr. španjolski, francuski i njemački), upotrijebite ovu naredbu:
+Za prijevod vašeg projekta na više jezika (npr. španjolski, francuski i njemački), upotrijebite ovu naredbu:
 
 ```bash
 translate -l "es fr de"
@@ -56,7 +56,7 @@ Ova naredba će prevesti projekt na španjolski, francuski i njemački, dodajuć
 
 #### Primjer na Phi-3 CookBooku
 
-U **Phi-3 CookBooku**, nakon povlačenja najnovijih promjena za odražavanje najnovijih commitova, koristio sam sljedeću metodu za prevođenje novododanih markdown datoteka i slika.
+U **Phi-3 CookBooku**, nakon povlačenja najnovijih promjena kako bi se odrazili najnoviji commitovi, koristio/la sam sljedeću metodu za prijevod novo dodanih markdown datoteka i slika.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,21 +65,21 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Iako se općenito preporučuje prevođenje jednog jezika odjednom, u situacijama poput ove gdje je potrebno dodati specifične promjene, prevođenje više jezika odjednom može biti učinkovito.
+> Iako se općenito preporučuje prevoditi jedan jezik odjednom, u situacijama poput ove gdje treba dodati određene promjene, prijevod na više jezika odjednom može biti učinkovit.
 
 ### 3. Ažuriranje prijevoda (briše postojeće prijevode)
 
-Za ažuriranje postojećih prijevoda (tj. brisanje trenutnih prijevoda i zamjenu novima), upotrijebite opciju `-u`. Ovo će izbrisati sve postojeće prijevode za navedene jezike i ponovno ih prevesti.
+Za ažuriranje postojećih prijevoda (tj. brisanje trenutnih prijevoda i njihovu zamjenu novima), koristite opciju `-u`. Ovo će izbrisati sve postojeće prijevode za navedene jezike i ponovno ih prevesti.
 
 ```bash
 translate -l "ko" -u
 ```
 
-Upozorenje: Ova naredba će vas zatražiti potvrdu prije nego što nastavi s brisanjem postojećih prijevoda.
+Upozorenje: Ova naredba će vas tražiti potvrdu prije nego što nastavi s brisanjem postojećih prijevoda.
 
 #### Primjer na Phi-3 CookBooku
 
-U **Phi-3 CookBooku** koristio sam sljedeću metodu za ažuriranje svih prevedenih datoteka na španjolskom. Preporučujem ovu metodu kad postoje značajne promjene u izvornom sadržaju kroz više markdown dokumenata. Ako je potrebno ažurirati samo nekoliko prevedenih markdown datoteka, učinkovitije je ručno izbrisati te specifične datoteke, a zatim koristiti metodu `-a` za dodavanje ažuriranih prijevoda.
+U **Phi-3 CookBooku** koristio/la sam sljedeću metodu za ažuriranje svih prevedenih datoteka na španjolski. Preporučujem ovu metodu kada postoje značajne promjene u izvornom sadržaju kroz više markdown dokumenata. Ako je potrebno ažurirati samo nekoliko prevedenih markdown datoteka, učinkovitije je ručno izbrisati te određene datoteke i zatim koristiti metodu `-a` za dodavanje ažuriranih prijevoda.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -90,9 +90,9 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|███████████████████████████████████| 95/95 [1:40:27<00:00, 125.62s/it]
 ```
 
-### 5. Prevođenje samo slika
+### 5. Prijevod samo slika
 
-Za prevođenje samo slikovnih datoteka u vašem projektu, upotrijebite opciju `-img`:
+Za prijevod samo slikovnih datoteka u vašem projektu, koristite opciju `-img`:
 
 ```bash
 translate -l "ko" -img
@@ -100,27 +100,17 @@ translate -l "ko" -img
 
 Ova naredba će prevesti samo slike na korejski, bez utjecaja na markdown datoteke.
 
-### 6. Prevođenje samo markdown datoteka
+### 6. Prijevod samo markdown datoteka
 
-Za prevođenje samo markdown datoteka u vašem projektu, upotrijebite opciju `-md`:
+Za prijevod samo markdown datoteka u vašem projektu, koristite opciju `-md`:
 
 ```bash
 translate -l "ko" -md
 ```
 
-### 7. Provjera pogrešaka u prevedenim datotekama
-
-Ako želite provjeriti prevedene datoteke na pogreške i po potrebi ponoviti prijevod, upotrijebite opciju `-chk`:
-
-```bash
-translate -l "ko" -chk
-```
-
-Ova naredba će pregledati prevedene markdown datoteke i pokušati ponovno prevesti sve datoteke u kojima su pronađene pogreške.
-
 #### Primjer na Phi-3 CookBooku
 
-U **Phi-3 CookBooku** koristio sam sljedeću metodu za provjeru pogrešaka u prijevodu korejskih datoteka i automatsko ponovno prevođenje za sve datoteke s uočenim problemima.
+U **Phi-3 CookBooku** koristio/la sam sljedeću metodu za provjeru pogrešaka u prijevodu u korejskim datotekama i automatsko ponovno prevođenje svih datoteka kod kojih su otkrivene pogreške.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -129,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Ova opcija provjerava pogreške u prijevodu. Trenutno, ako je razlika u prijelomima redaka između izvornog i prevedenog dokumenta veća od šest, datoteka se označava kao da ima pogrešku u prijevodu. Planiram poboljšati ovaj kriterij za veću fleksibilnost u budućnosti.
+Ova opcija provjerava pogreške u prijevodu. Trenutno, ako je razlika u broju prijeloma redaka između izvorne i prevedene datoteke veća od šest, datoteka se označava kao da ima pogrešku u prijevodu. Planiram poboljšati ovaj kriterij za veću fleksibilnost u budućnosti.
 
-Na primjer, ova metoda je korisna za otkrivanje nedostajućih dijelova ili oštećenih prijevoda, a automatski će pokušati ponovno prevesti te datoteke.
+Na primjer, ova metoda je korisna za otkrivanje nedostajućih dijelova ili oštećenih prijevoda, a automatski će ponovno pokušati prevesti te datoteke.
 
-Međutim, ako već znate koje su datoteke problematične, učinkovitije je ručno izbrisati te datoteke i koristiti opciju `-a` option to re-translate them.
+Međutim, ako već znate koje su datoteke problematične, učinkovitije je ručno izbrisati te datoteke i koristiti opciju `-a` za njihovo ponovno prevođenje.
 
-### 8. Debug Mode
+### 8. Način za otklanjanje grešaka (Debug Mode)
 
-To enable detailed logging for troubleshooting, use the `-d`:
+Za uključivanje detaljnog zapisivanja radi otklanjanja grešaka, koristite opciju `-d`:
 
 ```bash
 translate -l "ko" -d
 ```
 
-Ova naredba će pokrenuti prijevod u debug načinu rada, pružajući dodatne informacije o zapisima koje vam mogu pomoći u otkrivanju problema tijekom procesa prevođenja.
+Ova naredba će pokrenuti prijevod u debug načinu, pružajući dodatne informacije u zapisima koje vam mogu pomoći u prepoznavanju problema tijekom procesa prevođenja.
 
 #### Primjer na Phi-3 CookBooku
 
-U **Phi-3 CookBooku** naišao sam na problem gdje su prijevodi s mnogo poveznica u markdown datotekama uzrokovali pogreške u formatiranju, poput neispravnih prijevoda i zanemarivanja prijeloma redaka. Za dijagnosticiranje problema koristio sam opciju `-d` da vidim kako proces prevođenja funkcionira.
+U **Phi-3 CookBooku** naišao/la sam na problem gdje su prijevodi s mnogo poveznica u markdown datotekama uzrokovali pogreške u formatiranju, poput prekinutih prijevoda i ignoriranih prijeloma redaka. Za dijagnosticiranje ovog problema koristio/la sam opciju `-d` kako bih vidio/la kako proces prevođenja funkcionira.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -155,35 +145,35 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 ...
 ```
 
-### 9. Prevođenje na sve jezike
+### 9. Prijevod na sve jezike
 
-Ako želite prevesti projekt na sve podržane jezike, upotrijebite ključnu riječ all.
+Ako želite prevesti projekt na sve podržane jezike, koristite ključnu riječ all.
 
 > [!WARNING]
-> Prevođenje na sve jezike odjednom može potrajati značajno dugo, ovisno o veličini projekta. Na primjer, prevođenje **Phi-3 CookBooka** na španjolski trajalo je oko 2 sata. S obzirom na opseg, nije praktično da jedna osoba obrađuje 20 jezika. Preporučuje se podijeliti posao među više suradnika, svaki neka upravlja jednim ili dva jezika i postupno ažurira prijevode.
+> Prijevod na sve jezike odjednom može potrajati znatno, ovisno o veličini projekta. Na primjer, prijevod **Phi-3 CookBooka** na španjolski trajao je oko 2 sata. S obzirom na opseg, nije praktično da jedna osoba obrađuje 20 jezika. Preporučuje se podijeliti posao među više suradnika, od kojih svaki upravlja jednim ili dva jezika, i postupno ažurirati prijevode.
 
 ```bash
 translate -l "all"
 ```
 
-Ova naredba će prevesti projekt na sve dostupne jezike. Ako nastavite, prijevod može potrajati značajno dugo, ovisno o veličini projekta.
+Ova naredba će prevesti projekt na sve dostupne jezike. Ako nastavite, prijevod može potrajati znatno, ovisno o veličini projekta.
 
 > [!TIP]
 >
 > ### Ručno brisanje prevedenih datoteka (opcionalno)
-> Prevedene datoteke se sada automatski prepoznaju i čiste kada se ažurira izvorna datoteka.
+> Prevedene datoteke sada se automatski otkrivaju i čiste kada se izvorna datoteka ažurira.
 >
-> Međutim, ako želite ručno ažurirati prijevod – na primjer, ponovno napraviti određenu datoteku ili nadjačati ponašanje sustava – možete koristiti sljedeću naredbu za brisanje svih verzija datoteke u svim jezičnim mapama.
+> Međutim, ako želite ručno ažurirati prijevod – na primjer, ponovno prevesti određenu datoteku ili nadjačati ponašanje sustava – možete koristiti sljedeću naredbu za brisanje svih verzija datoteke u svim jezičnim mapama.
 >
-> ### Na Windowsima:
+> ### Na Windowsu:
 > 1. **Korištenje Command Prompt-a**:
 >    - Otvorite Command Prompt.
->    - Pređite u mapu gdje se datoteke nalaze pomoću naredbe `cd`.
+>    - Navigirajte do mape u kojoj se nalaze datoteke pomoću naredbe `cd`.
 >    - Koristite sljedeću naredbu za brisanje datoteka:
 >      ```
 >      del /s *filename*
 >      ```
->      Opcija `/s` pretražuje i poddirektorije.
+>      Zamijenite `filename` s dijelom imena datoteke koji tražite. Opcija `/s` pretražuje i poddirektorije.
 >
 > 2. **Korištenje PowerShell-a**:
 >    - Otvorite PowerShell.
@@ -191,21 +181,23 @@ Ova naredba će prevesti projekt na sve dostupne jezike. Ako nastavite, prijevod
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      Zamijenite `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>      Zamijenite `"C:\YourPath"` s putanjom do mape i `filename` s određenim imenom.
 >
-> ### On macOS/Linux:
-> 1. **Using Terminal**:
->   - Open Terminal.
->   - Navigate to the directory with `cd`.
->   - Use the `find` naredbu:
+> ### Na macOS/Linux:
+> 1. **Korištenje Terminala**:
+>   - Otvorite Terminal.
+>   - Navigirajte do direktorija pomoću `cd`.
+>   - Koristite naredbu `find`:
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->     Zamijenite `filename` with the specific name.
+>     Zamijenite `filename` s određenim imenom.
 >
-> Always double-check the files before deleting to avoid accidental loss. 
+> Uvijek dvaput provjerite datoteke prije brisanja kako biste izbjegli slučajni gubitak podataka. 
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` naredbu za ažuriranje najnovijih promjena datoteka.
+> Nakon što izbrišete datoteke koje treba zamijeniti, jednostavno ponovno pokrenite svoju `translate -l` naredbu kako biste ažurirali najnovije promjene datoteka.
 
-**Odricanje od odgovornosti**:  
-Ovaj dokument preveden je korištenjem AI usluge za prevođenje [Co-op Translator](https://github.com/Azure/co-op-translator). Iako težimo točnosti, imajte na umu da automatski prijevodi mogu sadržavati pogreške ili netočnosti. Izvorni dokument na izvornom jeziku treba smatrati službenim i autoritativnim izvorom. Za kritične informacije preporučuje se profesionalni ljudski prijevod. Ne snosimo odgovornost za bilo kakva nesporazuma ili pogrešna tumačenja koja proizlaze iz korištenja ovog prijevoda.
+---
+
+**Odricanje od odgovornosti**:
+Ovaj dokument je preveden pomoću AI usluge za prevođenje [Co-op Translator](https://github.com/Azure/co-op-translator). Iako težimo točnosti, imajte na umu da automatski prijevodi mogu sadržavati pogreške ili netočnosti. Izvorni dokument na svom izvornom jeziku treba smatrati mjerodavnim izvorom. Za ključne informacije preporučuje se profesionalni ljudski prijevod. Ne snosimo odgovornost za bilo kakva nesporazume ili pogrešna tumačenja koja proizlaze iz korištenja ovog prijevoda.

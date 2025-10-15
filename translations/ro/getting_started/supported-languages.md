@@ -1,84 +1,76 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b4ed48f23ec418b31e90a02fe629fcde",
-  "translation_date": "2025-06-12T12:18:35+00:00",
+  "original_hash": "badae5ee6451cc1a6e367cfe5ba92efa",
+  "translation_date": "2025-10-15T03:57:45+00:00",
   "source_file": "getting_started/supported-languages.md",
   "language_code": "ro"
 }
 -->
-# Limbaje suportate
+# Limbi suportate
 
-Tabelul de mai jos listează limbajele suportate în prezent de **Co-op Translator**. Include codurile limbajelor, denumirile acestora și eventualele probleme cunoscute asociate fiecărui limbaj. Dacă doriți să adăugați suport pentru un limbaj nou, vă rugăm să adăugați codul limbajului, denumirea și fontul corespunzător în fișierul `font_language_mappings.yml` aflat la `src/co_op_translator/fonts/` și să trimiteți un pull request după testare.
+Tabelul de mai jos prezintă limbile care sunt în prezent suportate de **Co-op Translator**. Include codurile limbilor, denumirile acestora și eventualele probleme cunoscute pentru fiecare limbă. Dacă dorești să adaugi suport pentru o limbă nouă, te rugăm să adaugi codul limbii, denumirea și fontul potrivit în fișierul `font_language_mappings.yml` aflat la `src/co_op_translator/fonts/` și să trimiți un pull request după ce ai testat.
 
-| Language Code | Language Name        | Font                              | RTL Support | Known Issues |
-|---------------|----------------------|-----------------------------------|-------------|--------------|
-| en            | English              | NotoSans-Medium.ttf               | No          | No           |
-| fr            | French               | NotoSans-Medium.ttf               | No          | No           |
-| es            | Spanish              | NotoSans-Medium.ttf               | No          | No           |
-| de            | German               | NotoSans-Medium.ttf               | No          | No           |
-| ru            | Russian              | NotoSans-Medium.ttf               | No          | No           |
-| ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | No          | No           |
-| ur            | Urdu                 | NotoSansArabic-Medium.ttf         | No          | No           |
-| zh            | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
-| mo            | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc    | No          | No           |
-| hk            | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc| No          | No           |
-| tw            | Chinese (Traditional, Taiwan) | NotoSansCJK-Medium.ttc   | No          | No           |
-| ja            | Japanese             | NotoSansCJK-Medium.ttc            | No          | No           |
-| ko            | Korean               | NotoSansCJK-Medium.ttc            | No          | No           |
-| hi            | Hindi                | NotoSansDevanagari-Medium.ttf     | No          | No           |
-| bn            | Bengali              | NotoSansBengali-Medium.ttf        | No          | No           |
-| mr            | Marathi              | NotoSansDevanagari-Medium.ttf     | No          | No           |
-| ne            | Nepali               | NotoSansDevanagari-Medium.ttf     | No          | No           |
-| pa            | Punjabi (Gurmukhi)   | NotoSansGurmukhi-Medium.ttf       | No          | No           |
-| pt            | Portuguese (Portugal)| NotoSans-Medium.ttf               | No          | No           |
-| br            | Portuguese (Brazil)  | NotoSans-Medium.ttf               | No          | No           |
-| it            | Italian              | NotoSans-Medium.ttf               | No          | No           |
-| pl            | Polish               | NotoSans-Medium.ttf               | No          | No           |
-| tr            | Turkish              | NotoSans-Medium.ttf               | No          | No           |
-| el            | Greek                | NotoSans-Medium.ttf               | No          | No           |
-| th            | Thai                 | NotoSansThai-Medium.ttf           | No          | No           |
-| sv            | Swedish              | NotoSans-Medium.ttf               | No          | No           |
-| da            | Danish               | NotoSans-Medium.ttf               | No          | No           |
-| no            | Norwegian            | NotoSans-Medium.ttf               | No          | No           |
-| fi            | Finnish              | NotoSans-Medium.ttf               | No          | No           |
-| nl            | Dutch                | NotoSans-Medium.ttf               | No          | No           |
-| he            | Hebrew               | NotoSansHebrew-Medium.ttf         | No          | No           |
-| vi            | Vietnamese           | NotoSans-Medium.ttf               | No          | No           |
-| id            | Indonesian           | NotoSans-Medium.ttf               | No          | No           |
-| ms            | Malay                | NotoSans-Medium.ttf               | No          | No           |
-| tl            | Tagalog (Filipino)   | NotoSans-Medium.ttf               | No          | No           |
-| sw            | Swahili              | NotoSans-Medium.ttf               | No          | No           |
-| hu            | Hungarian            | NotoSans-Medium.ttf               | No          | No           |
-| cs            | Czech                | NotoSans-Medium.ttf               | No          | No           |
-| sk            | Slovak               | NotoSans-Medium.ttf               | No          | No           |
-| ro            | Romanian             | NotoSans-Medium.ttf               | No          | No           |
-| bg            | Bulgarian            | NotoSans-Medium.ttf               | No          | No           |
-| sr            | Serbian (Cyrillic)   | NotoSans-Medium.ttf               | No          | No           |
-| hr            | Croatian             | NotoSans-Medium.ttf               | No          | No           |
-| sl            | Slovenian            | NotoSans-Medium.ttf               | No          | No           |
-| uk            | Ukrainian            | NotoSans-Medium.ttf               | No          | No           |
-| my            | Burmese (Myanmar)    | NotoSans-Medium.ttf               | No          | No           |
+| Cod limbă     | Denumire limbă              | Font                              | Suport RTL  | Probleme cunoscute |
+|---------------|-----------------------------|-----------------------------------|-------------|--------------------|
+| en            | Engleză                     | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| fr            | Franceză                    | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| es            | Spaniolă                    | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| de            | Germană                     | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| ru            | Rusă                        | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| ar            | Arabă                       | NotoSansArabic-Medium.ttf         | Da          | Nu                 |
+| fa            | Persană (Farsi)             | NotoSansArabic-Medium.ttf         | Da          | Nu                 |
+| ur            | Urdu                        | NotoSansArabic-Medium.ttf         | Da          | Nu                 |
+| zh            | Chineză (Simplificată)      | NotoSansCJK-Medium.ttc            | Nu          | Nu                 |
+| mo            | Chineză (Tradițională, Macau) | NotoSansCJK-Medium.ttc         | Nu          | Nu                 |
+| hk            | Chineză (Tradițională, Hong Kong) | NotoSansCJK-Medium.ttc      | Nu          | Nu                 |
+| tw            | Chineză (Tradițională, Taiwan) | NotoSansCJK-Medium.ttc         | Nu          | Nu                 |
+| ja            | Japoneză                    | NotoSansCJK-Medium.ttc            | Nu          | Nu                 |
+| ko            | Coreeană                    | NotoSansCJK-Medium.ttc            | Nu          | Nu                 |
+| hi            | Hindi                       | NotoSansDevanagari-Medium.ttf     | Nu          | Nu                 |
+| bn            | Bengali                     | NotoSansBengali-Medium.ttf        | Nu          | Nu                 |
+| mr            | Marathi                     | NotoSansDevanagari-Medium.ttf     | Nu          | Nu                 |
+| ne            | Nepaleză                    | NotoSansDevanagari-Medium.ttf     | Nu          | Nu                 |
+| pa            | Punjabi (Gurmukhi)          | NotoSansGurmukhi-Medium.ttf       | Nu          | Nu                 |
+| pt            | Portugheză (Portugalia)     | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| br            | Portugheză (Brazilia)       | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| it            | Italiană                    | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| lt            | Lituaniană                  | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| pl            | Poloneză                    | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| tr            | Turcă                       | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| el            | Greacă                      | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| th            | Thailandeză                 | NotoSansThai-Medium.ttf           | Nu          | Nu                 |
+| sv            | Suedeză                     | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| da            | Daneză                      | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| no            | Norvegiană                  | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| fi            | Finlandeză                  | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| nl            | Olandeză                    | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| he            | Ebraică                     | NotoSansHebrew-Medium.ttf         | Da          | Nu                 |
+| vi            | Vietnameză                  | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| id            | Indoneziană                 | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| ms            | Malaeză                     | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| tl            | Tagalog (Filipineză)        | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| sw            | Swahili                     | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| hu            | Maghiară                    | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| cs            | Cehă                        | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| sk            | Slovacă                     | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| ro            | Română                      | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| bg            | Bulgară                     | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| sr            | Sârbă (Chirilică)           | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| hr            | Croată                      | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| sl            | Slovenă                     | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| uk            | Ucraineană                  | NotoSans-Medium.ttf               | Nu          | Nu                 |
+| my            | Birmană (Myanmar)           | NotoSansMyanmar-Medium.ttf        | Nu          | Nu                 |
+| ta            | Tamil                       | NotoSansTamil-Medium.ttf          | Nu          | Nu                 |
+| et            | Estoniană                   | NotoSans-Medium.ttf               | Nu          | Nu                 |
 
-## Adăugarea unui limbaj nou
+## Adăugarea unei limbi noi
 
-Pentru a adăuga suport pentru un limbaj nou:
+Vrei să adaugi o limbă nouă? Urmează ghidul de contribuție:
 
-1. Accesați [src/co_op_translator/fonts/font_language_mappings.yml](https://github.com/Azure/co-op-translator/blob/main/src/co_op_translator/fonts/font_language_mappings.yml).
-2. Adăugați codul limbajului, denumirea și numele fișierului fontului corespunzător. Asigurați-vă că includeți atributul `rtl` dacă limbajul se scrie de la dreapta la stânga.
-3. Dacă trebuie să folosiți un font nou, verificați că acesta este liber pentru utilizare în proiecte open-source, consultând termenii de licențiere și drepturile de autor. După verificare, adăugați fișierul font în directorul `src/co_op_translator/fonts/`.
-4. Testați modificările local pentru a vă asigura că limbajul nou este suportat corect.
-5. Trimiteți un Pull Request cu modificările și menționați adăugarea limbajului nou în descrierea PR-ului.
+- Vezi Contribuire: <a href="../CONTRIBUTING.md#contribute-a-new-language">Contribuie cu o limbă nouă</a>
 
-Exemplu:
+---
 
-```yaml
-new_lang:
-  name: "New Language"
-  font: "NotoSans-Medium.ttf"
-  rtl: false
-```
-
-**Declinare a responsabilității**:  
-Acest document a fost tradus folosind serviciul de traducere automată AI [Co-op Translator](https://github.com/Azure/co-op-translator). Deși ne străduim pentru acuratețe, vă rugăm să țineți cont că traducerile automate pot conține erori sau inexactități. Documentul original, în limba sa nativă, trebuie considerat sursa autorizată. Pentru informații critice, se recomandă traducerea profesională realizată de un specialist uman. Nu ne asumăm răspunderea pentru eventualele neînțelegeri sau interpretări greșite care pot rezulta din utilizarea acestei traduceri.
+**Declarație de responsabilitate**:
+Acest document a fost tradus folosind serviciul de traducere AI [Co-op Translator](https://github.com/Azure/co-op-translator). Deși ne străduim să asigurăm acuratețea, vă rugăm să rețineți că traducerile automate pot conține erori sau inexactități. Documentul original, în limba sa nativă, trebuie considerat sursa autoritară. Pentru informații critice, se recomandă traducerea profesională umană. Nu ne asumăm răspunderea pentru orice neînțelegeri sau interpretări greșite care pot apărea din utilizarea acestei traduceri.

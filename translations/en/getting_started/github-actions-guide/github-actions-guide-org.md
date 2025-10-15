@@ -1,50 +1,50 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T18:58:54+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T02:06:42+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "en"
 }
 -->
 # Using the Co-op Translator GitHub Action (Organization Guide)
 
-**Target Audience:** This guide is for **Microsoft internal users** or **teams who have access to the necessary credentials for the pre-built Co-op Translator GitHub App** or who can create their own custom GitHub App.
+**Target Audience:** This guide is for **Microsoft internal users** or **teams who have access to the necessary credentials for the pre-built Co-op Translator GitHub App** or can create their own custom GitHub App.
 
-Automate the translation of your repository’s documentation easily with the Co-op Translator GitHub Action. This guide explains how to set up the action to automatically create pull requests with updated translations whenever your source Markdown files or images are changed.
+Automate the translation of your repository's documentation easily with the Co-op Translator GitHub Action. This guide explains how to set up the action so it automatically creates pull requests with updated translations whenever your source Markdown files or images change.
 
 > [!IMPORTANT]
 > 
 > **Choosing the Right Guide:**
 >
-> This guide explains setup using a **GitHub App ID and a Private Key**. You usually need this "Organization Guide" method if: **`GITHUB_TOKEN` Permissions are Restricted:** Your organization or repository settings limit the default permissions of the standard `GITHUB_TOKEN`. Specifically, if the `GITHUB_TOKEN` is not granted the necessary `write` permissions (such as `contents: write` or `pull-requests: write`), the workflow in the [Public Setup Guide](./github-actions-guide-public.md) will fail due to insufficient permissions. Using a dedicated GitHub App with explicitly assigned permissions avoids this problem.
+> This guide explains setup using a **GitHub App ID and a Private Key**. You usually need this "Organization Guide" method if: **`GITHUB_TOKEN` Permissions are Restricted:** Your organization or repository settings limit the default permissions granted to the standard `GITHUB_TOKEN`. Specifically, if the `GITHUB_TOKEN` does not have the necessary `write` permissions (like `contents: write` or `pull-requests: write`), the workflow in the [Public Setup Guide](./github-actions-guide-public.md) will fail due to insufficient permissions. Using a dedicated GitHub App with explicitly granted permissions avoids this problem.
 >
-> **If this does not apply to you:**
+> **If the above does not apply to you:**
 >
-> If the standard `GITHUB_TOKEN` has sufficient permissions in your repository (i.e., you are not restricted by organizational policies), please use the **[Public Setup Guide using GITHUB_TOKEN](./github-actions-guide-public.md)**. The public guide does not require managing App IDs or Private Keys and relies solely on the standard `GITHUB_TOKEN` and repository permissions.
+> If the standard `GITHUB_TOKEN` has enough permissions in your repository (i.e., you are not blocked by organizational restrictions), please use the **[Public Setup Guide using GITHUB_TOKEN](./github-actions-guide-public.md)**. The public guide does not require you to get or manage App IDs or Private Keys and relies only on the standard `GITHUB_TOKEN` and repository permissions.
 
 ## Prerequisites
 
-Before configuring the GitHub Action, make sure you have the necessary AI service credentials ready.
+Before you set up the GitHub Action, make sure you have the necessary AI service credentials.
 
-**1. Required: AI Language Model Credentials**  
+**1. Required: AI Language Model Credentials**
 You need credentials for at least one supported Language Model:
 
-- **Azure OpenAI**: Requires Endpoint, API Key, Model/Deployment Names, API Version.  
-- **OpenAI**: Requires API Key, (Optional: Org ID, Base URL, Model ID).  
-- See [Supported Models and Services](../../../../README.md) for details.  
+- **Azure OpenAI**: Requires Endpoint, API Key, Model/Deployment Names, API Version.
+- **OpenAI**: Requires API Key, (Optional: Org ID, Base URL, Model ID).
+- See [Supported Models and Services](../../../../README.md) for details.
 - Setup Guide: [Set up Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
 
 **2. Optional: Computer Vision Credentials (for Image Translation)**
 
-- Only needed if you want to translate text inside images.  
-- **Azure Computer Vision**: Requires Endpoint and Subscription Key.  
-- If not provided, the action will run in [Markdown-only mode](../markdown-only-mode.md).  
+- Only needed if you want to translate text inside images.
+- **Azure Computer Vision**: Requires Endpoint and Subscription Key.
+- If not provided, the action defaults to [Markdown-only mode](../markdown-only-mode.md).
 - Setup Guide: [Set up Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
 
 ## Setup and Configuration
 
-Follow these steps to configure the Co-op Translator GitHub Action in your repository:
+Follow these steps to set up the Co-op Translator GitHub Action in your repository:
 
 ### Step 1: Install and Configure GitHub App Authentication
 
@@ -56,33 +56,33 @@ The workflow uses GitHub App authentication to securely interact with your repos
 
 1. Click **Install** and select the account or organization where your target repository is located.
 
-    ![Install app](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.en.png)
+    <img src="../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.en.png" alt="Install app">
 
-1. Choose **Only select repositories** and pick your target repository (e.g., `PhiCookBook`). Click **Install**. You might be prompted to authenticate.
+1. Choose **Only select repositories** and select your target repository (for example, `PhiCookBook`). Click **Install**. You may be asked to authenticate.
 
-    ![Install authorize](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.en.png)
+    <img src="../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.en.png" alt="Install authorize">
 
-1. **Obtain App Credentials (Internal Process Required):** To allow the workflow to authenticate as the app, you need two pieces of information provided by the Co-op Translator team:  
-  - **App ID:** The unique identifier for the Co-op Translator app. The App ID is: `1164076`.  
-  - **Private Key:** You must obtain the **entire content** of the `.pem` private key file from the maintainer contact. **Handle this key like a password and keep it secure.**
+1. **Get App Credentials (Internal Process Required):** To let the workflow authenticate as the app, you need two pieces of information from the Co-op Translator team:
+  - **App ID:** The unique identifier for the Co-op Translator app. The App ID is: `1164076`.
+  - **Private Key:** You must get the **entire content** of the `.pem` private key file from the maintainer contact. **Treat this key like a password and keep it secure.**
 
-1. Proceed to Step 2.
+1. Continue to Step 2.
 
 #### **Option B: Use Your Own Custom GitHub App**
 
-- Alternatively, you can create and configure your own GitHub App. Make sure it has Read & write access to Contents and Pull requests. You will need its App ID and a generated Private Key.
+- If you prefer, you can create and set up your own GitHub App. Make sure it has Read & write access to Contents and Pull requests. You will need its App ID and a generated Private Key.
 
 ### Step 2: Configure Repository Secrets
 
-Add the GitHub App credentials and your AI service credentials as encrypted secrets in your repository settings.
+You need to add the GitHub App credentials and your AI service credentials as encrypted secrets in your repository settings.
 
-1. Go to your target GitHub repository (e.g., `PhiCookBook`).
+1. Go to your target GitHub repository (for example, `PhiCookBook`).
 
-1. Navigate to **Settings** > **Secrets and variables** > **Actions**.
+1. Go to **Settings** > **Secrets and variables** > **Actions**.
 
 1. Under **Repository secrets**, click **New repository secret** for each secret listed below.
 
-   ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.en.png)
+   <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.en.png" alt="Select setting action">
 
 **Required Secrets (for GitHub App Authentication):**
 
@@ -95,7 +95,7 @@ Add the GitHub App credentials and your AI service credentials as encrypted secr
 
 | Secret Name                         | Description                               | Value Source                     |
 | :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Key for Azure AI Service (Computer Vision)  | Azure AI Foundry                    |
+| `AZURE_AI_SERVICE_API_KEY`            | Key for Azure AI Service (Computer Vision)  | Azure AI Foundry                    |
 | `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint for Azure AI Service (Computer Vision) | Azure AI Foundry                     |
 | `AZURE_OPENAI_API_KEY`              | Key for Azure OpenAI service              | Azure AI Foundry                     |
 | `AZURE_OPENAI_ENDPOINT`             | Endpoint for Azure OpenAI service         | Azure AI Foundry                     |
@@ -107,13 +107,13 @@ Add the GitHub App credentials and your AI service credentials as encrypted secr
 | `OPENAI_CHAT_MODEL_ID`              | Specific OpenAI model ID                  | OpenAI Platform                    |
 | `OPENAI_BASE_URL`                   | Custom OpenAI API Base URL                | OpenAI Platform                    |
 
-![Enter environment variable name](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.en.png)
+<img src="../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.en.png" alt="Enter environment variable name">
 
 ### Step 3: Create the Workflow File
 
 Finally, create the YAML file that defines the automated workflow.
 
-1. In the root directory of your repository, create the `.github/workflows/` folder if it doesn’t already exist.
+1. In the root directory of your repository, create the `.github/workflows/` directory if it doesn't exist.
 
 1. Inside `.github/workflows/`, create a file named `co-op-translator.yml`.
 
@@ -155,7 +155,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +209,31 @@ jobs:
 
 ```
 
-4.  **Customize the Workflow:**  
-  - **[!IMPORTANT] Target Languages:** In the `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+4.  **Customize the Workflow:**
+  - **[!IMPORTANT] Target Languages:** In the `Run Co-op Translator` step, you **MUST review and change the list of language codes** in the `translate -l "..." -y` command to fit your project's needs. The example list (`ar de es...`) should be replaced or adjusted.
+  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (like source documentation) change, saving runner minutes.
+  - **PR Details:** Change the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
 
 ## Credential Management and Renewal
 
 - **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` keys) **before they expire** to avoid workflow failures.
+- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that the Azure OpenAI key used within Microsoft may have a mandatory renewal policy (for example, every 5 months). Make sure you update the relevant GitHub secrets (`AZURE_OPENAI_...` keys) **before they expire** to avoid workflow failures.
 
 ## Running the Workflow
 
-Once the `co-op-translator.yml` file is merged into your main branch (or the branch specified in the `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` filter, if configured),
+> [!WARNING]  
+> **GitHub-hosted Runner Time Limit:**  
+> GitHub-hosted runners like `ubuntu-latest` have a **maximum execution time limit of 6 hours**.  
+> For large documentation repositories, if the translation process takes longer than 6 hours, the workflow will be automatically stopped.  
+> To avoid this, consider:  
+> - Using a **self-hosted runner** (no time limit)  
+> - Reducing the number of target languages per run
 
-if translations are generated or updated, the action will automatically create a Pull Request containing the changes, ready for your review and merging.
+Once the `co-op-translator.yml` file is merged into your main branch (or the branch specified in the `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` filter, if set).
 
-**Disclaimer**:  
+If translations are created or updated, the action will automatically create a Pull Request with the changes, ready for you to review and merge.
+
+---
+
+**Disclaimer**:
 This document has been translated using the AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.

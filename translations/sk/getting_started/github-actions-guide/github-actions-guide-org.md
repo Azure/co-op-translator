@@ -1,54 +1,54 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:16:48+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T03:55:59+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "sk"
 }
 -->
-# Používanie Co-op Translator GitHub Action (Sprievodca pre organizácie)
+# Používanie Co-op Translator GitHub Action (Organizačný sprievodca)
 
-**Cieľová skupina:** Tento sprievodca je určený pre **interných používateľov Microsoftu** alebo **tímy, ktoré majú prístup k potrebným povereniam pre predpripravenú aplikáciu Co-op Translator GitHub App** alebo si môžu vytvoriť vlastnú vlastnú GitHub App.
+**Cieľová skupina:** Tento sprievodca je určený pre **interných používateľov Microsoftu** alebo **tímy, ktoré majú prístup k potrebným povereniam pre predpripravenú Co-op Translator GitHub App** alebo si môžu vytvoriť vlastnú vlastnú GitHub App.
 
-Automatizujte preklad dokumentácie vášho repozitára jednoducho pomocou Co-op Translator GitHub Action. Tento sprievodca vás prevedie nastavením akcie tak, aby automaticky vytvárala pull requesty s aktualizovanými prekladmi vždy, keď sa zmenia zdrojové Markdown súbory alebo obrázky.
+Automatizujte preklad dokumentácie vášho repozitára jednoducho pomocou Co-op Translator GitHub Action. Tento sprievodca vás prevedie nastavením akcie tak, aby automaticky vytvárala pull requesty s aktualizovanými prekladmi vždy, keď sa zmenia vaše zdrojové Markdown súbory alebo obrázky.
 
 > [!IMPORTANT]
 > 
 > **Výber správneho sprievodcu:**
 >
-> Tento sprievodca popisuje nastavenie pomocou **GitHub App ID a súkromného kľúča**. Túto metódu „Sprievodca pre organizácie“ obvykle potrebujete, ak: **`GITHUB_TOKEN` oprávnenia sú obmedzené:** Nastavenia vašej organizácie alebo repozitára obmedzujú predvolené oprávnenia štandardného `GITHUB_TOKEN`. Konkrétne, ak štandardný `GITHUB_TOKEN` nemá povolené potrebné `write` oprávnenia (napríklad `contents: write` alebo `pull-requests: write`), workflow podľa [Verejného sprievodcu nastavením](./github-actions-guide-public.md) zlyhá kvôli nedostatočným oprávneniam. Použitie samostatnej GitHub App s explicitne udelenými oprávneniami obíde toto obmedzenie.
+> Tento sprievodca popisuje nastavenie pomocou **GitHub App ID a Private Key**. Tento "Organizačný sprievodca" potrebujete najmä vtedy, ak: **`GITHUB_TOKEN` má obmedzené oprávnenia:** Nastavenia vašej organizácie alebo repozitára obmedzujú predvolené oprávnenia, ktoré štandardný `GITHUB_TOKEN` poskytuje. Konkrétne, ak `GITHUB_TOKEN` nemá povolené potrebné `write` oprávnenia (napr. `contents: write` alebo `pull-requests: write`), workflow v [Verejnom sprievodcovi](./github-actions-guide-public.md) zlyhá kvôli nedostatočným oprávneniam. Použitie dedikovanej GitHub App s explicitne udelenými oprávneniami obchádza toto obmedzenie.
 >
-> **Ak sa vás to netýka:**
+> **Ak sa vás vyššie uvedené netýka:**
 >
-> Ak má štandardný `GITHUB_TOKEN` dostatočné oprávnenia vo vašom repozitári (t. j. nie ste blokovaní organizačnými obmedzeniami), použite prosím **[Verejný sprievodca nastavením pomocou GITHUB_TOKEN](./github-actions-guide-public.md)**. Verejný sprievodca nevyžaduje získavanie alebo správu App ID či súkromných kľúčov a spolieha sa výhradne na štandardný `GITHUB_TOKEN` a oprávnenia repozitára.
+> Ak má štandardný `GITHUB_TOKEN` dostatočné oprávnenia vo vašom repozitári (t.j. nie ste blokovaní organizačnými obmedzeniami), použite **[Verejný sprievodca s GITHUB_TOKEN](./github-actions-guide-public.md)**. Verejný sprievodca nevyžaduje získavanie ani správu App ID alebo Private Key a spolieha sa len na štandardný `GITHUB_TOKEN` a oprávnenia repozitára.
 
 ## Predpoklady
 
-Pred konfiguráciou GitHub Action sa uistite, že máte pripravené potrebné poverenia pre AI služby.
+Pred konfiguráciou GitHub Action si pripravte potrebné poverenia AI služby.
 
-**1. Povinné: Poverenia pre AI jazykový model**  
-Potrebujete poverenia pre aspoň jeden podporovaný jazykový model:
+**1. Povinné: Poverenia AI jazykového modelu**
+Potrebujete poverenia aspoň pre jeden podporovaný jazykový model:
 
-- **Azure OpenAI**: Vyžaduje Endpoint, API kľúč, názvy modelu/deploymentu, verziu API.  
-- **OpenAI**: Vyžaduje API kľúč, (voliteľne: Org ID, Base URL, Model ID).  
-- Viac informácií nájdete v [Podporovaných modeloch a službách](../../../../README.md).  
+- **Azure OpenAI**: Vyžaduje Endpoint, API Key, názvy modelov/deploymentov, verziu API.
+- **OpenAI**: Vyžaduje API Key, (voliteľne: Org ID, Base URL, Model ID).
+- Podrobnosti nájdete v [Podporované modely a služby](../../../../README.md).
 - Sprievodca nastavením: [Nastavenie Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
 
-**2. Voliteľné: Poverenia pre Computer Vision (na preklad obrázkov)**
+**2. Voliteľné: Poverenia Computer Vision (pre preklad textu v obrázkoch)**
 
-- Potrebné iba ak chcete prekladať text v obrázkoch.  
-- **Azure Computer Vision**: Vyžaduje Endpoint a Subscription Key.  
-- Ak nie sú poskytnuté, akcia prejde do režimu [len Markdown](../markdown-only-mode.md).  
+- Potrebné len ak potrebujete prekladať text v obrázkoch.
+- **Azure Computer Vision**: Vyžaduje Endpoint a Subscription Key.
+- Ak nie sú zadané, akcia sa prepne do [režimu len pre Markdown](../markdown-only-mode.md).
 - Sprievodca nastavením: [Nastavenie Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
 
 ## Nastavenie a konfigurácia
 
-Postupujte podľa týchto krokov, aby ste nastavili Co-op Translator GitHub Action vo vašom repozitári:
+Postupujte podľa týchto krokov na nastavenie Co-op Translator GitHub Action vo vašom repozitári:
 
-### Krok 1: Inštalácia a konfigurácia autentifikácie GitHub App
+### Krok 1: Inštalácia a konfigurácia GitHub App autentifikácie
 
-Workflow používa autentifikáciu GitHub App, aby bezpečne komunikoval s vaším repozitárom (napr. na vytváranie pull requestov) vo vašom mene. Vyberte jednu možnosť:
+Workflow používa autentifikáciu GitHub App na bezpečnú interakciu s vaším repozitárom (napr. vytváranie pull requestov) vo vašom mene. Vyberte jednu možnosť:
 
 #### **Možnosť A: Inštalácia predpripravenej Co-op Translator GitHub App (pre interné použitie Microsoftu)**
 
@@ -56,68 +56,68 @@ Workflow používa autentifikáciu GitHub App, aby bezpečne komunikoval s vaš�
 
 1. Vyberte **Install** a zvoľte účet alebo organizáciu, kde sa nachádza váš cieľový repozitár.
 
-    ![Inštalácia aplikácie](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.sk.png)
+    ![Install app](../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.sk.png)
 
-1. Zvoľte **Only select repositories** a vyberte cieľový repozitár (napr. `PhiCookBook`). Kliknite na **Install**. Môže byť potrebné sa autentifikovať.
+1. Zvoľte **Only select repositories** a vyberte váš cieľový repozitár (napr. `PhiCookBook`). Kliknite na **Install**. Môže byť vyžadované overenie.
 
-    ![Autorizácia inštalácie](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.sk.png)
+    ![Install authorize](../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.sk.png)
 
-1. **Získanie poverení aplikácie (vyžaduje interný proces):** Aby mohol workflow autentifikovať ako aplikácia, potrebujete dve informácie poskytnuté tímom Co-op Translator:  
-  - **App ID:** Jedinečný identifikátor aplikácie Co-op Translator. App ID je: `1164076`.  
-  - **Súkromný kľúč:** Musíte získať **celý obsah** súboru súkromného kľúča `.pem` od kontaktného správcu. **Zaobchádzajte s týmto kľúčom ako s heslom a uchovávajte ho v bezpečí.**
+1. **Získajte poverenia aplikácie (vyžaduje interný proces):** Aby workflow mohol autentifikovať ako aplikácia, potrebujete dve informácie od tímu Co-op Translator:
+  - **App ID:** Unikátny identifikátor Co-op Translator aplikácie. App ID je: `1164076`.
+  - **Private Key:** Musíte získať **celý obsah** súboru `.pem` private key od kontaktného správcu. **Zaobchádzajte s týmto kľúčom ako s heslom a uchovávajte ho v bezpečí.**
 
-1. Pokračujte na Krok 2.
+1. Pokračujte na krok 2.
 
-#### **Možnosť B: Použitie vlastnej vlastnej GitHub App**
+#### **Možnosť B: Použitie vlastnej GitHub App**
 
-- Ak chcete, môžete si vytvoriť a nakonfigurovať vlastnú GitHub App. Uistite sa, že má prístup na čítanie a zápis do Contents a Pull requests. Budete potrebovať jej App ID a vygenerovaný súkromný kľúč.
+- Ak chcete, môžete si vytvoriť a nastaviť vlastnú GitHub App. Uistite sa, že má Read & write prístup k Contents a Pull requests. Budete potrebovať jej App ID a vygenerovaný Private Key.
 
-### Krok 2: Konfigurácia tajomstiev repozitára
+### Krok 2: Nastavenie tajných údajov repozitára
 
-Musíte pridať poverenia GitHub App a vaše AI služby ako zašifrované tajomstvá v nastaveniach repozitára.
+Musíte pridať poverenia GitHub App a AI služby ako šifrované tajné údaje v nastaveniach repozitára.
 
 1. Prejdite do cieľového GitHub repozitára (napr. `PhiCookBook`).
 
 1. Choďte do **Settings** > **Secrets and variables** > **Actions**.
 
-1. V sekcii **Repository secrets** kliknite na **New repository secret** pre každý z nižšie uvedených tajomstiev.
+1. V sekcii **Repository secrets** kliknite na **New repository secret** pre každý tajný údaj uvedený nižšie.
 
-   ![Výber nastavení akcií](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.sk.png)
+   ![Select setting action](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.sk.png)
 
-**Povinné tajomstvá (pre autentifikáciu GitHub App):**
+**Povinné tajné údaje (pre GitHub App autentifikáciu):**
 
-| Názov tajomstva       | Popis                                         | Zdroj hodnoty                                   |
-| :-------------------- | :--------------------------------------------- | :---------------------------------------------- |
-| `GH_APP_ID`            | App ID GitHub App (z Kroku 1).                  | Nastavenia GitHub App                           |
-| `GH_APP_PRIVATE_KEY` | **Celý obsah** stiahnutého súboru `.pem`. | Súbor `.pem` (z Kroku 1)                    |
+| Názov tajného údaja | Popis | Zdroj hodnoty |
+| :------------------- | :----------------------------------------------- | :----------------------------------------------- |
+| `GH_APP_ID` | App ID GitHub App (z kroku 1). | Nastavenia GitHub App |
+| `GH_APP_PRIVATE_KEY` | **Celý obsah** stiahnutého `.pem` súboru. | `.pem` súbor (z kroku 1) |
 
-**Tajomstvá AI služieb (pridajte VŠETKY, ktoré sa vzťahujú podľa vašich predpokladov):**
+**Tajné údaje AI služby (pridajte VŠETKY, ktoré sa vás týkajú podľa predpokladov):**
 
-| Názov tajomstva                     | Popis                                       | Zdroj hodnoty                   |
-| :---------------------------------- | :-------------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`              | Kľúč pre Azure AI službu (Computer Vision)    | Azure AI Foundry                |
-| `AZURE_AI_SERVICE_ENDPOINT`           | Endpoint pre Azure AI službu (Computer Vision) | Azure AI Foundry                |
-| `AZURE_OPENAI_API_KEY`                | Kľúč pre Azure OpenAI službu                    | Azure AI Foundry                |
-| `AZURE_OPENAI_ENDPOINT`               | Endpoint pre Azure OpenAI službu                 | Azure AI Foundry                |
-| `AZURE_OPENAI_MODEL_NAME`             | Názov vášho Azure OpenAI modelu                 | Azure AI Foundry                |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`     | Názov vášho Azure OpenAI deploymentu             | Azure AI Foundry                |
-| `AZURE_OPENAI_API_VERSION`            | Verzia API pre Azure OpenAI                      | Azure AI Foundry                |
-| `OPENAI_API_KEY`                  | API kľúč pre OpenAI                             | OpenAI Platform                |
-| `OPENAI_ORG_ID`                   | OpenAI Organization ID                          | OpenAI Platform                |
-| `OPENAI_CHAT_MODEL_ID`              | Špecifický model OpenAI                          | OpenAI Platform                |
-| `OPENAI_BASE_URL`                 | Vlastná OpenAI API Base URL                      | OpenAI Platform                |
+| Názov tajného údaja | Popis | Zdroj hodnoty |
+| :---------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY` | Kľúč pre Azure AI Service (Computer Vision) | Azure AI Foundry |
+| `AZURE_AI_SERVICE_ENDPOINT` | Endpoint pre Azure AI Service (Computer Vision) | Azure AI Foundry |
+| `AZURE_OPENAI_API_KEY` | Kľúč pre Azure OpenAI službu | Azure AI Foundry |
+| `AZURE_OPENAI_ENDPOINT` | Endpoint pre Azure OpenAI službu | Azure AI Foundry |
+| `AZURE_OPENAI_MODEL_NAME` | Názov vášho Azure OpenAI modelu | Azure AI Foundry |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Názov vášho Azure OpenAI deploymentu | Azure AI Foundry |
+| `AZURE_OPENAI_API_VERSION` | Verzia API pre Azure OpenAI | Azure AI Foundry |
+| `OPENAI_API_KEY` | API kľúč pre OpenAI | OpenAI Platform |
+| `OPENAI_ORG_ID` | OpenAI Organization ID | OpenAI Platform |
+| `OPENAI_CHAT_MODEL_ID` | Konkrétne OpenAI model ID | OpenAI Platform |
+| `OPENAI_BASE_URL` | Vlastné OpenAI API Base URL | OpenAI Platform |
 
-![Zadanie názvu environmentálnej premennej](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.sk.png)
+![Enter environment variable name](../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.sk.png)
 
 ### Krok 3: Vytvorenie workflow súboru
 
 Nakoniec vytvorte YAML súbor, ktorý definuje automatizovaný workflow.
 
-1. V koreňovom adresári repozitára vytvorte priečinok `.github/workflows/`, ak ešte neexistuje.
+1. V koreňovom adresári vášho repozitára vytvorte adresár `.github/workflows/`, ak ešte neexistuje.
 
-1. V priečinku `.github/workflows/` vytvorte súbor s názvom `co-op-translator.yml`.
+1. V `.github/workflows/` vytvorte súbor s názvom `co-op-translator.yml`.
 
-1. Vložte nasledujúci obsah do co-op-translator.yml.
+1. Vložte nasledujúci obsah do súboru co-op-translator.yml.
 
 ```
 name: Co-op Translator
@@ -155,7 +155,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +209,31 @@ jobs:
 
 ```
 
-4.  **Prispôsobenie workflow:**  
-  - **[!IMPORTANT] Cieľové jazyky:** V príkaze `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+4.  **Prispôsobenie workflow:**
+  - **[!IMPORTANT] Cieľové jazyky:** V kroku `Run Co-op Translator` **MUSÍTE skontrolovať a upraviť zoznam jazykových kódov** v príkaze `translate -l "..." -y` podľa potrieb vášho projektu. Ukážkový zoznam (`ar de es...`) je potrebné nahradiť alebo upraviť.
+  - **Trigger (`on:`):** Aktuálny trigger spúšťa workflow pri každom pushi na `main`. Pri veľkých repozitároch zvážte pridanie filtra `paths:` (pozrite komentovaný príklad v YAML), aby sa workflow spúšťal len pri zmene relevantných súborov (napr. zdrojová dokumentácia), čím ušetríte minúty runnera.
+  - **Detaily PR:** Prispôsobte `commit-message`, `title`, `body`, názov `branch` a `labels` v kroku `Create Pull Request` podľa potreby.
 
-## Credential Management and Renewal
+## Správa a obnova poverení
 
-- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` zadajte požadované jazyky **pred tým, než vypršia platnosti kľúčov**, aby ste predišli zlyhaniu workflow.
+- **Bezpečnosť:** Vždy ukladajte citlivé poverenia (API kľúče, private key) ako GitHub Actions secrets. Nikdy ich nezverejňujte v workflow súbore ani v kóde repozitára.
+- **[!IMPORTANT] Obnova kľúčov (interní používatelia Microsoftu):** Uvedomte si, že Azure OpenAI kľúč používaný v rámci Microsoftu môže mať povinnú politiku obnovy (napr. každých 5 mesiacov). Uistite sa, že aktualizujete príslušné GitHub secrets (`AZURE_OPENAI_...` kľúče) **pred ich vypršaním**, aby ste predišli zlyhaniu workflow.
 
-## Spustenie workflow
+## Spúšťanie workflow
 
-Keď je súbor `co-op-translator.yml` zlúčený do vašej hlavnej vetvy (alebo vetvy špecifikovanej vo filtri `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths`, ak je nakonfigurovaný).
+> [!WARNING]  
+> **Časový limit GitHub-hosted runnera:**  
+> GitHub-hosted runneri ako `ubuntu-latest` majú **maximálny čas spustenia 6 hodín**.  
+> Pri veľkých dokumentačných repozitároch, ak prekladový proces presiahne 6 hodín, workflow bude automaticky ukončený.  
+> Aby ste tomu predišli, zvážte:  
+> - Použitie **self-hosted runnera** (bez časového limitu)  
+> - Zníženie počtu cieľových jazykov na jeden beh
 
-Ak sú preklady vytvorené alebo aktualizované, akcia automaticky vytvorí Pull Request s týmito zmenami, pripravený na vašu kontrolu a zlúčenie.
+Keď je súbor `co-op-translator.yml` zlúčený do vašej hlavnej vetvy (alebo vetvy určenej v `on:` triggeri), workflow sa automaticky spustí vždy, keď sa do tejto vetvy pushnú zmeny (a zodpovedajú filtru `paths`, ak je nastavený).
 
-**Vyhlásenie o zodpovednosti**:  
-Tento dokument bol preložený pomocou AI prekladateľskej služby [Co-op Translator](https://github.com/Azure/co-op-translator). Hoci sa snažíme o presnosť, prosím berte na vedomie, že automatizované preklady môžu obsahovať chyby alebo nepresnosti. Pôvodný dokument v jeho natívnom jazyku by mal byť považovaný za autoritatívny zdroj. Pre kritické informácie sa odporúča profesionálny ľudský preklad. Nie sme zodpovední za akékoľvek nedorozumenia alebo nesprávne interpretácie vyplývajúce z použitia tohto prekladu.
+Ak sa vygenerujú alebo aktualizujú preklady, akcia automaticky vytvorí Pull Request s týmito zmenami, pripravený na vašu kontrolu a zlúčenie.
+
+---
+
+**Vyhlásenie o vylúčení zodpovednosti**:
+Tento dokument bol preložený pomocou AI prekladovej služby [Co-op Translator](https://github.com/Azure/co-op-translator). Hoci sa snažíme o presnosť, upozorňujeme, že automatizované preklady môžu obsahovať chyby alebo nepresnosti. Za autoritatívny zdroj by sa mal považovať pôvodný dokument v jeho pôvodnom jazyku. Pre kritické informácie odporúčame profesionálny ľudský preklad. Nenesieme zodpovednosť za akékoľvek nedorozumenia alebo nesprávne interpretácie vzniknuté použitím tohto prekladu.

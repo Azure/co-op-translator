@@ -1,94 +1,94 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:32:20+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T03:41:37+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "ms"
 }
 -->
 # Menggunakan Co-op Translator GitHub Action (Tetapan Awam)
 
-**Sasaran Pembaca:** Panduan ini ditujukan kepada pengguna dalam kebanyakan repositori awam atau persendirian di mana kebenaran GitHub Actions standard adalah mencukupi. Ia menggunakan `GITHUB_TOKEN` terbina dalam.
+**Sasaran Pengguna:** Panduan ini ditujukan untuk pengguna di kebanyakan repositori awam atau peribadi di mana kebenaran GitHub Actions standard sudah mencukupi. Ia menggunakan `GITHUB_TOKEN` terbina dalam.
 
-Automatikkan terjemahan dokumentasi repositori anda dengan mudah menggunakan Co-op Translator GitHub Action. Panduan ini membimbing anda cara menyediakan action ini untuk secara automatik mencipta pull request dengan terjemahan terkini setiap kali fail Markdown sumber atau imej anda berubah.
+Automasi terjemahan dokumentasi repositori anda dengan mudah menggunakan Co-op Translator GitHub Action. Panduan ini menerangkan cara menyediakan action supaya ia secara automatik mencipta pull request dengan terjemahan terkini setiap kali fail Markdown sumber atau imej anda berubah.
 
 > [!IMPORTANT]
 >
 > **Memilih Panduan Yang Betul:**
 >
-> Panduan ini menerangkan **penyediaan yang lebih mudah menggunakan `GITHUB_TOKEN` standard**. Ini adalah kaedah yang disyorkan untuk kebanyakan pengguna kerana ia tidak memerlukan pengurusan Kunci Peribadi GitHub App yang sensitif.
+> Panduan ini menerangkan **tetapan mudah menggunakan `GITHUB_TOKEN` standard**. Kaedah ini disyorkan untuk kebanyakan pengguna kerana anda tidak perlu mengurus Kunci Peribadi GitHub App yang sensitif.
 >
 
 ## Prasyarat
 
-Sebelum mengkonfigurasi GitHub Action, pastikan anda mempunyai kelayakan perkhidmatan AI yang diperlukan.
+Sebelum mengkonfigurasi GitHub Action, pastikan anda sudah mempunyai kelayakan perkhidmatan AI yang diperlukan.
 
-**1. Diperlukan: Kelayakan Model Bahasa AI**  
+**1. Wajib: Kelayakan Model Bahasa AI**
 Anda perlu kelayakan untuk sekurang-kurangnya satu Model Bahasa yang disokong:
 
-- **Azure OpenAI**: Memerlukan Endpoint, Kunci API, Nama Model/Penerapan, Versi API.  
-- **OpenAI**: Memerlukan Kunci API, (Pilihan: ID Organisasi, URL Asas, ID Model).  
-- Lihat [Supported Models and Services](../../../../README.md) untuk maklumat lanjut.
+- **Azure OpenAI**: Memerlukan Endpoint, API Key, Nama Model/Deployment, Versi API.
+- **OpenAI**: Memerlukan API Key, (Pilihan: Org ID, Base URL, Model ID).
+- Lihat [Model dan Perkhidmatan yang Disokong](../../../../README.md) untuk maklumat lanjut.
 
 **2. Pilihan: Kelayakan AI Vision (untuk Terjemahan Imej)**
 
-- Diperlukan hanya jika anda ingin menterjemah teks dalam imej.  
-- **Azure AI Vision**: Memerlukan Endpoint dan Kunci Langganan.  
+- Hanya diperlukan jika anda ingin menterjemah teks dalam imej.
+- **Azure AI Vision**: Memerlukan Endpoint dan Subscription Key.
 - Jika tidak disediakan, action akan menggunakan [mod Markdown sahaja](../markdown-only-mode.md).
 
-## Persediaan dan Konfigurasi
+## Tetapan dan Konfigurasi
 
-Ikuti langkah-langkah ini untuk mengkonfigurasi Co-op Translator GitHub Action dalam repositori anda menggunakan `GITHUB_TOKEN` standard.
+Ikuti langkah-langkah berikut untuk mengkonfigurasi Co-op Translator GitHub Action dalam repositori anda menggunakan `GITHUB_TOKEN` standard.
 
 ### Langkah 1: Fahami Pengesahan (Menggunakan `GITHUB_TOKEN`)
 
-Aliran kerja ini menggunakan `GITHUB_TOKEN` terbina dalam yang disediakan oleh GitHub Actions. Token ini secara automatik memberi kebenaran kepada aliran kerja untuk berinteraksi dengan repositori anda berdasarkan tetapan yang dikonfigurasi dalam **Langkah 3**.
+Workflow ini menggunakan `GITHUB_TOKEN` terbina dalam yang disediakan oleh GitHub Actions. Token ini secara automatik memberikan kebenaran kepada workflow untuk berinteraksi dengan repositori anda berdasarkan tetapan yang dikonfigurasi dalam **Langkah 3**.
 
-### Langkah 2: Konfigurasikan Rahsia Repositori
+### Langkah 2: Konfigurasi Secrets Repositori
 
-Anda hanya perlu menambah **kelayakan perkhidmatan AI** sebagai rahsia tersulit dalam tetapan repositori anda.
+Anda hanya perlu menambah **kelayakan perkhidmatan AI** anda sebagai secrets yang dienkripsi dalam tetapan repositori.
 
-1.  Pergi ke repositori sasaran GitHub anda.  
-2.  Pilih **Settings** > **Secrets and variables** > **Actions**.  
-3.  Di bawah **Repository secrets**, klik **New repository secret** untuk setiap rahsia perkhidmatan AI yang diperlukan seperti disenaraikan di bawah.
+1.  Pergi ke repositori GitHub yang anda ingin gunakan.
+2.  Pergi ke **Settings** > **Secrets and variables** > **Actions**.
+3.  Di bawah **Repository secrets**, klik **New repository secret** untuk setiap secret perkhidmatan AI yang diperlukan seperti di bawah.
 
-    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.ms.png) *(Rujukan Imej: Menunjukkan lokasi menambah rahsia)*
+    <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.ms.png" alt="Pilih tetapan action"> *(Rujukan Imej: Menunjukkan lokasi untuk menambah secrets)*
 
-**Rahsia Perkhidmatan AI Diperlukan (Tambah SEMUA yang berkenaan mengikut Prasyarat anda):**
+**Secrets Perkhidmatan AI Wajib (Tambah SEMUA yang berkaitan mengikut Prasyarat):**
 
-| Nama Rahsia                         | Penerangan                                | Sumber Nilai                    |
-| :---------------------------------- | :---------------------------------------- | :------------------------------ |
-| `AZURE_SUBSCRIPTION_KEY`            | Kunci untuk Perkhidmatan Azure AI (Computer Vision)  | Azure AI Foundry anda            |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint untuk Perkhidmatan Azure AI (Computer Vision) | Azure AI Foundry anda            |
-| `AZURE_OPENAI_API_KEY`              | Kunci untuk perkhidmatan Azure OpenAI              | Azure AI Foundry anda            |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint untuk perkhidmatan Azure OpenAI         | Azure AI Foundry anda            |
-| `AZURE_OPENAI_MODEL_NAME`           | Nama Model Azure OpenAI anda              | Azure AI Foundry anda            |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Nama Penerapan Azure OpenAI anda         | Azure AI Foundry anda            |
-| `AZURE_OPENAI_API_VERSION`          | Versi API untuk Azure OpenAI              | Azure AI Foundry anda            |
-| `OPENAI_API_KEY`                    | Kunci API untuk OpenAI                        | Platform OpenAI anda             |
-| `OPENAI_ORG_ID`                     | ID Organisasi OpenAI (Pilihan)         | Platform OpenAI anda             |
-| `OPENAI_CHAT_MODEL_ID`              | ID model OpenAI khusus (Pilihan)       | Platform OpenAI anda             |
-| `OPENAI_BASE_URL`                   | URL Asas API OpenAI tersuai (Pilihan)     | Platform OpenAI anda             |
+| Nama Secret                         | Penerangan                               | Sumber Nilai                     |
+| :---------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Kunci untuk Azure AI Service (Computer Vision)  | Azure AI Foundry anda               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint untuk Azure AI Service (Computer Vision) | Azure AI Foundry anda               |
+| `AZURE_OPENAI_API_KEY`              | Kunci untuk perkhidmatan Azure OpenAI              | Azure AI Foundry anda               |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint untuk perkhidmatan Azure OpenAI         | Azure AI Foundry anda               |
+| `AZURE_OPENAI_MODEL_NAME`           | Nama Model Azure OpenAI anda              | Azure AI Foundry anda               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Nama Deployment Azure OpenAI anda         | Azure AI Foundry anda               |
+| `AZURE_OPENAI_API_VERSION`          | Versi API untuk Azure OpenAI              | Azure AI Foundry anda               |
+| `OPENAI_API_KEY`                    | API Key untuk OpenAI                        | Platform OpenAI anda              |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID (Pilihan)         | Platform OpenAI anda              |
+| `OPENAI_CHAT_MODEL_ID`              | ID model OpenAI tertentu (Pilihan)       | Platform OpenAI anda              |
+| `OPENAI_BASE_URL`                   | Base URL API OpenAI tersuai (Pilihan)     | Platform OpenAI anda              |
 
-### Langkah 3: Konfigurasikan Kebenaran Aliran Kerja
+### Langkah 3: Konfigurasi Kebenaran Workflow
 
-GitHub Action memerlukan kebenaran yang diberikan melalui `GITHUB_TOKEN` untuk memeriksa kod dan mencipta pull request.
+GitHub Action memerlukan kebenaran melalui `GITHUB_TOKEN` untuk checkout kod dan mencipta pull request.
 
-1.  Dalam repositori anda, pergi ke **Settings** > **Actions** > **General**.  
-2.  Skrol ke bawah ke bahagian **Workflow permissions**.  
-3.  Pilih **Read and write permissions**. Ini memberikan `GITHUB_TOKEN` kebenaran `contents: write` dan `pull-requests: write` yang diperlukan untuk aliran kerja ini.  
-4.  Pastikan kotak pilihan untuk **Allow GitHub Actions to create and approve pull requests** ditanda.  
+1.  Dalam repositori anda, pergi ke **Settings** > **Actions** > **General**.
+2.  Skrol ke bahagian **Workflow permissions**.
+3.  Pilih **Read and write permissions**. Ini memberikan `GITHUB_TOKEN` kebenaran `contents: write` dan `pull-requests: write` yang diperlukan untuk workflow ini.
+4.  Pastikan kotak **Allow GitHub Actions to create and approve pull requests** **ditandakan**.
 5.  Klik **Save**.
 
-![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.ms.png)
+<img src="../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.ms.png" alt="Tetapan kebenaran">
 
-### Langkah 4: Cipta Fail Aliran Kerja
+### Langkah 4: Cipta Fail Workflow
 
-Akhir sekali, cipta fail YAML yang mentakrifkan aliran kerja automatik menggunakan `GITHUB_TOKEN`.
+Akhir sekali, cipta fail YAML yang mentakrifkan workflow automatik menggunakan `GITHUB_TOKEN`.
 
-1.  Di direktori akar repositori anda, cipta direktori `.github/workflows/` jika belum ada.  
-2.  Dalam `.github/workflows/`, cipta fail bernama `co-op-translator.yml`.  
+1.  Dalam direktori root repositori anda, cipta direktori `.github/workflows/` jika belum wujud.
+2.  Di dalam `.github/workflows/`, cipta fail bernama `co-op-translator.yml`.
 3.  Tampal kandungan berikut ke dalam `co-op-translator.yml`.
 
 ```yaml
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4.  **Sesuaikan Aliran Kerja:**  
-  - **[!IMPORTANT] Bahasa Sasaran:** Dalam langkah `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` jika perlu.
+```
+4.  **Ubahsuai Workflow:**
+  - **[!IMPORTANT] Bahasa Sasaran:** Dalam langkah `Run Co-op Translator`, anda **MESTI semak dan ubah senarai kod bahasa** dalam arahan `translate -l "..." -y` supaya sesuai dengan keperluan projek anda. Senarai contoh (`ar de es...`) perlu diganti atau disesuaikan.
+  - **Trigger (`on:`):** Trigger semasa akan berjalan setiap kali push ke `main`. Untuk repositori besar, pertimbangkan untuk menambah penapis `paths:` (lihat contoh komen dalam YAML) supaya workflow hanya berjalan apabila fail berkaitan (contohnya dokumentasi sumber) berubah, menjimatkan masa runner.
+  - **Butiran PR:** Ubahsuai `commit-message`, `title`, `body`, nama `branch`, dan `labels` dalam langkah `Create Pull Request` jika perlu.
 
-**Penafian**:  
-Dokumen ini telah diterjemahkan menggunakan perkhidmatan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Walaupun kami berusaha untuk ketepatan, sila ambil maklum bahawa terjemahan automatik mungkin mengandungi kesilapan atau ketidaktepatan. Dokumen asal dalam bahasa asalnya hendaklah dianggap sebagai sumber yang sahih. Untuk maklumat penting, terjemahan profesional oleh manusia adalah disyorkan. Kami tidak bertanggungjawab atas sebarang salah faham atau salah tafsir yang timbul daripada penggunaan terjemahan ini.
+## Menjalankan Workflow
+
+> [!WARNING]  
+> **Had Masa Runner GitHub-hosted:**  
+> Runner yang dihoskan GitHub seperti `ubuntu-latest` mempunyai **had masa maksimum 6 jam**.  
+> Untuk repositori dokumentasi yang besar, jika proses terjemahan melebihi 6 jam, workflow akan ditamatkan secara automatik.  
+> Untuk mengelakkan perkara ini, pertimbangkan:  
+> - Menggunakan **runner self-hosted** (tiada had masa)  
+> - Mengurangkan bilangan bahasa sasaran setiap kali run
+
+Selepas fail `co-op-translator.yml` digabungkan ke dalam branch utama anda (atau branch yang ditetapkan dalam trigger `on:`), workflow akan berjalan secara automatik setiap kali perubahan ditolak ke branch tersebut (dan sepadan dengan penapis `paths`, jika dikonfigurasi).
+
+---
+
+**Penafian**:
+Dokumen ini telah diterjemahkan menggunakan perkhidmatan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Walaupun kami berusaha untuk ketepatan, sila ambil maklum bahawa terjemahan automatik mungkin mengandungi kesilapan atau ketidaktepatan. Dokumen asal dalam bahasa asalnya harus dianggap sebagai sumber yang berwibawa. Untuk maklumat kritikal, terjemahan manusia profesional adalah disyorkan. Kami tidak bertanggungjawab atas sebarang salah faham atau salah tafsir yang timbul daripada penggunaan terjemahan ini.

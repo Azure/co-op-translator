@@ -1,123 +1,122 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:06:51+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T02:54:22+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "ne"
 }
 -->
-# Co-op Translator GitHub Action प्रयोग गर्ने तरिका (संस्था मार्गदर्शन)
+# Co-op Translator GitHub Action प्रयोग गर्ने तरिका (संस्थागत मार्गदर्शन)
 
-**लक्षित दर्शक:** यो मार्गदर्शन **Microsoft का आन्तरिक प्रयोगकर्ता** वा **पूर्वनिर्मित Co-op Translator GitHub App को आवश्यक प्रमाणपत्रहरू पहुँच भएको टोलीहरू** वा आफ्नै कस्टम GitHub App बनाउन सक्ने टोलीहरूका लागि हो।
+**लक्ष्य समूह:** यो मार्गदर्शन **Microsoft आन्तरिक प्रयोगकर्ता** वा **त्यस्ता टिमहरू**का लागि हो जससँग तयार Co-op Translator GitHub App को आवश्यक प्रमाणपत्रहरू छन् वा आफैंले आफ्नो कस्टम GitHub App बनाउन सक्छन्।
 
-तपाईंको रिपोजिटोरीको दस्तावेजीकरणको अनुवाद सजिलै स्वचालित गर्न Co-op Translator GitHub Action प्रयोग गर्नुहोस्। यो मार्गदर्शनले तपाईंलाई सोर्स Markdown फाइलहरू वा तस्बिरहरू परिवर्तन हुँदा स्वतः अनुवाद अपडेट गरी Pull Request सिर्जना गर्ने तरिका देखाउँछ।
+आफ्नो रिपोजिटरीको डक्युमेन्टेसन अनुवाद स्वचालित रूपमा गर्न Co-op Translator GitHub Action प्रयोग गर्नुहोस्। यो मार्गदर्शनले तपाईंलाई कसरी सेटअप गर्ने भन्ने देखाउँछ ताकि जब तपाईंको स्रोत Markdown फाइलहरू वा तस्बिरहरू परिवर्तन हुन्छन्, अनुवाद अपडेट भएको Pull Request स्वचालित रूपमा बनोस्।
 
-> [!IMPORTANT]
-> 
-> **सही मार्गदर्शन छान्नुहोस्:**
->
-> यो मार्गदर्शन **GitHub App ID र Private Key** प्रयोग गरेर सेटअप गर्ने प्रक्रिया वर्णन गर्दछ। तपाईंलाई यो "संस्था मार्गदर्शन" विधि चाहिन्छ यदि: **`GITHUB_TOKEN` अनुमतिहरू सीमित छन्:** तपाईंको संस्था वा रिपोजिटोरी सेटिङहरूले डिफल्ट `GITHUB_TOKEN` लाई दिइने अनुमतिहरूमा प्रतिबन्ध लगाएको छ। विशेषगरी, यदि `GITHUB_TOKEN` लाई आवश्यक `write` अनुमतिहरू (जस्तै `contents: write` वा `pull-requests: write`) अनुमति छैन भने, [Public Setup Guide](./github-actions-guide-public.md) मा रहेको workflow अनुमति अभावका कारण असफल हुन्छ। स्पष्ट रूपमा अनुमति दिइएको GitHub App प्रयोग गर्दा यो समस्या समाधान हुन्छ।
->
-> **यदि माथिको अवस्था तपाईंमा लागू हुँदैन भने:**
->
-> तपाईंको रिपोजिटोरीमा मानक `GITHUB_TOKEN` लाई पर्याप्त अनुमति छ भने (अर्थात् तपाईं संस्था प्रतिबन्धले अवरुद्ध हुनुहुन्न भने), कृपया **[Public Setup Guide using GITHUB_TOKEN](./github-actions-guide-public.md)** प्रयोग गर्नुहोस्। सार्वजनिक मार्गदर्शनमा App ID वा Private Key व्यवस्थापन आवश्यक पर्दैन र केवल मानक `GITHUB_TOKEN` र रिपोजिटोरी अनुमति प्रयोग हुन्छ।
+**महत्त्वपूर्ण**
+**सही मार्गदर्शन छान्नुहोस्:**
 
-## आवश्यकताहरू
+यो मार्गदर्शनमा **GitHub App ID र Private Key** प्रयोग गरेर सेटअप गर्ने तरिका छ। तपाईंलाई यो "संस्थागत मार्गदर्शन" चाहिन्छ यदि: **`GITHUB_TOKEN` अनुमति सीमित छ:** तपाईंको संस्था वा रिपोजिटरी सेटिङले `GITHUB_TOKEN` लाई दिइने डिफल्ट अनुमति सीमित गर्छ। विशेष गरी, यदि `GITHUB_TOKEN` लाई आवश्यक `write` अनुमति (जस्तै `contents: write` वा `pull-requests: write`) छैन भने, [सार्वजनिक सेटअप मार्गदर्शन](./github-actions-guide-public.md) मा दिइएको workflow अनुमति अभावका कारण असफल हुन्छ। स्पष्ट अनुमति दिइएको GitHub App प्रयोग गर्दा यो समस्या आउँदैन।
 
-GitHub Action कन्फिगर गर्नु अघि, आवश्यक AI सेवा प्रमाणपत्रहरू तयार राख्नुहोस्।
+**यदि माथिको कुरा तपाईंमा लागू हुँदैन भने:**
 
-**1. आवश्यक: AI भाषा मोडेल प्रमाणपत्रहरू**  
-तपाईंलाई कम्तीमा एक समर्थित भाषा मोडेलको प्रमाणपत्र आवश्यक छ:
+यदि तपाईंको रिपोजिटरीमा डिफल्ट `GITHUB_TOKEN` ले पर्याप्त अनुमति पाउँछ (अर्थात् संस्थागत सीमाले रोकिएको छैन), कृपया **[GITHUB_TOKEN प्रयोग गरेर सार्वजनिक सेटअप मार्गदर्शन](./github-actions-guide-public.md)** प्रयोग गर्नुहोस्। सार्वजनिक मार्गदर्शनमा App ID वा Private Key लिनु पर्दैन, केवल डिफल्ट `GITHUB_TOKEN` र रिपोजिटरी अनुमति प्रयोग हुन्छ।
 
-- **Azure OpenAI**: Endpoint, API Key, Model/Deployment नामहरू, API संस्करण आवश्यक छ।  
-- **OpenAI**: API Key आवश्यक छ, (वैकल्पिक: Org ID, Base URL, Model ID)।  
-- थप विवरणका लागि [Supported Models and Services](../../../../README.md) हेर्नुहोस्।  
-- सेटअप मार्गदर्शन: [Azure OpenAI सेटअप](../set-up-resources/set-up-azure-openai.md)।
+## पूर्वशर्तहरू
 
-**2. वैकल्पिक: कम्प्युटर भिजन प्रमाणपत्रहरू (तस्बिर अनुवादका लागि)**
+GitHub Action कन्फिगर गर्नु अघि, आवश्यक AI सेवा प्रमाणपत्रहरू तयार गर्नुहोस्।
 
-- तपाईंलाई तस्बिरभित्रको पाठ अनुवाद गर्न आवश्यक भए मात्र।  
-- **Azure Computer Vision**: Endpoint र Subscription Key आवश्यक।  
-- नदिएमा, यो Action [Markdown-only मोड](../markdown-only-mode.md) मा चल्नेछ।  
-- सेटअप मार्गदर्शन: [Azure Computer Vision सेटअप](../set-up-resources/set-up-azure-computer-vision.md)।
+**१. आवश्यक: AI Language Model प्रमाणपत्रहरू**
+कम्तीमा एउटा समर्थित Language Model को प्रमाणपत्र चाहिन्छ:
+
+- **Azure OpenAI**: Endpoint, API Key, Model/Deployment Name, API Version चाहिन्छ।
+- **OpenAI**: API Key चाहिन्छ, (Optional: Org ID, Base URL, Model ID)।
+- थप जानकारीका लागि [समर्थित मोडेल र सेवाहरू](../../../../README.md) हेर्नुहोस्।
+- सेटअप मार्गदर्शन: [Azure OpenAI सेटअप गर्नुहोस्](../set-up-resources/set-up-azure-openai.md)।
+
+**२. वैकल्पिक: Computer Vision प्रमाणपत्रहरू (तस्बिर अनुवादका लागि)**
+
+- तस्बिरभित्रको पाठ अनुवाद गर्न चाहनुहुन्छ भने मात्र आवश्यक।
+- **Azure Computer Vision**: Endpoint र Subscription Key चाहिन्छ।
+- यदि नदिएको खण्डमा, action [Markdown-only mode](../markdown-only-mode.md) मा चल्छ।
+- सेटअप मार्गदर्शन: [Azure Computer Vision सेटअप गर्नुहोस्](../set-up-resources/set-up-azure-computer-vision.md)।
 
 ## सेटअप र कन्फिगरेसन
 
-तपाईंको रिपोजिटोरीमा Co-op Translator GitHub Action कन्फिगर गर्न यी चरणहरू पालना गर्नुहोस्:
+तलका चरणहरू पालना गरेर Co-op Translator GitHub Action आफ्नो रिपोजिटरीमा कन्फिगर गर्नुहोस्:
 
-### चरण 1: GitHub App Authentication इन्स्टल र कन्फिगर गर्नुहोस्
+### चरण १: GitHub App Authentication स्थापना र कन्फिगर गर्नुहोस्
 
-यो workflow ले GitHub App authentication प्रयोग गरी तपाईंको रिपोजिटोरीसँग सुरक्षित रूपमा अन्तरक्रिया गर्छ (जस्तै Pull Request सिर्जना)। एउटा विकल्प छान्नुहोस्:
+Workflow ले GitHub App authentication प्रयोग गरेर तपाईंको रिपोजिटरीमा सुरक्षित रूपमा काम गर्छ (जस्तै Pull Request बनाउने)। दुई विकल्प:
 
-#### **विकल्प A: पूर्वनिर्मित Co-op Translator GitHub App इन्स्टल गर्नुहोस् (Microsoft आन्तरिक प्रयोगका लागि)**
+#### **विकल्प A: तयार Co-op Translator GitHub App स्थापना गर्नुहोस् (Microsoft आन्तरिक प्रयोगकर्ताका लागि)**
 
-1. [Co-op Translator GitHub App](https://github.com/apps/co-op-translator) पृष्ठमा जानुहोस्।
+१. [Co-op Translator GitHub App](https://github.com/apps/co-op-translator) पेजमा जानुहोस्।
 
-1. **Install** चयन गरी तपाईंको लक्षित रिपोजिटोरी रहेको खाता वा संगठन छान्नुहोस्।
+१. **Install** छान्नुहोस् र आफ्नो अकाउन्ट वा संस्था छान्नुहोस् जहाँ तपाईंको लक्षित रिपोजिटरी छ।
 
-    ![Install app](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.ne.png)
+    <img src="../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.ne.png" alt="Install app">
 
-1. **Only select repositories** छान्नुहोस् र तपाईंको लक्षित रिपोजिटोरी (जस्तै `PhiCookBook`) चयन गरी **Install** थिच्नुहोस्। तपाईंलाई प्रमाणीकरण गर्न भनिन सक्छ।
+१. **Only select repositories** छान्नुहोस् र आफ्नो लक्षित रिपोजिटरी (जस्तै `PhiCookBook`) छान्नुहोस्। **Install** क्लिक गर्नुहोस्। तपाईंलाई प्रमाणिकरण गर्न भनिन सक्छ।
 
-    ![Install authorize](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.ne.png)
+    <img src="../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.ne.png" alt="Install authorize">
 
-1. **App प्रमाणपत्र प्राप्त गर्नुहोस् (आन्तरिक प्रक्रिया आवश्यक):** workflow लाई App को रूपमा प्रमाणित गर्न, Co-op Translator टोलीबाट दुई जानकारीहरू आवश्यक छन्:  
-  - **App ID:** Co-op Translator App को अनन्य पहिचानकर्ता। App ID: `1164076`।  
-  - **Private Key:** `.pem` नामक निजी कुञ्जी फाइलको **पूर्ण सामग्री** प्राप्त गर्नुहोस्। यो कुञ्जीलाई पासवर्डझैं सुरक्षित राख्नुहोस्।
+१. **App प्रमाणपत्र प्राप्त गर्नुहोस् (आन्तरिक प्रक्रिया आवश्यक):** Workflow लाई app को रूपमा प्रमाणिकरण गर्न, तपाईंलाई Co-op Translator टिमले दुई कुरा दिनुपर्छ:
+  - **App ID:** Co-op Translator app को अद्वितीय पहिचानकर्ता। App ID हो: `1164076`।
+  - **Private Key:** तपाईंले सम्पूर्ण `.pem` private key फाइलको सामग्री सम्पर्क व्यक्ति (maintainer) बाट लिनुपर्छ। **यो key लाई पासवर्ड जस्तै सुरक्षित राख्नुहोस्।**
 
-1. चरण 2 मा जानुहोस्।
+१. चरण २ मा जानुहोस्।
 
-#### **विकल्प B: आफ्नै कस्टम GitHub App प्रयोग गर्नुहोस्**
+#### **विकल्प B: आफ्नो कस्टम GitHub App प्रयोग गर्नुहोस्**
 
-- तपाईंले चाहनु भएमा आफ्नै GitHub App सिर्जना र कन्फिगर गर्न सक्नुहुन्छ। यसले Contents र Pull requests मा Read & write पहुँच हुनुपर्छ। App ID र Private Key आवश्यक हुनेछ।
+- चाहनुहुन्छ भने, तपाईंले आफ्नै GitHub App बनाउन र कन्फिगर गर्न सक्नुहुन्छ। यसमा Contents र Pull requests मा Read & write पहुँच हुनुपर्छ। तपाईंलाई यसको App ID र Private Key चाहिन्छ।
 
-### चरण 2: रिपोजिटोरी सिक्रेटहरू कन्फिगर गर्नुहोस्
+### चरण २: रिपोजिटरी Secrets कन्फिगर गर्नुहोस्
 
-GitHub App प्रमाणपत्र र AI सेवा प्रमाणपत्रहरूलाई तपाईंको रिपोजिटोरी सेटिङमा इन्क्रिप्टेड सिक्रेटको रूपमा थप्नुहोस्।
+GitHub App प्रमाणपत्र र AI सेवा प्रमाणपत्रहरूलाई आफ्नो रिपोजिटरी सेटिङमा गोप्य secrets को रूपमा थप्नुहोस्।
 
-1. तपाईंको लक्षित GitHub रिपोजिटोरी (जस्तै `PhiCookBook`) मा जानुहोस्।
+१. आफ्नो लक्षित GitHub रिपोजिटरीमा जानुहोस् (जस्तै `PhiCookBook`)।
 
-1. **Settings** > **Secrets and variables** > **Actions** मा जानुहोस्।
+१. **Settings** > **Secrets and variables** > **Actions** मा जानुहोस्।
 
-1. **Repository secrets** अन्तर्गत, तल उल्लेखित प्रत्येक सिक्रेटका लागि **New repository secret** थिच्नुहोस्।
+१. **Repository secrets** अन्तर्गत, तलका प्रत्येक secret का लागि **New repository secret** क्लिक गर्नुहोस्।
 
-   ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.ne.png)
+   <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.ne.png" alt="Select setting action">
 
-**आवश्यक सिक्रेटहरू (GitHub App Authentication का लागि):**
+**GitHub App Authentication का लागि आवश्यक Secrets:**
 
-| सिक्रेट नाम           | विवरण                                    | मान स्रोत                                  |
-| :------------------- | :--------------------------------------- | :----------------------------------------- |
-| `GH_APP_ID`         | GitHub App को App ID (चरण 1 बाट)          | GitHub App सेटिङ्स                         |
-| `GH_APP_PRIVATE_KEY` | डाउनलोड गरिएको `.pem` फाइलको **पूर्ण सामग्री** | `.pem` फाइल (चरण 1 बाट)         |
+| Secret Name          | विवरण                                      | स्रोत                                     |
+| :------------------- | :------------------------------------------ | :---------------------------------------- |
+| `GH_APP_ID`          | GitHub App को App ID (चरण १ बाट)            | GitHub App Settings                      |
+| `GH_APP_PRIVATE_KEY` | डाउनलोड गरिएको `.pem` फाइलको सम्पूर्ण सामग्री | `.pem` फाइल (चरण १ बाट)                 |
 
-**AI सेवा सिक्रेटहरू (आवश्यकता अनुसार सबै थप्नुहोस्):**
+**AI सेवा Secrets (पूर्वशर्त अनुसार सबै थप्नुहोस्):**
 
-| सिक्रेट नाम                      | विवरण                                 | मान स्रोत                           |
-| :------------------------------ | :------------------------------------ | :---------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`           | Azure AI सेवा (Computer Vision) को कुञ्जी | Azure AI Foundry                    |
-| `AZURE_AI_SERVICE_ENDPOINT`           | Azure AI सेवा (Computer Vision) को Endpoint | Azure AI Foundry                    |
-| `AZURE_OPENAI_API_KEY`           | Azure OpenAI सेवा को कुञ्जी              | Azure AI Foundry                    |
-| `AZURE_OPENAI_ENDPOINT`           | Azure OpenAI सेवा को Endpoint           | Azure AI Foundry                    |
-| `AZURE_OPENAI_MODEL_NAME`           | तपाईंको Azure OpenAI मोडेल नाम          | Azure AI Foundry                    |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`           | तपाईंको Azure OpenAI Deployment नाम     | Azure AI Foundry                    |
-| `AZURE_OPENAI_API_VERSION`           | Azure OpenAI को API संस्करण             | Azure AI Foundry                    |
-| `OPENAI_API_KEY`           | OpenAI को API Key                       | OpenAI Platform                    |
-| `OPENAI_ORG_ID`           | OpenAI संस्था ID                        | OpenAI Platform                    |
-| `OPENAI_CHAT_MODEL_ID`           | विशिष्ट OpenAI मोडेल ID                 | OpenAI Platform                    |
-| `OPENAI_BASE_URL`           | कस्टम OpenAI API Base URL               | OpenAI Platform                    |
+| Secret Name                         | विवरण                               | स्रोत                     |
+| :---------------------------------- | :---------------------------------- | :------------------------ |
+| `AZURE_AI_SERVICE_API_KEY`            | Azure AI Service (Computer Vision) को Key  | Azure AI Foundry          |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI Service (Computer Vision) को Endpoint | Azure AI Foundry          |
+| `AZURE_OPENAI_API_KEY`              | Azure OpenAI सेवा को Key              | Azure AI Foundry          |
+| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI सेवा को Endpoint         | Azure AI Foundry          |
+| `AZURE_OPENAI_MODEL_NAME`           | Azure OpenAI Model Name              | Azure AI Foundry          |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Azure OpenAI Deployment Name         | Azure AI Foundry          |
+| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI को API Version          | Azure AI Foundry          |
+| `OPENAI_API_KEY`                    | OpenAI को API Key                    | OpenAI Platform           |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID               | OpenAI Platform           |
+| `OPENAI_CHAT_MODEL_ID`              | OpenAI को Specific model ID           | OpenAI Platform           |
+| `OPENAI_BASE_URL`                   | OpenAI को Custom API Base URL         | OpenAI Platform           |
 
-![Enter environment variable name](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.ne.png)
+<img src="../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.ne.png" alt="Enter environment variable name">
 
-### चरण 3: Workflow फाइल सिर्जना गर्नुहोस्
+### चरण ३: Workflow फाइल बनाउनुहोस्
 
-अन्तमा, स्वचालित workflow परिभाषित गर्ने YAML फाइल सिर्जना गर्नुहोस्।
+अन्तमा, स्वचालित workflow परिभाषित गर्ने YAML फाइल बनाउनुहोस्।
 
-1. तपाईंको रिपोजिटोरीको रुट डाइरेक्टरीमा, यदि छैन भने `.github/workflows/` डाइरेक्टरी बनाउनुहोस्।
+१. आफ्नो रिपोजिटरीको root directory मा `.github/workflows/` फोल्डर छैन भने बनाउनुहोस्।
 
-1. `.github/workflows/` भित्र `co-op-translator.yml` नामक फाइल बनाउनुहोस्।
+१. `.github/workflows/` भित्र `co-op-translator.yml` नामको फाइल बनाउनुहोस्।
 
-1. तलको सामग्री co-op-translator.yml मा टाँस्नुहोस्।
+१. तलको सामग्री co-op-translator.yml मा टाँस्नुहोस्।
 
 ```
 name: Co-op Translator
@@ -155,7 +154,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +208,30 @@ jobs:
 
 ```
 
-4. **Workflow अनुकूलन गर्नुहोस्:**  
-  - **[!IMPORTANT] लक्षित भाषाहरू:** `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+४.  **Workflow अनुकूलन गर्नुहोस्:**
+  - **Target Languages:** `Run Co-op Translator` स्टेपमा, तपाईंले `translate -l "..." -y` कमाण्डमा दिइएको भाषा कोडहरूको सूची **आफ्नो परियोजनाको आवश्यकता अनुसार अनिवार्य रूपमा परिमार्जन गर्नुहोस्**। उदाहरण सूची (`ar de es...`) लाई बदल्नुहोस् वा मिलाउनुहोस्।
+  - **Trigger (`on:`):** हालको trigger ले `main` मा हरेक push मा workflow चलाउँछ। ठूलो रिपोजिटरीका लागि, `paths:` filter थप्नुहोस् (YAML मा टिप्पणी गरिएको उदाहरण हेर्नुहोस्) ताकि केवल सम्बन्धित फाइल परिवर्तन हुँदा मात्र workflow चलोस्, runner minutes बचत गर्न।
+  - **PR विवरण:** `Create Pull Request` स्टेपमा `commit-message`, `title`, `body`, `branch` नाम, र `labels` अनुकूलन गर्नुहोस् यदि आवश्यक छ भने।
 
-## Credential Management and Renewal
+## प्रमाणपत्र व्यवस्थापन र नवीकरण
 
-- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` कुञ्जीहरूमा **समयावधि समाप्त हुनु अघि** आवश्यक भाषाहरू थप्नुहोस्, ताकि workflow असफल नहोस्।
+- **सुरक्षा:** संवेदनशील प्रमाणपत्रहरू (API key, private key) सधैं GitHub Actions secrets मा सुरक्षित राख्नुहोस्। workflow फाइल वा रिपोजिटरी कोडमा कहिल्यै देखाउनुहोस्।
+- **Key नवीकरण (Microsoft आन्तरिक प्रयोगकर्ता):** Microsoft भित्र प्रयोग हुने Azure OpenAI key को अनिवार्य नवीकरण नीति हुन सक्छ (जस्तै, हरेक ५ महिनामा)। workflow असफल हुन नदिन, GitHub secrets (`AZURE_OPENAI_...` keys) **समयमै अपडेट गर्नुहोस्**।
 
 ## Workflow चलाउने तरिका
 
-जब `co-op-translator.yml` फाइल तपाईंको मुख्य शाखामा (वा `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` फिल्टरमा निर्दिष्ट शाखामा) मर्ज हुन्छ,
+**GitHub-hosted Runner Time Limit:**  
+GitHub-hosted runner (जस्तै `ubuntu-latest`) को **अधिकतम execution समय ६ घण्टा** छ।  
+ठूलो डक्युमेन्टेसन रिपोजिटरीमा, अनुवाद प्रक्रिया ६ घण्टा भन्दा बढी लागेमा workflow स्वचालित रूपमा बन्द हुन्छ।  
+यसलाई रोक्न:  
+- **self-hosted runner** प्रयोग गर्नुहोस् (समय सीमा छैन)  
+- हरेक रनमा अनुवाद हुने भाषाको संख्या घटाउनुहोस्
 
-यदि अनुवादहरू सिर्जना वा अपडेट भए, Action ले स्वतः परिवर्तनहरू सहित Pull Request बनाउनेछ, जुन तपाईंले समीक्षा गरी मर्ज गर्न सक्नुहुन्छ।
+`co-op-translator.yml` फाइल मुख्य शाखामा (वा `on:` trigger मा निर्दिष्ट शाखामा) merge भएपछि, त्यो शाखामा परिवर्तन push हुँदा (र `paths` filter मिल्यो भने) workflow स्वचालित रूपमा चल्छ।
 
-**अस्वीकरण**:  
-यो दस्तावेज़ AI अनुवाद सेवा [Co-op Translator](https://github.com/Azure/co-op-translator) प्रयोग गरी अनुवाद गरिएको हो। हामी शुद्धताको प्रयास गर्छौं, तर कृपया जानकार रहनुहोस् कि स्वचालित अनुवादमा त्रुटिहरू वा अशुद्धता हुन सक्छ। मूल दस्तावेज़ यसको स्वदेशी भाषामा आधिकारिक स्रोत मानिनु पर्छ। महत्वपूर्ण जानकारीका लागि व्यावसायिक मानव अनुवाद सिफारिस गरिन्छ। यस अनुवादको प्रयोगबाट उत्पन्न कुनै पनि गलतफहमी वा गलत व्याख्याका लागि हामी जिम्मेवार छैनौं।
+अनुवादहरू बने वा अपडेट भएमा, action ले स्वचालित रूपमा Pull Request बनाउँछ, जुन तपाईंले review र merge गर्न सक्नुहुन्छ।
+
+---
+
+**अस्वीकरण**:
+यो दस्तावेज़ AI अनुवाद सेवा [Co-op Translator](https://github.com/Azure/co-op-translator) प्रयोग गरी अनुवाद गरिएको हो। हामी शुद्धताको लागि प्रयास गर्छौं, तर कृपया ध्यान दिनुहोस् कि स्वचालित अनुवादमा त्रुटि वा अशुद्धता हुन सक्छ। मूल दस्तावेज़ यसको मौलिक भाषामा नै अधिकारिक स्रोत मानिनुपर्छ। महत्वपूर्ण जानकारीको लागि, पेशेवर मानव अनुवाद सिफारिस गरिन्छ। यस अनुवादको प्रयोगबाट उत्पन्न हुने कुनै पनि गलतफहमी वा गलत व्याख्याको लागि हामी जिम्मेवार हुने छैनौं।

@@ -1,21 +1,21 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:33:27+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:04:06+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "it"
 }
 -->
 # Contribuire a Co-op Translator
 
-Questo progetto accoglie contributi e suggerimenti. La maggior parte dei contributi richiede di accettare un Contributor License Agreement (CLA) che dichiara che hai il diritto e effettivamente concedi a noi i diritti di utilizzare il tuo contributo. Per i dettagli, visita https://cla.opensource.microsoft.com.
+Questo progetto accoglie con piacere contributi e suggerimenti. La maggior parte dei contributi richiede che tu accetti un Contributor License Agreement (CLA) che dichiari di avere il diritto di concederci l’uso del tuo contributo. Per maggiori dettagli, visita https://cla.opensource.microsoft.com.
 
-Quando invii una pull request, un bot CLA determinerà automaticamente se devi fornire un CLA e decorerà la PR di conseguenza (ad esempio, controllo stato, commento). Segui semplicemente le istruzioni fornite dal bot. Dovrai farlo una sola volta per tutti i repository che usano il nostro CLA.
+Quando invii una pull request, un bot CLA determinerà automaticamente se devi fornire un CLA e aggiornerà la PR di conseguenza (ad esempio, con un controllo di stato o un commento). Segui semplicemente le istruzioni fornite dal bot. Dovrai farlo solo una volta per tutti i repository che usano il nostro CLA.
 
 ## Configurazione dell’ambiente di sviluppo
 
-Per configurare l’ambiente di sviluppo di questo progetto, consigliamo di usare Poetry per la gestione delle dipendenze. Usiamo `pyproject.toml` per gestire le dipendenze di progetto, quindi per installarle devi usare Poetry.
+Per configurare l’ambiente di sviluppo di questo progetto, consigliamo di usare Poetry per la gestione delle dipendenze. Usiamo `pyproject.toml` per gestire le dipendenze del progetto, quindi per installarle dovresti usare Poetry.
 
 ### Creare un ambiente virtuale
 
@@ -33,7 +33,7 @@ poetry init
 
 ### Attivare l’ambiente virtuale
 
-#### Per pip e Poetry
+#### Per entrambi, pip e Poetry
 
 - Windows:
 
@@ -53,7 +53,7 @@ poetry init
 poetry shell
 ```
 
-### Installazione del pacchetto e delle dipendenze richieste
+### Installazione del pacchetto e delle dipendenze necessarie
 
 #### Usando Poetry (da pyproject.toml)
 
@@ -70,7 +70,7 @@ Prima di inviare una PR, è importante testare la funzionalità di traduzione co
     mkdir test_docs
     ```
 
-2. Copia nella cartella di test alcuni documenti markdown e immagini che vuoi tradurre. Per esempio:
+2. Copia nella cartella di test alcuni file markdown e immagini che vuoi tradurre. Ad esempio:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -86,42 +86,42 @@ Prima di inviare una PR, è importante testare la funzionalità di traduzione co
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Controlla i file tradotti in `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. Controlla i file tradotti in `test_docs/translations` e `test_docs/translated_images` per verificare:
+   - La qualità della traduzione
+   - Che i commenti dei metadati siano corretti
+   - Che la struttura originale del markdown sia preservata
+   - Che link e immagini funzionino correttamente
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+Questo test manuale aiuta a garantire che le tue modifiche funzionino bene in scenari reali.
 
-### Environment variables
+### Variabili d’ambiente
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template`.
+1. Crea un file `.env` nella directory principale copiando il file `.env.template` fornito.
 1. Compila le variabili d’ambiente come indicato.
 
 > [!TIP]
 >
 > ### Opzioni aggiuntive per l’ambiente di sviluppo
 >
-> Oltre a eseguire il progetto localmente, puoi anche usare GitHub Codespaces o VS Code Dev Containers come ambienti di sviluppo alternativi.
+> Oltre a eseguire il progetto in locale, puoi anche usare GitHub Codespaces o i Dev Containers di VS Code per un’alternativa nella configurazione dell’ambiente di sviluppo.
 >
 > #### GitHub Codespaces
 >
-> Puoi eseguire questi esempi virtualmente usando GitHub Codespaces senza necessità di configurazioni aggiuntive.
+> Puoi eseguire questi esempi virtualmente usando GitHub Codespaces senza bisogno di ulteriori configurazioni.
 >
-> Il pulsante aprirà un’istanza web di VS Code nel tuo browser:
+> Il pulsante aprirà una versione web di VS Code nel tuo browser:
 >
-> 1. Apri il template (potrebbero volerci alcuni minuti):
+> 1. Apri il template (potrebbe richiedere alcuni minuti):
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
 > #### Esecuzione locale con VS Code Dev Containers
 >
-> ⚠️ Questa opzione funziona solo se Docker Desktop ha almeno 16 GB di RAM assegnati. Se hai meno di 16 GB di RAM, puoi provare l’opzione [GitHub Codespaces](../..) o [configurare l’ambiente localmente](../..).
+> ⚠️ Questa opzione funziona solo se Docker Desktop ha almeno 16 GB di RAM allocati. Se hai meno di 16 GB di RAM, puoi provare l’opzione [GitHub Codespaces](../..) o [configurare tutto in locale](../..).
 >
-> Un’opzione correlata è VS Code Dev Containers, che apre il progetto nella tua VS Code locale usando l’estensione [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Un’opzione correlata sono i Dev Containers di VS Code, che apriranno il progetto nel tuo VS Code locale usando l’estensione [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Avvia Docker Desktop (installalo se non è già presente)
+> 1. Avvia Docker Desktop (installalo se non è già installato)
 > 2. Apri il progetto:
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
@@ -129,7 +129,7 @@ This manual testing helps ensure that your changes work well in real-world scena
 
 ### Stile del codice
 
-Usiamo [Black](https://github.com/psf/black) come formatter per mantenere uno stile di codice coerente in tutto il progetto. Black è un formatter rigoroso che riformatta automaticamente il codice Python per aderire allo stile Black.
+Usiamo [Black](https://github.com/psf/black) come formattatore di codice Python per mantenere uno stile coerente in tutto il progetto. Black è un formattatore che riformatta automaticamente il codice Python secondo lo stile Black.
 
 #### Configurazione
 
@@ -164,7 +164,7 @@ pip install black
 
 ##### Con Poetry
 
-1. Formattta tutti i file Python nel progetto:
+1. Formattta tutti i file Python del progetto:
     ```bash
     poetry run black .
     ```
@@ -176,7 +176,7 @@ pip install black
 
 ##### Con pip
 
-1. Formattta tutti i file Python nel progetto:
+1. Formattta tutti i file Python del progetto:
     ```bash
     black .
     ```
@@ -187,15 +187,15 @@ pip install black
     ```
 
 > [!TIP]
-> Ti consigliamo di configurare il tuo editor per formattare automaticamente il codice con Black al salvataggio. La maggior parte degli editor moderni supporta questa funzione tramite estensioni o plugin.
+> Ti consigliamo di configurare il tuo editor per formattare automaticamente il codice con Black al salvataggio. La maggior parte degli editor moderni lo supporta tramite estensioni o plugin.
 
 ## Esecuzione di Co-op Translator
 
 Per eseguire Co-op Translator usando Poetry nel tuo ambiente, segui questi passaggi:
 
-1. Spostati nella cartella dove vuoi fare i test di traduzione o crea una cartella temporanea per i test.
+1. Vai nella cartella dove vuoi eseguire i test di traduzione o crea una cartella temporanea per i test.
 
-2. Esegui il comando seguente. Il flag `-l ko` with the language code you wish to translate into. The `-d` indica la modalità debug.
+2. Esegui il seguente comando. Sostituisci `-l ko` con il codice della lingua in cui vuoi tradurre. Il flag `-d` attiva la modalità debug.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -204,13 +204,51 @@ Per eseguire Co-op Translator usando Poetry nel tuo ambiente, segui questi passa
 > [!NOTE]
 > Assicurati che l’ambiente Poetry sia attivato (poetry shell) prima di eseguire il comando.
 
+## Contribuire una nuova lingua
+
+Accogliamo con piacere contributi che aggiungono il supporto a nuove lingue. Prima di aprire una PR, completa i passaggi seguenti per facilitare la revisione.
+
+1. Aggiungi la lingua alla mappatura dei font
+   - Modifica `src/co_op_translator/fonts/font_language_mappings.yml`
+   - Aggiungi una voce con:
+     - `code`: codice lingua in stile ISO (es. `vi`)
+     - `name`: nome visualizzato comprensibile
+     - `font`: un font presente in `src/co_op_translator/fonts/` che supporta lo script
+     - `rtl`: `true` se la lingua è da destra a sinistra, altrimenti `false`
+
+2. Includi i file dei font necessari (se servono)
+   - Se serve un nuovo font, verifica che la licenza sia compatibile con la distribuzione open source
+   - Aggiungi il file del font in `src/co_op_translator/fonts/`
+
+3. Verifica locale
+   - Esegui traduzioni su un piccolo campione (Markdown, immagini e notebook se necessario)
+   - Verifica che l’output sia visualizzato correttamente, inclusi font e layout RTL se applicabile
+
+4. Aggiorna la documentazione
+   - Assicurati che la lingua compaia in `getting_started/supported-languages.md`
+   - Non sono necessarie modifiche a `README_languages_template.md`; viene generato automaticamente dalla lista delle lingue supportate
+
+5. Apri una PR
+   - Descrivi la lingua aggiunta e qualsiasi considerazione su font/licenza
+   - Allega screenshot degli output renderizzati se possibile
+
+Esempio di voce YAML:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
 ## Maintainer
 
 ### Messaggio di commit e strategia di merge
 
-Per garantire coerenza e chiarezza nella cronologia dei commit del progetto, seguiamo un formato specifico per il messaggio di commit **finale** quando usiamo la strategia **Squash and Merge**.
+Per garantire coerenza e chiarezza nella cronologia dei commit del progetto, seguiamo un formato specifico **per il messaggio di commit finale** quando usiamo la strategia **Squash and Merge**.
 
-Quando una pull request (PR) viene unita, i singoli commit vengono compressi in un unico commit. Il messaggio finale deve seguire il formato qui sotto per mantenere una cronologia pulita e coerente.
+Quando una pull request (PR) viene unita, i singoli commit vengono uniti in un unico commit. Il messaggio di commit finale deve seguire il formato qui sotto per mantenere una cronologia pulita e coerente.
 
 #### Formato del messaggio di commit (per squash and merge)
 
@@ -221,42 +259,44 @@ Usiamo il seguente formato per i messaggi di commit:
 ```
 
 - **type**: Specifica la categoria del commit. Usiamo i seguenti tipi:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+  - `Docs`: Per aggiornamenti alla documentazione.
+  - `Build`: Per modifiche al sistema di build o alle dipendenze, inclusi aggiornamenti a file di configurazione, workflow CI o Dockerfile.
+  - `Core`: Per modifiche alle funzionalità principali del progetto, in particolare ai file nella cartella `src/co_op_translator/core`.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: Un breve riassunto della modifica.
+- **PR number**: Il numero della pull request associata al commit.
 
-**Examples**:
+**Esempi**:
 
-- `Docs: Update installation instructions for clarity (#50)`
-- `Core: Improve handling of image translation (#60)`
+- `Docs: Aggiorna le istruzioni di installazione per maggiore chiarezza (#50)`
+- `Core: Migliora la gestione della traduzione delle immagini (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> Attualmente, i prefissi **`Docs`**, **`Core`** e **`Build`** vengono aggiunti automaticamente ai titoli delle PR in base alle etichette applicate al codice modificato. Finché l’etichetta corretta è applicata, di solito non è necessario aggiornare manualmente il titolo della PR. Devi solo verificare che tutto sia corretto e che il prefisso sia stato generato correttamente.
 
-#### Merge strategy
+#### Strategia di merge
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+Usiamo **Squash and Merge** come strategia predefinita per le pull request. Questa strategia garantisce che i messaggi di commit seguano il nostro formato, anche se i singoli commit non lo fanno.
 
-**Reasons**:
+**Motivi**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- Una cronologia del progetto pulita e lineare.
+- Coerenza nei messaggi di commit.
+- Meno rumore da commit minori (es. "fix typo").
 
-When merging, ensure the final commit message follows the commit message format described above.
+Quando unisci, assicurati che il messaggio di commit finale segua il formato descritto sopra.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**Esempio di Squash and Merge**
+Se una PR contiene i seguenti commit:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-They should be squashed into:
-`Docs: Improve documentation clarity and formatting (#65)`
+Devono essere uniti in:
+`Docs: Migliora la chiarezza e la formattazione della documentazione (#65)`
 
-**Disclaimer**:  
-Questo documento è stato tradotto utilizzando il servizio di traduzione automatica AI [Co-op Translator](https://github.com/Azure/co-op-translator). Pur impegnandoci per garantire accuratezza, si prega di notare che le traduzioni automatiche possono contenere errori o imprecisioni. Il documento originale nella sua lingua nativa deve essere considerato la fonte autorevole. Per informazioni critiche, si raccomanda la traduzione professionale umana. Non siamo responsabili per eventuali incomprensioni o interpretazioni errate derivanti dall’uso di questa traduzione.
+---
+
+**Disclaimer**:
+Questo documento è stato tradotto utilizzando il servizio di traduzione AI [Co-op Translator](https://github.com/Azure/co-op-translator). Pur impegnandoci per garantire l’accuratezza, si prega di notare che le traduzioni automatiche possono contenere errori o imprecisioni. Il documento originale nella sua lingua nativa deve essere considerato la fonte autorevole. Per informazioni critiche, si raccomanda una traduzione professionale umana. Non siamo responsabili per eventuali incomprensioni o interpretazioni errate derivanti dall’uso di questa traduzione.

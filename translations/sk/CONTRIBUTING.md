@@ -1,31 +1,31 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:42:15+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:53:38+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "sk"
 }
 -->
 # Prispievanie do Co-op Translator
 
-Tento projekt víta príspevky a návrhy. Väčšina príspevkov vyžaduje, aby ste súhlasili s Contributor License Agreement (CLA), ktorý potvrdzuje, že máte právo a skutočne nám poskytujete práva na použitie vášho príspevku. Pre podrobnosti navštívte https://cla.opensource.microsoft.com.
+Tento projekt víta príspevky a návrhy. Väčšina príspevkov vyžaduje, aby ste súhlasili s Contributor License Agreement (CLA), čím potvrdíte, že máte právo a skutočne udeľujete práva na použitie vášho príspevku. Viac informácií nájdete na https://cla.opensource.microsoft.com.
 
-Keď odošlete pull request, CLA bot automaticky zistí, či je potrebné poskytnúť CLA, a označí PR vhodne (napr. kontrola stavu, komentár). Jednoducho postupujte podľa pokynov bota. Toto budete musieť urobiť iba raz pre všetky repozitáre používajúce náš CLA.
+Keď odošlete pull request, CLA bot automaticky zistí, či musíte poskytnúť CLA, a podľa toho označí PR (napr. status check, komentár). Stačí postupovať podľa pokynov bota. Tento proces stačí absolvovať len raz pre všetky repozitáre využívajúce našu CLA.
 
 ## Nastavenie vývojového prostredia
 
-Pre nastavenie vývojového prostredia tohto projektu odporúčame používať Poetry na správu závislostí. Používame `pyproject.toml` na správu závislostí projektu, a preto by ste mali na inštaláciu závislostí používať Poetry.
+Na nastavenie vývojového prostredia pre tento projekt odporúčame používať Poetry na správu závislostí. Závislosti projektu spravujeme cez `pyproject.toml`, preto na ich inštaláciu používajte Poetry.
 
 ### Vytvorenie virtuálneho prostredia
 
-#### Použitie pip
+#### Pomocou pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Použitie Poetry
+#### Pomocou Poetry
 
 ```bash
 poetry init
@@ -47,7 +47,7 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Použitie Poetry
+#### Pomocou Poetry
 
 ```bash
 poetry shell
@@ -55,7 +55,7 @@ poetry shell
 
 ### Inštalácia balíka a potrebných balíkov
 
-#### Použitie Poetry (z pyproject.toml)
+#### Pomocou Poetry (z pyproject.toml)
 
 ```bash
 poetry install
@@ -65,12 +65,12 @@ poetry install
 
 Pred odoslaním PR je dôležité otestovať funkčnosť prekladu na reálnej dokumentácii:
 
-1. Vytvorte testovací adresár v koreňovom adresári:
+1. V koreňovom adresári vytvorte testovací adresár:
     ```bash
     mkdir test_docs
     ```
 
-2. Skopírujte niektorú markdown dokumentáciu a obrázky, ktoré chcete preložiť, do testovacieho adresára. Napríklad:
+2. Skopírujte do testovacieho adresára nejakú markdown dokumentáciu a obrázky, ktoré chcete preložiť. Napríklad:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -86,54 +86,54 @@ Pred odoslaním PR je dôležité otestovať funkčnosť prekladu na reálnej do
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Skontrolujte preložené súbory v súbore `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. Skontrolujte preložené súbory v `test_docs/translations` a `test_docs/translated_images` a overte:
+   - Kvalitu prekladu
+   - Správnosť komentárov s metadátami
+   - Zachovanie pôvodnej štruktúry markdownu
+   - Funkčnosť odkazov a obrázkov
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+Toto manuálne testovanie pomáha zabezpečiť, že vaše zmeny fungujú aj v reálnych podmienkach.
 
-### Environment variables
+### Premenné prostredia
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template`.
+1. V koreňovom adresári vytvorte súbor `.env` skopírovaním poskytnutého súboru `.env.template`.
 1. Vyplňte premenné prostredia podľa pokynov.
 
 > [!TIP]
 >
-> ### Ďalšie možnosti nastavenia vývojového prostredia
+> ### Ďalšie možnosti vývojového prostredia
 >
-> Okrem lokálneho spustenia projektu môžete použiť aj GitHub Codespaces alebo VS Code Dev Containers ako alternatívne nastavenie vývojového prostredia.
+> Okrem lokálneho spustenia projektu môžete využiť aj GitHub Codespaces alebo VS Code Dev Containers ako alternatívne vývojové prostredie.
 >
 > #### GitHub Codespaces
 >
-> Tento príklad môžete spustiť virtuálne pomocou GitHub Codespaces bez nutnosti ďalších nastavení.
+> Ukážky môžete spustiť virtuálne pomocou GitHub Codespaces bez ďalších nastavení.
 >
-> Tlačidlo otvorí webovú VS Code inštanciu vo vašom prehliadači:
+> Tlačidlo otvorí webovú verziu VS Code vo vašom prehliadači:
 >
 > 1. Otvorte šablónu (môže to trvať niekoľko minút):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
 >
-> #### Lokálne spustenie pomocou VS Code Dev Containers
+> #### Lokálne spustenie cez VS Code Dev Containers
 >
-> ⚠️ Táto možnosť funguje len ak má váš Docker Desktop pridelených aspoň 16 GB RAM. Ak máte menej ako 16 GB RAM, môžete skúsiť [GitHub Codespaces](../..) alebo [nastaviť to lokálne](../..).
+> ⚠️ Táto možnosť funguje len ak máte v Docker Desktop pridelených aspoň 16 GB RAM. Ak máte menej, skúste [GitHub Codespaces](../..) alebo [nastavte lokálne](../..).
 >
-> Súvisiaca možnosť sú VS Code Dev Containers, ktoré otvoria projekt vo vašom lokálnom VS Code pomocou [Dev Containers rozšírenia](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Alternatívou sú VS Code Dev Containers, ktoré otvoria projekt vo vašom lokálnom VS Code pomocou [Dev Containers rozšírenia](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Spustite Docker Desktop (ak ho ešte nemáte, nainštalujte)
+> 1. Spustite Docker Desktop (nainštalujte, ak ešte nemáte)
 > 2. Otvorte projekt:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
 
 
 ### Štýl kódu
 
-Používame [Black](https://github.com/psf/black) ako formátovač Python kódu, aby sme udržali jednotný štýl kódu v celom projekte. Black je nekompromisný formátovač kódu, ktorý automaticky preformátuje Python kód podľa štýlu Black.
+Používame [Black](https://github.com/psf/black) ako formátovač Python kódu, aby sme udržali jednotný štýl v celom projekte. Black je nekompromisný formátovač, ktorý automaticky upravuje Python kód podľa svojich pravidiel.
 
 #### Konfigurácia
 
-Konfigurácia Black je definovaná v našom `pyproject.toml`:
+Konfigurácia Black je uvedená v našom `pyproject.toml`:
 
 ```toml
 [tool.black]
@@ -146,16 +146,16 @@ include = '\.pyi?$'
 
 Black môžete nainštalovať buď cez Poetry (odporúčané) alebo pip:
 
-##### Použitie Poetry
+##### Pomocou Poetry
 
-Black sa automaticky nainštaluje pri nastavení vývojového prostredia:
+Black sa nainštaluje automaticky pri nastavovaní vývojového prostredia:
 ```bash
 poetry install
 ```
 
-##### Použitie pip
+##### Pomocou pip
 
-Ak používate pip, môžete Black nainštalovať priamo:
+Ak používate pip, Black nainštalujete priamo:
 ```bash
 pip install black
 ```
@@ -187,76 +187,116 @@ pip install black
     ```
 
 > [!TIP]
-> Odporúčame nastaviť si editor tak, aby automaticky formátoval kód pomocou Black pri ukladaní. Väčšina moderných editorov to podporuje cez rozšírenia alebo pluginy.
+> Odporúčame nastaviť editor tak, aby automaticky formátoval kód pomocou Black pri ukladaní. Väčšina moderných editorov to podporuje cez rozšírenia alebo pluginy.
 
 ## Spustenie Co-op Translator
 
-Ak chcete spustiť Co-op Translator pomocou Poetry vo vašom prostredí, postupujte podľa týchto krokov:
+Na spustenie Co-op Translator pomocou Poetry vo vašom prostredí postupujte takto:
 
-1. Prejdite do adresára, kde chcete vykonať testy prekladu, alebo si vytvorte dočasný priečinok na testovanie.
+1. Prejdite do adresára, kde chcete vykonávať prekladové testy, alebo si vytvorte dočasný priečinok na testovanie.
 
-2. Spustite nasledujúci príkaz. Flag `-l ko` with the language code you wish to translate into. The `-d` znamená režim ladenia (debug).
+2. Spustite nasledujúci príkaz. Nahraďte `-l ko` kódom jazyka, do ktorého chcete prekladať. Prepínač `-d` aktivuje debug mód.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Uistite sa, že máte aktivované prostredie Poetry (poetry shell) pred spustením príkazu.
+> Pred spustením príkazu sa uistite, že máte aktivované Poetry prostredie (poetry shell).
+
+## Pridanie nového jazyka
+
+Radi privítame príspevky, ktoré pridávajú podporu pre nové jazyky. Pred otvorením PR prosím splňte nasledujúce kroky, aby bola kontrola plynulá.
+
+1. Pridajte jazyk do mapovania fontov
+   - Upraviť `src/co_op_translator/fonts/font_language_mappings.yml`
+   - Pridať položku s:
+     - `code`: ISO-like kód jazyka (napr. `vi`)
+     - `name`: Zrozumiteľný názov jazyka
+     - `font`: Font dostupný v `src/co_op_translator/fonts/`, ktorý podporuje dané písmo
+     - `rtl`: `true` ak je jazyk písaný sprava doľava, inak `false`
+
+2. Pridajte potrebné fonty (ak treba)
+   - Ak je potrebný nový font, overte licenčnú kompatibilitu pre open source distribúciu
+   - Pridajte font do `src/co_op_translator/fonts/`
+
+3. Lokálne overenie
+   - Spustite preklad na malej vzorke (Markdown, obrázky, notebooky podľa potreby)
+   - Overte, že výstup sa správne zobrazuje, vrátane fontov a prípadného RTL rozloženia
+
+4. Aktualizujte dokumentáciu
+   - Uistite sa, že jazyk je uvedený v `getting_started/supported-languages.md`
+   - Nie je potrebné meniť `README_languages_template.md`; generuje sa zo zoznamu podporovaných jazykov
+
+5. Otvorte PR
+   - Popíšte pridaný jazyk a prípadné font/licenčné otázky
+   - Priložte screenshoty zobrazených výstupov, ak je to možné
+
+Príklad YAML položky:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
 
 ## Správcovia
 
 ### Formát správy o commite a stratégia zlúčenia
 
-Pre zabezpečenie konzistentnosti a prehľadnosti histórie commitov v našom projekte používame špecifický formát správy o commite **pre finálnu správu commitu** pri použití stratégie **Squash and Merge**.
+Aby sme udržali konzistentnú a prehľadnú históriu commitov, používame špecifický formát správy o commite **pre finálnu správu** pri použití stratégie **Squash and Merge**.
 
-Keď sa pull request (PR) zlúči, jednotlivé commity sa spoja do jedného. Finálna správa o commite by mala mať nasledujúci formát, aby sa zachovala čistá a konzistentná história.
+Pri zlúčení pull requestu (PR) sa jednotlivé commity spoja do jedného. Finálna správa o commite by mala nasledovať formát nižšie, aby bola história čistá a jednotná.
 
 #### Formát správy o commite (pre squash and merge)
 
-Používame nasledujúci formát správ o commitoch:
+Používame nasledujúci formát:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
 - **type**: Určuje kategóriu commitu. Používame tieto typy:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+  - `Docs`: Aktualizácie dokumentácie.
+  - `Build`: Zmeny týkajúce sa build systému alebo závislostí, vrátane úprav konfiguračných súborov, CI workflow alebo Dockerfile.
+  - `Core`: Úpravy hlavnej funkcionality projektu, najmä súborov v `src/co_op_translator/core`.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: Stručné zhrnutie zmeny.
+- **PR number**: Číslo pull requestu, s ktorým commit súvisí.
 
-**Examples**:
+**Príklady**:
 
 - `Docs: Update installation instructions for clarity (#50)`
 - `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> Prefixy **`Docs`**, **`Core`** a **`Build`** sa aktuálne automaticky pridávajú do názvu PR podľa priradených štítkov k upravenému zdrojovému kódu. Ak je správny štítok priradený, zvyčajne netreba názov PR manuálne upravovať. Stačí overiť, že je všetko správne a prefix bol vygenerovaný správne.
 
-#### Merge strategy
+#### Stratégia zlúčenia
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+Používame **Squash and Merge** ako predvolenú stratégiu pre pull requesty. Táto stratégia zabezpečuje, že správy o commite budú podľa nášho formátu, aj keď jednotlivé commity nie sú.
 
-**Reasons**:
+**Dôvody**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- Čistá, lineárna história projektu.
+- Konzistentné správy o commite.
+- Menej zbytočných commitov (napr. "fix typo").
 
-When merging, ensure the final commit message follows the commit message format described above.
+Pri zlúčení sa uistite, že finálna správa o commite je podľa vyššie uvedeného formátu.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**Príklad Squash and Merge**
+Ak PR obsahuje tieto commity:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-They should be squashed into:
+Mali by byť zlúčené do:
 `Docs: Improve documentation clarity and formatting (#65)`
 
-**Vyhlásenie o zodpovednosti**:  
-Tento dokument bol preložený pomocou AI prekladateľskej služby [Co-op Translator](https://github.com/Azure/co-op-translator). Aj keď sa snažíme o presnosť, majte prosím na pamäti, že automatické preklady môžu obsahovať chyby alebo nepresnosti. Originálny dokument v jeho pôvodnom jazyku by mal byť považovaný za autoritatívny zdroj. Pre dôležité informácie sa odporúča profesionálny ľudský preklad. Nie sme zodpovední za akékoľvek nedorozumenia alebo nesprávne interpretácie vyplývajúce z použitia tohto prekladu.
+---
+
+**Vyhlásenie o vylúčení zodpovednosti**:
+Tento dokument bol preložený pomocou AI prekladovej služby [Co-op Translator](https://github.com/Azure/co-op-translator). Hoci sa snažíme o presnosť, upozorňujeme, že automatizované preklady môžu obsahovať chyby alebo nepresnosti. Za autoritatívny zdroj sa považuje pôvodný dokument v jeho pôvodnom jazyku. Pre kritické informácie odporúčame profesionálny ľudský preklad. Nenesieme zodpovednosť za akékoľvek nedorozumenia alebo nesprávne interpretácie vzniknuté použitím tohto prekladu.

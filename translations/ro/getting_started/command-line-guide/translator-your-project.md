@@ -1,42 +1,42 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:55:32+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T03:58:23+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "ro"
 }
 -->
-# Tradu-ți proiectul folosind Co-op Translator
+# Traduce-ți proiectul folosind Co-op Translator
 
-**Co-op Translator** este un instrument de linie de comandă (CLI) care te ajută să traduci fișiere markdown și imagini din proiectul tău în mai multe limbi. Această secțiune explică cum să folosești instrumentul, prezintă diversele opțiuni CLI și oferă exemple pentru diferite cazuri de utilizare.
+**Co-op Translator** este un instrument de tip linie de comandă (CLI) care te ajută să traduci fișierele markdown și imaginile din proiectul tău în mai multe limbi. Această secțiune explică cum să folosești instrumentul, prezintă opțiunile CLI disponibile și oferă exemple pentru diverse scenarii de utilizare.
 
 > [!NOTE]
-> Pentru o listă completă a comenzilor și descrierile detaliate ale acestora, te rugăm să consulți [Referința comenzilor](./command-reference.md).
+> Pentru lista completă de comenzi și descrierile lor detaliate, consultă [Referința de comenzi](./command-reference.md).
 
 ---
 
-## Scenarii și comenzi exemplu
+## Exemple de scenarii și comenzi
 
-Iată câteva cazuri comune de utilizare pentru **Co-op Translator**, împreună cu comenzile potrivite pentru a le rula.
+Mai jos găsești câteva situații comune în care poți folosi **Co-op Translator**, împreună cu comenzile potrivite.
 
 ### 1. Traducere de bază (o singură limbă)
 
-Pentru a traduce întregul proiect (fișiere markdown și imagini) într-o singură limbă, cum ar fi coreeana, folosește comanda următoare:
+Pentru a traduce întregul proiect (fișiere markdown și imagini) într-o singură limbă, de exemplu coreeană, folosește comanda de mai jos:
 
 ```bash
 translate -l "ko"
 ```
 
-Această comandă va traduce toate fișierele markdown și imaginile în coreeană, adăugând noile traduceri fără a șterge pe cele existente.
+Această comandă va traduce toate fișierele markdown și imaginile în coreeană, adăugând traduceri noi fără a șterge cele existente.
 
 > [!TIP]
 >
 > Vrei să vezi ce coduri de limbă sunt disponibile în **Co-op Translator**? Vizitează secțiunea [Limbi suportate](https://github.com/Azure/co-op-translator#supported-languages) din depozit pentru mai multe detalii.
 
-#### Exemplu în Phi-3 CookBook
+#### Exemplu pe Phi-3 CookBook
 
-În **Phi-3 CookBook**, am folosit următoarea metodă pentru a adăuga traducerea în coreeană pentru fișierele markdown și imaginile existente.
+În **Phi-3 CookBook**, am folosit metoda de mai jos pentru a adăuga traducerea în coreeană pentru fișierele markdown și imaginile existente.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -44,7 +44,7 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|████████████████████████████████████████████████| 153/153 [1:43:07<00:00, 241.31s/it]
 ```
 
-### 2. Traducerea în mai multe limbi
+### 2. Traducere în mai multe limbi
 
 Pentru a traduce proiectul în mai multe limbi (de exemplu, spaniolă, franceză și germană), folosește această comandă:
 
@@ -52,11 +52,11 @@ Pentru a traduce proiectul în mai multe limbi (de exemplu, spaniolă, franceză
 translate -l "es fr de"
 ```
 
-Această comandă va traduce proiectul în spaniolă, franceză și germană, adăugând noile traduceri fără a suprascrie pe cele existente.
+Comanda va traduce proiectul în spaniolă, franceză și germană, adăugând traduceri noi fără a suprascrie cele existente.
 
-#### Exemplu în Phi-3 CookBook
+#### Exemplu pe Phi-3 CookBook
 
-În **Phi-3 CookBook**, după ce am preluat ultimele modificări pentru a reflecta cele mai recente commit-uri, am folosit următoarea metodă pentru a traduce fișierele markdown și imaginile adăugate recent.
+În **Phi-3 CookBook**, după ce am preluat ultimele modificări pentru a reflecta cele mai recente commit-uri, am folosit metoda de mai jos pentru a traduce fișierele markdown și imaginile nou adăugate.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,21 +65,21 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Deși, în general, este recomandat să traduci o limbă pe rând, în situații ca aceasta, când trebuie adăugate modificări specifice, traducerea în mai multe limbi simultan poate fi eficientă.
+> De obicei, este recomandat să traduci o limbă pe rând, dar în situații ca aceasta, unde trebuie adăugate modificări specifice, traducerea simultană în mai multe limbi poate fi eficientă.
 
 ### 3. Actualizarea traducerilor (șterge traducerile existente)
 
-Pentru a actualiza traducerile existente (adică să ștergi traducerile curente și să le înlocuiești cu altele noi), folosește opțiunea `-u`. Aceasta va șterge toate traducerile existente pentru limbile specificate și le va retraduce.
+Pentru a actualiza traducerile existente (adică să ștergi traducerile curente și să le înlocuiești cu unele noi), folosește opțiunea `-u`. Aceasta va șterge toate traducerile existente pentru limbile specificate și le va retraduce.
 
 ```bash
 translate -l "ko" -u
 ```
 
-Atenție: Această comandă îți va cere confirmarea înainte de a continua cu ștergerea traducerilor existente.
+Atenție: Comanda va cere confirmarea înainte de a șterge traducerile existente.
 
-#### Exemplu în Phi-3 CookBook
+#### Exemplu pe Phi-3 CookBook
 
-În **Phi-3 CookBook**, am folosit următoarea metodă pentru a actualiza toate fișierele traduse în spaniolă. Recomand această metodă atunci când există modificări semnificative în conținutul original din mai multe fișiere markdown. Dacă sunt doar câteva fișiere traduse de actualizat, este mai eficient să ștergi manual acele fișiere specifice și apoi să folosești metoda `-a` pentru a adăuga traducerile actualizate.
+În **Phi-3 CookBook**, am folosit metoda de mai jos pentru a actualiza toate fișierele traduse în spaniolă. Recomand această metodă când există modificări semnificative în conținutul original din mai multe documente markdown. Dacă ai doar câteva fișiere traduse de actualizat, e mai eficient să le ștergi manual și apoi să folosești metoda `-a` pentru a adăuga traducerile actualizate.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -92,15 +92,15 @@ Translating markdown files: 100%|███████████████�
 
 ### 5. Traducerea doar a imaginilor
 
-Pentru a traduce doar fișierele de imagine din proiect, folosește opțiunea `-img`:
+Pentru a traduce doar fișierele imagine din proiect, folosește opțiunea `-img`:
 
 ```bash
 translate -l "ko" -img
 ```
 
-Această comandă va traduce doar imaginile în coreeană, fără a afecta fișierele markdown.
+Comanda va traduce doar imaginile în coreeană, fără a afecta fișierele markdown.
 
-### 6. Traducerea doar a fișierelor markdown
+### 6. Traducerea doar a fișierelor Markdown
 
 Pentru a traduce doar fișierele markdown din proiect, folosește opțiunea `-md`:
 
@@ -108,19 +108,9 @@ Pentru a traduce doar fișierele markdown din proiect, folosește opțiunea `-md
 translate -l "ko" -md
 ```
 
-### 7. Verificarea erorilor în fișierele traduse
+#### Exemplu pe Phi-3 CookBook
 
-Dacă vrei să verifici fișierele traduse pentru erori și să reîncerci traducerea dacă este necesar, folosește opțiunea `-chk`:
-
-```bash
-translate -l "ko" -chk
-```
-
-Această comandă va scana fișierele markdown traduse și va reîncerca traducerea pentru orice fișier cu erori.
-
-#### Exemplu în Phi-3 CookBook
-
-În **Phi-3 CookBook**, am folosit următoarea metodă pentru a verifica erorile de traducere în fișierele coreene și pentru a reîncerca automat traducerea pentru orice fișier cu probleme detectate.
+În **Phi-3 CookBook**, am folosit metoda de mai jos pentru a verifica erorile de traducere în fișierele coreene și pentru a retraduce automat fișierele cu probleme detectate.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -129,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Această opțiune verifică erorile de traducere. În prezent, dacă diferența în numărul de întreruperi de linie între fișierul original și cel tradus este mai mare de șase, fișierul este marcat ca având o eroare de traducere. Plănuiesc să îmbunătățesc acest criteriu pentru a oferi mai multă flexibilitate în viitor.
+Această opțiune verifică erorile de traducere. În prezent, dacă diferența de linii între fișierul original și cel tradus este mai mare de șase, fișierul este marcat ca având o eroare de traducere. Plănuiesc să îmbunătățesc acest criteriu pentru mai multă flexibilitate pe viitor.
 
-De exemplu, această metodă este utilă pentru detectarea fragmentelor lipsă sau a traducerilor corupte și va reîncerca automat traducerea pentru acele fișiere.
+De exemplu, această metodă este utilă pentru a detecta fragmente lipsă sau traduceri corupte și va retraduce automat acele fișiere.
 
-Totuși, dacă știi deja care fișiere sunt problematice, este mai eficient să le ștergi manual și să folosești opțiunea `-a` option to re-translate them.
+Totuși, dacă știi deja care fișiere sunt problematice, e mai eficient să le ștergi manual și să folosești opțiunea `-a` pentru a le retraduce.
 
-### 8. Debug Mode
+### 8. Modul de depanare (Debug Mode)
 
-To enable detailed logging for troubleshooting, use the `-d`:
+Pentru a activa logarea detaliată pentru depanare, folosește opțiunea `-d`:
 
 ```bash
 translate -l "ko" -d
 ```
 
-Această comandă va rula traducerea în modul debug, oferind informații suplimentare de logare care te pot ajuta să identifici problemele apărute în timpul procesului de traducere.
+Comanda va rula traducerea în modul debug, oferind informații suplimentare care te pot ajuta să identifici problemele apărute în procesul de traducere.
 
-#### Exemplu în Phi-3 CookBook
+#### Exemplu pe Phi-3 CookBook
 
-În **Phi-3 CookBook**, am întâmpinat o problemă în care traducerile cu multe linkuri din fișierele markdown cauzau erori de formatare, cum ar fi traduceri rupte și întreruperi de linie ignorate. Pentru a diagnostica această problemă, am folosit opțiunea `-d` pentru a vedea cum funcționează procesul de traducere.
+În **Phi-3 CookBook**, am întâmpinat o problemă în care traducerile cu multe linkuri în fișierele markdown generau erori de formatare, cum ar fi traduceri incomplete sau linii ignorate. Pentru a diagnostica problema, am folosit opțiunea `-d` ca să văd cum funcționează procesul de traducere.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -155,35 +145,35 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 ...
 ```
 
-### 9. Traducerea tuturor limbilor
+### 9. Traducerea în toate limbile
 
 Dacă vrei să traduci proiectul în toate limbile suportate, folosește cuvântul cheie all.
 
 > [!WARNING]
-> Traducerea tuturor limbilor simultan poate dura mult timp, în funcție de dimensiunea proiectului. De exemplu, traducerea **Phi-3 CookBook** în spaniolă a durat aproximativ 2 ore. Având în vedere amploarea, nu este practic ca o singură persoană să se ocupe de 20 de limbi. Se recomandă să împărțiți munca între mai mulți colaboratori, fiecare gestionând una sau două limbi, și să actualizați traducerile treptat.
+> Traducerea în toate limbile simultan poate dura mult timp, în funcție de dimensiunea proiectului. De exemplu, traducerea **Phi-3 CookBook** în spaniolă a durat aproximativ 2 ore. Având în vedere amploarea, nu este practic ca o singură persoană să gestioneze 20 de limbi. Recomand să împarți munca între mai mulți colaboratori, fiecare ocupându-se de una sau două limbi, și să actualizezi traducerile treptat.
 
 ```bash
 translate -l "all"
 ```
 
-Această comandă va traduce proiectul în toate limbile disponibile. Dacă continui, traducerea poate dura mult timp, în funcție de dimensiunea proiectului.
+Comanda va traduce proiectul în toate limbile disponibile. Dacă continui, traducerea poate dura mult timp, în funcție de dimensiunea proiectului.
 
 > [!TIP]
 >
 > ### Ștergerea manuală a fișierelor traduse (opțional)
-> Fișierele traduse sunt acum detectate și curățate automat atunci când un fișier sursă este actualizat.
+> Fișierele traduse sunt acum detectate automat și curățate când un fișier sursă este actualizat.
 >
-> Totuși, dacă vrei să actualizezi manual o traducere - de exemplu, să refaci un fișier specific sau să suprascrii comportamentul sistemului - poți folosi comanda următoare pentru a șterge toate versiunile fișierului din toate folderele de limbă.
+> Totuși, dacă vrei să actualizezi manual o traducere – de exemplu, să refaci un fișier anume sau să suprascrii comportamentul sistemului – poți folosi comanda de mai jos pentru a șterge toate versiunile fișierului din folderele de limbi.
 >
 > ### Pe Windows:
 > 1. **Folosind Command Prompt**:
 >    - Deschide Command Prompt.
 >    - Navighează la folderul unde se află fișierele folosind comanda `cd`.
->    - Folosește comanda următoare pentru a șterge fișierele:
+>    - Folosește comanda de mai jos pentru a șterge fișierele:
 >      ```
 >      del /s *filename*
 >      ```
->      Opțiunea `/s` caută și în subdirectoare.
+>      Înlocuiește `filename` cu partea specifică din numele fișierului pe care îl cauți. Opțiunea `/s` caută și în subfoldere.
 >
 > 2. **Folosind PowerShell**:
 >    - Deschide PowerShell.
@@ -191,14 +181,23 @@ Această comandă va traduce proiectul în toate limbile disponibile. Dacă cont
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      Înlocuiește `"C:\YourPath"` cu calea ta către fișiere.
->    - Folosește comanda `cd` și `find` pentru a căuta fișiere:
->      ```bash
+>      Înlocuiește `"C:\YourPath"` cu calea folderului și `filename` cu numele specific.
+>
+> ### Pe macOS/Linux:
+> 1. **Folosind Terminal**:
+>   - Deschide Terminal.
+>   - Navighează la director cu `cd`.
+>   - Folosește comanda `find`:
+>     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->      Înlocuiește `filename` cu numele fișierului pe care vrei să îl ștergi.
+>     Înlocuiește `filename` cu numele specific.
 >
-> Folosește comanda `translate -l` pentru a actualiza cele mai recente modificări ale fișierelor.
+> Verifică întotdeauna fișierele înainte de a le șterge ca să eviți pierderile accidentale. 
+>
+> După ce ai șters fișierele care trebuie înlocuite, rulează din nou comanda `translate -l` pentru a actualiza modificările recente ale fișierelor.
 
-**Declinare de responsabilitate**:  
-Acest document a fost tradus folosind serviciul de traducere AI [Co-op Translator](https://github.com/Azure/co-op-translator). Deși ne străduim pentru acuratețe, vă rugăm să rețineți că traducerile automate pot conține erori sau inexactități. Documentul original, în limba sa nativă, trebuie considerat sursa autorizată. Pentru informații critice, se recomandă traducerea profesională realizată de un traducător uman. Nu ne asumăm responsabilitatea pentru eventualele neînțelegeri sau interpretări greșite care pot rezulta din utilizarea acestei traduceri.
+---
+
+**Declarație de responsabilitate**:
+Acest document a fost tradus folosind serviciul de traducere AI [Co-op Translator](https://github.com/Azure/co-op-translator). Deși ne străduim să asigurăm acuratețea, vă rugăm să rețineți că traducerile automate pot conține erori sau inexactități. Documentul original, în limba sa nativă, trebuie considerat sursa autoritară. Pentru informații critice, se recomandă traducerea profesională realizată de oameni. Nu ne asumăm răspunderea pentru orice neînțelegeri sau interpretări greșite care pot apărea din utilizarea acestei traduceri.

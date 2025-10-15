@@ -1,37 +1,37 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T13:32:16+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T04:11:12+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "my"
 }
 -->
-# Co-op Translator တွင် ပါဝင်ဆောင်ရွက်ခြင်း
+# Co-op Translator ကို ပူးပေါင်းဆောင်ရွက်ခြင်း
 
-ဒီပရောဂျက်မှာ ဝေမျှမှုများနဲ့ အကြံပြုချက်တွေကို ကြိုဆိုပါတယ်။ ဝေမျှမှုအများစုအတွက် သင်မှာ သင့်ရဲ့ ဝေမျှမှုကို အသုံးပြုခွင့်ရှိကြောင်းနှင့် လက်တွေ့အသုံးပြုခွင့်ပေးကြောင်း ကြေညာထားတဲ့ Contributor License Agreement (CLA) ကို သဘောတူရပါမယ်။ အသေးစိတ်အချက်အလက်များအတွက် https://cla.opensource.microsoft.com ကို သွားရောက်ကြည့်ရှုနိုင်ပါသည်။
+ဒီ project မှာ ပူးပေါင်းဆောင်ရွက်မှုနဲ့ အကြံပြုချက်တွေကို ကြိုဆိုပါတယ်။ အများစုသော ပူးပေါင်းမှုတွေမှာ Contributor License Agreement (CLA) ကို သဘောတူဖို့ လိုအပ်ပါတယ်။ ဒါက သင့်ရဲ့ ပူးပေါင်းမှုကို အသုံးပြုခွင့်ကို ကျွန်တော်တို့ကို ပေးနိုင်ဖို့ သင့်မှာ အခွင့်အရေးရှိတယ်ဆိုတာ ကြေညာတာပါ။ အသေးစိတ်ကို https://cla.opensource.microsoft.com မှာ ကြည့်နိုင်ပါတယ်။
 
-သင် pull request တင်တဲ့အခါ CLA bot က သင့်မှာ CLA ပေးရန်လိုအပ်မရှိမရှိကို အလိုအလျောက်စစ်ဆေးပြီး PR ကို သင့်တော်စွာ ဖော်ပြပေးပါလိမ့်မယ် (ဥပမာ - status check, comment)။ bot ရဲ့ ညွှန်ကြားချက်တွေကို လိုက်နာရုံပါပဲ။ CLA သုံးသော repo အားလုံးအတွက် တစ်ကြိမ်တည်းပဲ ပြုလုပ်ရပါမယ်။
+Pull request တင်တဲ့အခါ CLA bot က သင် CLA တင်ဖို့ လိုအပ်/မလိုအပ် စစ်ဆေးပြီး PR ကို သက်ဆိုင်ရာအတိုင်း ပြသပေးပါလိမ့်မယ် (ဥပမာ status check, comment စသည်ဖြင့်)။ Bot ရဲ့ ညွှန်ကြားချက်ကို လိုက်နာပေးပါ။ CLA ကို တစ်ကြိမ်တည်းပဲ တင်ရမှာဖြစ်ပြီး ကျွန်တော်တို့ CLA ကို သုံးတဲ့ repo တွေအားလုံးမှာ အသုံးဝင်ပါတယ်။
 
-## ဖွံ့ဖြိုးရေးပတ်ဝန်းကျင် စတင်ပြင်ဆင်ခြင်း
+## Development environment ကို ပြင်ဆင်ခြင်း
 
-ဒီပရောဂျက်အတွက် ဖွံ့ဖြိုးရေးပတ်ဝန်းကျင်ကို စတင်ဖို့ dependency များကို စီမံခန့်ခွဲရန် Poetry ကို အသုံးပြုဖို့ အကြံပြုပါတယ်။ `pyproject.toml` ကို project dependency များ စီမံရန် အသုံးပြုသဖြင့် dependency များကို install လုပ်ရန် Poetry ကို အသုံးပြုသင့်ပါသည်။
+ဒီ project အတွက် development environment ကို ပြင်ဆင်ဖို့ Poetry ကို အသုံးပြုဖို့ အကြံပြုပါတယ်။ Project dependencies တွေကို `pyproject.toml` မှာ စီမံထားတာမို့ Dependencies တွေကို တင်ဖို့ Poetry ကို သုံးပါ။
 
 ### Virtual environment တစ်ခု ဖန်တီးခြင်း
 
-#### pip ဖြင့်
+#### pip သုံးခြင်း
 
 ```bash
 python -m venv .venv
 ```
 
-#### Poetry ဖြင့်
+#### Poetry သုံးခြင်း
 
 ```bash
 poetry init
 ```
 
-### Virtual environment ကို အက်တီဗိတ်လုပ်ခြင်း
+### Virtual environment ကို အသက်သွင်းခြင်း
 
 #### pip နဲ့ Poetry နှစ်ခုလုံးအတွက်
 
@@ -47,93 +47,92 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Poetry ဖြင့်
+#### Poetry သုံးခြင်း
 
 ```bash
 poetry shell
 ```
 
-### Package နှင့် လိုအပ်သော Packages များ တပ်ဆင်ခြင်း
+### Package နဲ့ လိုအပ်တဲ့ Packages တွေ တင်ခြင်း
 
-#### Poetry ဖြင့် (pyproject.toml မှ)
+#### Poetry သုံးပြီး (pyproject.toml မှ)
 
 ```bash
 poetry install
 ```
 
-### လက်တွေ့ စမ်းသပ်ခြင်း
+### Manual testing
 
-PR တင်ခွင့်မပြုမီ အမှန်တကယ်ရှိတဲ့ စာရွက်စာတမ်းတွေနဲ့ ဘာသာပြန်လုပ်ဆောင်မှုကို စမ်းသပ်ခြင်း အရေးကြီးပါတယ်။
+PR တင်မတင်ခင်မှာ Translation လုပ်တဲ့ function ကို တကယ့် documentation နဲ့ စမ်းသပ်ကြည့်တာ အရေးကြီးပါတယ်။
 
-1. root directory ထဲမှာ test directory တစ်ခု ဖန်တီးပါ။
+1. Root directory မှာ test directory တစ်ခု ဖန်တီးပါ:
     ```bash
     mkdir test_docs
     ```
 
-2. ဘာသာပြန်လိုသော markdown စာရွက်စာတမ်းများနှင့် ပုံများကို test directory ထဲကို ကူးထည့်ပါ။ ဥပမာ -
+2. သင် translate လုပ်ချင်တဲ့ markdown documentation နဲ့ images တွေကို test directory ထဲကို ကူးထည့်ပါ။ ဥပမာ:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. package ကို ကိုယ်ပိုင်စက်ပေါ်တွင် တပ်ဆင်ပါ။
+3. Package ကို local မှာ တင်ပါ:
     ```bash
     pip install -e .
     ```
 
-4. သင့် စမ်းသပ်စာရွက်စာတမ်းများတွင် Co-op Translator ကို အလုပ်လုပ်ပါ။
+4. သင့် test documents တွေမှာ Co-op Translator ကို run ပါ:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. ဘာသာပြန်ပြီးသော ဖိုင်များကို `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. `test_docs/translations` နဲ့ `test_docs/translated_images` ထဲက translated files တွေကို စစ်ဆေးပါ:
+   - ဘာသာပြန်ရတဲ့ အရည်အသွေး
+   - Metadata comments တွေ မှန်ကန်မှု
+   - မူလ markdown structure ကို ထိန်းသိမ်းထားမှု
+   - Links နဲ့ images တွေ မှန်ကန်စွာ အလုပ်လုပ်မှု
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+ဒီလို manual testing လုပ်ခြင်းက သင့်ပြင်ဆင်မှုတွေဟာ တကယ့်အသုံးပြုမှုမှာ အလုပ်လုပ်သလား စစ်ဆေးနိုင်ပါတယ်။
 
 ### Environment variables
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template` ဖိုင်ထဲမှာ စစ်ဆေးပါ။
-1. environment variable များကို ညွှန်ကြားချက်အတိုင်း ဖြည့်စွက်ပါ။
+1. Root directory မှာ `.env` ဖိုင်ကို `.env.template` ဖိုင်ကို ကူးယူပြီး ဖန်တီးပါ။
+1. Environment variables တွေကို ညွှန်ကြားချက်အတိုင်း ဖြည့်ပါ။
 
 > [!TIP]
 >
-> ### ဖွံ့ဖြိုးရေးပတ်ဝန်းကျင် အပိုရွေးချယ်စရာများ
+> ### Development environment အတွက် အခြားရွေးချယ်စရာများ
 >
-> ပရောဂျက်ကို ကိုယ်ပိုင်စက်ပေါ်တွင်သာမက GitHub Codespaces သို့မဟုတ် VS Code Dev Containers ကိုလည်း အသုံးပြုနိုင်ပါတယ်။
+> Project ကို local မှာ run လုပ်ခြင်းအပြင် GitHub Codespaces သို့မဟုတ် VS Code Dev Containers ကိုလည်း အသုံးပြုနိုင်ပါတယ်။
 >
 > #### GitHub Codespaces
 >
-> GitHub Codespaces ကို အသုံးပြု၍ ဒီ sample များကို အွန်လိုင်းမှာ အလုပ်လုပ်စေလိုက်ပြီး ထပ်မံပြင်ဆင်ခြင်း သို့မဟုတ် စက်ပေါ်တွင် အဆင်ပြေစွာ မလိုအပ်ပါ။
+> GitHub Codespaces ကို သုံးပြီး ဒီ sample တွေကို virtual မှာ run လုပ်နိုင်ပါတယ်။ ထပ်ဆင့်ပြင်ဆင်စရာမလိုပါ။
 >
-> အောက်ပါ ခလုတ်က သင့် browser မှာ web-based VS Code ကို ဖွင့်ပေးပါလိမ့်မယ်။
+> ဒီ button ကိုနှိပ်ရင် browser မှာ web-based VS Code instance တစ်ခု ဖွင့်ပေးပါလိမ့်မယ်:
 >
-> 1. Template ကို ဖွင့်ပါ (အချိန်အနည်းငယ်ယူနိုင်သည်) -
+> 1. Template ကို ဖွင့်ပါ (အချိန်အနည်းငယ် ကြာနိုင်ပါတယ်):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
 >
-> #### VS Code Dev Containers ဖြင့် ကိုယ်ပိုင်စက်ပေါ်တွင် အလုပ်လုပ်ခြင်း
+> #### Local မှာ VS Code Dev Containers သုံးပြီး run လုပ်ခြင်း
 >
-> ⚠️ ဒီရွေးချယ်မှုကို အသုံးပြုရန် Docker Desktop သည် အနည်းဆုံး 16 GB RAM ကို ချမှတ်ထားရပါမည်။ RAM 16 GB ထက်နည်းပါက [GitHub Codespaces ရွေးချယ်မှု](../..) သို့မဟုတ် [ကိုယ်ပိုင်စက်တွင် စတင်ပြင်ဆင်ခြင်း](../..) ကို ကြိုးစားကြည့်ပါ။
+> ⚠️ ဒီ option ကို သုံးဖို့အတွက် သင့် Docker Desktop မှာ အနည်းဆုံး 16 GB RAM ရှိဖို့ လိုအပ်ပါတယ်။ RAM နည်းနေရင် [GitHub Codespaces option](../..) သို့မဟုတ် [local မှာ ပြင်ဆင်ခြင်း](../..) ကို စမ်းကြည့်နိုင်ပါတယ်။
 >
-> VS Code Dev Containers သည် Dev Containers extension ကို အသုံးပြု၍ ကိုယ်ပိုင် VS Code မှာ ပရောဂျက်ကို ဖွင့်ပေးပါသည်။
+> ဆက်စပ်ရွေးချယ်စရာတစ်ခုက VS Code Dev Containers ဖြစ်ပြီး [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) ကို သုံးပြီး local VS Code မှာ project ကို ဖွင့်နိုင်ပါတယ်။
 >
-> 1. Docker Desktop ကို စတင်ပါ (မရှိသေးလျှင် install လုပ်ပါ)
-> 2. ပရောဂျက်ကို ဖွင့်ပါ -
+> 1. Docker Desktop ကို start လုပ်ပါ (မရှိသေးရင် install လုပ်ပါ)
+> 2. Project ကို ဖွင့်ပါ:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
 
+### Code Style
 
-### Code စတိုင်
+Project တစ်ခုလုံးမှာ code style ကို တစ်သမတ်တည်း ထိန်းသိမ်းဖို့ [Black](https://github.com/psf/black) Python code formatter ကို သုံးပါတယ်။ Black က Python code ကို Black style အတိုင်း အလိုအလျောက် ပြန်စီပေးပါတယ်။
 
-ပရောဂျက်တစ်ခုလုံးတွင် code စတိုင်ကို တူညီစေရန် Python code formatter အဖြစ် [Black](https://github.com/psf/black) ကို အသုံးပြုပါတယ်။ Black သည် Python code ကို အလိုအလျောက် ပြင်ဆင်ပေးပြီး Black စတိုင်အတိုင်း ပြောင်းလဲပေးသော code formatter ဖြစ်သည်။
+#### Configuration
 
-#### ဖော်ပြချက်
-
-Black ဖော်ပြချက်ကို `pyproject.toml` ထဲတွင် သတ်မှတ်ထားသည်။
+Black configuration ကို `pyproject.toml` မှာ သတ်မှတ်ထားပါတယ်။
 
 ```toml
 [tool.black]
@@ -142,121 +141,161 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-#### Black ကို တပ်ဆင်ခြင်း
+#### Black ကို တင်ခြင်း
 
-Poetry (အကြံပြု) သို့မဟုတ် pip ဖြင့် Black ကို တပ်ဆင်နိုင်ပါသည်။
+Black ကို Poetry (အကြံပြု) သို့မဟုတ် pip နဲ့ တင်နိုင်ပါတယ်။
 
-##### Poetry ဖြင့်
+##### Poetry သုံးခြင်း
 
-ဖွံ့ဖြိုးရေးပတ်ဝန်းကျင် စတင်ပြင်ဆင်တဲ့အခါ Black ကို အလိုအလျောက် တပ်ဆင်ပေးပါသည်။
+Development environment ပြင်ဆင်တဲ့အခါ Black ကို အလိုအလျောက် တင်ပေးပါလိမ့်မယ်:
 ```bash
 poetry install
 ```
 
-##### pip ဖြင့်
+##### pip သုံးခြင်း
 
-pip အသုံးပြုပါက Black ကို တိုက်ရိုက် တပ်ဆင်နိုင်ပါသည်။
+pip သုံးရင် Black ကို တိုက်ရိုက် တင်နိုင်ပါတယ်:
 ```bash
 pip install black
 ```
 
 #### Black ကို အသုံးပြုခြင်း
 
-##### Poetry ဖြင့်
+##### Poetry နဲ့
 
-1. ပရောဂျက်အတွင်းရှိ Python ဖိုင်အားလုံးကို format လုပ်ရန် -
+1. Project ထဲက Python files အားလုံးကို format လုပ်ပါ:
     ```bash
     poetry run black .
     ```
 
-2. ဖိုင် သို့မဟုတ် directory တစ်ခုကို သီးသန့် format လုပ်ရန် -
+2. File တစ်ခု သို့မဟုတ် directory တစ်ခုကို format လုပ်ပါ:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
-##### pip ဖြင့်
+##### pip နဲ့
 
-1. ပရောဂျက်အတွင်းရှိ Python ဖိုင်အားလုံးကို format လုပ်ရန် -
+1. Project ထဲက Python files အားလုံးကို format လုပ်ပါ:
     ```bash
     black .
     ```
 
-2. ဖိုင် သို့မဟုတ် directory တစ်ခုကို သီးသန့် format လုပ်ရန် -
+2. File တစ်ခု သို့မဟုတ် directory တစ်ခုကို format လုပ်ပါ:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> ကွန်ပျူတာတွင် Black ဖြင့် code ကို အလိုအလျောက် format လုပ်ဖို့ editor ကို ပြင်ဆင်ထားရန် အကြံပြုပါတယ်။ ယနေ့ခေတ် editor များမှာ extension သို့မဟုတ် plugin များဖြင့် ဒီလိုလုပ်နိုင်ပါသည်။
+> Code ကို Black နဲ့ save လုပ်တိုင်း အလိုအလျောက် format လုပ်ဖို့ editor ကို ပြင်ဆင်ထားဖို့ အကြံပြုပါတယ်။ Editor များစုစုပေါင်းမှာ extension သို့မဟုတ် plugin တွေနဲ့ ဒီအလုပ်ကို လုပ်နိုင်ပါတယ်။
 
-## Co-op Translator ကို အလုပ်လုပ်စေခြင်း
+## Co-op Translator ကို run လုပ်ခြင်း
 
-Poetry ကို အသုံးပြု၍ Co-op Translator ကို သင့်ပတ်ဝန်းကျင်တွင် အလုပ်လုပ်စေလိုပါက အောက်ပါအဆင့်များကို လိုက်နာပါ။
+Poetry ကို သုံးပြီး Co-op Translator ကို run လုပ်ဖို့ အောက်ပါအဆင့်တွေကို လိုက်နာပါ။
 
-1. ဘာသာပြန်စမ်းသပ်မှုများ ပြုလုပ်လိုသော directory သို့ သို့မဟုတ် စမ်းသပ်ရန် အခမဲ့ folder တစ်ခု ဖန်တီးပါ။
+1. Translation test လုပ်ချင်တဲ့ directory ကို သွားပါ သို့မဟုတ် စမ်းသပ်ဖို့အတွက် temporary folder တစ်ခု ဖန်တီးပါ။
 
-2. အောက်ပါ command ကို အလုပ်လုပ်ပါ။ `-l ko` with the language code you wish to translate into. The `-d` flag သည် debug mode ကို ဆိုလိုသည်။
+2. အောက်ပါ command ကို run ပါ။ `-l ko` ကို သင် translate လုပ်ချင်တဲ့ ဘာသာစကား code နဲ့ အစားထိုးပါ။ `-d` flag က debug mode ကို ဆိုလိုပါတယ်။
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> Command လုပ်ဆောင်မည့်အခါ သင့် Poetry environment ကို အက်တီဗိတ်လုပ်ထားရန် (poetry shell) သေချာပါစေ။
+> Command ကို run လုပ်ခင် Poetry environment ကို activate (poetry shell) လုပ်ထားဖို့ သေချာပါစေ။
 
-## ထိန်းသိမ်းသူများ
+## ဘာသာစကားအသစ် တစ်ခု ထည့်သွင်းရန်
 
-### Commit message နှင့် Merge များလုပ်နည်း
+ဘာသာစကားအသစ်တွေကို ထပ်မံထည့်သွင်းဖို့ ကြိုဆိုပါတယ်။ PR တင်ခင် အောက်ပါအဆင့်တွေကို ပြီးစီးထားဖို့ လိုအပ်ပါတယ်။
 
-ပရောဂျက် commit သမိုင်းမှာ တိကျရှင်းလင်းမှုရှိစေရန်အတွက် Squash and Merge များလုပ်တဲ့အခါ အဆုံး commit message အတွက် အထူး format ကိုလိုက်နာပါတယ်။
+1. Font mapping မှာ ဘာသာစကားကို ထည့်ပါ
+   - `src/co_op_translator/fonts/font_language_mappings.yml` ကို ပြင်ပါ
+   - အောက်ပါအတိုင်း entry တစ်ခု ထည့်ပါ:
+     - `code`: ISO နဲ့ ဆင်တူ language code (ဥပမာ `vi`)
+     - `name`: လူသုံး display name
+     - `font`: `src/co_op_translator/fonts/` ထဲမှာရှိတဲ့ script ကို support လုပ်တဲ့ font
+     - `rtl`: ဘယ်မှညာသို့ (right-to-left) ဆိုရင် `true`, မဟုတ်ရင် `false`
 
-pull request (PR) တစ်ခု merge လုပ်သောအခါ၊ အခြား commit များအားလုံးကို single commit တစ်ခုအဖြစ် squash လုပ်မည်ဖြစ်ပြီး အဆုံး commit message ကို အောက်ပါ format အတိုင်း ရေးသားရပါမည်။
+2. လိုအပ်လျှင် font files တွေ ထည့်ပါ
+   - Font အသစ်လိုအပ်ရင် open source ဖြန့်ဝေခွင့်ရှိ/မရှိ စစ်ဆေးပါ
+   - Font file ကို `src/co_op_translator/fonts/` ထဲထည့်ပါ
+
+3. Local မှာ စစ်ဆေးပါ
+   - Markdown, images, notebooks စသည့် sample နည်းနည်းနဲ့ translate လုပ်ပါ
+   - Output မှာ font တွေ၊ RTL layout (လိုအပ်လျှင်) မှန်ကန်စွာ ပြသနိုင်မှု စစ်ဆေးပါ
+
+4. Documentation ကို update လုပ်ပါ
+   - ဘာသာစကားအသစ်ကို `getting_started/supported-languages.md` မှာ ထည့်ပါ
+   - `README_languages_template.md` ကို ပြင်စရာမလိုပါဘူး။ supported list မှ auto generate ဖြစ်ပါတယ်
+
+5. PR တင်ပါ
+   - ထည့်သွင်းတဲ့ ဘာသာစကားနဲ့ font/licensing အကြောင်းအရာကို ရှင်းပြပါ
+   - Screenshot တွေပါထည့်နိုင်ရင် ပိုကောင်းပါတယ်
+
+ตัวอย่าง YAML entry:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
+## Maintainers
+
+### Commit message နဲ့ Merge strategy
+
+Project ရဲ့ commit history ကို တစ်သမတ်တည်း၊ ရှင်းလင်းစွာ ထိန်းသိမ်းဖို့ **Squash and Merge** strategy ကို သုံးတဲ့အခါ **နောက်ဆုံး commit message** format ကို လိုက်နာပါတယ်။
+
+Pull request (PR) တစ်ခု merge လုပ်တဲ့အခါ commits တွေကို တစ်ခုတည်း commit အဖြစ် squash လုပ်ပါလိမ့်မယ်။ နောက်ဆုံး commit message ကို အောက်ပါ format နဲ့ ရေးသင့်ပါတယ်။
 
 #### Commit message format (squash and merge အတွက်)
 
-commit message များအတွက် အောက်ပါ format ကို အသုံးပြုပါသည် -
+Commit message တွေကို အောက်ပါ format နဲ့ သုံးပါတယ်။
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: commit အမျိုးအစားကို ဖော်ပြသည်။ အောက်ပါ အမျိုးအစားများကို အသုံးပြုသည် -
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+- **type**: Commit ရဲ့ category ကို ဖော်ပြပါတယ်။ အောက်ပါ type တွေကို သုံးပါတယ်။
+  - `Docs`: Documentation update အတွက်။
+  - `Build`: Build system သို့မဟုတ် dependencies, configuration files, CI workflows, Dockerfile စသည့် ပြင်ဆင်မှုအတွက်။
+  - `Core`: Project ရဲ့ core functionality သို့မဟုတ် features တွေ၊ အထူးသဖြင့် `src/co_op_translator/core` directory ထဲက files တွေပြင်ဆင်မှုအတွက်။
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: ပြင်ဆင်မှုအကြောင်း အကျဉ်းချုပ်။
+- **PR number**: Pull request နံပါတ်။
 
-**Examples**:
+**ဥပမာများ**:
 
 - `Docs: Update installation instructions for clarity (#50)`
 - `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> လက်ရှိမှာ **`Docs`**, **`Core`**, **`Build`** prefix တွေကို PR title မှာ labels အပေါ်မူတည်ပြီး အလိုအလျောက် ထည့်ပေးပါတယ်။ မှန်ကန်တဲ့ label ကို apply လုပ်ထားရင် PR title ကို ကိုယ်တိုင် ပြင်စရာမလိုပါဘူး။ Prefix မှန်/မမှန် စစ်ဆေးပေးရုံပါ။
 
 #### Merge strategy
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+Pull requests အတွက် **Squash and Merge** ကို default strategy အနေနဲ့ သုံးပါတယ်။ ဒီ strategy က commit messages တွေ format ကို တစ်သမတ်တည်း ထိန်းသိမ်းနိုင်ပါတယ်။
 
-**Reasons**:
+**အကြောင်းပြချက်များ**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- Project history ကို ရှင်းလင်း၊ တစ်ကြောင်းတည်း ထိန်းသိမ်းနိုင်ခြင်း
+- Commit messages တွေ တစ်သမတ်တည်း ဖြစ်ခြင်း
+- အရေးမကြီးတဲ့ commits (ဥပမာ "fix typo") တွေကို လျှော့ချနိုင်ခြင်း
 
-When merging, ensure the final commit message follows the commit message format described above.
+Merge လုပ်တဲ့အခါ နောက်ဆုံး commit message ကို အထက်ပါ format နဲ့ ရေးထားဖို့ သေချာပါစေ။
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**Squash and Merge ဥပမာ**
+PR တစ်ခုမှာ အောက်ပါ commits တွေပါဝင်ရင်:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-They should be squashed into:
+Squash လုပ်ပြီးနောက်:
 `Docs: Improve documentation clarity and formatting (#65)`
 
-**တစ်ဖန်ကြေညာချက်**  
-ဤစာရွက်စာတမ်းကို AI ဘာသာပြန်ဝန်ဆောင်မှု [Co-op Translator](https://github.com/Azure/co-op-translator) ဖြင့် ဘာသာပြန်ထားပါသည်။ ကျွန်ုပ်တို့သည် တိကျမှန်ကန်မှုအတွက် ကြိုးပမ်းပါသော်လည်း၊ စက်ရုပ်ဘာသာပြန်မှုများတွင် အမှားများ သို့မဟုတ် မှားယွင်းချက်များ ပါဝင်နိုင်ကြောင်း သတိပြုပါရန် အကြောင်းကြားအပ်ပါသည်။ မူရင်းစာရွက်စာတမ်းကို မိမိဘာသာစကားဖြင့် အတည်ပြုရမည့် အရင်းအမြစ်အဖြစ် သတ်မှတ်သင့်ပါသည်။ အရေးကြီးသော အချက်အလက်များအတွက် လူ့ဘာသာပြန်သူမှ လုပ်ဆောင်သည့် ဘာသာပြန်မှုကို အကြံပြုပါသည်။ ဤဘာသာပြန်မှု အသုံးပြုမှုကြောင့် ဖြစ်ပေါ်လာသော နားလည်မှားယွင်းမှုများအတွက် ကျွန်ုပ်တို့ တာဝန်မယူပါ။
+---
+
+**သတိပေးချက်**:
+ဤစာရွက်စာတမ်းကို AI ဘာသာပြန်ဝန်ဆောင်မှု [Co-op Translator](https://github.com/Azure/co-op-translator) ကို အသုံးပြု၍ ဘာသာပြန်ထားပါသည်။ ကျွန်ုပ်တို့သည် တိကျမှုအတွက် ကြိုးစားနေသော်လည်း၊ အလိုအလျောက်ဘာသာပြန်မှုများတွင် အမှားများ သို့မဟုတ် မတိကျမှုများ ပါဝင်နိုင်သည်ကို သတိပြုပါ။ မူရင်းစာရွက်စာတမ်းကို မူလဘာသာဖြင့်သာ အာဏာရှိသောရင်းမြစ်အဖြစ် ယူဆသင့်ပါသည်။ အရေးကြီးသောအချက်အလက်များအတွက် လူ့ဘာသာပြန်ပညာရှင်များ၏ ဝန်ဆောင်မှုကို အကြံပြုပါသည်။ ဤဘာသာပြန်မှုကို အသုံးပြုခြင်းကြောင့် ဖြစ်ပေါ်လာသော နားလည်မှုမှားခြင်း သို့မဟုတ် အနားလည်မှုမှားခြင်းများအတွက် ကျွန်ုပ်တို့သည် တာဝန်ယူမည်မဟုတ်ပါ။

@@ -1,121 +1,121 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:18:38+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T04:07:31+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "hr"
 }
 -->
-# Korištenje Co-op Translator GitHub Akcije (Vodič za organizacije)
+# Korištenje Co-op Translator GitHub Actiona (Vodič za organizacije)
 
-**Ciljana publika:** Ovaj vodič namijenjen je **Microsoftovim internim korisnicima** ili **timovima koji imaju pristup potrebnim vjerodajnicama za unaprijed izrađenu Co-op Translator GitHub aplikaciju** ili mogu kreirati vlastitu prilagođenu GitHub aplikaciju.
+**Ciljana publika:** Ovaj vodič namijenjen je **Microsoftovim internim korisnicima** ili **timovima koji imaju pristup potrebnim vjerodajnicama za unaprijed pripremljenu Co-op Translator GitHub aplikaciju** ili mogu kreirati vlastitu prilagođenu GitHub aplikaciju.
 
-Automatizirajte prijevod dokumentacije vašeg repozitorija bez napora koristeći Co-op Translator GitHub Akciju. Ovaj vodič vodi vas kroz postavljanje akcije koja automatski kreira pull requestove s ažuriranim prijevodima svaki put kada se promijene vaši izvorišni Markdown fajlovi ili slike.
+Automatizirajte prijevod dokumentacije vašeg repozitorija bez napora pomoću Co-op Translator GitHub Actiona. Ovaj vodič vas vodi kroz postavljanje actiona koji automatski kreira pull requestove s ažuriranim prijevodima svaki put kad se promijene izvorne Markdown datoteke ili slike.
 
 > [!IMPORTANT]
 > 
 > **Odabir pravog vodiča:**
 >
-> Ovaj vodič detaljno opisuje postavljanje koristeći **GitHub App ID i Privatni ključ**. Obično vam je potreban ovaj "Vodič za organizacije" ako: **`GITHUB_TOKEN` dopuštenja su ograničena:** Postavke vaše organizacije ili repozitorija ograničavaju zadana dopuštenja koja standardni `GITHUB_TOKEN` ima. Konkretno, ako `GITHUB_TOKEN` nema potrebna dopuštenja za `write` (kao što su `contents: write` ili `pull-requests: write`), radni tok iz [Javnog vodiča za postavljanje](./github-actions-guide-public.md) neće uspjeti zbog nedostatka dopuštenja. Korištenje namjenske GitHub aplikacije s eksplicitno dodijeljenim dopuštenjima zaobilazi ovo ograničenje.
+> Ovaj vodič opisuje postavljanje pomoću **GitHub App ID-a i privatnog ključa**. Ovu "organizacijsku" metodu obično trebate ako: **`GITHUB_TOKEN` dozvole su ograničene:** Postavke vaše organizacije ili repozitorija ograničavaju zadane dozvole koje standardni `GITHUB_TOKEN` daje. Konkretno, ako `GITHUB_TOKEN` nema potrebne `write` dozvole (poput `contents: write` ili `pull-requests: write`), workflow iz [javnog vodiča za postavljanje](./github-actions-guide-public.md) neće raditi zbog nedovoljnih dozvola. Korištenje namjenske GitHub aplikacije s eksplicitno dodijeljenim dozvolama zaobilazi ovo ograničenje.
 >
-> **Ako ovo ne vrijedi za vas:**
+> **Ako se gore navedeno ne odnosi na vas:**
 >
-> Ako standardni `GITHUB_TOKEN` ima dovoljna dopuštenja u vašem repozitoriju (tj. niste blokirani ograničenjima organizacije), koristite **[Javni vodič za postavljanje koristeći GITHUB_TOKEN](./github-actions-guide-public.md)**. Javni vodič ne zahtijeva pribavljanje ili upravljanje App ID-evima ili Privatnim ključevima te se oslanja isključivo na standardni `GITHUB_TOKEN` i dopuštenja repozitorija.
+> Ako standardni `GITHUB_TOKEN` ima dovoljne dozvole u vašem repozitoriju (tj. niste blokirani organizacijskim ograničenjima), koristite **[Javni vodič za postavljanje pomoću GITHUB_TOKEN-a](./github-actions-guide-public.md)**. Javni vodič ne zahtijeva dobivanje ili upravljanje App ID-ima ili privatnim ključevima i oslanja se isključivo na standardni `GITHUB_TOKEN` i dozvole repozitorija.
 
 ## Preduvjeti
 
-Prije konfiguriranja GitHub Akcije, osigurajte da imate potrebne vjerodajnice za AI usluge spremne.
+Prije konfiguracije GitHub Actiona, osigurajte da imate spremne potrebne vjerodajnice za AI servis.
 
-**1. Potrebno: Vjerodajnice za AI jezični model**  
+**1. Obavezno: Vjerodajnice za AI jezični model**
 Potrebne su vam vjerodajnice za barem jedan podržani jezični model:
 
-- **Azure OpenAI**: Potrebni su Endpoint, API ključ, nazivi modela/implementacija, verzija API-ja.  
-- **OpenAI**: Potreban API ključ, (opcionalno: Org ID, Base URL, Model ID).  
-- Pogledajte [Podržane modele i usluge](../../../../README.md) za detalje.  
+- **Azure OpenAI**: Potreban je Endpoint, API ključ, naziv modela/deploymenta, verzija API-ja.
+- **OpenAI**: Potreban je API ključ, (Opcionalno: Org ID, Base URL, Model ID).
+- Pogledajte [Podržani modeli i servisi](../../../../README.md) za detalje.
 - Vodič za postavljanje: [Postavljanje Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
 
-**2. Opcionalno: Vjerodajnice za Computer Vision (za prijevod slika)**
+**2. Opcionalno: Vjerodajnice za računalni vid (za prijevod slika)**
 
-- Potrebno samo ako želite prevoditi tekst unutar slika.  
-- **Azure Computer Vision**: Potrebni su Endpoint i ključ pretplate.  
-- Ako nisu navedeni, akcija će raditi u [Markdown-only načinu](../markdown-only-mode.md).  
+- Potrebno samo ako želite prevoditi tekst unutar slika.
+- **Azure Computer Vision**: Potreban je Endpoint i Subscription Key.
+- Ako nije navedeno, action radi u [samo Markdown načinu](../markdown-only-mode.md).
 - Vodič za postavljanje: [Postavljanje Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
 
 ## Postavljanje i konfiguracija
 
-Slijedite ove korake za konfiguraciju Co-op Translator GitHub Akcije u vašem repozitoriju:
+Slijedite ove korake za konfiguraciju Co-op Translator GitHub Actiona u vašem repozitoriju:
 
-### Korak 1: Instalirajte i konfigurirajte GitHub App autentifikaciju
+### Korak 1: Instalirajte i konfigurirajte GitHub App autentikaciju
 
-Radni tok koristi autentifikaciju preko GitHub aplikacije kako bi sigurno komunicirao s vašim repozitorijem (npr. kreirao pull requestove) u vaše ime. Odaberite jednu od opcija:
+Workflow koristi GitHub App autentikaciju za sigurno povezivanje s vašim repozitorijem (npr. kreiranje pull requestova) u vaše ime. Odaberite jednu opciju:
 
-#### **Opcija A: Instalirajte unaprijed izrađenu Co-op Translator GitHub aplikaciju (za Microsoft internu upotrebu)**
+#### **Opcija A: Instalirajte unaprijed pripremljenu Co-op Translator GitHub aplikaciju (za Microsoft interne korisnike)**
 
-1. Posjetite [Co-op Translator GitHub App](https://github.com/apps/co-op-translator) stranicu.
+1. Otvorite stranicu [Co-op Translator GitHub App](https://github.com/apps/co-op-translator).
 
-1. Odaberite **Install** i izaberite račun ili organizaciju u kojoj se nalazi vaš cilj repozitorij.
+1. Odaberite **Install** i odaberite račun ili organizaciju gdje se nalazi vaš ciljani repozitorij.
 
-    ![Install app](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.hr.png)
+    <img src="../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.hr.png" alt="Instaliraj aplikaciju">
 
-1. Odaberite **Only select repositories** i označite svoj cilj repozitorij (npr. `PhiCookBook`). Kliknite **Install**. Možda će biti potrebna autentifikacija.
+1. Odaberite **Only select repositories** i odaberite vaš ciljani repozitorij (npr. `PhiCookBook`). Kliknite **Install**. Možda ćete morati potvrditi identitet.
 
-    ![Install authorize](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.hr.png)
+    <img src="../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.hr.png" alt="Autoriziraj instalaciju">
 
-1. **Preuzmite vjerodajnice aplikacije (potreban interni proces):** Da bi radni tok mogao autentificirati kao aplikacija, potrebne su vam dvije informacije koje vam pruža Co-op Translator tim:  
-  - **App ID:** Jedinstveni identifikator Co-op Translator aplikacije. App ID je: `1164076`.  
-  - **Privatni ključ:** Morate dobiti **cijeli sadržaj** `.pem` privatnog ključa od kontakta održavatelja. **Postupajte s ovim ključem kao s lozinkom i čuvajte ga sigurno.**
+1. **Dobavite vjerodajnice aplikacije (potreban interni proces):** Da biste omogućili workflowu autentikaciju kao aplikacija, trebate dvije informacije koje daje Co-op Translator tim:
+  - **App ID:** Jedinstveni identifikator za Co-op Translator aplikaciju. App ID je: `1164076`.
+  - **Privatni ključ:** Morate dobiti **cijeli sadržaj** `.pem` privatnog ključa od kontakt osobe za održavanje. **Tretirajte ovaj ključ kao lozinku i čuvajte ga sigurno.**
 
 1. Nastavite na Korak 2.
 
 #### **Opcija B: Koristite vlastitu prilagođenu GitHub aplikaciju**
 
-- Ako želite, možete kreirati i konfigurirati vlastitu GitHub aplikaciju. Provjerite da ima Read & Write pristup Contents i Pull requests. Trebat će vam njen App ID i generirani Privatni ključ.
+- Ako želite, možete kreirati i konfigurirati vlastitu GitHub aplikaciju. Osigurajte da ima Read & write pristup za Contents i Pull requests. Trebat će vam njen App ID i generirani privatni ključ.
 
-### Korak 2: Konfigurirajte tajne u repozitoriju
+### Korak 2: Konfigurirajte tajne repozitorija
 
-Morate dodati vjerodajnice GitHub aplikacije i vjerodajnice AI usluga kao šifrirane tajne u postavkama vašeg repozitorija.
+Morate dodati vjerodajnice GitHub aplikacije i AI servisa kao enkriptirane tajne u postavkama repozitorija.
 
-1. Otvorite svoj cilj repozitorij na GitHubu (npr. `PhiCookBook`).
+1. Otvorite vaš ciljani GitHub repozitorij (npr. `PhiCookBook`).
 
 1. Idite na **Settings** > **Secrets and variables** > **Actions**.
 
-1. Pod **Repository secrets**, kliknite **New repository secret** za svaku tajnu navedenu u nastavku.
+1. Pod **Repository secrets**, kliknite **New repository secret** za svaku tajnu s popisa dolje.
 
-   ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.hr.png)
+   <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.hr.png" alt="Odaberi postavke actiona">
 
-**Potrebne tajne (za autentifikaciju GitHub aplikacije):**
+**Obavezne tajne (za GitHub App autentikaciju):**
 
-| Naziv tajne          | Opis                                      | Izvor vrijednosti                                |
-| :------------------- | :----------------------------------------- | :----------------------------------------------- |
-| `GH_APP_ID`          | App ID GitHub aplikacije (iz Koraka 1).   | Postavke GitHub aplikacije                        |
-| `GH_APP_PRIVATE_KEY` | **Cijeli sadržaj** preuzetog `.pem` fajla. | `.pem` fajl (iz Koraka 1)             |
+| Naziv tajne          | Opis                                      | Izvor vrijednosti                                     |
+| :------------------- | :----------------------------------------- | :---------------------------------------------------- |
+| `GH_APP_ID`          | App ID GitHub aplikacije (iz Koraka 1).    | Postavke GitHub aplikacije                            |
+| `GH_APP_PRIVATE_KEY` | **Cijeli sadržaj** preuzetog `.pem` fajla. | `.pem` fajl (iz Koraka 1)                             |
 
-**Tajne za AI usluge (dodajte SVE koje se odnose na vaše preduvjete):**
+**Tajne za AI servis (dodajte SVE koje se odnose na vaše preduvjete):**
 
-| Naziv tajne                         | Opis                                   | Izvor vrijednosti                   |
-| :---------------------------------- | :------------------------------------- | :--------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Ključ za Azure AI uslugu (Computer Vision)  | Azure AI Foundry                    |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint za Azure AI uslugu (Computer Vision) | Azure AI Foundry                    |
-| `AZURE_OPENAI_API_KEY`              | Ključ za Azure OpenAI uslugu              | Azure AI Foundry                    |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint za Azure OpenAI uslugu            | Azure AI Foundry                    |
-| `AZURE_OPENAI_MODEL_NAME`           | Naziv vašeg Azure OpenAI modela            | Azure AI Foundry                    |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Naziv vaše Azure OpenAI implementacije       | Azure AI Foundry                    |
-| `AZURE_OPENAI_API_VERSION`          | Verzija API-ja za Azure OpenAI             | Azure AI Foundry                    |
-| `OPENAI_API_KEY`                    | API ključ za OpenAI                        | OpenAI Platform                    |
-| `OPENAI_ORG_ID`                     | OpenAI Organization ID                    | OpenAI Platform                    |
-| `OPENAI_CHAT_MODEL_ID`              | Specifični OpenAI model ID                  | OpenAI Platform                    |
-| `OPENAI_BASE_URL`                   | Prilagođeni OpenAI API Base URL            | OpenAI Platform                    |
+| Naziv tajne                         | Opis                                   | Izvor vrijednosti                |
+| :---------------------------------- | :------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Ključ za Azure AI servis (Computer Vision)  | Azure AI Foundry                    |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint za Azure AI servis (Computer Vision) | Azure AI Foundry                     |
+| `AZURE_OPENAI_API_KEY`              | Ključ za Azure OpenAI servis           | Azure AI Foundry                     |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint za Azure OpenAI servis        | Azure AI Foundry                     |
+| `AZURE_OPENAI_MODEL_NAME`           | Naziv vašeg Azure OpenAI modela        | Azure AI Foundry                     |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Naziv vašeg Azure OpenAI deploymenta   | Azure AI Foundry                     |
+| `AZURE_OPENAI_API_VERSION`          | Verzija API-ja za Azure OpenAI         | Azure AI Foundry                     |
+| `OPENAI_API_KEY`                    | API ključ za OpenAI                    | OpenAI Platform                  |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID                 | OpenAI Platform                  |
+| `OPENAI_CHAT_MODEL_ID`              | ID specifičnog OpenAI modela           | OpenAI Platform                    |
+| `OPENAI_BASE_URL`                   | Prilagođeni OpenAI API Base URL        | OpenAI Platform                    |
 
-![Enter environment variable name](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.hr.png)
+<img src="../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.hr.png" alt="Unesi naziv varijable okruženja">
 
 ### Korak 3: Kreirajte workflow datoteku
 
-Na kraju, kreirajte YAML datoteku koja definira automatizirani radni tok.
+Na kraju, kreirajte YAML datoteku koja definira automatizirani workflow.
 
-1. U korijenskom direktoriju vašeg repozitorija kreirajte direktorij `.github/workflows/` ako ne postoji.
+1. U root direktoriju vašeg repozitorija, kreirajte direktorij `.github/workflows/` ako ne postoji.
 
-1. Unutar `.github/workflows/`, kreirajte datoteku nazvanu `co-op-translator.yml`.
+1. Unutar `.github/workflows/`, kreirajte datoteku naziva `co-op-translator.yml`.
 
 1. Zalijepite sljedeći sadržaj u co-op-translator.yml.
 
@@ -155,7 +155,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +209,31 @@ jobs:
 
 ```
 
-4.  **Prilagodite radni tok:**  
-  - **[!IMPORTANT] Ciljani jezici:** U `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+4.  **Prilagodite workflow:**
+  - **[!IMPORTANT] Ciljani jezici:** U koraku `Run Co-op Translator` **OBAVEZNO pregledajte i izmijenite popis jezičnih kodova** unutar naredbe `translate -l "..." -y` prema potrebama vašeg projekta. Primjer popisa (`ar de es...`) treba zamijeniti ili prilagoditi.
+  - **Trigger (`on:`):** Trenutni trigger pokreće workflow na svaki push na `main`. Za velike repozitorije, razmislite o dodavanju `paths:` filtera (pogledajte komentirani primjer u YAML-u) kako bi se workflow pokretao samo kad se promijene relevantne datoteke (npr. izvorna dokumentacija), čime štedite vrijeme izvođenja.
+  - **Detalji PR-a:** Prilagodite `commit-message`, `title`, `body`, naziv `branch`a i `labels` u koraku `Create Pull Request` po potrebi.
 
-## Credential Management and Renewal
+## Upravljanje vjerodajnicama i obnova
 
-- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` ključevima) **prije nego što istekne** kako biste spriječili neuspjehe radnog toka.
+- **Sigurnost:** Osjetljive vjerodajnice (API ključeve, privatne ključeve) uvijek pohranjujte kao GitHub Actions tajne. Nikada ih ne izlažite u workflow datoteci ili kodu repozitorija.
+- **[!IMPORTANT] Obnova ključeva (Microsoft interni korisnici):** Imajte na umu da Azure OpenAI ključ korišten unutar Microsofta može imati obaveznu politiku obnove (npr. svakih 5 mjeseci). Obavezno ažurirajte odgovarajuće GitHub tajne (`AZURE_OPENAI_...` ključeve) **prije isteka** kako biste spriječili prekid workflowa.
 
-## Pokretanje radnog toka
+## Pokretanje workflowa
 
-Nakon što je `co-op-translator.yml` datoteka spojena u vaš main branch (ili granu navedenu u `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` filteru, ako je konfigurirano).
+> [!WARNING]  
+> **Vremensko ograničenje za GitHub-hosted runner:**  
+> GitHub-hosted runneri poput `ubuntu-latest` imaju **maksimalno vrijeme izvođenja od 6 sati**.  
+> Za velike repozitorije s dokumentacijom, ako proces prevođenja premaši 6 sati, workflow će automatski biti prekinut.  
+> Da biste to spriječili, razmislite o:  
+> - Korištenju **self-hosted runnera** (bez vremenskog ograničenja)  
+> - Smanjenju broja ciljanih jezika po pokretanju
 
-Ako se prijevodi generiraju ili ažuriraju, akcija će automatski kreirati Pull Request sa promjenama, spreman za vaš pregled i spajanje.
+Kada se datoteka `co-op-translator.yml` spoji na vaš glavni branch (ili branch naveden u `on:` triggeru), workflow će se automatski pokrenuti svaki put kad se promjene pošalju na taj branch (i zadovolje `paths` filter, ako je konfiguriran).
 
-**Odricanje od odgovornosti**:  
-Ovaj je dokument preveden korištenjem AI usluge za prijevod [Co-op Translator](https://github.com/Azure/co-op-translator). Iako nastojimo postići točnost, imajte na umu da automatski prijevodi mogu sadržavati pogreške ili netočnosti. Izvorni dokument na izvornom jeziku treba smatrati autoritativnim izvorom. Za kritične informacije preporučuje se profesionalni ljudski prijevod. Nismo odgovorni za bilo kakve nesporazume ili pogrešne interpretacije koje proizlaze iz korištenja ovog prijevoda.
+Ako se generiraju ili ažuriraju prijevodi, action će automatski kreirati Pull Request s promjenama, spreman za vaš pregled i spajanje.
+
+---
+
+**Odricanje od odgovornosti**:
+Ovaj dokument je preveden pomoću AI usluge za prevođenje [Co-op Translator](https://github.com/Azure/co-op-translator). Iako nastojimo osigurati točnost, imajte na umu da automatski prijevodi mogu sadržavati pogreške ili netočnosti. Izvorni dokument na svom izvornom jeziku treba smatrati mjerodavnim izvorom. Za ključne informacije preporučuje se profesionalni ljudski prijevod. Ne snosimo odgovornost za bilo kakva nesporazume ili pogrešna tumačenja koja proizlaze iz korištenja ovog prijevoda.

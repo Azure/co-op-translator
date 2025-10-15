@@ -1,49 +1,94 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b38d8f042530a4bc872def7cb2c141cd",
-  "translation_date": "2025-06-12T11:33:48+00:00",
+  "original_hash": "a6cddf5e9648ef0bba0de7eb07e74cf1",
+  "translation_date": "2025-10-15T04:03:03+00:00",
   "source_file": "getting_started/command-reference.md",
   "language_code": "sr"
 }
 -->
-# Reference komandi
-**Co-op Translator** CLI nudi nekoliko opcija za prilagođavanje procesa prevođenja:
+# Референца команди
 
-Komanda                                      | Opis
----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-translate -l "language_codes"                 | Prevodi vaš projekat na navedene jezike. Primer: translate -l "es fr de" prevodi na španski, francuski i nemački. Koristite translate -l "all" za prevođenje na sve podržane jezike.
-translate -l "language_codes" -u              | Ažurira prevode brisanjem postojećih i njihovim ponovnim kreiranjem. Upozorenje: Ovo će obrisati sve trenutne prevode za navedene jezike.
-translate -l "language_codes" -img            | Prevodi samo fajlove sa slikama.
-translate -l "language_codes" -md             | Prevodi samo Markdown fajlove.
-translate -l "language_codes" -chk            | Proverava prevedene fajlove na greške i ponovo pokušava prevođenje ako je potrebno.
-translate -l "language_codes" -d              | Omogućava debug režim za detaljno beleženje.
-translate -l "language_codes" -r "root_dir"   | Navodi korenski direktorijum projekta
-translate -l "language_codes" -f              | Koristi brzi režim za prevođenje slika (do 3x brže prikazivanje uz blagi pad kvaliteta i poravnanja).
-translate -l "language_codes" -y              | Automatski potvrđuje sve upite (korisno za CI/CD pipeline-ove)
-translate -l "language_codes" --help          | prikaz pomoći unutar CLI sa dostupnim komandama
+CLI алатка **Co-op Translator** нуди више опција за прилагођавање процеса превођења:
 
-### Primeri korišćenja:
+Команда                                       | Опис
+----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+translate -l "language_codes"                 | Преводи ваш пројекат на наведене језике. Пример: translate -l "es fr de" преводи на шпански, француски и немачки. Користите translate -l "all" за превођење на све подржане језике.
+translate -l "language_codes" -u              | Ажурира преводе брисањем постојећих и поновним креирањем. Упозорење: Ово ће обрисати све тренутне преводе за наведене језике.
+translate -l "language_codes" -img            | Преводи само сликовне фајлове.
+translate -l "language_codes" -md             | Преводи само Markdown фајлове.
+translate -l "language_codes" -nb             | Преводи само Jupyter notebook фајлове (.ipynb).
+translate -l "language_codes" --fix           | Поново преводи фајлове са ниским оценама поузданости на основу претходних резултата евалуације.
+translate -l "language_codes" -d              | Омогућава debug режим за детаљно логовање.
+translate -l "language_codes" --save-logs, -s | Чува DEBUG логове у фајлове у <root_dir>/logs/ (конзола остаје контролисана преко -d)
+translate -l "language_codes" -r "root_dir"   | Наводи root директоријум пројекта
+translate -l "language_codes" -f              | Користи брзи режим за превођење слика (до 3x брже цртање уз малу жртву квалитета и поравнања).
+translate -l "language_codes" -y              | Аутоматски потврђује све упите (корисно за CI/CD процесе)
+translate -l "language_codes" --help          | Детаљи помоћи унутар CLI са доступним командама
+evaluate -l "language_code"                  | Оцењује квалитет превода за одређени језик и даје оцене поузданости
+evaluate -l "language_code" -c 0.8           | Оцењује преводе са прилагођеним прагом поузданости
+evaluate -l "language_code" -f               | Брзи режим евалуације (само на основу правила, без LLM)
+evaluate -l "language_code" -D               | Дубинска евалуација (само LLM, темељније али спорије)
+evaluate -l "language_code" --save-logs, -s  | Чува DEBUG логове у фајлове у <root_dir>/logs/
+migrate-links -l "language_codes"             | Поново обрађује преведене Markdown фајлове ради ажурирања линкова ка notebook-има (.ipynb). Преферира преведене notebook-ове када су доступни; иначе може да користи оригиналне.
+migrate-links -l "language_codes" -r          | Наводи root директоријум пројекта (подразумевано: тренутни директоријум).
+migrate-links -l "language_codes" --dry-run   | Приказује који би се фајлови променили без уписивања промена.
+migrate-links -l "language_codes" --no-fallback-to-original | Не преписује линкове ка оригиналним notebook-има када недостају преведени (ажурира само када постоји преведени).
+migrate-links -l "language_codes" -d          | Омогућава debug режим за детаљно логовање.
+migrate-links -l "language_codes" --save-logs, -s | Чува DEBUG логове у фајлове у <root_dir>/logs/
+migrate-links -l "all" -y                      | Обрађује све језике и аутоматски потврђује упозорење.
 
-  1. Podrazumevano ponašanje (dodavanje novih prevoda bez brisanja postojećih):   translate -l "ko"    translate -l "es fr de" -r "./my_project"
+## Примери употребе
 
-  2. Dodavanje samo novih korejskih prevoda slika (bez brisanja postojećih prevoda):    translate -l "ko" -img
+  1. Подразумевано понашање (додаје нове преводе без брисања постојећих):   translate -l "ko"    translate -l "es fr de" -r "./my_project"
 
-  3. Ažuriranje svih korejskih prevoda (Upozorenje: Ovo briše sve postojeće korejske prevode pre ponovnog prevođenja):    translate -l "ko" -u
+  2. Додаје само нове корејске преводе слика (не брише постојеће преводе):    translate -l "ko" -img
 
-  4. Ažuriranje samo korejskih slika (Upozorenje: Ovo briše sve postojeće korejske slike pre ponovnog prevođenja):    translate -l "ko" -img -u
+  3. Ажурира све корејске преводе (Упозорење: Ово брише све постојеће корејске преводе пре поновног превођења):    translate -l "ko" -u
 
-  5. Dodavanje novih markdown prevoda za korejski bez uticaja na ostale prevode:    translate -l "ko" -md
+  4. Ажурира само корејске слике (Упозорење: Ово брише све постојеће корејске слике пре поновног превођења):    translate -l "ko" -img -u
 
-  6. Provera prevedenih fajlova na greške i ponovni pokušaj prevođenja ako je potrebno: translate -l "ko" -chk
+  5. Додаје нове markdown преводе за корејски без утицаја на друге преводе:    translate -l "ko" -md
 
-  7. Provera prevedenih fajlova na greške i ponovni pokušaj prevođenja (samo markdown): translate -l "ko" -chk -md
+  6. Поправља преводе са ниском поузданошћу на основу претходних резултата евалуације: translate -l "ko" --fix
 
-  8. Provera prevedenih fajlova na greške i ponovni pokušaj prevođenja (samo slike): translate -l "ko" -chk -img
+  7. Поправља преводе са ниском поузданошћу само за одређене фајлове (markdown): translate -l "ko" --fix -md
 
-  9. Korišćenje brzog režima za prevođenje slika:    translate -l "ko" -img -f
+  8. Поправља преводе са ниском поузданошћу само за одређене фајлове (слике): translate -l "ko" --fix -img
 
-  10. Primer debug režima: - translate -l "ko" -d: Omogućava debug beleženje.
+  9. Користи брзи режим за превођење слика:    translate -l "ko" -img -f
 
-**Ограничење одговорности**:  
-Овај документ је преведен коришћењем AI преводилачке услуге [Co-op Translator](https://github.com/Azure/co-op-translator). Иако тежимо тачности, имајте у виду да аутоматизовани преводи могу садржати грешке или нетачности. Оригинални документ на његовом изворном језику треба сматрати ауторитетним извором. За критичне информације препоручује се професионални људски превод. Нисмо одговорни за било каква неспоразума или погрешна тумачења која произилазе из употребе овог превода.
+  10. Поправља преводе са ниском поузданошћу уз прилагођени праг: translate -l "ko" --fix -c 0.8
+
+  11. Пример debug режима: - translate -l "ko" -d: Омогућава debug логовање.
+  12. Чување логова у фајлове: translate -l "ko" -s
+  13. DEBUG на конзоли и у фајлу: translate -l "ko" -d -s
+
+  14. Миграција линкова ка notebook-има за корејске преводе (ажурира линкове ка преведеним notebook-има када су доступни):    migrate-links -l "ko"
+
+  15. Миграција линкова са dry-run (без уписа у фајлове):    migrate-links -l "ko" --dry-run
+
+  16. Ажурира линкове само када постоје преведени notebook-и (не користи оригинале):    migrate-links -l "ko" --no-fallback-to-original
+
+  17. Обрађује све језике са потврдом:    migrate-links -l "all"
+
+  18. Обрађује све језике и аутоматски потврђује:    migrate-links -l "all" -y
+  19. Чување логова у фајлове за migrate-links:    migrate-links -l "ko ja" -s
+
+### Примери евалуације
+
+> [!WARNING]  
+> **Бета функција**: Функционалност евалуације је тренутно у бета верзији. Ова функција је објављена ради евалуације преведених докумената, а методе и детаљна имплементација су још у развоју и могу се мењати.
+
+  1. Евалуација корејских превода: evaluate -l "ko"
+
+  2. Евалуација са прилагођеним прагом поузданости: evaluate -l "ko" -c 0.8
+
+  3. Брза евалуација (само на основу правила): evaluate -l "ko" -f
+
+  4. Дубинска евалуација (само LLM): evaluate -l "ko" -D
+
+---
+
+**Одрицање од одговорности**:  
+Овај документ је преведен коришћењем AI услуге за превођење [Co-op Translator](https://github.com/Azure/co-op-translator). Иако тежимо тачности, молимо вас да имате у виду да аутоматски преводи могу садржати грешке или нетачности. Оригинални документ на изворном језику треба сматрати ауторитативним извором. За критичне информације препоручује се професионални људски превод. Не сносимо одговорност за било какве неспоразуме или погрешна тумачења настала коришћењем овог превода.

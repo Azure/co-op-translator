@@ -1,35 +1,42 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-14T12:50:36+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T02:30:16+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "mo"
 }
 -->
-# 使用 Co-op Translator 翻譯您的項目
+# 使用 Co-op Translator 翻譯你的專案
 
-**Co-op Translator** 是一個命令行界面 (CLI) 工具，幫助您將項目中的 Markdown 和圖片文件翻譯成多種語言。本節介紹如何使用該工具，涵蓋各種 CLI 選項，並提供不同使用案例的示例。
+**Co-op Translator** 是一個命令列介面（CLI）工具，可以協助你將專案中的 markdown 和圖片檔案翻譯成多種語言。本節會說明如何使用這個工具，介紹各種 CLI 選項，並提供不同情境下的範例。
+
+> [!NOTE]
+> 完整的指令列表和詳細說明，請參考 [指令參考](./command-reference.md)。
 
 ---
 
-## 示例場景和命令
+## 範例情境與指令
 
-以下是一些常見的 **Co-op Translator** 使用案例，以及相應的命令。
+以下是 **Co-op Translator** 幾個常見的使用情境，以及對應的指令。
 
 ### 1. 基本翻譯（單一語言）
 
-要將整個項目（Markdown 文件和圖片）翻譯成單一語言，例如韓語，請使用以下命令：
+如果你想將整個專案（包括 markdown 檔案和圖片）翻譯成單一語言，例如韓文，可以使用以下指令：
 
 ```bash
 translate -l "ko"
 ```
 
-此命令將所有 Markdown 和圖片文件翻譯成韓語，添加新翻譯而不刪除任何現有翻譯。
+這個指令會將所有 markdown 和圖片檔案翻譯成韓文，並新增翻譯，不會刪除現有的翻譯。
 
-#### Phi-3 CookBook 示例
+> [!TIP]
+>
+> 想知道 **Co-op Translator** 支援哪些語言代碼嗎？請到專案的 [支援語言](https://github.com/Azure/co-op-translator#supported-languages) 區段查看詳細資訊。
 
-在 **Phi-3 CookBook** 中，我使用以下方法為現有的 Markdown 文件和圖片添加韓語翻譯。
+#### Phi-3 CookBook 範例
+
+在 **Phi-3 CookBook** 中，我是用以下方法來新增現有 markdown 檔案和圖片的韓文翻譯。
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko"
@@ -39,17 +46,17 @@ Translating markdown files: 100%|███████████████�
 
 ### 2. 翻譯多種語言
 
-要將項目翻譯成多種語言（例如西班牙語、法語和德語），請使用此命令：
+如果你想將專案翻譯成多種語言（例如西班牙文、法文和德文），可以使用這個指令：
 
 ```bash
 translate -l "es fr de"
 ```
 
-此命令將項目翻譯成西班牙語、法語和德語，添加新翻譯而不覆蓋現有翻譯。
+這個指令會將專案翻譯成西班牙文、法文和德文，並新增翻譯，不會覆蓋現有的翻譯。
 
-#### Phi-3 CookBook 示例
+#### Phi-3 CookBook 範例
 
-在 **Phi-3 CookBook** 中，在拉取最新更改以反映最新提交後，我使用以下方法翻譯新添加的 Markdown 文件和圖片。
+在 **Phi-3 CookBook** 中，拉取最新的變更以反映最近的提交後，我用以下方法來翻譯新加入的 markdown 檔案和圖片。
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -57,19 +64,22 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|████████████████████████████████████████████████| 6/6 [24:07<00:00, 241.31s/it]
 ```
 
+> [!NOTE]
+> 雖然一般建議一次只翻譯一種語言，但像這種需要針對特定變更進行處理的情況下，同時翻譯多種語言會更有效率。
+
 ### 3. 更新翻譯（刪除現有翻譯）
 
-要更新現有翻譯（即刪除當前翻譯並用新翻譯替換），請使用 `-u` 選項。這將刪除指定語言的所有現有翻譯並重新翻譯。
+如果你想更新現有的翻譯（也就是刪除目前的翻譯並重新翻譯），可以使用 `-u` 選項。這會刪除指定語言的所有現有翻譯，然後重新翻譯。
 
 ```bash
 translate -l "ko" -u
 ```
 
-警告：此命令將在繼續刪除現有翻譯之前提示您確認。
+注意：這個指令會在刪除現有翻譯前要求你確認。
 
-#### Phi-3 CookBook 示例
+#### Phi-3 CookBook 範例
 
-在 **Phi-3 CookBook** 中，我使用以下方法更新所有西班牙語翻譯文件。我建議在原始內容在多個 Markdown 文件中有重大更改時使用此方法。如果只有少數翻譯的 Markdown 文件需要更新，手動刪除那些特定文件然後使用 `-a` 方法添加更新翻譯會更有效。
+在 **Phi-3 CookBook** 中，我用以下方法來更新所有西班牙文的翻譯檔案。當原始內容在多個 markdown 文件中有重大變更時，我建議用這個方法。如果只需要更新少數幾個翻譯檔案，手動刪除那些檔案後再用 `-a` 方法新增翻譯會更有效率。
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -82,35 +92,25 @@ Translating markdown files: 100%|███████████████�
 
 ### 5. 只翻譯圖片
 
-要只翻譯項目中的圖片文件，請使用 `-img` 選項：
+如果你只想翻譯專案中的圖片檔案，可以使用 `-img` 選項：
 
 ```bash
 translate -l "ko" -img
 ```
 
-此命令將只翻譯圖片成韓語，而不影響任何 Markdown 文件。
+這個指令只會將圖片翻譯成韓文，不會影響任何 markdown 檔案。
 
-### 6. 只翻譯 Markdown 文件
+### 6. 只翻譯 Markdown 檔案
 
-要只翻譯項目中的 Markdown 文件，請使用 `-md` 選項：
+如果你只想翻譯專案中的 markdown 檔案，可以使用 `-md` 選項：
 
 ```bash
 translate -l "ko" -md
 ```
 
-### 7. 檢查翻譯文件中的錯誤
+#### Phi-3 CookBook 範例
 
-如果您想檢查翻譯文件中的錯誤並在必要時重試翻譯，請使用 `-chk` 選項：
-
-```bash
-translate -l "ko" -chk
-```
-
-此命令將掃描翻譯的 Markdown 文件並對有錯誤的文件重試翻譯。
-
-#### Phi-3 CookBook 示例
-
-在 **Phi-3 CookBook** 中，我使用以下方法檢查韓語文件中的翻譯錯誤，並自動重試翻譯有問題的文件。
+在 **Phi-3 CookBook** 中，我用以下方法來檢查韓文檔案的翻譯錯誤，並自動重試翻譯有問題的檔案。
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -119,25 +119,25 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-此選項檢查翻譯錯誤。目前，如果原始文件和翻譯文件之間的換行差異超過六行，則文件被標記為翻譯錯誤。我計劃在未來改進此標準以提高靈活性。
+這個選項會檢查翻譯錯誤。目前，如果原始檔案和翻譯檔案的換行數差異超過六行，該檔案就會被標記為有翻譯錯誤。我之後會改進這個判斷標準，讓它更有彈性。
 
-例如，此方法有助於檢測缺失的片段或損壞的翻譯，並將自動重試翻譯那些文件。
+例如，這個方法很適合用來偵測遺漏段落或損壞的翻譯，並會自動重試這些檔案的翻譯。
 
-然而，如果您已經知道哪些文件有問題，手動刪除那些文件並使用 `-a` option to re-translate them.
+不過，如果你已經知道哪些檔案有問題，手動刪除那些檔案後再用 `-a` 選項重新翻譯會更有效率。
 
-### 8. Debug Mode
+### 8. 除錯模式
 
-To enable detailed logging for troubleshooting, use the `-d` 選項會更有效：
+如果你需要詳細的日誌來協助排查問題，可以使用 `-d` 選項：
 
 ```bash
 translate -l "ko" -d
 ```
 
-此命令將在調試模式下運行翻譯，提供額外的日誌信息，幫助您識別翻譯過程中的問題。
+這個指令會以除錯模式執行翻譯，提供更多日誌資訊，幫助你找出翻譯過程中的問題。
 
-#### Phi-3 CookBook 示例
+#### Phi-3 CookBook 範例
 
-在 **Phi-3 CookBook** 中，我遇到了一個問題，即 Markdown 文件中有許多鏈接的翻譯導致格式錯誤，如翻譯破裂和忽略換行。為了診斷此問題，我使用 `-d` 選項查看翻譯過程的工作情況。
+在 **Phi-3 CookBook** 中，我遇到 markdown 檔案中有很多連結時，翻譯會出現格式錯誤，例如翻譯斷裂或換行被忽略。為了診斷這個問題，我用 `-d` 選項來觀察翻譯過程的細節。
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -147,50 +147,57 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 
 ### 9. 翻譯所有語言
 
-如果您想將項目翻譯成所有支持的語言，請使用 all 關鍵字。
+如果你想將專案翻譯成所有支援的語言，可以使用 all 關鍵字。
+
+> [!WARNING]
+> 一次翻譯所有語言會花費大量時間，取決於專案的大小。例如，將 **Phi-3 CookBook** 翻譯成西班牙文就花了大約 2 小時。以這個規模來說，一個人要處理 20 種語言並不實際。建議多位貢獻者分工，每人負責一到兩種語言，逐步更新翻譯。
 
 ```bash
 translate -l "all"
 ```
 
-此命令將項目翻譯成所有可用語言。如果繼續，根據項目大小，翻譯可能需要相當長的時間。
+這個指令會將專案翻譯成所有可用語言。執行時，翻譯所需時間會依專案大小而有所不同。
 
-> ### 手動刪除翻譯文件（可選）
-> 翻譯文件現在會在源文件更新時自動檢測和清理。
+> [!TIP]
 >
-> 不過，如果您想手動更新翻譯 - 例如重新翻譯特定文件或覆蓋系統行為 - 您可以使用以下命令刪除語言文件夾中的所有版本。
+> ### 手動刪除翻譯檔案（選用）
+> 現在只要原始檔案有更新，翻譯檔案會自動偵測並清理。
+>
+> 不過，如果你想手動更新某個翻譯檔案，例如要重做特定檔案或覆蓋系統行為，可以用以下指令刪除該檔案在所有語言資料夾中的版本。
 >
 > ### 在 Windows 上：
-> 1. **使用命令提示符**：
->    - 打開命令提示符。
->    - 使用 `cd` 命令導航到文件所在文件夾。
->    - 使用以下命令刪除文件：
+> 1. **使用命令提示字元**：
+>    - 開啟命令提示字元。
+>    - 用 `cd` 指令切換到檔案所在的資料夾。
+>    - 用以下指令刪除檔案：
 >      ```
 >      del /s *filename*
 >      ```
->      替換 `filename` with the specific part of the file name you're looking for. The `/s` 選項也會搜索子目錄。
+>      將 `filename` 替換成你要搜尋的檔名片段。`/s` 參數會搜尋子目錄。
 >
 > 2. **使用 PowerShell**：
->    - 打開 PowerShell。
->    - 運行此命令：
+>    - 開啟 PowerShell。
+>    - 執行這個指令：
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      替換 `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>      將 `"C:\YourPath"` 換成資料夾路徑，`filename` 換成特定檔名。
 >
-> ### On macOS/Linux:
-> 1. **Using Terminal**:
->   - Open Terminal.
->   - Navigate to the directory with `cd`.
->   - Use the `find` 命令：
+> ### 在 macOS/Linux 上：
+> 1. **使用終端機**：
+>   - 開啟終端機。
+>   - 用 `cd` 切換到目錄。
+>   - 用 `find` 指令：
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->     替換 `filename` with the specific name.
+>     將 `filename` 換成特定檔名。
 >
-> Always double-check the files before deleting to avoid accidental loss. 
+> 刪除前請務必再次確認檔案，避免誤刪。
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l` 命令以更新最新文件更改。
+> 刪除需要替換的檔案後，只要重新執行你的 `translate -l` 指令，就能更新最新的檔案變更。
 
-**免責聲明**：  
-本文件已使用AI翻譯服務[Co-op Translator](https://github.com/Azure/co-op-translator)進行翻譯。我們努力確保準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原始語言的文件視為權威來源。對於關鍵信息，建議使用專業人工翻譯。我們對因使用此翻譯而產生的任何誤解或誤讀不承擔責任。
+---
+
+**免責聲明**：
+本文件是使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。雖然我們力求準確，但請注意自動翻譯可能包含錯誤或不準確之處。原始語言的文件應視為具權威性的來源。對於重要資訊，建議採用專業人工翻譯。因使用本翻譯而產生的任何誤解或誤釋，我們概不負責。

@@ -1,54 +1,54 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:12:18+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T03:28:16+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "fi"
 }
 -->
 # Co-op Translator GitHub Actionin käyttö (Organisaation opas)
 
-**Kohdeyleisö:** Tämä opas on tarkoitettu **Microsoftin sisäisille käyttäjille** tai **tiimeille, joilla on pääsy tarvittaviin tunnistetietoihin valmiiksi rakennetulle Co-op Translator GitHub -sovellukselle** tai jotka voivat luoda oman mukautetun GitHub-sovelluksen.
+**Kohderyhmä:** Tämä opas on tarkoitettu **Microsoftin sisäisille käyttäjille** tai **tiimeille, joilla on pääsy valmiiksi rakennettuun Co-op Translator GitHub Appiin** tai jotka voivat luoda oman mukautetun GitHub Appin.
 
-Automatisoi repositoriosi dokumentaation käännökset vaivattomasti Co-op Translator GitHub Actionin avulla. Tämä opas ohjaa sinut toiminnon määrittämisessä niin, että se luo automaattisesti pull requesteja päivitettyjen käännösten kanssa aina, kun lähde-Markdown-tiedostosi tai kuvat muuttuvat.
+Automatisoi repositoriosi dokumentaation kääntäminen helposti Co-op Translator GitHub Actionin avulla. Tämä opas ohjaa sinut läpi toiminnon käyttöönoton, jolloin se luo automaattisesti pull requestit päivitettyjen käännösten kanssa aina, kun lähde-Markdown-tiedostot tai kuvat muuttuvat.
 
 > [!IMPORTANT]
 > 
-> **Oikean oppaan valinta:**
+> **Valitse oikea opas:**
 >
-> Tämä opas kuvaa asetukset käyttäen **GitHub App ID:tä ja yksityistä avainta**. Tarvitset tämän "Organisaation oppaan" menetelmän yleensä, jos: **`GITHUB_TOKEN` oikeudet ovat rajoitettuja:** Organisaatiosi tai repositoriosi asetukset rajoittavat oletuksena myönnettyjä oikeuksia standardille `GITHUB_TOKEN`:lle. Erityisesti, jos `GITHUB_TOKEN` ei saa tarvittavia `write`-oikeuksia (kuten `contents: write` tai `pull-requests: write`), työnkulku [Public Setup Guide](./github-actions-guide-public.md) -oppaassa epäonnistuu puutteellisten oikeuksien vuoksi. Omalla GitHub-sovelluksella, jolla on nimenomaisesti myönnetyt oikeudet, tämä rajoitus ohitetaan.
+> Tässä oppaassa kuvataan käyttöönotto **GitHub App ID:n ja Private Keyn** avulla. Tarvitset yleensä tämän "Organisaation oppaan" menetelmän, jos: **`GITHUB_TOKEN`-oikeudet ovat rajoitettuja:** Organisaatiosi tai repositoriosi asetukset rajoittavat oletusoikeuksia, jotka myönnetään tavalliselle `GITHUB_TOKEN`:lle. Erityisesti, jos `GITHUB_TOKEN`:lla ei ole tarvittavia `write`-oikeuksia (kuten `contents: write` tai `pull-requests: write`), [Julkisen oppaan](./github-actions-guide-public.md) työnkulku epäonnistuu riittämättömien oikeuksien vuoksi. Erillisen GitHub Appin käyttö, jolle on myönnetty oikeudet, ohittaa tämän rajoituksen.
 >
 > **Jos yllä oleva ei koske sinua:**
 >
-> Jos standardilla `GITHUB_TOKEN`:lla on riittävät oikeudet repositoriossasi (eli organisaatiorajoitukset eivät estä sinua), käytä **[Public Setup Guide using GITHUB_TOKEN](./github-actions-guide-public.md)** -opasta. Julkinen opas ei vaadi App ID:n tai yksityisen avaimen hankkimista tai hallintaa, vaan luottaa pelkästään standardiin `GITHUB_TOKEN`:oon ja repositorion oikeuksiin.
+> Jos tavallisella `GITHUB_TOKEN`:lla on riittävät oikeudet repositoriossasi (eli organisaatiorajoitukset eivät estä sinua), käytä **[Julkista opasta GITHUB_TOKENilla](./github-actions-guide-public.md)**. Julkinen opas ei vaadi App ID:n tai Private Keyn hankintaa tai hallintaa, vaan käyttää pelkästään tavallista `GITHUB_TOKEN`:ia ja repositorion oikeuksia.
 
 ## Esivaatimukset
 
-Ennen GitHub Actionin määrittämistä varmista, että sinulla on tarvittavat AI-palvelun tunnistetiedot valmiina.
+Ennen GitHub Actionin konfigurointia varmista, että sinulla on tarvittavat AI-palvelun tunnukset valmiina.
 
-**1. Pakollinen: AI-kielimallin tunnistetiedot**  
-Tarvitset tunnistetiedot vähintään yhdelle tuetulle kielimallille:
+**1. Pakollinen: AI-kielimallin tunnukset**
+Tarvitset tunnukset vähintään yhteen tuettuun kielimalliin:
 
-- **Azure OpenAI**: Tarvitaan Endpoint, API-avain, Malli/Deployment-nimet, API-versio.  
-- **OpenAI**: Tarvitaan API-avain, (valinnainen: Org ID, Base URL, Model ID).  
-- Katso lisätietoja [Supported Models and Services](../../../../README.md) -osiosta.  
-- Asetusopas: [Set up Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
+- **Azure OpenAI**: Vaatii Endpointin, API Keyn, mallin/deploymentin nimet, API-version.
+- **OpenAI**: Vaatii API Keyn, (Valinnainen: Org ID, Base URL, Model ID).
+- Katso [Tuetut mallit ja palvelut](../../../../README.md) lisätietoja varten.
+- Käyttöönotto-ohje: [Azure OpenAI:n käyttöönotto](../set-up-resources/set-up-azure-openai.md).
 
-**2. Valinnainen: Computer Vision -tunnistetiedot (kuvakäännöksiä varten)**
+**2. Valinnainen: Computer Vision -tunnukset (kuvien kääntämiseen)**
 
-- Tarvitaan vain, jos haluat kääntää kuviin sisältyvää tekstiä.  
-- **Azure Computer Vision**: Tarvitaan Endpoint ja Subscription Key.  
-- Jos näitä ei anneta, toiminto käyttää oletuksena [vain Markdown-tilaa](../markdown-only-mode.md).  
-- Asetusopas: [Set up Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
+- Tarvitaan vain, jos haluat kääntää kuviin upotettua tekstiä.
+- **Azure Computer Vision**: Vaatii Endpointin ja Subscription Keyn.
+- Jos et anna näitä, toiminto käyttää oletuksena [vain Markdown-tilaa](../markdown-only-mode.md).
+- Käyttöönotto-ohje: [Azure Computer Visionin käyttöönotto](../set-up-resources/set-up-azure-computer-vision.md).
 
-## Määrittäminen ja konfigurointi
+## Käyttöönotto ja konfigurointi
 
-Seuraa näitä ohjeita ottaaksesi Co-op Translator GitHub Actionin käyttöön repositoriossasi:
+Seuraa näitä ohjeita Co-op Translator GitHub Actionin konfiguroimiseksi repositoriossasi:
 
-### Vaihe 1: Asenna ja määritä GitHub App -todennus
+### Vaihe 1: Asenna ja konfiguroi GitHub App -autentikointi
 
-Työnkulku käyttää GitHub App -todennusta, jotta se voi turvallisesti toimia repositoriossasi puolestasi (esim. luoda pull requesteja). Valitse yksi vaihtoehto:
+Työnkulku käyttää GitHub App -autentikointia, jotta se voi turvallisesti toimia repositoriossasi (esim. luoda pull requesteja) puolestasi. Valitse yksi vaihtoehto:
 
 #### **Vaihtoehto A: Asenna valmiiksi rakennettu Co-op Translator GitHub App (Microsoftin sisäinen käyttö)**
 
@@ -56,66 +56,66 @@ Työnkulku käyttää GitHub App -todennusta, jotta se voi turvallisesti toimia 
 
 1. Valitse **Install** ja valitse tili tai organisaatio, jossa kohderepositoriosi sijaitsee.
 
-    ![Install app](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.fi.png)
+    <img src="../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.fi.png" alt="Asenna sovellus">
 
-1. Valitse **Only select repositories** ja valitse kohderepositoriosi (esim. `PhiCookBook`). Klikkaa **Install**. Saatat joutua kirjautumaan sisään.
+1. Valitse **Only select repositories** ja valitse kohderepositoriosi (esim. `PhiCookBook`). Klikkaa **Install**. Sinua voidaan pyytää tunnistautumaan.
 
-    ![Install authorize](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.fi.png)
+    <img src="../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.fi.png" alt="Asenna valtuutus">
 
-1. **Hanki sovellustunnukset (sisäinen prosessi):** Jotta työnkulku voi todennustua sovelluksena, tarvitset kaksi tietoa, jotka Co-op Translator -tiimi toimittaa:  
-  - **App ID:** Co-op Translator -sovelluksen yksilöllinen tunniste. App ID on: `1164076`.  
-  - **Yksityinen avain:** Sinun on saatava **kokonainen sisältö** `.pem` -yksityisavaintiedostosta ylläpitäjältä. **Kohtele tätä avainta kuin salasanaa ja säilytä se turvallisesti.**
+1. **Hanki App-tunnukset (sisäinen prosessi):** Jotta työnkulku voi tunnistautua sovelluksena, tarvitset kaksi Co-op Translator -tiimin antamaa tietoa:
+  - **App ID:** Co-op Translator -sovelluksen yksilöllinen tunniste. App ID on: `1164076`.
+  - **Private Key:** Sinun täytyy hankkia **koko `.pem`-yksityisavaintiedoston sisältö** ylläpitäjältä. **Säilytä tämä avain kuin salasana ja pidä se turvassa.**
 
 1. Jatka vaiheeseen 2.
 
 #### **Vaihtoehto B: Käytä omaa mukautettua GitHub Appia**
 
-- Halutessasi voit luoda ja määrittää oman GitHub Appin. Varmista, että sillä on Luku- ja kirjoitusoikeudet Contents- ja Pull requests -osioihin. Tarvitset sen App ID:n ja luodun yksityisen avaimen.
+- Voit halutessasi luoda ja konfiguroida oman GitHub Appin. Varmista, että sillä on luku- ja kirjoitusoikeudet Contents- ja Pull requests -kohteisiin. Tarvitset App ID:n ja generoidun Private Keyn.
 
-### Vaihe 2: Määritä repositorion salaisuudet
+### Vaihe 2: Konfiguroi repositorion salaisuudet
 
-Lisää GitHub App -tunnistetiedot ja AI-palvelun tunnukset salattuina salaisuuksina repositoriosi asetuksiin.
+Sinun tulee lisätä GitHub Appin tunnukset ja AI-palvelun tunnukset salattuina salaisuuksina repositoriosi asetuksiin.
 
-1. Siirry kohderepositoriosi GitHub-sivulle (esim. `PhiCookBook`).
+1. Siirry kohde-GitHub-repositoriosi sivulle (esim. `PhiCookBook`).
 
-1. Mene kohtaan **Settings** > **Secrets and variables** > **Actions**.
+1. Mene **Settings** > **Secrets and variables** > **Actions**.
 
-1. Klikkaa **New repository secret** lisätäksesi alla listatut salaisuudet yksitellen.
+1. **Repository secrets** -kohdassa klikkaa **New repository secret** jokaiselle alla listatulle salaisuudelle.
 
-   ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.fi.png)
+   <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.fi.png" alt="Valitse asetustoiminto">
 
-**Pakolliset salaisuudet (GitHub App -todennukseen):**
+**Pakolliset salaisuudet (GitHub App -autentikointiin):**
 
-| Salaisuuden nimi          | Kuvaus                                      | Arvon lähde                                     |
-| :------------------------ | :------------------------------------------ | :---------------------------------------------- |
-| `GH_APP_ID`        | GitHub Appin App ID (vaiheesta 1).          | GitHub Appin asetukset                          |
-| `GH_APP_PRIVATE_KEY`        | Ladatun `.pem` tiedoston **kokonainen sisältö**. | `.pem` tiedosto (vaiheesta 1)       |
+| Salaisuuden nimi     | Kuvaus                                            | Arvon lähde                                   |
+| :------------------- | :------------------------------------------------ | :--------------------------------------------- |
+| `GH_APP_ID`          | GitHub Appin App ID (vaiheesta 1)                 | GitHub Appin asetukset                        |
+| `GH_APP_PRIVATE_KEY` | Ladatun `.pem`-tiedoston **koko sisältö**         | `.pem`-tiedosto (vaiheesta 1)                 |
 
-**AI-palvelun salaisuudet (lisää KAIKKI tarpeelliset esivaatimusten mukaan):**
+**AI-palvelun salaisuudet (lisää KAIKKI, jotka koskevat esivaatimuksiasi):**
 
-| Salaisuuden nimi           | Kuvaus                                   | Arvon lähde                     |
-| :------------------------- | :--------------------------------------- | :------------------------------ |
-| `AZURE_SUBSCRIPTION_KEY`         | Avain Azure AI -palveluun (Computer Vision) | Azure AI Foundry                |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint Azure AI -palveluun (Computer Vision) | Azure AI Foundry                |
-| `AZURE_OPENAI_API_KEY`         | Avain Azure OpenAI -palveluun             | Azure AI Foundry                |
-| `AZURE_OPENAI_ENDPOINT`         | Endpoint Azure OpenAI -palveluun           | Azure AI Foundry                |
-| `AZURE_OPENAI_MODEL_NAME`         | Azure OpenAI -mallin nimi                  | Azure AI Foundry                |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`         | Azure OpenAI -deploymentin nimi            | Azure AI Foundry                |
-| `AZURE_OPENAI_API_VERSION`         | API-versio Azure OpenAI -palvelulle        | Azure AI Foundry                |
-| `OPENAI_API_KEY`         | API-avain OpenAI:lle                        | OpenAI Platform                |
-| `OPENAI_ORG_ID`         | OpenAI-organisaation ID                      | OpenAI Platform                |
-| `OPENAI_CHAT_MODEL_ID`         | Tietty OpenAI-mallin ID                      | OpenAI Platform                |
-| `OPENAI_BASE_URL`         | Mukautettu OpenAI API Base URL                | OpenAI Platform                |
+| Salaisuuden nimi                     | Kuvaus                                    | Arvon lähde                  |
+| :----------------------------------- | :---------------------------------------- | :--------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`           | Azure AI Service -avain (Computer Vision) | Azure AI Foundry             |
+| `AZURE_AI_SERVICE_ENDPOINT`          | Azure AI Service -endpoint (Computer Vision) | Azure AI Foundry          |
+| `AZURE_OPENAI_API_KEY`               | Azure OpenAI -palvelun avain              | Azure AI Foundry             |
+| `AZURE_OPENAI_ENDPOINT`              | Azure OpenAI -palvelun endpoint           | Azure AI Foundry             |
+| `AZURE_OPENAI_MODEL_NAME`            | Azure OpenAI -mallin nimi                 | Azure AI Foundry             |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`  | Azure OpenAI -deploymentin nimi           | Azure AI Foundry             |
+| `AZURE_OPENAI_API_VERSION`           | Azure OpenAI -API-versio                  | Azure AI Foundry             |
+| `OPENAI_API_KEY`                     | OpenAI API Key                            | OpenAI Platform              |
+| `OPENAI_ORG_ID`                      | OpenAI Organisaatio ID                    | OpenAI Platform              |
+| `OPENAI_CHAT_MODEL_ID`               | OpenAI-mallin ID                          | OpenAI Platform              |
+| `OPENAI_BASE_URL`                    | Mukautettu OpenAI API Base URL            | OpenAI Platform              |
 
-![Enter environment variable name](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.fi.png)
+<img src="../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.fi.png" alt="Syötä ympäristömuuttujan nimi">
 
-### Vaihe 3: Luo työnkulutiedosto
+### Vaihe 3: Luo työnkulun tiedosto
 
 Lopuksi luo YAML-tiedosto, joka määrittelee automaattisen työnkulun.
 
-1. Luo repositoriosi juurihakemistoon `.github/workflows/`-kansio, jos sitä ei vielä ole.
+1. Luo repositoriosi juureen `.github/workflows/`-hakemisto, jos sitä ei ole.
 
-1. Luo `.github/workflows/`-kansioon tiedosto nimeltä `co-op-translator.yml`.
+1. Luo `.github/workflows/`-hakemistoon tiedosto nimeltä `co-op-translator.yml`.
 
 1. Liitä seuraava sisältö tiedostoon co-op-translator.yml.
 
@@ -155,7 +155,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +209,31 @@ jobs:
 
 ```
 
-4.  **Mukauta työnkulkua:**  
-  - **[!IMPORTANT] Kohdekielet:** Muokkaa `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+4.  **Mukauta työnkulkua:**
+  - **[!IMPORTANT] Kohdekielet:** `Run Co-op Translator` -vaiheessa sinun **TÄYTYY tarkistaa ja muokata kielikoodien listaa** `translate -l "..." -y` -komennossa projektisi tarpeiden mukaan. Esimerkkilista (`ar de es...`) tulee korvata tai säätää.
+  - **Trigger (`on:`):** Nykyinen trigger käynnistyy jokaisesta pushista `main`-haaraan. Suurissa repositorioissa harkitse `paths:`-suodattimen lisäämistä (katso kommentoitu esimerkki YAMLissa), jotta työnkulku käynnistyy vain, kun relevantit tiedostot (esim. lähdedokumentaatio) muuttuvat – näin säästät runner-minuutteja.
+  - **PR-tiedot:** Mukauta `commit-message`, `title`, `body`, `branch`-nimi ja `labels` `Create Pull Request` -vaiheessa tarvittaessa.
 
-## Credential Management and Renewal
+## Tunnusten hallinta ja uusiminen
 
-- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` -avaimia **ennen kuin ne vanhenevat** estääksesi työnkulun epäonnistumiset.
+- **Turvallisuus:** Säilytä aina arkaluontoiset tunnukset (API-avaimet, yksityisavaimet) GitHub Actionsin salaisuuksina. Älä koskaan paljasta niitä työnkulun tiedostossa tai repositorion koodissa.
+- **[!IMPORTANT] Avaimen uusiminen (Microsoftin sisäiset käyttäjät):** Huomioi, että Azure OpenAI -avain saattaa vaatia pakollisen uusimisen (esim. 5 kuukauden välein). Muista päivittää vastaavat GitHub-salaisuudet (`AZURE_OPENAI_...`-avaimet) **ennen niiden vanhenemista**, jotta työnkulku ei epäonnistu.
 
 ## Työnkulun suorittaminen
 
-Kun `co-op-translator.yml` tiedosto on yhdistetty päähaaraasi (tai `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` -suodattimessa määriteltyyn haaraan, jos sellainen on asetettu).
+> [!WARNING]  
+> **GitHub-hostatun runnerin aikaraja:**  
+> GitHub-hostatut runnerit kuten `ubuntu-latest` voivat suorittaa työnkulun **enintään 6 tuntia**.  
+> Jos dokumentaatiorepositoriosi on suuri ja käännösprosessi kestää yli 6 tuntia, työnkulku keskeytetään automaattisesti.  
+> Tämän välttämiseksi harkitse:  
+> - **Oman runnerin** käyttöä (ei aikarajaa)  
+> - Kohdekielien määrän vähentämistä per ajo
 
-Jos käännöksiä luodaan tai päivitetään, toiminto luo automaattisesti Pull Requestin, joka sisältää muutokset, valmiina tarkastettavaksi ja yhdistettäväksi.
+Kun `co-op-translator.yml`-tiedosto on yhdistetty päähaaraan (tai siihen haaraan, jonka määritit `on:`-triggerissä), työnkulku käynnistyy automaattisesti aina, kun muutoksia pusketaan kyseiseen haaraan (ja täyttävät mahdollisen `paths`-suodattimen).
 
-**Vastuuvapauslauseke**:  
-Tämä asiakirja on käännetty käyttämällä tekoälypohjaista käännöspalvelua [Co-op Translator](https://github.com/Azure/co-op-translator). Vaikka pyrimme tarkkuuteen, otathan huomioon, että automaattikäännöksissä saattaa esiintyä virheitä tai epätarkkuuksia. Alkuperäistä asiakirjaa sen alkuperäisellä kielellä tulee pitää auktoritatiivisena lähteenä. Tärkeiden tietojen osalta suositellaan ammattimaista ihmiskäännöstä. Emme ole vastuussa tämän käännöksen käytöstä johtuvista väärinymmärryksistä tai virhetulkinnoista.
+Jos käännöksiä luodaan tai päivitetään, toiminto luo automaattisesti Pull Requestin, joka sisältää muutokset ja on valmis tarkistettavaksi ja yhdistettäväksi.
+
+---
+
+**Vastuuvapauslauseke**:
+Tämä asiakirja on käännetty käyttämällä tekoälypohjaista käännöspalvelua [Co-op Translator](https://github.com/Azure/co-op-translator). Vaikka pyrimme tarkkuuteen, huomioithan, että automaattiset käännökset voivat sisältää virheitä tai epätarkkuuksia. Alkuperäistä asiakirjaa sen alkuperäisellä kielellä tulee pitää ensisijaisena lähteenä. Kriittisissä tapauksissa suositellaan ammattimaista ihmiskääntäjää. Emme ole vastuussa tämän käännöksen käytöstä mahdollisesti aiheutuvista väärinkäsityksistä tai tulkintavirheistä.

@@ -1,23 +1,23 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:35:21+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:15:26+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "th"
 }
 -->
-# Contributing to Co-op Translator
+# การมีส่วนร่วมกับ Co-op Translator
 
-โครงการนี้ยินดีรับการมีส่วนร่วมและข้อเสนอแนะ ส่วนใหญ่การมีส่วนร่วมจะต้องให้คุณยอมรับ Contributor License Agreement (CLA) ที่ระบุว่าคุณมีสิทธิ์และได้ให้สิทธิ์เราในการใช้ผลงานของคุณ สำหรับรายละเอียดเพิ่มเติม โปรดเยี่ยมชม https://cla.opensource.microsoft.com
+โปรเจกต์นี้ยินดีต้อนรับการมีส่วนร่วมและข้อเสนอแนะต่าง ๆ โดยส่วนใหญ่แล้วการมีส่วนร่วมจะต้องให้คุณยอมรับข้อตกลง Contributor License Agreement (CLA) เพื่อยืนยันว่าคุณมีสิทธิ์และได้ให้สิทธิ์เราในการใช้ผลงานของคุณ รายละเอียดเพิ่มเติมดูได้ที่ https://cla.opensource.microsoft.com
 
-เมื่อคุณส่ง pull request ระบบ CLA bot จะตรวจสอบโดยอัตโนมัติว่าคุณจำเป็นต้องส่ง CLA หรือไม่ และจะประดับ PR ให้เหมาะสม (เช่น ตรวจสอบสถานะ, คอมเมนต์) เพียงแค่ทำตามคำแนะนำที่บอทให้มา คุณจะต้องทำเพียงครั้งเดียวในทุกรีโพที่ใช้ CLA ของเรา
+เมื่อคุณส่ง pull request จะมีบอท CLA ตรวจสอบโดยอัตโนมัติว่าคุณต้องยื่น CLA หรือไม่ และจะแสดงสถานะหรือคอมเมนต์ใน PR ให้คุณทำตามคำแนะนำของบอท ซึ่งคุณจะต้องทำขั้นตอนนี้เพียงครั้งเดียวสำหรับทุก repo ที่ใช้ CLA ของเรา
 
 ## การตั้งค่าสภาพแวดล้อมสำหรับการพัฒนา
 
-เพื่อเตรียมสภาพแวดล้อมการพัฒนาสำหรับโครงการนี้ เราแนะนำให้ใช้ Poetry สำหรับจัดการ dependencies เราใช้ `pyproject.toml` ในการจัดการ dependencies ของโครงการ ดังนั้นในการติดตั้ง dependencies คุณควรใช้ Poetry
+สำหรับการตั้งค่าสภาพแวดล้อมการพัฒนา เราแนะนำให้ใช้ Poetry ในการจัดการ dependencies โดยเราใช้ `pyproject.toml` ในการจัดการ dependencies ของโปรเจกต์ ดังนั้นควรติดตั้ง dependencies ด้วย Poetry
 
-### สร้างสภาพแวดล้อมเสมือน
+### สร้าง virtual environment
 
 #### ใช้ pip
 
@@ -31,7 +31,7 @@ python -m venv .venv
 poetry init
 ```
 
-### เปิดใช้งานสภาพแวดล้อมเสมือน
+### เปิดใช้งาน virtual environment
 
 #### สำหรับทั้ง pip และ Poetry
 
@@ -53,7 +53,7 @@ poetry init
 poetry shell
 ```
 
-### การติดตั้งแพ็กเกจและแพ็กเกจที่จำเป็น
+### ติดตั้งแพ็กเกจและ dependencies ที่จำเป็น
 
 #### ใช้ Poetry (จาก pyproject.toml)
 
@@ -61,22 +61,22 @@ poetry shell
 poetry install
 ```
 
-### การทดสอบด้วยตนเอง
+### การทดสอบแบบ manual
 
-ก่อนส่ง PR สิ่งสำคัญคือต้องทดสอบฟังก์ชันการแปลกับเอกสารจริง:
+ก่อนจะส่ง PR ควรทดสอบฟีเจอร์แปลกับเอกสารจริงดังนี้:
 
-1. สร้างไดเรกทอรีทดสอบในไดเรกทอรีหลัก:
+1. สร้างโฟลเดอร์สำหรับทดสอบที่ root directory:
     ```bash
     mkdir test_docs
     ```
 
-2. คัดลอกเอกสาร markdown และรูปภาพที่ต้องการแปลไปยังไดเรกทอรีทดสอบ เช่น:
+2. คัดลอกไฟล์ markdown และรูปภาพที่ต้องการแปลไปไว้ในโฟลเดอร์ทดสอบ เช่น:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. ติดตั้งแพ็กเกจในเครื่อง:
+3. ติดตั้งแพ็กเกจแบบ local:
     ```bash
     pip install -e .
     ```
@@ -86,54 +86,54 @@ poetry install
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. ตรวจสอบไฟล์แปลใน `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. ตรวจสอบไฟล์ที่แปลแล้วใน `test_docs/translations` และ `test_docs/translated_images` เพื่อดูว่า:
+   - คุณภาพการแปลเป็นที่น่าพอใจหรือไม่
+   - คอมเมนต์ metadata ถูกต้องหรือไม่
+   - โครงสร้าง markdown เดิมยังคงอยู่
+   - ลิงก์และรูปภาพใช้งานได้ถูกต้อง
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+การทดสอบแบบ manual นี้จะช่วยให้มั่นใจว่าการเปลี่ยนแปลงของคุณใช้งานได้ดีในสถานการณ์จริง
 
-### Environment variables
+### ตัวแปรสภาพแวดล้อม
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template`  
-1. กรอกตัวแปรสภาพแวดล้อมตามคำแนะนำ
+1. สร้างไฟล์ `.env` ที่ root directory โดยคัดลอกจากไฟล์ `.env.template`
+1. กรอกค่าตัวแปรสภาพแวดล้อมตามคำแนะนำ
 
 > [!TIP]
 >
 > ### ตัวเลือกเพิ่มเติมสำหรับสภาพแวดล้อมการพัฒนา
 >
-> นอกจากการรันโครงการในเครื่องแล้ว คุณยังสามารถใช้ GitHub Codespaces หรือ VS Code Dev Containers เป็นตัวเลือกสภาพแวดล้อมการพัฒนาอีกทางหนึ่ง
+> นอกจากการรันโปรเจกต์บนเครื่องของคุณเองแล้ว คุณยังสามารถใช้ GitHub Codespaces หรือ VS Code Dev Containers เพื่อสร้างสภาพแวดล้อมการพัฒนาแบบทางเลือกได้เช่นกัน
 >
 > #### GitHub Codespaces
 >
-> คุณสามารถรันตัวอย่างนี้แบบเสมือนโดยใช้ GitHub Codespaces โดยไม่ต้องตั้งค่าหรือกำหนดค่าเพิ่มเติม
+> คุณสามารถรันตัวอย่างนี้แบบออนไลน์ผ่าน GitHub Codespaces ได้เลยโดยไม่ต้องตั้งค่าเพิ่มเติม
 >
 > ปุ่มนี้จะเปิด VS Code เวอร์ชันเว็บในเบราว์เซอร์ของคุณ:
 >
-> 1. เปิดเทมเพลต (อาจใช้เวลาหลายนาที):
+> 1. เปิดเทมเพลต (อาจใช้เวลาสักครู่):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
 >
-> #### รันในเครื่องโดยใช้ VS Code Dev Containers
+> #### การรันบนเครื่องโดยใช้ VS Code Dev Containers
 >
-> ⚠️ ตัวเลือกนี้จะทำงานได้ก็ต่อเมื่อ Docker Desktop ของคุณถูกจัดสรร RAM อย่างน้อย 16 GB หากคุณมี RAM น้อยกว่า 16 GB คุณสามารถลองใช้ [GitHub Codespaces](../..) หรือ [ตั้งค่าในเครื่อง](../..)
+> ⚠️ ตัวเลือกนี้จะใช้ได้ก็ต่อเมื่อ Docker Desktop ของคุณถูกจัดสรร RAM อย่างน้อย 16 GB หากมี RAM น้อยกว่านี้ แนะนำให้ใช้ [GitHub Codespaces](../..) หรือ [ตั้งค่าบนเครื่อง](../..)
 >
-> ตัวเลือกที่เกี่ยวข้องคือ VS Code Dev Containers ซึ่งจะเปิดโครงการใน VS Code บนเครื่องของคุณโดยใช้ [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> อีกทางเลือกหนึ่งคือ VS Code Dev Containers ซึ่งจะเปิดโปรเจกต์ใน VS Code บนเครื่องของคุณโดยใช้ [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. เริ่ม Docker Desktop (ติดตั้งถ้ายังไม่มี)
-> 2. เปิดโครงการ:
+> 1. เปิด Docker Desktop (ติดตั้งหากยังไม่มี)
+> 2. เปิดโปรเจกต์:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
 
 
 ### รูปแบบโค้ด
 
-เราใช้ [Black](https://github.com/psf/black) เป็นตัวจัดรูปแบบโค้ด Python เพื่อรักษารูปแบบโค้ดให้สม่ำเสมอทั่วทั้งโครงการ Black เป็นตัวจัดรูปแบบโค้ดที่ไม่ประนีประนอมซึ่งจะจัดรูปแบบโค้ด Python โดยอัตโนมัติเพื่อให้ตรงกับรูปแบบของ Black
+เราใช้ [Black](https://github.com/psf/black) เป็นตัวจัดรูปแบบโค้ด Python เพื่อให้โค้ดในโปรเจกต์มีมาตรฐานเดียวกัน Black จะจัดรูปแบบโค้ด Python ให้อัตโนมัติตามมาตรฐานของ Black
 
 #### การตั้งค่า
 
-การตั้งค่า Black ถูกกำหนดไว้ใน `pyproject.toml` ของเรา:
+การตั้งค่าของ Black จะอยู่ใน `pyproject.toml` ของเรา:
 
 ```toml
 [tool.black]
@@ -144,58 +144,58 @@ include = '\.pyi?$'
 
 #### การติดตั้ง Black
 
-คุณสามารถติดตั้ง Black โดยใช้ Poetry (แนะนำ) หรือ pip:
+คุณสามารถติดตั้ง Black ได้ทั้งผ่าน Poetry (แนะนำ) หรือ pip:
 
 ##### ใช้ Poetry
 
-Black จะถูกติดตั้งโดยอัตโนมัติเมื่อคุณตั้งค่าสภาพแวดล้อมการพัฒนา:
+Black จะถูกติดตั้งอัตโนมัติเมื่อคุณตั้งค่าสภาพแวดล้อมการพัฒนา:
 ```bash
 poetry install
 ```
 
 ##### ใช้ pip
 
-ถ้าคุณใช้ pip คุณสามารถติดตั้ง Black ได้โดยตรง:
+หากใช้ pip สามารถติดตั้ง Black ได้โดยตรง:
 ```bash
 pip install black
 ```
 
-#### การใช้ Black
+#### การใช้งาน Black
 
 ##### กับ Poetry
 
-1. จัดรูปแบบไฟล์ Python ทั้งหมดในโครงการ:
+1. จัดรูปแบบไฟล์ Python ทั้งหมดในโปรเจกต์:
     ```bash
     poetry run black .
     ```
 
-2. จัดรูปแบบไฟล์หรือไดเรกทอรีเฉพาะ:
+2. จัดรูปแบบไฟล์หรือโฟลเดอร์เฉพาะ:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
 ##### กับ pip
 
-1. จัดรูปแบบไฟล์ Python ทั้งหมดในโครงการ:
+1. จัดรูปแบบไฟล์ Python ทั้งหมดในโปรเจกต์:
     ```bash
     black .
     ```
 
-2. จัดรูปแบบไฟล์หรือไดเรกทอรีเฉพาะ:
+2. จัดรูปแบบไฟล์หรือโฟลเดอร์เฉพาะ:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> เราแนะนำให้ตั้งค่า editor ของคุณให้จัดรูปแบบโค้ดด้วย Black อัตโนมัติเมื่อบันทึกไฟล์ ตัวแก้ไขสมัยใหม่ส่วนใหญ่รองรับฟีเจอร์นี้ผ่านส่วนขยายหรือปลั๊กอิน
+> แนะนำให้ตั้งค่า editor ของคุณให้จัดรูปแบบโค้ดด้วย Black อัตโนมัติเมื่อบันทึกไฟล์ ปัจจุบัน editor ส่วนใหญ่รองรับฟีเจอร์นี้ผ่าน extension หรือ plugin
 
-## การรัน Co-op Translator
+## การใช้งาน Co-op Translator
 
-เพื่อรัน Co-op Translator โดยใช้ Poetry ในสภาพแวดล้อมของคุณ ให้ทำตามขั้นตอนเหล่านี้:
+หากต้องการรัน Co-op Translator ด้วย Poetry ในสภาพแวดล้อมของคุณ ให้ทำตามขั้นตอนนี้:
 
-1. ไปยังไดเรกทอรีที่คุณต้องการทดสอบการแปล หรือสร้างโฟลเดอร์ชั่วคราวสำหรับการทดสอบ
+1. ไปยังโฟลเดอร์ที่ต้องการทดสอบการแปล หรือสร้างโฟลเดอร์ชั่วคราวสำหรับทดสอบ
 
-2. รันคำสั่งต่อไปนี้ โดยแฟลก `-l ko` with the language code you wish to translate into. The `-d` หมายถึงโหมดดีบัก
+2. รันคำสั่งต่อไปนี้ โดยเปลี่ยน `-l ko` เป็นรหัสภาษาที่ต้องการแปล และ `-d` คือโหมด debug
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -204,59 +204,99 @@ pip install black
 > [!NOTE]
 > ตรวจสอบให้แน่ใจว่าสภาพแวดล้อม Poetry ของคุณถูกเปิดใช้งาน (poetry shell) ก่อนรันคำสั่ง
 
-## ผู้ดูแล
+## การเพิ่มภาษาใหม่
 
-### รูปแบบข้อความคอมมิตและกลยุทธ์การรวมโค้ด
+เรายินดีรับการมีส่วนร่วมที่เพิ่มการรองรับภาษาใหม่ ๆ ก่อนเปิด PR กรุณาทำตามขั้นตอนด้านล่างเพื่อให้การรีวิวเป็นไปอย่างราบรื่น
 
-เพื่อให้ประวัติการคอมมิตของโครงการมีความสอดคล้องและชัดเจน เราใช้รูปแบบข้อความคอมมิตเฉพาะสำหรับข้อความคอมมิตสุดท้ายเมื่อใช้กลยุทธ์ **Squash and Merge**
+1. เพิ่มภาษาใน font mapping
+   - แก้ไขไฟล์ `src/co_op_translator/fonts/font_language_mappings.yml`
+   - เพิ่ม entry โดยระบุ:
+     - `code`: รหัสภาษาแบบ ISO (เช่น `vi`)
+     - `name`: ชื่อภาษาที่อ่านเข้าใจง่าย
+     - `font`: ฟอนต์ที่อยู่ใน `src/co_op_translator/fonts/` และรองรับตัวอักษรของภาษา
+     - `rtl`: `true` ถ้าเป็นภาษาเขียนจากขวาไปซ้าย, ถ้าไม่ใช่ให้ใส่ `false`
 
-เมื่อ pull request (PR) ถูกผสาน คอมมิตแต่ละรายการจะถูกรวมเป็นคอมมิตเดียว ข้อความคอมมิตสุดท้ายควรเป็นไปตามรูปแบบด้านล่างเพื่อรักษาความสะอาดและความสม่ำเสมอของประวัติ
+2. เพิ่มไฟล์ฟอนต์ที่จำเป็น (ถ้าต้องใช้)
+   - หากต้องใช้ฟอนต์ใหม่ ตรวจสอบให้แน่ใจว่า license สามารถแจกจ่ายแบบ open source ได้
+   - เพิ่มไฟล์ฟอนต์ใน `src/co_op_translator/fonts/`
 
-#### รูปแบบข้อความคอมมิต (สำหรับ squash and merge)
+3. ตรวจสอบผลลัพธ์ในเครื่อง
+   - ทดสอบแปลตัวอย่างเล็ก ๆ (Markdown, รูปภาพ, หรือ notebooks ตามความเหมาะสม)
+   - ตรวจสอบผลลัพธ์ว่าการแสดงผลถูกต้อง รวมถึงฟอนต์และการจัดวาง RTL ถ้ามี
 
-เราใช้รูปแบบต่อไปนี้สำหรับข้อความคอมมิต:
+4. อัปเดตเอกสาร
+   - ตรวจสอบให้แน่ใจว่าภาษาที่เพิ่มปรากฏใน `getting_started/supported-languages.md`
+   - ไม่ต้องแก้ไข `README_languages_template.md` เพราะไฟล์นี้จะถูกสร้างจากรายการภาษาโดยอัตโนมัติ
+
+5. เปิด PR
+   - อธิบายภาษาที่เพิ่มและข้อควรพิจารณาเรื่องฟอนต์/ลิขสิทธิ์
+   - แนบภาพหน้าจอของผลลัพธ์ที่แสดงผลแล้วถ้าเป็นไปได้
+
+ตัวอย่าง entry ใน YAML:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
+## ผู้ดูแลโปรเจกต์
+
+### รูปแบบ commit message และกลยุทธ์การ merge
+
+เพื่อความสม่ำเสมอและชัดเจนในประวัติ commit ของโปรเจกต์ เรากำหนดรูปแบบ commit message **สำหรับ commit สุดท้าย** เมื่อใช้กลยุทธ์ **Squash and Merge**
+
+เมื่อ pull request (PR) ถูก merge, commit ย่อย ๆ ทั้งหมดจะถูกรวมเป็น commit เดียว โดย commit message สุดท้ายควรเป็นไปตามรูปแบบด้านล่างเพื่อให้ประวัติสะอาดและสม่ำเสมอ
+
+#### รูปแบบ commit message (สำหรับ squash and merge)
+
+เราใช้รูปแบบ commit message ดังนี้:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
-- **type**: ระบุประเภทของคอมมิต เราใช้ประเภทดังนี้:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+- **type**: ระบุหมวดหมู่ของ commit โดยใช้ประเภทต่อไปนี้:
+  - `Docs`: สำหรับการอัปเดตเอกสาร
+  - `Build`: สำหรับการเปลี่ยนแปลงที่เกี่ยวกับระบบ build หรือ dependencies รวมถึงการอัปเดตไฟล์ config, CI workflow หรือ Dockerfile
+  - `Core`: สำหรับการเปลี่ยนแปลงฟีเจอร์หลักของโปรเจกต์ โดยเฉพาะไฟล์ใน `src/co_op_translator/core`
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: สรุปสั้น ๆ ว่ามีการเปลี่ยนแปลงอะไร
+- **PR number**: หมายเลข pull request ที่เกี่ยวข้องกับ commit
 
-**Examples**:
+**ตัวอย่าง**:
 
 - `Docs: Update installation instructions for clarity (#50)`
 - `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> ปัจจุบัน prefix **`Docs`**, **`Core`**, และ **`Build`** จะถูกเพิ่มให้อัตโนมัติในชื่อ PR ตาม label ที่กำกับไว้กับ source code ที่แก้ไข ดังนั้นโดยปกติคุณไม่ต้องแก้ไขชื่อ PR เอง เพียงแค่ตรวจสอบให้แน่ใจว่าทุกอย่างถูกต้องและ prefix ถูกสร้างอย่างเหมาะสม
 
-#### Merge strategy
+#### กลยุทธ์การ merge
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+เราใช้ **Squash and Merge** เป็นกลยุทธ์หลักสำหรับ pull request วิธีนี้จะช่วยให้ commit message เป็นไปตามรูปแบบที่กำหนด แม้ว่า commit ย่อย ๆ จะไม่ได้เขียนตามรูปแบบก็ตาม
 
-**Reasons**:
+**เหตุผล**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- ประวัติโปรเจกต์สะอาดและเป็นเส้นตรง
+- commit message มีความสม่ำเสมอ
+- ลด commit ย่อยที่ไม่สำคัญ (เช่น "fix typo")
 
-When merging, ensure the final commit message follows the commit message format described above.
+เมื่อ merge ให้ตรวจสอบว่า commit message สุดท้ายเป็นไปตามรูปแบบที่กำหนด
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**ตัวอย่าง Squash and Merge**
+ถ้า PR มี commit ดังนี้:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-They should be squashed into:
+ควรถูกรวมเป็น:
 `Docs: Improve documentation clarity and formatting (#65)`
 
-**ข้อจำกัดความรับผิดชอบ**:  
-เอกสารนี้ได้รับการแปลโดยใช้บริการแปลภาษา AI [Co-op Translator](https://github.com/Azure/co-op-translator) แม้เราจะพยายามให้ความถูกต้องสูงสุด แต่โปรดทราบว่าการแปลอัตโนมัติอาจมีข้อผิดพลาดหรือความไม่ถูกต้อง เอกสารต้นฉบับในภาษาต้นทางควรถูกพิจารณาเป็นแหล่งข้อมูลที่เชื่อถือได้ สำหรับข้อมูลที่มีความสำคัญ ควรใช้การแปลโดยผู้เชี่ยวชาญมนุษย์ เราจะไม่รับผิดชอบต่อความเข้าใจผิดหรือการตีความที่ผิดพลาดใด ๆ ที่เกิดขึ้นจากการใช้การแปลนี้
+---
+
+**ข้อจำกัดความรับผิดชอบ**:
+เอกสารฉบับนี้ได้รับการแปลโดยใช้บริการแปลภาษา AI [Co-op Translator](https://github.com/Azure/co-op-translator) แม้เราจะพยายามให้การแปลมีความถูกต้อง แต่โปรดทราบว่าการแปลโดยอัตโนมัติอาจมีข้อผิดพลาดหรือความไม่ถูกต้อง เอกสารต้นฉบับในภาษาต้นทางควรถือเป็นแหล่งข้อมูลที่เชื่อถือได้ สำหรับข้อมูลสำคัญ แนะนำให้ใช้บริการแปลโดยนักแปลมืออาชีพ ทางเราจะไม่รับผิดชอบต่อความเข้าใจผิดหรือการตีความที่เกิดจากการใช้การแปลนี้

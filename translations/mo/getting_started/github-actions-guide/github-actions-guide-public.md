@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-14T12:51:15+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T02:31:05+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "mo"
 }
 -->
-# 使用 Co-op Translator GitHub Action (公開設定)
+# 使用 Co-op Translator GitHub Action（公開設定）
 
-**目標受眾：** 本指南適用於大多數公共或私人存儲庫的用戶，標準 GitHub Actions 權限已足夠。它使用內建的 `GITHUB_TOKEN`。
+**適用對象：** 本指南適用於大多數公開或私人倉庫，只要標準 GitHub Actions 權限足夠即可。它使用內建的 `GITHUB_TOKEN`。
 
-使用 Co-op Translator GitHub Action 自動化翻譯您的存儲庫文檔。此指南將引導您設置操作，以便在源 Markdown 文件或圖像更改時自動創建更新翻譯的拉取請求。
+利用 Co-op Translator GitHub Action，輕鬆自動化你的倉庫文件翻譯。這份指南會一步步教你如何設定這個 Action，讓它在你的 Markdown 原始檔或圖片有變動時，自動建立包含最新翻譯的 Pull Request。
 
 > [!IMPORTANT]
 >
 > **選擇合適的指南：**
 >
-> 本指南詳細介紹了**使用標準 `GITHUB_TOKEN` 的簡單設置**。這是大多數用戶的推薦方法，因為它不需要管理敏感的 GitHub App 私鑰。
+> 本指南介紹的是**使用標準 `GITHUB_TOKEN` 的簡易設定**。這是大多數使用者推薦的方式，因為不需要管理敏感的 GitHub App 私密金鑰。
 >
 
-## 先決條件
+## 事前準備
 
-在配置 GitHub Action 之前，請確保您已準備好必要的 AI 服務憑證。
+在設定 GitHub Action 之前，請先準備好所需的 AI 服務憑證。
 
-**1. 必需：AI 語言模型憑證**
-您需要至少一個支持的語言模型憑證：
+**1. 必備：AI 語言模型憑證**
+你需要至少一種支援的語言模型憑證：
 
-- **Azure OpenAI**：需要端點、API 密鑰、模型/部署名稱、API 版本。
-- **OpenAI**：需要 API 密鑰，（可選：組織 ID、基礎 URL、模型 ID）。
-- 詳情請參見 [支持的模型和服務](../../../../README.md)。
+- **Azure OpenAI**：需要 Endpoint、API Key、模型/部署名稱、API 版本。
+- **OpenAI**：需要 API Key，（選填：Org ID、Base URL、Model ID）。
+- 詳細請參考 [支援的模型與服務](../../../../README.md)。
 
-**2. 可選：AI 視覺憑證（用於圖像翻譯）**
+**2. 選填：AI Vision 憑證（用於圖片翻譯）**
 
-- 僅在需要翻譯圖像內的文本時需要。
-- **Azure AI Vision**：需要端點和訂閱密鑰。
-- 如果未提供，操作默認為 [僅 Markdown 模式](../markdown-only-mode.md)。
+- 只有需要翻譯圖片中的文字時才需要。
+- **Azure AI Vision**：需要 Endpoint 和 Subscription Key。
+- 如果沒提供，Action 會自動切換到 [僅 Markdown 模式](../markdown-only-mode.md)。
 
-## 設置和配置
+## 設定與配置
 
-按照以下步驟在您的存儲庫中使用標準 `GITHUB_TOKEN` 配置 Co-op Translator GitHub Action。
+請依照以下步驟，使用標準 `GITHUB_TOKEN` 在你的倉庫設定 Co-op Translator GitHub Action。
 
-### 步驟 1：了解身份驗證（使用 `GITHUB_TOKEN`）
+### 步驟 1：了解認證方式（使用 `GITHUB_TOKEN`）
 
-此工作流程使用 GitHub Actions 提供的內建 `GITHUB_TOKEN`。此令牌根據 **步驟 3** 中配置的設置自動授予工作流程與您的存儲庫交互的權限。
+這個流程會用到 GitHub Actions 內建的 `GITHUB_TOKEN`。這個 Token 會根據你在**步驟 3**設定的權限，自動授權流程操作你的倉庫。
 
-### 步驟 2：配置存儲庫密碼
+### 步驟 2：設定倉庫密碼
 
-您只需要在存儲庫設置中添加您的 **AI 服務憑證** 作為加密密碼。
+你只需要將**AI 服務憑證**加到倉庫設定的加密密碼中。
 
-1.  進入目標 GitHub 存儲庫。
-2.  前往 **Settings** > **Secrets and variables** > **Actions**。
-3.  在 **Repository secrets** 下，點擊 **New repository secret**，為下列每個所需的 AI 服務密碼添加。
+1. 進入你的目標 GitHub 倉庫。
+2. 點選 **Settings** > **Secrets and variables** > **Actions**。
+3. 在 **Repository secrets** 下，針對每個需要的 AI 服務密碼，點選 **New repository secret**。
 
-    ![選擇設置操作](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.mo.png) *(圖片參考：顯示添加密碼的位置)*
+    <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.mo.png" alt="選擇設定動作"> *(圖片說明：顯示如何新增密碼)*
 
-**所需 AI 服務密碼（根據您的先決條件添加所有適用的）：**
+**必備 AI 服務密碼（根據你的事前準備，全部都要加）：**
 
-| 密碼名稱                         | 描述                               | 值來源                     |
-| :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Azure AI Service（計算機視覺）的密鑰  | 您的 Azure AI Foundry               |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI Service（計算機視覺）的端點 | 您的 Azure AI Foundry               |
-| `AZURE_OPENAI_API_KEY`              | Azure OpenAI 服務的密鑰              | 您的 Azure AI Foundry               |
-| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI 服務的端點         | 您的 Azure AI Foundry               |
-| `AZURE_OPENAI_MODEL_NAME`           | 您的 Azure OpenAI 模型名稱              | 您的 Azure AI Foundry               |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | 您的 Azure OpenAI 部署名稱         | 您的 Azure AI Foundry               |
-| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI 的 API 版本              | 您的 Azure AI Foundry               |
-| `OPENAI_API_KEY`                    | OpenAI 的 API 密鑰                        | 您的 OpenAI Platform              |
-| `OPENAI_ORG_ID`                     | OpenAI 組織 ID（可選）         | 您的 OpenAI Platform              |
-| `OPENAI_CHAT_MODEL_ID`              | 特定 OpenAI 模型 ID（可選）       | 您的 OpenAI Platform              |
-| `OPENAI_BASE_URL`                   | 自定義 OpenAI API 基礎 URL（可選）     | 您的 OpenAI Platform              |
+| 密碼名稱                         | 說明                                   | 來源                           |
+| :------------------------------ | :------------------------------------- | :----------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Azure AI Service（Computer Vision）金鑰  | 你的 Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI Service（Computer Vision）端點 | 你的 Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`              | Azure OpenAI 服務金鑰                  | 你的 Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI 服務端點                  | 你的 Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`           | Azure OpenAI 模型名稱                  | 你的 Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Azure OpenAI 部署名稱                  | 你的 Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI API 版本                  | 你的 Azure AI Foundry               |
+| `OPENAI_API_KEY`                    | OpenAI API 金鑰                        | 你的 OpenAI 平台                    |
+| `OPENAI_ORG_ID`                     | OpenAI 組織 ID（選填）                 | 你的 OpenAI 平台                    |
+| `OPENAI_CHAT_MODEL_ID`              | 指定 OpenAI 模型 ID（選填）            | 你的 OpenAI 平台                    |
+| `OPENAI_BASE_URL`                   | 自訂 OpenAI API Base URL（選填）       | 你的 OpenAI 平台                    |
 
-### 步驟 3：配置工作流程權限
+### 步驟 3：設定流程權限
 
-GitHub Action 需要通過 `GITHUB_TOKEN` 授予的權限來檢出代碼並創建拉取請求。
+GitHub Action 需要透過 `GITHUB_TOKEN` 取得 checkout 及建立 Pull Request 的權限。
 
-1.  在您的存儲庫中，前往 **Settings** > **Actions** > **General**。
-2.  滾動到 **Workflow permissions** 部分。
-3.  選擇 **Read and write permissions**。這授予 `GITHUB_TOKEN` 這個工作流程所需的 `contents: write` 和 `pull-requests: write` 權限。
-4.  確保 **Allow GitHub Actions to create and approve pull requests** 的選框已 **勾選**。
-5.  選擇 **Save**。
+1. 在你的倉庫，點選 **Settings** > **Actions** > **General**。
+2. 往下捲到 **Workflow permissions** 區塊。
+3. 選擇 **Read and write permissions**。這會讓 `GITHUB_TOKEN` 取得 `contents: write` 和 `pull-requests: write` 權限。
+4. 確認 **Allow GitHub Actions to create and approve pull requests** 的勾選框有**打勾**。
+5. 點選 **Save**。
 
-![權限設置](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.mo.png)
+<img src="../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.mo.png" alt="權限設定">
 
-### 步驟 4：創建工作流程文件
+### 步驟 4：建立流程檔案
 
-最後，使用 `GITHUB_TOKEN` 創建定義自動化工作流程的 YAML 文件。
+最後，建立 YAML 檔案，定義使用 `GITHUB_TOKEN` 的自動化流程。
 
-1.  在您的存儲庫根目錄中，如果不存在，請創建 `.github/workflows/` 目錄。
-2.  在 `.github/workflows/` 中，創建名為 `co-op-translator.yml` 的文件。
-3.  將以下內容粘貼到 `co-op-translator.yml` 中。
+1. 在你的倉庫根目錄下，建立 `.github/workflows/` 資料夾（如果還沒建立）。
+2. 在 `.github/workflows/` 裡面，建立一個名為 `co-op-translator.yml` 的檔案。
+3. 把以下內容貼到 `co-op-translator.yml`。
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -168,10 +168,24 @@ jobs:
             translations/
             translated_images/
 ```
-4.  **自定義工作流程：**
-  - **[!IMPORTANT] 目標語言：** 如有需要，在 `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` 步驟中進行修改。
+4.  **自訂流程：**
+  - **[!IMPORTANT] 目標語言：** 在 `Run Co-op Translator` 步驟中，你**必須檢查並修改 `translate -l "..." -y` 指令裡的語言代碼清單**，以符合你的專案需求。範例清單（`ar de es...`）需要替換或調整。
+  - **觸發條件（`on:`）：** 目前設定是每次 push 到 `main` 都會觸發。若你的倉庫很大，建議加上 `paths:` 過濾（YAML 裡有註解範例），只在相關檔案（例如原始文件）變動時才執行，節省 runner 時間。
+  - **PR 詳細設定：** 如有需要，可自訂 `commit-message`、`title`、`body`、`branch` 名稱及 `labels`。
+
+## 執行流程
+
+> [!WARNING]  
+> **GitHub 託管 Runner 時間限制：**  
+> GitHub 託管的 runner（如 `ubuntu-latest`）**最多執行 6 小時**。  
+> 如果你的文件倉庫很大，翻譯流程超過 6 小時，流程會自動被終止。  
+> 避免這種情況的方法：  
+> - 使用**自架 runner**（沒時間限制）  
+> - 每次執行時減少目標語言數量
+
+當 `co-op-translator.yml` 檔案合併到你的主分支（或 `on:` 觸發條件指定的分支）後，只要有變更 push 到該分支（且符合 `paths` 過濾條件），流程就會自動執行。
+
+---
 
 **免責聲明**：
-本文件是使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 翻譯的。儘管我們力求準確，但請注意，自動翻譯可能包含錯誤或不準確之處。應將原語言的原始文件視為權威來源。對於關鍵信息，建議尋求專業人工翻譯。我們對使用此翻譯所產生的任何誤解或誤釋不承擔責任。
+本文件是使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 翻譯的。雖然我們力求準確，但請注意自動翻譯可能包含錯誤或不準確之處。原始語言的文件應被視為具權威性的來源。對於重要資訊，建議使用專業人工翻譯。因使用本翻譯而產生的任何誤解或誤釋，我們概不負責。

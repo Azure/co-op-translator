@@ -1,19 +1,19 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:36:15+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T03:38:29+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "id"
 }
 -->
 # Instal paket Co-op translator
 
-**Co-op Translator** adalah alat antarmuka baris perintah (CLI) yang dirancang untuk membantu Anda menerjemahkan semua file markdown dan gambar dalam proyek Anda ke dalam berbagai bahasa. Tutorial ini akan memandu Anda dalam mengonfigurasi translator dan menjalankannya untuk berbagai kasus penggunaan.
+**Co-op Translator** adalah alat antarmuka baris perintah (CLI) yang dirancang untuk membantu Anda menerjemahkan semua file markdown dan gambar di proyek Anda ke berbagai bahasa. Tutorial ini akan memandu Anda dalam mengonfigurasi translator dan menjalankannya untuk berbagai kasus penggunaan.
 
-### Buat lingkungan virtual
+### Membuat virtual environment
 
-Anda dapat membuat lingkungan virtual menggunakan `pip` atau `Poetry`. Ketik salah satu perintah berikut di terminal Anda.
+Anda dapat membuat virtual environment menggunakan `pip` atau `Poetry`. Ketik salah satu perintah berikut di terminal Anda.
 
 #### Menggunakan pip
 
@@ -27,9 +27,9 @@ python -m venv .venv
 poetry init
 ```
 
-### Aktifkan lingkungan virtual
+### Aktifkan virtual environment
 
-Setelah membuat lingkungan virtual, Anda perlu mengaktifkannya. Langkah-langkahnya berbeda tergantung pada sistem operasi Anda. Ketik perintah berikut di terminal Anda.
+Setelah membuat virtual environment, Anda perlu mengaktifkannya. Langkah-langkahnya berbeda tergantung sistem operasi Anda. Ketik perintah berikut di terminal Anda.
 
 #### Untuk pip dan Poetry
 
@@ -47,17 +47,17 @@ Setelah membuat lingkungan virtual, Anda perlu mengaktifkannya. Langkah-langkahn
 
 #### Menggunakan Poetry
 
-1. Jika Anda membuat lingkungan dengan Poetry, ketik perintah berikut di terminal untuk mengaktifkannya.
+1. Jika Anda membuat environment dengan Poetry, ketik perintah berikut di terminal Anda untuk mengaktifkannya.
 
     ```bash
     poetry shell
     ```
 
-### Instal Paket dan paket yang dibutuhkan
+### Instalasi Paket dan Paket yang Dibutuhkan
 
-Setelah lingkungan virtual Anda siap dan aktif, langkah berikutnya adalah menginstal dependensi yang diperlukan.
+Setelah virtual environment Anda siap dan diaktifkan, langkah selanjutnya adalah menginstal dependensi yang diperlukan.
 
-### Instal cepat
+### Instalasi cepat
 
 Instal Co-Op Translator melalui pip
 
@@ -73,9 +73,10 @@ poetry add co-op-translator
 
 #### Menggunakan pip (dari requirements.txt) jika Anda mengkloning repo ini
 
-![NOTE] Harap JANGAN lakukan ini jika Anda menginstal co-op translator melalui instalasi cepat.
+> [!NOTE]
+> Jangan lakukan ini jika Anda menginstal co-op translator melalui instalasi cepat.
 
-1. Jika Anda menggunakan pip, ketik perintah berikut di terminal Anda. Ini akan secara otomatis menginstal paket yang dibutuhkan yang tercantum dalam file `requirements.txt`:
+1. Jika Anda menggunakan pip, ketik perintah berikut di terminal Anda. Ini akan secara otomatis menginstal paket yang diperlukan yang sudah ditentukan di file `requirements.txt`:
 
     ```bash
     pip install -r requirements.txt
@@ -83,11 +84,13 @@ poetry add co-op-translator
 
 #### Menggunakan Poetry (dari pyproject.toml)
 
-1. Jika Anda menggunakan Poetry, ketik perintah berikut di terminal Anda. Ini akan secara otomatis menginstal paket yang dibutuhkan yang tercantum dalam file `pyproject.toml`:
+1. Jika Anda menggunakan Poetry, ketik perintah berikut di terminal Anda. Ini akan secara otomatis menginstal paket yang diperlukan yang sudah ditentukan di file `pyproject.toml`:
 
     ```bash
     poetry install
     ```
 
-**Penafian**:  
-Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berusaha untuk akurasi, harap diperhatikan bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sah. Untuk informasi penting, disarankan menggunakan terjemahan profesional oleh manusia. Kami tidak bertanggung jawab atas kesalahpahaman atau penafsiran yang salah yang timbul dari penggunaan terjemahan ini.
+---
+
+**Penafian**:
+Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berupaya untuk memberikan terjemahan yang akurat, harap diketahui bahwa terjemahan otomatis dapat mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang berwenang. Untuk informasi yang bersifat kritis, disarankan menggunakan jasa penerjemah profesional. Kami tidak bertanggung jawab atas kesalahpahaman atau penafsiran yang timbul dari penggunaan terjemahan ini.

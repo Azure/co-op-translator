@@ -1,19 +1,19 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:38:16+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T04:09:54+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "sl"
 }
 -->
-# Namestitev paketa Co-op translator
+# Namestitev paketa Co-op Translator
 
-**Co-op Translator** je orodje z ukazno vrstico (CLI), ki vam pomaga prevesti vse markdown datoteke in slike v vašem projektu v več jezikov. Ta vodič vas bo popeljal skozi nastavitev prevajalnika in njegovo uporabo za različne primere.
+**Co-op Translator** je orodje za ukazno vrstico (CLI), namenjeno prevajanju vseh markdown datotek in slik v vašem projektu v več jezikov. Ta vodič vas bo popeljal skozi nastavitev prevajalnika in njegovo uporabo v različnih primerih.
 
-### Ustvarjanje virtualnega okolja
+### Ustvarite virtualno okolje
 
-Virtualno okolje lahko ustvarite z uporabo `pip` ali `Poetry`. V terminal vnesite eno od naslednjih ukazov.
+Virtualno okolje lahko ustvarite z uporabo `pip` ali `Poetry`. V terminal vnesite enega od naslednjih ukazov.
 
 #### Uporaba pip
 
@@ -27,9 +27,9 @@ python -m venv .venv
 poetry init
 ```
 
-### Aktivacija virtualnega okolja
+### Aktivirajte virtualno okolje
 
-Ko ustvarite virtualno okolje, ga morate aktivirati. Postopek je odvisen od vašega operacijskega sistema. V terminal vnesite naslednji ukaz.
+Ko ustvarite virtualno okolje, ga morate aktivirati. Koraki se razlikujejo glede na vaš operacijski sistem. V terminal vnesite naslednji ukaz.
 
 #### Za pip in Poetry
 
@@ -55,27 +55,28 @@ Ko ustvarite virtualno okolje, ga morate aktivirati. Postopek je odvisen od vaš
 
 ### Namestitev paketa in potrebnih odvisnosti
 
-Ko je virtualno okolje pripravljeno in aktivirano, je naslednji korak namestitev potrebnih paketov.
+Ko je vaše virtualno okolje pripravljeno in aktivirano, je naslednji korak namestitev potrebnih odvisnosti.
 
-### Hitro nameščanje
+### Hitra namestitev
 
-Namestite Co-Op Translator preko pip
+Namestite Co-Op Translator prek pip
 
 ```
 pip install co-op-translator
 ```
-Ali
+Ali 
 
-Namestite preko Poetry
+Namestite prek poetry
 ```
 poetry add co-op-translator
 ```
 
-#### Uporaba pip (iz requirements.txt), če ste klonirali ta repozitorij
+#### Uporaba pip (iz requirements.txt), če klonirate ta repozitorij
 
-![NOTE] Prosimo, tega ne počnite, če ste Co-op translator namestili preko hitre namestitve.
+> [!NOTE]
+> Tega NE počnite, če nameščate co-op translator prek hitre namestitve.
 
-1. Če uporabljate pip, v terminal vnesite naslednji ukaz. Samodejno bo namestil potrebne pakete, določene v datoteki `requirements.txt`:
+1. Če uporabljate pip, v terminal vnesite naslednji ukaz. Samodejno bo namestil potrebne pakete, ki so navedeni v datoteki `requirements.txt`:
 
     ```bash
     pip install -r requirements.txt
@@ -83,11 +84,13 @@ poetry add co-op-translator
 
 #### Uporaba Poetry (iz pyproject.toml)
 
-1. Če uporabljate Poetry, v terminal vnesite naslednji ukaz. Samodejno bo namestil potrebne pakete, določene v datoteki `pyproject.toml`:
+1. Če uporabljate Poetry, v terminal vnesite naslednji ukaz. Samodejno bo namestil potrebne pakete, ki so navedeni v datoteki `pyproject.toml`:
 
     ```bash
     poetry install
     ```
 
-**Omejitev odgovornosti**:  
-Ta dokument je bil preveden z uporabo AI prevajalske storitve [Co-op Translator](https://github.com/Azure/co-op-translator). Čeprav si prizadevamo za natančnost, vas opozarjamo, da avtomatizirani prevodi lahko vsebujejo napake ali netočnosti. Izvirni dokument v njegovem izvirnem jeziku velja za avtoritativni vir. Za pomembne informacije priporočamo strokovni človeški prevod. Za morebitna nesporazume ali napačne interpretacije, ki izhajajo iz uporabe tega prevoda, ne odgovarjamo.
+---
+
+**Izjava o omejitvi odgovornosti**:
+Ta dokument je bil preveden s pomočjo storitve za strojno prevajanje [Co-op Translator](https://github.com/Azure/co-op-translator). Čeprav si prizadevamo za natančnost, vas opozarjamo, da lahko avtomatski prevodi vsebujejo napake ali netočnosti. Izvirni dokument v svojem maternem jeziku velja za avtoritativni vir. Za ključne informacije priporočamo strokoven človeški prevod. Ne prevzemamo odgovornosti za morebitne nesporazume ali napačne razlage, ki bi izhajale iz uporabe tega prevoda.

@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:36:13+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T04:10:50+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "sl"
 }
 -->
-# Uporaba Co-op Translator GitHub Action (Javna Nastavitev)
+# Uporaba Co-op Translator GitHub Action (Javna nastavitev)
 
-**Ciljna skupina:** Ta vodič je namenjen uporabnikom v večini javnih ali zasebnih repozitorijev, kjer so zadostna standardna dovoljenja GitHub Actions. Uporablja vgrajeni `GITHUB_TOKEN`.
+**Ciljna skupina:** Ta vodič je namenjen uporabnikom v večini javnih ali zasebnih repozitorijev, kjer so standardna dovoljenja GitHub Actions zadostna. Uporablja vgrajeni `GITHUB_TOKEN`.
 
-Samodejno prevedite dokumentacijo vašega repozitorija brez napora z uporabo Co-op Translator GitHub Action. Ta vodič vas vodi skozi nastavitve akcije, ki samodejno ustvari pull requeste z osveženimi prevodi, kadar se spremenijo vaši izvorni Markdown dokumenti ali slike.
+Avtomatizirajte prevajanje dokumentacije vašega repozitorija brez napora z uporabo Co-op Translator GitHub Action. Ta vodič vas vodi skozi postopek nastavitve akcije, ki samodejno ustvari pull requeste s posodobljenimi prevodi, kadar koli se spremenijo vaši izvorni Markdown dokumenti ali slike.
 
 > [!IMPORTANT]
 >
 > **Izbira pravega vodiča:**
 >
-> Ta vodič opisuje **enostavnejšo nastavitev s standardnim `GITHUB_TOKEN`**. To je priporočena metoda za večino uporabnikov, saj ni potrebno upravljati občutljivih zasebnih ključev GitHub App.
+> Ta vodič opisuje **enostavnejšo nastavitev z uporabo standardnega `GITHUB_TOKEN`**. To je priporočena metoda za večino uporabnikov, saj ni potrebno upravljati občutljivih zasebnih ključev GitHub App.
 >
 
 ## Predpogoji
 
-Pred konfiguracijo GitHub Action poskrbite, da imate pripravljene potrebne poverilnice za AI storitve.
+Preden nastavite GitHub Action, poskrbite, da imate pripravljene potrebne podatke za AI storitve.
 
-**1. Obvezno: Poverilnice za AI jezikovni model**  
-Potrebujete poverilnice za vsaj en podprt jezikovni model:
+**1. Obvezno: Poverilnice za jezikovni model AI**
+Potrebujete podatke za vsaj en podprt jezikovni model:
 
-- **Azure OpenAI**: zahteva Endpoint, API ključ, imena modelov/implementacij, različico API-ja.  
-- **OpenAI**: zahteva API ključ, (neobvezno: Org ID, osnovni URL, ID modela).  
-- Podrobnosti si oglejte v [Supported Models and Services](../../../../README.md).
+- **Azure OpenAI**: Potrebujete Endpoint, API ključ, imena modelov/deploymentov, verzijo API.
+- **OpenAI**: Potrebujete API ključ, (neobvezno: Org ID, Base URL, Model ID).
+- Glejte [Podprti modeli in storitve](../../../../README.md) za podrobnosti.
 
 **2. Neobvezno: Poverilnice za AI Vision (za prevajanje slik)**
 
-- Potrebno le, če želite prevajati besedilo v slikah.  
-- **Azure AI Vision**: zahteva Endpoint in naročniški ključ.  
-- Če jih ne zagotovite, akcija samodejno preklopi v [Markdown-only mode](../markdown-only-mode.md).
+- Potrebno le, če želite prevajati besedilo na slikah.
+- **Azure AI Vision**: Potrebujete Endpoint in Subscription Key.
+- Če tega ne navedete, bo akcija privzeto delovala v [načinu samo za Markdown](../markdown-only-mode.md).
 
 ## Nastavitev in konfiguracija
 
-Sledite tem korakom, da konfigurirate Co-op Translator GitHub Action v vašem repozitoriju z uporabo standardnega `GITHUB_TOKEN`.
+Sledite tem korakom za nastavitev Co-op Translator GitHub Action v vašem repozitoriju z uporabo standardnega `GITHUB_TOKEN`.
 
-### Korak 1: Razumevanje avtentikacije (Uporaba `GITHUB_TOKEN`)
+### 1. korak: Razumevanje avtentikacije (Uporaba `GITHUB_TOKEN`)
 
-Ta potek dela uporablja vgrajeni `GITHUB_TOKEN`, ki ga zagotavlja GitHub Actions. Ta žeton samodejno podeli dovoljenja za interakcijo z vašim repozitorijem glede na nastavitve, določene v **Koraku 3**.
+Ta potek dela uporablja vgrajeni `GITHUB_TOKEN`, ki ga zagotavlja GitHub Actions. Ta žeton samodejno omogoča dovoljenja za potek dela za interakcijo z vašim repozitorijem glede na nastavitve, določene v **3. koraku**.
 
-### Korak 2: Konfiguracija skrivnosti repozitorija
+### 2. korak: Nastavite skrivnosti repozitorija
 
-Potrebno je le, da v nastavitvah repozitorija dodate **AI poverilnice** kot šifrirane skrivnosti.
+Dodati morate le **podatke za AI storitve** kot šifrirane skrivnosti v nastavitvah vašega repozitorija.
 
-1.  Odprite ciljnega GitHub repozitorij.  
-2.  Pojdite na **Settings** > **Secrets and variables** > **Actions**.  
-3.  Pod **Repository secrets** kliknite **New repository secret** za vsako potrebno AI skrivnost, navedeno spodaj.
+1.  Odprite ciljni GitHub repozitorij.
+2.  Pojdite na **Settings** > **Secrets and variables** > **Actions**.
+3.  Pod **Repository secrets** kliknite **New repository secret** za vsako zahtevano skrivnost AI storitve, navedeno spodaj.
 
-    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.sl.png) *(Slika prikazuje, kje dodati skrivnosti)*
+    ![Izbira nastavitve action](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.sl.png) *(Referenca slike: prikazuje, kje dodati skrivnosti)*
 
-**Obvezne AI skrivnosti (Dodajte VSE, ki veljajo glede na vaše predpogoje):**
+**Zahtevane skrivnosti za AI storitve (dodajte VSE, ki jih potrebujete glede na predpogoje):**
 
-| Ime skrivnosti                     | Opis                                    | Vir vrednosti                   |
-| :--------------------------------- | :------------------------------------- | :----------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Ključ za Azure AI Service (Računalniški vid) | Vaša Azure AI Foundry           |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint za Azure AI Service (Računalniški vid) | Vaša Azure AI Foundry           |
-| `AZURE_OPENAI_API_KEY`              | Ključ za Azure OpenAI storitev            | Vaša Azure AI Foundry           |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint za Azure OpenAI storitev          | Vaša Azure AI Foundry           |
-| `AZURE_OPENAI_MODEL_NAME`           | Ime vašega Azure OpenAI modela             | Vaša Azure AI Foundry           |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Ime vaše Azure OpenAI implementacije          | Vaša Azure AI Foundry           |
-| `AZURE_OPENAI_API_VERSION`          | Različica API-ja za Azure OpenAI            | Vaša Azure AI Foundry           |
-| `OPENAI_API_KEY`                    | API ključ za OpenAI                        | Vaša OpenAI platforma           |
-| `OPENAI_ORG_ID`                     | OpenAI ID organizacije (neobvezno)         | Vaša OpenAI platforma           |
-| `OPENAI_CHAT_MODEL_ID`              | Specifični ID OpenAI modela (neobvezno)       | Vaša OpenAI platforma           |
-| `OPENAI_BASE_URL`                   | Prilagojen osnovni URL OpenAI API-ja (neobvezno) | Vaša OpenAI platforma           |
+| Ime skrivnosti                      | Opis                                      | Vir vrednosti                    |
+| :---------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Ključ za Azure AI Service (Computer Vision)  | Vaš Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint za Azure AI Service (Computer Vision) | Vaš Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`              | Ključ za Azure OpenAI storitev            | Vaš Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint za Azure OpenAI storitev         | Vaš Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`           | Ime vašega Azure OpenAI modela            | Vaš Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Ime vašega Azure OpenAI deploymenta       | Vaš Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`          | Verzija API za Azure OpenAI               | Vaš Azure AI Foundry               |
+| `OPENAI_API_KEY`                    | API ključ za OpenAI                       | Vaša OpenAI platforma              |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID (neobvezno)        | Vaša OpenAI platforma              |
+| `OPENAI_CHAT_MODEL_ID`              | ID določenega OpenAI modela (neobvezno)   | Vaša OpenAI platforma              |
+| `OPENAI_BASE_URL`                   | Osnovni URL za OpenAI API (neobvezno)     | Vaša OpenAI platforma              |
 
-### Korak 3: Nastavitev dovoljenj poteka dela
+### 3. korak: Nastavite dovoljenja za potek dela
 
-GitHub Action potrebuje dovoljenja, ki jih podeli `GITHUB_TOKEN` za dostop do kode in ustvarjanje pull requestov.
+GitHub Action potrebuje dovoljenja, ki jih omogoča `GITHUB_TOKEN`, za prenos kode in ustvarjanje pull requestov.
 
-1.  V repozitoriju pojdite na **Settings** > **Actions** > **General**.  
-2.  Pomaknite se do razdelka **Workflow permissions**.  
-3.  Izberite **Read and write permissions**. To omogoči, da ima `GITHUB_TOKEN` potrebna dovoljenja `contents: write` in `pull-requests: write` za ta potek dela.  
-4.  Preverite, da je potrjeno polje **Allow GitHub Actions to create and approve pull requests**.  
+1.  V repozitoriju pojdite na **Settings** > **Actions** > **General**.
+2.  Pomaknite se do razdelka **Workflow permissions**.
+3.  Izberite **Read and write permissions**. S tem omogočite `GITHUB_TOKEN` potrebna dovoljenja `contents: write` in `pull-requests: write` za ta potek dela.
+4.  Prepričajte se, da je potrjeno polje **Allow GitHub Actions to create and approve pull requests**.
 5.  Kliknite **Save**.
 
-![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.sl.png)
+![Nastavitev dovoljenj](../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.sl.png)
 
-### Korak 4: Ustvarite datoteko poteka dela
+### 4. korak: Ustvarite datoteko poteka dela
 
-Nazadnje ustvarite YAML datoteko, ki definira avtomatiziran potek dela z uporabo `GITHUB_TOKEN`.
+Na koncu ustvarite YAML datoteko, ki definira avtomatiziran potek dela z uporabo `GITHUB_TOKEN`.
 
-1.  V korenski mapi vašega repozitorija ustvarite mapo `.github/workflows/`, če še ne obstaja.  
-2.  V mapi `.github/workflows/` ustvarite datoteko z imenom `co-op-translator.yml`.  
-3.  Vstavite naslednjo vsebino v datoteko `co-op-translator.yml`.
+1.  V korenskem imeniku repozitorija ustvarite mapo `.github/workflows/`, če še ne obstaja.
+2.  V mapi `.github/workflows/` ustvarite datoteko z imenom `co-op-translator.yml`.
+3.  V datoteko `co-op-translator.yml` prilepite naslednjo vsebino.
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4.  **Prilagodite potek dela:**  
-  - **[!IMPORTANT] Ciljni jeziki:** V koraku `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` po potrebi.
+```
+4.  **Prilagodite potek dela:**
+  - **[!IMPORTANT] Ciljni jeziki:** V koraku `Run Co-op Translator` **MORATE pregledati in po potrebi spremeniti seznam jezikovnih kod** v ukazu `translate -l "..." -y`, da ustreza potrebam vašega projekta. Primer seznama (`ar de es...`) je treba zamenjati ali prilagoditi.
+  - **Sprožilec (`on:`):** Trenutni sprožilec se zažene ob vsakem pushu na `main`. Za večje repozitorije razmislite o dodajanju filtra `paths:` (glejte komentiran primer v YAML), da se potek dela zažene le ob spremembah relevantnih datotek (npr. izvorne dokumentacije) in tako prihranite minute izvajanja.
+  - **Podrobnosti PR:** Po potrebi prilagodite `commit-message`, `title`, `body`, ime `branch` in `labels` v koraku `Create Pull Request`.
 
-**Omejitev odgovornosti**:  
-Ta dokument je bil preveden z uporabo storitve za avtomatski prevod AI [Co-op Translator](https://github.com/Azure/co-op-translator). Čeprav si prizadevamo za natančnost, vas opozarjamo, da lahko avtomatski prevodi vsebujejo napake ali netočnosti. Izvirni dokument v njegovem izvirnem jeziku velja za avtoritativni vir. Za pomembne informacije priporočamo strokovni človeški prevod. Za kakršnekoli nesporazume ali napačne razlage, ki izhajajo iz uporabe tega prevoda, ne odgovarjamo.
+## Zagon poteka dela
+
+> [!WARNING]  
+> **Časovna omejitev za GitHub-hosted runnerje:**  
+> GitHub-hosted runnerji, kot je `ubuntu-latest`, imajo **najdaljši čas izvajanja 6 ur**.  
+> Če prevajanje v velikih repozitorijih preseže 6 ur, bo potek dela samodejno prekinjen.  
+> Da to preprečite, razmislite o:  
+> - Uporabi **self-hosted runnerja** (brez časovne omejitve)  
+> - Zmanjšanju števila ciljnih jezikov na posamezen zagon
+
+Ko je datoteka `co-op-translator.yml` združena v vašo glavno vejo (ali vejo, določeno v sprožilcu `on:`), se bo potek dela samodejno zagnal ob vsaki spremembi, potisnjeni v to vejo (in če ustreza filtru `paths`, če je nastavljen).
+
+---
+
+**Izjava o omejitvi odgovornosti**:
+Ta dokument je bil preveden s pomočjo storitve za strojno prevajanje [Co-op Translator](https://github.com/Azure/co-op-translator). Čeprav si prizadevamo za natančnost, vas opozarjamo, da lahko avtomatski prevodi vsebujejo napake ali netočnosti. Izvirni dokument v svojem izvoru jeziku naj velja za avtoritativni vir. Za kritične informacije priporočamo strokoven človeški prevod. Ne prevzemamo odgovornosti za morebitne nesporazume ali napačne razlage, ki bi nastale zaradi uporabe tega prevoda.

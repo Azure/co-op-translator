@@ -1,123 +1,123 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:01:27+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T02:21:52+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "fa"
 }
 -->
 # استفاده از اکشن Co-op Translator در گیت‌هاب (راهنمای سازمانی)
 
-**مخاطب هدف:** این راهنما برای **کاربران داخلی مایکروسافت** یا **تیم‌هایی که به اطلاعات لازم برای اپلیکیشن Co-op Translator گیت‌هاب از پیش ساخته شده دسترسی دارند** یا می‌توانند اپلیکیشن گیت‌هاب سفارشی خود را ایجاد کنند، تهیه شده است.
+**مخاطب هدف:** این راهنما برای **کاربران داخلی مایکروسافت** یا **تیم‌هایی که به مدارک لازم برای اپلیکیشن آماده Co-op Translator در گیت‌هاب دسترسی دارند** یا می‌توانند اپلیکیشن اختصاصی خود را بسازند، تهیه شده است.
 
-با استفاده از اکشن Co-op Translator گیت‌هاب، مستندات مخزن خود را به‌صورت خودکار ترجمه کنید. این راهنما شما را در راه‌اندازی اکشن برای ایجاد خودکار درخواست‌های pull با ترجمه‌های به‌روزشده هر بار که فایل‌های Markdown یا تصاویر منبع تغییر کنند، همراهی می‌کند.
+مستندسازی مخزن خود را به‌راحتی با اکشن Co-op Translator در گیت‌هاب به‌صورت خودکار ترجمه کنید. این راهنما شما را قدم‌به‌قدم برای راه‌اندازی اکشن راهنمایی می‌کند تا هر زمان که فایل‌های مارک‌داون یا تصاویر منبع شما تغییر کند، به‌طور خودکار درخواست pull با ترجمه‌های به‌روزشده ایجاد شود.
 
 > [!IMPORTANT]
->
+> 
 > **انتخاب راهنمای مناسب:**
 >
-> این راهنما نحوه راه‌اندازی با استفاده از **شناسه اپلیکیشن گیت‌هاب و کلید خصوصی** را توضیح می‌دهد. معمولاً این روش «راهنمای سازمانی» را زمانی نیاز دارید که: **`GITHUB_TOKEN` دسترسی‌ها محدود شده‌اند:** تنظیمات سازمان یا مخزن شما دسترسی‌های پیش‌فرض داده شده به `GITHUB_TOKEN` استاندارد را محدود می‌کند. به‌طور خاص، اگر `GITHUB_TOKEN` دسترسی‌های لازم `write` (مانند `contents: write` یا `pull-requests: write`) را نداشته باشد، روند کاری در [راهنمای راه‌اندازی عمومی](./github-actions-guide-public.md) به دلیل کمبود دسترسی‌ها شکست خواهد خورد. استفاده از اپلیکیشن گیت‌هاب اختصاصی با دسترسی‌های مشخص، این محدودیت را دور می‌زند.
+> این راهنما راه‌اندازی با استفاده از **GitHub App ID و کلید خصوصی** را توضیح می‌دهد. معمولاً زمانی به این روش "راهنمای سازمانی" نیاز دارید که: **دسترسی‌های `GITHUB_TOKEN` محدود شده باشد:** تنظیمات سازمان یا مخزن شما دسترسی‌های پیش‌فرض داده‌شده به `GITHUB_TOKEN` استاندارد را محدود کرده باشد. به‌ویژه اگر `GITHUB_TOKEN` اجازه دسترسی‌های `write` لازم (مانند `contents: write` یا `pull-requests: write`) را نداشته باشد، روند کار در [راهنمای عمومی](./github-actions-guide-public.md) به دلیل کمبود دسترسی شکست می‌خورد. استفاده از یک GitHub App اختصاصی با دسترسی‌های مشخص این محدودیت را دور می‌زند.
 >
-> **اگر مورد بالا شامل حال شما نمی‌شود:**
+> **اگر شرایط بالا شامل حال شما نمی‌شود:**
 >
-> اگر `GITHUB_TOKEN` استاندارد دسترسی‌های کافی در مخزن شما دارد (یعنی محدودیت سازمانی مانع شما نمی‌شود)، لطفاً از **[راهنمای راه‌اندازی عمومی با استفاده از GITHUB_TOKEN](./github-actions-guide-public.md)** استفاده کنید. راهنمای عمومی نیازی به دریافت یا مدیریت شناسه اپلیکیشن یا کلید خصوصی ندارد و فقط به دسترسی‌های استاندارد `GITHUB_TOKEN` و مخزن وابسته است.
+> اگر `GITHUB_TOKEN` استاندارد در مخزن شما دسترسی کافی دارد (یعنی محدودیت سازمانی ندارید)، لطفاً از **[راهنمای عمومی با استفاده از GITHUB_TOKEN](./github-actions-guide-public.md)** استفاده کنید. راهنمای عمومی نیازی به دریافت یا مدیریت App ID یا کلید خصوصی ندارد و فقط به `GITHUB_TOKEN` و دسترسی‌های مخزن متکی است.
 
 ## پیش‌نیازها
 
-قبل از پیکربندی اکشن گیت‌هاب، اطمینان حاصل کنید که اطلاعات دسترسی سرویس هوش مصنوعی مورد نیاز را دارید.
+قبل از پیکربندی اکشن گیت‌هاب، مطمئن شوید که مدارک لازم برای سرویس هوش مصنوعی را آماده دارید.
 
-**1. ضروری: اطلاعات دسترسی مدل زبان هوش مصنوعی**  
-شما به اطلاعات دسترسی حداقل یکی از مدل‌های زبانی پشتیبانی شده نیاز دارید:
+**۱. الزامی: مدارک مدل زبانی هوش مصنوعی**
+شما به مدارک یکی از مدل‌های زبانی پشتیبانی‌شده نیاز دارید:
 
-- **Azure OpenAI**: نیاز به Endpoint، کلید API، نام مدل/استقرار، نسخه API دارد.  
-- **OpenAI**: نیاز به کلید API، (اختیاری: شناسه سازمان، آدرس پایه، شناسه مدل) دارد.  
-- جزئیات را در [مدل‌ها و سرویس‌های پشتیبانی شده](../../../../README.md) ببینید.  
+- **Azure OpenAI**: نیاز به Endpoint، API Key، نام مدل/استقرار و نسخه API دارد.
+- **OpenAI**: نیاز به API Key دارد (اختیاری: Org ID، Base URL، Model ID).
+- برای جزئیات بیشتر به [مدل‌ها و سرویس‌های پشتیبانی‌شده](../../../../README.md) مراجعه کنید.
 - راهنمای راه‌اندازی: [راه‌اندازی Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
 
-**2. اختیاری: اطلاعات دسترسی بینایی ماشین (برای ترجمه تصاویر)**
+**۲. اختیاری: مدارک Computer Vision (برای ترجمه تصاویر)**
 
-- فقط در صورتی که نیاز به ترجمه متن داخل تصاویر دارید، لازم است.  
-- **Azure Computer Vision**: نیاز به Endpoint و کلید اشتراک دارد.  
-- در صورت عدم ارائه، اکشن در [حالت فقط Markdown](../markdown-only-mode.md) اجرا می‌شود.  
+- فقط در صورتی لازم است که نیاز به ترجمه متن داخل تصاویر دارید.
+- **Azure Computer Vision**: نیاز به Endpoint و Subscription Key دارد.
+- اگر ارائه نشود، اکشن به‌صورت پیش‌فرض در [حالت فقط مارک‌داون](../markdown-only-mode.md) اجرا می‌شود.
 - راهنمای راه‌اندازی: [راه‌اندازی Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
 
 ## راه‌اندازی و پیکربندی
 
-برای پیکربندی اکشن Co-op Translator گیت‌هاب در مخزن خود، مراحل زیر را دنبال کنید:
+برای پیکربندی اکشن Co-op Translator در مخزن خود مراحل زیر را دنبال کنید:
 
-### مرحله ۱: نصب و پیکربندی احراز هویت اپلیکیشن گیت‌هاب
+### گام ۱: نصب و پیکربندی احراز هویت GitHub App
 
-روند کاری از احراز هویت اپلیکیشن گیت‌هاب برای تعامل امن با مخزن شما (مثلاً ایجاد درخواست‌های pull) به نمایندگی از شما استفاده می‌کند. یک گزینه را انتخاب کنید:
+این روند از احراز هویت GitHub App برای تعامل امن با مخزن شما (مثلاً ایجاد pull request) به نمایندگی از شما استفاده می‌کند. یکی از گزینه‌های زیر را انتخاب کنید:
 
-#### **گزینه A: نصب اپلیکیشن Co-op Translator از پیش ساخته شده (برای استفاده داخلی مایکروسافت)**
+#### **گزینه A: نصب اپلیکیشن آماده Co-op Translator (برای استفاده داخلی مایکروسافت)**
 
-1. به صفحه [اپلیکیشن Co-op Translator گیت‌هاب](https://github.com/apps/co-op-translator) بروید.
+1. به صفحه [Co-op Translator GitHub App](https://github.com/apps/co-op-translator) بروید.
 
-1. گزینه **Install** را انتخاب کنید و حساب یا سازمانی که مخزن هدف شما در آن قرار دارد را انتخاب کنید.
+1. روی **Install** کلیک کنید و حساب یا سازمانی که مخزن هدف شما در آن قرار دارد را انتخاب کنید.
 
-    ![نصب اپلیکیشن](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.fa.png)
+    <img src="../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.fa.png" alt="Install app">
 
-1. گزینه **Only select repositories** را انتخاب کرده و مخزن هدف خود را (مثلاً `PhiCookBook`) برگزینید. سپس روی **Install** کلیک کنید. ممکن است نیاز به احراز هویت داشته باشید.
+1. گزینه **Only select repositories** را انتخاب کنید و مخزن هدف خود (مثلاً `PhiCookBook`) را انتخاب کنید. روی **Install** کلیک کنید. ممکن است نیاز به احراز هویت داشته باشید.
 
-    ![تأیید نصب](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.fa.png)
+    <img src="../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.fa.png" alt="Install authorize">
 
-1. **دریافت اطلاعات اپلیکیشن (فرآیند داخلی لازم است):** برای اجازه دادن به روند کاری جهت احراز هویت به عنوان اپلیکیشن، به دو مورد نیاز دارید که توسط تیم Co-op Translator ارائه می‌شود:  
-  - **شناسه اپلیکیشن:** شناسه یکتای اپلیکیشن Co-op Translator است. شناسه اپلیکیشن: `1164076`.  
-  - **کلید خصوصی:** باید **تمام محتوای** فایل کلید خصوصی `.pem` را از تماس نگهدارنده دریافت کنید. **این کلید را مانند رمز عبور حفظ کرده و ایمن نگه دارید.**
+1. **دریافت مدارک اپلیکیشن (فرآیند داخلی لازم):** برای اینکه روند کار بتواند به‌عنوان اپلیکیشن احراز هویت کند، به دو مورد نیاز دارید که توسط تیم Co-op Translator ارائه می‌شود:
+  - **App ID:** شناسه منحصربه‌فرد اپلیکیشن Co-op Translator. App ID این است: `1164076`.
+  - **کلید خصوصی:** باید **تمام محتوای** فایل کلید خصوصی `.pem` را از مسئول مربوطه دریافت کنید. **این کلید را مانند رمز عبور محرمانه نگه دارید.**
 
-1. به مرحله ۲ بروید.
+1. به گام ۲ بروید.
 
-#### **گزینه B: استفاده از اپلیکیشن گیت‌هاب سفارشی خودتان**
+#### **گزینه B: استفاده از GitHub App اختصاصی خودتان**
 
-- اگر تمایل دارید، می‌توانید اپلیکیشن گیت‌هاب خود را ایجاد و پیکربندی کنید. اطمینان حاصل کنید که دسترسی خواندن و نوشتن به محتوا و درخواست‌های pull دارد. شما به شناسه اپلیکیشن و کلید خصوصی تولید شده نیاز خواهید داشت.
+- اگر ترجیح می‌دهید، می‌توانید GitHub App اختصاصی خود را بسازید و پیکربندی کنید. مطمئن شوید که دسترسی Read & write به Contents و Pull requests دارد. به App ID و کلید خصوصی تولیدشده نیاز خواهید داشت.
 
-### مرحله ۲: پیکربندی اسرار مخزن
+### گام ۲: پیکربندی Secrets مخزن
 
-شما باید اطلاعات احراز هویت اپلیکیشن گیت‌هاب و اطلاعات سرویس هوش مصنوعی خود را به صورت اسرار رمزنگاری شده در تنظیمات مخزن اضافه کنید.
+شما باید مدارک GitHub App و مدارک سرویس هوش مصنوعی خود را به‌عنوان secrets رمزنگاری‌شده در تنظیمات مخزن اضافه کنید.
 
-1. به مخزن هدف گیت‌هاب خود بروید (مثلاً `PhiCookBook`).
+1. به مخزن هدف خود در گیت‌هاب بروید (مثلاً `PhiCookBook`).
 
 1. به **Settings** > **Secrets and variables** > **Actions** بروید.
 
-1. در بخش **Repository secrets**، برای هر یک از اسرار زیر روی **New repository secret** کلیک کنید.
+1. زیر **Repository secrets**، برای هر secret زیر روی **New repository secret** کلیک کنید.
 
-   ![انتخاب تنظیمات اکشن](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.fa.png)
+   <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.fa.png" alt="Select setting action">
 
-**اسرار ضروری (برای احراز هویت اپلیکیشن گیت‌هاب):**
+**Secrets الزامی (برای احراز هویت GitHub App):**
 
-| نام راز               | توضیح                                          | منبع مقدار                                      |
-| :------------------- | :---------------------------------------------- | :---------------------------------------------- |
-| `GH_APP_ID`          | شناسه اپلیکیشن گیت‌هاب (از مرحله ۱).              | تنظیمات اپلیکیشن گیت‌هاب                        |
-| `GH_APP_PRIVATE_KEY` | **تمام محتوای** فایل `.pem` دانلود شده. | فایل `.pem` (از مرحله ۱)           |
+| نام Secret            | توضیحات                                         | منبع مقدار                                      |
+| :------------------- | :----------------------------------------------- | :----------------------------------------------- |
+| `GH_APP_ID`          | App ID اپلیکیشن GitHub (از گام ۱)               | تنظیمات GitHub App                              |
+| `GH_APP_PRIVATE_KEY` | **تمام محتوای** فایل `.pem` دانلودشده           | فایل `.pem` (از گام ۱)                          |
 
-**اسرار سرویس هوش مصنوعی (تمام موارد مربوط بر اساس پیش‌نیازها را اضافه کنید):**
+**Secrets سرویس هوش مصنوعی (همه موارد مرتبط با پیش‌نیازها را اضافه کنید):**
 
-| نام راز                             | توضیح                                     | منبع مقدار                        |
-| :---------------------------------- | :---------------------------------------- | :-------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | کلید سرویس Azure AI (بینایی ماشین)          | Azure AI Foundry                  |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint سرویس Azure AI (بینایی ماشین)        | Azure AI Foundry                  |
-| `AZURE_OPENAI_API_KEY`              | کلید سرویس Azure OpenAI                      | Azure AI Foundry                  |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint سرویس Azure OpenAI                   | Azure AI Foundry                  |
-| `AZURE_OPENAI_MODEL_NAME`           | نام مدل Azure OpenAI شما                       | Azure AI Foundry                  |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | نام استقرار Azure OpenAI شما                     | Azure AI Foundry                  |
-| `AZURE_OPENAI_API_VERSION`          | نسخه API برای Azure OpenAI                     | Azure AI Foundry                  |
-| `OPENAI_API_KEY`                    | کلید API برای OpenAI                          | OpenAI Platform                  |
-| `OPENAI_ORG_ID`                     | شناسه سازمان OpenAI                          | OpenAI Platform                  |
-| `OPENAI_CHAT_MODEL_ID`              | شناسه مدل خاص OpenAI                          | OpenAI Platform                  |
-| `OPENAI_BASE_URL`                   | آدرس پایه سفارشی API OpenAI                    | OpenAI Platform                  |
+| نام Secret                          | توضیحات                                   | منبع مقدار                     |
+| :---------------------------------- | :---------------------------------------- | :----------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | کلید سرویس Azure AI (Computer Vision)      | Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint سرویس Azure AI (Computer Vision)  | Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`              | کلید سرویس Azure OpenAI                   | Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint سرویس Azure OpenAI                | Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`           | نام مدل Azure OpenAI شما                   | Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | نام استقرار Azure OpenAI شما               | Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`          | نسخه API برای Azure OpenAI                 | Azure AI Foundry               |
+| `OPENAI_API_KEY`                    | API Key برای OpenAI                        | OpenAI Platform                |
+| `OPENAI_ORG_ID`                     | شناسه سازمان OpenAI                        | OpenAI Platform                |
+| `OPENAI_CHAT_MODEL_ID`              | شناسه مدل خاص OpenAI                       | OpenAI Platform                |
+| `OPENAI_BASE_URL`                   | Base URL سفارشی OpenAI API                 | OpenAI Platform                |
 
-![وارد کردن نام متغیر محیطی](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.fa.png)
+<img src="../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.fa.png" alt="Enter environment variable name">
 
-### مرحله ۳: ایجاد فایل روند کاری
+### گام ۳: ساخت فایل Workflow
 
-در نهایت، فایل YAML که روند کاری خودکار را تعریف می‌کند، ایجاد کنید.
+در نهایت، فایل YAML که روند خودکار را تعریف می‌کند بسازید.
 
-1. در شاخه اصلی مخزن خود، اگر پوشه `.github/workflows/` وجود ندارد، آن را بسازید.
+1. در ریشه مخزن خود، اگر پوشه `.github/workflows/` وجود ندارد، آن را بسازید.
 
-1. داخل `.github/workflows/`، فایلی به نام `co-op-translator.yml` ایجاد کنید.
+1. داخل `.github/workflows/`، فایلی به نام `co-op-translator.yml` بسازید.
 
-1. محتوای زیر را در co-op-translator.yml جای‌گذاری کنید.
+1. محتوای زیر را در co-op-translator.yml قرار دهید.
 
 ```
 name: Co-op Translator
@@ -155,7 +155,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +209,31 @@ jobs:
 
 ```
 
-4.  **سفارشی‌سازی روند کاری:**  
-  - **[!IMPORTANT] زبان‌های هدف:** در دستور `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+4.  **شخصی‌سازی Workflow:**
+  - **[!IMPORTANT] زبان‌های هدف:** در مرحله `Run Co-op Translator`، **حتماً لیست کد زبان‌ها** در دستور `translate -l "..." -y` را مطابق نیاز پروژه خود بازبینی و ویرایش کنید. لیست نمونه (`ar de es...`) باید جایگزین یا اصلاح شود.
+  - **Trigger (`on:`):** در حال حاضر روی هر push به `main` اجرا می‌شود. برای مخازن بزرگ، می‌توانید یک فیلتر `paths:` اضافه کنید (مثال کامنت‌شده در YAML را ببینید) تا فقط هنگام تغییر فایل‌های مرتبط (مثلاً مستندات منبع) اجرا شود و زمان اجرای runner را ذخیره کنید.
+  - **جزئیات PR:** در صورت نیاز، `commit-message`، `title`، `body`، نام `branch` و `labels` را در مرحله `Create Pull Request` شخصی‌سازی کنید.
 
-## Credential Management and Renewal
+## مدیریت و تمدید مدارک
 
-- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` کلیدها) **قبل از انقضا** آن‌ها را به‌روز کنید تا از شکست روند کاری جلوگیری شود.
+- **امنیت:** همیشه مدارک حساس (کلیدهای API، کلیدهای خصوصی) را به‌صورت secrets در GitHub Actions ذخیره کنید. هرگز آن‌ها را در فایل workflow یا کد مخزن قرار ندهید.
+- **[!IMPORTANT] تمدید کلید (کاربران داخلی مایکروسافت):** توجه داشته باشید که کلید Azure OpenAI مورد استفاده در مایکروسافت ممکن است سیاست تمدید اجباری (مثلاً هر ۵ ماه) داشته باشد. حتماً secrets مربوط به GitHub (`AZURE_OPENAI_...`) را **قبل از انقضا** به‌روزرسانی کنید تا از شکست workflow جلوگیری شود.
 
-## اجرای روند کاری
+## اجرای Workflow
 
-پس از ادغام فایل `co-op-translator.yml` در شاخه main شما (یا شاخه مشخص شده در فیلتر `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths`، در صورت تنظیم)،
+> [!WARNING]  
+> **محدودیت زمانی Runner میزبانی‌شده گیت‌هاب:**  
+> Runnerهای میزبانی‌شده مانند `ubuntu-latest` حداکثر **۶ ساعت زمان اجرا** دارند.  
+> برای مخازن مستندات بزرگ، اگر فرآیند ترجمه بیش از ۶ ساعت طول بکشد، workflow به‌طور خودکار متوقف می‌شود.  
+> برای جلوگیری از این موضوع:  
+> - از **runner اختصاصی** استفاده کنید (بدون محدودیت زمانی)  
+> - تعداد زبان‌های هدف در هر اجرا را کاهش دهید
 
-اگر ترجمه‌ها تولید یا به‌روزرسانی شده باشند، اکشن به‌صورت خودکار یک درخواست Pull Request شامل تغییرات ایجاد می‌کند که آماده بررسی و ادغام شماست.
+پس از ادغام فایل `co-op-translator.yml` در شاخه اصلی (یا شاخه‌ای که در `on:` مشخص شده)، workflow به‌طور خودکار هر زمان که تغییراتی به آن شاخه push شود (و با فیلتر `paths` مطابقت داشته باشد، اگر تنظیم شده باشد) اجرا می‌شود.
 
-**سلب مسئولیت**:  
-این سند با استفاده از سرویس ترجمه ماشینی [Co-op Translator](https://github.com/Azure/co-op-translator) ترجمه شده است. در حالی که ما در تلاش برای دقت هستیم، لطفاً توجه داشته باشید که ترجمه‌های خودکار ممکن است حاوی خطاها یا نواقصی باشند. سند اصلی به زبان مبدأ باید به عنوان منبع معتبر در نظر گرفته شود. برای اطلاعات حیاتی، ترجمه حرفه‌ای انسانی توصیه می‌شود. ما مسئول هیچ گونه سوءتفاهم یا برداشت نادرستی که از استفاده از این ترجمه ناشی شود، نیستیم.
+اگر ترجمه‌ها تولید یا به‌روزرسانی شوند، اکشن به‌طور خودکار یک Pull Request با تغییرات ایجاد می‌کند تا شما آن را بازبینی و ادغام کنید.
+
+---
+
+**سلب مسئولیت**:
+این سند با استفاده از سرویس ترجمه هوش مصنوعی [Co-op Translator](https://github.com/Azure/co-op-translator) ترجمه شده است. اگرچه ما برای دقت تلاش می‌کنیم، لطفاً توجه داشته باشید که ترجمه‌های خودکار ممکن است شامل خطا یا نادقتی باشند. نسخه اصلی سند به زبان مادری آن باید به عنوان منبع معتبر در نظر گرفته شود. برای اطلاعات حساس، ترجمه انسانی حرفه‌ای توصیه می‌شود. ما هیچ مسئولیتی در قبال سوء تفاهم یا تفسیر نادرست ناشی از استفاده از این ترجمه نداریم.

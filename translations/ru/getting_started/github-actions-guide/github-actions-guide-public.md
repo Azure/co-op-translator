@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:21:46+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T02:16:41+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "ru"
 }
 -->
 # Использование Co-op Translator GitHub Action (Публичная настройка)
 
-**Целевая аудитория:** Это руководство предназначено для пользователей большинства публичных и приватных репозиториев, где достаточно стандартных прав GitHub Actions. Для работы используется встроенный `GITHUB_TOKEN`.
+**Целевая аудитория:** Это руководство предназначено для пользователей большинства публичных или приватных репозиториев, где достаточно стандартных разрешений GitHub Actions. Используется встроенный `GITHUB_TOKEN`.
 
-Автоматизируйте перевод документации вашего репозитория с помощью Co-op Translator GitHub Action. В этом руководстве показано, как настроить действие для автоматического создания pull request с обновлёнными переводами при изменении исходных Markdown-файлов или изображений.
+Автоматизируйте перевод документации вашего репозитория с помощью Co-op Translator GitHub Action. В этом руководстве показано, как настроить действие для автоматического создания pull request'ов с обновлёнными переводами при изменении исходных Markdown-файлов или изображений.
 
 > [!IMPORTANT]
 >
 > **Выбор подходящего руководства:**
 >
-> В этом руководстве описана **более простая настройка с использованием стандартного `GITHUB_TOKEN`**. Это рекомендуемый способ для большинства пользователей, так как не требует управления конфиденциальными приватными ключами GitHub App.
+> В этом руководстве описана **более простая настройка с использованием стандартного `GITHUB_TOKEN`**. Этот способ рекомендуется большинству пользователей, так как не требует управления приватными ключами GitHub App.
 >
 
-## Требования
+## Предварительные требования
 
-Перед настройкой GitHub Action убедитесь, что у вас есть необходимые учётные данные для AI-сервисов.
+Перед настройкой GitHub Action убедитесь, что у вас есть необходимые учётные данные для AI-сервиса.
 
-**1. Обязательно: учётные данные для языковой модели AI**  
-Вам нужны данные как минимум для одной из поддерживаемых языковых моделей:
+**1. Обязательно: Учётные данные языковой модели AI**
+Вам нужны учётные данные хотя бы для одной поддерживаемой языковой модели:
 
-- **Azure OpenAI**: необходимы Endpoint, API Key, имена моделей/деплойментов, версия API.  
-- **OpenAI**: необходим API Key, (необязательно: Org ID, базовый URL, ID модели).  
-- Подробнее см. в разделе [Supported Models and Services](../../../../README.md).
+- **Azure OpenAI**: Требуется Endpoint, API Key, имена модели/деплоймента, версия API.
+- **OpenAI**: Требуется API Key, (опционально: Org ID, Base URL, Model ID).
+- Подробнее смотрите [Поддерживаемые модели и сервисы](../../../../README.md).
 
-**2. Необязательно: учётные данные AI Vision (для перевода изображений)**
+**2. Опционально: Учётные данные AI Vision (для перевода изображений)**
 
-- Требуются только если нужно переводить текст на изображениях.  
-- **Azure AI Vision**: необходимы Endpoint и Subscription Key.  
-- Если не указаны, действие работает в [режиме только с Markdown](../markdown-only-mode.md).
+- Требуется только если нужно переводить текст на изображениях.
+- **Azure AI Vision**: Требуется Endpoint и Subscription Key.
+- Если не указано, действие работает в [режиме только Markdown](../markdown-only-mode.md).
 
 ## Настройка и конфигурация
 
-Следуйте этим шагам, чтобы настроить Co-op Translator GitHub Action в вашем репозитории с использованием стандартного `GITHUB_TOKEN`.
+Следуйте этим шагам для настройки Co-op Translator GitHub Action в вашем репозитории с использованием стандартного `GITHUB_TOKEN`.
 
-### Шаг 1: Понимание аутентификации (с использованием `GITHUB_TOKEN`)
+### Шаг 1: Понимание аутентификации (использование `GITHUB_TOKEN`)
 
-Этот workflow использует встроенный `GITHUB_TOKEN`, предоставляемый GitHub Actions. Этот токен автоматически даёт права workflow на взаимодействие с вашим репозиторием в соответствии с настройками из **Шага 3**.
+Этот workflow использует встроенный `GITHUB_TOKEN`, предоставляемый GitHub Actions. Этот токен автоматически даёт необходимые разрешения для работы с репозиторием согласно настройкам, указанным в **Шаге 3**.
 
 ### Шаг 2: Настройка секретов репозитория
 
-Вам нужно добавить только **учётные данные AI-сервисов** в виде зашифрованных секретов в настройках репозитория.
+Вам нужно добавить только **учётные данные AI-сервиса** как зашифрованные секреты в настройках репозитория.
 
-1.  Перейдите в нужный репозиторий на GitHub.  
-2.  Откройте **Settings** > **Secrets and variables** > **Actions**.  
-3.  В разделе **Repository secrets** нажмите **New repository secret** для каждого требуемого секрета AI-сервиса из списка ниже.
+1.  Перейдите в нужный репозиторий на GitHub.
+2.  Откройте **Settings** > **Secrets and variables** > **Actions**.
+3.  В разделе **Repository secrets** нажмите **New repository secret** для каждого необходимого секрета AI-сервиса из списка ниже.
 
-    ![Выбор действия настройки](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.ru.png) *(Изображение для ориентира: где добавлять секреты)*
+    ![Выбор настройки действия](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.ru.png) *(Ссылка на изображение: показывает, где добавить секреты)*
 
-**Обязательные секреты AI-сервисов (добавьте ВСЕ, которые соответствуют вашим требованиям):**
+**Необходимые секреты AI-сервиса (добавьте ВСЕ, которые подходят по вашим требованиям):**
 
-| Название секрета                    | Описание                                   | Источник значения                 |
-| :---------------------------------- | :----------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Ключ для Azure AI Service (Компьютерное зрение) | Ваш Azure AI Foundry               |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint для Azure AI Service (Компьютерное зрение) | Ваш Azure AI Foundry               |
-| `AZURE_OPENAI_API_KEY`              | Ключ для Azure OpenAI сервиса              | Ваш Azure AI Foundry               |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint для Azure OpenAI сервиса           | Ваш Azure AI Foundry               |
-| `AZURE_OPENAI_MODEL_NAME`           | Имя вашей модели Azure OpenAI               | Ваш Azure AI Foundry               |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Имя вашего деплоймента Azure OpenAI          | Ваш Azure AI Foundry               |
-| `AZURE_OPENAI_API_VERSION`          | Версия API для Azure OpenAI                  | Ваш Azure AI Foundry               |
-| `OPENAI_API_KEY`                    | API Key для OpenAI                          | Ваша платформа OpenAI             |
-| `OPENAI_ORG_ID`                     | OpenAI Organization ID (необязательно)       | Ваша платформа OpenAI             |
-| `OPENAI_CHAT_MODEL_ID`              | Конкретный ID модели OpenAI (необязательно) | Ваша платформа OpenAI             |
-| `OPENAI_BASE_URL`                   | Кастомный базовый URL OpenAI API (необязательно) | Ваша платформа OpenAI             |
+| Имя секрета                         | Описание                                   | Источник значения                  |
+| :---------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Ключ для Azure AI Service (Computer Vision)  | Ваш Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint для Azure AI Service (Computer Vision) | Ваш Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`              | Ключ для Azure OpenAI service              | Ваш Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint для Azure OpenAI service          | Ваш Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`           | Имя вашей модели Azure OpenAI              | Ваш Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Имя деплоймента Azure OpenAI               | Ваш Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`          | Версия API для Azure OpenAI                | Ваш Azure AI Foundry               |
+| `OPENAI_API_KEY`                    | API Key для OpenAI                         | Ваша платформа OpenAI              |
+| `OPENAI_ORG_ID`                     | ID организации OpenAI (опционально)        | Ваша платформа OpenAI              |
+| `OPENAI_CHAT_MODEL_ID`              | ID конкретной модели OpenAI (опционально)  | Ваша платформа OpenAI              |
+| `OPENAI_BASE_URL`                   | Кастомный Base URL API OpenAI (опционально)| Ваша платформа OpenAI              |
 
-### Шаг 3: Настройка прав workflow
+### Шаг 3: Настройка разрешений workflow
 
-GitHub Action требует прав, предоставляемых через `GITHUB_TOKEN`, для проверки кода и создания pull request.
+Для работы GitHub Action нужны разрешения через `GITHUB_TOKEN` для доступа к коду и создания pull request'ов.
 
-1.  В репозитории откройте **Settings** > **Actions** > **General**.  
-2.  Пролистайте до раздела **Workflow permissions**.  
-3.  Выберите **Read and write permissions**. Это даст `GITHUB_TOKEN` необходимые права `contents: write` и `pull-requests: write` для этого workflow.  
-4.  Убедитесь, что включена опция **Allow GitHub Actions to create and approve pull requests**.  
+1.  В репозитории откройте **Settings** > **Actions** > **General**.
+2.  Пролистайте до раздела **Workflow permissions**.
+3.  Выберите **Read and write permissions**. Это даст `GITHUB_TOKEN` необходимые права `contents: write` и `pull-requests: write` для этого workflow.
+4.  Убедитесь, что галочка **Allow GitHub Actions to create and approve pull requests** установлена.
 5.  Нажмите **Save**.
 
-![Настройка прав](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.ru.png)
+![Настройка разрешений](../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.ru.png)
 
 ### Шаг 4: Создание файла workflow
 
-Наконец, создайте YAML-файл, который определяет автоматический workflow с использованием `GITHUB_TOKEN`.
+Теперь создайте YAML-файл, который определяет автоматизированный workflow с использованием `GITHUB_TOKEN`.
 
-1.  В корневой папке вашего репозитория создайте каталог `.github/workflows/`, если он ещё не существует.  
-2.  Внутри `.github/workflows/` создайте файл с именем `co-op-translator.yml`.  
-3.  Вставьте следующий контент в `co-op-translator.yml`.
+1.  В корне репозитория создайте папку `.github/workflows/`, если её нет.
+2.  Внутри `.github/workflows/` создайте файл с именем `co-op-translator.yml`.
+3.  Вставьте следующий код в `co-op-translator.yml`.
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4.  **Настройка workflow:**  
-  - **[!IMPORTANT] Целевые языки:** при необходимости измените параметр в шаге `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request`.
+```
+4.  **Настройте workflow:**
+  - **[!IMPORTANT] Целевые языки:** В шаге `Run Co-op Translator` **ОБЯЗАТЕЛЬНО проверьте и измените список языковых кодов** в команде `translate -l "..." -y` согласно требованиям вашего проекта. Пример списка (`ar de es...`) нужно заменить или скорректировать.
+  - **Триггер (`on:`):** Сейчас workflow запускается при каждом push в `main`. Для больших репозиториев рекомендуется добавить фильтр `paths:` (см. пример в комментарии в YAML), чтобы workflow запускался только при изменении нужных файлов (например, исходной документации), экономя минуты runner'а.
+  - **Детали PR:** При необходимости измените `commit-message`, `title`, `body`, имя ветки и `labels` в шаге `Create Pull Request`.
 
-**Отказ от ответственности**:  
-Этот документ был переведен с помощью сервиса автоматического перевода [Co-op Translator](https://github.com/Azure/co-op-translator). Несмотря на наши усилия по обеспечению точности, просим учитывать, что автоматические переводы могут содержать ошибки или неточности. Оригинальный документ на его исходном языке следует считать авторитетным источником. Для критически важной информации рекомендуется обращаться к профессиональному переводу, выполненному человеком. Мы не несем ответственности за любые недоразумения или неверные толкования, возникшие в результате использования данного перевода.
+## Запуск workflow
+
+> [!WARNING]  
+> **Ограничение времени на GitHub-hosted runner:**  
+> GitHub-hosted runner'ы, такие как `ubuntu-latest`, имеют **максимальное время выполнения 6 часов**.  
+> Для больших репозиториев с документацией, если процесс перевода займёт больше 6 часов, workflow будет автоматически остановлен.  
+> Чтобы избежать этого, рассмотрите:  
+> - Использование **self-hosted runner** (без ограничения времени)  
+> - Сокращение количества целевых языков за один запуск
+
+После того как файл `co-op-translator.yml` будет добавлен в вашу основную ветку (или ветку, указанную в триггере `on:`), workflow будет автоматически запускаться при каждом пуше в эту ветку (и при совпадении с фильтром `paths`, если он настроен).
+
+---
+
+**Отказ от ответственности**:
+Этот документ был переведен с помощью сервиса автоматического перевода [Co-op Translator](https://github.com/Azure/co-op-translator). Несмотря на стремление к точности, автоматические переводы могут содержать ошибки или неточности. Оригинальный документ на исходном языке следует считать авторитетным источником. Для получения критически важной информации рекомендуется профессиональный перевод человеком. Мы не несём ответственности за любые недоразумения или неправильные толкования, возникшие в результате использования данного перевода.

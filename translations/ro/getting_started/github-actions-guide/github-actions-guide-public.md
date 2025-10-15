@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:34:38+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T03:59:01+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "ro"
 }
 -->
-# Utilizarea Acțiunii Co-op Translator GitHub (Configurare Publică)
+# Utilizarea acțiunii Co-op Translator pe GitHub (Configurare Publică)
 
-**Public țintă:** Acest ghid este destinat utilizatorilor din majoritatea depozitelor publice sau private unde permisiunile standard GitHub Actions sunt suficiente. Utilizează `GITHUB_TOKEN` încorporat.
+**Public țintă:** Acest ghid se adresează utilizatorilor din majoritatea depozitelor publice sau private unde permisiunile standard GitHub Actions sunt suficiente. Folosește `GITHUB_TOKEN` integrat.
 
-Automatizează traducerea documentației depozitului tău fără efort, folosind Acțiunea Co-op Translator GitHub. Acest ghid te conduce pas cu pas în configurarea acțiunii pentru a crea automat pull request-uri cu traduceri actualizate ori de câte ori fișierele tale sursă Markdown sau imaginile se modifică.
+Automatizează traducerea documentației din depozitul tău cu ușurință folosind acțiunea Co-op Translator pe GitHub. Acest ghid te ajută să configurezi acțiunea astfel încât să creeze automat pull request-uri cu traduceri actualizate ori de câte ori se modifică fișierele tale Markdown sursă sau imaginile.
 
 > [!IMPORTANT]
 >
 > **Alegerea ghidului potrivit:**
 >
-> Acest ghid detaliază **configurarea mai simplă folosind `GITHUB_TOKEN` standard**. Aceasta este metoda recomandată pentru majoritatea utilizatorilor deoarece nu necesită gestionarea cheilor private sensibile ale aplicației GitHub.
+> Acest ghid descrie **configurarea simplă folosind `GITHUB_TOKEN` standard**. Este metoda recomandată pentru majoritatea utilizatorilor, deoarece nu necesită gestionarea unor chei private sensibile pentru aplicații GitHub.
 >
 
 ## Cerințe preliminare
 
-Înainte de a configura Acțiunea GitHub, asigură-te că ai pregătite acreditările necesare pentru serviciul AI.
+Înainte de a configura acțiunea GitHub, asigură-te că ai la dispoziție credențialele pentru serviciul AI.
 
-**1. Obligatoriu: Acreditări pentru Modelul de Limbaj AI**  
-Ai nevoie de acreditări pentru cel puțin un Model de Limbaj suportat:
+**1. Obligatoriu: Credențiale pentru modelul AI de limbaj**
+Ai nevoie de credențiale pentru cel puțin un model de limbaj suportat:
 
-- **Azure OpenAI**: Necesită Endpoint, Cheie API, Nume Model/Deployment, Versiune API.  
-- **OpenAI**: Necesită Cheie API, (Opțional: ID organizație, URL de bază, ID model).  
-- Vezi [Modele și Servicii suportate](../../../../README.md) pentru detalii.
+- **Azure OpenAI**: Necesită Endpoint, API Key, Nume Model/Deployment, Versiune API.
+- **OpenAI**: Necesită API Key, (Opțional: Org ID, Base URL, Model ID).
+- Vezi [Modele și servicii suportate](../../../../README.md) pentru detalii.
 
-**2. Opțional: Acreditări AI Vision (pentru traducerea imaginilor)**
+**2. Opțional: Credențiale AI Vision (pentru traducerea imaginilor)**
 
-- Necesare doar dacă dorești să traduci text din imagini.  
-- **Azure AI Vision**: Necesită Endpoint și Cheie de abonament.  
-- Dacă nu sunt furnizate, acțiunea va folosi [modul doar Markdown](../markdown-only-mode.md).
+- Necesare doar dacă vrei să traduci text din imagini.
+- **Azure AI Vision**: Necesită Endpoint și Subscription Key.
+- Dacă nu sunt furnizate, acțiunea va funcționa în [mod doar Markdown](../markdown-only-mode.md).
 
 ## Configurare și setare
 
-Urmează acești pași pentru a configura Acțiunea Co-op Translator GitHub în depozitul tău folosind `GITHUB_TOKEN` standard.
+Urmează pașii de mai jos pentru a configura acțiunea Co-op Translator în depozitul tău folosind `GITHUB_TOKEN` standard.
 
 ### Pasul 1: Înțelege autentificarea (folosind `GITHUB_TOKEN`)
 
-Acest flux de lucru folosește `GITHUB_TOKEN` încorporat oferit de GitHub Actions. Acest token acordă automat permisiuni fluxului de lucru pentru a interacționa cu depozitul tău, în funcție de setările configurate în **Pasul 3**.
+Acest workflow folosește `GITHUB_TOKEN` integrat, oferit de GitHub Actions. Acest token acordă automat permisiuni workflow-ului pentru a interacționa cu depozitul tău, conform setărilor din **Pasul 3**.
 
 ### Pasul 2: Configurează secretele depozitului
 
-Trebuie doar să adaugi **acreditările serviciilor AI** ca secrete criptate în setările depozitului tău.
+Trebuie doar să adaugi **credențialele serviciului AI** ca secrete criptate în setările depozitului.
 
-1. Accesează depozitul GitHub țintă.  
-2. Mergi la **Settings** > **Secrets and variables** > **Actions**.  
-3. Sub **Repository secrets**, apasă pe **New repository secret** pentru fiecare secret necesar al serviciului AI listat mai jos.
+1.  Accesează depozitul tău GitHub.
+2.  Mergi la **Settings** > **Secrets and variables** > **Actions**.
+3.  Sub **Repository secrets**, apasă **New repository secret** pentru fiecare secret AI necesar din lista de mai jos.
 
-![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.ro.png) *(Referință imagine: Arată unde se adaugă secretele)*
+    ![Select setting action](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.ro.png) *(Referință imagine: Arată unde se adaugă secretele)*
 
-**Secrete obligatorii pentru serviciile AI (Adaugă TOATE cele aplicabile conform Cerințelor preliminare):**
+**Secrete AI necesare (Adaugă TOATE care se aplică în funcție de cerințele tale):**
 
-| Nume Secret                       | Descriere                               | Sursa valorii                   |
-| :-------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Cheie pentru serviciul Azure AI (Computer Vision)  | Azure AI Foundry                 |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint pentru serviciul Azure AI (Computer Vision) | Azure AI Foundry                 |
-| `AZURE_OPENAI_API_KEY`              | Cheie pentru serviciul Azure OpenAI              | Azure AI Foundry                 |
-| `AZURE_OPENAI_ENDPOINT`             | Endpoint pentru serviciul Azure OpenAI         | Azure AI Foundry                 |
-| `AZURE_OPENAI_MODEL_NAME`           | Numele modelului Azure OpenAI              | Azure AI Foundry                 |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Numele deployment-ului Azure OpenAI         | Azure AI Foundry                 |
-| `AZURE_OPENAI_API_VERSION`          | Versiunea API pentru Azure OpenAI              | Azure AI Foundry                 |
-| `OPENAI_API_KEY`                    | Cheie API pentru OpenAI                        | Platforma OpenAI                |
-| `OPENAI_ORG_ID`                     | ID organizație OpenAI (Opțional)         | Platforma OpenAI                |
-| `OPENAI_CHAT_MODEL_ID`              | ID model OpenAI specific (Opțional)       | Platforma OpenAI                |
-| `OPENAI_BASE_URL`                   | URL API de bază OpenAI personalizat (Opțional)     | Platforma OpenAI                |
+| Nume secret                         | Descriere                               | Sursa valorii                     |
+| :---------------------------------- | :-------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Cheie pentru Azure AI Service (Computer Vision)  | Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint pentru Azure AI Service (Computer Vision) | Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`              | Cheie pentru serviciul Azure OpenAI              | Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint pentru serviciul Azure OpenAI         | Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`           | Numele modelului Azure OpenAI              | Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Numele deployment-ului Azure OpenAI         | Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`          | Versiunea API pentru Azure OpenAI              | Azure AI Foundry               |
+| `OPENAI_API_KEY`                    | Cheie API pentru OpenAI                        | Platforma OpenAI              |
+| `OPENAI_ORG_ID`                     | ID organizație OpenAI (Opțional)         | Platforma OpenAI              |
+| `OPENAI_CHAT_MODEL_ID`              | ID model OpenAI specific (Opțional)       | Platforma OpenAI              |
+| `OPENAI_BASE_URL`                   | URL de bază personalizat pentru API OpenAI (Opțional)     | Platforma OpenAI              |
 
-### Pasul 3: Configurează permisiunile fluxului de lucru
+### Pasul 3: Configurează permisiunile workflow-ului
 
 Acțiunea GitHub are nevoie de permisiuni acordate prin `GITHUB_TOKEN` pentru a face checkout la cod și a crea pull request-uri.
 
-1. În depozitul tău, accesează **Settings** > **Actions** > **General**.  
-2. Derulează până la secțiunea **Workflow permissions**.  
-3. Selectează **Read and write permissions**. Aceasta oferă `GITHUB_TOKEN` permisiunile necesare `contents: write` și `pull-requests: write` pentru acest flux de lucru.  
-4. Asigură-te că bifa pentru **Allow GitHub Actions to create and approve pull requests** este **activată**.  
-5. Apasă pe **Save**.
+1.  În depozitul tău, mergi la **Settings** > **Actions** > **General**.
+2.  Derulează până la secțiunea **Workflow permissions**.
+3.  Selectează **Read and write permissions**. Aceasta acordă permisiunile `contents: write` și `pull-requests: write` necesare workflow-ului.
+4.  Asigură-te că bifezi **Allow GitHub Actions to create and approve pull requests**.
+5.  Apasă **Save**.
 
-![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.ro.png)
+![Permission setting](../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.ro.png)
 
-### Pasul 4: Creează fișierul de workflow
+### Pasul 4: Creează fișierul workflow
 
-În final, creează fișierul YAML care definește fluxul de lucru automatizat folosind `GITHUB_TOKEN`.
+În final, creează fișierul YAML care definește workflow-ul automatizat folosind `GITHUB_TOKEN`.
 
-1. În directorul rădăcină al depozitului, creează directorul `.github/workflows/` dacă nu există.  
-2. În interiorul `.github/workflows/`, creează un fișier numit `co-op-translator.yml`.  
-3. LiPează conținutul următor în `co-op-translator.yml`.
+1.  În directorul rădăcină al depozitului, creează folderul `.github/workflows/` dacă nu există deja.
+2.  În `.github/workflows/`, creează fișierul `co-op-translator.yml`.
+3.  Copiază conținutul de mai jos în `co-op-translator.yml`.
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4. **Personalizează fluxul de lucru:**  
-  - **[!IMPORTANT] Limbi țintă:** În pasul `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` modifică dacă este necesar.
+```
+4.  **Personalizează workflow-ul:**
+  - **[!IMPORTANT] Limbile țintă:** În pasul `Run Co-op Translator`, **TREBUIE să verifici și să modifici lista codurilor de limbă** din comanda `translate -l "..." -y` pentru a corespunde cerințelor proiectului tău. Lista exemplu (`ar de es...`) trebuie înlocuită sau ajustată.
+  - **Trigger (`on:`):** Trigger-ul actual rulează la fiecare push pe `main`. Pentru depozite mari, ia în considerare adăugarea unui filtru `paths:` (vezi exemplul comentat din YAML) pentru a rula workflow-ul doar când se modifică fișiere relevante (ex: documentația sursă), economisind minutele runner-ului.
+  - **Detalii PR:** Poți personaliza `commit-message`, `title`, `body`, numele `branch` și `labels` din pasul `Create Pull Request` dacă este necesar.
 
-**Declinare de responsabilitate**:  
-Acest document a fost tradus folosind serviciul de traducere AI [Co-op Translator](https://github.com/Azure/co-op-translator). Deși ne străduim pentru acuratețe, vă rugăm să rețineți că traducerile automate pot conține erori sau inexactități. Documentul original în limba sa nativă trebuie considerat sursa autorizată. Pentru informații critice, se recomandă traducerea profesională realizată de un specialist uman. Nu ne asumăm responsabilitatea pentru eventualele neînțelegeri sau interpretări greșite rezultate din utilizarea acestei traduceri.
+## Rularea workflow-ului
+
+> [!WARNING]  
+> **Limită de timp pentru runner-ul găzduit de GitHub:**  
+> Runner-ele găzduite de GitHub, precum `ubuntu-latest`, au o **limită maximă de execuție de 6 ore**.  
+> Pentru depozite mari de documentație, dacă procesul de traducere depășește 6 ore, workflow-ul va fi oprit automat.  
+> Pentru a evita acest lucru, ia în considerare:  
+> - Utilizarea unui **runner self-hosted** (fără limită de timp)  
+> - Reducerea numărului de limbi țintă per rulare
+
+După ce fișierul `co-op-translator.yml` este integrat în ramura principală (sau ramura specificată în trigger-ul `on:`), workflow-ul va rula automat ori de câte ori se fac modificări pe acea ramură (și se potrivește cu filtrul `paths`, dacă este configurat).
+
+---
+
+**Declarație de responsabilitate**:
+Acest document a fost tradus folosind serviciul de traducere AI [Co-op Translator](https://github.com/Azure/co-op-translator). Deși ne străduim să asigurăm acuratețea, vă rugăm să rețineți că traducerile automate pot conține erori sau inexactități. Documentul original, în limba sa nativă, trebuie considerat sursa autoritară. Pentru informații critice, se recomandă traducerea profesională realizată de oameni. Nu ne asumăm răspunderea pentru orice neînțelegeri sau interpretări greșite care pot apărea din utilizarea acestei traduceri.

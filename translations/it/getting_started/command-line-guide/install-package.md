@@ -1,19 +1,19 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:34:03+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T03:05:41+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "it"
 }
 -->
-# Installare il pacchetto Co-op translator
+# Installa il pacchetto Co-op Translator
 
-Il **Co-op Translator** è uno strumento a riga di comando (CLI) progettato per aiutarti a tradurre tutti i file markdown e le immagini del tuo progetto in più lingue. Questo tutorial ti guiderà nella configurazione del traduttore e nel suo utilizzo per vari casi d’uso.
+Il **Co-op Translator** è uno strumento da riga di comando (CLI) progettato per aiutarti a tradurre tutti i file markdown e le immagini del tuo progetto in più lingue. Questa guida ti accompagnerà nella configurazione del traduttore e nel suo utilizzo per diversi casi d'uso.
 
-### Creare un ambiente virtuale
+### Crea un ambiente virtuale
 
-Puoi creare un ambiente virtuale usando `pip` oppure `Poetry`. Digita uno dei seguenti comandi nel terminale.
+Puoi creare un ambiente virtuale utilizzando sia `pip` che `Poetry`. Digita uno dei seguenti comandi nel tuo terminale.
 
 #### Usando pip
 
@@ -27,11 +27,11 @@ python -m venv .venv
 poetry init
 ```
 
-### Attivare l’ambiente virtuale
+### Attiva l'ambiente virtuale
 
-Dopo aver creato l’ambiente virtuale, dovrai attivarlo. I passaggi variano a seconda del sistema operativo. Digita il seguente comando nel terminale.
+Dopo aver creato l'ambiente virtuale, dovrai attivarlo. I passaggi variano a seconda del sistema operativo. Digita il seguente comando nel tuo terminale.
 
-#### Per pip e Poetry
+#### Per entrambi pip e Poetry
 
 - Windows:
 
@@ -47,15 +47,15 @@ Dopo aver creato l’ambiente virtuale, dovrai attivarlo. I passaggi variano a s
 
 #### Usando Poetry
 
-1. Se hai creato l’ambiente con Poetry, digita il seguente comando nel terminale per attivarlo.
+1. Se hai creato l'ambiente con Poetry, digita il seguente comando nel tuo terminale per attivarlo.
 
     ```bash
     poetry shell
     ```
 
-### Installazione del pacchetto e delle dipendenze necessarie
+### Installazione del pacchetto e dei pacchetti necessari
 
-Una volta configurato e attivato l’ambiente virtuale, il passo successivo è installare le dipendenze necessarie.
+Una volta che il tuo ambiente virtuale è stato configurato e attivato, il prossimo passo è installare le dipendenze necessarie.
 
 ### Installazione rapida
 
@@ -66,16 +66,17 @@ pip install co-op-translator
 ```
 Oppure
 
-Installa tramite Poetry
+Installa tramite poetry
 ```
 poetry add co-op-translator
 ```
 
-#### Usando pip (da requirements.txt) se cloni questo repo
+#### Usando pip (da requirements.txt) se hai clonato questo repository
 
-![NOTE] Ti preghiamo di NON farlo se installi co-op translator tramite l’installazione rapida.
+> [!NOTE]
+> Non eseguire questa operazione se hai installato co-op translator tramite l'installazione rapida.
 
-1. Se usi pip, digita il seguente comando nel terminale. Installerà automaticamente i pacchetti richiesti specificati nel file `requirements.txt`:
+1. Se stai usando pip, digita il seguente comando nel tuo terminale. Installerà automaticamente i pacchetti richiesti specificati nel file `requirements.txt`:
 
     ```bash
     pip install -r requirements.txt
@@ -83,11 +84,13 @@ poetry add co-op-translator
 
 #### Usando Poetry (da pyproject.toml)
 
-1. Se usi Poetry, digita il seguente comando nel terminale. Installerà automaticamente i pacchetti richiesti specificati nel file `pyproject.toml`:
+1. Se stai usando Poetry, digita il seguente comando nel tuo terminale. Installerà automaticamente i pacchetti richiesti specificati nel file `pyproject.toml`:
 
     ```bash
     poetry install
     ```
 
-**Disclaimer**:  
-Questo documento è stato tradotto utilizzando il servizio di traduzione automatica [Co-op Translator](https://github.com/Azure/co-op-translator). Pur impegnandoci per garantire l’accuratezza, si prega di notare che le traduzioni automatiche possono contenere errori o imprecisioni. Il documento originale nella sua lingua nativa deve essere considerato la fonte autorevole. Per informazioni critiche, si raccomanda una traduzione professionale effettuata da un umano. Non ci assumiamo alcuna responsabilità per eventuali malintesi o interpretazioni errate derivanti dall’uso di questa traduzione.
+---
+
+**Disclaimer**:
+Questo documento è stato tradotto utilizzando il servizio di traduzione AI [Co-op Translator](https://github.com/Azure/co-op-translator). Pur impegnandoci per garantire l’accuratezza, si prega di notare che le traduzioni automatiche possono contenere errori o imprecisioni. Il documento originale nella sua lingua nativa deve essere considerato la fonte autorevole. Per informazioni critiche, si raccomanda una traduzione professionale umana. Non siamo responsabili per eventuali fraintendimenti o interpretazioni errate derivanti dall’uso di questa traduzione.

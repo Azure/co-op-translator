@@ -1,19 +1,19 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:37:27+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T03:58:17+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "ro"
 }
 -->
-# Instalează pachetul Co-op translator
+# Instalează pachetul Co-op Translator
 
-**Co-op Translator** este un instrument de linie de comandă (CLI) creat pentru a te ajuta să traduci toate fișierele markdown și imaginile din proiectul tău în mai multe limbi. Acest tutorial te va ghida prin configurarea traducătorului și rularea acestuia pentru diverse cazuri de utilizare.
+**Co-op Translator** este un instrument de tip linie de comandă (CLI) creat pentru a te ajuta să traduci toate fișierele markdown și imaginile din proiectul tău în mai multe limbi. Acest tutorial te va ghida prin configurarea translatorului și rularea lui pentru diverse scenarii.
 
 ### Creează un mediu virtual
 
-Poți crea un mediu virtual folosind fie `pip`, fie `Poetry`. Tastează una dintre comenzile de mai jos în terminalul tău.
+Poți crea un mediu virtual folosind fie `pip`, fie `Poetry`. Tastează una dintre comenzile de mai jos în terminal.
 
 #### Folosind pip
 
@@ -29,7 +29,7 @@ poetry init
 
 ### Activează mediul virtual
 
-După ce ai creat mediul virtual, va trebui să îl activezi. Pașii diferă în funcție de sistemul tău de operare. Tastează comanda corespunzătoare în terminal.
+După ce ai creat mediul virtual, va trebui să-l activezi. Pașii diferă în funcție de sistemul de operare. Tastează următoarea comandă în terminal.
 
 #### Pentru pip și Poetry
 
@@ -53,29 +53,30 @@ După ce ai creat mediul virtual, va trebui să îl activezi. Pașii diferă în
     poetry shell
     ```
 
-### Instalarea pachetului și a dependențelor necesare
+### Instalarea pachetului și a pachetelor necesare
 
-După ce mediul virtual este configurat și activat, următorul pas este să instalezi dependențele necesare.
+După ce mediul virtual este creat și activat, următorul pas este să instalezi dependențele necesare.
 
 ### Instalare rapidă
 
-Instalează Co-Op Translator folosind pip
+Instalează Co-Op Translator cu pip
 
 ```
 pip install co-op-translator
-```  
-Sau  
+```
+Sau 
 
-Instalează folosind poetry  
+Instalează cu poetry
 ```
 poetry add co-op-translator
 ```
 
-#### Folosind pip (din requirements.txt) dacă ai clonat acest repo
+#### Folosind pip (din requirements.txt) dacă clonezi acest repo
 
-![NOTE] Te rugăm să NU faci asta dacă instalezi co-op translator prin instalarea rapidă.
+> [!NOTE]
+> Te rugăm să NU faci acest lucru dacă instalezi co-op translator prin instalarea rapidă.
 
-1. Dacă folosești pip, tastează următoarea comandă în terminal. Aceasta va instala automat pachetele necesare specificate în fișierul `requirements.txt`:
+1. Dacă folosești pip, tastează următoarea comandă în terminal. Va instala automat pachetele necesare specificate în fișierul `requirements.txt`:
 
     ```bash
     pip install -r requirements.txt
@@ -83,11 +84,13 @@ poetry add co-op-translator
 
 #### Folosind Poetry (din pyproject.toml)
 
-1. Dacă folosești Poetry, tastează următoarea comandă în terminal. Aceasta va instala automat pachetele necesare specificate în fișierul `pyproject.toml`:
+1. Dacă folosești Poetry, tastează următoarea comandă în terminal. Va instala automat pachetele necesare specificate în fișierul `pyproject.toml`:
 
     ```bash
     poetry install
     ```
 
-**Declinare a responsabilității**:  
-Acest document a fost tradus folosind serviciul de traducere AI [Co-op Translator](https://github.com/Azure/co-op-translator). Deși ne străduim pentru acuratețe, vă rugăm să rețineți că traducerile automate pot conține erori sau inexactități. Documentul original, în limba sa nativă, trebuie considerat sursa autorizată. Pentru informații critice, se recomandă traducerea profesională realizată de un specialist uman. Nu ne asumăm răspunderea pentru eventualele neînțelegeri sau interpretări greșite rezultate din utilizarea acestei traduceri.
+---
+
+**Declarație de responsabilitate**:
+Acest document a fost tradus folosind serviciul de traducere AI [Co-op Translator](https://github.com/Azure/co-op-translator). Deși ne străduim să asigurăm acuratețea, vă rugăm să rețineți că traducerile automate pot conține erori sau inexactități. Documentul original, în limba sa nativă, trebuie considerat sursa autoritară. Pentru informații critice, se recomandă traducerea profesională realizată de oameni. Nu ne asumăm răspunderea pentru orice neînțelegeri sau interpretări greșite care pot apărea din utilizarea acestei traduceri.

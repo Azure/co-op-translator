@@ -1,95 +1,95 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a52587a512e667f70d92db853d3c61d5",
-  "translation_date": "2025-06-12T19:22:45+00:00",
+  "original_hash": "527ca4d0a8d3f51087ec3317279e36ee",
+  "translation_date": "2025-10-15T02:25:43+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-public.md",
   "language_code": "ur"
 }
 -->
-# کو-آپ ٹرانسلیٹر GitHub ایکشن استعمال کرنا (عوامی سیٹ اپ)
+# کو-آپ ٹرانسلیٹر گیٹ ہب ایکشن کا استعمال (پبلک سیٹ اپ)
 
-**مخاطب:** یہ رہنما ان صارفین کے لیے ہے جو زیادہ تر عوامی یا نجی ریپوزٹریز میں کام کرتے ہیں جہاں معیاری GitHub Actions کی اجازتیں کافی ہوتی ہیں۔ یہ بلٹ ان `GITHUB_TOKEN` استعمال کرتا ہے۔
+**ہدف صارفین:** یہ رہنمائی زیادہ تر پبلک یا پرائیویٹ ریپوزیٹریز کے صارفین کے لیے ہے جہاں اسٹینڈرڈ GitHub Actions کی اجازتیں کافی ہیں۔ اس میں بلٹ ان `GITHUB_TOKEN` استعمال ہوتا ہے۔
 
-اپنے ریپوزٹری کی دستاویزات کا ترجمہ خودکار طریقے سے کو-آپ ٹرانسلیٹر GitHub ایکشن کے ذریعے کریں۔ یہ رہنما آپ کو ایکشن سیٹ اپ کرنے کا طریقہ بتاتا ہے تاکہ جب بھی آپ کے ماخذ Markdown فائلز یا تصاویر تبدیل ہوں، تو خودکار طریقے سے اپ ڈیٹ شدہ ترجمہ کے ساتھ پل ریکویسٹ بنائے جائیں۔
+اپنے ریپوزیٹری کی ڈاکیومنٹیشن کو خودکار طریقے سے ترجمہ کریں کو-آپ ٹرانسلیٹر گیٹ ہب ایکشن کے ذریعے۔ یہ رہنمائی آپ کو ایکشن سیٹ اپ کرنے کے مراحل بتاتی ہے تاکہ جب بھی آپ کے سورس مارک ڈاؤن فائلز یا امیجز میں تبدیلی ہو، خودکار طور پر ترجمہ شدہ اپڈیٹس کے ساتھ پل ریکویسٹ بن جائے۔
 
 > [!IMPORTANT]
 >
-> **صحیح رہنما کا انتخاب:**
+> **درست رہنمائی کا انتخاب:**
 >
-> یہ رہنما **معیاری `GITHUB_TOKEN` کے ذریعے آسان سیٹ اپ** کی تفصیل دیتا ہے۔ یہ زیادہ تر صارفین کے لیے تجویز کردہ طریقہ ہے کیونکہ اس میں حساس GitHub App Private Keys کے انتظام کی ضرورت نہیں ہوتی۔
+> یہ رہنمائی **آسان سیٹ اپ کو بیان کرتی ہے جو اسٹینڈرڈ `GITHUB_TOKEN` استعمال کرتا ہے**۔ زیادہ تر صارفین کے لیے یہی طریقہ تجویز کیا جاتا ہے کیونکہ اس میں حساس GitHub App پرائیویٹ کیز کو سنبھالنے کی ضرورت نہیں۔
 >
 
-## ضروریات
+## لازمی شرائط
 
-GitHub ایکشن کو ترتیب دینے سے پہلے یقینی بنائیں کہ آپ کے پاس مطلوبہ AI سروس کی اسناد موجود ہیں۔
+GitHub Action کو ترتیب دینے سے پہلے، یہ یقینی بنائیں کہ آپ کے پاس مطلوبہ AI سروس کی اسناد موجود ہیں۔
 
-**1. لازمی: AI زبان ماڈل کی اسناد**  
-آپ کو کم از کم ایک سپورٹڈ زبان ماڈل کے لیے اسناد درکار ہیں:
+**1. لازمی: AI لینگویج ماڈل کی اسناد**
+آپ کو کم از کم ایک سپورٹڈ لینگویج ماڈل کے لیے اسناد درکار ہیں:
 
-- **Azure OpenAI**: Endpoint، API Key، Model/Deployment Names، API Version کی ضرورت ہوتی ہے۔  
-- **OpenAI**: API Key، (اختیاری: Org ID، Base URL، Model ID) درکار ہیں۔  
-- تفصیلات کے لیے [Supported Models and Services](../../../../README.md) دیکھیں۔
+- **Azure OpenAI**: اینڈ پوائنٹ، API Key، ماڈل/ڈیپلائمنٹ نام، API ورژن درکار ہیں۔
+- **OpenAI**: API Key درکار ہے، (اختیاری: Org ID، Base URL، Model ID)۔
+- مزید تفصیل کے لیے دیکھیں [Supported Models and Services](../../../../README.md)۔
 
-**2. اختیاری: AI وژن اسناد (تصویری ترجمے کے لیے)**
+**2. اختیاری: AI ویژن کی اسناد (امیج ترجمہ کے لیے)**
 
-- صرف اس صورت میں ضروری جب آپ کو تصاویر میں موجود متن کا ترجمہ کرنا ہو۔  
-- **Azure AI Vision**: Endpoint اور Subscription Key کی ضرورت ہوتی ہے۔  
-- اگر فراہم نہ کی جائیں، تو ایکشن [Markdown-only mode](../markdown-only-mode.md) پر کام کرے گا۔
+- صرف اس صورت میں درکار ہیں جب آپ امیجز کے اندر موجود متن کا ترجمہ کرنا چاہتے ہیں۔
+- **Azure AI Vision**: اینڈ پوائنٹ اور سبسکرپشن کی درکار ہیں۔
+- اگر فراہم نہ کی جائیں تو ایکشن [صرف مارک ڈاؤن موڈ](../markdown-only-mode.md) پر چلتا ہے۔
 
 ## سیٹ اپ اور ترتیب
 
-معیاری `GITHUB_TOKEN` استعمال کرتے ہوئے اپنے ریپوزٹری میں کو-آپ ٹرانسلیٹر GitHub ایکشن کو ترتیب دینے کے لیے یہ اقدامات کریں۔
+اسٹینڈرڈ `GITHUB_TOKEN` کے ساتھ اپنے ریپوزیٹری میں کو-آپ ٹرانسلیٹر گیٹ ہب ایکشن کو ترتیب دینے کے لیے یہ مراحل فالو کریں۔
 
-### مرحلہ 1: تصدیق کی سمجھ بوجھ (`GITHUB_TOKEN` کا استعمال)
+### مرحلہ 1: تصدیق کو سمجھیں (`GITHUB_TOKEN` کا استعمال)
 
-یہ ورک فلو GitHub Actions کی فراہم کردہ بلٹ ان `GITHUB_TOKEN` استعمال کرتا ہے۔ یہ ٹوکن خود بخود ورک فلو کو آپ کے ریپوزٹری کے ساتھ تعامل کی اجازت دیتا ہے جیسا کہ **مرحلہ 3** میں سیٹ کی گئی ترتیبات کے مطابق ہے۔
+یہ ورک فلو GitHub Actions کی طرف سے فراہم کردہ بلٹ ان `GITHUB_TOKEN` استعمال کرتا ہے۔ یہ ٹوکن خودکار طور پر ورک فلو کو آپ کے ریپوزیٹری کے ساتھ تعامل کی اجازت دیتا ہے، جیسا کہ **مرحلہ 3** میں ترتیب دیا گیا ہے۔
 
-### مرحلہ 2: ریپوزٹری سیکرٹس کی ترتیب
+### مرحلہ 2: ریپوزیٹری سیکرٹس کی ترتیب
 
-آپ کو صرف اپنی **AI سروس کی اسناد** کو اپنے ریپوزٹری کی ترتیبات میں انکرپٹڈ سیکرٹس کے طور پر شامل کرنا ہوگا۔
+آپ کو صرف اپنی **AI سروس کی اسناد** کو ریپوزیٹری سیٹنگز میں انکرپٹڈ سیکرٹس کے طور پر شامل کرنا ہے۔
 
-1.  اپنے ہدف GitHub ریپوزٹری پر جائیں۔  
-2.  **Settings** > **Secrets and variables** > **Actions** پر جائیں۔  
+1.  اپنے مطلوبہ GitHub ریپوزیٹری پر جائیں۔
+2.  **Settings** > **Secrets and variables** > **Actions** پر جائیں۔
 3.  **Repository secrets** کے تحت، ہر مطلوبہ AI سروس سیکرٹ کے لیے **New repository secret** پر کلک کریں۔
 
-    ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.ur.png) *(تصویر کا حوالہ: سیکرٹس شامل کرنے کی جگہ)*
+    <img src="../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.ur.png" alt="سیکرٹس شامل کرنے کی جگہ" /> *(تصویری حوالہ: سیکرٹس کہاں شامل کرنے ہیں)*
 
-**ضروری AI سروس سیکرٹس (اپنی ضروریات کے مطابق تمام شامل کریں):**
+**مطلوبہ AI سروس سیکرٹس (اپنی لازمی شرائط کے مطابق تمام شامل کریں):**
 
-| سیکرٹ کا نام                         | وضاحت                                  | قدر کا ذریعہ                    |
-| :---------------------------------- | :----------------------------------- | :----------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`            | Azure AI سروس (کمپیوٹر وژن) کے لیے کلید    | آپ کا Azure AI Foundry          |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI سروس (کمپیوٹر وژن) کے لیے اینڈ پوائنٹ | آپ کا Azure AI Foundry          |
-| `AZURE_OPENAI_API_KEY`              | Azure OpenAI سروس کے لیے کلید              | آپ کا Azure AI Foundry          |
-| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI سروس کے لیے اینڈ پوائنٹ        | آپ کا Azure AI Foundry          |
-| `AZURE_OPENAI_MODEL_NAME`           | آپ کا Azure OpenAI ماڈل نام               | آپ کا Azure AI Foundry          |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | آپ کا Azure OpenAI ڈیپلائمنٹ نام            | آپ کا Azure AI Foundry          |
-| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI کے لیے API ورژن               | آپ کا Azure AI Foundry          |
-| `OPENAI_API_KEY`                    | OpenAI کے لیے API کی                      | آپ کا OpenAI پلیٹ فارم          |
-| `OPENAI_ORG_ID`                     | OpenAI آرگنائزیشن ID (اختیاری)            | آپ کا OpenAI پلیٹ فارم          |
-| `OPENAI_CHAT_MODEL_ID`              | مخصوص OpenAI ماڈل ID (اختیاری)            | آپ کا OpenAI پلیٹ فارم          |
-| `OPENAI_BASE_URL`                   | کسٹم OpenAI API بیس URL (اختیاری)         | آپ کا OpenAI پلیٹ فارم          |
+| سیکرٹ کا نام                         | وضاحت                               | ویلیو سورس                     |
+| :---------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Azure AI Service (Computer Vision) کے لیے کی  | آپ کا Azure AI Foundry               |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Azure AI Service (Computer Vision) کے لیے اینڈ پوائنٹ | آپ کا Azure AI Foundry               |
+| `AZURE_OPENAI_API_KEY`              | Azure OpenAI سروس کے لیے کی              | آپ کا Azure AI Foundry               |
+| `AZURE_OPENAI_ENDPOINT`             | Azure OpenAI سروس کے لیے اینڈ پوائنٹ         | آپ کا Azure AI Foundry               |
+| `AZURE_OPENAI_MODEL_NAME`           | آپ کا Azure OpenAI ماڈل نام              | آپ کا Azure AI Foundry               |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | آپ کا Azure OpenAI ڈیپلائمنٹ نام         | آپ کا Azure AI Foundry               |
+| `AZURE_OPENAI_API_VERSION`          | Azure OpenAI کے لیے API ورژن              | آپ کا Azure AI Foundry               |
+| `OPENAI_API_KEY`                    | OpenAI کے لیے API Key                        | آپ کا OpenAI Platform              |
+| `OPENAI_ORG_ID`                     | OpenAI آرگنائزیشن آئی ڈی (اختیاری)         | آپ کا OpenAI Platform              |
+| `OPENAI_CHAT_MODEL_ID`              | مخصوص OpenAI ماڈل آئی ڈی (اختیاری)       | آپ کا OpenAI Platform              |
+| `OPENAI_BASE_URL`                   | کسٹم OpenAI API Base URL (اختیاری)     | آپ کا OpenAI Platform              |
 
 ### مرحلہ 3: ورک فلو کی اجازتیں ترتیب دیں
 
-GitHub ایکشن کو کوڈ چیک آؤٹ کرنے اور پل ریکویسٹ بنانے کے لیے `GITHUB_TOKEN` کے ذریعے اجازتیں درکار ہیں۔
+GitHub Action کو `GITHUB_TOKEN` کے ذریعے کوڈ چیک آؤٹ کرنے اور پل ریکویسٹ بنانے کی اجازت درکار ہے۔
 
-1.  اپنی ریپوزٹری میں **Settings** > **Actions** > **General** پر جائیں۔  
-2.  نیچے **Workflow permissions** سیکشن تک سکرول کریں۔  
-3.  **Read and write permissions** منتخب کریں۔ یہ ورک فلو کے لیے `GITHUB_TOKEN` کو ضروری `contents: write` اور `pull-requests: write` اجازتیں دیتا ہے۔  
-4.  یقینی بنائیں کہ **Allow GitHub Actions to create and approve pull requests** کا چیک باکس منتخب ہو۔  
-5.  **Save** پر کلک کریں۔
+1.  اپنے ریپوزیٹری میں **Settings** > **Actions** > **General** پر جائیں۔
+2.  **Workflow permissions** سیکشن تک نیچے جائیں۔
+3.  **Read and write permissions** منتخب کریں۔ اس سے `GITHUB_TOKEN` کو اس ورک فلو کے لیے `contents: write` اور `pull-requests: write` کی اجازت مل جائے گی۔
+4.  **Allow GitHub Actions to create and approve pull requests** کے چیک باکس کو **چیک** کریں۔
+5.  **Save** منتخب کریں۔
 
-![Permission setting](../../../../translated_images/permission-setting.cb1f57fdb5194f0743b1f6932f221e404ae2928ee88d77f1de39aba46fbf774a.ur.png)
+<img src="../../../../translated_images/permission-setting.ae2f02748b0579e7dc3633f14dad67005b533ea8f69890818857de058089a7f5.ur.png" alt="اجازتوں کی ترتیب" />
 
 ### مرحلہ 4: ورک فلو فائل بنائیں
 
-آخر میں، وہ YAML فائل بنائیں جو `GITHUB_TOKEN` استعمال کرتے ہوئے خودکار ورک فلو کی تعریف کرتی ہے۔
+آخر میں، YAML فائل بنائیں جو `GITHUB_TOKEN` کے ساتھ خودکار ورک فلو کو بیان کرتی ہے۔
 
-1.  اپنی ریپوزٹری کی روٹ ڈائریکٹری میں، اگر موجود نہ ہو تو `.github/workflows/` ڈائریکٹری بنائیں۔  
-2.  `.github/workflows/` کے اندر ایک فائل `co-op-translator.yml` کے نام سے بنائیں۔  
-3.  مندرجہ ذیل مواد `co-op-translator.yml` میں پیسٹ کریں۔
+1.  اپنے ریپوزیٹری کی روٹ ڈائریکٹری میں `.github/workflows/` ڈائریکٹری بنائیں اگر موجود نہیں۔
+2.  `.github/workflows/` کے اندر `co-op-translator.yml` نامی فائل بنائیں۔
+3.  درج ذیل مواد `co-op-translator.yml` میں پیسٹ کریں۔
 
 ```yaml
 name: Co-op Translator
@@ -127,7 +127,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # === AI Service Credentials ===
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
@@ -167,11 +167,25 @@ jobs:
           add-paths: |
             translations/
             translated_images/
-```  
-4.  **ورک فلو کو حسب ضرورت بنائیں:**  
-  - **[!IMPORTANT] ہدف زبانیں:** اگر ضرورت ہو تو `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` مرحلے میں زبانیں تبدیل کریں۔
+```
+4.  **ورک فلو کو اپنی مرضی کے مطابق بنائیں:**
+  - **[!IMPORTANT] ہدف زبانیں:** `Run Co-op Translator` مرحلے میں، آپ کو لازمی طور پر `translate -l "..." -y` کمانڈ میں زبانوں کے کوڈز کی فہرست کو اپنے پروجیکٹ کی ضروریات کے مطابق دیکھنا اور تبدیل کرنا ہے۔ دی گئی مثال (`ar de es...`) کو تبدیل یا ایڈجسٹ کرنا ضروری ہے۔
+  - **ٹرگر (`on:`):** موجودہ ٹرگر ہر بار `main` پر پش ہونے پر ورک فلو چلاتا ہے۔ بڑے ریپوزیٹریز کے لیے، `paths:` فلٹر شامل کرنے پر غور کریں (YAML میں تبصرہ شدہ مثال دیکھیں) تاکہ ورک فلو صرف متعلقہ فائلوں (مثلاً سورس ڈاکیومنٹیشن) میں تبدیلی پر چلے، اور رنر منٹس بچیں۔
+  - **PR تفصیلات:** `Create Pull Request` مرحلے میں `commit-message`, `title`, `body`, `branch` نام، اور `labels` کو اپنی ضرورت کے مطابق تبدیل کریں۔
 
-**ڈس کلیمر**:  
-یہ دستاویز AI ترجمہ سروس [Co-op Translator](https://github.com/Azure/co-op-translator) کے ذریعے ترجمہ کی گئی ہے۔ اگرچہ ہم درستگی کے لیے کوشاں ہیں، براہ کرم اس بات سے آگاہ رہیں کہ خودکار ترجمے میں غلطیاں یا کمی بیشی ہو سکتی ہے۔ اصل دستاویز اپنی مادری زبان میں ہی معتبر ماخذ سمجھی جانی چاہیے۔ اہم معلومات کے لیے پیشہ ور انسانی ترجمہ کی سفارش کی جاتی ہے۔ اس ترجمے کے استعمال سے پیدا ہونے والی کسی بھی غلط فہمی یا غلط تشریح کی ذمہ داری ہم پر نہیں ہوگی۔
+## ورک فلو چلانا
+
+> [!WARNING]  
+> **GitHub-hosted رنر وقت کی حد:**  
+> GitHub-hosted رنرز جیسے `ubuntu-latest` کی **زیادہ سے زیادہ عمل درآمد کی حد 6 گھنٹے** ہے۔  
+> اگر بڑے ڈاکیومنٹیشن ریپوزیٹریز میں ترجمہ کا عمل 6 گھنٹے سے زیادہ ہو جائے تو ورک فلو خودکار طور پر ختم ہو جائے گا۔  
+> اس سے بچنے کے لیے:  
+> - **سیلف-ہوسٹڈ رنر** استعمال کریں (کوئی وقت کی حد نہیں)  
+> - ہر رن میں ہدف زبانوں کی تعداد کم کریں
+
+جب `co-op-translator.yml` فائل آپ کی مین برانچ (یا `on:` ٹرگر میں دی گئی برانچ) میں مرج ہو جائے گی، ورک فلو خودکار طور پر ہر بار چلے گا جب اس برانچ میں تبدیلی پش کی جائے گی (اور اگر `paths` فلٹر ترتیب دیا گیا ہو تو اس کے مطابق)۔
+
+---
+
+**اعلانِ دستبرداری**:
+یہ دستاویز AI ترجمہ سروس [Co-op Translator](https://github.com/Azure/co-op-translator) کے ذریعے ترجمہ کی گئی ہے۔ اگرچہ ہم درستگی کی کوشش کرتے ہیں، براہ کرم آگاہ رہیں کہ خودکار ترجمے میں غلطیاں یا عدم درستگی ہو سکتی ہے۔ اصل دستاویز اپنی مقامی زبان میں مستند ذریعہ سمجھی جائے۔ اہم معلومات کے لیے پیشہ ور انسانی ترجمہ کی سفارش کی جاتی ہے۔ اس ترجمے کے استعمال سے پیدا ہونے والی کسی بھی غلط فہمی یا غلط تشریح کے ہم ذمہ دار نہیں ہیں۔

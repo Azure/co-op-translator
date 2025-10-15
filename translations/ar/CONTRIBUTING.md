@@ -1,21 +1,21 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d95d7ec0097c5569ac16dd42840787a2",
-  "translation_date": "2025-06-12T09:25:32+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T02:16:56+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "ar"
 }
 -->
 # المساهمة في Co-op Translator
 
-يرحب هذا المشروع بالمساهمات والاقتراحات. تتطلب معظم المساهمات موافقتك على اتفاقية ترخيص المساهمين (CLA) التي تُعلن فيها بأن لديك الحق في منحنا حقوق استخدام مساهمتك، وأنك فعلًا تمنحنا هذه الحقوق. لمزيد من التفاصيل، زر https://cla.opensource.microsoft.com.
+هذا المشروع يرحب بالمساهمات والاقتراحات. معظم المساهمات تتطلب منك الموافقة على اتفاقية ترخيص المساهم (CLA) التي تؤكد أنك تملك الحق في منحنا حقوق استخدام مساهمتك. لمزيد من التفاصيل، قم بزيارة https://cla.opensource.microsoft.com.
 
-عند تقديم طلب سحب، سيقوم بوت CLA تلقائيًا بتحديد ما إذا كنت بحاجة لتوفير CLA وتزيين طلب السحب بشكل مناسب (مثل فحص الحالة، تعليق). ما عليك سوى اتباع التعليمات التي يقدمها البوت. ستحتاج إلى القيام بذلك مرة واحدة فقط عبر جميع المستودعات التي تستخدم اتفاقيتنا.
+عند تقديم طلب سحب (pull request)، سيحدد بوت CLA تلقائيًا ما إذا كنت بحاجة لتقديم CLA وسيضيف إشعارًا مناسبًا على الطلب (مثل فحص الحالة أو تعليق). فقط اتبع التعليمات التي يقدمها البوت. ستحتاج للقيام بذلك مرة واحدة فقط عبر جميع المستودعات التي تستخدم CLA الخاص بنا.
 
 ## إعداد بيئة التطوير
 
-لإعداد بيئة التطوير لهذا المشروع، نوصي باستخدام Poetry لإدارة التبعيات. نستخدم `pyproject.toml` لإدارة تبعيات المشروع، وبالتالي لتثبيت التبعيات، يجب عليك استخدام Poetry.
+لإعداد بيئة التطوير لهذا المشروع، نوصي باستخدام Poetry لإدارة الاعتمادات. نحن نستخدم `pyproject.toml` لإدارة اعتمادات المشروع، ولذلك، لتثبيت الاعتمادات، يجب عليك استخدام Poetry.
 
 ### إنشاء بيئة افتراضية
 
@@ -33,7 +33,7 @@ poetry init
 
 ### تفعيل البيئة الافتراضية
 
-#### لكل من pip و Poetry
+#### لكل من pip وPoetry
 
 - ويندوز:
 
@@ -53,7 +53,7 @@ poetry init
 poetry shell
 ```
 
-### تثبيت الحزمة والحزم المطلوبة
+### تثبيت الحزمة والاعتمادات المطلوبة
 
 #### باستخدام Poetry (من pyproject.toml)
 
@@ -63,20 +63,20 @@ poetry install
 
 ### الاختبار اليدوي
 
-قبل تقديم طلب السحب، من المهم اختبار وظيفة الترجمة باستخدام وثائق حقيقية:
+قبل تقديم طلب سحب، من المهم اختبار وظيفة الترجمة باستخدام توثيق حقيقي:
 
-1. أنشئ مجلد اختبار في المجلد الجذر:
+1. أنشئ مجلد اختبار في الدليل الجذري:
     ```bash
     mkdir test_docs
     ```
 
-2. انسخ بعض وثائق الماركدوان والصور التي تريد ترجمتها إلى مجلد الاختبار. على سبيل المثال:
+2. انسخ بعض ملفات التوثيق بصيغة markdown والصور التي ترغب في ترجمتها إلى مجلد الاختبار. على سبيل المثال:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. ثبت الحزمة محليًا:
+3. قم بتثبيت الحزمة محليًا:
     ```bash
     pip install -e .
     ```
@@ -86,17 +86,17 @@ poetry install
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. تحقق من الملفات المترجمة في ملف `test_docs/translations` and `test_docs/translated_images` to verify:
-   - The translation quality
-   - The metadata comments are correct
-   - The original markdown structure is preserved
-   - Links and images are working properly
+5. تحقق من الملفات المترجمة في `test_docs/translations` و`test_docs/translated_images` للتأكد من:
+   - جودة الترجمة
+   - صحة تعليقات البيانات الوصفية
+   - الحفاظ على بنية الـ markdown الأصلية
+   - الروابط والصور تعمل بشكل صحيح
 
-This manual testing helps ensure that your changes work well in real-world scenarios.
+هذا الاختبار اليدوي يساعد في التأكد من أن التغييرات التي قمت بها تعمل بشكل جيد في سيناريوهات العالم الحقيقي.
 
-### Environment variables
+### متغيرات البيئة
 
-1. Create an `.env` file in the root directory by copying the provided `.env.template`.
+1. أنشئ ملف `.env` في الدليل الجذري عن طريق نسخ الملف `.env.template` المقدم.
 1. املأ متغيرات البيئة كما هو موضح.
 
 > [!TIP]
@@ -107,33 +107,33 @@ This manual testing helps ensure that your changes work well in real-world scena
 >
 > #### GitHub Codespaces
 >
-> يمكنك تشغيل هذه العينات افتراضيًا باستخدام GitHub Codespaces ولا تحتاج إلى أي إعدادات إضافية.
+> يمكنك تشغيل هذه العينات افتراضيًا باستخدام GitHub Codespaces دون الحاجة لأي إعدادات إضافية.
 >
-> سيفتح الزر مثيل VS Code قائم على الويب في متصفحك:
+> سيؤدي الزر إلى فتح نسخة من VS Code على الويب في متصفحك:
 >
-> 1. افتح القالب (قد يستغرق عدة دقائق):
+> 1. افتح القالب (قد يستغرق ذلك عدة دقائق):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
 >
 > #### التشغيل محليًا باستخدام VS Code Dev Containers
 >
-> ⚠️ هذا الخيار سيعمل فقط إذا كان Docker Desktop مخصصًا له على الأقل 16 جيجابايت من الذاكرة العشوائية. إذا كانت الذاكرة أقل من 16 جيجابايت، يمكنك تجربة خيار [GitHub Codespaces](../..) أو [إعداده محليًا](../..).
+> ⚠️ هذا الخيار سيعمل فقط إذا كان لديك على الأقل 16 جيجابايت من ذاكرة الوصول العشوائي (RAM) مخصصة لـ Docker Desktop. إذا كان لديك أقل من 16 جيجابايت، يمكنك تجربة [خيار GitHub Codespaces](../..) أو [إعداده محليًا](../..).
 >
-> خيار ذو صلة هو VS Code Dev Containers، الذي سيفتح المشروع في VS Code المحلي باستخدام [امتداد Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> خيار آخر هو VS Code Dev Containers، والذي سيفتح المشروع في VS Code المحلي لديك باستخدام [إضافة Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. شغّل Docker Desktop (وثبته إذا لم يكن مثبتًا)
+> 1. شغّل Docker Desktop (قم بتثبيته إذا لم يكن مثبتًا)
 > 2. افتح المشروع:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
 
 
-### نمط كتابة الكود
+### أسلوب كتابة الكود
 
-نستخدم [Black](https://github.com/psf/black) كمنسق كود بايثون للحفاظ على نمط كود موحد عبر المشروع. Black هو منسق كود صارم يعيد تنسيق كود بايثون تلقائيًا ليتوافق مع نمط Black.
+نستخدم [Black](https://github.com/psf/black) كمنسق كود بايثون للحفاظ على أسلوب كتابة موحد عبر المشروع. Black هو منسق كود صارم يعيد تنسيق كود بايثون تلقائيًا ليتوافق مع أسلوب Black.
 
-#### التهيئة
+#### الإعداد
 
-يتم تحديد تهيئة Black في `pyproject.toml` الخاص بنا:
+إعداد Black محدد في ملف `pyproject.toml` الخاص بنا:
 
 ```toml
 [tool.black]
@@ -164,38 +164,38 @@ pip install black
 
 ##### مع Poetry
 
-1. نسق جميع ملفات بايثون في المشروع:
+1. تنسيق جميع ملفات بايثون في المشروع:
     ```bash
     poetry run black .
     ```
 
-2. نسق ملف أو مجلد محدد:
+2. تنسيق ملف أو مجلد محدد:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
 ##### مع pip
 
-1. نسق جميع ملفات بايثون في المشروع:
+1. تنسيق جميع ملفات بايثون في المشروع:
     ```bash
     black .
     ```
 
-2. نسق ملف أو مجلد محدد:
+2. تنسيق ملف أو مجلد محدد:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> نوصي بضبط محررك ليقوم تلقائيًا بتنسيق الكود باستخدام Black عند الحفظ. معظم المحررات الحديثة تدعم ذلك عبر الإضافات أو البلجنات.
+> نوصي بإعداد محررك ليقوم بتنسيق الكود تلقائيًا باستخدام Black عند الحفظ. معظم المحررات الحديثة تدعم ذلك من خلال الإضافات أو الملحقات.
 
 ## تشغيل Co-op Translator
 
 لتشغيل Co-op Translator باستخدام Poetry في بيئتك، اتبع الخطوات التالية:
 
-1. انتقل إلى المجلد حيث تريد إجراء اختبارات الترجمة أو أنشئ مجلدًا مؤقتًا لأغراض الاختبار.
+1. انتقل إلى الدليل الذي ترغب في إجراء اختبارات الترجمة فيه أو أنشئ مجلدًا مؤقتًا لغرض الاختبار.
 
-2. نفذ الأمر التالي. يشير العلم `-l ko` with the language code you wish to translate into. The `-d` إلى وضع التصحيح.
+2. نفذ الأمر التالي. استبدل `-l ko` برمز اللغة التي ترغب في الترجمة إليها. العلم `-d` يشير إلى وضع التصحيح (debug).
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -204,13 +204,51 @@ pip install black
 > [!NOTE]
 > تأكد من تفعيل بيئة Poetry (poetry shell) قبل تشغيل الأمر.
 
-## المسؤولون عن الصيانة
+## المساهمة بلغة جديدة
 
-### رسالة الالتزام واستراتيجية الدمج
+نرحب بالمساهمات التي تضيف دعمًا للغات جديدة. قبل فتح طلب سحب، يرجى إكمال الخطوات أدناه لضمان مراجعة سلسة.
 
-لضمان الاتساق والوضوح في سجل الالتزام الخاص بمشروعنا، نتبع تنسيقًا محددًا لرسائل الالتزام **لرسالة الالتزام النهائية** عند استخدام استراتيجية **Squash and Merge**.
+1. أضف اللغة إلى تعيين الخطوط
+   - حرر الملف `src/co_op_translator/fonts/font_language_mappings.yml`
+   - أضف إدخالًا يحتوي على:
+     - `code`: رمز اللغة على نمط ISO (مثال: `vi`)
+     - `name`: اسم العرض البشري
+     - `font`: خط متوفر في `src/co_op_translator/fonts/` يدعم الحروف المطلوبة
+     - `rtl`: `true` إذا كانت اللغة من اليمين لليسار، وإلا `false`
 
-عند دمج طلب سحب، يتم دمج الالتزامات الفردية في التزام واحد. يجب أن تتبع رسالة الالتزام النهائية التنسيق أدناه للحفاظ على سجل نظيف ومتسق.
+2. تضمين ملفات الخط المطلوبة (إذا لزم الأمر)
+   - إذا كان هناك خط جديد مطلوب، تحقق من توافق الترخيص مع التوزيع مفتوح المصدر
+   - أضف ملف الخط إلى `src/co_op_translator/fonts/`
+
+3. التحقق المحلي
+   - شغّل الترجمة على عينة صغيرة (Markdown، صور، ودفاتر ملاحظات إذا لزم الأمر)
+   - تحقق من أن المخرجات تظهر بشكل صحيح، بما في ذلك الخطوط وأي تخطيط RTL إذا كان ذلك مناسبًا
+
+4. تحديث التوثيق
+   - تأكد من ظهور اللغة في `getting_started/supported-languages.md`
+   - لا حاجة لتعديل `README_languages_template.md`؛ يتم إنشاؤه تلقائيًا من القائمة المدعومة
+
+5. افتح طلب سحب
+   - صف اللغة المضافة وأي اعتبارات تتعلق بالخط/الترخيص
+   - أرفق لقطات شاشة للمخرجات إذا أمكن
+
+مثال على إدخال YAML:
+
+```yaml
+new_lang(code):
+  name: "New Language"
+  font: "NotoSans-Medium.ttf"
+  rtl: false
+```
+
+
+## المشرفون
+
+### تنسيق رسالة الالتزام واستراتيجية الدمج
+
+لضمان الاتساق والوضوح في سجل التغييرات الخاص بالمشروع، نتبع تنسيقًا محددًا لرسائل الالتزام **لرسالة الالتزام النهائية** عند استخدام استراتيجية **Squash and Merge**.
+
+عند دمج طلب سحب (PR)، سيتم دمج جميع الالتزامات الفردية في التزام واحد. يجب أن تتبع رسالة الالتزام النهائية التنسيق أدناه للحفاظ على سجل نظيف وموحد.
 
 #### تنسيق رسالة الالتزام (لـ squash and merge)
 
@@ -221,42 +259,44 @@ pip install black
 ```
 
 - **type**: يحدد فئة الالتزام. نستخدم الأنواع التالية:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes related to the build system or dependencies, including updates to configuration files, CI workflows, or the Dockerfile.
-  - `Core`: For modifications to the project's core functionality or features, particularly those involving files in the `src/co_op_translator/core` directory.
+  - `Docs`: لتحديثات التوثيق.
+  - `Build`: للتغييرات المتعلقة بنظام البناء أو الاعتمادات، بما في ذلك تحديثات ملفات الإعداد، سير العمل CI، أو Dockerfile.
+  - `Core`: لتعديلات الوظائف الأساسية للمشروع أو الميزات، خاصة تلك التي تتعلق بملفات في مجلد `src/co_op_translator/core`.
 
-- **description**: A concise summary of the change.
-- **PR number**: The number of the pull request associated with the commit.
+- **description**: ملخص موجز للتغيير.
+- **PR number**: رقم طلب السحب المرتبط بالالتزام.
 
-**Examples**:
+**أمثلة**:
 
 - `Docs: Update installation instructions for clarity (#50)`
 - `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Currently, the **`Docs`**, **`Core`**, and **`Build`** prefixes are automatically added to PR titles based on the labels applied to the modified source code. As long as the correct label is applied, you typically don't need to manually update the PR title. You just need to verify that everything is correct and the prefix has been generated appropriately.
+> حاليًا، يتم إضافة البادئات **`Docs`**، **`Core`**، و**`Build`** تلقائيًا إلى عناوين طلبات السحب بناءً على التصنيفات المطبقة على الكود المعدل. طالما تم تطبيق التصنيف الصحيح، عادة لا تحتاج لتحديث عنوان الطلب يدويًا. فقط تحقق من أن كل شيء صحيح وأن البادئة تم توليدها بشكل مناسب.
 
-#### Merge strategy
+#### استراتيجية الدمج
 
-We use **Squash and Merge** as our default strategy for pull requests. This strategy ensures that commit messages follow our format, even if individual commits don't.
+نستخدم **Squash and Merge** كاستراتيجية افتراضية لطلبات السحب. هذه الاستراتيجية تضمن أن رسائل الالتزام تتبع تنسيقنا، حتى لو لم تكن الالتزامات الفردية كذلك.
 
-**Reasons**:
+**الأسباب**:
 
-- A clean, linear project history.
-- Consistency in commit messages.
-- Reduced noise from minor commits (e.g., "fix typo").
+- سجل مشروع نظيف وخطي.
+- اتساق في رسائل الالتزام.
+- تقليل الضوضاء الناتجة عن الالتزامات الصغيرة (مثل "تصحيح خطأ إملائي").
 
-When merging, ensure the final commit message follows the commit message format described above.
+عند الدمج، تأكد من أن رسالة الالتزام النهائية تتبع تنسيق رسالة الالتزام الموضح أعلاه.
 
-**Example of Squash and Merge**
-If a PR contains the following commits:
+**مثال على Squash and Merge**
+إذا كان طلب السحب يحتوي على الالتزامات التالية:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-They should be squashed into:
+يجب دمجها في:
 `Docs: Improve documentation clarity and formatting (#65)`
 
-**إخلاء مسؤولية**:  
-تمت ترجمة هذا المستند باستخدام خدمة الترجمة الآلية [Co-op Translator](https://github.com/Azure/co-op-translator). بينما نسعى لتحقيق الدقة، يرجى العلم أن الترجمات الآلية قد تحتوي على أخطاء أو عدم دقة. يجب اعتبار المستند الأصلي بلغته الأصلية المصدر الموثوق به. للمعلومات الحساسة، يُنصح بالاستعانة بترجمة بشرية محترفة. نحن غير مسؤولين عن أي سوء فهم أو تفسير ناتج عن استخدام هذه الترجمة.
+---
+
+**إخلاء المسؤولية**:
+تمت ترجمة هذا المستند باستخدام خدمة الترجمة بالذكاء الاصطناعي [Co-op Translator](https://github.com/Azure/co-op-translator). بينما نسعى لتحقيق الدقة، يرجى العلم أن الترجمات الآلية قد تحتوي على أخطاء أو معلومات غير دقيقة. يجب اعتبار المستند الأصلي بلغته الأصلية هو المصدر الرسمي والموثوق. بالنسبة للمعلومات الحساسة أو الهامة، يُنصح بالاستعانة بترجمة بشرية احترافية. نحن غير مسؤولين عن أي سوء فهم أو تفسير خاطئ ينشأ عن استخدام هذه الترجمة.

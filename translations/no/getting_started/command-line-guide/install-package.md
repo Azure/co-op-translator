@@ -1,27 +1,27 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "b6d85d887d2664539a438dae5d0dfa50",
-  "translation_date": "2025-06-12T18:35:24+00:00",
+  "original_hash": "510827ad22a2031a50838919c3594828",
+  "translation_date": "2025-10-15T03:24:59+00:00",
   "source_file": "getting_started/command-line-guide/install-package.md",
   "language_code": "no"
 }
 -->
-# Installer Co-op translator-pakken
+# Installer Co-op Translator-pakken
 
-**Co-op Translator** er et kommandolinjeverktøy (CLI) som hjelper deg med å oversette alle markdown-filene og bildene i prosjektet ditt til flere språk. Denne veiledningen tar deg gjennom hvordan du konfigurerer oversetteren og kjører den for ulike brukstilfeller.
+**Co-op Translator** er et kommandolinjeverktøy (CLI) som hjelper deg å oversette alle markdown-filer og bilder i prosjektet ditt til flere språk. Denne veiledningen viser deg hvordan du konfigurerer oversetteren og bruker den til ulike formål.
 
 ### Opprett et virtuelt miljø
 
-Du kan opprette et virtuelt miljø ved å bruke enten `pip` eller `Poetry`. Skriv en av følgende kommandoer i terminalen din.
+Du kan opprette et virtuelt miljø med enten `pip` eller `Poetry`. Skriv inn en av følgende kommandoer i terminalen din.
 
-#### Bruke pip
+#### Med pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Bruke Poetry
+#### Med Poetry
 
 ```bash
 poetry init
@@ -29,7 +29,7 @@ poetry init
 
 ### Aktiver det virtuelle miljøet
 
-Etter at du har opprettet det virtuelle miljøet, må du aktivere det. Stegene varierer avhengig av operativsystemet ditt. Skriv følgende kommando i terminalen.
+Etter at du har opprettet det virtuelle miljøet, må du aktivere det. Fremgangsmåten varierer avhengig av operativsystem. Skriv inn følgende kommando i terminalen din.
 
 #### For både pip og Poetry
 
@@ -45,9 +45,9 @@ Etter at du har opprettet det virtuelle miljøet, må du aktivere det. Stegene v
     source .venv/bin/activate
     ```
 
-#### Bruke Poetry
+#### Med Poetry
 
-1. Hvis du opprettet miljøet med Poetry, skriv følgende kommando i terminalen for å aktivere det.
+1. Hvis du opprettet miljøet med Poetry, skriv inn følgende kommando i terminalen for å aktivere det.
 
     ```bash
     poetry shell
@@ -55,39 +55,42 @@ Etter at du har opprettet det virtuelle miljøet, må du aktivere det. Stegene v
 
 ### Installere pakken og nødvendige pakker
 
-Når det virtuelle miljøet ditt er satt opp og aktivert, er neste steg å installere de nødvendige avhengighetene.
+Når det virtuelle miljøet er satt opp og aktivert, er neste steg å installere nødvendige avhengigheter.
 
 ### Rask installasjon
 
-Installer via Co-Op Translator med pip
+Installer Co-Op Translator via pip
 
 ```
 pip install co-op-translator
 ```
 Eller
 
-Installer via Poetry
+Installer via poetry
 ```
 poetry add co-op-translator
 ```
 
-#### Bruke pip (fra requirements.txt) hvis du kloner dette repoet
+#### Med pip (fra requirements.txt) hvis du kloner dette repoet
 
-![NOTE] Vennligst IKKE gjør dette hvis du installerer co-op translator via rask installasjon.
+> [!NOTE]
+> Ikke gjør dette hvis du installerer co-op translator via rask installasjon.
 
-1. Hvis du bruker pip, skriv følgende kommando i terminalen. Den vil automatisk installere de nødvendige pakkene spesifisert i `requirements.txt`-filen:
+1. Hvis du bruker pip, skriv inn følgende kommando i terminalen. Den vil automatisk installere nødvendige pakker som er spesifisert i `requirements.txt`-filen:
 
     ```bash
     pip install -r requirements.txt
     ```
 
-#### Bruke Poetry (fra pyproject.toml)
+#### Med Poetry (fra pyproject.toml)
 
-1. Hvis du bruker Poetry, skriv følgende kommando i terminalen. Den vil automatisk installere de nødvendige pakkene spesifisert i `pyproject.toml`-filen:
+1. Hvis du bruker Poetry, skriv inn følgende kommando i terminalen. Den vil automatisk installere nødvendige pakker som er spesifisert i `pyproject.toml`-filen:
 
     ```bash
     poetry install
     ```
 
-**Ansvarsfraskrivelse**:  
-Dette dokumentet er oversatt ved hjelp av AI-oversettelsestjenesten [Co-op Translator](https://github.com/Azure/co-op-translator). Selv om vi streber etter nøyaktighet, vennligst vær oppmerksom på at automatiske oversettelser kan inneholde feil eller unøyaktigheter. Det originale dokumentet på dets opprinnelige språk skal anses som den autoritative kilden. For kritisk informasjon anbefales profesjonell menneskelig oversettelse. Vi er ikke ansvarlige for eventuelle misforståelser eller feiltolkninger som oppstår ved bruk av denne oversettelsen.
+---
+
+**Ansvarsfraskrivelse**:
+Dette dokumentet er oversatt ved hjelp av AI-oversettelsestjenesten [Co-op Translator](https://github.com/Azure/co-op-translator). Selv om vi tilstreber nøyaktighet, må du være oppmerksom på at automatiske oversettelser kan inneholde feil eller unøyaktigheter. Det originale dokumentet på sitt opprinnelige språk bør anses som den autoritative kilden. For kritisk informasjon anbefales profesjonell menneskelig oversettelse. Vi er ikke ansvarlige for eventuelle misforståelser eller feiltolkninger som oppstår ved bruk av denne oversettelsen.

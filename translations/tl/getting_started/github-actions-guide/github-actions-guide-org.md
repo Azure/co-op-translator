@@ -1,123 +1,123 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "c437820027c197f25fb2cbee95bae28c",
-  "translation_date": "2025-06-12T19:14:59+00:00",
+  "original_hash": "9fac847815936ef6e6c8bfde6d191571",
+  "translation_date": "2025-10-15T03:44:00+00:00",
   "source_file": "getting_started/github-actions-guide/github-actions-guide-org.md",
   "language_code": "tl"
 }
 -->
 # Paggamit ng Co-op Translator GitHub Action (Gabay para sa Organisasyon)
 
-**Target na Mambabasa:** Ang gabay na ito ay para sa **mga internal na user ng Microsoft** o **mga team na may access sa kinakailangang kredensyal para sa pre-built na Co-op Translator GitHub App** o kaya ay kayang gumawa ng sarili nilang custom na GitHub App.
+**Sino ang para dito:** Ang gabay na ito ay para sa **mga Microsoft internal na user** o **mga team na may access sa kinakailangang credentials para sa pre-built Co-op Translator GitHub App** o kaya ay makakagawa ng sarili nilang custom GitHub App.
 
-Automatiko mong isalin ang dokumentasyon ng iyong repositoryo gamit ang Co-op Translator GitHub Action. Tinatalakay ng gabay na ito kung paano i-setup ang action upang awtomatikong gumawa ng pull requests na may updated na mga salin kapag may pagbabago sa iyong source Markdown files o mga larawan.
+Automatiko mong maisasalin ang dokumentasyon ng iyong repository gamit ang Co-op Translator GitHub Action. Sa gabay na ito, matututunan mo kung paano i-set up ang action para awtomatikong gumawa ng pull request na may updated na salin tuwing may pagbabago sa iyong source Markdown files o mga larawan.
 
 > [!IMPORTANT]
->
+> 
 > **Pagpili ng Tamang Gabay:**
 >
-> Detalyado sa gabay na ito ang setup gamit ang **GitHub App ID at Private Key**. Kadalasan, kailangan mo ang paraang "Organization Guide" kung: **`GITHUB_TOKEN` Permissions ay Limitado:** Pinipigilan ng settings ng iyong organisasyon o repositoryo ang mga default na permiso na ibinibigay sa karaniwang `GITHUB_TOKEN`. Partikular, kung hindi pinapayagan ang `GITHUB_TOKEN` ng mga kinakailangang permiso sa `write` (tulad ng `contents: write` o `pull-requests: write`), mabibigo ang workflow sa [Public Setup Guide](./github-actions-guide-public.md) dahil sa kakulangan ng permiso. Ang paggamit ng dedikadong GitHub App na may tahasang ipinagkaloob na mga permiso ay nakakaiwas sa limitasyong ito.
+> Ang gabay na ito ay para sa setup gamit ang **GitHub App ID at Private Key**. Kadalasan, kailangan mo ang "Organization Guide" na paraan kung: **`GITHUB_TOKEN` Permissions ay Limitado:** Ang iyong organisasyon o repository settings ay naglilimita sa default na permissions ng standard `GITHUB_TOKEN`. Halimbawa, kung ang `GITHUB_TOKEN` ay hindi pinapayagan ang kinakailangang `write` permissions (tulad ng `contents: write` o `pull-requests: write`), hindi gagana ang workflow sa [Public Setup Guide](./github-actions-guide-public.md) dahil kulang ang permissions. Ang paggamit ng dedikadong GitHub App na may malinaw na permissions ay nakakaiwas sa limitasyong ito.
 >
-> **Kung hindi ito ang kaso para sa iyo:**
+> **Kung hindi ka apektado ng nasa itaas:**
 >
-> Kung ang karaniwang `GITHUB_TOKEN` ay may sapat na permiso sa iyong repositoryo (ibig sabihin, hindi ka nahaharang ng mga limitasyon ng organisasyon), gamitin ang **[Public Setup Guide gamit ang GITHUB_TOKEN](./github-actions-guide-public.md)**. Hindi kailangan ng public guide na kumuha o mag-manage ng App IDs o Private Keys at umaasa lamang sa karaniwang `GITHUB_TOKEN` at permiso ng repositoryo.
+> Kung sapat ang permissions ng standard `GITHUB_TOKEN` sa iyong repository (ibig sabihin, hindi ka na-block ng organizational restrictions), gamitin ang **[Public Setup Guide gamit ang GITHUB_TOKEN](./github-actions-guide-public.md)**. Ang public guide ay hindi nangangailangan ng App IDs o Private Keys at umaasa lang sa standard `GITHUB_TOKEN` at repository permissions.
 
-## Mga Kinakailangan
+## Mga Kailangan Bago Magsimula
 
-Bago i-configure ang GitHub Action, siguraduhing handa na ang mga kinakailangang kredensyal para sa AI service.
+Bago i-configure ang GitHub Action, siguraduhing handa na ang iyong AI service credentials.
 
-**1. Kinakailangan: Kredensyal para sa AI Language Model**  
-Kailangan mo ng kredensyal para sa kahit isa sa mga suportadong Language Model:
+**1. Kailangan: AI Language Model Credentials**
+Kailangan mo ng credentials para sa kahit isang suportadong Language Model:
 
-- **Azure OpenAI**: Kailangan ang Endpoint, API Key, Pangalan ng Model/Deployment, API Version.  
-- **OpenAI**: Kailangan ang API Key, (Opsyonal: Org ID, Base URL, Model ID).  
-- Tingnan ang [Supported Models and Services](../../../../README.md) para sa detalye.  
-- Gabay sa Setup: [I-setup ang Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
+- **Azure OpenAI**: Kailangan ng Endpoint, API Key, Model/Deployment Names, API Version.
+- **OpenAI**: Kailangan ng API Key, (Opsyonal: Org ID, Base URL, Model ID).
+- Tingnan ang [Supported Models and Services](../../../../README.md) para sa detalye.
+- Gabay sa Setup: [Set up Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
 
-**2. Opsyonal: Kredensyal para sa Computer Vision (para sa Pagsasalin ng Larawan)**
+**2. Opsyonal: Computer Vision Credentials (para sa Pagsasalin ng Larawan)**
 
-- Kailangan lang kung nais mong isalin ang teksto sa loob ng mga larawan.  
-- **Azure Computer Vision**: Kailangan ang Endpoint at Subscription Key.  
-- Kung hindi ito ibibigay, gagamitin ng action ang [Markdown-only mode](../markdown-only-mode.md).  
-- Gabay sa Setup: [I-setup ang Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
+- Kailangan lang kung gusto mong isalin ang text sa loob ng mga larawan.
+- **Azure Computer Vision**: Kailangan ng Endpoint at Subscription Key.
+- Kung hindi ibinigay, ang action ay magde-default sa [Markdown-only mode](../markdown-only-mode.md).
+- Gabay sa Setup: [Set up Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
 
-## Setup at Pag-configure
+## Setup at Configuration
 
-Sundin ang mga hakbang na ito para i-configure ang Co-op Translator GitHub Action sa iyong repositoryo:
+Sundin ang mga hakbang na ito para i-configure ang Co-op Translator GitHub Action sa iyong repository:
 
 ### Hakbang 1: I-install at I-configure ang GitHub App Authentication
 
-Gumagamit ang workflow ng GitHub App authentication para ligtas na makipag-ugnayan sa iyong repositoryo (halimbawa, gumawa ng pull requests) sa iyong ngalan. Pumili ng isa sa mga opsyon:
+Gumagamit ang workflow ng GitHub App authentication para ligtas na makipag-interact sa iyong repository (hal. gumawa ng pull request) para sa iyo. Pumili ng isang opsyon:
 
-#### **Opsyon A: I-install ang Pre-built na Co-op Translator GitHub App (para sa Internal na Paggamit ng Microsoft)**
+#### **Opsyon A: I-install ang Pre-built Co-op Translator GitHub App (para sa Microsoft Internal Use)**
 
-1. Pumunta sa [Co-op Translator GitHub App](https://github.com/apps/co-op-translator) na pahina.
+1. Pumunta sa [Co-op Translator GitHub App](https://github.com/apps/co-op-translator) page.
 
-1. Piliin ang **Install** at piliin ang account o organisasyon kung saan naroroon ang iyong target na repositoryo.
+1. Piliin ang **Install** at piliin ang account o organisasyon kung saan naroon ang iyong target repository.
 
-    ![Install app](../../../../translated_images/install-app.35a2210b4eadb0e9c081206925cb1f305ccb6e214d4bf006c4ea83dcbeec4f50.tl.png)
+    ![Install app](../../../../translated_images/install-app.d0f0a24cbb1d6c93f293f002eb34e633f7bc8f5caaba46b97806ba7bdc958f27.tl.png)
 
-1. Piliin ang **Only select repositories** at piliin ang iyong target na repositoryo (halimbawa, `PhiCookBook`). I-click ang **Install**. Maaaring hilingin sa iyo na mag-authenticate.
+1. Piliin ang **Only select repositories** at piliin ang iyong target repository (hal. `PhiCookBook`). I-click ang **Install**. Maaaring hingin ang iyong authentication.
 
-    ![Install authorize](../../../../translated_images/install-authorize.9338f61fc59df13d55042bb32a69c7f581339e0ea11ada503b83908681c485bd.tl.png)
+    ![Install authorize](../../../../translated_images/install-authorize.29df6238c3eb8f707e7fc6f97a946cb654b328530c4aeddce28b874693f076a0.tl.png)
 
-1. **Kunin ang App Credentials (Kinakailangan ang Internal na Proseso):** Para payagan ang workflow na mag-authenticate bilang app, kailangan mo ng dalawang impormasyon mula sa Co-op Translator team:  
-  - **App ID:** Ang natatanging identifier para sa Co-op Translator app. Ang App ID ay: `1164076`.  
-  - **Private Key:** Kailangan mong makuha ang **buong nilalaman** ng `.pem` private key file mula sa tagapamahala. **Ituring ang key na ito tulad ng password at panatilihing ligtas.**
+1. **Kunin ang App Credentials (Internal Process Required):** Para makapag-authenticate ang workflow bilang app, kailangan mo ng dalawang impormasyon mula sa Co-op Translator team:
+  - **App ID:** Ang unique identifier para sa Co-op Translator app. Ang App ID ay: `1164076`.
+  - **Private Key:** Kailangan mong kunin ang **buong laman** ng `.pem` private key file mula sa maintainer contact. **Ituring ang key na ito na parang password at panatilihing ligtas.**
 
 1. Magpatuloy sa Hakbang 2.
 
-#### **Opsyon B: Gumamit ng Sariling Custom GitHub App**
+#### **Opsyon B: Gumamit ng Sarili Mong Custom GitHub App**
 
-- Kung gusto mo, maaari kang gumawa at mag-configure ng sarili mong GitHub App. Siguraduhing mayroon itong Read & write access sa Contents at Pull requests. Kailangan mo ang App ID at isang generated na Private Key.
+- Kung gusto mo, maaari kang gumawa at mag-configure ng sarili mong GitHub App. Siguraduhing may Read & write access ito sa Contents at Pull requests. Kailangan mo ang App ID at generated Private Key nito.
 
 ### Hakbang 2: I-configure ang Repository Secrets
 
-Kailangan mong idagdag ang GitHub App credentials at ang iyong AI service credentials bilang encrypted secrets sa settings ng iyong repositoryo.
+Kailangan mong idagdag ang GitHub App credentials at AI service credentials bilang encrypted secrets sa iyong repository settings.
 
-1. Pumunta sa iyong target na GitHub repositoryo (halimbawa, `PhiCookBook`).
+1. Pumunta sa iyong target GitHub repository (hal. `PhiCookBook`).
 
 1. Pumunta sa **Settings** > **Secrets and variables** > **Actions**.
 
 1. Sa ilalim ng **Repository secrets**, i-click ang **New repository secret** para sa bawat secret na nakalista sa ibaba.
 
-   ![Select setting action](../../../../translated_images/select-setting-action.32e2394813d09dc148494f34daea40724f24ff406de889f26cbbbf05f98ed621.tl.png)
+   ![Select setting action](../../../../translated_images/select-setting-action.3b95c915d60311592ca51ecb91b3a7bbe0ae45438a2ee872c1520dc90b677780.tl.png)
 
-**Kinakailangang Secrets (para sa GitHub App Authentication):**
+**Mga Kailangan na Secret (para sa GitHub App Authentication):**
 
-| Pangalan ng Secret          | Paglalarawan                                     | Pinagmulan ng Halaga                           |
-| :-------------------------- | :----------------------------------------------- | :--------------------------------------------- |
-| `GH_APP_ID`          | Ang App ID ng GitHub App (mula sa Hakbang 1).   | GitHub App Settings                            |
-| `GH_APP_PRIVATE_KEY`          | **Buong nilalaman** ng na-download na `.pem` file. | `.pem` file (mula sa Hakbang 1)   |
+| Secret Name          | Description                                      | Value Source                                     |
+| :------------------- | :----------------------------------------------- | :----------------------------------------------- |
+| `GH_APP_ID`          | App ID ng GitHub App (mula Hakbang 1).           | GitHub App Settings                              |
+| `GH_APP_PRIVATE_KEY` | **Buong laman** ng na-download na `.pem` file.   | `.pem` file (mula Hakbang 1)                     |
 
-**AI Service Secrets (Idagdag LAHAT ng naaangkop base sa iyong Mga Kinakailangan):**
+**AI Service Secrets (Idagdag LAHAT ng naaangkop base sa iyong Prerequisites):**
 
-| Pangalan ng Secret           | Paglalarawan                                   | Pinagmulan ng Halaga                      |
-| :--------------------------- | :---------------------------------------------- | :---------------------------------------- |
-| `AZURE_SUBSCRIPTION_KEY`           | Key para sa Azure AI Service (Computer Vision) | Azure AI Foundry                         |
-| `AZURE_AI_SERVICE_ENDPOINT`           | Endpoint para sa Azure AI Service (Computer Vision) | Azure AI Foundry                         |
-| `AZURE_OPENAI_API_KEY`           | Key para sa Azure OpenAI service                | Azure AI Foundry                         |
-| `AZURE_OPENAI_ENDPOINT`           | Endpoint para sa Azure OpenAI service           | Azure AI Foundry                         |
-| `AZURE_OPENAI_MODEL_NAME`           | Pangalan ng Azure OpenAI Model                   | Azure AI Foundry                         |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`           | Pangalan ng Azure OpenAI Deployment              | Azure AI Foundry                         |
-| `AZURE_OPENAI_API_VERSION`           | API Version para sa Azure OpenAI                 | Azure AI Foundry                         |
-| `OPENAI_API_KEY`           | API Key para sa OpenAI                           | OpenAI Platform                         |
-| `OPENAI_ORG_ID`           | OpenAI Organization ID                           | OpenAI Platform                         |
-| `OPENAI_CHAT_MODEL_ID`           | Partikular na OpenAI model ID                     | OpenAI Platform                         |
-| `OPENAI_BASE_URL`           | Custom OpenAI API Base URL                        | OpenAI Platform                         |
+| Secret Name                         | Description                               | Value Source                     |
+| :---------------------------------- | :---------------------------------------- | :------------------------------- |
+| `AZURE_AI_SERVICE_API_KEY`            | Key para sa Azure AI Service (Computer Vision)  | Azure AI Foundry                    |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint para sa Azure AI Service (Computer Vision) | Azure AI Foundry                     |
+| `AZURE_OPENAI_API_KEY`              | Key para sa Azure OpenAI service              | Azure AI Foundry                     |
+| `AZURE_OPENAI_ENDPOINT`             | Endpoint para sa Azure OpenAI service         | Azure AI Foundry                     |
+| `AZURE_OPENAI_MODEL_NAME`           | Azure OpenAI Model Name mo                   | Azure AI Foundry                     |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Azure OpenAI Deployment Name mo              | Azure AI Foundry                     |
+| `AZURE_OPENAI_API_VERSION`          | API Version para sa Azure OpenAI              | Azure AI Foundry                     |
+| `OPENAI_API_KEY`                    | API Key para sa OpenAI                        | OpenAI Platform                  |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID                        | OpenAI Platform                  |
+| `OPENAI_CHAT_MODEL_ID`              | Specific OpenAI model ID                      | OpenAI Platform                    |
+| `OPENAI_BASE_URL`                   | Custom OpenAI API Base URL                    | OpenAI Platform                    |
 
-![Enter environment variable name](../../../../translated_images/add-secrets-done.b23043ce6cec6b73d6da4456644bf37289dd678e36269b2263143d24e8b6cf72.tl.png)
+![Enter environment variable name](../../../../translated_images/add-secrets-done.444861ce6956d5cb20781ead1237fcc12805078349bb0d4e95bb9540ee192227.tl.png)
 
 ### Hakbang 3: Gumawa ng Workflow File
 
-Sa wakas, gumawa ng YAML file na nagde-define ng automated workflow.
+Sa huli, gumawa ng YAML file na magde-define ng automated workflow.
 
-1. Sa root directory ng iyong repositoryo, gumawa ng `.github/workflows/` na directory kung wala pa ito.
+1. Sa root directory ng iyong repository, gumawa ng `.github/workflows/` directory kung wala pa ito.
 
-1. Sa loob ng `.github/workflows/`, gumawa ng file na pinangalanang `co-op-translator.yml`.
+1. Sa loob ng `.github/workflows/`, gumawa ng file na ang pangalan ay `co-op-translator.yml`.
 
-1. I-paste ang sumusunod na nilalaman sa co-op-translator.yml.
+1. I-paste ang sumusunod na content sa co-op-translator.yml.
 
 ```
 name: Co-op Translator
@@ -155,7 +155,7 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
           # Azure AI Service Credentials
-          AZURE_SUBSCRIPTION_KEY: ${{ secrets.AZURE_SUBSCRIPTION_KEY }}
+          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
           AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
 
           # Azure OpenAI Credentials
@@ -209,21 +209,31 @@ jobs:
 
 ```
 
-4.  **I-customize ang Workflow:**  
-  - **[!IMPORTANT] Target na Mga Wika:** Sa `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
-  - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
-  - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
+4.  **I-customize ang Workflow:**
+  - **[!IMPORTANT] Target Languages:** Sa `Run Co-op Translator` step, **KAILANGAN mong i-review at baguhin ang listahan ng language codes** sa loob ng `translate -l "..." -y` command para tumugma sa requirements ng iyong proyekto. Palitan o i-adjust ang example list (`ar de es...`) ayon sa kailangan.
+  - **Trigger (`on:`):** Ang kasalukuyang trigger ay tumatakbo sa bawat push sa `main`. Para sa malalaking repository, magdagdag ng `paths:` filter (tingnan ang naka-comment na example sa YAML) para tumakbo lang ang workflow kapag may pagbabago sa relevant files (hal. source documentation), para makatipid sa runner minutes.
+  - **PR Details:** I-customize ang `commit-message`, `title`, `body`, `branch` name, at `labels` sa `Create Pull Request` step kung kinakailangan.
 
-## Credential Management and Renewal
+## Pamamahala at Pag-renew ng Credentials
 
-- **Security:** Always store sensitive credentials (API keys, private keys) as GitHub Actions secrets. Never expose them in your workflow file or repository code.
-- **[!IMPORTANT] Key Renewal (Internal Microsoft Users):** Be aware that Azure OpenAI key used within Microsoft might have a mandatory renewal policy (e.g., every 5 months). Ensure you update the corresponding GitHub secrets (`AZURE_OPENAI_...` mga susi) **bago ito mag-expire** upang maiwasan ang pagkabigo ng workflow.
+- **Seguridad:** Laging itago ang sensitibong credentials (API keys, private keys) bilang GitHub Actions secrets. Huwag kailanman ilantad ang mga ito sa workflow file o repository code.
+- **[!IMPORTANT] Key Renewal (Microsoft Internal Users):** Tandaan na ang Azure OpenAI key na ginagamit sa loob ng Microsoft ay maaaring may mandatory renewal policy (hal. bawat 5 buwan). Siguraduhing i-update ang kaukulang GitHub secrets (`AZURE_OPENAI_...` keys) **bago mag-expire** para maiwasan ang workflow failures.
 
 ## Pagpapatakbo ng Workflow
 
-Kapag na-merge na ang `co-op-translator.yml` file sa iyong main branch (o sa branch na tinukoy sa `on:` trigger), the workflow will automatically run whenever changes are pushed to that branch (and match the `paths` filter, kung naka-configure).
+> [!WARNING]  
+> **GitHub-hosted Runner Time Limit:**  
+> Ang mga GitHub-hosted runner tulad ng `ubuntu-latest` ay may **maximum execution time limit na 6 na oras**.  
+> Para sa malalaking documentation repositories, kung lalampas sa 6 na oras ang translation process, awtomatikong ititigil ang workflow.  
+> Para maiwasan ito, maaaring:  
+> - Gumamit ng **self-hosted runner** (walang time limit)  
+> - Bawasan ang bilang ng target languages kada run
 
-Kung may mga nalikhang o na-update na mga salin, awtomatikong gagawa ang action ng Pull Request na naglalaman ng mga pagbabago, handa nang suriin at i-merge.
+Kapag na-merge na ang `co-op-translator.yml` file sa iyong main branch (o sa branch na nakasaad sa `on:` trigger), awtomatikong tatakbo ang workflow tuwing may changes na ipu-push sa branch na iyon (at tumutugma sa `paths` filter, kung naka-configure).
 
-**Paunawa**:  
-Ang dokumentong ito ay isinalin gamit ang AI translation service na [Co-op Translator](https://github.com/Azure/co-op-translator). Bagamat nagsusumikap kami para sa katumpakan, pakatandaan na ang mga awtomatikong salin ay maaaring maglaman ng mga pagkakamali o hindi pagkakatugma. Ang orihinal na dokumento sa orihinal nitong wika ang dapat ituring na pangunahing sanggunian. Para sa mahahalagang impormasyon, inirerekomenda ang propesyonal na pagsasalin ng tao. Hindi kami mananagot sa anumang hindi pagkakaunawaan o maling interpretasyon na maaaring magmula sa paggamit ng pagsasaling ito.
+Kung may mga bagong salin o na-update, awtomatikong gagawa ng Pull Request ang action na naglalaman ng mga pagbabago, handa na para sa iyong review at pag-merge.
+
+---
+
+**Paunawa**:
+Ang dokumentong ito ay isinalin gamit ang AI translation service na [Co-op Translator](https://github.com/Azure/co-op-translator). Bagaman nagsusumikap kami para sa katumpakan, pakatandaan na ang mga awtomatikong pagsasalin ay maaaring maglaman ng mga pagkakamali o hindi pagkakatugma. Ang orihinal na dokumento sa kanyang sariling wika ang dapat ituring na pangunahing sanggunian. Para sa mahahalagang impormasyon, inirerekomenda ang propesyonal na pagsasalin ng tao. Hindi kami mananagot sa anumang hindi pagkakaunawaan o maling interpretasyon na maaaring lumitaw mula sa paggamit ng pagsasaling ito.

@@ -1,8 +1,8 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d238206c3503631e32774716d11d1868",
-  "translation_date": "2025-06-12T18:49:56+00:00",
+  "original_hash": "20943a46b11c6d74814f41a817a6db4c",
+  "translation_date": "2025-10-15T03:19:56+00:00",
   "source_file": "getting_started/command-line-guide/translator-your-project.md",
   "language_code": "sv"
 }
@@ -12,15 +12,15 @@ CO_OP_TRANSLATOR_METADATA:
 **Co-op Translator** är ett kommandoradsverktyg (CLI) som hjälper dig att översätta markdown- och bildfiler i ditt projekt till flera språk. Den här sektionen förklarar hur du använder verktyget, går igenom olika CLI-alternativ och ger exempel för olika användningsområden.
 
 > [!NOTE]
-> För en komplett lista över kommandon och deras detaljerade beskrivningar, se [Command reference](./command-reference.md).
+> För en komplett lista över kommandon och deras detaljerade beskrivningar, se [Kommandoreferens](./command-reference.md).
 
 ---
 
 ## Exempelscenarier och kommandon
 
-Här är några vanliga användningsfall för **Co-op Translator** tillsammans med lämpliga kommandon att köra.
+Här är några vanliga användningsområden för **Co-op Translator** tillsammans med lämpliga kommandon.
 
-### 1. Grundläggande översättning (ett språk)
+### 1. Grundläggande översättning (Ett språk)
 
 För att översätta hela ditt projekt (markdown-filer och bilder) till ett språk, till exempel koreanska, använd följande kommando:
 
@@ -28,13 +28,13 @@ För att översätta hela ditt projekt (markdown-filer och bilder) till ett spr�
 translate -l "ko"
 ```
 
-Det här kommandot översätter alla markdown- och bildfiler till koreanska och lägger till nya översättningar utan att ta bort några befintliga.
+Detta kommando översätter alla markdown- och bildfiler till koreanska och lägger till nya översättningar utan att ta bort befintliga.
 
 > [!TIP]
 >
 > Vill du se vilka språkkoder som finns tillgängliga i **Co-op Translator**? Besök avsnittet [Supported Languages](https://github.com/Azure/co-op-translator#supported-languages) i repot för mer information.
 
-#### Exempel från Phi-3 CookBook
+#### Exempel i Phi-3 CookBook
 
 I **Phi-3 CookBook** använde jag följande metod för att lägga till koreansk översättning för befintliga markdown-filer och bilder.
 
@@ -46,17 +46,17 @@ Translating markdown files: 100%|███████████████�
 
 ### 2. Översätta till flera språk
 
-För att översätta ditt projekt till flera språk (t.ex. spanska, franska och tyska) använd detta kommando:
+För att översätta ditt projekt till flera språk (t.ex. spanska, franska och tyska), använd detta kommando:
 
 ```bash
 translate -l "es fr de"
 ```
 
-Det här kommandot översätter projektet till spanska, franska och tyska och lägger till nya översättningar utan att skriva över befintliga.
+Detta kommando översätter projektet till spanska, franska och tyska och lägger till nya översättningar utan att skriva över befintliga.
 
-#### Exempel från Phi-3 CookBook
+#### Exempel i Phi-3 CookBook
 
-I **Phi-3 CookBook**, efter att ha hämtat de senaste ändringarna för att återspegla de senaste committerna, använde jag följande metod för att översätta nyligen tillagda markdown-filer och bilder.
+I **Phi-3 CookBook**, efter att ha hämtat de senaste ändringarna för att få med de senaste commitarna, använde jag följande metod för att översätta nyligen tillagda markdown-filer och bilder.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko ja zh tw es fr" -a
@@ -65,21 +65,21 @@ Translating markdown files: 100%|███████████████�
 ```
 
 > [!NOTE]
-> Även om det generellt rekommenderas att översätta ett språk i taget, kan det i situationer som denna där specifika ändringar behöver läggas till vara effektivt att översätta flera språk samtidigt.
+> Det är oftast bäst att översätta ett språk i taget, men i situationer som denna där specifika ändringar behöver läggas till kan det vara effektivt att översätta flera språk samtidigt.
 
-### 3. Uppdatera översättningar (tar bort befintliga översättningar)
+### 3. Uppdatera översättningar (Tar bort befintliga översättningar)
 
-För att uppdatera befintliga översättningar (dvs. ta bort nuvarande översättningar och ersätta dem med nya) använd `-u`-alternativet. Detta kommer att ta bort alla befintliga översättningar för angivna språk och översätta dem på nytt.
+För att uppdatera befintliga översättningar (dvs. ta bort nuvarande översättningar och ersätta dem med nya), använd alternativet `-u`. Detta tar bort alla befintliga översättningar för de angivna språken och översätter dem på nytt.
 
 ```bash
 translate -l "ko" -u
 ```
 
-Varning: Detta kommando kommer att be om bekräftelse innan det fortsätter med att ta bort befintliga översättningar.
+Varning: Detta kommando kommer att be dig bekräfta innan befintliga översättningar tas bort.
 
-#### Exempel från Phi-3 CookBook
+#### Exempel i Phi-3 CookBook
 
-I **Phi-3 CookBook** använde jag följande metod för att uppdatera alla översatta filer på spanska. Jag rekommenderar att använda denna metod när det finns betydande förändringar i originalinnehållet över flera markdown-dokument. Om det bara finns några få översatta markdown-filer att uppdatera är det mer effektivt att manuellt ta bort dessa specifika filer och sedan använda `-a`-metoden för att lägga till uppdaterade översättningar.
+I **Phi-3 CookBook** använde jag följande metod för att uppdatera alla översatta filer på spanska. Jag rekommenderar att använda denna metod när det är stora ändringar i originalinnehållet över flera markdown-dokument. Om det bara är några få översatta markdown-filer som behöver uppdateras är det mer effektivt att manuellt ta bort just de filerna och sedan använda `-a`-metoden för att lägga till de uppdaterade översättningarna.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "es" -u
@@ -90,37 +90,27 @@ Translating images: 100%|██████████████████�
 Translating markdown files: 100%|███████████████████████████████████| 95/95 [1:40:27<00:00, 125.62s/it]
 ```
 
-### 5. Översätta endast bilder
+### 5. Endast översätta bilder
 
-För att översätta endast bildfilerna i ditt projekt, använd `-img`-alternativet:
+För att endast översätta bildfilerna i ditt projekt, använd alternativet `-img`:
 
 ```bash
 translate -l "ko" -img
 ```
 
-Det här kommandot översätter endast bilderna till koreanska utan att påverka några markdown-filer.
+Detta kommando översätter endast bilderna till koreanska utan att påverka några markdown-filer.
 
-### 6. Översätta endast markdown-filer
+### 6. Endast översätta markdown-filer
 
-För att översätta endast markdown-filerna i ditt projekt, använd `-md`-alternativet:
+För att endast översätta markdown-filerna i ditt projekt, använd alternativet `-md`:
 
 ```bash
 translate -l "ko" -md
 ```
 
-### 7. Kontrollera fel i översatta filer
+#### Exempel i Phi-3 CookBook
 
-Om du vill kontrollera översatta filer för fel och försöka översätta på nytt vid behov, använd `-chk`-alternativet:
-
-```bash
-translate -l "ko" -chk
-```
-
-Det här kommandot skannar de översatta markdown-filerna och försöker översätta på nytt för eventuella filer med fel.
-
-#### Exempel från Phi-3 CookBook
-
-I **Phi-3 CookBook** använde jag följande metod för att kontrollera översättningsfel i de koreanska filerna och automatiskt försöka översätta på nytt för filer där problem upptäcktes.
+I **Phi-3 CookBook** använde jag följande metod för att kontrollera översättningsfel i de koreanska filerna och automatiskt försöka översätta om de filer där fel upptäcktes.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l"ko" -chk 
@@ -129,15 +119,15 @@ Checking files for ko: 100%|█████████████████�
 Retrying vsc-extension-quickstart.md for ko:   0%|                                     | 0/17 [00:00<?, ?file/s] 
 ```
 
-Detta alternativ kontrollerar översättningsfel. För närvarande flaggas en fil som felaktig om skillnaden i radbrytningar mellan original- och översatt fil är mer än sex. Jag planerar att förbättra detta kriterium för större flexibilitet i framtiden.
+Detta alternativ kontrollerar översättningsfel. För närvarande, om skillnaden i radbrytningar mellan original- och översättningsfilen är mer än sex, flaggas filen som felaktigt översatt. Jag planerar att förbättra detta kriterium för större flexibilitet framöver.
 
 Till exempel är denna metod användbar för att upptäcka saknade delar eller korrupta översättningar, och den försöker automatiskt översätta om dessa filer.
 
-Men om du redan vet vilka filer som är problematiska är det mer effektivt att manuellt ta bort dessa filer och använda `-a` option to re-translate them.
+Men om du redan vet vilka filer som är problematiska är det mer effektivt att manuellt ta bort dessa filer och använda `-a`-alternativet för att översätta dem på nytt.
 
-### 8. Debug Mode
+### 8. Felsökningsläge
 
-To enable detailed logging for troubleshooting, use the `-d`-alternativet:
+För att aktivera detaljerad loggning för felsökning, använd alternativet `-d`:
 
 ```bash
 translate -l "ko" -d
@@ -145,9 +135,9 @@ translate -l "ko" -d
 
 Detta kommando kör översättningen i felsökningsläge och ger extra logginformation som kan hjälpa dig att identifiera problem under översättningsprocessen.
 
-#### Exempel från Phi-3 CookBook
+#### Exempel i Phi-3 CookBook
 
-I **Phi-3 CookBook** stötte jag på ett problem där översättningar med många länkar i markdown-filer orsakade formateringsfel, såsom brutna översättningar och ignorerade radbrytningar. För att diagnostisera detta problem använde jag `-d`-alternativet för att se hur översättningsprocessen fungerar.
+I **Phi-3 CookBook** stötte jag på ett problem där översättningar med många länkar i markdown-filer orsakade formateringsfel, som trasiga översättningar och ignorerade radbrytningar. För att felsöka detta använde jag `-d`-alternativet för att se hur översättningsprocessen fungerade.
 
 ```bash
 (.venv) C:\Users\sms79\dev\Phi-3CookBook>translate -l "ko" -d
@@ -155,57 +145,59 @@ DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/comp
 ...
 ```
 
-### 9. Översätta alla språk
+### 9. Översätta till alla språk
 
-Om du vill översätta projektet till alla stödda språk, använd nyckelordet all.
+Om du vill översätta projektet till alla språk som stöds, använd nyckelordet all.
 
 > [!WARNING]
-> Att översätta alla språk samtidigt kan ta betydande tid beroende på projektets storlek. Till exempel tog det ungefär 2 timmar att översätta **Phi-3 CookBook** till spanska. Med tanke på omfattningen är det inte praktiskt för en person att hantera 20 språk. Det rekommenderas att dela upp arbetet mellan flera bidragsgivare, där varje ansvarar för ett eller två språk, och uppdaterar översättningarna successivt.
+> Att översätta till alla språk på en gång kan ta mycket lång tid beroende på projektets storlek. Till exempel tog det cirka 2 timmar att översätta **Phi-3 CookBook** till spanska. Med tanke på omfattningen är det inte rimligt att en person hanterar 20 språk. Det är bättre att dela upp arbetet mellan flera bidragsgivare, där varje person ansvarar för ett eller två språk, och uppdatera översättningarna gradvis.
 
 ```bash
 translate -l "all"
 ```
 
-Det här kommandot översätter projektet till alla tillgängliga språk. Om du fortsätter kan översättningen ta mycket tid beroende på projektets storlek.
+Detta kommando översätter projektet till alla tillgängliga språk. Om du fortsätter kan översättningen ta lång tid beroende på projektets storlek.
 
 > [!TIP]
 >
-> ### Manuellt ta bort översatta filer (valfritt)
+> ### Ta bort översatta filer manuellt (valfritt)
 > Översatta filer upptäcks och rensas nu automatiskt när en källfil uppdateras.
 >
-> Om du däremot vill uppdatera en översättning manuellt – till exempel för att göra om en specifik fil eller åsidosätta systemets beteende – kan du använda följande kommando för att ta bort alla versioner av filen i språkmapparna.
+> Men om du vill uppdatera en översättning manuellt – till exempel för att göra om en specifik fil eller åsidosätta systemets beteende – kan du använda följande kommando för att ta bort alla versioner av filen i språkmapparna.
 >
 > ### På Windows:
-> 1. **Använda Kommandotolken**:
+> 1. **Med Kommandotolken**:
 >    - Öppna Kommandotolken.
->    - Navigera till mappen där filerna finns med `cd`-kommandot.
+>    - Navigera till mappen där filerna finns med kommandot `cd`.
 >    - Använd följande kommando för att ta bort filer:
 >      ```
 >      del /s *filename*
 >      ```
->      Alternativet `/s` söker även i undermappar.
+>      Ersätt `filename` med den del av filnamnet du letar efter. `/s`-alternativet söker i undermappar också.
 >
-> 2. **Använda PowerShell**:
+> 2. **Med PowerShell**:
 >    - Öppna PowerShell.
 >    - Kör detta kommando:
 >      ```powershell
 >      Get-ChildItem -Path "C:\YourPath" -Filter "*filename*" -Recurse | Remove-Item -Force
 >      ```
->      Byt ut `"C:\YourPath"` with the folder path and `filename` with the specific name.
+>      Ersätt `"C:\YourPath"` med mappsökvägen och `filename` med det specifika namnet.
 >
-> ### On macOS/Linux:
-> 1. **Using Terminal**:
->   - Open Terminal.
->   - Navigate to the directory with `cd`.
->   - Use the `find`-kommandot:
+> ### På macOS/Linux:
+> 1. **Med Terminalen**:
+>   - Öppna Terminalen.
+>   - Navigera till katalogen med `cd`.
+>   - Använd kommandot `find`:
 >     ```bash
 >     find . -type f -name "*filename*" -delete
 >     ```
->     Byt ut `filename` with the specific name.
+>     Ersätt `filename` med det specifika namnet.
 >
-> Always double-check the files before deleting to avoid accidental loss. 
+> Kontrollera alltid filerna noggrant innan du tar bort dem för att undvika oavsiktlig förlust.
 >
-> Once you have deleted the files which need to be replace simply rerun your `translate -l`-kommandot för att uppdatera de senaste filändringarna.
+> När du har tagit bort de filer som behöver ersättas, kör bara ditt `translate -l`-kommando igen för att uppdatera de senaste filändringarna.
 
-**Ansvarsfriskrivning**:  
-Detta dokument har översatts med hjälp av AI-översättningstjänsten [Co-op Translator](https://github.com/Azure/co-op-translator). Även om vi strävar efter noggrannhet, var vänlig observera att automatiska översättningar kan innehålla fel eller brister. Det ursprungliga dokumentet på dess modersmål bör betraktas som den auktoritativa källan. För kritisk information rekommenderas professionell mänsklig översättning. Vi ansvarar inte för några missförstånd eller feltolkningar som uppstår till följd av användningen av denna översättning.
+---
+
+**Ansvarsfriskrivning**:
+Detta dokument har översatts med hjälp av AI-översättningstjänsten [Co-op Translator](https://github.com/Azure/co-op-translator). Vi strävar efter noggrannhet, men var medveten om att automatiska översättningar kan innehålla fel eller brister. Det ursprungliga dokumentet på dess originalspråk ska betraktas som den auktoritativa källan. För kritisk information rekommenderas professionell mänsklig översättning. Vi ansvarar inte för eventuella missförstånd eller feltolkningar som uppstår vid användning av denna översättning.

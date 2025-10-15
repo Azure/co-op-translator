@@ -39,14 +39,24 @@ See how Co-op Translator organizes translated educational GitHub content:
 ## Quick start
 
 ```bash
+# Create and activate a virtual environment (recommended)
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+# Install the package
 pip install co-op-translator
+# Translate
 translate -l "ko ja fr" -md
 ```
 
 Docker:
 
 ```bash
+# Pull the public image from GHCR
 docker pull ghcr.io/azure/co-op-translator:latest
+# Run with current folder mounted and .env provided (Bash/Zsh)
 docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
 ```
 

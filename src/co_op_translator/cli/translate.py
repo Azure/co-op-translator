@@ -15,7 +15,10 @@ from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.utils.common.logging_utils import setup_logging
-from co_op_translator.utils.common.file_utils import update_readme_languages_table
+from co_op_translator.utils.common.file_utils import (
+    update_readme_languages_table,
+    update_readme_other_courses,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -258,10 +261,10 @@ def translate_command(
             language_codes, root_dir, translation_types=translation_types
         )
 
-        # If all languages are selected, update README languages table BEFORE translation
+        # Update README shared sections BEFORE translation
+        readme_path = root_path / "README.md"
         try:
             if all_languages_selected:
-                readme_path = root_path / "README.md"
                 if update_readme_languages_table(readme_path):
                     click.echo("✅ Updated README languages table from template.")
                 else:
@@ -270,6 +273,12 @@ def translate_command(
                     )
         except Exception as e:
             logger.warning(f"Failed to update README languages table: {e}")
+
+        try:
+            if update_readme_other_courses(readme_path):
+                click.echo("✅ Updated README 'Other courses' section from template.")
+        except Exception as e:
+            logger.warning(f"Failed to update README 'Other courses': {e}")
 
         if fix:
             click.echo(f"Fixing translations with confidence below {min_confidence}...")

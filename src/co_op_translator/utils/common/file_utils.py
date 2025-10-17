@@ -9,22 +9,26 @@ import re
 
 LANG_TABLE_START = "<!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->"
 LANG_TABLE_END = "<!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->"
+OTHER_COURSES_START = "<!-- CO-OP TRANSLATOR OTHER COURSES START -->"
+OTHER_COURSES_END = "<!-- CO-OP TRANSLATOR OTHER COURSES END -->"
 
 
-def replace_between_markers(readme_text: str, new_block: str) -> str:
+def _replace_between_markers_generic(
+    readme_text: str, new_block: str, start_marker: str, end_marker: str
+) -> str:
     """
-    Replace content between language table markers with the provided new block.
+    Replace content between the provided start/end markers with the new block.
     Markers are included in the replacement. If markers are missing, returns original text.
     """
     # Case-insensitive detection of markers so users can vary casing
     lower_text = readme_text.lower()
-    start_idx = lower_text.find(LANG_TABLE_START.lower())
-    end_idx = lower_text.find(LANG_TABLE_END.lower())
+    start_idx = lower_text.find(start_marker.lower())
+    end_idx = lower_text.find(end_marker.lower())
     if start_idx == -1 or end_idx == -1 or end_idx < start_idx:
         return readme_text
 
     # Expand end to include the end marker line completely
-    end_idx_inclusive = end_idx + len(LANG_TABLE_END)
+    end_idx_inclusive = end_idx + len(end_marker)
 
     before = readme_text[:start_idx].rstrip()
     after = readme_text[end_idx_inclusive:].lstrip()
@@ -39,6 +43,15 @@ def replace_between_markers(readme_text: str, new_block: str) -> str:
     return "\n\n".join(pieces) + ("\n" if readme_text.endswith("\n") else "")
 
 
+def replace_between_markers(readme_text: str, new_block: str) -> str:
+    """
+    Backward-compatible helper that replaces between the LANGUAGES TABLE markers.
+    """
+    return _replace_between_markers_generic(
+        readme_text, new_block, LANG_TABLE_START, LANG_TABLE_END
+    )
+
+
 def load_languages_table_template() -> str:
     """Load the bundled languages table template markdown."""
     try:
@@ -46,6 +59,19 @@ def load_languages_table_template() -> str:
 
         with resources.open_text(
             "co_op_translator.templates", "languages_table.md", encoding="utf-8"
+        ) as f:
+            return f.read()
+    except Exception:
+        return ""
+
+
+def load_other_courses_template() -> str:
+    """Load the bundled other courses template markdown."""
+    try:
+        from importlib import resources
+
+        with resources.open_text(
+            "co_op_translator.templates", "other_courses.md", encoding="utf-8"
         ) as f:
             return f.read()
     except Exception:
@@ -70,7 +96,29 @@ def update_readme_languages_table(readme_path: Path) -> bool:
         template,
         flags=re.IGNORECASE,
     )
-    updated = replace_between_markers(original, template)
+    updated = _replace_between_markers_generic(
+        original, template, LANG_TABLE_START, LANG_TABLE_END
+    )
+    if updated != original:
+        readme_path.write_text(updated, encoding="utf-8", newline="\n")
+        return True
+    return False
+
+
+def update_readme_other_courses(readme_path: Path) -> bool:
+    """
+    Update README 'Other courses' section between markers using bundled template.
+    Returns True if updated, False otherwise.
+    """
+    if not readme_path.exists():
+        return False
+    original = readme_path.read_text(encoding="utf-8")
+    template = load_other_courses_template()
+    if not template:
+        return False
+    updated = _replace_between_markers_generic(
+        original, template, OTHER_COURSES_START, OTHER_COURSES_END
+    )
     if updated != original:
         readme_path.write_text(updated, encoding="utf-8", newline="\n")
         return True

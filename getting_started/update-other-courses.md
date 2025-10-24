@@ -10,7 +10,7 @@ This guide explains how to make the "Other Courses" section auto‑synchronize u
 
 ## Quick start: Enable auto‑sync in your repo
 
-Add the following markers around the "Other Courses" section in your README (or the page where this list lives). Co‑op Translator will replace everything between these markers on every run.
+Add the following markers around the "Other Courses" section in your README. Co‑op Translator will replace everything between these markers on every run.
 
 ```markdown
 <!-- CO-OP TRANSLATOR OTHER COURSES START -->

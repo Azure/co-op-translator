@@ -68,7 +68,7 @@ docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-transl
 2. Configure one LLM provider (Azure OpenAI or OpenAI)
 3. (Optional) For image translation (`-img`), configure Azure AI Vision
 4. (Recommended) Clean up any previous translations to avoid conflicts (e.g., `translations/`)
-5. (Recommended) Add a translation section to your README using the [README languages template](./README_languages_template.md)
+5. (Recommended) Add a translation section to your README using the [README languages template](./getting_started/README_languages_template.md)
 6. See: [Set up Azure AI](./getting_started/set-up-azure-ai.md)
 
 ## Usage
@@ -112,7 +112,7 @@ More flags: [Command reference](./getting_started/command-reference.md)
 - [Command-line guide](./getting_started/command-line-guide/command-line-guide.md)
 - [GitHub Actions guide (Public repositories & standard secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md)
 - [GitHub Actions guide (Microsoft organization repositories & org-level setups)](./getting_started/github-actions-guide/github-actions-guide-org.md)
-- [README languages template](./README_languages_template.md)
+- [README languages template](./getting_started/README_languages_template.md)
 - [Supported languages](./getting_started/supported-languages.md)
 - [Contributing](./CONTRIBUTING.md)
 - [Troubleshooting](./getting_started/troubleshooting.md)

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "co_op_translator"
-version = "0.11.2"
+version = "0.11.3"
 description = "Easily automate the translation of your documentation into multiple languages to reach a global audience."
 authors = [
     "Minseok Song <minseok.song@mssong.com>",

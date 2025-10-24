@@ -114,7 +114,7 @@ More flags: [Command reference](./getting_started/command-reference.md)
 - [Supported languages](./getting_started/supported-languages.md)
 - [Troubleshooting](./getting_started/troubleshooting.md)
 
-## Support Us and Foster Global Learning
+## Support us and foster global learning
 
 Join us in revolutionizing how educational content is shared globally! Give [Co-op Translator](https://github.com/azure/co-op-translator) a ⭐ on GitHub and support our mission to break down language barriers in learning and technology. Your interest and contributions make a significant impact! Code contributions and feature suggestions are always welcome.
 
@@ -135,7 +135,7 @@ Join us in revolutionizing how educational content is shared globally! Give [Co-
 - [IoT for Beginners](https://aka.ms/iot-beginners)
 - [PhiCookBook](https://github.com/microsoft/PhiCookBook)
 
-## Video Presentations
+## Video presentations
 
 Learn more about Co-op Translator through our presentations _(Click the image below to watch on YouTube.)_:
 

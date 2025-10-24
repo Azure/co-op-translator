@@ -221,7 +221,7 @@ We welcome contributions that add support for new languages. Before opening a PR
 
 4. Update documentation
    - Ensure the language appears in `getting_started/supported-languages.md`
-   - No changes to `README_languages_template.md` are needed; it is generated from the supported list
+   - No changes to `getting_started/README_languages_template.md` are needed; it is generated from the supported list
 
 5. Open a PR
    - Describe the language added and any font/licensing considerations

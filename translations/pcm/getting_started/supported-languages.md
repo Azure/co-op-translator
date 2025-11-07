@@ -1,6 +1,15 @@
-# Supported languages
+<!--
+CO_OP_TRANSLATOR_METADATA:
+{
+  "original_hash": "40660d83d2792201cad4aec9fdf25a29",
+  "translation_date": "2025-11-06T17:31:00+00:00",
+  "source_file": "getting_started/supported-languages.md",
+  "language_code": "pcm"
+}
+-->
+# Languages Wey Dem Support
 
-The table below lists the languages currently supported by **Co-op Translator**. It includes language codes, language names, and any known issues associated with each language. If you would like to add support for a new language, please add the corresponding language code, name, and appropriate font in the `font_language_mappings.yml` file located at `src/co_op_translator/fonts/` and submit a pull request after testing.
+Di table wey dey below show di languages wey **Co-op Translator** dey support now. E get di language codes, di names of di languages, and any wahala wey dem don sabi wey dey follow each language. If you wan add new language, abeg add di correct language code, name, and di correct font for di `font_language_mappings.yml` file wey dey for `src/co_op_translator/fonts/` and submit pull request after you don test am.
 
 | Language Code | Language Name        | Font                              | RTL Support | Known Issues |
 |---------------|----------------------|-----------------------------------|-------------|--------------|
@@ -56,8 +65,13 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | et            | Estonian             | NotoSans-Medium.ttf               | No          | No           |
 | pcm           | Nigerian Pidgin      | NotoSans-Medium.ttf               | No          | No           |
 
-## Adding a new language
+## How to Add New Language
 
-Interested in adding a new language? Please follow the contribution guide:
+You wan add new language? Abeg follow di contribution guide:
 
 - See Contributing: [Contribute a new language](../CONTRIBUTING.md#contribute-a-new-language)
+
+---
+
+**Disclaimer**:  
+Dis dokyument don use AI transle-shun service [Co-op Translator](https://github.com/Azure/co-op-translator) do di transle-shun. Even as we dey try make am correct, abeg make you sabi say machine transle-shun fit get mistake or no dey accurate well. Di original dokyument wey dey for im native language na di one wey you go take as di correct source. For important mata, e good make you use professional human transle-shun. We no go fit take blame for any misunderstanding or wrong interpretation wey fit happen because you use dis transle-shun.

@@ -154,3 +154,6 @@ ta:
 et:
   name: "Estonian"
   font: "NotoSans-Medium.ttf"  
+pcm:
+  name: "Nigerian Pidgin"
+  font: "NotoSans-Medium.ttf"

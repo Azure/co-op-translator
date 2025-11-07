@@ -64,7 +64,7 @@ wcwidth~=0.2.13
 # Text processing
 arabic-reshaper>=3.0.0
 python-bidi>=0.4.2
-az-ai-healthcheck[vision]==0.1.5
+azure-ai-healthcheck[vision]==0.1.5
 ai-healthcheck~=0.1.1
 
 # Development dependencies

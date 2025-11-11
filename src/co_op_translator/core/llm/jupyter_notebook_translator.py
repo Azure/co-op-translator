@@ -140,10 +140,13 @@ class JupyterNotebookTranslator:
                 language_code
             )
             if disclaimer_text:
+                start_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER START -->"
+                end_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER END -->"
+                disclaimer_block = f"{start_marker}\n{disclaimer_text}\n{end_marker}"
                 disclaimer_cell = {
                     "cell_type": "markdown",
                     "metadata": {},
-                    "source": [f"\n---\n\n{disclaimer_text}\n"],
+                    "source": [disclaimer_block + "\n"],
                 }
                 notebook["cells"].append(disclaimer_cell)
                 logger.debug(f"Added disclaimer cell to {notebook_path.name}")

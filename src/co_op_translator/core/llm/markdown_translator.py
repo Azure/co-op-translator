@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 import asyncio
 import logging
+import re
 from pathlib import Path
+from importlib import resources
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.utils.llm.markdown_utils import (
     process_markdown,
@@ -150,7 +152,11 @@ class MarkdownTranslator(ABC):
             result = metadata_comment + result
         if add_disclaimer:
             disclaimer = await self.generate_disclaimer(language_code)
-            result = result + "\n\n---\n\n" + disclaimer
+            if disclaimer:
+                start_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER START -->"
+                end_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER END -->"
+                disclaimer_block = f"{start_marker}\n{disclaimer}\n{end_marker}"
+                result = result + "\n\n---\n\n" + disclaimer_block
 
         return result
 
@@ -217,23 +223,45 @@ class MarkdownTranslator(ABC):
         Returns:
             Translated disclaimer text
         """
+        template_text = self._read_disclaimer_template_inner()
+        if not template_text:
+            return ""
+
         language_name = self.font_config.get_language_name(output_lang)
         system_text = (
             f"Translate the following text to {language_name} ({output_lang})."
         )
-        user_text = (
-            "**Disclaimer**:\n"
-            "This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). "
-            "While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. "
-            "The original document in its native language should be considered the authoritative source. "
-            "For critical information, professional human translation is recommended. "
-            "We are not liable for any misunderstandings or misinterpretations arising from the use of this translation."
-        )
+        user_text = template_text
         disclaimer_prompt = system_text + SPLIT_DELIMITER + user_text
 
         disclaimer = await self._run_prompt(disclaimer_prompt, "disclaimer prompt", 1)
 
         return disclaimer
+
+    def _read_disclaimer_template_inner(self) -> str:
+        """Read the packaged disclaimer template and return inner content between markers.
+
+        Returns empty string if the template is missing or markers not found.
+        """
+        try:
+            with (
+                resources.files("co_op_translator.templates")
+                .joinpath("disclaimer.md")
+                .open("r", encoding="utf-8") as f
+            ):
+                text = f.read()
+        except Exception:
+            return ""
+
+        start_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER START -->"
+        end_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER END -->"
+        pattern = re.compile(
+            re.escape(start_marker) + r"\s*(.*?)\s*" + re.escape(end_marker), re.DOTALL
+        )
+        m = pattern.search(text)
+        if not m:
+            return ""
+        return m.group(1).strip()
 
     @classmethod
     def create(cls, root_dir: Path = None) -> "MarkdownTranslator":

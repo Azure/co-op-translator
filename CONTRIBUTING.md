@@ -236,6 +236,22 @@ new_lang(code):
   rtl: false
 ```
 
+### Test the new language
+
+You can test the new language by running the following command:
+
+```bash
+# Create and activate a virtual environment
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+# Install the development package
+pip install -e .
+# Run the translation
+translate -l "new_lang"
+```
 
 ## Maintainers
 

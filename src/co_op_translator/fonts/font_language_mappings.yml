@@ -29,13 +29,13 @@ zh:
   name: "Chinese (Simplified)"
   font: "NotoSansCJK-Medium.ttc"
 mo:
-  name: "Chinese (Traditional)"
+  name: "Chinese (Traditional, Macau)"
   font: "NotoSansCJK-Medium.ttc"
 hk:
-  name: "Chinese (Traditional)"
+  name: "Chinese (Traditional, Hong Kong)"
   font: "NotoSansCJK-Medium.ttc"
 tw:
-  name: "Chinese (Traditional)"
+  name: "Chinese (Traditional, Taiwan)"
   font: "NotoSansCJK-Medium.ttc"
 ja:
   name: "Japanese"

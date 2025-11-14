@@ -326,14 +326,15 @@ class ImageTranslator(ABC):
                     else:
                         offset_x = 10
 
-                    # Render text with Skia to ensure proper shaping, then paste into the temp RGBA image
-                    skia_text_img = draw_text_on_image(
+                    rendered_text_img = draw_text_on_image(
                         translated_text,
                         font,
                         text_color,
                         font_path=font_path,
                     )
-                    text_img.paste(skia_text_img, (offset_x, offset_y), skia_text_img)
+                    text_img.paste(
+                        rendered_text_img, (offset_x, offset_y), rendered_text_img
+                    )
 
                     rotated_text_img = text_img.rotate(angle, expand=True)
                     center_x = min(xs) + box_width / 2

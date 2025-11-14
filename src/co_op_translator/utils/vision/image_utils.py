@@ -17,6 +17,7 @@ from co_op_translator.config.constants import (
     RGBA_IMAGE_EXTENSIONS,
 )
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -225,22 +226,88 @@ def warp_image_to_bounding_box(text_img_array, bounding_box, image_width, image_
     return warped
 
 
-def draw_text_on_image(text, font, text_color):
+def draw_text_on_image(text, font, text_color, font_path=None):
     """
-    Draw text onto an image with a transparent background.
+    Draw text into a transparent RGBA image using Pillow.
+
+    - Uses dual-font rendering: English (ASCII) segments use the 'en' mapped font,
+      other characters use the target language font to avoid tofu.
+    - Aligns runs to a common baseline to prevent clipping.
 
     Args:
-        text (str): The text to draw.
-        font (PIL.ImageFont.ImageFont): The font object.
-        text_color (tuple): The text color (R, G, B).
+        text (str): The text to render.
+        font (PIL.ImageFont.ImageFont): Base font object (size is read and applied).
+        text_color (tuple): Text color as (R, G, B).
+        font_path (str, optional): Unused in Pillow path; kept for compatibility.
 
     Returns:
-        PIL.Image.Image: The image with text.
+        PIL.Image.Image: An RGBA image containing the rendered text.
     """
-    size = tuple(font.getbbox(text)[2:])  # width and height of the text
-    text_image = Image.new("RGBA", size, (255, 255, 255, 0))
+
+    font_size = getattr(font, "size", 40)
+
+    # Prepare Latin font for ASCII
+    try:
+        en_font_path = FontConfig().get_font_path("en")
+        latin_font = ImageFont.truetype(en_font_path, int(font_size))
+    except Exception:
+        latin_font = font
+
+    def is_ascii_latin(ch: str) -> bool:
+        cp = ord(ch)
+        return 0x20 <= cp <= 0x7E
+
+    # Segment text into ASCII vs non-ASCII runs
+    runs = []
+    if text:
+        current = [text[0]]
+        current_is_ascii = is_ascii_latin(text[0])
+        for ch in text[1:]:
+            if is_ascii_latin(ch) == current_is_ascii:
+                current.append(ch)
+            else:
+                runs.append(
+                    ("".join(current), latin_font if current_is_ascii else font)
+                )
+                current = [ch]
+                current_is_ascii = not current_is_ascii
+        runs.append(("".join(current), latin_font if current_is_ascii else font))
+    else:
+        runs = [("", font)]
+
+    # Measure runs
+    widths = []
+    ascents = []
+    descents = []
+    for seg, fnt in runs:
+        if hasattr(fnt, "getbbox"):
+            bbox = fnt.getbbox(seg or " ")
+            w = max(1, bbox[2] - bbox[0])
+        else:
+            w = max(1, int(font_size))
+        widths.append(w)
+        if hasattr(fnt, "getmetrics"):
+            a, d = fnt.getmetrics()
+        else:
+            a, d = int(font_size * 0.8), int(font_size * 0.2)
+        ascents.append(max(1, int(a)))
+        descents.append(max(0, int(d)))
+
+    pad = 2
+    max_ascent = max(ascents) if ascents else int(font_size)
+    max_descent = max(descents) if descents else int(font_size * 0.3)
+    baseline_y = pad + max_ascent
+    total_w = max(1, sum(widths) + pad * 2)
+    total_h = max(1, pad + max_ascent + max_descent + pad)
+
+    text_image = Image.new("RGBA", (total_w, total_h), (255, 255, 255, 0))
     draw = ImageDraw.Draw(text_image)
-    draw.text((0, 0), text, font=font, fill=text_color)
+    x = pad
+    for idx, (seg, fnt) in enumerate(runs):
+        if seg:
+            y = baseline_y - ascents[idx]
+            draw.text((x, y), seg, font=fnt, fill=text_color)
+        x += widths[idx]
     return text_image
 
 

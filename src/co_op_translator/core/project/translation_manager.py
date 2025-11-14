@@ -873,22 +873,24 @@ class TranslationManager:
         for task in tasks:
             task_queue.put_nowait(task)
 
+        # Add sentinel values so workers can exit cleanly after processing tasks
+        worker_count = 5
+        for _ in range(worker_count):
+            task_queue.put_nowait(None)
+
         # Setup progress tracking UI
         with tqdm(total=len(tasks), desc=task_desc) as progress_bar:
             # Launch parallel worker tasks for processing
             workers = [
-                asyncio.create_task(worker(task_queue, progress_bar)) for _ in range(5)
+                asyncio.create_task(worker(task_queue, progress_bar))
+                for _ in range(worker_count)
             ]
 
             # Wait for all queued tasks to complete
             await task_queue.join()
 
-            # Get results from completed tasks
-            results = [task.result() for task in workers]
-
-            # Ensure all workers have completed
-            for worker_task in workers:
-                worker_task.cancel()
+            # Gather worker completion to avoid InvalidStateError from unfinished tasks
+            results = [t.result() for t in workers]
 
         return results
 

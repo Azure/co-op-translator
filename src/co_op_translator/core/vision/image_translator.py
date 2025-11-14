@@ -326,14 +326,14 @@ class ImageTranslator(ABC):
                     else:
                         offset_x = 10
 
-                    temp_draw = ImageDraw.Draw(text_img)
-                    temp_draw.text(
-                        (offset_x, offset_y),
+                    # Render text with Skia to ensure proper shaping, then paste into the temp RGBA image
+                    skia_text_img = draw_text_on_image(
                         translated_text,
-                        font=font,
-                        fill=text_color,
-                        anchor="la",
+                        font,
+                        text_color,
+                        font_path=font_path,
                     )
+                    text_img.paste(skia_text_img, (offset_x, offset_y), skia_text_img)
 
                     rotated_text_img = text_img.rotate(angle, expand=True)
                     center_x = min(xs) + box_width / 2
@@ -395,7 +395,10 @@ class ImageTranslator(ABC):
                         image = Image.alpha_composite(image, mask_image)
 
                     text_image = draw_text_on_image(
-                        translated_text, font, get_text_color(final_bg_color)
+                        translated_text,
+                        font,
+                        get_text_color(final_bg_color),
+                        font_path=font_path,
                     )
                     text_image_array = np.array(text_image)
 

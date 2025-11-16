@@ -162,3 +162,52 @@ async def test_markdown_only_mode(temp_project_dir):
         await translator.translation_manager.translate_project_async()
         # Verify that translate_project_async was called (no need to check args since translation_types is set in init)
         translator.translation_manager.translate_project_async.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_project_translator_custom_output_directories(temp_project_dir):
+    """ProjectTranslator should honor custom translations_dir and image_dir."""
+    with (
+        patch(
+            "co_op_translator.core.llm.text_translator.TextTranslator"
+        ) as mock_text_translator,
+        patch(
+            "co_op_translator.core.llm.markdown_translator.MarkdownTranslator"
+        ) as mock_markdown_translator,
+        patch(
+            "co_op_translator.core.vision.image_translator.ImageTranslator"
+        ) as mock_image_translator,
+        patch(
+            "co_op_translator.core.llm.jupyter_notebook_translator.JupyterNotebookTranslator"
+        ) as mock_jupyter_translator,
+        patch(
+            "co_op_translator.config.llm_config.config.LLMConfig.get_available_provider"
+        ) as mock_get_provider,
+    ):
+        mock_text_translator.create.return_value = MagicMock()
+        mock_markdown_translator.create.return_value = MagicMock()
+        mock_image_translator.create.return_value = MagicMock()
+        mock_jupyter_translator.create.return_value = MagicMock()
+        mock_get_provider.return_value = LLMProvider.AZURE_OPENAI
+
+        custom_translations = temp_project_dir / "content" / "i18n"
+        custom_images = temp_project_dir / "public" / "translated_media"
+
+        translator = ProjectTranslator(
+            "ko ja",
+            root_dir=temp_project_dir,
+            translation_types=["markdown", "notebook", "images"],
+            translations_dir=custom_translations,
+            image_dir=custom_images,
+        )
+
+        assert translator.translations_dir == custom_translations.resolve()
+        assert translator.image_dir == custom_images.resolve()
+        assert (
+            translator.translation_manager.translations_dir
+            == translator.translations_dir
+        )
+        assert translator.translation_manager.image_dir == translator.image_dir
+        assert (
+            translator.directory_manager.translations_dir == translator.translations_dir
+        )

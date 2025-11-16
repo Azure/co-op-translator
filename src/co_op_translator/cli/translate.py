@@ -258,7 +258,9 @@ def translate_command(
 
         # Initialize ProjectTranslator with determined settings
         translator = ProjectTranslator(
-            language_codes, root_dir, translation_types=translation_types
+            language_codes,
+            root_dir,
+            translation_types=translation_types,
         )
 
         # Update README shared sections BEFORE translation

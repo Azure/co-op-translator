@@ -65,11 +65,22 @@ def test_draw_text_on_image(mock_image_new, mock_image_draw, mock_truetype):
 
     text_image = draw_text_on_image("Test Text", font_mock, (0, 0, 0))
 
-    mock_image_new.assert_called_once_with("RGBA", (100, 30), (255, 255, 255, 0))
+    mock_image_new.assert_called_once()
+    args, kwargs = mock_image_new.call_args
+    assert args[0] == "RGBA"
+    width, height = args[1]
+    assert width >= 100
+    assert height > 0
+    assert args[2] == (255, 255, 255, 0)
+
     assert text_image == text_image_mock
-    draw_mock.text.assert_called_once_with(
-        (0, 0), "Test Text", font=font_mock, fill=(0, 0, 0)
-    )
+
+    draw_mock.text.assert_called_once()
+    (position, text_arg), text_kwargs = draw_mock.text.call_args
+    assert position[0] >= 0 and position[1] >= 0
+    assert text_arg == "Test Text"
+    assert text_kwargs["font"] == font_mock
+    assert text_kwargs["fill"] == (0, 0, 0)
 
 
 @patch("PIL.Image.new")

@@ -20,13 +20,20 @@ logger = logging.getLogger(__name__)
 class AzureMarkdownTranslator(MarkdownTranslator):
     """Azure OpenAI implementation for markdown translation."""
 
-    def __init__(self, root_dir: Path = None):
+    def __init__(
+        self,
+        root_dir: Path | None = None,
+        translations_dir: Path | None = None,
+        image_dir: Path | None = None,
+    ):
         """Initialize translator with Azure-specific configuration.
 
         Args:
             root_dir: Optional root directory for the project
         """
-        super().__init__(root_dir)
+        super().__init__(
+            root_dir, translations_dir=translations_dir, image_dir=image_dir
+        )
         self.kernel = self._initialize_kernel()
 
     def _initialize_kernel(self):

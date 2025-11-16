@@ -287,7 +287,14 @@ def draw_text_on_image(text, font, text_color, font_path=None):
             w = max(1, int(font_size))
         widths.append(w)
         if hasattr(fnt, "getmetrics"):
-            a, d = fnt.getmetrics()
+            try:
+                metrics = fnt.getmetrics()
+                if isinstance(metrics, (tuple, list)) and len(metrics) == 2:
+                    a, d = metrics
+                else:
+                    raise ValueError("Invalid font metrics")
+            except Exception:
+                a, d = int(font_size * 0.8), int(font_size * 0.2)
         else:
             a, d = int(font_size * 0.8), int(font_size * 0.2)
         ascents.append(max(1, int(a)))

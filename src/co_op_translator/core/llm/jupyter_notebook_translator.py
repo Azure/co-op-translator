@@ -25,14 +25,25 @@ class JupyterNotebookTranslator:
     and the overall notebook structure.
     """
 
-    def __init__(self, root_dir: Path = None):
+    def __init__(
+        self,
+        root_dir: Path = None,
+        translations_dir: Path | None = None,
+        image_dir: Path | None = None,
+    ):
         """Initialize the notebook translator.
 
         Args:
             root_dir: Root directory of the project for path calculations
         """
         self.root_dir = root_dir
-        self.markdown_translator = MarkdownTranslator.create(root_dir)
+        self.translations_dir = translations_dir
+        self.image_dir = image_dir
+        self.markdown_translator = MarkdownTranslator.create(
+            root_dir,
+            translations_dir=translations_dir,
+            image_dir=image_dir,
+        )
 
     async def translate_notebook(
         self,
@@ -163,7 +174,12 @@ class JupyterNotebookTranslator:
         return json.dumps(notebook, ensure_ascii=False, indent=1)
 
     @classmethod
-    def create(cls, root_dir: Path = None) -> "JupyterNotebookTranslator":
+    def create(
+        cls,
+        root_dir: Path = None,
+        translations_dir: Path | None = None,
+        image_dir: Path | None = None,
+    ) -> "JupyterNotebookTranslator":
         """Create a Jupyter Notebook translator instance.
 
         Factory method for creating the translator.
@@ -174,4 +190,4 @@ class JupyterNotebookTranslator:
         Returns:
             JupyterNotebookTranslator instance
         """
-        return cls(root_dir)
+        return cls(root_dir, translations_dir=translations_dir, image_dir=image_dir)

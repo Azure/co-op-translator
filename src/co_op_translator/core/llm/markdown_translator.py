@@ -32,13 +32,20 @@ class MarkdownTranslator(ABC):
 
     TRANSLATION_TIMEOUT_SECONDS = 300  # Translation timeout in seconds
 
-    def __init__(self, root_dir: Path = None):
+    def __init__(
+        self,
+        root_dir: Path | None = None,
+        translations_dir: Path | None = None,
+        image_dir: Path | None = None,
+    ):
         """Initialize translator with project configuration.
 
         Args:
             root_dir: Root directory of the project for path calculations
         """
         self.root_dir = root_dir
+        self.translations_dir = translations_dir
+        self.image_dir = image_dir
         self.font_config = FontConfig()
 
     def calculate_file_hash(self, file_path: Path) -> str:
@@ -143,6 +150,8 @@ class MarkdownTranslator(ABC):
             translated_content,
             language_code,
             self.root_dir,
+            translations_dir=self.translations_dir,
+            translated_images_dir=self.image_dir,
             translation_types=translation_types,
         )
 
@@ -264,7 +273,12 @@ class MarkdownTranslator(ABC):
         return m.group(1).strip()
 
     @classmethod
-    def create(cls, root_dir: Path = None) -> "MarkdownTranslator":
+    def create(
+        cls,
+        root_dir: Path | None = None,
+        translations_dir: Path | None = None,
+        image_dir: Path | None = None,
+    ) -> "MarkdownTranslator":
         """Create appropriate markdown translator based on configured provider.
 
         Factory method that instantiates the correct implementation based on
@@ -290,13 +304,21 @@ class MarkdownTranslator(ABC):
                 AzureMarkdownTranslator,
             )
 
-            return AzureMarkdownTranslator(root_dir)
+            return AzureMarkdownTranslator(
+                root_dir=root_dir,
+                translations_dir=translations_dir,
+                image_dir=image_dir,
+            )
         elif provider == LLMProvider.OPENAI:
             from co_op_translator.core.llm.providers.openai.markdown_translator import (
                 OpenAIMarkdownTranslator,
             )
 
-            return OpenAIMarkdownTranslator(root_dir)
+            return OpenAIMarkdownTranslator(
+                root_dir=root_dir,
+                translations_dir=translations_dir,
+                image_dir=image_dir,
+            )
         else:
             raise ValueError(
                 f"Unsupported LLM provider '{provider}'. Supported providers: AZURE_OPENAI, OPENAI. Please check your configuration."

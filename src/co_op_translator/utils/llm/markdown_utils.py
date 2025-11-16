@@ -319,6 +319,8 @@ def update_links(
     markdown_string: str,
     language_code: str,
     root_dir: Path,
+    translations_dir: Path | None = None,
+    translated_images_dir: Path | None = None,
     translation_types: list[str] = None,
 ) -> str:
     logger.info("Updating links in the markdown file")
@@ -327,8 +329,10 @@ def update_links(
     if translation_types is None:
         translation_types = ["markdown", "notebook", "images"]
 
-    translations_dir = root_dir / "translations"
-    translated_images_dir = root_dir / "translated_images"
+    if translations_dir is None:
+        translations_dir = root_dir / "translations"
+    if translated_images_dir is None:
+        translated_images_dir = root_dir / "translated_images"
 
     # Update image links
     markdown_string = update_image_links(

@@ -68,7 +68,13 @@ logger = logging.getLogger(__name__)
     help="Automatically confirm prompts (useful when using -l 'all').",
 )
 def migrate_links_command(
-    language_codes, root_dir, dry_run, fallback_to_original, debug, yes, save_logs
+    language_codes,
+    root_dir,
+    dry_run,
+    fallback_to_original,
+    debug,
+    yes,
+    save_logs,
 ):
     """
     Reprocess only translated markdown files that contain .ipynb links and
@@ -91,6 +97,7 @@ def migrate_links_command(
             click.echo(f"📄 Logs will be saved to: {log_file_path}")
 
         translations_dir = root_path / "translations"
+
         if not translations_dir.exists():
             click.echo(f"No translations directory found at: {translations_dir}")
             return
@@ -222,14 +229,14 @@ def migrate_links_command(
                         except ValueError:
                             # Try resolving relative to translated markdown directory, then map back to root
                             translated_md_dir = (
-                                (root_path / "translations")
+                                translations_dir
                                 / lang
                                 / original_md_path.relative_to(root_path).parent
                             )
                             alt_abs = (translated_md_dir / path).resolve()
                             try:
                                 rel_to_lang = alt_abs.relative_to(
-                                    (root_path / "translations") / lang
+                                    translations_dir / lang
                                 )
                                 linked_abs = (root_path / rel_to_lang).resolve()
                                 _ = linked_abs.relative_to(root_path)
@@ -260,7 +267,6 @@ def migrate_links_command(
                 total_matched += 1
 
                 # Compute translated_md_dir for later comparisons
-                translations_dir = root_path / "translations"
                 translated_md_dir = (
                     translations_dir
                     / lang

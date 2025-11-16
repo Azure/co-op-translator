@@ -66,6 +66,11 @@ logger = logging.getLogger(__name__)
     help="Minimum confidence threshold (0.0-1.0) for identifying translations to fix. Only used with --fix.",
 )
 @click.option(
+    "--add-disclaimer/--no-disclaimer",
+    default=True,
+    help="Add machine translation disclaimer sections to translated markdown and notebooks (default: enabled).",
+)
+@click.option(
     "--fast",
     "-f",
     is_flag=True,
@@ -90,6 +95,7 @@ def translate_command(
     fast,
     yes,
     min_confidence,
+    add_disclaimer,
 ):
     """
     CLI for translating project files.
@@ -261,6 +267,7 @@ def translate_command(
             language_codes,
             root_dir,
             translation_types=translation_types,
+            add_disclaimer=add_disclaimer,
         )
 
         # Update README shared sections BEFORE translation

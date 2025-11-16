@@ -33,8 +33,7 @@ class ProjectTranslator:
         language_codes,
         root_dir=".",
         translation_types=None,
-        translations_dir=None,
-        image_dir=None,
+        add_disclaimer: bool = True,
     ):
         """Initialize project translation environment.
 
@@ -133,6 +132,7 @@ class ProjectTranslator:
             self.image_translator,
             self.notebook_translator,
             self.translation_types,
+            add_disclaimer=add_disclaimer,
         )
 
     def translate_project(

@@ -28,7 +28,13 @@ class ProjectTranslator:
     and tracking of translation status across the project.
     """
 
-    def __init__(self, language_codes, root_dir=".", translation_types=None):
+    def __init__(
+        self,
+        language_codes,
+        root_dir=".",
+        translation_types=None,
+        add_disclaimer: bool = True,
+    ):
         """Initialize project translation environment.
 
         Sets up translators and managers needed for project translation operations.
@@ -97,6 +103,7 @@ class ProjectTranslator:
             self.image_translator,
             self.notebook_translator,
             self.translation_types,
+            add_disclaimer=add_disclaimer,
         )
 
     def translate_project(

@@ -34,6 +34,8 @@ class ProjectTranslator:
         root_dir=".",
         translation_types=None,
         add_disclaimer: bool = True,
+        translations_dir=None,
+        image_dir=None,
     ):
         """Initialize project translation environment.
 

@@ -153,7 +153,9 @@ class JupyterNotebookTranslator:
             if disclaimer_text:
                 start_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER START -->"
                 end_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER END -->"
-                disclaimer_block = f"{start_marker}\n{disclaimer_text}\n{end_marker}"
+                disclaimer_block = (
+                    f"---\n\n{start_marker}\n{disclaimer_text}\n{end_marker}"
+                )
                 disclaimer_cell = {
                     "cell_type": "markdown",
                     "metadata": {},

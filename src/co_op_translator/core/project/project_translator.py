@@ -46,13 +46,33 @@ class ProjectTranslator:
         """
         self.language_codes = language_codes.split()
         self.root_dir = Path(root_dir).resolve()
-        self.translations_dir = self.root_dir / "translations"
-        self.image_dir = self.root_dir / "translated_images"
+        self.translations_dir = (
+            Path(translations_dir).resolve()
+            if translations_dir is not None
+            else self.root_dir / "translations"
+        )
+        self.image_dir = (
+            Path(image_dir).resolve()
+            if image_dir is not None
+            else self.root_dir / "translated_images"
+        )
 
         # Default translation types if not specified (safe fallback for direct API usage)
         if translation_types is None:
             translation_types = ["markdown", "notebook", "images"]
         self.translation_types = translation_types
+
+        # Build effective excluded dirs, always excluding the configured translation/image trees
+        excluded_dirs = set(EXCLUDED_DIRS)
+        for dir_path in (self.translations_dir, self.image_dir):
+            try:
+                rel = dir_path.relative_to(self.root_dir)
+                if rel.parts:
+                    excluded_dirs.add(rel.parts[-1])
+            except ValueError:
+                # Directory is outside root_dir; no need to exclude from root scans
+                continue
+        self.excluded_dirs = list(excluded_dirs)
 
         # Initialize text translator
         self.text_translator = text_translator.TextTranslator.create()
@@ -78,25 +98,34 @@ class ProjectTranslator:
             self.image_translator = None
 
         self.markdown_translator = markdown_translator.MarkdownTranslator.create(
-            self.root_dir
+            self.root_dir,
+            translations_dir=self.translations_dir,
+            image_dir=self.image_dir,
         )
 
         # Initialize notebook translator if notebooks are enabled
         if "notebook" in self.translation_types:
-            self.notebook_translator = JupyterNotebookTranslator.create(self.root_dir)
+            self.notebook_translator = JupyterNotebookTranslator.create(
+                self.root_dir,
+                translations_dir=self.translations_dir,
+                image_dir=self.image_dir,
+            )
         else:
             self.notebook_translator = None
 
         # Initialize directory and translation managers
         self.directory_manager = DirectoryManager(
-            self.root_dir, self.translations_dir, self.language_codes, EXCLUDED_DIRS
+            self.root_dir,
+            self.translations_dir,
+            self.language_codes,
+            self.excluded_dirs,
         )
         self.translation_manager = TranslationManager(
             self.root_dir,
             self.translations_dir,
             self.image_dir,
             self.language_codes,
-            EXCLUDED_DIRS,
+            self.excluded_dirs,
             SUPPORTED_IMAGE_EXTENSIONS,
             SUPPORTED_NOTEBOOK_EXTENSIONS,
             self.markdown_translator,
@@ -202,7 +231,7 @@ class ProjectTranslator:
             root_dir=self.root_dir,
             translations_dir=self.translations_dir,
             language_codes=[language_code],
-            excluded_dirs=EXCLUDED_DIRS,
+            excluded_dirs=self.excluded_dirs,
             use_llm=True,
             use_rule=True,
         )

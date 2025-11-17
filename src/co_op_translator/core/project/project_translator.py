@@ -48,16 +48,25 @@ class ProjectTranslator:
         """
         self.language_codes = language_codes.split()
         self.root_dir = Path(root_dir).resolve()
-        self.translations_dir = (
-            Path(translations_dir).resolve()
-            if translations_dir is not None
-            else self.root_dir / "translations"
-        )
-        self.image_dir = (
-            Path(image_dir).resolve()
-            if image_dir is not None
-            else self.root_dir / "translated_images"
-        )
+        # Resolve translations_dir relative to root_dir when a relative path is provided.
+        if translations_dir is not None:
+            t_dir = Path(translations_dir)
+            if t_dir.is_absolute():
+                self.translations_dir = t_dir.resolve()
+            else:
+                self.translations_dir = (self.root_dir / t_dir).resolve()
+        else:
+            self.translations_dir = self.root_dir / "translations"
+
+        # Resolve image_dir relative to root_dir when a relative path is provided.
+        if image_dir is not None:
+            i_dir = Path(image_dir)
+            if i_dir.is_absolute():
+                self.image_dir = i_dir.resolve()
+            else:
+                self.image_dir = (self.root_dir / i_dir).resolve()
+        else:
+            self.image_dir = self.root_dir / "translated_images"
 
         # Default translation types if not specified (safe fallback for direct API usage)
         if translation_types is None:

@@ -211,3 +211,43 @@ async def test_project_translator_custom_output_directories(temp_project_dir):
         assert (
             translator.directory_manager.translations_dir == translator.translations_dir
         )
+
+
+@pytest.mark.asyncio
+async def test_project_translator_relative_output_directories(temp_project_dir):
+    with (
+        patch(
+            "co_op_translator.core.llm.text_translator.TextTranslator"
+        ) as mock_text_translator,
+        patch(
+            "co_op_translator.core.llm.markdown_translator.MarkdownTranslator"
+        ) as mock_markdown_translator,
+        patch(
+            "co_op_translator.core.vision.image_translator.ImageTranslator"
+        ) as mock_image_translator,
+        patch(
+            "co_op_translator.core.llm.jupyter_notebook_translator.JupyterNotebookTranslator"
+        ) as mock_jupyter_translator,
+        patch(
+            "co_op_translator.config.llm_config.config.LLMConfig.get_available_provider"
+        ) as mock_get_provider,
+    ):
+        mock_text_translator.create.return_value = MagicMock()
+        mock_markdown_translator.create.return_value = MagicMock()
+        mock_image_translator.create.return_value = MagicMock()
+        mock_jupyter_translator.create.return_value = MagicMock()
+        mock_get_provider.return_value = LLMProvider.AZURE_OPENAI
+
+        translator = ProjectTranslator(
+            "ko ja",
+            root_dir=temp_project_dir,
+            translation_types=["markdown", "notebook", "images"],
+            translations_dir="content/i18n",
+            image_dir="public/translated_media",
+        )
+
+        expected_translations = (temp_project_dir / "content" / "i18n").resolve()
+        expected_images = (temp_project_dir / "public" / "translated_media").resolve()
+
+        assert translator.translations_dir == expected_translations
+        assert translator.image_dir == expected_images

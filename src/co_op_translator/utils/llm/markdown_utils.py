@@ -53,7 +53,7 @@ def generate_prompt_template(
         1. DO NOT add '''markdown or any other tags around the translation
         2. Make sure the translation does not sound too literal
         3. Translate comments as well
-        4. Preserve inline HTML (e.g., <a>, <img>) exactly; do not convert to Markdown; translate only visible text (e.g., link text, alt/title); do not change tag names, attributes, or URLs/paths.
+        4. Preserve inline and block HTML (e.g., <a>, <img>, <details>, <summary>, <div>) exactly; do not convert to Markdown; translate only visible text (e.g., link text, alt/title, summary labels); do not change tag names, attributes, or URLs/paths.
         5. Do not translate:
            - [!NOTE], [!WARNING], [!TIP], [!IMPORTANT], [!CAUTION]
            - Variable names, function names, class names

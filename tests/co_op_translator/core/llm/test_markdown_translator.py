@@ -36,6 +36,20 @@ graph TD;
 """
 
 
+TEST_MD_WITH_DETAILS = """
+# Sample Details
+
+<details>
+  <summary>TypeScript</summary>
+
+  ```sh
+  npm install @modelcontextprotocol/sdk zod
+  npm install -D @types/node typescript
+  ```
+</details>
+"""
+
+
 class ConcreteMarkdownTranslator(MarkdownTranslator):
     """A concrete implementation of MarkdownTranslator for testing."""
 
@@ -217,6 +231,57 @@ async def test_translate_markdown_translates_mermaid_block(
     assert "[es]Decision[/es]" in result
     assert "[es]Do it[/es]" in result
     assert "[es]Stop[/es]" in result
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_preserves_details_blocks(
+    real_markdown_translator, tmp_path
+):
+    """Ensure that HTML <details>/<summary> blocks are preserved and
+    their visible text can be translated while code blocks inside are
+    still handled via placeholders.
+    """
+    test_file = tmp_path / "example_details.md"
+    test_file.write_text(TEST_MD_WITH_DETAILS)
+
+    async def fake_prompt(prompt, index, total):
+        # Preserve disclaimers logic from other tests
+        if "Disclaimer" in prompt.lower():
+            return "Aviso Legal: Este es un documento traducido."
+
+        # Main markdown translation: echo back content, but simulate
+        # translation of the heading and summary text while preserving
+        # HTML structure and any code block placeholders.
+        if "Sample Details" in prompt or "<details>" in prompt:
+            _, body = prompt.split(SPLIT_DELIMITER, 1)
+            body = body.replace("# Sample Details", "# Ejemplo de Detalles")
+            body = body.replace(
+                "<summary>TypeScript</summary>",
+                "<summary>TypeScript (ES)</summary>",
+            )
+            return body
+
+        return prompt
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        result = await real_markdown_translator.translate_markdown(
+            document=TEST_MD_WITH_DETAILS,
+            language_code="es",
+            md_file_path=test_file,
+        )
+
+    # <details>/<summary> HTML structure should be preserved
+    assert "<details>" in result
+    assert "</details>" in result
+    assert "<summary>TypeScript (ES)</summary>" in result
+
+    # The shell code block content should still be present after
+    # placeholder replacement and restoration.
+    assert "npm install @modelcontextprotocol/sdk zod" in result
 
 
 @pytest.mark.asyncio

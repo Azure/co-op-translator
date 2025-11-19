@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, patch
 import re
 
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
+from co_op_translator.utils.llm.markdown_utils import SPLIT_DELIMITER
 
 # A sample markdown with a code block and a link for testing.
 TEST_MD_CONTENT = """
@@ -11,6 +12,28 @@ TEST_MD_CONTENT = """
 ```python
 print("Hello, world!")
 ```"""
+
+
+TEST_MD_WITH_COMMENTS = """
+# Sample Markdown
+
+```python
+# First comment
+print("Hello, world!")
+# Second comment
+```"""
+
+
+TEST_MD_WITH_MERMAID = """
+# Sample Markdown
+
+```mermaid
+graph TD;
+    A[Start] --> B{Decision};
+    B -->|Yes| C[Do it];
+    B -->|No| D[Stop];
+```
+"""
 
 
 class ConcreteMarkdownTranslator(MarkdownTranslator):
@@ -45,12 +68,24 @@ async def test_translate_markdown_partial_mock(real_markdown_translator, tmp_pat
     async def fake_prompt(prompt, index, total):
         # Return a translation that preserves markdown structure and placeholders
         # This simulates what a real translator would do with the prompt template
+        if "Each line is in the form 'COMMENT_n: <text>'." in prompt:
+            # Comment-only translation request for code blocks
+            _, user_part = prompt.split(SPLIT_DELIMITER, 1)
+            lines = [ln.strip() for ln in user_part.splitlines() if ln.strip()]
+            out_lines = []
+            for line in lines:
+                m = re.match(r"^(COMMENT_\d+):\s*(.*)$", line)
+                if not m:
+                    continue
+                prefix, text = m.groups()
+                out_lines.append(f"{prefix}: [es]{text}[/es]")
+            return "\n".join(out_lines)
         if "Sample Markdown" in prompt:
             # Keep any code block placeholders in the translation
             placeholder_match = re.search(r"@@CODE_BLOCK_\d+@@", prompt)
             code_placeholder = placeholder_match.group(0) if placeholder_match else ""
             return f"# Ejemplo de Markdown\n\n{code_placeholder}"
-        elif "Disclaimer" in prompt.lower():
+        if "Disclaimer" in prompt.lower():
             return "Aviso Legal: Este es un documento traducido."
         return prompt  # Return the original prompt for any other content
 
@@ -79,6 +114,109 @@ async def test_translate_markdown_partial_mock(real_markdown_translator, tmp_pat
         assert (
             mock_run_prompt.call_count > 0
         ), "Expected at least one call to _run_prompt for the translation process."
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_translates_code_comments(
+    real_markdown_translator, tmp_path
+):
+    """Ensure that comments inside fenced code blocks are translated
+    while preserving the original code lines.
+    """
+    # Create test file
+    test_file = tmp_path / "example_comments.md"
+    test_file.write_text(TEST_MD_WITH_COMMENTS)
+
+    async def fake_prompt(prompt, index, total):
+        if "Each line is in the form 'COMMENT_n: <text>'." in prompt:
+            # Comment-only translation request for code blocks
+            _, user_part = prompt.split(SPLIT_DELIMITER, 1)
+            lines = [ln.strip() for ln in user_part.splitlines() if ln.strip()]
+            out_lines = []
+            for line in lines:
+                m = re.match(r"^(COMMENT_\d+):\s*(.*)$", line)
+                if not m:
+                    continue
+                prefix, text = m.groups()
+                out_lines.append(f"{prefix}: [es]{text}[/es]")
+            return "\n".join(out_lines)
+        if "Sample Markdown" in prompt:
+            placeholder_match = re.search(r"@@CODE_BLOCK_\d+@@", prompt)
+            code_placeholder = placeholder_match.group(0) if placeholder_match else ""
+            return f"# Ejemplo de Markdown\n\n{code_placeholder}"
+        if "Disclaimer" in prompt.lower():
+            return "Aviso Legal: Este es un documento traducido."
+        return prompt
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        result = await real_markdown_translator.translate_markdown(
+            document=TEST_MD_WITH_COMMENTS,
+            language_code="es",
+            md_file_path=test_file,
+        )
+
+    # Code line must remain intact
+    assert 'print("Hello, world!")' in result
+
+    # Comments should be translated according to our fake_prompt
+    assert "# [es]First comment[/es]" in result
+    assert "# [es]Second comment[/es]" in result
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_translates_mermaid_block(
+    real_markdown_translator, tmp_path
+):
+    """Ensure that Mermaid fenced code blocks are translated as diagrams,
+    preserving syntax while translating human-readable labels.
+    """
+    test_file = tmp_path / "example_mermaid.md"
+    test_file.write_text(TEST_MD_WITH_MERMAID)
+
+    async def fake_prompt(prompt, index, total):
+        # Mermaid-specific translation
+        if "Mermaid diagram code" in prompt:
+            _, code_block = prompt.split(SPLIT_DELIMITER, 1)
+            # Simulate translation by wrapping labels in [es]...[/es]
+            # We keep the overall Mermaid syntax intact.
+            translated = (
+                code_block.replace("Start", "[es]Start[/es]")
+                .replace("Decision", "[es]Decision[/es]")
+                .replace("Do it", "[es]Do it[/es]")
+                .replace("Stop", "[es]Stop[/es]")
+            )
+            return translated
+        if "Sample Markdown" in prompt:
+            placeholder_match = re.search(r"@@CODE_BLOCK_\d+@@", prompt)
+            code_placeholder = placeholder_match.group(0) if placeholder_match else ""
+            return f"# Ejemplo de Markdown\n\n{code_placeholder}"
+        if "Disclaimer" in prompt.lower():
+            return "Aviso Legal: Este es un documento traducido."
+        return prompt
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        result = await real_markdown_translator.translate_markdown(
+            document=TEST_MD_WITH_MERMAID,
+            language_code="es",
+            md_file_path=test_file,
+        )
+
+    # Mermaid syntax must still be present
+    assert "graph TD;" in result
+
+    # Labels should be translated according to our fake_prompt
+    assert "[es]Start[/es]" in result
+    assert "[es]Decision[/es]" in result
+    assert "[es]Do it[/es]" in result
+    assert "[es]Stop[/es]" in result
 
 
 @pytest.mark.asyncio

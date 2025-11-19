@@ -15,6 +15,7 @@ translate -l "language_codes" --save-logs, -s | Save DEBUG-level logs to files u
 translate -l "language_codes" -r "root_dir"   | Specifies the root directory of the project
 translate -l "language_codes" -f              | Uses fast mode for image translation (up to 3x faster plotting at a slight cost to quality and alignment).
 translate -l "language_codes" -y              | Automatically confirm all prompts (useful for CI/CD pipelines)
+translate -l "language_codes" --add-disclaimer/--no-disclaimer | Enable or disable adding a machine translation disclaimer section to translated markdown and notebooks (default: enabled).
 translate -l "language_codes" --help          | help details within the CLI showing available commands
 evaluate -l "language_code"                  | Evaluates translation quality for a specific language and provides confidence scores
 evaluate -l "language_code" -c 0.8           | Evaluates translations with custom confidence threshold
@@ -54,8 +55,9 @@ migrate-links -l "all" -y                      | Process all languages and auto-
   11. Debug mode example: - translate -l "ko" -d: Enable debug logging.
   12. Save logs to files: translate -l "ko" -s
   13. Console DEBUG and file DEBUG: translate -l "ko" -d -s
+  14. Translate without adding machine translation disclaimers to outputs: translate -l "ko" --no-disclaimer
 
-  14. Migrate notebook links for Korean translations (update links to translated notebooks when available):    migrate-links -l "ko"
+  15. Migrate notebook links for Korean translations (update links to translated notebooks when available):    migrate-links -l "ko"
 
   15. Migrate links with dry-run (no file writes):    migrate-links -l "ko" --dry-run
 

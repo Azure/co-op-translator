@@ -157,3 +157,6 @@ et:
 pcm:
   name: "Nigerian Pidgin"
   font: "NotoSans-Medium.ttf"
+te:
+  name: "Telugu"
+  font: "NotoSansTelugu-Medium.ttf"

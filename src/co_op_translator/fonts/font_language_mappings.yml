@@ -163,3 +163,6 @@ te:
 ml:
   name: "Malayalam"
   font: "NotoSansMalayalam-Medium.ttf"
+kn:
+  name: "Kannada"
+  font: "NotoSansKannada-Medium.ttf"

@@ -56,6 +56,7 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | et            | Estonian             | NotoSans-Medium.ttf               | No          | No           |
 | pcm           | Nigerian Pidgin      | NotoSans-Medium.ttf               | No          | No           |
 | te            | Telugu               | NotoSans-Medium.ttf               | No          | No           |
+| ml            | Malayalam            | NotoSans-Medium.ttf               | No          | No           |
 
 ## Adding a new language
 

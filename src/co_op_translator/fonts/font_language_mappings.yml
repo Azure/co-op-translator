@@ -160,3 +160,6 @@ pcm:
 te:
   name: "Telugu"
   font: "NotoSansTelugu-Medium.ttf"
+ml:
+  name: "Malayalam"
+  font: "NotoSansMalayalam-Medium.ttf"

@@ -306,3 +306,23 @@ If a PR contains the following commits:
 
 They should be squashed into:
 `Docs: Improve documentation clarity and formatting (#65)`
+
+### Release process
+
+This section describes the simplest way for maintainers to publish a new release of Co-op Translator.
+
+#### 1. Bump the version in `pyproject.toml`
+
+1. Decide the next version number (we follow semantic versioning: `MAJOR.MINOR.PATCH`).
+2. Edit `pyproject.toml` and update the `version` field under `[tool.poetry]`.
+3. Open a dedicated pull request that only changes the version (and any automatically updated lock/metadata files, if present).
+4. After review, use **Squash and Merge** and ensure the final commit message follows the format described above.
+
+#### 2. Create a GitHub Release
+
+1. Go to the GitHub repository page and open **Releases** → **Draft a new release**.
+2. Create a new tag (for example, `v0.13.0`) from the `main` branch.
+3. Set the release title to the same version (for example, `v0.13.0`).
+4. Click **Generate release notes** to auto-populate the changelog.
+5. Optionally edit the text (for example, to highlight newly supported languages or important changes).
+6. Publish the release.

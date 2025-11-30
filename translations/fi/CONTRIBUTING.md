@@ -1,31 +1,33 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
-  "translation_date": "2025-10-15T03:26:01+00:00",
+  "original_hash": "758ca1c5ae0d32c52d2dd59132dcfbf0",
+  "translation_date": "2025-11-30T11:31:34+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "fi"
 }
 -->
 # Osallistuminen Co-op Translator -projektiin
 
-Tähän projektiin ovat tervetulleita kaikki kontribuutiot ja ehdotukset. Useimmat kontribuutiot edellyttävät, että hyväksyt Contributor License Agreementin (CLA), jossa vakuutat, että sinulla on oikeus antaa meille oikeudet käyttää kontribuutiotasi. Lisätietoja: https://cla.opensource.microsoft.com.
+Tämä projekti ottaa mielellään vastaan panoksia ja ehdotuksia. Useimmat panokset edellyttävät, että hyväksyt
+Contributor License Agreementin (CLA), jossa vahvistat, että sinulla on oikeus ja myönnät meille
+oikeudet käyttää panostasi. Lisätietoja löytyy osoitteesta https://cla.opensource.microsoft.com.
 
-Kun lähetät pull requestin, CLA-botti tarkistaa automaattisesti, tarvitsetko CLA:n, ja merkitsee PR:n sen mukaisesti (esim. tilatarkistus, kommentti). Seuraa vain botin antamia ohjeita. Tämä tarvitsee tehdä vain kerran kaikissa repositorioissa, jotka käyttävät CLA:ta.
+Kun lähetät pull requestin, CLA-botti tarkistaa automaattisesti, tarvitsetko CLA:n ja merkitsee PR:n asianmukaisesti (esim. tilantarkistus, kommentti). Noudata vain botin antamia ohjeita. Tämä tarvitsee tehdä vain kerran kaikissa CLA:ta käyttävissä repositorioissa.
 
 ## Kehitysympäristön asennus
 
-Tämän projektin kehitysympäristön asennukseen suosittelemme Poetrya riippuvuuksien hallintaan. Käytämme `pyproject.toml`-tiedostoa projektin riippuvuuksien hallintaan, joten riippuvuudet kannattaa asentaa Poetrylla.
+Tämän projektin kehitysympäristön asennukseen suosittelemme Poetrya riippuvuuksien hallintaan. Käytämme `pyproject.toml`-tiedostoa projektin riippuvuuksien hallintaan, joten riippuvuuksien asentamiseen tulee käyttää Poetrya.
 
 ### Virtuaaliympäristön luominen
 
-#### pipillä
+#### Pipin avulla
 
 ```bash
 python -m venv .venv
 ```
 
-#### Poetrylla
+#### Poetryn avulla
 
 ```bash
 poetry init
@@ -33,7 +35,7 @@ poetry init
 
 ### Virtuaaliympäristön aktivointi
 
-#### Sekä pipille että Poetrylle
+#### Sekä pipillä että Poetrylla
 
 - Windows:
 
@@ -47,15 +49,15 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Poetrylla
+#### Poetryn avulla
 
 ```bash
 poetry shell
 ```
 
-### Paketin ja tarvittavien riippuvuuksien asennus
+### Paketin ja vaadittujen pakettien asentaminen
 
-#### Poetrylla (pyproject.toml-tiedostosta)
+#### Poetrylla (pyproject.toml:n perusteella)
 
 ```bash
 poetry install
@@ -63,14 +65,14 @@ poetry install
 
 ### Manuaalinen testaus
 
-Ennen PR:n lähettämistä on tärkeää testata käännöstoiminnallisuutta oikealla dokumentaatiolla:
+Ennen PR:n lähettämistä on tärkeää testata käännöstoiminnallisuus oikealla dokumentaatiolla:
 
-1. Luo testikansio projektin juureen:
+1. Luo testihakemisto juurihakemistoon:
     ```bash
     mkdir test_docs
     ```
 
-2. Kopioi haluamasi markdown-dokumentaatio ja kuvat testikansioon. Esimerkiksi:
+2. Kopioi testihakemistoon joitain käännettäviä markdown-dokumentteja ja kuvia. Esimerkiksi:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -81,47 +83,47 @@ Ennen PR:n lähettämistä on tärkeää testata käännöstoiminnallisuutta oik
     pip install -e .
     ```
 
-4. Aja Co-op Translator testidokumenteillasi:
+4. Suorita Co-op Translator testidokumenteillasi:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
 5. Tarkista käännetyt tiedostot kansioista `test_docs/translations` ja `test_docs/translated_images` varmistaaksesi:
    - Käännöksen laatu
-   - Metatietokommentit ovat oikein
-   - Alkuperäinen markdown-rakenne säilyy
-   - Linkit ja kuvat toimivat oikein
+   - Metatietokommenttien oikeellisuus
+   - Alkuperäisen markdown-rakenteen säilyminen
+   - Linkkien ja kuvien toimivuus
 
-Tämä manuaalinen testaus auttaa varmistamaan, että muutoksesi toimivat hyvin todellisissa tilanteissa.
+Tämä manuaalinen testaus varmistaa, että muutoksesi toimivat hyvin todellisissa tilanteissa.
 
 ### Ympäristömuuttujat
 
-1. Luo `.env`-tiedosto projektin juureen kopioimalla mukana tuleva `.env.template`-tiedosto.
+1. Luo juurihakemistoon `.env`-tiedosto kopioimalla valmiiksi annettu `.env.template`-tiedosto.
 1. Täytä ympäristömuuttujat ohjeiden mukaisesti.
 
 > [!TIP]
 >
-> ### Lisävaihtoehtoja kehitysympäristölle
+> ### Vaihtoehtoisia kehitysympäristöjä
 >
-> Voit ajaa projektia paikallisesti, mutta vaihtoehtoisesti voit käyttää myös GitHub Codespacesia tai VS Code Dev Containersia kehitysympäristön pystyttämiseen.
+> Projektia voi ajaa paikallisesti, mutta vaihtoehtoisesti voit käyttää GitHub Codespacesia tai VS Code Dev Containers -ympäristöä.
 >
 > #### GitHub Codespaces
 >
-> Voit ajaa näitä esimerkkejä virtuaalisesti GitHub Codespacesilla ilman lisäasetuksia.
+> Voit ajaa näitä esimerkkejä virtuaalisesti GitHub Codespacesin avulla ilman lisäasetuksia.
 >
-> Painike avaa selainpohjaisen VS Code -instanssin:
+> Painike avaa selaimessa web-pohjaisen VS Code -instanssin:
 >
-> 1. Avaa pohja (tämä voi kestää muutaman minuutin):
+> 1. Avaa malli (voi kestää muutaman minuutin):
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
 > #### Paikallinen ajo VS Code Dev Containersilla
 >
-> ⚠️ Tämä vaihtoehto toimii vain, jos Docker Desktopille on varattu vähintään 16 GB RAM-muistia. Jos muistia on vähemmän, kokeile [GitHub Codespaces -vaihtoehtoa](../..) tai [asennusta paikallisesti](../..).
+> ⚠️ Tämä vaihtoehto toimii vain, jos Docker Desktopilla on varattu vähintään 16 GB RAM-muistia. Jos muistia on vähemmän, voit kokeilla [GitHub Codespaces -vaihtoehtoa](../..) tai [asentaa paikallisesti](../..).
 >
-> Toinen vaihtoehto on VS Code Dev Containers, joka avaa projektin paikallisessa VS Codessa [Dev Containers -laajennuksella](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Vaihtoehtona on VS Code Dev Containers, joka avaa projektin paikallisessa VS Codessa käyttäen [Dev Containers -laajennusta](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Käynnistä Docker Desktop (asenna, jos ei ole jo asennettu)
+> 1. Käynnistä Docker Desktop (asennus tarvittaessa)
 > 2. Avaa projekti:
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
@@ -129,11 +131,11 @@ Tämä manuaalinen testaus auttaa varmistamaan, että muutoksesi toimivat hyvin 
 
 ### Koodityyli
 
-Käytämme [Blackia](https://github.com/psf/black) Python-koodin muotoiluun, jotta koodityyli pysyy yhtenäisenä koko projektissa. Black on automaattinen koodinmuotoilija, joka muotoilee Python-koodin Blackin tyyliin.
+Käytämme [Black](https://github.com/psf/black) -työkalua Python-koodin muotoiluun, jotta koodityyli pysyy yhtenäisenä projektissa. Black on tinkimätön koodinmuotoilija, joka muotoilee Python-koodin automaattisesti Blackin tyylin mukaiseksi.
 
 #### Konfiguraatio
 
-Blackin asetukset löytyvät `pyproject.toml`-tiedostosta:
+Blackin asetukset on määritelty `pyproject.toml`-tiedostossamme:
 
 ```toml
 [tool.black]
@@ -142,18 +144,18 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-#### Blackin asennus
+#### Blackin asentaminen
 
-Voit asentaa Blackin joko Poetrylla (suositeltavaa) tai pipillä:
+Blackin voi asentaa joko Poetrylla (suositus) tai pipillä:
 
 ##### Poetrylla
 
-Black asentuu automaattisesti kehitysympäristön asennuksen yhteydessä:
+Black asennetaan automaattisesti kehitysympäristön asennuksen yhteydessä:
 ```bash
 poetry install
 ```
 
-##### pipillä
+##### Pipillä
 
 Jos käytät pipiä, voit asentaa Blackin suoraan:
 ```bash
@@ -164,38 +166,38 @@ pip install black
 
 ##### Poetrylla
 
-1. Muotoile kaikki Python-tiedostot projektissa:
+1. Muotoile kaikki projektin Python-tiedostot:
     ```bash
     poetry run black .
     ```
 
-2. Muotoile tietty tiedosto tai kansio:
+2. Muotoile tietty tiedosto tai hakemisto:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
-##### pipillä
+##### Pipillä
 
-1. Muotoile kaikki Python-tiedostot projektissa:
+1. Muotoile kaikki projektin Python-tiedostot:
     ```bash
     black .
     ```
 
-2. Muotoile tietty tiedosto tai kansio:
+2. Muotoile tietty tiedosto tai hakemisto:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> Suosittelemme asettamaan editorisi muotoilemaan koodin automaattisesti Blackilla tallennuksen yhteydessä. Useimmat modernit editorit tukevat tätä laajennusten tai lisäosien avulla.
+> Suosittelemme konfiguroimaan editorisi muotoilemaan koodin automaattisesti Blackilla tallennuksen yhteydessä. Useimmat nykyaikaiset editorit tukevat tätä laajennusten tai lisäosien kautta.
 
 ## Co-op Translatorin ajaminen
 
-Voit ajaa Co-op Translatoria Poetrylla seuraavasti:
+Ajaaksesi Co-op Translatoria Poetryn avulla ympäristössäsi, toimi seuraavasti:
 
-1. Siirry kansioon, jossa haluat tehdä käännöstestejä, tai luo väliaikainen kansio testausta varten.
+1. Siirry hakemistoon, jossa haluat tehdä käännösten testauksen, tai luo väliaikainen kansio testejä varten.
 
-2. Suorita seuraava komento. Korvaa `-l ko` haluamallasi kielikoodilla. `-d`-lippu käynnistää debug-tilan.
+2. Suorita seuraava komento. Korvaa `-l ko` haluamallasi kielikoodilla. `-d`-valitsin tarkoittaa debug-tilaa.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -206,33 +208,33 @@ Voit ajaa Co-op Translatoria Poetrylla seuraavasti:
 
 ## Uuden kielen lisääminen
 
-Otamme mielellämme vastaan kontribuutioita, jotka lisäävät tuen uusille kielille. Ennen PR:n avaamista tee seuraavat vaiheet, jotta tarkistus sujuu sujuvasti.
+Otamme mielellämme vastaan panoksia, jotka lisäävät tukea uusille kielille. Ennen PR:n avaamista suorita alla olevat vaiheet sujuvan tarkastelun varmistamiseksi.
 
 1. Lisää kieli fonttikarttaan
    - Muokkaa tiedostoa `src/co_op_translator/fonts/font_language_mappings.yml`
-   - Lisää rivi, jossa on:
-     - `code`: ISO-tyyppinen kielikoodi (esim. `vi`)
-     - `name`: Ihmisläheinen nimi
-     - `font`: Fontti, joka löytyy kansiosta `src/co_op_translator/fonts/` ja tukee kyseistä kirjoitusjärjestelmää
-     - `rtl`: `true`, jos oikealta vasemmalle, muuten `false`
+   - Lisää merkintä, jossa on:
+     - `code`: ISO-tyylinen kielikoodi (esim. `vi`)
+     - `name`: Käyttäjäystävällinen näyttönimi
+     - `font`: Fontti, joka toimitetaan kansiossa `src/co_op_translator/fonts/` ja tukee kyseistä kirjoitusjärjestelmää
+     - `rtl`: `true`, jos kieli on oikealta vasemmalle, muuten `false`
 
 2. Lisää tarvittavat fonttitiedostot (tarvittaessa)
-   - Jos uusi fontti tarvitaan, varmista, että sen lisenssi sallii avoimen lähdekoodin jakelun
+   - Jos uusi fontti tarvitaan, varmista lisenssin yhteensopivuus avoimen lähdekoodin jakeluun
    - Lisää fonttitiedosto kansioon `src/co_op_translator/fonts/`
 
-3. Paikallinen testaus
-   - Aja käännös pienellä esimerkillä (Markdown, kuvat ja notebookit tarpeen mukaan)
+3. Paikallinen tarkistus
+   - Suorita käännökset pienelle näytteelle (Markdown, kuvat ja notebookit tarpeen mukaan)
    - Varmista, että tuloste näkyy oikein, mukaan lukien fontit ja mahdollinen RTL-asettelu
 
 4. Päivitä dokumentaatio
    - Varmista, että kieli näkyy tiedostossa `getting_started/supported-languages.md`
-   - Tiedostoon `README_languages_template.md` ei tarvitse tehdä muutoksia; se generoidaan tuetun listan perusteella
+   - Tiedostoa `getting_started/README_languages_template.md` ei tarvitse muuttaa, sillä se generoidaan tuetun listan perusteella
 
 5. Avaa PR
-   - Kuvaile lisätty kieli ja mahdolliset fontti/lisenssihuomiot
-   - Liitä mukaan kuvakaappauksia renderöidyistä tulosteista, jos mahdollista
+   - Kuvaile lisätty kieli ja mahdolliset fontti- tai lisenssiasiat
+   - Liitä mukaan kuvakaappauksia renderöidyistä tuloksista, jos mahdollista
 
-Esimerkki YAML-rivistä:
+Esimerkkimerkintä YAML-muodossa:
 
 ```yaml
 new_lang(code):
@@ -241,62 +243,100 @@ new_lang(code):
   rtl: false
 ```
 
+### Uuden kielen testaus
 
-## Ylläpitäjille
+Voit testata uutta kieltä suorittamalla seuraavan komennon:
 
-### Commit-viestit ja yhdistämisstrategia
+```bash
+# Luo ja aktivoi virtuaaliympäristö
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+# Asenna kehityspaketti
+pip install -e .
+# Suorita käännös
+translate -l "new_lang"
+```
 
-Jotta projektin commit-historia pysyy selkeänä ja johdonmukaisena, noudatamme tiettyä commit-viestien muotoa **lopullisessa commit-viestissä** käytettäessä **Squash and Merge** -strategiaa.
+## Ylläpitäjät
 
-Kun pull request (PR) yhdistetään, yksittäiset commitit yhdistetään yhdeksi commitiksi. Lopullisen commit-viestin tulee noudattaa alla olevaa muotoa, jotta historia pysyy siistinä ja yhtenäisenä.
+### Commit-viesti ja yhdistämisstrategia
+
+Projektin commit-historian johdonmukaisuuden ja selkeyden varmistamiseksi noudatamme tiettyä commit-viestien muotoa **lopullisessa commit-viestissä** käyttäessämme **Squash and Merge** -strategiaa.
+
+Kun pull request yhdistetään, yksittäiset commitit yhdistetään yhdeksi commitiksi. Lopullisen commit-viestin tulee noudattaa alla olevaa muotoa, jotta historia pysyy siistinä ja yhtenäisenä.
 
 #### Commit-viestin muoto (squash and merge)
 
 Käytämme seuraavaa muotoa commit-viesteissä:
 
 ```bash
-<type>: <description> (#<PR number>)
+<type>: <description> (#<PR numero>)
 ```
 
 - **type**: Määrittää commitin kategorian. Käytämme seuraavia tyyppejä:
   - `Docs`: Dokumentaatiopäivitykset.
   - `Build`: Muutokset build-järjestelmään tai riippuvuuksiin, mukaan lukien konfiguraatiotiedostot, CI-työnkulut tai Dockerfile.
-  - `Core`: Projektin ydintoiminnallisuuden tai ominaisuuksien muutokset, erityisesti `src/co_op_translator/core`-kansiossa.
+  - `Core`: Muutokset projektin ydintoiminnallisuuteen tai ominaisuuksiin, erityisesti tiedostoissa `src/co_op_translator/core`.
 
 - **description**: Tiivis yhteenveto muutoksesta.
-- **PR number**: Pull requestin numero.
+- **PR-numero**: Pull requestin numero, johon commit liittyy.
 
 **Esimerkkejä**:
 
-- `Docs: Update installation instructions for clarity (#50)`
-- `Core: Improve handling of image translation (#60)`
+- `Docs: Päivitä asennusohjeet selkeyden vuoksi (#50)`
+- `Core: Paranna kuvan käännöksen käsittelyä (#60)`
 
 > [!NOTE]
-> Tällä hetkellä **`Docs`**, **`Core`** ja **`Build`** -etuliitteet lisätään automaattisesti PR-otsikoihin muokattujen lähdekooditiedostojen perusteella. Kunhan oikea label on lisätty, sinun ei yleensä tarvitse muokata PR-otsikkoa käsin. Tarkista vain, että kaikki on oikein ja etuliite on muodostettu oikein.
+> Tällä hetkellä **`Docs`**, **`Core`** ja **`Build`** -etuliitteet lisätään automaattisesti PR-otsikoihin muokattujen lähdekooditiedostojen tunnisteiden perusteella. Kun oikea tunniste on käytössä, sinun ei yleensä tarvitse muokata PR-otsikkoa manuaalisesti. Tarkista vain, että kaikki on oikein ja etuliite on generoitu oikein.
 
 #### Yhdistämisstrategia
 
 Käytämme oletuksena **Squash and Merge** -strategiaa pull requesteille. Tämä varmistaa, että commit-viestit noudattavat muotoamme, vaikka yksittäiset commitit eivät sitä tekisikään.
 
-**Perustelut**:
+**Syitä**:
 
 - Selkeä, lineaarinen projektihistoria.
-- Johdonmukaiset commit-viestit.
-- Vähemmän hälyä pienistä commiteista (esim. "fix typo").
+- Johdonmukaisuus commit-viesteissä.
+- Vähemmän hälyä pienistä commiteista (esim. "korjaa kirjoitusvirhe").
 
-Yhdistettäessä varmista, että lopullinen commit-viesti noudattaa yllä kuvattua muotoa.
+Yhdistämisen yhteydessä varmista, että lopullinen commit-viesti noudattaa yllä kuvattua muotoa.
 
 **Esimerkki Squash and Merge -yhdistämisestä**
 Jos PR sisältää seuraavat commitit:
 
-- `fix typo`
-- `update README`
-- `adjust formatting`
+- `korjaa kirjoitusvirhe`
+- `päivitä README`
+- `säädä muotoilua`
 
 Ne yhdistetään muotoon:
-`Docs: Improve documentation clarity and formatting (#65)`
+`Docs: Paranna dokumentaation selkeyttä ja muotoilua (#65)`
+
+### Julkaisuprosessi
+
+Tässä osiossa kuvataan helpoin tapa ylläpitäjille julkaista uusi versio Co-op Translatorista.
+
+#### 1. Versiotunnuksen päivitys `pyproject.toml`-tiedostossa
+
+1. Päätä seuraava versiotunnus (käytämme semanttista versionhallintaa: `MAJOR.MINOR.PATCH`).
+2. Muokkaa `pyproject.toml`-tiedostoa ja päivitä `version`-kenttä `[tool.poetry]`-osion alla.
+3. Avaa oma pull request, joka muuttaa vain version (ja mahdolliset automaattisesti päivittyvät lukko- tai metatiedostot).
+4. Tarkastuksen jälkeen käytä **Squash and Merge** -yhdistämistä ja varmista, että lopullinen commit-viesti noudattaa yllä kuvattua muotoa.
+
+#### 2. GitHub Release -julkaisun luominen
+
+1. Mene GitHub-repositorion sivulle ja avaa **Releases** → **Draft a new release**.
+2. Luo uusi tagi (esim. `v0.13.0`) `main`-haaran pohjalta.
+3. Aseta julkaisun otsikoksi sama versio (esim. `v0.13.0`).
+4. Klikkaa **Generate release notes** täyttääksesi automaattisesti muutosten lokin.
+5. Muokkaa tekstiä halutessasi (esim. korosta uusia kieliä tai tärkeitä muutoksia).
+6. Julkaise release.
 
 ---
 
+<!-- CO-OP TRANSLATOR DISCLAIMER START -->
 **Vastuuvapauslauseke**:
-Tämä asiakirja on käännetty käyttämällä tekoälypohjaista käännöspalvelua [Co-op Translator](https://github.com/Azure/co-op-translator). Vaikka pyrimme tarkkuuteen, huomioithan, että automaattiset käännökset voivat sisältää virheitä tai epätarkkuuksia. Alkuperäistä asiakirjaa sen alkuperäisellä kielellä tulee pitää ensisijaisena lähteenä. Kriittisissä tapauksissa suositellaan ammattimaista ihmiskääntäjää. Emme ole vastuussa tämän käännöksen käytöstä mahdollisesti aiheutuvista väärinkäsityksistä tai tulkintavirheistä.
+Tämä asiakirja on käännetty käyttämällä tekoälypohjaista käännöspalvelua [Co-op Translator](https://github.com/Azure/co-op-translator). Vaikka pyrimme tarkkuuteen, otathan huomioon, että automaattikäännöksissä saattaa esiintyä virheitä tai epätarkkuuksia. Alkuperäinen asiakirja sen alkuperäiskielellä on virallinen lähde. Tärkeissä asioissa suositellaan ammattimaista ihmiskäännöstä. Emme ole vastuussa tämän käännöksen käytöstä aiheutuvista väärinymmärryksistä tai tulkinnoista.
+<!-- CO-OP TRANSLATOR DISCLAIMER END -->

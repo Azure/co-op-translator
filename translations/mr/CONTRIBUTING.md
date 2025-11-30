@@ -1,23 +1,23 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
-  "translation_date": "2025-10-15T02:48:52+00:00",
+  "original_hash": "758ca1c5ae0d32c52d2dd59132dcfbf0",
+  "translation_date": "2025-11-30T10:38:21+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "mr"
 }
 -->
 # Co-op Translator मध्ये योगदान देणे
 
-या प्रकल्पात योगदान आणि सूचना स्वागतार्ह आहेत. बहुतेक योगदानांसाठी तुम्हाला Contributor License Agreement (CLA) वर सहमती द्यावी लागते, ज्यामध्ये तुम्ही आम्हाला तुमचे योगदान वापरण्याचा अधिकार देत आहात, हे जाहीर करता. अधिक माहितीसाठी https://cla.opensource.microsoft.com या लिंकला भेट द्या.
+हा प्रकल्प योगदान आणि सूचना स्वीकारतो. बहुतेक योगदानांसाठी आपल्याला Contributor License Agreement (CLA) सहमत व्हावे लागते, ज्यात आपण आपल्या योगदानाचा वापर करण्याचा अधिकार आम्हाला दिला आहे हे घोषित केले जाते. तपशीलांसाठी, https://cla.opensource.microsoft.com येथे भेट द्या.
 
-जेव्हा तुम्ही pull request सबमिट करता, तेव्हा CLA bot आपोआप तपासेल की तुम्हाला CLA द्यायची गरज आहे का आणि PR ला योग्यरित्या सजवेल (उदा., status check, comment). फक्त bot ने दिलेल्या सूचनांचे पालन करा. तुम्हाला हे सर्व CLA वापरणाऱ्या सर्व रेपोजसाठी फक्त एकदाच करावे लागेल.
+जेव्हा आपण पुल रिक्वेस्ट सबमिट करता, तेव्हा CLA बॉट आपोआप तपासेल की आपल्याला CLA प्रदान करणे आवश्यक आहे का आणि PR योग्यरित्या चिन्हांकित करेल (उदा., स्थिती तपासणी, टिप्पणी). फक्त बॉटने दिलेल्या सूचनांचे पालन करा. आपल्याला आमच्या CLA वापरणाऱ्या सर्व रेपॉजमध्ये हे फक्त एकदाच करावे लागेल.
 
-## विकासासाठी वातावरणाची सेटअप
+## विकास पर्यावरण सेटअप
 
-या प्रकल्पासाठी विकासाचे वातावरण सेट करण्यासाठी, dependency व्यवस्थापनासाठी Poetry वापरण्याची शिफारस केली जाते. आम्ही प्रकल्पाच्या dependency साठी `pyproject.toml` वापरतो, त्यामुळे dependency install करण्यासाठी Poetry वापरा.
+या प्रकल्पासाठी विकास पर्यावरण सेट करण्यासाठी, आम्ही Poetry वापरण्याचा सल्ला देतो जे अवलंबित्व व्यवस्थापनासाठी उपयुक्त आहे. आम्ही प्रकल्पाच्या अवलंबित्वांसाठी `pyproject.toml` वापरतो, त्यामुळे अवलंबित्वे इन्स्टॉल करण्यासाठी Poetry वापरावे.
 
-### virtual environment तयार करा
+### व्हर्च्युअल एन्व्हायर्नमेंट तयार करा
 
 #### pip वापरून
 
@@ -31,7 +31,7 @@ python -m venv .venv
 poetry init
 ```
 
-### virtual environment सक्रिय करा
+### व्हर्च्युअल एन्व्हायर्नमेंट सक्रिय करा
 
 #### pip आणि Poetry दोन्हीसाठी
 
@@ -53,7 +53,7 @@ poetry init
 poetry shell
 ```
 
-### पॅकेज आणि आवश्यक पॅकेजेस install करणे
+### पॅकेज आणि आवश्यक पॅकेजेस इन्स्टॉल करणे
 
 #### Poetry वापरून (pyproject.toml मधून)
 
@@ -63,77 +63,77 @@ poetry install
 
 ### मॅन्युअल चाचणी
 
-PR सबमिट करण्यापूर्वी, प्रत्यक्ष दस्तऐवजांसह भाषांतर कार्यक्षमता तपासणे महत्त्वाचे आहे:
+PR सबमिट करण्यापूर्वी, वास्तविक दस्तऐवजांसह भाषांतर कार्यक्षमता तपासणे महत्त्वाचे आहे:
 
-1. मुख्य directory मध्ये एक test directory तयार करा:
+1. रूट डायरेक्टरीमध्ये एक test डायरेक्टरी तयार करा:
     ```bash
     mkdir test_docs
     ```
 
-2. तुम्हाला भाषांतर करायचे markdown दस्तऐवज आणि प्रतिमा test directory मध्ये कॉपी करा. उदाहरणार्थ:
+2. भाषांतरासाठी काही मार्कडाउन दस्तऐवज आणि प्रतिमा test डायरेक्टरीमध्ये कॉपी करा. उदाहरणार्थ:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. पॅकेज स्थानिकरित्या install करा:
+3. पॅकेज स्थानिकरित्या इन्स्टॉल करा:
     ```bash
     pip install -e .
     ```
 
-4. Co-op Translator तुमच्या test documents वर चालवा:
+4. आपल्या test दस्तऐवजांवर Co-op Translator चालवा:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
 5. `test_docs/translations` आणि `test_docs/translated_images` मधील भाषांतरित फाइल्स तपासा आणि खात्री करा:
    - भाषांतराची गुणवत्ता
-   - metadata comments योग्य आहेत का
-   - मूळ markdown रचना जशीच्या तशी आहे का
-   - लिंक आणि प्रतिमा व्यवस्थित काम करत आहेत का
+   - मेटाडेटा टिप्पण्या बरोबर आहेत
+   - मूळ मार्कडाउन संरचना जपलेली आहे
+   - दुवे आणि प्रतिमा योग्यरित्या कार्यरत आहेत
 
-ही मॅन्युअल चाचणी तुमचे बदल प्रत्यक्ष वापरात योग्यरित्या काम करतात याची खात्री करते.
+ही मॅन्युअल चाचणी आपले बदल वास्तविक परिस्थितीत चांगले कार्य करतात याची खात्री करण्यास मदत करते.
 
-### Environment variables
+### पर्यावरण चल (Environment Variables)
 
-1. मुख्य directory मध्ये `.env.template` फाइल कॉपी करून `.env` फाइल तयार करा.
-1. दिलेल्या सूचनांप्रमाणे environment variables भरा.
+1. रूट डायरेक्टरीमध्ये `.env.template` फाइल कॉपी करून `.env` फाइल तयार करा.
+2. दिलेल्या मार्गदर्शनानुसार पर्यावरण चल भरा.
 
 > [!TIP]
 >
-> ### अतिरिक्त विकास वातावरणाचे पर्याय
+> ### अतिरिक्त विकास पर्यावरण पर्याय
 >
-> प्रकल्प स्थानिकरित्या चालवण्याव्यतिरिक्त, GitHub Codespaces किंवा VS Code Dev Containers वापरूनही विकासाचे वातावरण सेट करू शकता.
+> प्रकल्प स्थानिकरित्या चालवण्याशिवाय, आपण GitHub Codespaces किंवा VS Code Dev Containers वापरून पर्यायी विकास पर्यावरण देखील सेट करू शकता.
 >
 > #### GitHub Codespaces
 >
-> GitHub Codespaces वापरून हे samples virtually चालवू शकता आणि कोणतीही अतिरिक्त सेटिंग किंवा सेटअप आवश्यक नाही.
+> GitHub Codespaces वापरून हे नमुने आभासीपणे चालवू शकता, कोणतीही अतिरिक्त सेटिंग किंवा सेटअप आवश्यक नाही.
 >
-> हा बटण तुमच्या ब्राउझरमध्ये web-based VS Code instance उघडेल:
+> हा बटण आपला ब्राउझरमध्ये वेब-आधारित VS Code उघडेल:
 >
-> 1. template उघडा (याला काही मिनिटे लागू शकतात):
+> 1. टेम्पलेट उघडा (हे काही मिनिटे लागू शकतात):
 >
->     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
+>     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
 > #### स्थानिकरित्या VS Code Dev Containers वापरून चालवणे
 >
-> ⚠️ हा पर्याय फक्त तेव्हाच काम करेल जेव्हा तुमच्या Docker Desktop ला किमान 16 GB RAM दिलेले असेल. जर तुमच्याकडे 16 GB पेक्षा कमी RAM असेल, तर [GitHub Codespaces पर्याय](../..) वापरू शकता किंवा [स्थानिकरित्या सेटअप करा](../..).
+> ⚠️ हा पर्याय फक्त तेव्हाच कार्य करेल जेव्हा आपल्या Docker Desktop ला किमान 16 GB RAM दिलेली असेल. जर आपल्याकडे 16 GB पेक्षा कमी RAM असेल, तर आपण [GitHub Codespaces पर्याय](../..) वापरू शकता किंवा [स्थानिकरित्या सेटअप](../..) करू शकता.
 >
-> संबंधित पर्याय म्हणजे VS Code Dev Containers, जे प्रकल्प तुमच्या स्थानिक VS Code मध्ये [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) वापरून उघडेल:
+> संबंधित पर्याय म्हणजे VS Code Dev Containers, जे प्रकल्प आपल्या स्थानिक VS Code मध्ये [Dev Containers विस्तार](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) वापरून उघडेल:
 >
-> 1. Docker Desktop सुरू करा (install केले नसेल तर आधी install करा)
+> 1. Docker Desktop सुरू करा (जर आधी इन्स्टॉल नसेल तर इन्स्टॉल करा)
 > 2. प्रकल्प उघडा:
 >
->    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
+>    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
 
 ### कोड शैली
 
-आम्ही [Black](https://github.com/psf/black) हा Python code formatter वापरतो, जेणेकरून प्रकल्पात कोड शैली सुसंगत राहील. Black हा एक कठोर formatter आहे जो Python कोड आपोआप Black code style नुसार सुधारतो.
+आम्ही प्रकल्पात सुसंगत कोड शैली राखण्यासाठी [Black](https://github.com/psf/black) वापरतो. Black हा एक कठोर कोड फॉरमॅटर आहे जो आपोआप Python कोड Black कोड शैलीशी सुसंगत करतो.
 
-#### संरचना
+#### कॉन्फिगरेशन
 
-Black ची संरचना आमच्या `pyproject.toml` मध्ये दिली आहे:
+Black ची कॉन्फिगरेशन आमच्या `pyproject.toml` मध्ये निर्दिष्ट आहे:
 
 ```toml
 [tool.black]
@@ -142,20 +142,20 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-#### Black install करणे
+#### Black इन्स्टॉल करणे
 
-Poetry (शिफारसीय) किंवा pip वापरून Black install करू शकता:
+आपण Black Poetry (शिफारस केलेले) किंवा pip वापरून इन्स्टॉल करू शकता:
 
 ##### Poetry वापरून
 
-विकासाचे वातावरण सेट करताना Black आपोआप install होते:
+विकास पर्यावरण सेट करताना Black आपोआप इन्स्टॉल होतो:
 ```bash
 poetry install
 ```
 
 ##### pip वापरून
 
-pip वापरत असाल, तर Black थेट install करा:
+जर आपण pip वापरत असाल, तर Black थेट इन्स्टॉल करू शकता:
 ```bash
 pip install black
 ```
@@ -164,75 +164,75 @@ pip install black
 
 ##### Poetry सह
 
-1. प्रकल्पातील सर्व Python फाइल्स format करा:
+1. प्रकल्पातील सर्व Python फाइल्स फॉरमॅट करा:
     ```bash
     poetry run black .
     ```
 
-2. विशिष्ट फाइल किंवा directory format करा:
+2. विशिष्ट फाइल किंवा डायरेक्टरी फॉरमॅट करा:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
 ##### pip सह
 
-1. प्रकल्पातील सर्व Python फाइल्स format करा:
+1. प्रकल्पातील सर्व Python फाइल्स फॉरमॅट करा:
     ```bash
     black .
     ```
 
-2. विशिष्ट फाइल किंवा directory format करा:
+2. विशिष्ट फाइल किंवा डायरेक्टरी फॉरमॅट करा:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> Black सह कोड save करताच आपोआप format होईल असे editor सेटअप करण्याची शिफारस करतो. बहुतेक आधुनिक editors मध्ये हे extension किंवा plugin द्वारे शक्य आहे.
+> आम्ही शिफारस करतो की आपला संपादक Black वापरून कोड सेव्ह करताना आपोआप फॉरमॅट करेल असे सेट करा. बहुतेक आधुनिक संपादक हे विस्तार किंवा प्लगइनद्वारे समर्थन करतात.
 
 ## Co-op Translator चालवणे
 
-Poetry वापरून Co-op Translator चालवण्यासाठी खालील पावले पाळा:
+आपल्या पर्यावरणात Poetry वापरून Co-op Translator चालवण्यासाठी खालील चरणांचे पालन करा:
 
-1. ज्या directory मध्ये भाषांतर चाचण्या करायच्या आहेत किंवा चाचणीसाठी तात्पुरती फोल्डर तयार करायची आहे, तिथे जा.
+1. त्या डायरेक्टरीमध्ये जा जिथे आपण भाषांतर चाचण्या करणार आहात किंवा चाचणीसाठी तात्पुरता फोल्डर तयार करा.
 
-2. खालील कमांड चालवा. `-l ko` ऐवजी तुम्हाला हवी असलेली भाषा कोड वापरा. `-d` flag म्हणजे debug mode.
+2. खालील कमांड चालवा. `-l ko` या भाषेच्या कोडने बदला ज्यात आपण भाषांतर करू इच्छिता. `-d` फ्लॅग डिबग मोड दर्शवतो.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> कमांड चालवण्यापूर्वी तुमचे Poetry environment सक्रिय (poetry shell) आहे याची खात्री करा.
+> कमांड चालवण्यापूर्वी आपले Poetry पर्यावरण सक्रिय (poetry shell) असल्याची खात्री करा.
 
-## नवीन भाषा जोडण्यासाठी योगदान द्या
+## नवीन भाषा योगदान करा
 
-नवीन भाषांसाठी समर्थन जोडणारे योगदान स्वागतार्ह आहे. PR उघडण्यापूर्वी, खालील पावले पूर्ण करा, जेणेकरून review सुलभ होईल.
+आम्ही नवीन भाषांसाठी समर्थन जोडणारे योगदान स्वागत करतो. PR उघडण्यापूर्वी, कृपया खालील चरण पूर्ण करा जेणेकरून पुनरावलोकन सुरळीत होईल.
 
-1. भाषा font mapping मध्ये जोडा
+1. फॉन्ट मॅपिंगमध्ये भाषा जोडा
    - `src/co_op_translator/fonts/font_language_mappings.yml` संपादित करा
-   - खालील entry जोडा:
+   - खालील माहिती असलेली नोंद जोडा:
      - `code`: ISO सारखा भाषा कोड (उदा., `vi`)
-     - `name`: वाचायला सोपे नाव
-     - `font`: `src/co_op_translator/fonts/` मध्ये असलेला script ला support करणारा font
-     - `rtl`: script right-to-left असल्यास `true`, अन्यथा `false`
+     - `name`: मानवी वाचनीय नाव
+     - `font`: `src/co_op_translator/fonts/` मध्ये असलेला फॉन्ट जो त्या लिपीसाठी समर्थन करतो
+     - `rtl`: जर उजवीकडून डावीकडे असेल तर `true`, अन्यथा `false`
 
-2. आवश्यक font फाइल्स समाविष्ट करा (आवश्यक असल्यास)
-   - नवीन font लागल्यास, open source वितरणासाठी license compatible आहे का ते तपासा
-   - font फाइल `src/co_op_translator/fonts/` मध्ये जोडा
+2. आवश्यक फॉन्ट फाइल्स समाविष्ट करा (जर आवश्यक असेल)
+   - नवीन फॉन्ट आवश्यक असल्यास, ओपन सोर्स वितरणासाठी परवाना सुसंगतता तपासा
+   - फॉन्ट फाइल `src/co_op_translator/fonts/` मध्ये जोडा
 
-3. स्थानिक तपासणी
-   - लहान sample साठी (Markdown, images, notebooks) भाषांतर चालवा
-   - output योग्यरित्या render होते का, font आणि RTL layout (लागल्यास) तपासा
+3. स्थानिक पडताळणी
+   - लहान नमुन्यासाठी (Markdown, प्रतिमा, नोटबुक्स) भाषांतर चालवा
+   - आउटपुट योग्यरित्या रेंडर होते का, फॉन्ट्स आणि RTL लेआउट तपासा
 
-4. दस्तऐवज अपडेट करा
-   - भाषा `getting_started/supported-languages.md` मध्ये दिसते आहे याची खात्री करा
-   - `README_languages_template.md` मध्ये बदल करण्याची गरज नाही; हे supported list वरून तयार होते
+4. दस्तऐवज अद्ययावत करा
+   - भाषा `getting_started/supported-languages.md` मध्ये दिसते याची खात्री करा
+   - `getting_started/README_languages_template.md` मध्ये बदल आवश्यक नाही; ते समर्थित यादीवरून तयार होते
 
 5. PR उघडा
-   - कोणती भाषा जोडली आणि font/license बाबत काही विचार आहेत का ते सांगा
-   - शक्य असल्यास rendered output चे screenshots जोडा
+   - जोडलेल्या भाषेचे वर्णन करा आणि फॉन्ट/परवाना बाबत माहिती द्या
+   - शक्य असल्यास रेंडर केलेल्या आउटपुटचे स्क्रीनशॉट जोडा
 
-YAML entry चे उदाहरण:
+उदाहरण YAML नोंद:
 
 ```yaml
 new_lang(code):
@@ -241,62 +241,100 @@ new_lang(code):
   rtl: false
 ```
 
+### नवीन भाषा चाचणी करा
+
+खालील कमांड चालवून नवीन भाषा चाचणी करू शकता:
+
+```bash
+# एक आभासी वातावरण तयार करा आणि सक्रिय करा
+python -m venv .venv
+# विंडोज
+.venv\Scripts\activate
+# मॅकओएस/लिनक्स
+source .venv/bin/activate
+# विकास पॅकेज स्थापित करा
+pip install -e .
+# भाषांतर चालवा
+translate -l "new_lang"
+```
 
 ## देखभाल करणारे
 
-### Commit message आणि Merge strategy
+### कमिट संदेश आणि मर्ज धोरण
 
-आमच्या प्रकल्पाच्या commit history मध्ये सुसंगतता आणि स्पष्टता राखण्यासाठी, **Squash and Merge** strategy वापरताना **अंतिम commit message** साठी खास format वापरतो.
+आमच्या प्रकल्पाच्या कमिट इतिहासात सुसंगतता आणि स्पष्टता राखण्यासाठी, आम्ही **Squash and Merge** धोरण वापरताना **अंतिम कमिट संदेशासाठी** विशिष्ट कमिट संदेश फॉरमॅट वापरतो.
 
-Pull request (PR) merge केल्यावर, वेगवेगळे commits एकाच commit मध्ये squash केले जातात. अंतिम commit message खालील format नुसार असावा, जेणेकरून history स्वच्छ आणि सुसंगत राहील.
+जेव्हा पुल रिक्वेस्ट (PR) मर्ज केली जाते, तेव्हा वैयक्तिक कमिट्स एका कमिटमध्ये संक्षिप्त (squash) केल्या जातात. अंतिम कमिट संदेश खालील फॉरमॅटमध्ये असावा जेणेकरून स्वच्छ आणि सुसंगत इतिहास राखता येईल.
 
-#### Commit message format (squash and merge साठी)
+#### कमिट संदेश फॉरमॅट (squash and merge साठी)
 
-आम्ही commit messages साठी खालील format वापरतो:
+आम्ही कमिट संदेशांसाठी खालील फॉरमॅट वापरतो:
 
 ```bash
-<type>: <description> (#<PR number>)
+<type>: <description> (#<PR क्रमांक>)
 ```
 
-- **type**: commit चा प्रकार दर्शवतो. आम्ही हे प्रकार वापरतो:
-  - `Docs`: दस्तऐवज अपडेटसाठी.
-  - `Build`: build system किंवा dependency संबंधित बदलांसाठी, configuration files, CI workflows, किंवा Dockerfile updates.
-  - `Core`: प्रकल्पाच्या मुख्य कार्यक्षमता किंवा वैशिष्ट्यांमध्ये बदल, विशेषतः `src/co_op_translator/core` directory मधील फाइल्ससाठी.
+- **type**: कमिटचा प्रकार दर्शवितो. आम्ही खालील प्रकार वापरतो:
+  - `Docs`: दस्तऐवज अद्ययावत करण्यासाठी.
+  - `Build`: बिल्ड सिस्टम किंवा अवलंबित्वांशी संबंधित बदलांसाठी, ज्यात कॉन्फिगरेशन फाइल्स, CI वर्कफ्लोज, किंवा Dockerfile अद्यतने समाविष्ट आहेत.
+  - `Core`: प्रकल्पाच्या मुख्य कार्यक्षमता किंवा वैशिष्ट्यांमध्ये बदलांसाठी, विशेषतः `src/co_op_translator/core` डायरेक्टरीतील फाइल्ससाठी.
 
 - **description**: बदलाचा संक्षिप्त सारांश.
-- **PR number**: commit शी संबंधित pull request चा क्रमांक.
+- **PR number**: संबंधित पुल रिक्वेस्ट नंबर.
 
 **उदाहरणे**:
 
-- `Docs: Update installation instructions for clarity (#50)`
-- `Core: Improve handling of image translation (#60)`
+- `Docs: स्पष्टतेसाठी इन्स्टॉलेशन सूचना अद्ययावत करा (#50)`
+- `Core: प्रतिमा भाषांतर हाताळणी सुधारित करा (#60)`
 
 > [!NOTE]
-> सध्या, **`Docs`**, **`Core`**, आणि **`Build`** हे prefixes PR titles मध्ये आपोआप जोडले जातात, modified source code वर लागू केलेल्या labels नुसार. योग्य label लागू केला असेल, तर तुम्हाला manually PR title बदलण्याची गरज नाही. फक्त सर्व काही योग्य आहे आणि prefix योग्यरित्या तयार झाला आहे याची खात्री करा.
+> सध्या, **`Docs`**, **`Core`**, आणि **`Build`** प्रीफिक्स PR शीर्षकांमध्ये आपोआप जोडले जातात, जेव्हा संबंधित लेबल्स स्रोत कोडवर लावले जातात. योग्य लेबल लावल्यास, आपल्याला PR शीर्षक मॅन्युअली अपडेट करण्याची गरज नाही. फक्त सर्व काही बरोबर आहे का ते तपासा आणि प्रीफिक्स योग्यरित्या तयार झाला आहे याची खात्री करा.
 
-#### Merge strategy
+#### मर्ज धोरण
 
-आम्ही pull requests साठी **Squash and Merge** हा default strategy वापरतो. या strategy मुळे commit messages आमच्या format नुसार राहतात, जरी individual commits तसे नसले तरी.
+आम्ही पुल रिक्वेस्टसाठी डीफॉल्ट धोरण म्हणून **Squash and Merge** वापरतो. हे धोरण सुनिश्चित करते की कमिट संदेश आमच्या फॉरमॅटनुसार असतील, जरी वैयक्तिक कमिट्स तसे नसतील.
 
 **कारणे**:
 
-- स्वच्छ, linear project history.
-- commit messages मध्ये सुसंगतता.
-- किरकोळ commits (उदा., "fix typo") मुळे होणारा गोंधळ कमी.
+- स्वच्छ, रेषीय प्रकल्प इतिहास.
+- कमिट संदेशांमध्ये सुसंगतता.
+- लहान कमिट्समुळे होणारा आवाज कमी होतो (उदा., "टायपो दुरुस्त करा").
 
-Merge करताना, अंतिम commit message वरील format नुसार आहे याची खात्री करा.
+मर्ज करताना, अंतिम कमिट संदेश वरील फॉरमॅटनुसार असावा याची खात्री करा.
 
 **Squash and Merge चे उदाहरण**
-जर PR मध्ये खालील commits असतील:
+जर PR मध्ये खालील कमिट्स असतील:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-तर ते squash करून असे असावे:
+तर त्यांना एकत्र करून बनवावे:
 `Docs: Improve documentation clarity and formatting (#65)`
+
+### प्रकाशन प्रक्रिया
+
+हा विभाग देखभाल करणाऱ्यांसाठी Co-op Translator चा नवीन प्रकाशन कसा प्रकाशित करायचा याचे सोपे मार्गदर्शन करतो.
+
+#### 1. `pyproject.toml` मध्ये आवृत्ती वाढवा
+
+1. पुढील आवृत्ती क्रमांक ठरवा (आम्ही semantic versioning वापरतो: `MAJOR.MINOR.PATCH`).
+2. `pyproject.toml` संपादित करा आणि `[tool.poetry]` अंतर्गत `version` फील्ड अपडेट करा.
+3. फक्त आवृत्ती बदलणारी (आणि जर असतील तर आपोआप अपडेट होणाऱ्या लॉक/मेटाडेटा फाइल्स) समर्पित पुल रिक्वेस्ट उघडा.
+4. पुनरावलोकनानंतर, **Squash and Merge** वापरा आणि अंतिम कमिट संदेश वरील फॉरमॅटनुसार असावा याची खात्री करा.
+
+#### 2. GitHub Release तयार करा
+
+1. GitHub रेपॉजिटरी पेजवर जा आणि **Releases** → **Draft a new release** उघडा.
+2. नवीन टॅग तयार करा (उदा., `v0.13.0`) `main` शाखेतून.
+3. प्रकाशन शीर्षक त्याच आवृत्तीने सेट करा (उदा., `v0.13.0`).
+4. **Generate release notes** क्लिक करा जेणेकरून चेंजलॉग आपोआप भरेल.
+5. आवश्यक असल्यास मजकूर संपादित करा (उदा., नवीन समर्थित भाषा किंवा महत्त्वाचे बदल हायलाइट करण्यासाठी).
+6. प्रकाशन प्रकाशित करा.
 
 ---
 
+<!-- CO-OP TRANSLATOR DISCLAIMER START -->
 **अस्वीकरण**:
-हे दस्तऐवज AI भाषांतर सेवा [Co-op Translator](https://github.com/Azure/co-op-translator) वापरून भाषांतरित केले आहे. आम्ही अचूकतेसाठी प्रयत्नशील असलो तरी, कृपया लक्षात घ्या की स्वयंचलित भाषांतरांमध्ये चुका किंवा अपूर्णता असू शकतात. मूळ भाषेतील दस्तऐवज हा अधिकृत स्रोत मानावा. अत्यावश्यक माहितीसाठी, व्यावसायिक मानवी भाषांतराची शिफारस केली जाते. या भाषांतराचा वापर करून झालेल्या कोणत्याही गैरसमज किंवा चुकीच्या अर्थासाठी आम्ही जबाबदार राहणार नाही.
+हा दस्तऐवज AI अनुवाद सेवा [Co-op Translator](https://github.com/Azure/co-op-translator) वापरून अनुवादित केला आहे. आम्ही अचूकतेसाठी प्रयत्न करतो, तरी कृपया लक्षात घ्या की स्वयंचलित अनुवादांमध्ये चुका किंवा अचूकतेची कमतरता असू शकते. मूळ दस्तऐवज त्याच्या स्थानिक भाषेत अधिकृत स्रोत मानला जावा. महत्त्वाच्या माहितीसाठी व्यावसायिक मानवी अनुवाद शिफारसीय आहे. या अनुवादाच्या वापरामुळे उद्भवणाऱ्या कोणत्याही गैरसमजुती किंवा चुकीच्या अर्थलागी आम्ही जबाबदार नाही.
+<!-- CO-OP TRANSLATOR DISCLAIMER END -->

@@ -1,15 +1,15 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "dac6bc281667816537df51f724a0ff2c",
-  "translation_date": "2025-11-30T10:20:37+00:00",
+  "original_hash": "8f776df01855a3a659c8eb6f16a5de74",
+  "translation_date": "2025-10-15T02:34:27+00:00",
   "source_file": "README.md",
   "language_code": "tw"
 }
 -->
-# Co-op 翻譯器
+# Co-op Translator
 
-_輕鬆自動化將您的教育 GitHub 內容翻譯成多種語言，觸及全球受眾。_
+_輕鬆自動化翻譯你的教育性 GitHub 內容，支援多語言，讓你觸及全球受眾。_
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
@@ -25,61 +25,59 @@ _輕鬆自動化將您的教育 GitHub 內容翻譯成多種語言，觸及全�
 
 ### 🌐 多語言支援
 
-#### 由 [Co-op Translator](https://github.com/Azure/Co-op-Translator) 支援
+#### 由 [Co-op Translator](https://github.com/Azure/Co-op-Translator) 提供
 
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
-[阿拉伯語](../ar/README.md) | [孟加拉語](../bn/README.md) | [保加利亞語](../bg/README.md) | [緬甸語](../my/README.md) | [中文（簡體）](../zh/README.md) | [中文（繁體，香港）](../hk/README.md) | [中文（繁體，澳門）](../mo/README.md) | [中文（繁體，台灣）](./README.md) | [克羅埃西亞語](../hr/README.md) | [捷克語](../cs/README.md) | [丹麥語](../da/README.md) | [荷蘭語](../nl/README.md) | [愛沙尼亞語](../et/README.md) | [芬蘭語](../fi/README.md) | [法語](../fr/README.md) | [德語](../de/README.md) | [希臘語](../el/README.md) | [希伯來語](../he/README.md) | [印地語](../hi/README.md) | [匈牙利語](../hu/README.md) | [印尼語](../id/README.md) | [義大利語](../it/README.md) | [日語](../ja/README.md) | [坎納達語](../kn/README.md) | [韓語](../ko/README.md) | [立陶宛語](../lt/README.md) | [馬來語](../ms/README.md) | [馬拉雅拉姆語](../ml/README.md) | [馬拉地語](../mr/README.md) | [尼泊爾語](../ne/README.md) | [奈及利亞皮欽語](../pcm/README.md) | [挪威語](../no/README.md) | [波斯語（法爾西語）](../fa/README.md) | [波蘭語](../pl/README.md) | [葡萄牙語（巴西）](../br/README.md) | [葡萄牙語（葡萄牙）](../pt/README.md) | [旁遮普語（古魯穆奇文）](../pa/README.md) | [羅馬尼亞語](../ro/README.md) | [俄語](../ru/README.md) | [塞爾維亞語（西里爾字母）](../sr/README.md) | [斯洛伐克語](../sk/README.md) | [斯洛文尼亞語](../sl/README.md) | [西班牙語](../es/README.md) | [斯瓦希里語](../sw/README.md) | [瑞典語](../sv/README.md) | [他加祿語（菲律賓語）](../tl/README.md) | [泰米爾語](../ta/README.md) | [泰盧固語](../te/README.md) | [泰語](../th/README.md) | [土耳其語](../tr/README.md) | [烏克蘭語](../uk/README.md) | [烏爾都語](../ur/README.md) | [越南語](../vi/README.md)
+[阿拉伯文](../ar/README.md) | [孟加拉文](../bn/README.md) | [保加利亞文](../bg/README.md) | [緬甸文 (緬甸)](../my/README.md) | [中文（簡體）](../zh/README.md) | [中文（繁體，香港）](../hk/README.md) | [中文（繁體，澳門）](../mo/README.md) | [中文（繁體，台灣）](./README.md) | [克羅埃西亞文](../hr/README.md) | [捷克文](../cs/README.md) | [丹麥文](../da/README.md) | [荷蘭文](../nl/README.md) | [愛沙尼亞文](../et/README.md) | [芬蘭文](../fi/README.md) | [法文](../fr/README.md) | [德文](../de/README.md) | [希臘文](../el/README.md) | [希伯來文](../he/README.md) | [印地文](../hi/README.md) | [匈牙利文](../hu/README.md) | [印尼文](../id/README.md) | [義大利文](../it/README.md) | [日文](../ja/README.md) | [韓文](../ko/README.md) | [立陶宛文](../lt/README.md) | [馬來文](../ms/README.md) | [馬拉地文](../mr/README.md) | [尼泊爾文](../ne/README.md) | [挪威文](../no/README.md) | [波斯文 (法爾西)](../fa/README.md) | [波蘭文](../pl/README.md) | [葡萄牙文（巴西）](../br/README.md) | [葡萄牙文（葡萄牙）](../pt/README.md) | [旁遮普文 (古魯穆奇)](../pa/README.md) | [羅馬尼亞文](../ro/README.md) | [俄文](../ru/README.md) | [塞爾維亞文 (西里爾字母)](../sr/README.md) | [斯洛伐克文](../sk/README.md) | [斯洛維尼亞文](../sl/README.md) | [西班牙文](../es/README.md) | [斯瓦希里文](../sw/README.md) | [瑞典文](../sv/README.md) | [他加祿文 (菲律賓)](../tl/README.md) | [泰米爾文](../ta/README.md) | [泰文](../th/README.md) | [土耳其文](../tr/README.md) | [烏克蘭文](../uk/README.md) | [烏爾都文](../ur/README.md) | [越南文](../vi/README.md)
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
 [![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
 
-[![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
-
+[![Microsoft Azure AI Foundry Discord](https://dcbadge.limes.pink/api/server/ByRwuEEgH4)](https://discord.com/invite/ByRwuEEgH4)
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 
-## 概覽
+## 簡介
 
-**Co-op 翻譯器** 幫助您輕鬆將教育用的 GitHub 內容本地化成多種語言。
-當您更新 Markdown 檔案、圖片或筆記本時，翻譯會自動同步，確保您的內容對全球學習者保持準確且最新。
+**Co-op Translator** 讓你能夠快速將你的教育性 GitHub 內容翻譯成多種語言，輕鬆觸及全球用戶。當你更新 Markdown 檔案、圖片或 Jupyter 筆記本時，翻譯內容會自動同步，確保你的教育內容對國際用戶始終保持新穎且相關。
 
-以下是翻譯內容的組織範例：
+看看 Co-op Translator 如何組織翻譯後的教育性 GitHub 內容：
 
-![Example](../../translated_images/translation-ex.0c8aa6a7ee0aad2b35cddcc110c719baf0afc640e8c5a45540e6c166b9907d91.tw.png)
+![範例](../../translated_images/translation-ex.0c8aa6a7ee0aad2b35cddcc110c719baf0afc640e8c5a45540e6c166b9907d91.tw.png)
 
 ## 快速開始
 
 ```bash
-# 建立並啟用虛擬環境（建議）
+# Create and activate a virtual environment (recommended)
 python -m venv .venv
-# Windows 作業系統
+# Windows
 .venv\Scripts\activate
-# macOS/Linux 作業系統
+# macOS/Linux
 source .venv/bin/activate
-# 安裝套件
+# Install the package
 pip install co-op-translator
-# 翻譯
+# Translate
 translate -l "ko ja fr" -md
 ```
 
 Docker：
 
 ```bash
-# 從 GHCR 拉取公共映像檔
+# Pull the public image from GHCR
 docker pull ghcr.io/azure/co-op-translator:latest
-# 以掛載當前資料夾並提供 .env 的方式執行（Bash/Zsh）
+# Run with current folder mounted and .env provided (Bash/Zsh)
 docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
 ```
 
 ## 最小設定
 
-1. 使用範本建立 `.env` 檔案：[.env.template](../../.env.template)
-2. 設定一個 LLM 供應商（Azure OpenAI 或 OpenAI）
-3. （選用）若要翻譯圖片（`-img`），請設定 Azure AI Vision
-4. （建議）清理先前的翻譯資料以避免衝突（例如 `translations/`）
-5. （建議）在 README 中加入翻譯語言區塊，使用 [README 語言範本](./getting_started/README_languages_template.md)
-6. 參考：[設定 Azure AI](./getting_started/set-up-azure-ai.md)
+- 使用範本建立 `.env`：[.env.template](../../.env.template)
+- 設定一個 LLM 供應商（Azure OpenAI 或 OpenAI）
+- 若需圖片翻譯（`-img`），也要設定 Azure AI Vision
+- 建議：如果你有其他工具產生的翻譯，請先清理（例如：`translations/`），避免衝突。
+- 建議：在你的 README 加入翻譯區塊，參考 [README 語言範本](./README_languages_template.md)
+- 參考：[設定 Azure AI](./getting_started/set-up-azure-ai.md)
 
 ## 使用方式
 
@@ -89,7 +87,7 @@ docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-transl
 translate -l "ko ja"
 ```
 
-僅翻譯 Markdown：
+只翻譯 Markdown：
 
 ```bash
 translate -l "de" -md
@@ -101,20 +99,20 @@ Markdown + 圖片：
 translate -l "pt" -md -img
 ```
 
-僅翻譯筆記本：
+只翻譯筆記本：
 
 ```bash
 translate -l "zh" -nb
 ```
 
-更多參數：請參考 [指令參考](./getting_started/command-reference.md)
+更多參數：[指令參考](./getting_started/command-reference.md)
 
 ## 功能特色
 
 - 自動翻譯 Markdown、筆記本與圖片
-- 翻譯內容與原始檔案變更保持同步
-- 可在本機（CLI）或 CI（GitHub Actions）中運行
-- 使用 Azure OpenAI 或 OpenAI；圖片翻譯可選用 Azure AI Vision
+- 翻譯內容與原始內容同步
+- 可在本地（CLI）或 CI（GitHub Actions）運作
+- 支援 Azure OpenAI 或 OpenAI；圖片可選用 Azure AI Vision
 - 保留 Markdown 格式與結構
 
 ## 文件
@@ -122,49 +120,41 @@ translate -l "zh" -nb
 - [命令列指南](./getting_started/command-line-guide/command-line-guide.md)
 - [GitHub Actions 指南（公開倉庫與標準密鑰）](./getting_started/github-actions-guide/github-actions-guide-public.md)
 - [GitHub Actions 指南（Microsoft 組織倉庫與組織層級設定）](./getting_started/github-actions-guide/github-actions-guide-org.md)
-- [README 語言範本](./getting_started/README_languages_template.md)
 - [支援語言](./getting_started/supported-languages.md)
-- [貢獻指南](./CONTRIBUTING.md)
 - [疑難排解](./getting_started/troubleshooting.md)
 
-### Microsoft 專屬指南
-> [!NOTE]
-> 僅供 Microsoft “For Beginners” 倉庫維護者參考。
+## 支持我們，推動全球學習
 
-- [更新「其他課程」清單（僅限 MS Beginners 倉庫）](./getting_started/update-other-courses.md)
+邀請你一起改變教育內容的全球分享方式！歡迎在 GitHub 上為 [Co-op Translator](https://github.com/azure/co-op-translator) 按下 ⭐，支持我們打破學習與科技的語言障礙。你的關注與貢獻將帶來巨大影響！歡迎提出程式貢獻與功能建議。
 
-## 支持我們，促進全球學習
-
-加入我們，一起革新教育內容的全球分享方式！請在 GitHub 上為 [Co-op Translator](https://github.com/azure/co-op-translator) 點⭐，支持我們打破學習與科技的語言障礙。您的關注與貢獻將帶來重大影響！歡迎隨時提交程式碼貢獻與功能建議。
-
-### 以您的語言探索 Microsoft 教育內容
+### 探索你語言的 Microsoft 教育內容
 
 - [AZD for Beginners](https://github.com/microsoft/AZD-for-beginners)
 - [Edge AI for Beginners](https://github.com/microsoft/edgeai-for-beginners)
 - [Model Context Protocol (MCP) For Beginners](https://github.com/microsoft/mcp-for-beginners)
 - [AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners)
-- [使用 .NET 的生成式 AI 初學者指南](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
-- [生成式 AI 初學者指南](https://github.com/microsoft/generative-ai-for-beginners)
-- [使用 Java 的生成式 AI 初學者指南](https://github.com/microsoft/generative-ai-for-beginners-java)
-- [機器學習初學者](https://aka.ms/ml-beginners)
-- [資料科學初學者](https://aka.ms/datascience-beginners)
-- [人工智慧初學者](https://aka.ms/ai-beginners)
-- [資安初學者](https://github.com/microsoft/Security-101)
-- [網頁開發初學者](https://aka.ms/webdev-beginners)
-- [物聯網初學者](https://aka.ms/iot-beginners)
+- [Generative AI for Beginners using .NET](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
+- [Generative AI for Beginners](https://github.com/microsoft/generative-ai-for-beginners)
+- [Generative AI for Beginners using Java](https://github.com/microsoft/generative-ai-for-beginners-java)
+- [ML for Beginners](https://aka.ms/ml-beginners)
+- [Data Science for Beginners](https://aka.ms/datascience-beginners)
+- [AI for Beginners](https://aka.ms/ai-beginners)
+- [Cybersecurity for Beginners](https://github.com/microsoft/Security-101)
+- [Web Dev for Beginners](https://aka.ms/webdev-beginners)
+- [IoT for Beginners](https://aka.ms/iot-beginners)
 - [PhiCookBook](https://github.com/microsoft/PhiCookBook)
 
-## 影片介紹
+## 影片簡報
 
-👉 點擊下方圖片，在 YouTube 觀看。
+想更了解 Co-op Translator？歡迎觀看我們的簡報影片（_點擊下方圖片可在 YouTube 觀看_）：
 
-- **Open at Microsoft**：18 分鐘簡短介紹與快速教學，說明如何使用 Co-op 翻譯器。
+- **Open at Microsoft**：18 分鐘簡介與快速上手教學。
 
   [![Open at Microsoft](../../translated_images/open-ms-thumbnail.946b356b89bc5f0e33dcebb852f7926b98c33f54c1a49ce01c36ae7f35e2443a.tw.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
-## 貢獻
+## 貢獻指南
 
-本專案歡迎各種貢獻與建議。想為 Azure Co-op Translator 貢獻嗎？請參閱我們的 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解如何協助讓 Co-op 翻譯器更易於使用。
+本專案歡迎各種貢獻與建議。有興趣參與 Azure Co-op Translator 嗎？請參閱 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解如何協助我們讓 Co-op Translator 更加普及。
 
 ## 貢獻者
 
@@ -172,39 +162,41 @@ translate -l "zh" -nb
 
 ## 行為準則
 
-本專案已採用 [Microsoft 開源行為準則](https://opensource.microsoft.com/codeofconduct/)。
-更多資訊請參閱 [行為準則常見問題](https://opensource.microsoft.com/codeofconduct/faq/) 或
-聯絡 [opencode@microsoft.com](mailto:opencode@microsoft.com) 提出任何問題或意見。
+本專案採用 [Microsoft 開源行為準則](https://opensource.microsoft.com/codeofconduct/)。
+更多資訊請參閱 [行為準則 FAQ](https://opensource.microsoft.com/codeofconduct/faq/)，或
+聯絡 [opencode@microsoft.com](mailto:opencode@microsoft.com) 提出其他問題或意見。
 
 ## 負責任的 AI
 
-Microsoft 致力於協助客戶負責任地使用我們的 AI 產品，分享我們的經驗，並透過透明度說明與影響評估等工具建立信任夥伴關係。許多相關資源可在 [https://aka.ms/RAI](https://aka.ms/RAI) 找到。
-Microsoft 的負責任 AI 方法基於公平性、可靠性與安全性、隱私與安全、包容性、透明度及問責制等 AI 原則。
+Microsoft 致力於協助客戶負責任地使用我們的 AI 產品，分享我們的經驗，並透過透明說明與影響評估等工具建立信任夥伴關係。你可以在 [https://aka.ms/RAI](https://aka.ms/RAI) 找到許多相關資源。
+Microsoft 的負責任 AI 策略以公平性、可靠性與安全性、隱私與安全、包容性、透明度與問責為原則。
 
-大型自然語言、影像與語音模型——如本範例中使用的模型——可能會出現不公平、不可靠或冒犯性的行為，進而造成傷害。請參閱 [Azure OpenAI 服務透明度說明](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) 以了解相關風險與限制。
-建議的風險緩解方法是在您的架構中加入一個安全系統，能夠偵測並防止有害行為。[Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) 提供獨立的保護層，能夠偵測應用程式和服務中使用者生成及 AI 生成的有害內容。Azure AI Content Safety 包含文字和影像 API，讓您能夠偵測有害的素材。我們也提供互動式的 Content Safety Studio，讓您可以查看、探索並試用跨不同模態偵測有害內容的範例程式碼。以下的[快速入門文件](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest)將引導您如何向服務發出請求。
+大規模自然語言、影像與語音模型（如本範例所用）有時可能出現不公平、不可靠或令人反感的行為，進而造成傷害。請參閱 [Azure OpenAI 服務透明說明](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) 以了解相關風險與限制。
 
-另一個需要考慮的面向是整體應用程式的效能。對於多模態和多模型的應用程式，我們認為效能是指系統能如您和使用者所期望的運作，包括不產生有害輸出。評估整體應用程式的效能時，重要的是使用[生成品質及風險與安全指標](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in)。
+建議的風險緩解方式，是在你的架構中加入安全系統，偵測並防止有害行為。[Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) 提供獨立的保護層，能偵測應用程式與服務中用戶或 AI 產生的有害內容。Azure AI Content Safety 包含文字與圖片 API，可協助你偵測有害內容。我們也提供互動式 Content Safety Studio，讓你瀏覽、探索並試用不同型態的有害內容偵測範例。你可以參考以下 [快速入門文件](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) 學習如何呼叫服務。
+另一個需要考慮的面向是整體應用程式效能。對於多模態和多模型的應用程式來說，效能指的是系統能夠如你和你的使用者所預期地運作，包括不產生有害的輸出。評估整體應用程式的效能時，建議使用[生成品質以及風險與安全性指標](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in)。
 
-您可以在開發環境中使用[prompt flow SDK](https://microsoft.github.io/promptflow/index.html)來評估您的 AI 應用程式。無論是使用測試資料集或目標，您的生成式 AI 應用程式的生成結果都會透過內建評估器或您選擇的自訂評估器進行量化評估。若要開始使用 prompt flow SDK 評估您的系統，您可以參考[快速入門指南](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk)。執行評估後，您可以在[Azure AI Studio 中視覺化結果](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results)。
+你可以在開發環境中利用 [prompt flow SDK](https://microsoft.github.io/promptflow/index.html) 來評估你的 AI 應用程式。無論是使用測試資料集或目標，你的生成式 AI 應用程式的輸出都能透過內建或自訂的評估器進行量化評分。若要開始使用 prompt flow sdk 來評估你的系統，可以參考[快速入門指南](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk)。執行評估後，你可以[在 Azure AI Studio 中視覺化結果](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results)。
 
 ## 商標
 
-本專案可能包含專案、產品或服務的商標或標誌。微軟商標或標誌的授權使用須遵守並符合[微軟商標與品牌指南](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general)。在本專案的修改版本中使用微軟商標或標誌，不得造成混淆或暗示微軟的贊助。任何第三方商標或標誌的使用均須遵守該第三方的政策。
+本專案可能包含專案、產品或服務的商標或標誌。經授權使用 Microsoft
+商標或標誌時，必須遵循
+[Microsoft 的商標與品牌指南](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general)。
+在本專案的修改版本中使用 Microsoft 商標或標誌時，不得造成混淆或暗示 Microsoft 贊助。
+任何第三方商標或標誌的使用，則需遵循該第三方的政策。
 
 ## 尋求協助
 
-如果您遇到困難或對建立 AI 應用程式有任何疑問，歡迎加入：
+如果你在開發 AI 應用程式時遇到困難或有任何疑問，歡迎加入：
 
-[![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
+<a href="https://aka.ms/foundry/discord"><img src="https://img.shields.io/badge/Discord-Azure_AI_Foundry_Community_Discord-blue?style=for-the-badge&logo=discord&color=5865f2&logoColor=fff" alt="Azure AI Foundry Discord"></a>
 
-如果您在開發過程中有產品回饋或錯誤，請造訪：
+如果你有產品回饋或在開發過程中遇到錯誤，請前往：
 
-[![Microsoft Foundry Developer Forum](https://img.shields.io/badge/GitHub-Microsoft_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
+<a href="https://aka.ms/foundry/forum"><img src="https://img.shields.io/badge/GitHub-Azure_AI_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff" alt="Azure AI Foundry Developer Forum"></a>
 
 ---
 
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**免責聲明**：  
-本文件係使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。雖然我們致力於確保翻譯的準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。原始文件的母語版本應視為權威來源。對於重要資訊，建議採用專業人工翻譯。我們不對因使用本翻譯而產生的任何誤解或誤釋負責。
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->
+**免責聲明**：
+本文件是使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。雖然我們力求準確，但請注意，自動翻譯可能包含錯誤或不精確之處。原始語言的文件應視為具權威性的來源。對於重要資訊，建議採用專業人工翻譯。因使用本翻譯而產生的任何誤解或誤釋，我們概不負責。

@@ -1,27 +1,27 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "758ca1c5ae0d32c52d2dd59132dcfbf0",
-  "translation_date": "2025-11-30T11:48:01+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:37:01+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "id"
 }
 -->
-# Berkontribusi ke Co-op Translator
+# Berkontribusi pada Co-op Translator
 
-Proyek ini menerima kontribusi dan saran. Sebagian besar kontribusi mengharuskan Anda menyetujui
-Contributor License Agreement (CLA) yang menyatakan bahwa Anda memiliki hak, dan memang memberikan kami
+Proyek ini terbuka untuk kontribusi dan saran. Sebagian besar kontribusi mengharuskan Anda menyetujui
+Contributor License Agreement (CLA) yang menyatakan bahwa Anda memiliki hak untuk, dan benar-benar memberikan kami,
 hak untuk menggunakan kontribusi Anda. Untuk detailnya, kunjungi https://cla.opensource.microsoft.com.
 
 Saat Anda mengirimkan pull request, bot CLA akan secara otomatis menentukan apakah Anda perlu memberikan
-CLA dan menandai PR dengan tepat (misalnya, pemeriksaan status, komentar). Cukup ikuti instruksi
-yang diberikan oleh bot. Anda hanya perlu melakukan ini sekali untuk semua repositori yang menggunakan CLA kami.
+CLA dan menandai PR sesuai (misalnya, status check, komentar). Ikuti saja instruksi
+yang diberikan oleh bot. Anda hanya perlu melakukannya sekali untuk semua repo yang menggunakan CLA kami.
 
 ## Pengaturan lingkungan pengembangan
 
-Untuk menyiapkan lingkungan pengembangan untuk proyek ini, kami menyarankan menggunakan Poetry untuk mengelola dependensi. Kami menggunakan `pyproject.toml` untuk mengelola dependensi proyek, jadi untuk menginstal dependensi, Anda harus menggunakan Poetry.
+Untuk menyiapkan lingkungan pengembangan proyek ini, kami merekomendasikan menggunakan Poetry untuk mengelola dependensi. Kami menggunakan `pyproject.toml` untuk mengelola dependensi proyek, jadi untuk menginstal dependensi, Anda sebaiknya menggunakan Poetry.
 
-### Membuat lingkungan virtual
+### Membuat virtual environment
 
 #### Menggunakan pip
 
@@ -35,7 +35,7 @@ python -m venv .venv
 poetry init
 ```
 
-### Mengaktifkan lingkungan virtual
+### Mengaktifkan virtual environment
 
 #### Untuk pip dan Poetry
 
@@ -57,7 +57,7 @@ poetry init
 poetry shell
 ```
 
-### Menginstal Paket dan Paket yang dibutuhkan
+### Instalasi Paket dan Paket yang Dibutuhkan
 
 #### Menggunakan Poetry (dari pyproject.toml)
 
@@ -69,12 +69,12 @@ poetry install
 
 Sebelum mengirimkan PR, penting untuk menguji fungsi terjemahan dengan dokumentasi nyata:
 
-1. Buat direktori test di direktori root:
+1. Buat direktori tes di direktori root:
     ```bash
     mkdir test_docs
     ```
 
-2. Salin beberapa dokumentasi markdown dan gambar yang ingin Anda terjemahkan ke dalam direktori test. Contohnya:
+2. Salin beberapa dokumentasi markdown dan gambar yang ingin Anda terjemahkan ke direktori tes. Contohnya:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -85,47 +85,47 @@ Sebelum mengirimkan PR, penting untuk menguji fungsi terjemahan dengan dokumenta
     pip install -e .
     ```
 
-4. Jalankan Co-op Translator pada dokumen test Anda:
+4. Jalankan Co-op Translator pada dokumen tes Anda:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Periksa file terjemahan di `test_docs/translations` dan `test_docs/translated_images` untuk memverifikasi:
+5. Periksa file hasil terjemahan di `test_docs/translations` dan `test_docs/translated_images` untuk memastikan:
    - Kualitas terjemahan
    - Komentar metadata sudah benar
    - Struktur markdown asli tetap terjaga
    - Tautan dan gambar berfungsi dengan baik
 
-Pengujian manual ini membantu memastikan perubahan Anda bekerja dengan baik dalam skenario nyata.
+Pengujian manual ini membantu memastikan perubahan Anda berjalan baik di skenario nyata.
 
 ### Variabel lingkungan
 
 1. Buat file `.env` di direktori root dengan menyalin file `.env.template` yang disediakan.
-1. Isi variabel lingkungan sesuai panduan.
+1. Isi variabel lingkungan sesuai petunjuk.
 
 > [!TIP]
 >
 > ### Opsi tambahan untuk lingkungan pengembangan
 >
-> Selain menjalankan proyek secara lokal, Anda juga dapat menggunakan GitHub Codespaces atau VS Code Dev Containers sebagai alternatif pengaturan lingkungan pengembangan.
+> Selain menjalankan proyek secara lokal, Anda juga bisa menggunakan GitHub Codespaces atau VS Code Dev Containers sebagai alternatif pengaturan lingkungan pengembangan.
 >
 > #### GitHub Codespaces
 >
-> Anda dapat menjalankan contoh ini secara virtual menggunakan GitHub Codespaces tanpa perlu pengaturan tambahan.
+> Anda dapat menjalankan contoh ini secara virtual menggunakan GitHub Codespaces tanpa pengaturan tambahan.
 >
-> Tombol ini akan membuka instance VS Code berbasis web di browser Anda:
+> Tombol berikut akan membuka VS Code berbasis web di browser Anda:
 >
-> 1. Buka template (ini mungkin memakan waktu beberapa menit):
+> 1. Buka template (proses ini mungkin memakan waktu beberapa menit):
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
-> #### Menjalankan secara Lokal menggunakan VS Code Dev Containers
+> #### Menjalankan Secara Lokal menggunakan VS Code Dev Containers
 >
-> ⚠️ Opsi ini hanya akan berfungsi jika Docker Desktop Anda dialokasikan minimal 16 GB RAM. Jika Anda memiliki kurang dari 16 GB RAM, Anda bisa mencoba opsi [GitHub Codespaces](../..) atau [mengaturnya secara lokal](../..).
+> ⚠️ Opsi ini hanya berfungsi jika Docker Desktop Anda dialokasikan minimal 16 GB RAM. Jika RAM Anda kurang dari 16 GB, Anda bisa mencoba [opsi GitHub Codespaces](../..) atau [mengatur secara lokal](../..).
 >
-> Opsi terkait adalah VS Code Dev Containers, yang akan membuka proyek di VS Code lokal Anda menggunakan [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Opsi terkait adalah VS Code Dev Containers, yang akan membuka proyek di VS Code lokal Anda menggunakan [ekstensi Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Mulai Docker Desktop (instal jika belum terpasang)
+> 1. Jalankan Docker Desktop (instal jika belum terpasang)
 > 2. Buka proyek:
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
@@ -133,11 +133,11 @@ Pengujian manual ini membantu memastikan perubahan Anda bekerja dengan baik dala
 
 ### Gaya Kode
 
-Kami menggunakan [Black](https://github.com/psf/black) sebagai formatter kode Python untuk menjaga konsistensi gaya kode di seluruh proyek. Black adalah formatter kode yang tegas yang secara otomatis memformat ulang kode Python agar sesuai dengan gaya kode Black.
+Kami menggunakan [Black](https://github.com/psf/black) sebagai formatter kode Python untuk menjaga konsistensi gaya kode di seluruh proyek. Black adalah formatter kode yang tegas dan otomatis memformat kode Python agar sesuai dengan gaya Black.
 
 #### Konfigurasi
 
-Konfigurasi Black ditentukan dalam `pyproject.toml` kami:
+Konfigurasi Black ditentukan di `pyproject.toml` kami:
 
 ```toml
 [tool.black]
@@ -146,20 +146,20 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-#### Menginstal Black
+#### Instalasi Black
 
 Anda dapat menginstal Black menggunakan Poetry (disarankan) atau pip:
 
 ##### Menggunakan Poetry
 
-Black otomatis terinstal saat Anda menyiapkan lingkungan pengembangan:
+Black akan otomatis terinstal saat Anda menyiapkan lingkungan pengembangan:
 ```bash
 poetry install
 ```
 
 ##### Menggunakan pip
 
-Jika menggunakan pip, Anda dapat menginstal Black secara langsung:
+Jika Anda menggunakan pip, Anda bisa menginstal Black secara langsung:
 ```bash
 pip install black
 ```
@@ -168,7 +168,7 @@ pip install black
 
 ##### Dengan Poetry
 
-1. Format semua file Python dalam proyek:
+1. Format semua file Python di proyek:
     ```bash
     poetry run black .
     ```
@@ -180,7 +180,7 @@ pip install black
 
 ##### Dengan pip
 
-1. Format semua file Python dalam proyek:
+1. Format semua file Python di proyek:
     ```bash
     black .
     ```
@@ -191,15 +191,15 @@ pip install black
     ```
 
 > [!TIP]
-> Kami menyarankan mengatur editor Anda agar secara otomatis memformat kode dengan Black saat menyimpan. Sebagian besar editor modern mendukung ini melalui ekstensi atau plugin.
+> Kami menyarankan Anda mengatur editor agar otomatis memformat kode dengan Black saat menyimpan. Sebagian besar editor modern mendukung ini melalui ekstensi atau plugin.
 
 ## Menjalankan Co-op Translator
 
 Untuk menjalankan Co-op Translator menggunakan Poetry di lingkungan Anda, ikuti langkah-langkah berikut:
 
-1. Arahkan ke direktori tempat Anda ingin melakukan pengujian terjemahan atau buat folder sementara untuk tujuan pengujian.
+1. Masuk ke direktori tempat Anda ingin melakukan tes terjemahan atau buat folder sementara untuk keperluan tes.
 
-2. Jalankan perintah berikut. Ganti `-l ko` dengan kode bahasa yang ingin Anda terjemahkan. Flag `-d` menunjukkan mode debug.
+2. Jalankan perintah berikut. Ganti `-l ko` dengan kode bahasa yang ingin Anda gunakan. Flag `-d` menandakan mode debug.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -208,33 +208,33 @@ Untuk menjalankan Co-op Translator menggunakan Poetry di lingkungan Anda, ikuti 
 > [!NOTE]
 > Pastikan lingkungan Poetry Anda sudah aktif (poetry shell) sebelum menjalankan perintah.
 
-## Berkontribusi bahasa baru
+## Kontribusi bahasa baru
 
-Kami menyambut kontribusi yang menambahkan dukungan untuk bahasa baru. Sebelum membuka PR, harap selesaikan langkah-langkah berikut untuk memastikan proses review berjalan lancar.
+Kami menerima kontribusi untuk menambah dukungan bahasa baru. Sebelum membuka PR, silakan selesaikan langkah-langkah berikut agar proses review berjalan lancar.
 
 1. Tambahkan bahasa ke pemetaan font
    - Edit `src/co_op_translator/fonts/font_language_mappings.yml`
    - Tambahkan entri dengan:
-     - `code`: kode bahasa mirip ISO (misalnya, `vi`)
-     - `name`: nama tampilan yang mudah dipahami
-     - `font`: font yang disertakan di `src/co_op_translator/fonts/` yang mendukung skrip tersebut
-     - `rtl`: `true` jika bahasa ditulis dari kanan ke kiri, jika tidak `false`
+     - `code`: kode bahasa mirip ISO (misal, `vi`)
+     - `name`: nama tampilan yang mudah dibaca
+     - `font`: font yang tersedia di `src/co_op_translator/fonts/` dan mendukung skrip tersebut
+     - `rtl`: `true` jika kanan-ke-kiri, jika tidak `false`
 
-2. Sertakan file font yang diperlukan (jika perlu)
-   - Jika font baru diperlukan, pastikan lisensi kompatibel untuk distribusi open source
+2. Sertakan file font yang dibutuhkan (jika perlu)
+   - Jika font baru diperlukan, pastikan lisensinya kompatibel untuk distribusi open source
    - Tambahkan file font ke `src/co_op_translator/fonts/`
 
 3. Verifikasi lokal
-   - Jalankan terjemahan untuk contoh kecil (Markdown, gambar, dan notebook sesuai kebutuhan)
-   - Verifikasi hasil output tampil dengan benar, termasuk font dan tata letak RTL jika berlaku
+   - Jalankan terjemahan untuk sampel kecil (Markdown, gambar, dan notebook sesuai kebutuhan)
+   - Pastikan hasil output tampil dengan benar, termasuk font dan layout RTL jika berlaku
 
 4. Perbarui dokumentasi
    - Pastikan bahasa muncul di `getting_started/supported-languages.md`
-   - Tidak perlu mengubah `getting_started/README_languages_template.md`; file ini dihasilkan dari daftar bahasa yang didukung
+   - Tidak perlu mengubah `README_languages_template.md`; file ini dihasilkan dari daftar bahasa yang didukung
 
 5. Buka PR
-   - Jelaskan bahasa yang ditambahkan dan pertimbangan font/lisensi jika ada
-   - Lampirkan tangkapan layar hasil render jika memungkinkan
+   - Jelaskan bahasa yang ditambahkan dan pertimbangan font/lisensi
+   - Lampirkan screenshot hasil render jika memungkinkan
 
 Contoh entri YAML:
 
@@ -245,56 +245,40 @@ new_lang(code):
   rtl: false
 ```
 
-### Uji bahasa baru
 
-Anda dapat menguji bahasa baru dengan menjalankan perintah berikut:
+## Maintainer
 
-```bash
-# Buat dan aktifkan lingkungan virtual
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
-# Instal paket pengembangan
-pip install -e .
-# Jalankan terjemahan
-translate -l "new_lang"
-```
+### Format pesan commit dan strategi merge
 
-## Pemelihara
+Untuk menjaga konsistensi dan kejelasan riwayat commit proyek, kami mengikuti format pesan commit khusus **untuk pesan commit akhir** saat menggunakan strategi **Squash and Merge**.
 
-### Pesan commit dan strategi Merge
-
-Untuk memastikan konsistensi dan kejelasan dalam riwayat commit proyek kami, kami mengikuti format pesan commit tertentu **untuk pesan commit akhir** saat menggunakan strategi **Squash and Merge**.
-
-Saat pull request (PR) digabungkan, commit individual akan digabung menjadi satu commit. Pesan commit akhir harus mengikuti format di bawah ini untuk menjaga riwayat yang bersih dan konsisten.
+Saat pull request (PR) digabungkan, commit individual akan digabung menjadi satu commit. Pesan commit akhir harus mengikuti format di bawah ini agar riwayat tetap bersih dan konsisten.
 
 #### Format pesan commit (untuk squash and merge)
 
 Kami menggunakan format berikut untuk pesan commit:
 
 ```bash
-<type>: <description> (#<nomor PR>)
+<type>: <description> (#<PR number>)
 ```
 
 - **type**: Menentukan kategori commit. Kami menggunakan tipe berikut:
   - `Docs`: Untuk pembaruan dokumentasi.
   - `Build`: Untuk perubahan terkait sistem build atau dependensi, termasuk pembaruan file konfigurasi, workflow CI, atau Dockerfile.
-  - `Core`: Untuk modifikasi fungsi inti proyek atau fitur, terutama yang melibatkan file di direktori `src/co_op_translator/core`.
+  - `Core`: Untuk modifikasi pada fungsi inti atau fitur proyek, terutama yang melibatkan file di direktori `src/co_op_translator/core`.
 
 - **description**: Ringkasan singkat perubahan.
-- **PR number**: Nomor pull request terkait commit.
+- **PR number**: Nomor pull request yang terkait dengan commit.
 
 **Contoh**:
 
-- `Docs: Perbarui instruksi instalasi agar lebih jelas (#50)`
-- `Core: Tingkatkan penanganan terjemahan gambar (#60)`
+- `Docs: Update installation instructions for clarity (#50)`
+- `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Saat ini, prefix **`Docs`**, **`Core`**, dan **`Build`** secara otomatis ditambahkan ke judul PR berdasarkan label yang diterapkan pada kode sumber yang diubah. Selama label yang benar diterapkan, biasanya Anda tidak perlu memperbarui judul PR secara manual. Anda hanya perlu memeriksa bahwa semuanya benar dan prefix sudah dihasilkan dengan tepat.
+> Saat ini, prefix **`Docs`**, **`Core`**, dan **`Build`** otomatis ditambahkan ke judul PR berdasarkan label yang diterapkan pada kode sumber yang diubah. Selama label yang benar sudah diterapkan, Anda biasanya tidak perlu mengubah judul PR secara manual. Anda hanya perlu memastikan semuanya sudah benar dan prefix sudah dihasilkan dengan tepat.
 
-#### Strategi Merge
+#### Strategi merge
 
 Kami menggunakan **Squash and Merge** sebagai strategi default untuk pull request. Strategi ini memastikan pesan commit mengikuti format kami, meskipun commit individual tidak.
 
@@ -302,43 +286,21 @@ Kami menggunakan **Squash and Merge** sebagai strategi default untuk pull reques
 
 - Riwayat proyek yang bersih dan linear.
 - Konsistensi dalam pesan commit.
-- Mengurangi kebisingan dari commit kecil (misalnya, "perbaiki typo").
+- Mengurangi noise dari commit kecil (misal, "fix typo").
 
-Saat menggabungkan, pastikan pesan commit akhir mengikuti format pesan commit yang dijelaskan di atas.
+Saat menggabungkan, pastikan pesan commit akhir mengikuti format yang dijelaskan di atas.
 
 **Contoh Squash and Merge**
-Jika sebuah PR berisi commit berikut:
+Jika PR berisi commit berikut:
 
-- `perbaiki typo`
-- `perbarui README`
-- `sesuaikan format`
+- `fix typo`
+- `update README`
+- `adjust formatting`
 
-Maka akan digabung menjadi:
-`Docs: Tingkatkan kejelasan dan format dokumentasi (#65)`
-
-### Proses rilis
-
-Bagian ini menjelaskan cara termudah bagi pemelihara untuk menerbitkan rilis baru Co-op Translator.
-
-#### 1. Tingkatkan versi di `pyproject.toml`
-
-1. Tentukan nomor versi berikutnya (kami mengikuti semantic versioning: `MAJOR.MINOR.PATCH`).
-2. Edit `pyproject.toml` dan perbarui field `version` di bawah `[tool.poetry]`.
-3. Buka pull request khusus yang hanya mengubah versi (dan file lock/metadata yang diperbarui otomatis, jika ada).
-4. Setelah review, gunakan **Squash and Merge** dan pastikan pesan commit akhir mengikuti format yang dijelaskan di atas.
-
-#### 2. Buat Rilis GitHub
-
-1. Buka halaman repositori GitHub dan buka **Releases** → **Draft a new release**.
-2. Buat tag baru (misalnya, `v0.13.0`) dari cabang `main`.
-3. Setel judul rilis sama dengan versi (misalnya, `v0.13.0`).
-4. Klik **Generate release notes** untuk mengisi changelog secara otomatis.
-5. Opsional: edit teks (misalnya, untuk menyoroti bahasa baru yang didukung atau perubahan penting).
-6. Publikasikan rilis.
+Maka semuanya digabung menjadi:
+`Docs: Improve documentation clarity and formatting (#65)`
 
 ---
 
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**Penafian**:  
-Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berusaha untuk akurasi, harap diingat bahwa terjemahan otomatis mungkin mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang sahih. Untuk informasi penting, disarankan menggunakan terjemahan profesional oleh manusia. Kami tidak bertanggung jawab atas kesalahpahaman atau salah tafsir yang timbul dari penggunaan terjemahan ini.
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->
+**Disclaimer**:
+Dokumen ini telah diterjemahkan menggunakan layanan terjemahan AI [Co-op Translator](https://github.com/Azure/co-op-translator). Meskipun kami berupaya untuk memberikan terjemahan yang akurat, harap diketahui bahwa terjemahan otomatis dapat mengandung kesalahan atau ketidakakuratan. Dokumen asli dalam bahasa aslinya harus dianggap sebagai sumber yang berwenang. Untuk informasi yang bersifat kritis, disarankan menggunakan jasa penerjemah profesional. Kami tidak bertanggung jawab atas kesalahpahaman atau penafsiran yang timbul dari penggunaan terjemahan ini.

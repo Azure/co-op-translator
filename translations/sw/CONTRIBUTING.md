@@ -1,21 +1,21 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "758ca1c5ae0d32c52d2dd59132dcfbf0",
-  "translation_date": "2025-11-30T11:59:34+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:44:33+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "sw"
 }
 -->
-# Kuchangia kwa Co-op Translator
+# Kuchangia kwenye Co-op Translator
 
-Mradi huu unakaribisha michango na mapendekezo. Michango mingi inahitaji ukakubali Mkataba wa Leseni ya Mchangiaji (CLA) unaothibitisha kuwa una haki, na kwa kweli unatuwezesha kutumia mchango wako. Kwa maelezo zaidi, tembelea https://cla.opensource.microsoft.com.
+Mradi huu unakaribisha michango na mapendekezo. Michango mingi inahitaji ukubali Mkataba wa Leseni ya Mchangiaji (CLA) unaothibitisha kuwa una haki ya, na kweli unatoa, haki ya sisi kutumia mchango wako. Kwa maelezo zaidi, tembelea https://cla.opensource.microsoft.com.
 
-Unapowasilisha ombi la pull request, bot ya CLA itagundua moja kwa moja kama unahitaji kutoa CLA na kuandaa PR ipasavyo (mfano, ukaguzi wa hali, maoni). Fuata tu maelekezo yanayotolewa na bot. Hii unahitaji kufanya mara moja tu kwa repos zote zinazotumia CLA yetu.
+Unapowasilisha pull request, bot ya CLA itatambua moja kwa moja kama unahitaji kutoa CLA na itaweka alama kwenye PR ipasavyo (mfano, status check, maoni). Fuata tu maelekezo yatakayotolewa na bot. Utahitaji kufanya hili mara moja tu kwenye repos zote zinazotumia CLA yetu.
 
-## Kuanzisha mazingira ya maendeleo
+## Kuandaa Mazingira ya Maendeleo
 
-Ili kuanzisha mazingira ya maendeleo kwa mradi huu, tunapendekeza kutumia Poetry kusimamia utegemezi. Tunatumia `pyproject.toml` kusimamia utegemezi wa mradi, kwa hivyo, kusakinisha utegemezi, unapaswa kutumia Poetry.
+Ili kuandaa mazingira ya maendeleo kwa mradi huu, tunapendekeza utumie Poetry kusimamia utegemezi. Tunatumia `pyproject.toml` kusimamia utegemezi wa mradi, hivyo ili kusakinisha utegemezi, tumia Poetry.
 
 ### Tengeneza mazingira ya virtual
 
@@ -33,7 +33,7 @@ poetry init
 
 ### Washa mazingira ya virtual
 
-#### Kwa pip na Poetry zote mbili
+#### Kwa pip na Poetry zote
 
 - Windows:
 
@@ -53,7 +53,7 @@ poetry init
 poetry shell
 ```
 
-### Kusakinisha Pakiti na Pakiti zinazohitajika
+### Kusakinisha Package na Packages zinazohitajika
 
 #### Kutumia Poetry (kutoka pyproject.toml)
 
@@ -63,20 +63,20 @@ poetry install
 
 ### Kupima kwa mkono
 
-Kabla ya kuwasilisha PR, ni muhimu kupima utendaji wa tafsiri kwa kutumia nyaraka halisi:
+Kabla ya kuwasilisha PR, ni muhimu kupima uwezo wa kutafsiri kwa kutumia nyaraka halisi:
 
-1. Tengeneza saraka ya majaribio kwenye saraka kuu:
+1. Tengeneza folda ya majaribio kwenye mzizi wa mradi:
     ```bash
     mkdir test_docs
     ```
 
-2. Nakili baadhi ya nyaraka za markdown na picha unazotaka kutafsiri kwenye saraka ya majaribio. Kwa mfano:
+2. Nakili baadhi ya nyaraka za markdown na picha unazotaka kutafsiri kwenye folda ya majaribio. Kwa mfano:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. Sakinisha pakiti kwa ndani:
+3. Sakinisha package kwa njia ya ndani:
     ```bash
     pip install -e .
     ```
@@ -86,54 +86,54 @@ Kabla ya kuwasilisha PR, ni muhimu kupima utendaji wa tafsiri kwa kutumia nyarak
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Angalia faili zilizotafsiriwa katika `test_docs/translations` na `test_docs/translated_images` kuthibitisha:
+5. Angalia faili zilizotafsiriwa kwenye `test_docs/translations` na `test_docs/translated_images` ili kuthibitisha:
    - Ubora wa tafsiri
    - Maoni ya metadata ni sahihi
-   - Muundo wa awali wa markdown umehifadhiwa
+   - Muundo wa asili wa markdown umehifadhiwa
    - Viungo na picha vinafanya kazi vizuri
 
-Kupima kwa mkono husaidia kuhakikisha mabadiliko yako yanafanya kazi vizuri katika hali halisi.
+Majaribio haya ya mkono husaidia kuhakikisha mabadiliko yako yanafanya kazi vizuri kwenye mazingira halisi.
 
-### Mabadiliko ya mazingira
+### Vigezo vya mazingira
 
-1. Tengeneza faili `.env` kwenye saraka kuu kwa kunakili faili `.env.template` iliyotolewa.
-1. Jaza mabadiliko ya mazingira kama ilivyoelekezwa.
+1. Tengeneza faili `.env` kwenye mzizi wa mradi kwa kunakili faili `.env.template` iliyopo.
+1. Jaza vigezo vya mazingira kama ulivyoelekezwa.
 
 > [!TIP]
 >
-> ### Chaguzi za ziada za mazingira ya maendeleo
+> ### Chaguo za ziada za mazingira ya maendeleo
 >
-> Mbali na kuendesha mradi kwa ndani, unaweza pia kutumia GitHub Codespaces au VS Code Dev Containers kama mbadala wa mazingira ya maendeleo.
+> Mbali na kuendesha mradi kwa njia ya ndani, unaweza pia kutumia GitHub Codespaces au VS Code Dev Containers kama njia mbadala ya kuandaa mazingira ya maendeleo.
 >
 > #### GitHub Codespaces
 >
-> Unaweza kuendesha sampuli hizi kwa mtandao kwa kutumia GitHub Codespaces na hakuna mipangilio au usanidi wa ziada unaohitajika.
+> Unaweza kuendesha sampuli hizi kwa njia ya mtandao kwa kutumia GitHub Codespaces bila mipangilio au maandalizi ya ziada.
 >
-> Kitufe kitafungua toleo la VS Code la mtandao kwenye kivinjari chako:
+> Kitufe kitafungua toleo la VS Code kwenye kivinjari chako:
 >
-> 1. Fungua kiolezo (hii inaweza kuchukua dakika kadhaa):
+> 1. Fungua template (hii inaweza kuchukua dakika kadhaa):
 >
->     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
+>     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
 >
 > #### Kuendesha kwa ndani kwa kutumia VS Code Dev Containers
 >
-> ⚠️ Chaguo hili litafanya kazi tu ikiwa Docker Desktop yako imepewa angalau GB 16 za RAM. Ikiwa una chini ya GB 16 za RAM, unaweza jaribu [chaguo la GitHub Codespaces](../..) au [kuandaa kwa ndani](../..).
+> ⚠️ Chaguo hili litafanya kazi tu kama Docker Desktop yako imetengewa angalau 16 GB ya RAM. Kama una RAM chini ya 16 GB, unaweza kujaribu [chaguo la GitHub Codespaces](../..) au [kuandaa kwa ndani](../..).
 >
-> Chaguo linalohusiana ni VS Code Dev Containers, ambalo litaifungua mradi kwenye VS Code yako ya ndani kwa kutumia [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Chaguo lingine ni VS Code Dev Containers, ambayo itafungua mradi kwenye VS Code yako ya ndani kwa kutumia [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Anzisha Docker Desktop (sakinisha ikiwa bado haijasakinishwa)
+> 1. Anzisha Docker Desktop (sakinisha kama bado haijasakinishwa)
 > 2. Fungua mradi:
 >
->    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
+>    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
 
 
-### Mtindo wa Msimbo
+### Mtindo wa Kuandika Code
 
-Tunatumia [Black](https://github.com/psf/black) kama mpangaji msimbo wa Python ili kudumisha mtindo thabiti wa msimbo katika mradi. Black ni mpangaji msimbo usio na msamaha unaobadilisha msimbo wa Python moja kwa moja ili uendane na mtindo wa Black.
+Tunatumia [Black](https://github.com/psf/black) kama formatter ya Python ili kudumisha mtindo wa code ulio sawa kwenye mradi. Black ni formatter isiyokubali maelewano ambayo inarekebisha code ya Python moja kwa moja kufuata mtindo wa Black.
 
-#### Usanidi
+#### Mpangilio
 
-Usanidi wa Black umeainishwa katika `pyproject.toml` yetu:
+Mpangilio wa Black umeainishwa kwenye `pyproject.toml` yetu:
 
 ```toml
 [tool.black]
@@ -148,14 +148,14 @@ Unaweza kusakinisha Black kwa kutumia Poetry (inapendekezwa) au pip:
 
 ##### Kutumia Poetry
 
-Black husakinishwa moja kwa moja unapoanzisha mazingira ya maendeleo:
+Black inasakinishwa moja kwa moja unapoweka mazingira ya maendeleo:
 ```bash
 poetry install
 ```
 
 ##### Kutumia pip
 
-Ikiwa unatumia pip, unaweza kusakinisha Black moja kwa moja:
+Kama unatumia pip, unaweza kusakinisha Black moja kwa moja:
 ```bash
 pip install black
 ```
@@ -164,38 +164,38 @@ pip install black
 
 ##### Kwa Poetry
 
-1. Panga faili zote za Python katika mradi:
+1. Rekebisha faili zote za Python kwenye mradi:
     ```bash
     poetry run black .
     ```
 
-2. Panga faili au saraka maalum:
+2. Rekebisha faili au folda maalum:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
 ##### Kwa pip
 
-1. Panga faili zote za Python katika mradi:
+1. Rekebisha faili zote za Python kwenye mradi:
     ```bash
     black .
     ```
 
-2. Panga faili au saraka maalum:
+2. Rekebisha faili au folda maalum:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> Tunapendekeza kuweka mhariri wako upange msimbo kiotomatiki kwa Black unapoihifadhi. Wahariri wengi wa kisasa wanaunga mkono hili kupitia nyongeza au programu-jalizi.
+> Tunapendekeza uweke editor yako iwe inarekebisha code moja kwa moja kwa Black kila unapohifadhi. Editors nyingi za kisasa zinaunga mkono hili kupitia extensions au plugins.
 
 ## Kuendesha Co-op Translator
 
-Ili kuendesha Co-op Translator kwa kutumia Poetry katika mazingira yako, fuata hatua hizi:
+Ili kuendesha Co-op Translator kwa kutumia Poetry kwenye mazingira yako, fuata hatua hizi:
 
-1. Nenda kwenye saraka unayotaka kufanya majaribio ya tafsiri au tengeneza folda ya muda kwa madhumuni ya majaribio.
+1. Nenda kwenye folda unayotaka kufanya majaribio ya tafsiri au tengeneza folda ya muda kwa ajili ya majaribio.
 
-2. Endesha amri ifuatayo. Badilisha `-l ko` na msimbo wa lugha unayotaka kutafsiri. Bendera `-d` inaonyesha hali ya debug.
+2. Tekeleza amri ifuatayo. Badilisha `-l ko` na msimbo wa lugha unayotaka kutafsiri. Bendera ya `-d` inaashiria hali ya debug.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -206,33 +206,33 @@ Ili kuendesha Co-op Translator kwa kutumia Poetry katika mazingira yako, fuata h
 
 ## Changia lugha mpya
 
-Tunakaribisha michango inayoongeza msaada kwa lugha mpya. Kabla ya kufungua PR, tafadhali kamilisha hatua zilizo hapa chini ili kuhakikisha ukaguzi mzuri.
+Tunakaribisha michango ya kuongeza msaada kwa lugha mpya. Kabla ya kufungua PR, tafadhali kamilisha hatua zilizo hapa chini ili kurahisisha ukaguzi.
 
-1. Ongeza lugha kwenye ramani ya fonti
+1. Ongeza lugha kwenye font mapping
    - Hariri `src/co_op_translator/fonts/font_language_mappings.yml`
-   - Ongeza kipengee chenye:
-     - `code`: msimbo wa lugha unaofanana na ISO (mfano, `vi`)
-     - `name`: Jina la kuonyesha linaloeleweka na watu
-     - `font`: Fonti iliyopo `src/co_op_translator/fonts/` inayounga mkono maandishi
-     - `rtl`: `true` ikiwa ni kutoka kulia kwenda kushoto, vinginevyo `false`
+   - Ongeza kipengele chenye:
+     - `code`: Msimbo wa lugha wa ISO (mfano, `vi`)
+     - `name`: Jina la lugha linaloeleweka kirahisi
+     - `font`: Fonti iliyopo kwenye `src/co_op_translator/fonts/` inayounga mkono maandishi ya lugha hiyo
+     - `rtl`: `true` kama ni maandishi ya kulia kwenda kushoto, vinginevyo `false`
 
-2. Jumuisha faili za fonti zinazohitajika (ikiwa zinahitajika)
-   - Ikiwa fonti mpya inahitajika, hakikisha leseni inaruhusu usambazaji wa chanzo wazi
+2. Jumuisha faili za fonti zinazohitajika (ikibidi)
+   - Kama fonti mpya inahitajika, hakikisha leseni yake inaruhusu usambazaji wa open source
    - Ongeza faili ya fonti kwenye `src/co_op_translator/fonts/`
 
-3. Thibitisha kwa ndani
-   - Endesha tafsiri kwa sampuli ndogo (Markdown, picha, na daftari kama inavyofaa)
-   - Hakikisha matokeo yanaonyeshwa vizuri, ikijumuisha fonti na mpangilio wa RTL ikiwa unahitajika
+3. Hakiki kwa ndani
+   - Endesha tafsiri kwa sampuli ndogo (Markdown, picha, na notebooks inapofaa)
+   - Hakikisha matokeo yanaonekana vizuri, ikiwemo fonti na mpangilio wa RTL kama inahitajika
 
 4. Sasisha nyaraka
-   - Hakikisha lugha inaonekana katika `getting_started/supported-languages.md`
-   - Hakuna mabadiliko yanayohitajika kwenye `getting_started/README_languages_template.md`; inatengenezwa kutoka kwa orodha ya lugha zinazotegemewa
+   - Hakikisha lugha inaonekana kwenye `getting_started/supported-languages.md`
+   - Hakuna mabadiliko yanayohitajika kwenye `README_languages_template.md`; inatengenezwa kutoka orodha ya lugha zinazoungwa mkono
 
 5. Fungua PR
    - Eleza lugha iliyoongezwa na masuala yoyote ya fonti/leseni
-   - Ambatisha picha za skrini za matokeo ikiwa inawezekana
+   - Ambatanisha picha za matokeo yaliyotafsiriwa kama inawezekana
 
-Mfano wa kipengee cha YAML:
+Mfano wa kipengele cha YAML:
 
 ```yaml
 new_lang(code):
@@ -241,100 +241,62 @@ new_lang(code):
   rtl: false
 ```
 
-### Jaribu lugha mpya
 
-Unaweza kujaribu lugha mpya kwa kuendesha amri ifuatayo:
+## Walezi wa Mradi
 
-```bash
-# Unda na wezesha mazingira pepe
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
-# Sakinisha kifurushi cha maendeleo
-pip install -e .
-# Endesha tafsiri
-translate -l "new_lang"
-```
+### Muundo wa ujumbe wa commit na mkakati wa kuunganisha
 
-## Watunzaji
+Ili kuhakikisha historia ya commit ya mradi wetu ina uwazi na mpangilio, tunafuata muundo maalum wa ujumbe wa commit **kwa ujumbe wa mwisho wa commit** tunapotumia mkakati wa **Squash and Merge**.
 
-### Ujumbe wa commit na Mkakati wa Kuunganisha
-
-Ili kuhakikisha muendelezo na uwazi katika historia ya commit ya mradi wetu, tunafuata muundo maalum wa ujumbe wa commit **kwa ujumbe wa commit wa mwisho** tunapotumia mkakati wa **Squash and Merge**.
-
-Wakati pull request (PR) inapounganishwa, commits binafsi zitachanganywa kuwa commit moja. Ujumbe wa commit wa mwisho unapaswa kufuata muundo ulio hapa chini ili kudumisha historia safi na thabiti.
+PR inapounganishwa, commits zote za ndani zitaunganishwa kuwa commit moja. Ujumbe wa mwisho wa commit unapaswa kufuata muundo ulio hapa chini ili kudumisha historia safi na yenye mpangilio.
 
 #### Muundo wa ujumbe wa commit (kwa squash and merge)
 
-Tunatumia muundo ufuatao kwa ujumbe wa commit:
+Tunatumia muundo huu kwa ujumbe wa commit:
 
 ```bash
-<type>: <description> (#<Nambari ya PR>)
+<type>: <description> (#<PR number>)
 ```
 
-- **type**: Inaelezea aina ya commit. Tunatumia aina zifuatazo:
+- **type**: Inaonyesha aina ya commit. Tunatumia aina zifuatazo:
   - `Docs`: Kwa masasisho ya nyaraka.
-  - `Build`: Kwa mabadiliko yanayohusiana na mfumo wa kujenga au utegemezi, ikiwa ni pamoja na masasisho ya faili za usanidi, michakato ya CI, au Dockerfile.
-  - `Core`: Kwa mabadiliko ya kazi kuu au vipengele vya mradi, hasa zile zinazohusisha faili katika saraka `src/co_op_translator/core`.
+  - `Build`: Kwa mabadiliko yanayohusiana na mfumo wa kujenga au utegemezi, ikiwemo masasisho ya faili za mpangilio, CI workflows, au Dockerfile.
+  - `Core`: Kwa mabadiliko kwenye utendaji wa msingi wa mradi, hasa yanayohusisha faili kwenye folda ya `src/co_op_translator/core`.
 
 - **description**: Muhtasari mfupi wa mabadiliko.
-- **PR number**: Nambari ya pull request inayohusiana na commit.
+- **PR number**: Namba ya pull request inayohusiana na commit.
 
 **Mifano**:
 
-- `Docs: Sasisha maelekezo ya usakinishaji kwa uwazi (#50)`
-- `Core: Boresha usimamizi wa tafsiri ya picha (#60)`
+- `Docs: Update installation instructions for clarity (#50)`
+- `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Kwa sasa, viambatanisho vya **`Docs`**, **`Core`**, na **`Build`** vinaongezwa moja kwa moja kwenye vichwa vya PR kulingana na lebo zilizowekwa kwenye msimbo uliobadilishwa. Mradi lebo sahihi imewekwa, kawaida huna haja ya kubadilisha kichwa cha PR kwa mkono. Unahitaji tu kuthibitisha kila kitu kiko sawa na kiambatanisho kimeundwa ipasavyo.
+> Kwa sasa, vianzio vya **`Docs`**, **`Core`**, na **`Build`** vinaongezwa moja kwa moja kwenye vichwa vya PR kulingana na lebo zilizowekwa kwenye source code iliyobadilishwa. Mradi lebo sahihi imewekwa, mara nyingi huhitaji kubadilisha kichwa cha PR mwenyewe. Unachotakiwa ni kuthibitisha kila kitu kiko sawa na kianzio kimeundwa ipasavyo.
 
 #### Mkakati wa kuunganisha
 
-Tunatumia **Squash and Merge** kama mkakati wetu wa kawaida kwa pull requests. Mkakati huu unahakikisha ujumbe wa commit unafuata muundo wetu, hata kama commits binafsi hazifuatilii.
+Tunatumia **Squash and Merge** kama mkakati chaguo-msingi wa pull requests. Mkakati huu unahakikisha ujumbe wa commit unafuata muundo wetu, hata kama commits za ndani hazifanyi hivyo.
 
 **Sababu**:
 
-- Historia safi, ya mstari wa mradi.
-- Muendelezo katika ujumbe wa commit.
-- Kupunguza kelele kutoka kwa commits ndogo (mfano, "rekebisha typo").
+- Historia safi na ya mstari mmoja wa mradi.
+- Ujumbe wa commit wenye mpangilio.
+- Kupunguza kelele za commits ndogo (mfano, "fix typo").
 
-Unapounganisha, hakikisha ujumbe wa commit wa mwisho unafuata muundo wa ujumbe wa commit ulioelezwa hapo juu.
+Unapounganisha, hakikisha ujumbe wa mwisho wa commit unafuata muundo wa ujumbe wa commit ulioelezwa hapo juu.
 
 **Mfano wa Squash and Merge**
-Ikiwa PR ina commits zifuatazo:
+Kama PR ina commits zifuatazo:
 
-- `rekebisha typo`
-- `sasisha README`
-- `rekebisha muundo`
+- `fix typo`
+- `update README`
+- `adjust formatting`
 
-Zitachanganywa kuwa:
-`Docs: Boresha uwazi na muundo wa nyaraka (#65)`
-
-### Mchakato wa kutolewa kwa toleo
-
-Sehemu hii inaelezea njia rahisi kwa watunzaji kuchapisha toleo jipya la Co-op Translator.
-
-#### 1. Ongeza toleo katika `pyproject.toml`
-
-1. Amua nambari ya toleo lijalo (tunafuata semantic versioning: `MAJOR.MINOR.PATCH`).
-2. Hariri `pyproject.toml` na sasisha sehemu ya `version` chini ya `[tool.poetry]`.
-3. Fungua pull request maalum inayobadilisha toleo tu (na faili zozote za lock/metadata zilizosasishwa moja kwa moja, ikiwa zipo).
-4. Baada ya ukaguzi, tumia **Squash and Merge** na hakikisha ujumbe wa commit wa mwisho unafuata muundo ulioelezwa hapo juu.
-
-#### 2. Tengeneza Toleo la GitHub
-
-1. Nenda kwenye ukurasa wa hifadhi ya GitHub na fungua **Releases** → **Draft a new release**.
-2. Tengeneza tag mpya (kwa mfano, `v0.13.0`) kutoka tawi la `main`.
-3. Weka kichwa cha toleo kuwa toleo lile lile (kwa mfano, `v0.13.0`).
-4. Bonyeza **Generate release notes** ili kujaza kiotomatiki kumbukumbu za mabadiliko.
-5. Hiari, hariri maandishi (kwa mfano, kuonyesha lugha mpya zinazotegemewa au mabadiliko muhimu).
-6. Chapisha toleo.
+Zinapaswa kuunganishwa kuwa:
+`Docs: Improve documentation clarity and formatting (#65)`
 
 ---
 
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**Kiarifa cha Kukataa**:
-Hati hii imetafsiriwa kwa kutumia huduma ya tafsiri ya AI [Co-op Translator](https://github.com/Azure/co-op-translator). Ingawa tunajitahidi kwa usahihi, tafadhali fahamu kuwa tafsiri za kiotomatiki zinaweza kuwa na makosa au upungufu wa usahihi. Hati ya asili katika lugha yake ya asili inapaswa kuchukuliwa kama chanzo cha mamlaka. Kwa taarifa muhimu, tafsiri ya kitaalamu ya binadamu inapendekezwa. Hatubebei dhamana kwa kutoelewana au tafsiri potofu zinazotokana na matumizi ya tafsiri hii.
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->
+**Kanusho**:
+Hati hii imetafsiriwa kwa kutumia huduma ya kutafsiri ya AI [Co-op Translator](https://github.com/Azure/co-op-translator). Ingawa tunajitahidi kwa usahihi, tafadhali fahamu kwamba tafsiri za kiotomatiki zinaweza kuwa na makosa au kutokuwa sahihi. Hati asili katika lugha yake ya asili inapaswa kuchukuliwa kama chanzo cha mamlaka. Kwa taarifa muhimu, inashauriwa kutumia huduma ya utafsiri wa binadamu wa kitaalamu. Hatutawajibika kwa kutokuelewana au tafsiri zisizo sahihi zinazotokana na matumizi ya tafsiri hii.

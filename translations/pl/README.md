@@ -1,15 +1,15 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "dac6bc281667816537df51f724a0ff2c",
-  "translation_date": "2025-11-30T11:02:41+00:00",
+  "original_hash": "8f776df01855a3a659c8eb6f16a5de74",
+  "translation_date": "2025-10-15T03:07:00+00:00",
   "source_file": "README.md",
   "language_code": "pl"
 }
 -->
 # Co-op Translator
 
-_Łatwo automatyzuj tłumaczenie edukacyjnych treści na GitHubie na wiele języków, aby dotrzeć do globalnej publiczności._
+_Automatyzuj tłumaczenie swojej edukacyjnej zawartości na GitHubie na wiele języków i docieraj do odbiorców na całym świecie._
 
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
@@ -23,67 +23,65 @@ _Łatwo automatyzuj tłumaczenie edukacyjnych treści na GitHubie na wiele języ
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-### 🌐 Wsparcie wielu języków
+### 🌐 Obsługa wielu języków
 
 #### Obsługiwane przez [Co-op Translator](https://github.com/Azure/Co-op-Translator)
 
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
-[Arabski](../ar/README.md) | [Bengalski](../bn/README.md) | [Bułgarski](../bg/README.md) | [Birmański (Myanmar)](../my/README.md) | [Chiński (uproszczony)](../zh/README.md) | [Chiński (tradycyjny, Hongkong)](../hk/README.md) | [Chiński (tradycyjny, Makau)](../mo/README.md) | [Chiński (tradycyjny, Tajwan)](../tw/README.md) | [Chorwacki](../hr/README.md) | [Czeski](../cs/README.md) | [Duński](../da/README.md) | [Niderlandzki](../nl/README.md) | [Estoński](../et/README.md) | [Fiński](../fi/README.md) | [Francuski](../fr/README.md) | [Niemiecki](../de/README.md) | [Grecki](../el/README.md) | [Hebrajski](../he/README.md) | [Hindi](../hi/README.md) | [Węgierski](../hu/README.md) | [Indonezyjski](../id/README.md) | [Włoski](../it/README.md) | [Japoński](../ja/README.md) | [Kannada](../kn/README.md) | [Koreański](../ko/README.md) | [Litewski](../lt/README.md) | [Malajski](../ms/README.md) | [Malajalam](../ml/README.md) | [Marathi](../mr/README.md) | [Nepalski](../ne/README.md) | [Nigeryjski pidgin](../pcm/README.md) | [Norweski](../no/README.md) | [Perski (Farsi)](../fa/README.md) | [Polski](./README.md) | [Portugalski (Brazylia)](../br/README.md) | [Portugalski (Portugalia)](../pt/README.md) | [Pendżabski (Gurmukhi)](../pa/README.md) | [Rumuński](../ro/README.md) | [Rosyjski](../ru/README.md) | [Serbski (cyrylica)](../sr/README.md) | [Słowacki](../sk/README.md) | [Słoweński](../sl/README.md) | [Hiszpański](../es/README.md) | [Suahili](../sw/README.md) | [Szwedzki](../sv/README.md) | [Tagalog (Filipiński)](../tl/README.md) | [Tamilski](../ta/README.md) | [Telugu](../te/README.md) | [Tajski](../th/README.md) | [Turecki](../tr/README.md) | [Ukraiński](../uk/README.md) | [Urdu](../ur/README.md) | [Wietnamski](../vi/README.md)
+[Arabic](../ar/README.md) | [Bengali](../bn/README.md) | [Bulgarian](../bg/README.md) | [Burmese (Myanmar)](../my/README.md) | [Chinese (Simplified)](../zh/README.md) | [Chinese (Traditional, Hong Kong)](../hk/README.md) | [Chinese (Traditional, Macau)](../mo/README.md) | [Chinese (Traditional, Taiwan)](../tw/README.md) | [Croatian](../hr/README.md) | [Czech](../cs/README.md) | [Danish](../da/README.md) | [Dutch](../nl/README.md) | [Estonian](../et/README.md) | [Finnish](../fi/README.md) | [French](../fr/README.md) | [German](../de/README.md) | [Greek](../el/README.md) | [Hebrew](../he/README.md) | [Hindi](../hi/README.md) | [Hungarian](../hu/README.md) | [Indonesian](../id/README.md) | [Italian](../it/README.md) | [Japanese](../ja/README.md) | [Korean](../ko/README.md) | [Lithuanian](../lt/README.md) | [Malay](../ms/README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Norwegian](../no/README.md) | [Persian (Farsi)](../fa/README.md) | [Polish](./README.md) | [Portuguese (Brazil)](../br/README.md) | [Portuguese (Portugal)](../pt/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Romanian](../ro/README.md) | [Russian](../ru/README.md) | [Serbian (Cyrillic)](../sr/README.md) | [Slovak](../sk/README.md) | [Slovenian](../sl/README.md) | [Spanish](../es/README.md) | [Swahili](../sw/README.md) | [Swedish](../sv/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Tamil](../ta/README.md) | [Thai](../th/README.md) | [Turkish](../tr/README.md) | [Ukrainian](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnamese](../vi/README.md)
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
 [![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
 
-[![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
-
+[![Microsoft Azure AI Foundry Discord](https://dcbadge.limes.pink/api/server/ByRwuEEgH4)](https://discord.com/invite/ByRwuEEgH4)
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 
 ## Przegląd
 
-**Co-op Translator** pomaga łatwo lokalizować edukacyjne treści na GitHubie na wiele języków.  
-Gdy aktualizujesz pliki Markdown, obrazy lub notatniki, tłumaczenia są automatycznie synchronizowane, dzięki czemu Twoje materiały pozostają dokładne i aktualne dla uczących się na całym świecie.
+**Co-op Translator** pozwala szybko tłumaczyć edukacyjne treści na GitHubie na wiele języków, dzięki czemu łatwo docierasz do odbiorców na całym świecie. Gdy aktualizujesz pliki Markdown, obrazy lub notatniki Jupyter, tłumaczenia są automatycznie synchronizowane, by Twoje materiały edukacyjne były zawsze aktualne i dostępne dla międzynarodowych użytkowników.
 
-Przykład organizacji przetłumaczonych treści:
+Zobacz, jak Co-op Translator organizuje przetłumaczone materiały edukacyjne na GitHubie:
 
 ![Przykład](../../translated_images/translation-ex.0c8aa6a7ee0aad2b35cddcc110c719baf0afc640e8c5a45540e6c166b9907d91.pl.png)
 
 ## Szybki start
 
 ```bash
-# Utwórz i aktywuj środowisko wirtualne (zalecane)
+# Create and activate a virtual environment (recommended)
 python -m venv .venv
 # Windows
 .venv\Scripts\activate
 # macOS/Linux
 source .venv/bin/activate
-# Zainstaluj pakiet
+# Install the package
 pip install co-op-translator
-# Przetłumacz
+# Translate
 translate -l "ko ja fr" -md
 ```
 
 Docker:
 
 ```bash
-# Pobierz publiczny obraz z GHCR
+# Pull the public image from GHCR
 docker pull ghcr.io/azure/co-op-translator:latest
-# Uruchom z zamontowanym bieżącym folderem i dostarczonym plikiem .env (Bash/Zsh)
+# Run with current folder mounted and .env provided (Bash/Zsh)
 docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
 ```
 
 ## Minimalna konfiguracja
 
-1. Utwórz plik `.env` korzystając z szablonu: [.env.template](../../.env.template)  
-2. Skonfiguruj jednego dostawcę LLM (Azure OpenAI lub OpenAI)  
-3. (Opcjonalnie) Dla tłumaczenia obrazów (`-img`) skonfiguruj Azure AI Vision  
-4. (Zalecane) Wyczyść poprzednie tłumaczenia, aby uniknąć konfliktów (np. `translations/`)  
-5. (Zalecane) Dodaj sekcję tłumaczeń do swojego README korzystając z [szablonu języków README](./getting_started/README_languages_template.md)  
-6. Zobacz: [Konfiguracja Azure AI](./getting_started/set-up-azure-ai.md)  
+- Utwórz plik `.env` na podstawie szablonu: [.env.template](../../.env.template)
+- Skonfiguruj jednego dostawcę LLM (Azure OpenAI lub OpenAI)
+- Do tłumaczenia obrazów (`-img`) skonfiguruj także Azure AI Vision
+- Zalecane: Jeśli masz tłumaczenia wygenerowane przez inne narzędzia, najpierw je usuń, aby uniknąć konfliktów (np. `translations/`).
+- Zalecane: Dodaj sekcję tłumaczeń do swojego README, korzystając z [szablonu języków README](./README_languages_template.md)
+- Zobacz: [Konfiguracja Azure AI](./getting_started/set-up-azure-ai.md)
 
 ## Użycie
 
-Tłumacz wszystkie obsługiwane typy:
+Tłumaczenie wszystkich obsługiwanych typów:
 
 ```bash
 translate -l "ko ja"
@@ -107,65 +105,56 @@ Tylko notatniki:
 translate -l "zh" -nb
 ```
 
-Więcej opcji: [Referencja poleceń](./getting_started/command-reference.md)
+Więcej opcji: [Opis poleceń](./getting_started/command-reference.md)
 
 ## Funkcje
 
-- Automatyczne tłumaczenie Markdown, notatników i obrazów  
-- Synchronizacja tłumaczeń z oryginalnymi zmianami  
-- Działa lokalnie (CLI) lub w CI (GitHub Actions)  
-- Wykorzystuje Azure OpenAI lub OpenAI; opcjonalnie Azure AI Vision dla obrazów  
-- Zachowuje formatowanie i strukturę Markdown  
+- Automatyczne tłumaczenie plików Markdown, notatników i obrazów
+- Synchronizacja tłumaczeń z aktualizacjami źródła
+- Działa lokalnie (CLI) lub w CI (GitHub Actions)
+- Wykorzystuje Azure OpenAI lub OpenAI; opcjonalnie Azure AI Vision do obrazów
+- Zachowuje formatowanie i strukturę Markdown
 
 ## Dokumentacja
 
-- [Przewodnik po linii poleceń](./getting_started/command-line-guide/command-line-guide.md)  
-- [Przewodnik GitHub Actions (repozytoria publiczne i standardowe sekrety)](./getting_started/github-actions-guide/github-actions-guide-public.md)  
-- [Przewodnik GitHub Actions (repozytoria organizacji Microsoft i konfiguracje na poziomie organizacji)](./getting_started/github-actions-guide/github-actions-guide-org.md)  
-- [Szablon języków README](./getting_started/README_languages_template.md)  
-- [Obsługiwane języki](./getting_started/supported-languages.md)  
-- [Wkład w projekt](./CONTRIBUTING.md)  
-- [Rozwiązywanie problemów](./getting_started/troubleshooting.md)  
+- [Przewodnik po linii poleceń](./getting_started/command-line-guide/command-line-guide.md)
+- [Przewodnik po GitHub Actions (repozytoria publiczne i standardowe sekrety)](./getting_started/github-actions-guide/github-actions-guide-public.md)
+- [Przewodnik po GitHub Actions (repozytoria organizacji Microsoft i konfiguracje na poziomie organizacji)](./getting_started/github-actions-guide/github-actions-guide-org.md)
+- [Obsługiwane języki](./getting_started/supported-languages.md)
+- [Rozwiązywanie problemów](./getting_started/troubleshooting.md)
 
-### Przewodnik specyficzny dla Microsoft  
-> [!NOTE]  
-> Tylko dla opiekunów repozytoriów Microsoft „Dla początkujących”.
+## Wesprzyj nas i wspieraj globalną edukację
 
-- [Aktualizacja listy „innych kursów” (tylko dla repozytoriów MS Beginners)](./getting_started/update-other-courses.md)
+Dołącz do nas i zmieniaj sposób udostępniania treści edukacyjnych na świecie! Daj [Co-op Translator](https://github.com/azure/co-op-translator) ⭐ na GitHubie i wesprzyj naszą misję przełamywania barier językowych w nauce i technologii. Twoje zainteresowanie i wkład mają ogromne znaczenie! Wszelkie propozycje funkcji i kontrybucje do kodu są mile widziane.
 
-## Wspieraj nas i wspieraj globalną edukację
+### Odkrywaj edukacyjne materiały Microsoft w swoim języku
 
-Dołącz do nas w rewolucjonizowaniu sposobu, w jaki treści edukacyjne są udostępniane na całym świecie!  
-Daj [Co-op Translator](https://github.com/azure/co-op-translator) ⭐ na GitHubie i wspieraj naszą misję przełamywania barier językowych w nauce i technologii. Twoje zainteresowanie i wkład mają ogromne znaczenie! Zachęcamy do zgłaszania kodu i propozycji funkcji.
-
-### Odkrywaj edukacyjne treści Microsoft w swoim języku
-
-- [AZD dla początkujących](https://github.com/microsoft/AZD-for-beginners)  
-- [Edge AI dla początkujących](https://github.com/microsoft/edgeai-for-beginners)  
-- [Model Context Protocol (MCP) dla początkujących](https://github.com/microsoft/mcp-for-beginners)  
-- [AI Agents dla początkujących](https://github.com/microsoft/ai-agents-for-beginners)  
-- [Generative AI dla początkujących z użyciem .NET](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)  
-- [Generative AI dla początkujących](https://github.com/microsoft/generative-ai-for-beginners)  
-- [Generative AI dla początkujących z użyciem Java](https://github.com/microsoft/generative-ai-for-beginners-java)  
-- [ML dla początkujących](https://aka.ms/ml-beginners)  
-- [Data Science dla początkujących](https://aka.ms/datascience-beginners)  
-- [AI dla początkujących](https://aka.ms/ai-beginners)  
-- [Cyberbezpieczeństwo dla początkujących](https://github.com/microsoft/Security-101)  
-- [Web Dev dla początkujących](https://aka.ms/webdev-beginners)  
-- [IoT dla początkujących](https://aka.ms/iot-beginners)  
-- [PhiCookBook](https://github.com/microsoft/PhiCookBook)  
+- [AZD for Beginners](https://github.com/microsoft/AZD-for-beginners)
+- [Edge AI for Beginners](https://github.com/microsoft/edgeai-for-beginners)
+- [Model Context Protocol (MCP) For Beginners](https://github.com/microsoft/mcp-for-beginners)
+- [AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners)
+- [Generative AI for Beginners using .NET](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
+- [Generative AI for Beginners](https://github.com/microsoft/generative-ai-for-beginners)
+- [Generative AI for Beginners using Java](https://github.com/microsoft/generative-ai-for-beginners-java)
+- [ML for Beginners](https://aka.ms/ml-beginners)
+- [Data Science for Beginners](https://aka.ms/datascience-beginners)
+- [AI for Beginners](https://aka.ms/ai-beginners)
+- [Cybersecurity for Beginners](https://github.com/microsoft/Security-101)
+- [Web Dev for Beginners](https://aka.ms/webdev-beginners)
+- [IoT for Beginners](https://aka.ms/iot-beginners)
+- [PhiCookBook](https://github.com/microsoft/PhiCookBook)
 
 ## Prezentacje wideo
 
-👉 Kliknij obraz poniżej, aby obejrzeć na YouTube.
+Dowiedz się więcej o Co-op Translator z naszych prezentacji _(Kliknij obrazek poniżej, aby obejrzeć na YouTube.)_:
 
-- **Open at Microsoft**: Krótkie, 18-minutowe wprowadzenie i szybki przewodnik, jak korzystać z Co-op Translator.
+- **Open at Microsoft**: Krótkie 18-minutowe wprowadzenie i szybki przewodnik po użyciu Co-op Translator.
 
   [![Open at Microsoft](../../translated_images/open-ms-thumbnail.946b356b89bc5f0e33dcebb852f7926b98c33f54c1a49ce01c36ae7f35e2443a.pl.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
-## Wkład w projekt
+## Współtworzenie
 
-Projekt zaprasza do współpracy i sugestii. Chcesz pomóc w rozwoju Azure Co-op Translator? Zapoznaj się z naszym [CONTRIBUTING.md](./CONTRIBUTING.md), aby dowiedzieć się, jak możesz pomóc uczynić Co-op Translator bardziej dostępnym.
+Ten projekt jest otwarty na kontrybucje i sugestie. Chcesz współtworzyć Azure Co-op Translator? Zajrzyj do [CONTRIBUTING.md](./CONTRIBUTING.md), aby dowiedzieć się, jak możesz pomóc uczynić Co-op Translator bardziej dostępnym.
 
 ## Współtwórcy
 
@@ -173,39 +162,37 @@ Projekt zaprasza do współpracy i sugestii. Chcesz pomóc w rozwoju Azure Co-op
 
 ## Kodeks postępowania
 
-Projekt przyjął [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).  
-Więcej informacji znajdziesz w [FAQ dotyczących Kodeksu postępowania](https://opensource.microsoft.com/codeofconduct/faq/) lub  
-skontaktuj się pod adresem [opencode@microsoft.com](mailto:opencode@microsoft.com) w razie dodatkowych pytań lub uwag.
+Ten projekt przyjął [Kodeks postępowania Microsoft Open Source](https://opensource.microsoft.com/codeofconduct/).
+Więcej informacji znajdziesz w [FAQ dotyczących kodeksu postępowania](https://opensource.microsoft.com/codeofconduct/faq/) lub
+skontaktuj się z [opencode@microsoft.com](mailto:opencode@microsoft.com), jeśli masz dodatkowe pytania lub uwagi.
 
-## Odpowiedzialna sztuczna inteligencja
+## Odpowiedzialna AI
 
-Microsoft zobowiązuje się pomagać klientom w odpowiedzialnym korzystaniu z naszych produktów AI, dzielić się naszymi doświadczeniami oraz budować zaufanie poprzez narzędzia takie jak Transparency Notes i Impact Assessments. Wiele z tych zasobów znajdziesz pod adresem [https://aka.ms/RAI](https://aka.ms/RAI).  
-Podejście Microsoft do odpowiedzialnej AI opiera się na naszych zasadach AI: uczciwość, niezawodność i bezpieczeństwo, prywatność i ochrona, inkluzywność, przejrzystość oraz odpowiedzialność.
+Microsoft zobowiązuje się do wspierania klientów w odpowiedzialnym korzystaniu z naszych produktów AI, dzielenia się doświadczeniami i budowania relacji opartych na zaufaniu dzięki narzędziom takim jak Transparency Notes i Impact Assessments. Wiele z tych zasobów znajdziesz na [https://aka.ms/RAI](https://aka.ms/RAI).
+Podejście Microsoft do odpowiedzialnej AI opiera się na zasadach: uczciwości, niezawodności i bezpieczeństwa, prywatności i ochrony, inkluzywności, przejrzystości oraz odpowiedzialności.
 
-Modele językowe, obrazowe i mowy na dużą skalę – takie jak te używane w tym przykładzie – mogą potencjalnie zachowywać się w sposób nieuczciwy, zawodny lub obraźliwy, co może powodować szkody. Prosimy zapoznać się z [Transparency note usługi Azure OpenAI](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text), aby być świadomym ryzyk i ograniczeń.
-Zalecanym podejściem do ograniczania tych ryzyk jest włączenie do architektury systemu bezpieczeństwa, który potrafi wykrywać i zapobiegać szkodliwym zachowaniom. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) zapewnia niezależną warstwę ochrony, zdolną do wykrywania szkodliwych treści generowanych przez użytkowników i AI w aplikacjach i usługach. Azure AI Content Safety obejmuje API do analizy tekstu i obrazów, które pozwalają wykrywać materiały szkodliwe. Mamy również interaktywne Content Safety Studio, które umożliwia przeglądanie, eksplorowanie i wypróbowywanie przykładowego kodu do wykrywania szkodliwych treści w różnych modalnościach. Poniższa [dokumentacja szybkiego startu](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) przeprowadzi Cię przez proces wysyłania zapytań do usługi.
+Modele językowe, obrazowe i głosowe na dużą skalę – takie jak te używane w tym projekcie – mogą czasem zachowywać się w sposób nieuczciwy, nieprzewidywalny lub obraźliwy, co może prowadzić do szkód. Zapoznaj się z [notą transparentności usługi Azure OpenAI](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text), aby poznać ryzyka i ograniczenia.
 
-Kolejnym aspektem, który warto wziąć pod uwagę, jest ogólna wydajność aplikacji. W przypadku aplikacji multimodalnych i wielomodelowych, wydajność oznacza, że system działa zgodnie z oczekiwaniami Twoimi i użytkowników, w tym nie generuje szkodliwych wyników. Ważne jest, aby ocenić wydajność całej aplikacji, korzystając z [metryk jakości generowania oraz ryzyka i bezpieczeństwa](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in).
+Zalecanym sposobem ograniczania tych ryzyk jest wdrożenie systemu bezpieczeństwa, który wykryje i zapobiegnie szkodliwym zachowaniom. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) zapewnia niezależną warstwę ochrony, wykrywając szkodliwe treści generowane przez użytkowników i AI w aplikacjach i usługach. Azure AI Content Safety oferuje API do tekstu i obrazów, które pozwalają wykrywać szkodliwe materiały. Dostępne jest także interaktywne Content Safety Studio, gdzie możesz przetestować przykładowy kod wykrywający szkodliwe treści w różnych formatach. [Dokumentacja szybkiego startu](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) przeprowadzi Cię przez wysyłanie zapytań do tej usługi.
+Kolejnym aspektem, który warto wziąć pod uwagę, jest ogólna wydajność aplikacji. W przypadku aplikacji wielomodalnych i opartych na wielu modelach, wydajność oznacza, że system działa zgodnie z oczekiwaniami Twoimi i użytkowników, w tym nie generuje szkodliwych wyników. Ważne jest, aby ocenić wydajność całej aplikacji, korzystając z <a href="https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in">metryk jakości generowania oraz ryzyka i bezpieczeństwa</a>.
 
-Możesz ocenić swoją aplikację AI w środowisku deweloperskim, używając [prompt flow SDK](https://microsoft.github.io/promptflow/index.html). Na podstawie zestawu testowego lub celu, generacje Twojej aplikacji generatywnej AI są ilościowo mierzone za pomocą wbudowanych lub własnych evaluatorów. Aby rozpocząć pracę z prompt flow sdk do oceny systemu, możesz skorzystać z [przewodnika szybkiego startu](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). Po wykonaniu oceny możesz [wizualizować wyniki w Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
+Możesz ocenić swoją aplikację AI w środowisku deweloperskim, korzystając z <a href="https://microsoft.github.io/promptflow/index.html">prompt flow SDK</a>. Na podstawie zbioru testowego lub wybranego celu, generacje Twojej aplikacji AI są mierzone ilościowo za pomocą wbudowanych lub własnych ewaluatorów. Aby rozpocząć pracę z prompt flow SDK i ocenić swój system, możesz skorzystać z <a href="https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk">przewodnika szybkiego startu</a>. Po przeprowadzeniu ewaluacji możesz <a href="https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results">zwizualizować wyniki w Azure AI Studio</a>.
 
 ## Znaki towarowe
 
-Ten projekt może zawierać znaki towarowe lub logotypy projektów, produktów lub usług. Autoryzowane użycie znaków towarowych lub logotypów Microsoft podlega i musi być zgodne z [Wytycznymi dotyczącymi znaków towarowych i marki Microsoft](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Użycie znaków towarowych lub logotypów Microsoft w zmodyfikowanych wersjach tego projektu nie może powodować nieporozumień ani sugerować sponsorowania przez Microsoft. Wszelkie użycie znaków towarowych lub logotypów stron trzecich podlega politykom tych stron trzecich.
+Ten projekt może zawierać znaki towarowe lub logotypy projektów, produktów lub usług. Autoryzowane użycie znaków towarowych lub logotypów Microsoftu podlega i musi być zgodne z <a href="https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general">Wytycznymi dotyczącymi znaków towarowych i marki Microsoft</a>. Użycie znaków towarowych lub logotypów Microsoftu w zmodyfikowanych wersjach tego projektu nie może wprowadzać w błąd ani sugerować sponsorowania przez Microsoft. Wszelkie użycie znaków towarowych lub logotypów stron trzecich podlega zasadom tych stron.
 
-## Uzyskanie pomocy
+## Uzyskiwanie pomocy
 
 Jeśli utkniesz lub masz pytania dotyczące tworzenia aplikacji AI, dołącz do:
 
-[![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
+<a href="https://aka.ms/foundry/discord"><img src="https://img.shields.io/badge/Discord-Azure_AI_Foundry_Community_Discord-blue?style=for-the-badge&logo=discord&color=5865f2&logoColor=fff" alt="Azure AI Foundry Discord"></a>
 
 Jeśli masz uwagi dotyczące produktu lub napotkasz błędy podczas tworzenia, odwiedź:
 
-[![Microsoft Foundry Developer Forum](https://img.shields.io/badge/GitHub-Microsoft_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
+<a href="https://aka.ms/foundry/forum"><img src="https://img.shields.io/badge/GitHub-Azure_AI_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff" alt="Azure AI Foundry Developer Forum"></a>
 
 ---
 
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
 **Zastrzeżenie**:  
-Niniejszy dokument został przetłumaczony za pomocą usługi tłumaczenia AI [Co-op Translator](https://github.com/Azure/co-op-translator). Mimo że dokładamy starań, aby tłumaczenie było jak najbardziej precyzyjne, prosimy mieć na uwadze, że automatyczne tłumaczenia mogą zawierać błędy lub nieścisłości. Oryginalny dokument w języku źródłowym powinien być uznawany za źródło autorytatywne. W przypadku informacji krytycznych zalecane jest skorzystanie z profesjonalnego tłumaczenia wykonanego przez człowieka. Nie ponosimy odpowiedzialności za jakiekolwiek nieporozumienia lub błędne interpretacje wynikające z korzystania z tego tłumaczenia.
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->
+Ten dokument został przetłumaczony przy użyciu usługi tłumaczenia AI [Co-op Translator](https://github.com/Azure/co-op-translator). Dokładamy wszelkich starań, aby tłumaczenie było poprawne, jednak należy pamiętać, że tłumaczenia automatyczne mogą zawierać błędy lub nieścisłości. Za wiążące źródło należy uznać oryginalny dokument w jego języku ojczystym. W przypadku informacji krytycznych zalecane jest skorzystanie z profesjonalnych usług tłumaczenia przez człowieka. Nie ponosimy odpowiedzialności za wszelkie nieporozumienia lub błędne interpretacje wynikające z użycia tego tłumaczenia.

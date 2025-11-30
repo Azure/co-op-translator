@@ -1,144 +1,139 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "758ca1c5ae0d32c52d2dd59132dcfbf0",
-  "translation_date": "2025-11-30T13:05:33+00:00",
+  "original_hash": "a28303d122bd8d1c19e63b74a3cbc8ed",
+  "translation_date": "2025-11-06T17:29:30+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "pcm"
 }
 -->
-# How to Contribute to Co-op Translator
+# Contributin to Co-op Translator
 
-Dis project dey welcome contributions and suggestions. Most contributions go require say you agree to one Contributor License Agreement (CLA) wey talk say you get right and you really dey give us permission to use your contribution. For details, check https://cla.opensource.microsoft.com.
+Dis project dey welcome contributions and suggestions. Most contributions go need make you agree to one Contributor License Agreement (CLA) wey go show say you get di right to, and you really dey give us di rights to use wetin you contribute. For more details, visit https://cla.opensource.microsoft.com.
 
-When you submit pull request, one CLA bot go automatically check if you need provide CLA and e go put the correct status or comment for the PR. Just follow wetin the bot talk. You go only need do am once for all repos wey dey use our CLA.
+When you submit pull request, one CLA bot go automatically check if you need to provide CLA and e go mark di PR well (e.g., status check, comment). Just follow di instructions wey di bot go give you. You go only need to do am once for all repos wey dey use our CLA.
 
 ## How to Set Up Development Environment
 
-To set up development environment for dis project, we recommend say you use Poetry to manage dependencies. We dey use `pyproject.toml` to manage project dependencies, so to install dependencies, you suppose use Poetry.
+To set up di development environment for dis project, we dey recommend make you use Poetry to manage dependencies. We dey use `pyproject.toml` to manage project dependencies, so to install dependencies, you go need use Poetry.
 
-### How to Create Virtual Environment
+### Create Virtual Environment
 
-#### Using pip
+#### If you dey use pip
 
 ```bash
 python -m venv .venv
 ```
 
-
-#### Using Poetry
+#### If you dey use Poetry
 
 ```bash
 poetry init
 ```
 
-
-### How to Activate Virtual Environment
+### Activate di Virtual Environment
 
 #### For both pip and Poetry
 
-- Windows:
+- For Windows:
 
     ```bash
     .venv\Scripts\activate.bat
     ```
 
-
-- Mac/Linux:
+- For Mac/Linux:
 
     ```bash
     source .venv/bin/activate
     ```
 
-
-#### Using Poetry
+#### If you dey use Poetry
 
 ```bash
 poetry shell
 ```
 
+### Install di Package and di Required Packages
 
-### How to Install Package and Required Packages
-
-#### Using Poetry (from pyproject.toml)
+#### If you dey use Poetry (from pyproject.toml)
 
 ```bash
 poetry install
 ```
 
-
 ### Manual Testing
 
-Before you submit PR, e important to test translation functionality with real documentation:
+Before you submit PR, e good make you test di translation functionality with real documentation:
 
-1. Create test directory for root directory:
+1. Create one test folder for di root directory:
     ```bash
     mkdir test_docs
     ```
 
-2. Copy some markdown documentation and images wey you want translate enter the test directory. For example:
+2. Copy some markdown documentation and images wey you wan translate put for di test folder. For example:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
     ```
 
-3. Install the package locally:
+3. Install di package for your local machine:
     ```bash
     pip install -e .
     ```
 
-4. Run Co-op Translator on your test documents:
+4. Run Co-op Translator for your test documents:
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Check the translated files for `test_docs/translations` and `test_docs/translated_images` to confirm:
-   - The translation quality
-   - The metadata comments dey correct
-   - The original markdown structure still dey
+5. Check di translated files for `test_docs/translations` and `test_docs/translated_images` to confirm say:
+   - Di translation quality dey okay
+   - Di metadata comments dey correct
+   - Di original markdown structure no change
    - Links and images dey work well
 
-Dis manual testing go help make sure say your changes dey work well for real-world situations.
+Dis manual testing go help make sure say wetin you change dey work well for real-life situations.
 
 ### Environment Variables
 
-1. Create `.env` file for root directory by copying the `.env.template` file wey dem provide.
-2. Fill the environment variables as e take talk.
+1. Create `.env` file for di root directory by copying di `.env.template` file wey dem provide.
+1. Fill di environment variables as dem guide you.
 
 > [!TIP]
 >
 > ### Other Development Environment Options
 >
-> Besides running the project locally, you fit also use GitHub Codespaces or VS Code Dev Containers as alternative development environment setup.
+> Apart from running di project for your local machine, you fit use GitHub Codespaces or VS Code Dev Containers as another way to set up di development environment.
 >
 > #### GitHub Codespaces
 >
-> You fit run dis samples virtually by using GitHub Codespaces and you no need do any extra settings or setup.
+> You fit run dis samples online by using GitHub Codespaces and you no need any extra settings or setup.
 >
-> The button go open web-based VS Code for your browser:
+> Di button go open one web-based VS Code for your browser:
 >
-> 1. Open the template (e fit take small time):
+> 1. Open di template (e fit take some minutes):
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
-> #### Running Locally using VS Code Dev Containers
+> #### Run Locally with VS Code Dev Containers
 >
-> ⚠️ Dis option go only work if your Docker Desktop get at least 16 GB RAM. If your RAM less than 16 GB, you fit try the [GitHub Codespaces option](../..) or [set am up locally](../..).
+> ⚠️ Dis option go only work if your Docker Desktop get at least 16 GB RAM. If you no get up to 16 GB RAM, you fit try di [GitHub Codespaces option](../..) or [set am up locally](../..).
 >
-> Another option na VS Code Dev Containers, wey go open the project for your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Another option na VS Code Dev Containers, wey go open di project for your local VS Code using di [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Start Docker Desktop (install am if you never install)
-> 2. Open the project:
+> 1. Start Docker Desktop (install am if you never install am before)
+> 2. Open di project:
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
+
 ### Code Style
 
-We dey use [Black](https://github.com/psf/black) as our Python code formatter to keep code style consistent for the project. Black na strict code formatter wey automatically dey reformat Python code to follow Black code style.
+We dey use [Black](https://github.com/psf/black) as our Python code formatter to make sure say di code style for di project dey consistent. Black na one kind code formatter wey no dey compromise and e dey automatically arrange Python code to match di Black code style.
 
 #### Configuration
 
-Black configuration dey for our `pyproject.toml`:
+Di Black configuration dey for our `pyproject.toml`:
 
 ```toml
 [tool.black]
@@ -147,101 +142,95 @@ target-version = ['py310']
 include = '\.pyi?$'
 ```
 
-
 #### How to Install Black
 
-You fit install Black using Poetry (we recommend) or pip:
+You fit install Black by using Poetry (we recommend am) or pip:
 
-##### Using Poetry
+##### If you dey use Poetry
 
-Black go automatically install when you set up development environment:
+Black go automatically install when you set up di development environment:
 ```bash
 poetry install
 ```
 
+##### If you dey use pip
 
-##### Using pip
-
-If you dey use pip, you fit install Black directly:
+If na pip you dey use, you fit install Black directly:
 ```bash
 pip install black
 ```
-
 
 #### How to Use Black
 
 ##### With Poetry
 
-1. Format all Python files for the project:
+1. Format all di Python files for di project:
     ```bash
     poetry run black .
     ```
 
-2. Format one specific file or directory:
+2. Format one specific file or folder:
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
-
 ##### With pip
 
-1. Format all Python files for the project:
+1. Format all di Python files for di project:
     ```bash
     black .
     ```
 
-2. Format one specific file or directory:
+2. Format one specific file or folder:
     ```bash
     black path/to/file_or_directory
     ```
 
-
 > [!TIP]
-> We recommend say you set your editor to automatically format code with Black when you save. Most modern editors support dis with extensions or plugins.
+> We dey recommend make you set your editor to dey automatically format code with Black anytime you save. Most modern editors get support for dis through extensions or plugins.
 
 ## How to Run Co-op Translator
 
-To run Co-op Translator using Poetry for your environment, follow these steps:
+To run Co-op Translator with Poetry for your environment, follow dis steps:
 
-1. Go the directory where you want do translation tests or create one temporary folder for testing.
+1. Go to di folder wey you wan use do translation tests or create one temporary folder for testing.
 
-2. Run this command. Change `-l ko` to the language code wey you want translate to. The `-d` flag mean debug mode.
+2. Run di command below. Replace `-l ko` with di language code wey you wan translate into. Di `-d` flag mean debug mode.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
-
 > [!NOTE]
-> Make sure say your Poetry environment dey activated (poetry shell) before you run the command.
+> Make sure say your Poetry environment don activate (poetry shell) before you run di command.
 
-## How to Contribute New Language
+## How to Add New Language
 
-We dey welcome contributions wey add support for new languages. Before you open PR, please complete these steps to make review smooth.
+We dey welcome contributions wey go add support for new languages. Before you open PR, abeg complete di steps below to make di review process smooth.
 
-1. Add the language to the font mapping
+1. Add di language to di font mapping
    - Edit `src/co_op_translator/fonts/font_language_mappings.yml`
-   - Add entry with:
+   - Add one entry wey get:
      - `code`: ISO-like language code (e.g., `vi`)
-     - `name`: Human-friendly display name
-     - `font`: Font wey dey `src/co_op_translator/fonts/` wey support the script
-     - `rtl`: `true` if na right-to-left, otherwise `false`
+     - `name`: Di name wey people go fit understand
+     - `font`: One font wey dey for `src/co_op_translator/fonts/` wey fit support di script
+     - `rtl`: `true` if na right-to-left, if no be, put `false`
 
-2. Add required font files (if needed)
-   - If new font dey needed, check license compatibility for open source distribution
-   - Add the font file to `src/co_op_translator/fonts/`
+2. Add di font files wey dem need (if e dey necessary)
+   - If dem need new font, check say di license fit allow open source distribution
+   - Add di font file to `src/co_op_translator/fonts/`
 
-3. Local verification
-   - Run translations for small sample (Markdown, images, and notebooks as needed)
-   - Check output to confirm e render well, including fonts and any RTL layout if e dey
+3. Test am for your local machine
+   - Run translations for small sample (Markdown, images, and notebooks if e dey necessary)
+   - Check say di output dey render well, including fonts and any RTL layout if e apply
 
 4. Update documentation
-   - Make sure the language dey for `getting_started/supported-languages.md`
-   - No need change `getting_started/README_languages_template.md`; e dey generated from supported list
+   - Make sure say di language dey show for `getting_started/supported-languages.md`
+   - No need to change `getting_started/README_languages_template.md`; e dey generate from di supported list
 
 5. Open PR
-   - Describe the language wey you add and any font/licensing info
-   - Attach screenshots of rendered outputs if you fit
+   - Talk about di language wey you add and any font/licensing things wey dem suppose know
+   - Add screenshots of di rendered outputs if you fit
 
 Example YAML entry:
 
@@ -253,48 +242,29 @@ new_lang(code):
 ```
 
 
-### How to Test New Language
-
-You fit test the new language by running this command:
-
-```bash
-# Make and start one virtual environment
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
-# Install di development package
-pip install -e .
-# Run di translation
-translate -l "new_lang"
-```
-
-
 ## Maintainers
 
 ### Commit Message and Merge Strategy
 
-To keep our project commit history consistent and clear, we dey follow one specific commit message format **for the final commit message** when we dey use **Squash and Merge** strategy.
+To make sure say our project commit history dey consistent and clear, we dey follow one kind commit message format **for di final commit message** when we dey use di **Squash and Merge** strategy.
 
-When PR merge, the individual commits go squash into one commit. The final commit message suppose follow the format below to keep history clean and consistent.
+When we merge pull request (PR), di individual commits go join together as one commit. Di final commit message suppose follow di format below to keep di history clean and consistent.
 
-#### Commit Message Format (for squash and merge)
+#### Commit Message Format (for Squash and Merge)
 
-We dey use this format for commit messages:
+We dey use dis format for commit messages:
 
 ```bash
 <type>: <description> (#<PR number>)
 ```
 
+- **type**: E dey show di category of di commit. We dey use di types below:
+  - `Docs`: For updates to documentation.
+  - `Build`: For changes wey concern di build system or dependencies, including updates to configuration files, CI workflows, or di Dockerfile.
+  - `Core`: For changes to di main functionality or features of di project, especially di ones wey dey involve files for `src/co_op_translator/core` directory.
 
-- **type**: This one specify the category of the commit. We get these types:
-  - `Docs`: For documentation updates.
-  - `Build`: For changes wey concern build system or dependencies, including config files, CI workflows, or Dockerfile updates.
-  - `Core`: For changes to the project's core features or functionality, especially files inside `src/co_op_translator/core` directory.
-
-- **description**: Short summary of the change.
-- **PR number**: The pull request number wey relate to the commit.
+- **description**: One short summary of di change.
+- **PR number**: Di number of di pull request wey join di commit.
 
 **Examples**:
 
@@ -302,54 +272,31 @@ We dey use this format for commit messages:
 - `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Right now, the **`Docs`**, **`Core`**, and **`Build`** prefixes dey automatically add to PR titles based on labels wey dem put for the modified source code. As long as the correct label dey, you no need manually update PR title. Just check say everything correct and the prefix don generate well.
+> For now, di **`Docs`**, **`Core`**, and **`Build`** prefixes dey automatically add to PR titles based on di labels wey dem put for di modified source code. As long as di correct label dey, you no need to manually change di PR title. Just make sure say everything dey correct and di prefix dey okay.
 
 #### Merge Strategy
 
-We dey use **Squash and Merge** as our default strategy for pull requests. This strategy make sure say commit messages follow our format, even if individual commits no do so.
+We dey use **Squash and Merge** as di default strategy for pull requests. Dis strategy dey make sure say commit messages dey follow our format, even if di individual commits no follow.
 
-**Reasons**:
+**Why we dey use am**:
 
-- Clean, linear project history.
-- Consistent commit messages.
-- Less noise from small commits (like "fix typo").
+- E dey make di project history clean and straight.
+- E dey make commit messages consistent.
+- E dey reduce noise from small small commits (e.g., "fix typo").
 
-When you dey merge, make sure the final commit message follow the commit message format wey we talk about above.
+When you wan merge, make sure say di final commit message follow di commit message format wey we describe above.
 
 **Example of Squash and Merge**
-
-If PR get these commits:
+If one PR get di commits below:
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-Dem go squash am into:
+Dem go join as one:
 `Docs: Improve documentation clarity and formatting (#65)`
-
-### Release Process
-
-Dis section dey explain the easiest way for maintainers to publish new release of Co-op Translator.
-
-#### 1. Bump Version for `pyproject.toml`
-
-1. Decide the next version number (we dey follow semantic versioning: `MAJOR.MINOR.PATCH`).
-2. Edit `pyproject.toml` and update `version` field under `[tool.poetry]`.
-3. Open one dedicated pull request wey only change the version (and any auto-updated lock/metadata files if e dey).
-4. After review, use **Squash and Merge** and make sure the final commit message follow the format wey we talk about.
-
-#### 2. Create GitHub Release
-
-1. Go GitHub repo page and open **Releases** → **Draft a new release**.
-2. Create new tag (for example, `v0.13.0`) from `main` branch.
-3. Set release title to the same version (for example, `v0.13.0`).
-4. Click **Generate release notes** to auto-fill changelog.
-5. You fit edit the text if you want (for example, to highlight new supported languages or important changes).
-6. Publish the release.
 
 ---
 
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**Disclaimer**:
-Dis document don translate wit AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). Even though we dey try make am correct, abeg sabi say automated translation fit get some errors or wahala. Di original document wey dey im own language na di correct one. If na serious matter, e better make person wey sabi do professional human translation do am. We no go responsible for any misunderstanding or wrong meaning wey fit come from dis translation.
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->
+**Disclaimer**:  
+Dis dokyument don use AI transleshion service [Co-op Translator](https://github.com/Azure/co-op-translator) do di transleshion. Even as we dey try make am accurate, abeg make you sabi say automatik transleshion fit get mistake or no dey correct well. Di original dokyument for im native language na di main source wey you go fit trust. For important mata, e good make you use professional human transleshion. We no go fit take blame for any misunderstanding or wrong interpretation wey fit happen because you use dis transleshion.

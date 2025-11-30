@@ -1,15 +1,15 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "d11fe2b5308a8752a994869658751533",
-  "translation_date": "2025-11-30T13:08:38+00:00",
+  "original_hash": "40660d83d2792201cad4aec9fdf25a29",
+  "translation_date": "2025-11-06T17:31:00+00:00",
   "source_file": "getting_started/supported-languages.md",
   "language_code": "pcm"
 }
 -->
-# Supported languages
+# Languages Wey Dem Support
 
-Di table wey dey below list all di languages wey **Co-op Translator** dey support now. E get language codes, language names, plus any wahala wey dem sabi get for each language. If you wan add support for new language, abeg add di correct language code, name, plus di right font for di `font_language_mappings.yml` file wey dey for `src/co_op_translator/fonts/` and after you don test am, submit pull request.
+Di table wey dey below show di languages wey **Co-op Translator** dey support now. E get di language codes, di names of di languages, and any wahala wey dem don sabi wey dey follow each language. If you wan add new language, abeg add di correct language code, name, and di correct font for di `font_language_mappings.yml` file wey dey for `src/co_op_translator/fonts/` and submit pull request after you don test am.
 
 | Language Code | Language Name        | Font                              | RTL Support | Known Issues |
 |---------------|----------------------|-----------------------------------|-------------|--------------|
@@ -64,11 +64,8 @@ Di table wey dey below list all di languages wey **Co-op Translator** dey suppor
 | ta            | Tamil                | NotoSansTamil-Medium.ttf          | No          | No           |
 | et            | Estonian             | NotoSans-Medium.ttf               | No          | No           |
 | pcm           | Nigerian Pidgin      | NotoSans-Medium.ttf               | No          | No           |
-| te            | Telugu               | NotoSans-Medium.ttf               | No          | No           |
-| ml            | Malayalam            | NotoSans-Medium.ttf               | No          | No           |
-| kn            | Kannada              | NotoSans-Medium.ttf               | No          | No           |
 
-## Adding a new language
+## How to Add New Language
 
 You wan add new language? Abeg follow di contribution guide:
 
@@ -76,7 +73,5 @@ You wan add new language? Abeg follow di contribution guide:
 
 ---
 
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**Disclaimer**:
-Dis document na AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator) wey translate am. Even though we dey try make am correct, abeg sabi say automated translation fit get some mistakes or no too correct. The original document wey e dey for im own language na im be the correct one. If na serious matter, e better make person wey sabi do professional human translation help. We no go responsible for any wahala or wrong understanding wey fit happen because of this translation.
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->
+**Disclaimer**:  
+Dis dokyument don use AI transle-shun service [Co-op Translator](https://github.com/Azure/co-op-translator) do di transle-shun. Even as we dey try make am correct, abeg make you sabi say machine transle-shun fit get mistake or no dey accurate well. Di original dokyument wey dey for im native language na di one wey you go take as di correct source. For important mata, e good make you use professional human transle-shun. We no go fit take blame for any misunderstanding or wrong interpretation wey fit happen because you use dis transle-shun.

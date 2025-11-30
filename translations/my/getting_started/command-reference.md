@@ -1,98 +1,94 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "822238e4451d04bb152cebb1be6f13c2",
-  "translation_date": "2025-11-30T12:43:41+00:00",
+  "original_hash": "a6cddf5e9648ef0bba0de7eb07e74cf1",
+  "translation_date": "2025-10-15T04:12:36+00:00",
   "source_file": "getting_started/command-reference.md",
   "language_code": "my"
 }
 -->
-# Command reference
+# အမိန့်များအကြောင်းအရာ
 
-**Co-op Translator** CLI သည် ဘာသာပြန်လုပ်ငန်းစဉ်ကို စိတ်ကြိုက်ပြင်ဆင်နိုင်ရန် အမျိုးမျိုးသောရွေးချယ်စရာများကို ပေးဆောင်သည်။
+**Co-op Translator** CLI မှာ ဘာသာပြန်လုပ်ငန်းစဉ်ကို ကိုယ်တိုင်ပြင်ဆင်နိုင်ဖို့ ရွေးချယ်စရာအမျိုးမျိုးရှိပါတယ်။
 
-Command                                       | ဖော်ပြချက်
+အမိန့်                                       | ရှင်းလင်းချက်
 ----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-translate -l "language_codes"                 | သင့်ပရောဂျက်ကို သတ်မှတ်ထားသောဘာသာစကားများသို့ ဘာသာပြန်သည်။ ဥပမာ - translate -l "es fr de" သည် စပိန်၊ ပြင်သစ်နှင့် ဂျာမန်ဘာသာသို့ ဘာသာပြန်သည်။ translate -l "all" ကို အသုံးပြု၍ ပံ့ပိုးထားသော ဘာသာစကားအားလုံးသို့ ဘာသာပြန်နိုင်သည်။
-translate -l "language_codes" -u              | ရှိပြီးသားဘာသာပြန်ချက်များကို ဖျက်ပြီး ပြန်လည်ဖန်တီးခြင်းဖြင့် ဘာသာပြန်ချက်များကို အပ်ဒိတ်လုပ်သည်။ သတိပြုရန် - သတ်မှတ်ထားသောဘာသာစကားများအတွက် လက်ရှိဘာသာပြန်ချက်အားလုံးကို ဖျက်ပစ်မည်။
-translate -l "language_codes" -img            | ပုံဖိုင်များကိုသာ ဘာသာပြန်သည်။
-translate -l "language_codes" -md             | Markdown ဖိုင်များကိုသာ ဘာသာပြန်သည်။
-translate -l "language_codes" -nb             | Jupyter notebook ဖိုင်များ (.ipynb) ကိုသာ ဘာသာပြန်သည်။
-translate -l "language_codes" --fix           | ယခင်အကဲဖြတ်မှုရလဒ်အရ ယုံကြည်မှုနည်းသော ဘာသာပြန်ချက်များကို ပြန်လည်ဘာသာပြန်သည်။
-translate -l "language_codes" -d              | အသေးစိတ်မှတ်တမ်းတင်မှုအတွက် debug mode ကို ဖွင့်သည်။
-translate -l "language_codes" --save-logs, -s | DEBUG အဆင့်မှတ်တမ်းများကို <root_dir>/logs/ အောက်တွင် ဖိုင်များအဖြစ် သိမ်းဆည်းသည် (console သည် -d ဖြင့် ထိန်းချုပ်ထားသည်)
-translate -l "language_codes" -r "root_dir"   | ပရောဂျက်၏ root directory ကို သတ်မှတ်သည်။
-translate -l "language_codes" -f              | ပုံဘာသာပြန်မှုအတွက် အမြန် mode ကို အသုံးပြုသည် (အရည်အသွေးနှင့် alignment အနည်းငယ်ကျဆင်းသော်လည်း ၃ ဆအထိ မြန်ဆန်စေသည်)။
-translate -l "language_codes" -y              | အားလုံးသော prompt များကို အလိုအလျောက် အတည်ပြုသည် (CI/CD pipeline များအတွက် အသုံးဝင်သည်)
-translate -l "language_codes" --add-disclaimer/--no-disclaimer | ဘာသာပြန်ထားသော markdown နှင့် notebook များတွင် စက်ဘာသာပြန်ချက် သတိပေးစာပိုင်း ထည့်သွင်းခြင်းကို ဖွင့်/ပိတ်သည် (ပုံမှန် - ဖွင့်ထားသည်)။
-translate -l "language_codes" --help          | CLI အတွင်းရှိ ရနိုင်သော command များအကြောင်း အကူအညီ ဖော်ပြချက်
-evaluate -l "language_code"                  | သတ်မှတ်ထားသောဘာသာစကားအတွက် ဘာသာပြန်အရည်အသွေးကို အကဲဖြတ်ပြီး ယုံကြည်မှုအဆင့်များကို ပေးသည်။
-evaluate -l "language_code" -c 0.8           | စိတ်ကြိုက် ယုံကြည်မှုနည်းနည်းကို သတ်မှတ်၍ ဘာသာပြန်ချက်များကို အကဲဖြတ်သည်။
-evaluate -l "language_code" -f               | အမြန် အကဲဖြတ်မှု mode (rule-based သာဖြစ်ပြီး LLM မပါဝင်)
-evaluate -l "language_code" -D               | နက်ရှိုင်းသော အကဲဖြတ်မှု mode (LLM-based သာဖြစ်ပြီး ပိုမိုအသေးစိတ် သော်လည်း နှေးကွေး)
-evaluate -l "language_code" --save-logs, -s  | DEBUG အဆင့်မှတ်တမ်းများကို <root_dir>/logs/ အောက်တွင် ဖိုင်များအဖြစ် သိမ်းဆည်းသည်။
-migrate-links -l "language_codes"             | ဘာသာပြန်ထားသော Markdown ဖိုင်များကို ပြန်လည်ဆန်းစစ်ပြီး notebook (.ipynb) များသို့ လင့်ခ်များကို အပ်ဒိတ်လုပ်သည်။ ဘာသာပြန်ထားသော notebook များ ရှိပါက အဲဒီကို ဦးစားပေးသုံးစွဲပြီး မရှိပါက မူလ notebook များသို့ ပြန်လည်ဆက်သွယ်နိုင်သည်။
-migrate-links -l "language_codes" -r          | ပရောဂျက် root directory ကို သတ်မှတ်သည် (ပုံမှန် - လက်ရှိ directory)။
-migrate-links -l "language_codes" --dry-run   | ဘယ်ဖိုင်များပြောင်းလဲမည်ကိုသာ ပြသပြီး ဖိုင်များကို မရေးသားပါ။
-migrate-links -l "language_codes" --no-fallback-to-original | ဘာသာပြန်ထားသော notebook မရှိပါက မူလ notebook များသို့ လင့်ခ်ပြန်ရေးခြင်း မပြုလုပ်ပါ (ဘာသာပြန်ထားသော notebook ရှိသောအခါတွင်သာ အပ်ဒိတ်လုပ်သည်)။
-migrate-links -l "language_codes" -d          | အသေးစိတ်မှတ်တမ်းတင်မှုအတွက် debug mode ကို ဖွင့်သည်။
-migrate-links -l "language_codes" --save-logs, -s | DEBUG အဆင့်မှတ်တမ်းများကို <root_dir>/logs/ အောက်တွင် ဖိုင်များအဖြစ် သိမ်းဆည်းသည်။
-migrate-links -l "all" -y                      | ဘာသာစကားအားလုံးကို လုပ်ဆောင်ပြီး သတိပေး prompt ကို အလိုအလျောက် အတည်ပြုသည်။
+translate -l "language_codes"                 | သတ်မှတ်ထားတဲ့ ဘာသာစကားတွေကို သင့် project ကို ဘာသာပြန်ပေးပါမယ်။ ဥပမာ - translate -l "es fr de" ဆိုရင် စပိန်၊ ပြင်သစ်၊ ဂျာမန် ဘာသာပြန်ပေးပါမယ်။ translate -l "all" ဆိုရင် ပံ့ပိုးထားတဲ့ ဘာသာစကားအားလုံးကို ဘာသာပြန်ပေးပါမယ်။
+translate -l "language_codes" -u              | ဘာသာပြန်ချက်တွေကို update လုပ်ပြီး ရှိပြီးသားတွေကို ဖျက်ပြီး ပြန်လည်ဖန်တီးပါမယ်။ သတိပေးချက် - သတ်မှတ်ထားတဲ့ ဘာသာစကားတွေအတွက် ရှိပြီးသား ဘာသာပြန်ချက်အားလုံးကို ဖျက်ပါမယ်။
+translate -l "language_codes" -img            | ဓာတ်ပုံဖိုင်တွေကိုသာ ဘာသာပြန်ပါမယ်။
+translate -l "language_codes" -md             | Markdown ဖိုင်တွေကိုသာ ဘာသာပြန်ပါမယ်။
+translate -l "language_codes" -nb             | Jupyter notebook ဖိုင် (.ipynb) တွေကိုသာ ဘာသာပြန်ပါမယ်။
+translate -l "language_codes" --fix           | အရည်အသွေးယုံကြည်မှုနိမ့်တဲ့ ဖိုင်တွေကို ပြန်လည်ဘာသာပြန်ပါမယ် (အရင်အကဲဖြတ်ရလဒ်အပေါ်မူတည်ပြီး)။
+translate -l "language_codes" -d              | Debug mode ဖွင့်ပြီး အသေးစိတ် log တွေ ရယူနိုင်ပါတယ်။
+translate -l "language_codes" --save-logs, -s | DEBUG-level log တွေကို <root_dir>/logs/ ထဲမှာ ဖိုင်အနေနဲ့ သိမ်းပါမယ် (console မှာတော့ -d နဲ့ ထိန်းချုပ်နိုင်ပါတယ်)
+translate -l "language_codes" -r "root_dir"   | Project ရဲ့ root directory ကို သတ်မှတ်နိုင်ပါတယ်။
+translate -l "language_codes" -f              | ဓာတ်ပုံဘာသာပြန်မှုအတွက် fast mode ကို သုံးပါမယ် (quality နဲ့ alignment နည်းနည်းလျော့နည်းပေမယ့် ၃ ဆအထိ မြန်မြန် plot လုပ်နိုင်ပါတယ်)။
+translate -l "language_codes" -y              | Prompt အားလုံးကို အလိုအလျောက် အတည်ပြုပါမယ် (CI/CD pipeline တွေအတွက် အသုံးဝင်ပါတယ်)
+translate -l "language_codes" --help          | CLI ထဲမှာ အသုံးပြုနိုင်တဲ့ command တွေကို ပြသပါမယ်
+evaluate -l "language_code"                  | သတ်မှတ်ထားတဲ့ ဘာသာစကားအတွက် ဘာသာပြန်အရည်အသွေးကို အကဲဖြတ်ပြီး ယုံကြည်မှု score တွေ ပေးပါမယ်
+evaluate -l "language_code" -c 0.8           | ယုံကြည်မှု threshold ကို ကိုယ်တိုင်သတ်မှတ်ပြီး ဘာသာပြန်ချက်တွေကို အကဲဖြတ်ပါမယ်
+evaluate -l "language_code" -f               | Fast evaluation mode (rule-based သာ အသုံးပြုသည်၊ LLM မပါ)
+evaluate -l "language_code" -D               | Deep evaluation mode (LLM-based သာ အသုံးပြုသည်၊ ပိုမိုအသေးစိတ်၊ ပိုနှေး)
+evaluate -l "language_code" --save-logs, -s  | DEBUG-level log တွေကို <root_dir>/logs/ ထဲမှာ သိမ်းပါမယ်
+migrate-links -l "language_codes"             | ဘာသာပြန်ပြီးသား Markdown ဖိုင်တွေကို ပြန်လည်လုပ်ပြီး notebook (.ipynb) link တွေ update လုပ်ပါမယ်။ ဘာသာပြန်ပြီးသား notebook ရှိရင် အဲဒါကို သုံးပြီး မရှိရင် မူရင်း notebook ကို fallback လုပ်နိုင်ပါတယ်။
+migrate-links -l "language_codes" -r          | Project ရဲ့ root directory ကို သတ်မှတ်နိုင်ပါတယ် (default: လက်ရှိ directory)။
+migrate-links -l "language_codes" --dry-run   | ဘယ်ဖိုင်တွေ ပြောင်းလဲမလဲ ပြသပေးမယ်၊ ပြောင်းလဲမှုမရှိပါ။
+migrate-links -l "language_codes" --no-fallback-to-original | ဘာသာပြန်ပြီးသား notebook မရှိရင် မူရင်း notebook link ကို မပြန်ရေးပါနဲ့ (ဘာသာပြန်ပြီးသားရှိရင်သာ update လုပ်ပါမယ်)။
+migrate-links -l "language_codes" -d          | Debug mode ဖွင့်ပြီး အသေးစိတ် log တွေ ရယူနိုင်ပါတယ်။
+migrate-links -l "language_codes" --save-logs, -s | DEBUG-level log တွေကို <root_dir>/logs/ ထဲမှာ သိမ်းပါမယ်
+migrate-links -l "all" -y                      | ဘာသာစကားအားလုံးကို process လုပ်ပြီး warning prompt ကို အလိုအလျောက် အတည်ပြုပါမယ်။
 
-## အသုံးပြုမှု ဥပမာများ
+## အသုံးပြုနည်း ဥပမာများ
 
-  1. ပုံမှန်အပြုအမူ (ရှိပြီးသားဘာသာပြန်ချက်များကို ဖျက်မထားဘဲ အသစ်ထည့်သည်) - translate -l "ko"    translate -l "es fr de" -r "./my_project"
+  1. Default အပြုအမူ (အသစ်ဘာသာပြန်ချက်တွေထည့်ပြီး ရှိပြီးသားတွေ မဖျက်):   translate -l "ko"    translate -l "es fr de" -r "./my_project"
 
-  2. ကိုရီးယားဘာသာ ပုံများသာ အသစ်ထည့်သည် (ရှိပြီးသားဘာသာပြန်ချက် မဖျက်ပါ) - translate -l "ko" -img
+  2. ကိုရီးယား ဓာတ်ပုံဘာသာပြန်ချက်အသစ်တွေထည့် (ရှိပြီးသားဘာသာပြန်ချက်တွေ မဖျက်):    translate -l "ko" -img
 
-  3. ကိုရီးယားဘာသာ ဘာသာပြန်ချက်အားလုံးကို အပ်ဒိတ်လုပ်သည် (သတိ - ရှိပြီးသား ဘာသာပြန်ချက်အားလုံးကို ဖျက်ပြီး ပြန်လည်ဘာသာပြန်မည်) - translate -l "ko" -u
+  3. ကိုရီးယား ဘာသာပြန်ချက်အားလုံးကို update (သတိပေးချက် - ရှိပြီးသားကိုရီးယားဘာသာပြန်ချက်အားလုံးကို ဖျက်ပြီး ပြန်ဘာသာပြန်):    translate -l "ko" -u
 
-  4. ကိုရီးယားဘာသာ ပုံများကိုသာ အပ်ဒိတ်လုပ်သည် (သတိ - ရှိပြီးသား ပုံများအားလုံးကို ဖျက်ပြီး ပြန်လည်ဘာသာပြန်မည်) - translate -l "ko" -img -u
+  4. ကိုရီးယား ဓာတ်ပုံတွေကိုသာ update (သတိပေးချက် - ရှိပြီးသားကိုရီးယားဓာတ်ပုံအားလုံးကို ဖျက်ပြီး ပြန်ဘာသာပြန်):    translate -l "ko" -img -u
 
-  5. ကိုရီးယားဘာသာ Markdown ဘာသာပြန်ချက်အသစ်များကိုသာ ထည့်သွင်းသည်၊ အခြားဘာသာပြန်ချက်များကို မထိခိုက်စေပါ - translate -l "ko" -md
+  5. ကိုရီးယား markdown ဘာသာပြန်ချက်အသစ်တွေထည့် (အခြားဘာသာပြန်ချက်တွေ မထိခိုက်):    translate -l "ko" -md
 
-  6. ယခင်အကဲဖြတ်မှုအရ ယုံကြည်မှုနည်းသော ဘာသာပြန်ချက်များကို ပြင်ဆင်သည် - translate -l "ko" --fix
+  6. အရည်အသွေးယုံကြည်မှုနိမ့်တဲ့ ဘာသာပြန်ချက်တွေကို ပြင်ဆင်: translate -l "ko" --fix
 
-  7. ယုံကြည်မှုနည်းသော ဘာသာပြန်ချက်များကို ဖိုင်အမျိုးအစားအလိုက်သာ ပြင်ဆင်သည် (Markdown) - translate -l "ko" --fix -md
+  7. Markdown ဖိုင်တွေအတွက်သာ အရည်အသွေးနိမ့်တဲ့ ဘာသာပြန်ချက်တွေကို ပြင်ဆင်: translate -l "ko" --fix -md
 
-  8. ယုံကြည်မှုနည်းသော ဘာသာပြန်ချက်များကို ဖိုင်အမျိုးအစားအလိုက်သာ ပြင်ဆင်သည် (ပုံ) - translate -l "ko" --fix -img
+  8. ဓာတ်ပုံဖိုင်တွေအတွက်သာ အရည်အသွေးနိမ့်တဲ့ ဘာသာပြန်ချက်တွေကို ပြင်ဆင်: translate -l "ko" --fix -img
 
-  9. ပုံဘာသာပြန်မှုအတွက် အမြန် mode ကို အသုံးပြုသည် - translate -l "ko" -img -f
+  9. ဓာတ်ပုံဘာသာပြန်မှုအတွက် fast mode သုံး:    translate -l "ko" -img -f
 
-  10. စိတ်ကြိုက် ယုံကြည်မှုနည်းနည်းဖြင့် ယုံကြည်မှုနည်းသော ဘာသာပြန်ချက်များကို ပြင်ဆင်သည် - translate -l "ko" --fix -c 0.8
+  10. ကိုယ်တိုင် threshold သတ်မှတ်ပြီး အရည်အသွေးနိမ့်တဲ့ ဘာသာပြန်ချက်တွေကို ပြင်ဆင်: translate -l "ko" --fix -c 0.8
 
-  11. Debug mode ဥပမာ - translate -l "ko" -d: debug မှတ်တမ်းတင်မှုကို ဖွင့်သည်။
-  12. မှတ်တမ်းများကို ဖိုင်များအဖြစ် သိမ်းဆည်းသည် - translate -l "ko" -s
-  13. Console DEBUG နှင့် ဖိုင် DEBUG နှစ်ခုလုံး - translate -l "ko" -d -s
-  14. စက်ဘာသာပြန် သတိပေးစာပိုင်း မထည့်သွင်းဘဲ ဘာသာပြန်သည် - translate -l "ko" --no-disclaimer
+  11. Debug mode ဥပမာ: - translate -l "ko" -d: Debug logging ဖွင့်ပါ။
+  12. Log တွေကို ဖိုင်ထဲသိမ်း: translate -l "ko" -s
+  13. Console DEBUG နဲ့ file DEBUG: translate -l "ko" -d -s
 
-  15. ကိုရီးယားဘာသာ ဘာသာပြန်ထားသော notebook များအတွက် လင့်ခ်များကို ပြောင်းလဲသည် (ဘာသာပြန်ထားသော notebook များရှိပါက အပ်ဒိတ်လုပ်သည်) - migrate-links -l "ko"
+  14. ကိုရီးယား ဘာသာပြန်ချက်တွေအတွက် notebook link တွေ migrate လုပ် (ဘာသာပြန်ပြီးသား notebook ရှိရင် link ကို update):    migrate-links -l "ko"
 
-  15. လင့်ခ်များကို dry-run ဖြင့် ပြသသည် (ဖိုင် မရေးသားပါ) - migrate-links -l "ko" --dry-run
+  15. Dry-run နဲ့ link migrate လုပ် (ဖိုင်မပြောင်း):    migrate-links -l "ko" --dry-run
 
-  16. ဘာသာပြန်ထားသော notebook မရှိပါက မူလ notebook များသို့ ပြန်မသွားဘဲ လင့်ခ်များကိုသာ အပ်ဒိတ်လုပ်သည် - migrate-links -l "ko" --no-fallback-to-original
+  16. ဘာသာပြန်ပြီးသား notebook ရှိမှသာ link update လုပ် (မူရင်းကို fallback မလုပ်):    migrate-links -l "ko" --no-fallback-to-original
 
-  17. ဘာသာစကားအားလုံးကို prompt ဖြင့် လုပ်ဆောင်သည် - migrate-links -l "all"
+  17. ဘာသာစကားအားလုံးအတွက် confirmation prompt နဲ့ process လုပ်:    migrate-links -l "all"
 
-  18. ဘာသာစကားအားလုံးကို လုပ်ဆောင်ပြီး အလိုအလျောက် အတည်ပြုသည် - migrate-links -l "all" -y
-  19. migrate-links အတွက် မှတ်တမ်းများကို ဖိုင်များအဖြစ် သိမ်းဆည်းသည် - migrate-links -l "ko ja" -s
+  18. ဘာသာစကားအားလုံးအတွက် auto-confirm နဲ့ process လုပ်:    migrate-links -l "all" -y
+  19. migrate-links အတွက် log တွေကို ဖိုင်ထဲသိမ်း:    migrate-links -l "ko ja" -s
 
 ### အကဲဖြတ်မှု ဥပမာများ
 
 > [!WARNING]  
-> **Beta Feature**: အကဲဖြတ်မှု လုပ်ဆောင်ချက်သည် လက်ရှိ beta အဆင့်တွင် ရှိသည်။ ဤလုပ်ဆောင်ချက်ကို ဘာသာပြန်ထားသော စာရွက်စာတမ်းများကို အကဲဖြတ်ရန် ထုတ်ပြန်ထားပြီး၊ အကဲဖြတ်နည်းလမ်းများနှင့် အသေးစိတ် အကောင်အထည်ဖော်မှုများကို ဆက်လက်တိုးတက်အောင် လုပ်ဆောင်နေဆဲဖြစ်ပြီး ပြောင်းလဲနိုင်ပါသည်။
+> **Beta Feature**: အကဲဖြတ်မှုလုပ်ဆောင်ချက်ဟာ လက်ရှိ beta ဖြစ်ပါတယ်။ ဘာသာပြန်ထားတဲ့စာရွက်စာတမ်းတွေကို အကဲဖြတ်ဖို့အတွက် release လုပ်ထားတာဖြစ်ပြီး၊ အကဲဖြတ်နည်းနဲ့ အသေးစိတ်လုပ်ဆောင်မှုတွေကတော့ တိုးတက်နေဆဲဖြစ်လို့ ပြောင်းလဲနိုင်ပါတယ်။
 
-  1. ကိုရီးယားဘာသာ ဘာသာပြန်ချက်များကို အကဲဖြတ်သည် - evaluate -l "ko"
+  1. ကိုရီးယား ဘာသာပြန်ချက်တွေကို အကဲဖြတ်: evaluate -l "ko"
 
-  2. စိတ်ကြိုက် ယုံကြည်မှုနည်းနည်းဖြင့် အကဲဖြတ်သည် - evaluate -l "ko" -c 0.8
+  2. ကိုယ်တိုင် ယုံကြည်မှု threshold သတ်မှတ်ပြီး အကဲဖြတ်: evaluate -l "ko" -c 0.8
 
-  3. အမြန် အကဲဖြတ်မှု (rule-based သာ) - evaluate -l "ko" -f
+  3. Fast evaluation (rule-based သာ): evaluate -l "ko" -f
 
-  4. နက်ရှိုင်းသော အကဲဖြတ်မှု (LLM-based သာ) - evaluate -l "ko" -D
+  4. Deep evaluation (LLM-based သာ): evaluate -l "ko" -D
 
 ---
 
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**အကြောင်းကြားချက်**  
-ဤစာတမ်းကို AI ဘာသာပြန်ဝန်ဆောင်မှု [Co-op Translator](https://github.com/Azure/co-op-translator) ဖြင့် ဘာသာပြန်ထားပါသည်။ ကျွန်ုပ်တို့သည် တိကျမှန်ကန်မှုအတွက် ကြိုးစားသော်လည်း အလိုအလျောက် ဘာသာပြန်ချက်များတွင် အမှားများ သို့မဟုတ် မှားယွင်းချက်များ ပါဝင်နိုင်ကြောင်း သတိပြုပါရန် မေတ္တာရပ်ခံအပ်ပါသည်။ မူရင်းစာတမ်းကို မိမိဘာသာစကားဖြင့်သာ တရားဝင်အချက်အလက်အဖြစ် ယူဆသင့်ပါသည်။ အရေးကြီးသော အချက်အလက်များအတွက် လူ့ပညာရှင်များ၏ ဘာသာပြန်ချက်ကို အကြံပြုပါသည်။ ဤဘာသာပြန်ချက်ကို အသုံးပြုရာမှ ဖြစ်ပေါ်လာနိုင်သည့် နားလည်မှုမှားယွင်းမှုများအတွက် ကျွန်ုပ်တို့သည် တာဝန်မယူပါ။
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->
+**သတိပေးချက်**:
+ဤစာရွက်စာတမ်းကို AI ဘာသာပြန်ဝန်ဆောင်မှု [Co-op Translator](https://github.com/Azure/co-op-translator) ကို အသုံးပြု၍ ဘာသာပြန်ထားပါသည်။ ကျွန်ုပ်တို့သည် တိကျမှုအတွက် ကြိုးစားနေသော်လည်း၊ အလိုအလျောက်ဘာသာပြန်မှုများတွင် အမှားများ သို့မဟုတ် မတိကျမှုများ ပါဝင်နိုင်သည်ကို သတိပြုပါ။ မူရင်းစာရွက်စာတမ်းသည် မူလဘာသာစကားဖြင့် အာဏာရှိသောရင်းမြစ်အဖြစ် ယူဆသင့်ပါသည်။ အရေးကြီးသောအချက်အလက်များအတွက် လူ့ဘာသာပြန်ပညာရှင်များ၏ ဝန်ဆောင်မှုကို အကြံပြုပါသည်။ ဤဘာသာပြန်မှုကို အသုံးပြုခြင်းကြောင့် ဖြစ်ပေါ်လာနိုင်သော နားလည်မှုမှားခြင်း သို့မဟုတ် အနားလည်မှုမှားခြင်းများအတွက် ကျွန်ုပ်တို့သည် တာဝန်ယူမည်မဟုတ်ပါ။

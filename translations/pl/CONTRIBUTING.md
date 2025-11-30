@@ -1,42 +1,39 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "758ca1c5ae0d32c52d2dd59132dcfbf0",
-  "translation_date": "2025-11-30T11:01:53+00:00",
+  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
+  "translation_date": "2025-10-15T03:06:38+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "pl"
 }
 -->
 # Współtworzenie Co-op Translator
 
-Ten projekt zachęca do zgłaszania wkładów i sugestii. Większość wkładów wymaga zgody na
-Umowę Licencyjną Współtwórcy (CLA), która potwierdza, że masz prawo i faktycznie udzielasz nam
-praw do korzystania z Twojego wkładu. Szczegóły znajdziesz na https://cla.opensource.microsoft.com.
+Ten projekt zachęca do współtworzenia i zgłaszania sugestii. Większość kontrybucji wymaga zaakceptowania Umowy Licencyjnej Współtwórcy (CLA), w której oświadczasz, że masz prawo i faktycznie udzielasz nam praw do korzystania z Twojego wkładu. Szczegóły znajdziesz na https://cla.opensource.microsoft.com.
 
-Po przesłaniu pull requesta, bot CLA automatycznie sprawdzi, czy musisz dostarczyć
-CLA i odpowiednio oznaczy PR (np. status, komentarz). Wystarczy, że wykonasz to raz dla wszystkich repozytoriów korzystających z naszej CLA.
+Gdy zgłaszasz pull request, bot CLA automatycznie sprawdzi, czy musisz zaakceptować CLA i odpowiednio oznaczy PR (np. status, komentarz). Po prostu postępuj zgodnie z instrukcjami bota. Wystarczy to zrobić raz dla wszystkich repozytoriów korzystających z naszego CLA.
 
 ## Konfiguracja środowiska deweloperskiego
 
-Aby skonfigurować środowisko deweloperskie dla tego projektu, zalecamy użycie Poetry do zarządzania zależnościami. Używamy `pyproject.toml` do zarządzania zależnościami projektu, więc do instalacji zależności powinieneś użyć Poetry.
+Aby skonfigurować środowisko deweloperskie dla tego projektu, zalecamy użycie Poetry do zarządzania zależnościami. Używamy `pyproject.toml` do zarządzania zależnościami projektu, dlatego do ich instalacji powinieneś użyć Poetry.
 
-### Utworzenie wirtualnego środowiska
+### Tworzenie środowiska wirtualnego
 
-#### Za pomocą pip
+#### Z użyciem pip
 
 ```bash
 python -m venv .venv
 ```
 
-#### Za pomocą Poetry
+#### Z użyciem Poetry
 
 ```bash
 poetry init
 ```
 
-### Aktywacja wirtualnego środowiska
+### Aktywacja środowiska wirtualnego
 
-#### Dla pip i Poetry
+#### Zarówno dla pip, jak i Poetry
 
 - Windows:
 
@@ -50,30 +47,30 @@ poetry init
     source .venv/bin/activate
     ```
 
-#### Za pomocą Poetry
+#### Z użyciem Poetry
 
 ```bash
 poetry shell
 ```
 
-### Instalacja pakietu i wymaganych pakietów
+### Instalacja pakietu i wymaganych zależności
 
-#### Za pomocą Poetry (z pyproject.toml)
+#### Z użyciem Poetry (z pliku pyproject.toml)
 
 ```bash
 poetry install
 ```
 
-### Testowanie ręczne
+### Testowanie manualne
 
-Przed przesłaniem PR ważne jest przetestowanie funkcji tłumaczenia na rzeczywistej dokumentacji:
+Przed zgłoszeniem PR ważne jest przetestowanie funkcjonalności tłumaczenia na prawdziwej dokumentacji:
 
 1. Utwórz katalog testowy w katalogu głównym:
     ```bash
     mkdir test_docs
     ```
 
-2. Skopiuj do katalogu testowego wybrane pliki markdown i obrazy, które chcesz przetłumaczyć. Na przykład:
+2. Skopiuj wybraną dokumentację markdown oraz obrazy, które chcesz przetłumaczyć, do katalogu testowego. Przykład:
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -89,18 +86,18 @@ Przed przesłaniem PR ważne jest przetestowanie funkcji tłumaczenia na rzeczyw
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. Sprawdź przetłumaczone pliki w `test_docs/translations` i `test_docs/translated_images`, aby zweryfikować:
+5. Sprawdź przetłumaczone pliki w `test_docs/translations` oraz `test_docs/translated_images`, aby zweryfikować:
    - Jakość tłumaczenia
    - Poprawność komentarzy z metadanymi
    - Zachowanie oryginalnej struktury markdown
-   - Poprawne działanie linków i obrazów
+   - Poprawność działania linków i obrazów
 
-To ręczne testowanie pomaga upewnić się, że Twoje zmiany działają dobrze w rzeczywistych scenariuszach.
+To testowanie manualne pomaga upewnić się, że Twoje zmiany działają poprawnie w rzeczywistych scenariuszach.
 
 ### Zmienne środowiskowe
 
 1. Utwórz plik `.env` w katalogu głównym, kopiując dostarczony plik `.env.template`.
-1. Wypełnij zmienne środowiskowe zgodnie z instrukcjami.
+1. Uzupełnij zmienne środowiskowe zgodnie z instrukcjami.
 
 > [!TIP]
 >
@@ -110,7 +107,7 @@ To ręczne testowanie pomaga upewnić się, że Twoje zmiany działają dobrze w
 >
 > #### GitHub Codespaces
 >
-> Możesz uruchomić te przykłady praktycznie, korzystając z GitHub Codespaces, bez konieczności dodatkowej konfiguracji.
+> Możesz uruchomić te przykłady wirtualnie za pomocą GitHub Codespaces bez dodatkowej konfiguracji.
 >
 > Przycisk otworzy instancję VS Code w przeglądarce:
 >
@@ -118,13 +115,13 @@ To ręczne testowanie pomaga upewnić się, że Twoje zmiany działają dobrze w
 >
 >     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
-> #### Uruchamianie lokalne za pomocą VS Code Dev Containers
+> #### Uruchamianie lokalnie z użyciem VS Code Dev Containers
 >
-> ⚠️ Ta opcja zadziała tylko, jeśli Docker Desktop ma przydzielone co najmniej 16 GB RAM. Jeśli masz mniej niż 16 GB RAM, możesz spróbować opcji [GitHub Codespaces](../..) lub [ustawić środowisko lokalnie](../..).
+> ⚠️ Ta opcja działa tylko, jeśli Docker Desktop ma przydzielone co najmniej 16 GB RAM. Jeśli masz mniej niż 16 GB RAM, możesz skorzystać z [opcji GitHub Codespaces](../..) lub [skonfigurować lokalnie](../..).
 >
-> Powiązaną opcją są VS Code Dev Containers, które otworzą projekt w lokalnym VS Code z użyciem [rozszerzenia Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+> Powiązaną opcją są VS Code Dev Containers, które otwierają projekt w lokalnym VS Code z użyciem [rozszerzenia Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 >
-> 1. Uruchom Docker Desktop (zainstaluj, jeśli jeszcze nie masz)
+> 1. Uruchom Docker Desktop (zainstaluj, jeśli nie masz)
 > 2. Otwórz projekt:
 >
 >    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
@@ -132,11 +129,11 @@ To ręczne testowanie pomaga upewnić się, że Twoje zmiany działają dobrze w
 
 ### Styl kodu
 
-Używamy [Black](https://github.com/psf/black) jako formatera kodu Python, aby utrzymać spójny styl kodu w całym projekcie. Black to bezkompromisowy formater, który automatycznie formatuje kod Python zgodnie ze stylem Black.
+Używamy [Black](https://github.com/psf/black) jako formatera kodu Python, aby zachować spójny styl kodowania w całym projekcie. Black to bezkompromisowy formatter, który automatycznie dostosowuje kod do ustalonego stylu.
 
 #### Konfiguracja
 
-Konfiguracja Black jest określona w naszym `pyproject.toml`:
+Konfiguracja Black znajduje się w naszym pliku `pyproject.toml`:
 
 ```toml
 [tool.black]
@@ -147,16 +144,16 @@ include = '\.pyi?$'
 
 #### Instalacja Black
 
-Black możesz zainstalować za pomocą Poetry (zalecane) lub pip:
+Możesz zainstalować Black za pomocą Poetry (zalecane) lub pip:
 
-##### Za pomocą Poetry
+##### Z użyciem Poetry
 
-Black jest automatycznie instalowany podczas konfiguracji środowiska deweloperskiego:
+Black jest instalowany automatycznie podczas konfiguracji środowiska deweloperskiego:
 ```bash
 poetry install
 ```
 
-##### Za pomocą pip
+##### Z użyciem pip
 
 Jeśli używasz pip, możesz zainstalować Black bezpośrednio:
 ```bash
@@ -172,7 +169,7 @@ pip install black
     poetry run black .
     ```
 
-2. Sformatuj konkretny plik lub katalog:
+2. Sformatuj wybrany plik lub katalog:
     ```bash
     poetry run black path/to/file_or_directory
     ```
@@ -184,21 +181,21 @@ pip install black
     black .
     ```
 
-2. Sformatuj konkretny plik lub katalog:
+2. Sformatuj wybrany plik lub katalog:
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> Zalecamy skonfigurowanie edytora tak, aby automatycznie formatował kod za pomocą Black przy zapisie. Większość nowoczesnych edytorów obsługuje to przez rozszerzenia lub wtyczki.
+> Zalecamy skonfigurowanie edytora, aby automatycznie formatował kod Black przy zapisie. Większość nowoczesnych edytorów obsługuje to przez rozszerzenia lub wtyczki.
 
 ## Uruchamianie Co-op Translator
 
-Aby uruchomić Co-op Translator za pomocą Poetry w swoim środowisku, wykonaj następujące kroki:
+Aby uruchomić Co-op Translator z użyciem Poetry w swoim środowisku, wykonaj następujące kroki:
 
-1. Przejdź do katalogu, w którym chcesz przeprowadzić testy tłumaczenia lub utwórz tymczasowy folder do testów.
+1. Przejdź do katalogu, w którym chcesz wykonać testy tłumaczenia lub utwórz tymczasowy folder do testów.
 
-2. Wykonaj poniższe polecenie. Zastąp `-l ko` kodem języka, na który chcesz tłumaczyć. Flaga `-d` oznacza tryb debugowania.
+2. Wykonaj poniższe polecenie. Zamień `-l ko` na kod języka, na który chcesz tłumaczyć. Flaga `-d` oznacza tryb debugowania.
 
     ```bash
     poetry run co-op-translator translate -l ko -d
@@ -209,31 +206,31 @@ Aby uruchomić Co-op Translator za pomocą Poetry w swoim środowisku, wykonaj n
 
 ## Dodanie nowego języka
 
-Zachęcamy do dodawania wsparcia dla nowych języków. Przed otwarciem PR wykonaj poniższe kroki, aby ułatwić przegląd.
+Chętnie przyjmujemy kontrybucje dodające obsługę nowych języków. Przed otwarciem PR wykonaj poniższe kroki, aby ułatwić proces recenzji.
 
 1. Dodaj język do mapowania czcionek
    - Edytuj `src/co_op_translator/fonts/font_language_mappings.yml`
    - Dodaj wpis z:
      - `code`: kod języka w stylu ISO (np. `vi`)
-     - `name`: przyjazna nazwa do wyświetlania
-     - `font`: czcionka dołączona w `src/co_op_translator/fonts/`, która obsługuje dany skrypt
-     - `rtl`: `true` jeśli język pisany jest od prawej do lewej, w przeciwnym razie `false`
+     - `name`: przyjazna nazwa wyświetlana
+     - `font`: czcionka dostępna w `src/co_op_translator/fonts/`, obsługująca dany alfabet
+     - `rtl`: `true` jeśli język jest pisany od prawej do lewej, w przeciwnym razie `false`
 
-2. Dołącz wymagane pliki czcionek (jeśli potrzebne)
-   - Jeśli wymagana jest nowa czcionka, sprawdź zgodność licencji z dystrybucją open source
+2. Dodaj wymagane pliki czcionek (jeśli potrzeba)
+   - Jeśli wymagana jest nowa czcionka, sprawdź zgodność licencji z otwartym oprogramowaniem
    - Dodaj plik czcionki do `src/co_op_translator/fonts/`
 
 3. Weryfikacja lokalna
-   - Uruchom tłumaczenia na małej próbce (Markdown, obrazy i notebooki, jeśli dotyczy)
-   - Sprawdź, czy wynik jest poprawnie renderowany, w tym czcionki i ewentualny układ RTL
+   - Przetłumacz małą próbkę (Markdown, obrazy, notatniki – w zależności od potrzeb)
+   - Sprawdź, czy wynik renderuje się poprawnie, w tym czcionki i ewentualny układ RTL
 
 4. Aktualizacja dokumentacji
    - Upewnij się, że język pojawia się w `getting_started/supported-languages.md`
-   - Nie trzeba zmieniać `getting_started/README_languages_template.md`; jest generowany z listy obsługiwanych języków
+   - Nie trzeba zmieniać `README_languages_template.md`; jest generowany automatycznie
 
 5. Otwórz PR
-   - Opisz dodany język oraz kwestie licencyjne czcionek, jeśli dotyczy
-   - Dołącz zrzuty ekranu z renderowanymi wynikami, jeśli to możliwe
+   - Opisz dodany język oraz kwestie związane z czcionką/licencją
+   - Jeśli to możliwe, dołącz zrzuty ekranu z renderowania wyników
 
 Przykładowy wpis YAML:
 
@@ -244,46 +241,30 @@ new_lang(code):
   rtl: false
 ```
 
-### Testowanie nowego języka
 
-Nowy język możesz przetestować, uruchamiając następujące polecenie:
+## Utrzymujący projekt
 
-```bash
-# Utwórz i aktywuj środowisko wirtualne
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
-# Zainstaluj pakiet deweloperski
-pip install -e .
-# Uruchom tłumaczenie
-translate -l "new_lang"
-```
+### Format wiadomości commitów i strategia scalania
 
-## Opiekunowie projektu
+Aby zapewnić spójność i przejrzystość historii commitów, stosujemy określony format wiadomości commitów **dla końcowej wiadomości** przy użyciu strategii **Squash and Merge**.
 
-### Format wiadomości commit i strategia scalania
+Gdy pull request (PR) jest scalany, poszczególne commity są łączone w jeden. Końcowa wiadomość commita powinna mieć poniższy format, aby zachować czytelną i spójną historię.
 
-Aby zapewnić spójność i przejrzystość historii commitów w projekcie, stosujemy określony format wiadomości commit **dla ostatecznej wiadomości commit** przy użyciu strategii **Squash and Merge**.
+#### Format wiadomości commita (dla squash and merge)
 
-Gdy pull request (PR) jest scalany, poszczególne commity są łączone w jeden. Ostateczna wiadomość commit powinna mieć poniższy format, aby utrzymać czystą i spójną historię.
-
-#### Format wiadomości commit (dla squash and merge)
-
-Używamy następującego formatu wiadomości commit:
+Używamy następującego formatu wiadomości commitów:
 
 ```bash
-<type>: <description> (#<numer PR>)
+<type>: <description> (#<PR number>)
 ```
 
 - **type**: Określa kategorię commita. Używamy następujących typów:
-  - `Docs`: dla aktualizacji dokumentacji.
-  - `Build`: dla zmian związanych z systemem budowania lub zależnościami, w tym aktualizacji plików konfiguracyjnych, workflow CI lub Dockerfile.
-  - `Core`: dla modyfikacji podstawowej funkcjonalności lub cech projektu, szczególnie dotyczących plików w katalogu `src/co_op_translator/core`.
+  - `Docs`: Aktualizacje dokumentacji.
+  - `Build`: Zmiany związane z systemem budowania lub zależnościami, w tym aktualizacje plików konfiguracyjnych, workflow CI lub Dockerfile.
+  - `Core`: Modyfikacje głównej funkcjonalności projektu lub funkcji, szczególnie dotyczące plików w katalogu `src/co_op_translator/core`.
 
-- **description**: Zwięzłe podsumowanie zmiany.
-- **PR number**: Numer pull requesta powiązanego z commitem.
+- **description**: Krótkie podsumowanie zmiany.
+- **PR number**: Numer pull requestu powiązanego z commitem.
 
 **Przykłady**:
 
@@ -291,19 +272,19 @@ Używamy następującego formatu wiadomości commit:
 - `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> Obecnie prefiksy **`Docs`**, **`Core`** i **`Build`** są automatycznie dodawane do tytułów PR na podstawie etykiet przypisanych do zmodyfikowanego kodu źródłowego. Jeśli odpowiednia etykieta jest zastosowana, zwykle nie musisz ręcznie zmieniać tytułu PR. Wystarczy zweryfikować, czy wszystko jest poprawne i prefiks został wygenerowany prawidłowo.
+> Obecnie prefiksy **`Docs`**, **`Core`** i **`Build`** są automatycznie dodawane do tytułów PR na podstawie etykiet przypisanych do zmodyfikowanego kodu źródłowego. Jeśli odpowiednia etykieta jest przypisana, zazwyczaj nie musisz ręcznie zmieniać tytułu PR. Wystarczy sprawdzić, czy wszystko jest poprawne i prefiks został wygenerowany prawidłowo.
 
 #### Strategia scalania
 
-Domyślną strategią scalania pull requestów jest **Squash and Merge**. Ta strategia zapewnia, że wiadomości commitów będą zgodne z naszym formatem, nawet jeśli pojedyncze commity nie są.
+Używamy **Squash and Merge** jako domyślnej strategii dla pull requestów. Ta strategia zapewnia, że wiadomości commitów są zgodne z naszym formatem, nawet jeśli poszczególne commity nie są.
 
 **Powody**:
 
 - Czysta, liniowa historia projektu.
-- Spójność wiadomości commit.
-- Mniej szumu z drobnych commitów (np. "popraw literówkę").
+- Spójność wiadomości commitów.
+- Mniej "szumu" od drobnych commitów (np. "fix typo").
 
-Podczas scalania upewnij się, że ostateczna wiadomość commit spełnia opisany powyżej format.
+Podczas scalania upewnij się, że końcowa wiadomość commita jest zgodna z opisanym powyżej formatem.
 
 **Przykład Squash and Merge**
 Jeśli PR zawiera następujące commity:
@@ -312,32 +293,10 @@ Jeśli PR zawiera następujące commity:
 - `update README`
 - `adjust formatting`
 
-Zostaną one połączone w:
+Powinny zostać połączone w:
 `Docs: Improve documentation clarity and formatting (#65)`
-
-### Proces wydania
-
-Ta sekcja opisuje najprostszy sposób dla opiekunów projektu na opublikowanie nowej wersji Co-op Translator.
-
-#### 1. Zwiększenie wersji w `pyproject.toml`
-
-1. Wybierz kolejny numer wersji (stosujemy wersjonowanie semantyczne: `MAJOR.MINOR.PATCH`).
-2. Edytuj `pyproject.toml` i zaktualizuj pole `version` w sekcji `[tool.poetry]`.
-3. Otwórz dedykowany pull request, który zmienia tylko wersję (oraz ewentualne automatycznie aktualizowane pliki lock/metadata, jeśli występują).
-4. Po przeglądzie użyj **Squash and Merge** i upewnij się, że ostateczna wiadomość commit spełnia opisany format.
-
-#### 2. Utworzenie wydania na GitHub
-
-1. Przejdź do strony repozytorium na GitHub i otwórz **Releases** → **Draft a new release**.
-2. Utwórz nowy tag (np. `v0.13.0`) z gałęzi `main`.
-3. Ustaw tytuł wydania na tę samą wersję (np. `v0.13.0`).
-4. Kliknij **Generate release notes**, aby automatycznie wypełnić changelog.
-5. Opcjonalnie edytuj tekst (np. aby wyróżnić nowo obsługiwane języki lub ważne zmiany).
-6. Opublikuj wydanie.
 
 ---
 
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
 **Zastrzeżenie**:  
-Niniejszy dokument został przetłumaczony za pomocą usługi tłumaczenia AI [Co-op Translator](https://github.com/Azure/co-op-translator). Mimo że dokładamy starań, aby tłumaczenie było jak najbardziej precyzyjne, prosimy mieć na uwadze, że automatyczne tłumaczenia mogą zawierać błędy lub nieścisłości. Oryginalny dokument w języku źródłowym należy traktować jako źródło wiarygodne i autorytatywne. W przypadku informacji o kluczowym znaczeniu zalecane jest skorzystanie z profesjonalnego tłumaczenia wykonanego przez człowieka. Nie ponosimy odpowiedzialności za jakiekolwiek nieporozumienia lub błędne interpretacje wynikające z korzystania z tego tłumaczenia.
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->
+Ten dokument został przetłumaczony przy użyciu usługi tłumaczenia AI [Co-op Translator](https://github.com/Azure/co-op-translator). Chociaż dokładamy starań, aby tłumaczenie było jak najdokładniejsze, należy pamiętać, że tłumaczenia automatyczne mogą zawierać błędy lub nieścisłości. Za autorytatywne źródło należy uznać oryginalny dokument w jego języku ojczystym. W przypadku informacji krytycznych zalecane jest skorzystanie z profesjonalnego tłumaczenia wykonanego przez człowieka. Nie ponosimy odpowiedzialności za wszelkie nieporozumienia lub błędne interpretacje wynikające z użycia tego tłumaczenia.

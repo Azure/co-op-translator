@@ -1,94 +1,98 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "a6cddf5e9648ef0bba0de7eb07e74cf1",
-  "translation_date": "2025-10-15T03:16:18+00:00",
+  "original_hash": "822238e4451d04bb152cebb1be6f13c2",
+  "translation_date": "2025-11-30T11:18:14+00:00",
   "source_file": "getting_started/command-reference.md",
   "language_code": "th"
 }
 -->
-# อ้างอิงคำสั่ง
+# คำสั่งอ้างอิง
 
-**Co-op Translator** CLI มีตัวเลือกหลายแบบให้ปรับแต่งกระบวนการแปลได้ตามต้องการ:
+CLI ของ **Co-op Translator** มีตัวเลือกหลายอย่างเพื่อปรับแต่งกระบวนการแปล:
 
-คำสั่ง                                       | คำอธิบาย
+คำสั่ง                                      | คำอธิบาย
 ----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-translate -l "language_codes"                 | แปลโปรเจกต์ของคุณเป็นภาษาที่ระบุ เช่น translate -l "es fr de" จะแปลเป็นสเปน ฝรั่งเศส และเยอรมัน ใช้ translate -l "all" เพื่อแปลเป็นทุกภาษาที่รองรับ
-translate -l "language_codes" -u              | อัปเดตการแปลโดยลบของเดิมและสร้างใหม่ทั้งหมด คำเตือน: จะลบการแปลปัจจุบันทั้งหมดของภาษาที่ระบุ
-translate -l "language_codes" -img            | แปลเฉพาะไฟล์รูปภาพเท่านั้น
-translate -l "language_codes" -md             | แปลเฉพาะไฟล์ Markdown เท่านั้น
-translate -l "language_codes" -nb             | แปลเฉพาะไฟล์ Jupyter notebook (.ipynb) เท่านั้น
-translate -l "language_codes" --fix           | แปลใหม่เฉพาะไฟล์ที่ได้คะแนนความมั่นใจต่ำจากผลการประเมินก่อนหน้า
-translate -l "language_codes" -d              | เปิดโหมด debug เพื่อดู log รายละเอียด
-translate -l "language_codes" --save-logs, -s | บันทึก log ระดับ DEBUG ลงไฟล์ที่ <root_dir>/logs/ (console ยังควบคุมด้วย -d)
-translate -l "language_codes" -r "root_dir"   | ระบุ root directory ของโปรเจกต์
-translate -l "language_codes" -f              | ใช้โหมดเร็วสำหรับการแปลรูปภาพ (plotting เร็วขึ้นสูงสุด 3 เท่า แต่คุณภาพและการจัดวางอาจลดลงเล็กน้อย)
-translate -l "language_codes" -y              | ตอบตกลงอัตโนมัติทุก prompt (เหมาะกับ CI/CD pipeline)
-translate -l "language_codes" --help          | แสดงรายละเอียดคำสั่งที่มีใน CLI
-evaluate -l "language_code"                  | ประเมินคุณภาพการแปลของภาษาที่ระบุและให้คะแนนความมั่นใจ
-evaluate -l "language_code" -c 0.8           | ประเมินการแปลโดยใช้ threshold ความมั่นใจที่กำหนดเอง
-evaluate -l "language_code" -f               | โหมดประเมินเร็ว (ใช้ rule-based เท่านั้น ไม่ใช้ LLM)
-evaluate -l "language_code" -D               | โหมดประเมินเชิงลึก (ใช้ LLM เท่านั้น ละเอียดกว่าแต่ช้ากว่า)
-evaluate -l "language_code" --save-logs, -s  | บันทึก log ระดับ DEBUG ลงไฟล์ที่ <root_dir>/logs/
-migrate-links -l "language_codes"             | ประมวลผลไฟล์ Markdown ที่แปลแล้วเพื่ออัปเดตลิงก์ไปยัง notebook (.ipynb) จะเลือกใช้ notebook ที่แปลแล้วถ้ามี ถ้าไม่มีก็ใช้ต้นฉบับแทนได้
-migrate-links -l "language_codes" -r          | ระบุ root directory ของโปรเจกต์ (ค่าเริ่มต้น: โฟลเดอร์ปัจจุบัน)
-migrate-links -l "language_codes" --dry-run   | แสดงไฟล์ที่จะถูกเปลี่ยนแปลงโดยไม่เขียนทับจริง
-migrate-links -l "language_codes" --no-fallback-to-original | ไม่เขียนลิงก์กลับไปยัง notebook ต้นฉบับเมื่อไม่มีฉบับแปล (อัปเดตเฉพาะเมื่อมีฉบับแปลเท่านั้น)
-migrate-links -l "language_codes" -d          | เปิดโหมด debug เพื่อดู log รายละเอียด
-migrate-links -l "language_codes" --save-logs, -s | บันทึก log ระดับ DEBUG ลงไฟล์ที่ <root_dir>/logs/
-migrate-links -l "all" -y                      | ประมวลผลทุกภาษาและยืนยัน prompt คำเตือนให้อัตโนมัติ
+translate -l "language_codes"                 | แปลโปรเจกต์ของคุณเป็นภาษาที่ระบุ ตัวอย่าง: translate -l "es fr de" แปลเป็นภาษาสเปน ฝรั่งเศส และเยอรมัน ใช้ translate -l "all" เพื่อแปลเป็นทุกภาษาที่รองรับ
+translate -l "language_codes" -u              | อัปเดตการแปลโดยลบการแปลเดิมทั้งหมดแล้วสร้างใหม่ คำเตือน: จะลบการแปลทั้งหมดในภาษาที่ระบุ
+translate -l "language_codes" -img            | แปลเฉพาะไฟล์รูปภาพ
+translate -l "language_codes" -md             | แปลเฉพาะไฟล์ Markdown
+translate -l "language_codes" -nb             | แปลเฉพาะไฟล์ Jupyter notebook (.ipynb)
+translate -l "language_codes" --fix           | แปลซ้ำไฟล์ที่มีคะแนนความมั่นใจต่ำตามผลการประเมินก่อนหน้า
+translate -l "language_codes" -d              | เปิดโหมดดีบักเพื่อบันทึกรายละเอียดการทำงาน
+translate -l "language_codes" --save-logs, -s | บันทึกบันทึก DEBUG ลงไฟล์ใน <root_dir>/logs/ (คอนโซลยังคงควบคุมด้วย -d)
+translate -l "language_codes" -r "root_dir"   | ระบุไดเรกทอรีหลักของโปรเจกต์
+translate -l "language_codes" -f              | ใช้โหมดเร็วสำหรับการแปลรูปภาพ (เร็วขึ้นสูงสุด 3 เท่า โดยแลกกับคุณภาพและการจัดวางที่อาจลดลงเล็กน้อย)
+translate -l "language_codes" -y              | ยืนยันคำสั่งทั้งหมดโดยอัตโนมัติ (เหมาะสำหรับ CI/CD pipelines)
+translate -l "language_codes" --add-disclaimer/--no-disclaimer | เปิดหรือปิดการเพิ่มส่วนคำเตือนการแปลด้วยเครื่องในไฟล์ markdown และโน้ตบุ๊กที่แปลแล้ว (ค่าเริ่มต้น: เปิด)
+translate -l "language_codes" --help          | แสดงรายละเอียดความช่วยเหลือภายใน CLI พร้อมคำสั่งที่มี
+evaluate -l "language_code"                  | ประเมินคุณภาพการแปลสำหรับภาษาที่ระบุและแสดงคะแนนความมั่นใจ
+evaluate -l "language_code" -c 0.8           | ประเมินการแปลโดยใช้เกณฑ์ความมั่นใจที่กำหนดเอง
+evaluate -l "language_code" -f               | โหมดประเมินเร็ว (ใช้กฎเท่านั้น ไม่มี LLM)
+evaluate -l "language_code" -D               | โหมดประเมินลึก (ใช้ LLM เท่านั้น ละเอียดแต่ช้ากว่า)
+evaluate -l "language_code" --save-logs, -s  | บันทึกบันทึก DEBUG ลงไฟล์ใน <root_dir>/logs/
+migrate-links -l "language_codes"             | ประมวลผลไฟล์ Markdown ที่แปลแล้วเพื่ออัปเดตลิงก์ไปยังโน้ตบุ๊ก (.ipynb) โดยจะเลือกโน้ตบุ๊กที่แปลแล้วก่อน หากไม่มีจะใช้โน้ตบุ๊กต้นฉบับแทน
+migrate-links -l "language_codes" -r          | ระบุไดเรกทอรีหลักของโปรเจกต์ (ค่าเริ่มต้น: โฟลเดอร์ปัจจุบัน)
+migrate-links -l "language_codes" --dry-run   | แสดงไฟล์ที่จะเปลี่ยนแปลงโดยไม่เขียนไฟล์จริง
+migrate-links -l "language_codes" --no-fallback-to-original | ไม่เขียนลิงก์กลับไปยังโน้ตบุ๊กต้นฉบับเมื่อโน้ตบุ๊กแปลไม่มี (อัปเดตเฉพาะเมื่อโน้ตบุ๊กแปลมี)
+migrate-links -l "language_codes" -d          | เปิดโหมดดีบักเพื่อบันทึกรายละเอียดการทำงาน
+migrate-links -l "language_codes" --save-logs, -s | บันทึกบันทึก DEBUG ลงไฟล์ใน <root_dir>/logs/
+migrate-links -l "all" -y                      | ประมวลผลทุกภาษาและยืนยันคำเตือนโดยอัตโนมัติ
 
 ## ตัวอย่างการใช้งาน
 
-  1. พฤติกรรมปกติ (เพิ่มการแปลใหม่โดยไม่ลบของเดิม):   translate -l "ko"    translate -l "es fr de" -r "./my_project"
+  1. พฤติกรรมเริ่มต้น (เพิ่มการแปลใหม่โดยไม่ลบของเดิม):   translate -l "ko"    translate -l "es fr de" -r "./my_project"
 
-  2. เพิ่มเฉพาะการแปลรูปภาพเกาหลีใหม่ (ไม่ลบของเดิม):    translate -l "ko" -img
+  2. เพิ่มเฉพาะการแปลรูปภาพภาษาเกาหลีใหม่ (ไม่ลบการแปลเดิม):    translate -l "ko" -img
 
-  3. อัปเดตการแปลเกาหลีทั้งหมด (คำเตือน: ลบการแปลเก่าทั้งหมดก่อนแปลใหม่):    translate -l "ko" -u
+  3. อัปเดตการแปลภาษาเกาหลีทั้งหมด (คำเตือน: จะลบการแปลภาษาเกาหลีทั้งหมดก่อนแปลใหม่):    translate -l "ko" -u
 
-  4. อัปเดตเฉพาะรูปภาพเกาหลี (คำเตือน: ลบรูปภาพเก่าทั้งหมดก่อนแปลใหม่):    translate -l "ko" -img -u
+  4. อัปเดตรูปภาพภาษาเกาหลีเท่านั้น (คำเตือน: จะลบรูปภาพภาษาเกาหลีทั้งหมดก่อนแปลใหม่):    translate -l "ko" -img -u
 
-  5. เพิ่มการแปล markdown ภาษาเกาหลีใหม่โดยไม่กระทบการแปลอื่น:    translate -l "ko" -md
+  5. เพิ่มการแปล markdown ภาษาเกาหลีโดยไม่กระทบการแปลอื่น:    translate -l "ko" -md
 
-  6. แก้ไขการแปลที่ได้คะแนนความมั่นใจต่ำตามผลประเมินก่อนหน้า: translate -l "ko" --fix
+  6. แก้ไขการแปลที่มีความมั่นใจต่ำตามผลประเมินก่อนหน้า: translate -l "ko" --fix
 
-  7. แก้ไขการแปลที่ได้คะแนนความมั่นใจต่ำเฉพาะไฟล์ (markdown): translate -l "ko" --fix -md
+  7. แก้ไขการแปลที่มีความมั่นใจต่ำเฉพาะไฟล์ markdown: translate -l "ko" --fix -md
 
-  8. แก้ไขการแปลที่ได้คะแนนความมั่นใจต่ำเฉพาะไฟล์ (รูปภาพ): translate -l "ko" --fix -img
+  8. แก้ไขการแปลที่มีความมั่นใจต่ำเฉพาะไฟล์รูปภาพ: translate -l "ko" --fix -img
 
   9. ใช้โหมดเร็วสำหรับแปลรูปภาพ:    translate -l "ko" -img -f
 
-  10. แก้ไขการแปลที่ได้คะแนนความมั่นใจต่ำโดยใช้ threshold กำหนดเอง: translate -l "ko" --fix -c 0.8
+  10. แก้ไขการแปลที่มีความมั่นใจต่ำโดยใช้เกณฑ์กำหนดเอง: translate -l "ko" --fix -c 0.8
 
-  11. ตัวอย่างโหมด debug: - translate -l "ko" -d: เปิด log debug
-  12. บันทึก log ลงไฟล์: translate -l "ko" -s
-  13. DEBUG ทั้งบน console และไฟล์: translate -l "ko" -d -s
+  11. ตัวอย่างโหมดดีบัก: - translate -l "ko" -d: เปิดบันทึกดีบัก
+  12. บันทึกบันทึกลงไฟล์: translate -l "ko" -s
+  13. บันทึก DEBUG ทั้งคอนโซลและไฟล์: translate -l "ko" -d -s
+  14. แปลโดยไม่เพิ่มคำเตือนการแปลด้วยเครื่องในผลลัพธ์: translate -l "ko" --no-disclaimer
 
-  14. อัปเดตลิงก์ notebook สำหรับการแปลเกาหลี (อัปเดตลิงก์ไปยัง notebook ที่แปลแล้วถ้ามี):    migrate-links -l "ko"
+  15. ย้ายลิงก์โน้ตบุ๊กสำหรับการแปลภาษาเกาหลี (อัปเดตลิงก์ไปยังโน้ตบุ๊กแปลเมื่อมี):    migrate-links -l "ko"
 
-  15. อัปเดตลิงก์แบบ dry-run (ไม่เขียนไฟล์จริง):    migrate-links -l "ko" --dry-run
+  15. ย้ายลิงก์แบบ dry-run (ไม่เขียนไฟล์):    migrate-links -l "ko" --dry-run
 
-  16. อัปเดตลิงก์เฉพาะเมื่อมี notebook ที่แปลแล้ว (ไม่ fallback ไปต้นฉบับ):    migrate-links -l "ko" --no-fallback-to-original
+  16. อัปเดตลิงก์เฉพาะเมื่อโน้ตบุ๊กแปลมี (ไม่ย้อนกลับไปต้นฉบับ):    migrate-links -l "ko" --no-fallback-to-original
 
-  17. ประมวลผลทุกภาษาพร้อม prompt ยืนยัน:    migrate-links -l "all"
+  17. ประมวลผลทุกภาษาพร้อมคำยืนยัน:    migrate-links -l "all"
 
   18. ประมวลผลทุกภาษาและยืนยันอัตโนมัติ:    migrate-links -l "all" -y
-  19. บันทึก log ลงไฟล์สำหรับ migrate-links:    migrate-links -l "ko ja" -s
+  19. บันทึกบันทึกสำหรับ migrate-links:    migrate-links -l "ko ja" -s
 
 ### ตัวอย่างการประเมิน
 
 > [!WARNING]  
-> **ฟีเจอร์เบต้า**: ฟังก์ชันการประเมินยังอยู่ในช่วงเบต้า ฟีเจอร์นี้ถูกปล่อยมาเพื่อประเมินเอกสารที่แปลแล้ว วิธีการประเมินและรายละเอียดการทำงานอาจมีการเปลี่ยนแปลงในอนาคต
+> **ฟีเจอร์เบต้า**: ฟังก์ชันการประเมินยังอยู่ในช่วงเบต้า ฟีเจอร์นี้เปิดให้ใช้เพื่อประเมินเอกสารที่แปลแล้ว วิธีการประเมินและการพัฒนารายละเอียดยังอยู่ระหว่างดำเนินการและอาจมีการเปลี่ยนแปลงได้
 
   1. ประเมินการแปลภาษาเกาหลี: evaluate -l "ko"
 
-  2. ประเมินโดยใช้ threshold ความมั่นใจที่กำหนดเอง: evaluate -l "ko" -c 0.8
+  2. ประเมินโดยใช้เกณฑ์ความมั่นใจที่กำหนดเอง: evaluate -l "ko" -c 0.8
 
-  3. ประเมินแบบเร็ว (ใช้ rule-based เท่านั้น): evaluate -l "ko" -f
+  3. ประเมินเร็ว (ใช้กฎเท่านั้น): evaluate -l "ko" -f
 
-  4. ประเมินเชิงลึก (ใช้ LLM เท่านั้น): evaluate -l "ko" -D
+  4. ประเมินลึก (ใช้ LLM เท่านั้น): evaluate -l "ko" -D
 
 ---
 
-**ข้อจำกัดความรับผิดชอบ**:
-เอกสารฉบับนี้ได้รับการแปลโดยใช้บริการแปลภาษา AI [Co-op Translator](https://github.com/Azure/co-op-translator) แม้เราจะพยายามให้การแปลมีความถูกต้อง แต่โปรดทราบว่าการแปลโดยอัตโนมัติอาจมีข้อผิดพลาดหรือความไม่ถูกต้อง เอกสารต้นฉบับในภาษาต้นทางควรถือเป็นแหล่งข้อมูลที่เชื่อถือได้ สำหรับข้อมูลสำคัญ แนะนำให้ใช้บริการแปลโดยนักแปลมืออาชีพ ทางเราจะไม่รับผิดชอบต่อความเข้าใจผิดหรือการตีความที่เกิดขึ้นจากการใช้การแปลนี้
+<!-- CO-OP TRANSLATOR DISCLAIMER START -->
+**ข้อจำกัดความรับผิดชอบ**:  
+เอกสารนี้ได้รับการแปลโดยใช้บริการแปลภาษาอัตโนมัติ [Co-op Translator](https://github.com/Azure/co-op-translator) แม้เราจะพยายามให้ความถูกต้องสูงสุด แต่โปรดทราบว่าการแปลอัตโนมัติอาจมีข้อผิดพลาดหรือความไม่ถูกต้อง เอกสารต้นฉบับในภาษาต้นทางถือเป็นแหล่งข้อมูลที่เชื่อถือได้ สำหรับข้อมูลที่สำคัญ ขอแนะนำให้ใช้บริการแปลโดยผู้เชี่ยวชาญมนุษย์ เราไม่รับผิดชอบต่อความเข้าใจผิดหรือการตีความผิดใด ๆ ที่เกิดจากการใช้การแปลนี้
+<!-- CO-OP TRANSLATOR DISCLAIMER END -->

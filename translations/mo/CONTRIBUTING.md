@@ -1,21 +1,21 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "bd4704f50c55da7d572b691484aa0b30",
-  "translation_date": "2025-10-15T02:28:29+00:00",
+  "original_hash": "758ca1c5ae0d32c52d2dd59132dcfbf0",
+  "translation_date": "2025-11-30T10:12:03+00:00",
   "source_file": "CONTRIBUTING.md",
   "language_code": "mo"
 }
 -->
-# 貢獻 Co-op Translator
+# 參與 Co-op Translator 專案
 
-這個專案歡迎大家貢獻和提出建議。大多數貢獻都需要你同意一份貢獻者授權協議 (CLA)，聲明你有權利並且確實授予我們使用你的貢獻的權利。詳情請參考 https://cla.opensource.microsoft.com。
+本專案歡迎各種貢獻與建議。大多數貢獻需要您同意一份貢獻者授權協議（Contributor License Agreement，CLA），聲明您有權利且確實授權我們使用您的貢獻。詳情請參閱 https://cla.opensource.microsoft.com。
 
-當你提交 pull request 時，CLA 機器人會自動判斷你是否需要提供 CLA，並在 PR 上做出相應標記（例如狀態檢查、留言）。只要按照機器人的指示操作即可。你只需要在所有使用我們 CLA 的 repo 中做一次這個步驟。
+當您提交拉取請求（pull request）時，CLA 機器人會自動判斷您是否需要提供 CLA，並適當標註 PR（例如狀態檢查、留言）。只需按照機器人提供的指示操作即可。您只需在所有使用我們 CLA 的倉庫中完成一次此流程。
 
 ## 開發環境設定
 
-建議使用 Poetry 來管理這個專案的依賴。我們用 `pyproject.toml` 來管理專案依賴，所以安裝依賴時請使用 Poetry。
+建議使用 Poetry 來管理本專案的依賴。專案使用 `pyproject.toml` 管理依賴，因此安裝依賴時請使用 Poetry。
 
 ### 建立虛擬環境
 
@@ -33,7 +33,7 @@ poetry init
 
 ### 啟動虛擬環境
 
-#### pip 和 Poetry 都適用
+#### pip 與 Poetry 通用
 
 - Windows：
 
@@ -53,7 +53,7 @@ poetry init
 poetry shell
 ```
 
-### 安裝套件及必要依賴
+### 安裝套件與所需依賴
 
 #### 使用 Poetry（根據 pyproject.toml）
 
@@ -63,14 +63,14 @@ poetry install
 
 ### 手動測試
 
-在提交 PR 之前，請務必用真實文件測試翻譯功能：
+在提交 PR 前，請務必使用真實文件測試翻譯功能：
 
-1. 在根目錄建立一個測試資料夾：
+1. 在專案根目錄建立一個測試資料夾：
     ```bash
     mkdir test_docs
     ```
 
-2. 把你想翻譯的 markdown 文件和圖片複製到測試資料夾。例如：
+2. 將您想翻譯的 Markdown 文件與圖片複製到測試資料夾。例如：
     ```bash
     cp /path/to/your/docs/*.md test_docs/
     cp /path/to/your/images/*.png test_docs/
@@ -81,59 +81,59 @@ poetry install
     pip install -e .
     ```
 
-4. 在你的測試文件上執行 Co-op Translator：
+4. 對測試文件執行 Co-op Translator：
     ```bash
     python -m co_op_translator --language-codes ko --root-dir test_docs
     ```
 
-5. 檢查 `test_docs/translations` 和 `test_docs/translated_images` 裡的翻譯檔案，確認：
+5. 檢查 `test_docs/translations` 與 `test_docs/translated_images` 中的翻譯結果，確認：
    - 翻譯品質
-   - metadata 註解正確
-   - 原本的 markdown 結構有保留
-   - 連結和圖片都能正常顯示
+   - 元資料註解正確
+   - 原始 Markdown 結構未被破壞
+   - 連結與圖片正常顯示
 
-這個手動測試可以確保你的修改在實際情境下運作良好。
+此手動測試有助於確保您的修改在實際情境中運作良好。
 
 ### 環境變數
 
-1. 在根目錄用 `.env.template` 檔案複製一份 `.env` 檔案。
-1. 按照指示填寫環境變數。
+1. 複製提供的 `.env.template` 檔案，並在根目錄建立 `.env` 檔案。
+2. 按指示填寫環境變數。
 
 > [!TIP]
 >
-> ### 其他開發環境選項
+> ### 額外的開發環境選項
 >
-> 除了在本地執行專案，你也可以用 GitHub Codespaces 或 VS Code Dev Containers 來建立開發環境。
+> 除了在本地執行專案外，您也可以使用 GitHub Codespaces 或 VS Code Dev Containers 作為替代的開發環境。
 >
 > #### GitHub Codespaces
 >
-> 你可以直接用 GitHub Codespaces 線上執行範例，不需要額外設定。
+> 您可以透過 GitHub Codespaces 虛擬執行此範例，無需額外設定。
 >
-> 按下按鈕會在瀏覽器開啟網頁版 VS Code：
+> 按鈕會在瀏覽器中開啟基於網頁的 VS Code：
 >
-> 1. 開啟範本（可能需要幾分鐘）：
+> 1. 開啟範本（可能需數分鐘）：
 >
->     <a href="https://codespaces.new/azure/co-op-translator"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
+>     [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure/co-op-translator)
 >
-> #### 使用 VS Code Dev Containers 在本地執行
+> #### 使用 VS Code Dev Containers 本地執行
 >
-> ⚠️ 這個選項需要你的 Docker Desktop 至少分配 16 GB RAM。如果你的 RAM 不足 16 GB，可以考慮 [GitHub Codespaces 選項](../..) 或 [本地設定](../..)。
+> ⚠️ 此選項僅在您的 Docker Desktop 分配至少 16 GB 記憶體時有效。若記憶體不足 16 GB，您可嘗試 [GitHub Codespaces 選項](../..) 或 [本地設定](../..)。
 >
-> 另一個選項是 VS Code Dev Containers，可以用 [Dev Containers 擴充套件](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) 在本地 VS Code 開啟專案：
+> 相關選項是 VS Code Dev Containers，會使用 [Dev Containers 擴充套件](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) 在本地 VS Code 開啟專案：
 >
-> 1. 啟動 Docker Desktop（如果還沒安裝請先安裝）
+> 1. 啟動 Docker Desktop（若尚未安裝請先安裝）
 > 2. 開啟專案：
 >
->    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator"><img src="https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode" alt="Open in Dev Containers"></a>
+>    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure/co-op-translator)
 
 
 ### 程式碼風格
 
-我們使用 [Black](https://github.com/psf/black) 作為 Python 程式碼格式化工具，確保整個專案的程式碼風格一致。Black 會自動將 Python 程式碼格式化成統一風格。
+我們使用 [Black](https://github.com/psf/black) 作為 Python 程式碼格式化工具，以維持專案中一致的程式碼風格。Black 是一款不妥協的格式化工具，會自動將 Python 程式碼格式化為 Black 標準風格。
 
-#### 設定方式
+#### 設定
 
-Black 的設定寫在 `pyproject.toml` 裡：
+Black 的設定在 `pyproject.toml` 中指定：
 
 ```toml
 [tool.black]
@@ -144,7 +144,7 @@ include = '\.pyi?$'
 
 #### 安裝 Black
 
-你可以用 Poetry（推薦）或 pip 安裝 Black：
+您可以使用 Poetry（推薦）或 pip 安裝 Black：
 
 ##### 使用 Poetry
 
@@ -155,84 +155,84 @@ poetry install
 
 ##### 使用 pip
 
-如果用 pip，可以直接安裝 Black：
+若使用 pip，可直接安裝 Black：
 ```bash
 pip install black
 ```
 
 #### 使用 Black
 
-##### 用 Poetry
+##### 使用 Poetry
 
-1. 格式化專案所有 Python 檔案：
+1. 格式化專案中所有 Python 檔案：
     ```bash
     poetry run black .
     ```
 
-2. 格式化指定檔案或資料夾：
+2. 格式化特定檔案或目錄：
     ```bash
     poetry run black path/to/file_or_directory
     ```
 
-##### 用 pip
+##### 使用 pip
 
-1. 格式化專案所有 Python 檔案：
+1. 格式化專案中所有 Python 檔案：
     ```bash
     black .
     ```
 
-2. 格式化指定檔案或資料夾：
+2. 格式化特定檔案或目錄：
     ```bash
     black path/to/file_or_directory
     ```
 
 > [!TIP]
-> 建議你設定編輯器自動在儲存時用 Black 格式化程式碼。大多數現代編輯器都支援這個功能（可用擴充套件或外掛）。
+> 建議設定您的編輯器在儲存時自動使用 Black 格式化程式碼。大多數現代編輯器都支援透過擴充套件或外掛實現此功能。
 
 ## 執行 Co-op Translator
 
-要用 Poetry 在你的環境執行 Co-op Translator，請依照以下步驟：
+若要在您的環境中使用 Poetry 執行 Co-op Translator，請依照以下步驟：
 
-1. 進入你想要進行翻譯測試的資料夾，或建立一個暫時的測試資料夾。
+1. 移動到您想執行翻譯測試的目錄，或建立一個臨時資料夾作為測試用。
 
-2. 執行以下指令。請將 `-l ko` 換成你想翻譯的語言代碼。`-d` 參數代表除錯模式。
+2. 執行以下指令。將 `-l ko` 替換為您想翻譯成的語言代碼。`-d` 參數表示除錯模式。
 
     ```bash
     poetry run co-op-translator translate -l ko -d
     ```
 
 > [!NOTE]
-> 執行指令前，請確認已啟動 Poetry 環境（poetry shell）。
+> 執行指令前，請確保已啟動 Poetry 環境（poetry shell）。
 
-## 貢獻新語言
+## 新增語言貢獻
 
-歡迎大家貢獻新語言支援。開 PR 前，請完成以下步驟，讓審查流程更順利。
+我們歡迎新增語言的貢獻。開啟 PR 前，請完成以下步驟以確保審核順利。
 
-1. 新增語言到字型對應表
+1. 新增語言至字型映射表
    - 編輯 `src/co_op_translator/fonts/font_language_mappings.yml`
-   - 新增一筆資料，包含：
+   - 新增條目，包含：
      - `code`：類似 ISO 的語言代碼（例如 `vi`）
-     - `name`：易懂的顯示名稱
-     - `font`：在 `src/co_op_translator/fonts/` 內有支援該文字的字型
-     - `rtl`：如果是由右至左語言填 `true`，否則填 `false`
+     - `name`：易讀的顯示名稱
+     - `font`：位於 `src/co_op_translator/fonts/` 中支援該文字系統的字型
+     - `rtl`：若為從右至左語言，設為 `true`，否則為 `false`
 
-2. 加入必要字型檔（如有需要）
-   - 如果需要新字型，請確認授權可用於開源發佈
-   - 把字型檔加到 `src/co_op_translator/fonts/`
+2. 包含所需字型檔（如有）
+   - 若需新增字型，請確認授權允許開源發佈
+   - 將字型檔加入 `src/co_op_translator/fonts/`
 
 3. 本地驗證
-   - 執行小範例翻譯（Markdown、圖片、notebook 等）
-   - 確認輸出能正確顯示，包括字型和 RTL 排版（如適用）
+   - 對小範例執行翻譯（Markdown、圖片及筆記本視情況）
+   - 確認輸出正確呈現，包括字型及 RTL 版面（如適用）
 
 4. 更新文件
-   - 確認語言已出現在 `getting_started/supported-languages.md`
-   - 不需要修改 `README_languages_template.md`，它會自動根據支援清單產生
+   - 確保語言出現在 `getting_started/supported-languages.md`
+   - 不需修改 `getting_started/README_languages_template.md`，該檔由支援列表自動生成
 
-5. 開 PR
-   - 說明新增的語言及字型/授權相關事項
-   - 如有可能，附上渲染後的截圖
+5. 開啟 PR
+   - 描述新增語言及字型/授權相關事項
+   - 若可能，附上渲染結果截圖
 
-YAML 範例：
+YAML 範例條目：
 
 ```yaml
 new_lang(code):
@@ -241,30 +241,46 @@ new_lang(code):
   rtl: false
 ```
 
+### 測試新語言
 
-## 維護者
-
-### Commit 訊息與合併策略
-
-為了讓專案的 commit 歷史一致且清楚，我們在使用 **Squash and Merge** 合併策略時，會遵循特定的 commit 訊息格式（只針對最終 commit 訊息）。
-
-當 PR 被合併時，所有 commit 會被壓縮成一個 commit。最終 commit 訊息請依照以下格式，保持歷史乾淨一致。
-
-#### Commit 訊息格式（Squash and Merge）
-
-我們使用以下格式：
+您可以透過以下指令測試新語言：
 
 ```bash
-<type>: <description> (#<PR number>)
+# 建立並啟動虛擬環境
+python -m venv .venv
+# Windows 作業系統
+.venv\Scripts\activate
+# macOS/Linux 作業系統
+source .venv/bin/activate
+# 安裝開發套件
+pip install -e .
+# 執行翻譯
+translate -l "new_lang"
 ```
 
-- **type**：commit 類型。我們使用以下類型：
+## 維護者指南
+
+### 提交訊息與合併策略
+
+為確保專案提交歷史的一致性與清晰度，我們在使用 **Squash and Merge** 策略時，對最終提交訊息採用特定格式。
+
+當拉取請求（PR）合併時，所有個別提交會被壓縮成一個提交。最終提交訊息應遵循以下格式，以維持乾淨且一致的歷史紀錄。
+
+#### 提交訊息格式（Squash and Merge）
+
+提交訊息格式如下：
+
+```bash
+<type>: <description> (#<PR 號碼>)
+```
+
+- **type**：指定提交類別。我們使用以下類型：
   - `Docs`：文件更新。
-  - `Build`：建置系統或依賴相關變更，包括設定檔、CI 工作流程或 Dockerfile。
+  - `Build`：與建置系統或依賴相關的變更，包括設定檔、CI 工作流程或 Dockerfile 更新。
   - `Core`：專案核心功能或特性修改，特別是 `src/co_op_translator/core` 目錄下的檔案。
 
-- **description**：簡要說明這次變更。
-- **PR number**：這次 commit 對應的 PR 編號。
+- **description**：簡潔的變更摘要。
+- **PR number**：關聯的拉取請求編號。
 
 **範例**：
 
@@ -272,31 +288,54 @@ new_lang(code):
 - `Core: Improve handling of image translation (#60)`
 
 > [!NOTE]
-> 目前 **`Docs`**、**`Core`** 和 **`Build`** 前綴會根據 PR 標籤自動加到 PR 標題。只要標籤正確，通常不需要手動修改 PR 標題。你只需要確認一切正確，前綴有自動產生即可。
+> 目前，**`Docs`**、**`Core`** 與 **`Build`** 前綴會根據修改的原始碼標籤自動加到 PR 標題。只要標籤正確，通常不需手動修改 PR 標題，只需確認前綴已正確生成。
 
 #### 合併策略
 
-我們預設使用 **Squash and Merge** 合併 PR。這個策略可以確保 commit 訊息格式一致，即使每個 commit 本身沒有遵守格式。
+我們預設使用 **Squash and Merge** 策略合併拉取請求。此策略確保提交訊息符合格式，即使個別提交不符合。
 
 **原因**：
 
-- 專案歷史乾淨、線性。
-- commit 訊息一致。
-- 減少小 commit（例如「fix typo」）造成的雜訊。
+- 保持乾淨且線性的專案歷史。
+- 提交訊息一致。
+- 減少瑣碎提交（如「修正錯字」）的干擾。
 
-合併時，請確保最終 commit 訊息符合上述格式。
+合併時，請確保最終提交訊息符合上述格式。
 
 **Squash and Merge 範例**
-如果一個 PR 包含以下 commit：
+
+若 PR 包含以下提交：
 
 - `fix typo`
 - `update README`
 - `adjust formatting`
 
-合併後應壓縮成：
+合併後應為：
 `Docs: Improve documentation clarity and formatting (#65)`
+
+### 發佈流程
+
+本節說明維護者如何簡單地發佈 Co-op Translator 新版本。
+
+#### 1. 調整 `pyproject.toml` 中的版本號
+
+1. 決定下一個版本號（遵循語義版本控制：`MAJOR.MINOR.PATCH`）。
+2. 編輯 `pyproject.toml`，更新 `[tool.poetry]` 下的 `version` 欄位。
+3. 開啟專門修改版本號（及自動更新的鎖定/元資料檔案，如有）的拉取請求。
+4. 審核後，使用 **Squash and Merge**，並確保最終提交訊息符合上述格式。
+
+#### 2. 建立 GitHub 發佈版本
+
+1. 前往 GitHub 倉庫頁面，開啟 **Releases** → **Draft a new release**。
+2. 從 `main` 分支建立新標籤（例如 `v0.13.0`）。
+3. 將發佈標題設為相同版本號（例如 `v0.13.0`）。
+4. 點擊 **Generate release notes** 自動填充變更日誌。
+5. 可選擇編輯內容（例如強調新增支援語言或重要變更）。
+6. 發佈版本。
 
 ---
 
-**免責聲明**：
-本文件是使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。雖然我們力求準確，但請注意，自動翻譯可能包含錯誤或不準確之處。原始語言的文件應視為具權威性的來源。對於重要資訊，建議尋求專業人工翻譯。我們不對因使用本翻譯而產生的任何誤解或誤釋承擔責任。
+<!-- CO-OP TRANSLATOR DISCLAIMER START -->
+**免責聲明**：  
+本文件係使用人工智能翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。雖然我哋致力於確保準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。原始文件之母語版本應視為權威來源。對於重要資訊，建議採用專業人工翻譯。我哋對因使用本翻譯而引致之任何誤解或誤釋概不負責。
+<!-- CO-OP TRANSLATOR DISCLAIMER END -->

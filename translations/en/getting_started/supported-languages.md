@@ -1,15 +1,15 @@
 <!--
 CO_OP_TRANSLATOR_METADATA:
 {
-  "original_hash": "badae5ee6451cc1a6e367cfe5ba92efa",
-  "translation_date": "2025-10-15T02:05:59+00:00",
+  "original_hash": "d11fe2b5308a8752a994869658751533",
+  "translation_date": "2025-11-30T09:39:50+00:00",
   "source_file": "getting_started/supported-languages.md",
   "language_code": "en"
 }
 -->
 # Supported languages
 
-The table below shows the languages that **Co-op Translator** currently supports. It lists language codes, language names, and any known issues for each language. If you want to add a new language, please add the language code, name, and the correct font to the `font_language_mappings.yml` file in `src/co_op_translator/fonts/` and submit a pull request after testing.
+The table below shows the languages currently supported by **Co-op Translator**. It includes language codes, language names, and any known issues for each language. If you want to add support for a new language, please add the corresponding language code, name, and appropriate font in the `font_language_mappings.yml` file located at `src/co_op_translator/fonts/` and submit a pull request after testing.
 
 | Language Code | Language Name        | Font                              | RTL Support | Known Issues |
 |---------------|----------------------|-----------------------------------|-------------|--------------|
@@ -63,14 +63,20 @@ The table below shows the languages that **Co-op Translator** currently supports
 | my            | Burmese (Myanmar)    | NotoSansMyanmar-Medium.ttf        | No          | No           |
 | ta            | Tamil                | NotoSansTamil-Medium.ttf          | No          | No           |
 | et            | Estonian             | NotoSans-Medium.ttf               | No          | No           |
+| pcm           | Nigerian Pidgin      | NotoSans-Medium.ttf               | No          | No           |
+| te            | Telugu               | NotoSans-Medium.ttf               | No          | No           |
+| ml            | Malayalam            | NotoSans-Medium.ttf               | No          | No           |
+| kn            | Kannada              | NotoSans-Medium.ttf               | No          | No           |
 
 ## Adding a new language
 
-Want to add a new language? Please follow the contribution guide:
+Interested in adding a new language? Please follow the contribution guide:
 
-- See Contributing: <a href="../CONTRIBUTING.md#contribute-a-new-language">Contribute a new language</a>
+- See Contributing: [Contribute a new language](../CONTRIBUTING.md#contribute-a-new-language)
 
 ---
 
+<!-- CO-OP TRANSLATOR DISCLAIMER START -->
 **Disclaimer**:
 This document has been translated using the AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.
+<!-- CO-OP TRANSLATOR DISCLAIMER END -->

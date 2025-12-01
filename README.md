@@ -2,6 +2,7 @@
 
 _Easily automate the translation of your educational GitHub content into multiple languages to reach a global audience._
 
+![Python 3.10–3.12](https://img.shields.io/badge/python-3.10--3.12-blue)
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
 [![Downloads](https://static.pepy.tech/badge/co-op-translator)](https://pepy.tech/project/co-op-translator)
@@ -65,12 +66,13 @@ docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-transl
 
 ## Minimal setup
 
-1. Create a `.env` file using the template: [.env.template](./.env.template)
-2. Configure one LLM provider (Azure OpenAI or OpenAI)
-3. (Optional) For image translation (`-img`), configure Azure AI Vision
-4. (Recommended) Clean up any previous translations to avoid conflicts (e.g., `translations/`)
-5. (Recommended) Add a translation section to your README using the [README languages template](./getting_started/README_languages_template.md)
-6. See: [Set up Azure AI](./getting_started/set-up-azure-ai.md)
+1. Assert that you have a supported Python version (currently 3.10-3.12). In poetry (pyproject.toml) this is handeled automatically.
+2. Create a `.env` file using the template: [.env.template](./.env.template)
+3. Configure one LLM provider (Azure OpenAI or OpenAI)
+4. (Optional) For image translation (`-img`), configure Azure AI Vision
+5. (Recommended) Clean up any previous translations to avoid conflicts (e.g., `translations/`)
+6. (Recommended) Add a translation section to your README using the [README languages template](./getting_started/README_languages_template.md)
+7. See: [Set up Azure AI](./getting_started/set-up-azure-ai.md)
 
 ## Usage
 

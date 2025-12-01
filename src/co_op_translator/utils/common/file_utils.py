@@ -392,14 +392,15 @@ def reset_translation_directories(
         shutil.rmtree(image_dir)
         logger.info(f"Removed existing translated_images directory: {image_dir}")
 
-    # Create new directories
+    # Create new directories for each language
     for lang_code in language_codes:
         lang_dir = translations_dir / lang_code
         lang_dir.mkdir(parents=True, exist_ok=True)
         logger.info(f"Created directory for {lang_code}: {lang_dir}")
 
-    image_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(f"Created translated_images directory: {image_dir}")
+        image_lang_dir = image_dir / lang_code
+        image_lang_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Created image directory for {lang_code}: {image_lang_dir}")
 
 
 def delete_translated_images_by_language_code(language_code: str, image_dir: Path):
@@ -410,18 +411,21 @@ def delete_translated_images_by_language_code(language_code: str, image_dir: Pat
         language_code (str): The language code to filter files by (e.g., 'ko').
         image_dir (Path): The directory where translated images are stored (e.g., './translated_images').
     """
-    image_dir = Path(image_dir)
+    """
+    Delete the entire image directory for the specified language code, including all its contents.
 
-    if not image_dir.exists():
-        logger.warning(f"Directory {image_dir} does not exist. No images to delete.")
+    Args:
+        language_code (str): The language code whose image folder should be deleted (e.g., 'ko').
+        image_dir (Path): The directory where translated images are stored (e.g., './translated_images').
+    """
+    image_lang_dir = Path(image_dir) / language_code
+
+    if not image_lang_dir.exists():
+        logger.warning(f"Directory {image_lang_dir} does not exist. No images to delete.")
         return
 
-    # Iterate through all files in the directory
-    for image_file in image_dir.iterdir():
-        # Check if the language code is part of the filename
-        if image_file.is_file() and f".{language_code}" in image_file.name:
-            logger.info(f"Deleting image file: {image_file}")
-            image_file.unlink()
+    shutil.rmtree(image_lang_dir)
+    logger.info(f"Deleted the image directory and all files for language: {language_code}")
 
 
 def delete_translated_markdown_files_by_language_code(

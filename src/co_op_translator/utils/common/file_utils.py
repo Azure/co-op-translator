@@ -421,11 +421,15 @@ def delete_translated_images_by_language_code(language_code: str, image_dir: Pat
     image_lang_dir = Path(image_dir) / language_code
 
     if not image_lang_dir.exists():
-        logger.warning(f"Directory {image_lang_dir} does not exist. No images to delete.")
+        logger.warning(
+            f"Directory {image_lang_dir} does not exist. No images to delete."
+        )
         return
 
     shutil.rmtree(image_lang_dir)
-    logger.info(f"Deleted the image directory and all files for language: {language_code}")
+    logger.info(
+        f"Deleted the image directory and all files for language: {language_code}"
+    )
 
 
 def delete_translated_markdown_files_by_language_code(

@@ -58,7 +58,7 @@ tornado>=6.4.1,<6.6.0
 tqdm~=4.66.4
 traitlets~=5.14.3
 typing_extensions~=4.12.2
-urllib3>=2.2.1,<2.6.0
+urllib3>=2.2.1,<2.7.0
 wcwidth~=0.2.13
 
 # Text processing

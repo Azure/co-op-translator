@@ -72,7 +72,6 @@ class AzureMarkdownTranslator(MarkdownTranslator):
             req_settings = self.kernel.get_prompt_execution_settings_from_service_id(
                 LLMProvider.AZURE_OPENAI.value
             )
-            req_settings.max_tokens = 4096
             req_settings.temperature = 0
             req_settings.top_p = 0.8
 

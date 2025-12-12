@@ -65,7 +65,6 @@ class TextTranslator(ABC):
                 {"role": "user", "content": prompt},
             ],
             response_format=TranslationResponse,
-            max_tokens=2000,
             temperature=0,
         )
 
@@ -92,7 +91,6 @@ class TextTranslator(ABC):
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt},
             ],
-            max_tokens=2000,
             temperature=0,
         )
         translated_text = remove_code_backticks(response.choices[0].message.content)

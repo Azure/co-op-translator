@@ -91,12 +91,18 @@ Later, when building your application, you'll likely configure it using these co
 AZURE_AI_SERVICE_API_KEY="your_azure_ai_service_api_key" # e.g., 21xasd...
 AZURE_AI_SERVICE_ENDPOINT="https://your_azure_ai_service_endpoint.cognitiveservices.azure.com/"
 
+# Optional fallback sets: duplicate variables with suffix _1/_2 (same index for all variables in the set)
+AZURE_AI_SERVICE_API_KEY_1="your_azure_ai_service_api_key_1"
+AZURE_AI_SERVICE_ENDPOINT_1="https://your_azure_ai_service_endpoint_1.cognitiveservices.azure.com/"
+
 # Azure OpenAI Credentials (Required for text translation)
 AZURE_OPENAI_API_KEY="your_azure_openai_api_key" # e.g., 21xasd...
 AZURE_OPENAI_ENDPOINT="https://your_azure_openai_endpoint.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="your_model_name" # e.g., gpt-4o
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="your_deployment_name" # e.g., cooptranslator-gpt4o
 AZURE_OPENAI_API_VERSION="your_api_version" # e.g., 2024-12-01-preview
+
+# Optional fallback sets: duplicate the full AZURE_OPENAI_* set with suffix _1/_2 (same index for all variables)
 ```
 
 ---

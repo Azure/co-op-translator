@@ -70,9 +70,10 @@ docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-transl
 2. Create a `.env` file using the template: [.env.template](./.env.template)
 3. Configure one LLM provider (Azure OpenAI or OpenAI)
 4. (Optional) For image translation (`-img`), configure Azure AI Vision
-5. (Recommended) Clean up any previous translations to avoid conflicts (e.g., `translations/`)
-6. (Recommended) Add a translation section to your README using the [README languages template](./getting_started/README_languages_template.md)
-7. See: [Set up Azure AI](./getting_started/set-up-azure-ai.md)
+5. (Optional) You can configure multiple credential sets by duplicating variables with suffixes like `_1`, `_2`, etc. All variables in a set must share the same suffix.
+6. (Recommended) Clean up any previous translations to avoid conflicts (e.g., `translations/`)
+7. (Recommended) Add a translation section to your README using the [README languages template](./getting_started/README_languages_template.md)
+8. See: [Set up Azure AI](./getting_started/set-up-azure-ai.md)
 
 ## Usage
 

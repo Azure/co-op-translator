@@ -20,13 +20,16 @@ def azure_openai_env_vars():
 
 @pytest.fixture
 def openai_env_vars():
-    return {"OPENAI_API_KEY": "fake_openai_key"}
+    return {
+        "OPENAI_API_KEY": "fake_openai_key",
+        "OPENAI_CHAT_MODEL_ID": "gpt-4o",
+    }
 
 
 @pytest.fixture
 def vision_env_vars():
     return {
-        "AZURE_SUBSCRIPTION_KEY": "fake_subscription_key",
+        "AZURE_AI_SERVICE_API_KEY": "fake_ai_service_key",
         "AZURE_AI_SERVICE_ENDPOINT": "https://fake-ai-service-endpoint.com",
     }
 

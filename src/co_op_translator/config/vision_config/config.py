@@ -6,6 +6,7 @@ from co_op_translator.config.vision_config.azure_computer_vision import (
     AzureAIVisionConfig,
 )
 from az_ai_healthcheck import check_azure_ai_vision
+from co_op_translator.utils.common.env_set_utils import set_preferred_env_set
 
 logger = logging.getLogger(__name__)
 
@@ -90,21 +91,32 @@ class VisionConfig:
         if provider != VisionProvider.AZURE_COMPUTER_VISION:
             return
 
-        endpoint = AzureAIVisionConfig.get_endpoint()
-        api_key = AzureAIVisionConfig.get_api_key()
-        if not endpoint or not api_key:
+        env_sets = AzureAIVisionConfig.get_env_sets()
+        if not env_sets:
             raise ValueError(
                 "Azure AI Service configuration missing required values. Ensure AZURE_AI_SERVICE_ENDPOINT and AZURE_AI_SERVICE_API_KEY are set."
             )
 
-        # Use healthcheck helper with default 50x50 in-memory PNG
-        res = check_azure_ai_vision(
-            endpoint=endpoint,
-            api_key=api_key,
-            timeout=10.0,
-        )
+        last_message: Optional[str] = None
+        for env_set in env_sets:
+            endpoint = env_set.values.get("AZURE_AI_SERVICE_ENDPOINT")
+            api_key = env_set.values.get("AZURE_AI_SERVICE_API_KEY")
+            if not endpoint or not api_key:
+                continue
 
-        if res.ok:
-            return True
-        # Fail on any non-ok with package-provided message
-        raise ValueError(res.message)
+            try:
+                res = check_azure_ai_vision(
+                    endpoint=endpoint,
+                    api_key=api_key,
+                    timeout=10.0,
+                )
+            except Exception as e:
+                last_message = str(e)
+                continue
+
+            if res.ok:
+                set_preferred_env_set(AzureAIVisionConfig._GROUP, env_set.index)
+                return True
+            last_message = res.message
+
+        raise ValueError(last_message or "Azure AI Vision connectivity check failed")

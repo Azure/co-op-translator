@@ -88,7 +88,7 @@ urllib3 = "^2.2.1"
 wcwidth = "^0.2.13"
 arabic-reshaper = "^3.0.0"
 python-bidi = "^0.6.6"
-az-ai-healthcheck = { version = "^0.1.5", extras = ["vision"] }
+az-ai-healthcheck = { version = "^0.1.6", extras = ["vision"] }
 ai-healthcheck = "^0.1.1"
 markdown-it-py = "^3.0.0"
 

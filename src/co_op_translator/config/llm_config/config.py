@@ -8,6 +8,7 @@ from az_ai_healthcheck import check_azure_openai
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
 from co_op_translator.config.llm_config.openai import OpenAIConfig
+from co_op_translator.utils.common.env_set_utils import any_env_var_present, set_preferred_env_set
 
 logger = logging.getLogger(__name__)
 
@@ -36,26 +37,27 @@ class LLMConfig:
         - "NO_CONFIG" if no variables are set at all.
         - "Incomplete" if some are set but not all (or required ones are missing).
         """
-        non_empty_count = sum(bool(v) for v in env_vars.values())
-
         if provider == LLMProvider.OPENAI:
-            # If there's no environment variable filled at all
-            if non_empty_count == 0:
+            bases = ["OPENAI_API_KEY", "OPENAI_CHAT_MODEL_ID", "OPENAI_ORG_ID", "OPENAI_BASE_URL"]
+            if not any_env_var_present(bases):
                 raise ValueError("NO_CONFIG_OPENAI")
 
-            # If OPENAI_API_KEY is missing or empty, it's incomplete
             if not env_vars.get("OPENAI_API_KEY"):
                 raise ValueError(
                     "Incomplete OpenAI configuration. The 'OPENAI_API_KEY' must be set."
                 )
 
+            if not env_vars.get("OPENAI_CHAT_MODEL_ID"):
+                raise ValueError(
+                    "Incomplete OpenAI configuration. The 'OPENAI_CHAT_MODEL_ID' must be set."
+                )
+
         elif provider == LLMProvider.AZURE_OPENAI:
-            # If there's no environment variable filled at all
-            if non_empty_count == 0:
+            bases = list(env_vars.keys())
+            if not any_env_var_present(bases):
                 raise ValueError("NO_CONFIG_AZURE")
 
-            # If some but not all are filled, it's incomplete
-            if non_empty_count < len(env_vars):
+            if any(v is None or not str(v).strip() for v in env_vars.values()):
                 raise ValueError(
                     f"Incomplete {provider.name} configuration. Ensure all required environment variables are set."
                 )
@@ -156,55 +158,76 @@ class LLMConfig:
         provider = cls.get_available_provider()
 
         if provider == LLMProvider.AZURE_OPENAI:
-            endpoint = (AzureOpenAIConfig.get_endpoint() or "").rstrip("/")
-            api_version = AzureOpenAIConfig.get_api_version()
-            api_key = AzureOpenAIConfig.get_api_key()
-            deployment = AzureOpenAIConfig.get_chat_deployment_name()
-
-            if not endpoint or not api_version or not api_key or not deployment:
+            env_sets = AzureOpenAIConfig.get_env_sets()
+            if not env_sets:
                 raise ValueError(
                     "Azure OpenAI configuration missing required values. Ensure AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_VERSION, AZURE_OPENAI_API_KEY, and AZURE_OPENAI_CHAT_DEPLOYMENT_NAME are set."
                 )
 
-            # Use external healthcheck helper for minimal probe
+            last_message: Optional[str] = None
+            for env_set in env_sets:
+                endpoint = (env_set.values.get("AZURE_OPENAI_ENDPOINT") or "").rstrip("/")
+                api_version = env_set.values.get("AZURE_OPENAI_API_VERSION")
+                api_key = env_set.values.get("AZURE_OPENAI_API_KEY")
+                deployment = env_set.values.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
 
-            res = check_azure_openai(
-                endpoint=endpoint,
-                api_key=api_key,
-                api_version=api_version,
-                deployment=deployment,
-                timeout=10.0,
-            )
+                if not endpoint or not api_version or not api_key or not deployment:
+                    continue
 
-            if res.ok:
-                return True
-            # Fail on any non-ok with package-provided message
-            raise ValueError(res.message)
+                try:
+                    res = check_azure_openai(
+                        endpoint=endpoint,
+                        api_key=api_key,
+                        api_version=api_version,
+                        deployment=deployment,
+                        timeout=10.0,
+                    )
+                except Exception as e:
+                    last_message = str(e)
+                    continue
+
+                if res.ok:
+                    set_preferred_env_set(AzureOpenAIConfig._GROUP, env_set.index)
+                    return True
+                last_message = res.message
+
+            raise ValueError(last_message or "Azure OpenAI connectivity check failed")
 
         elif provider == LLMProvider.OPENAI:
-            api_key = OpenAIConfig.get_api_key()
-            base_url = OpenAIConfig.get_base_url()
-            org_id = OpenAIConfig.get_org_id()
-            model_id = OpenAIConfig.get_chat_model_id()
-
-            if not api_key:
-                raise ValueError("OPENAI_API_KEY must be set for OpenAI provider.")
-            if not model_id:
+            env_sets = OpenAIConfig.get_env_sets()
+            if not env_sets:
                 raise ValueError(
-                    "OPENAI_CHAT_MODEL_ID must be set for OpenAI provider."
+                    "OpenAI configuration missing required values. Ensure OPENAI_API_KEY and OPENAI_CHAT_MODEL_ID are set."
                 )
 
-            res = check_openai(
-                endpoint=base_url,
-                api_key=api_key,
-                model=model_id,
-                org_id=org_id,
-                timeout=10.0,
-            )
+            last_message: Optional[str] = None
+            for env_set in env_sets:
+                api_key = env_set.values.get("OPENAI_API_KEY")
+                base_url = env_set.values.get("OPENAI_BASE_URL")
+                org_id = env_set.values.get("OPENAI_ORG_ID")
+                model_id = env_set.values.get("OPENAI_CHAT_MODEL_ID")
 
-            if res.ok:
-                return True
-            raise ValueError(res.message)
+                if not api_key or not model_id:
+                    continue
+
+                try:
+                    res = check_openai(
+                        endpoint=base_url,
+                        api_key=api_key,
+                        model=model_id,
+                        org_id=org_id,
+                        timeout=10.0,
+                    )
+                except Exception as e:
+                    last_message = str(e)
+                    continue
+
+                if res.ok:
+                    set_preferred_env_set(OpenAIConfig._GROUP, env_set.index)
+                    return True
+                last_message = res.message
+
+            raise ValueError(last_message or "OpenAI connectivity check failed")
         else:
             # Should not happen because get_available_provider() would have raised earlier otherwise
             raise ValueError("No LLM provider available for connectivity validation.")

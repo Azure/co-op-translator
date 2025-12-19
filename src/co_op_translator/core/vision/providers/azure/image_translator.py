@@ -37,6 +37,8 @@ class AzureImageTranslator(ImageTranslator):
         if not env_sets:
             return super().extract_line_bounding_boxes(image_path)
 
+        logger.debug("Azure AI Vision env sets available: %s", [s.index for s in env_sets])
+
         last_exc = None
         for env_set in env_sets:
             set_preferred_env_set(AzureAIVisionConfig._GROUP, env_set.index)
@@ -49,17 +51,20 @@ class AzureImageTranslator(ImageTranslator):
                     status_code = getattr(e.response, "status_code", None)
 
                 last_exc = e
-                if status_code in {401, 403, 408, 429, 500, 502, 503, 504}:
+                if status_code in {401, 403, 408, 409, 429, 500, 502, 503, 504}:
                     logger.warning(
-                        "Azure AI Vision request failed (status=%s); trying next env set",
+                        "Azure AI Vision request failed (status=%s) on env set %s; trying next env set",
                         status_code,
+                        env_set.index,
                     )
                     continue
                 raise
             except ServiceRequestError as e:
                 last_exc = e
                 logger.warning(
-                    "Azure AI Vision request error; trying next env set: %s", str(e)
+                    "Azure AI Vision request error on env set %s; trying next env set: %s",
+                    env_set.index,
+                    str(e),
                 )
                 continue
 

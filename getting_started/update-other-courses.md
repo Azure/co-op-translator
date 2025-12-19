@@ -35,3 +35,20 @@ If you want to update the standardized content that appears in all Beginners rep
 4. The next time Co‑op Translator runs (CLI or GitHub Action) in a target repo, it will automatically sync the updated section
 
 This ensures a single source of truth for the "Other Courses" content across all Beginners repositories.
+
+
+## Repo Sizes 
+
+The repos can become large due to the number of languages translated to help end users provide guidance on how to use clone - sparse to only clone necessary languages and not the entire repo 
+
+```
+> **Prefer to Clone Locally?**
+>
+> This repository includes 50+ language translations which significantly increases the download size. To clone without translations, use sparse checkout:
+> ```bash
+> git clone --filter=blob:none --sparse https://github.com/*****.git
+> cd *****
+> git sparse-checkout set --no-cone '/*' '!translations' '!translated_images'
+> ```
+> This gives you everything you need to complete the course with a much faster download.
+```

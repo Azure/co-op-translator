@@ -184,9 +184,9 @@ def translate_command(
             click.echo(f"📄 Logs will be saved to: {log_file_path}")
 
         # Now run the LLM health check; raises on failure
-        LLMConfig.validate_connectivity()
-        logger.info("LLM health check passed.")
-        click.echo("✅ LLM health check passed.")
+        # LLMConfig.validate_connectivity()
+        # logger.info("LLM health check passed.")
+        # click.echo("✅ LLM health check passed.")
 
         # If images are selected, validate Vision connectivity as well
         if "images" in translation_types:

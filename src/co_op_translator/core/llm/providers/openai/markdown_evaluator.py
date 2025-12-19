@@ -64,8 +64,6 @@ class OpenAIMarkdownEvaluator(MarkdownEvaluator):
             req_settings = self.kernel.get_prompt_execution_settings_from_service_id(
                 LLMProvider.OPENAI.value
             )
-            req_settings.temperature = 0
-            req_settings.top_p = 0.95
 
             # Use different logging format for system vs. content prompts
             if index == "disclaimer" or isinstance(index, str):

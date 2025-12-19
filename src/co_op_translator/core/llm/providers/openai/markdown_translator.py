@@ -1,7 +1,6 @@
 from pathlib import Path
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
-from semantic_kernel.prompt_template.prompt_template_config import PromptTemplateConfig
 from semantic_kernel.connectors.ai.chat_completion_client_base import (
     ChatCompletionClientBase,
 )
@@ -10,7 +9,7 @@ from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.utils.llm.markdown_utils import SPLIT_DELIMITER
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.config.llm_config.openai import OpenAIConfig
-from co_op_translator.utils.common.env_set_utils import set_preferred_env_set
+from co_op_translator.utils.common.env_set_utils import run_with_env_set_fallback_async
 import logging
 import time
 import asyncio
@@ -36,6 +35,8 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
             root_dir, translations_dir=translations_dir, image_dir=image_dir
         )
         self.kernel = self._initialize_kernel()
+        active = OpenAIConfig.get_active_env_set()
+        self._env_set_index = active.index if active is not None else None
 
     def _initialize_kernel(self):
         """Create and configure Semantic Kernel with OpenAI service.
@@ -56,47 +57,11 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
         )
         return kernel
 
-    def _extract_status_code(self, exc: Exception):
-        candidates = [
-            exc,
-            getattr(exc, "__cause__", None),
-            getattr(exc, "__context__", None),
-        ]
-        if getattr(exc, "args", None):
-            candidates.extend(list(exc.args))
-
-        for obj in candidates:
-            if obj is None:
-                continue
-            if not isinstance(obj, BaseException):
-                continue
-
-            status_code = getattr(obj, "status_code", None)
-            if status_code is None and getattr(obj, "response", None) is not None:
-                status_code = getattr(obj.response, "status_code", None)
-            if status_code is not None:
-                return status_code
-
-        return None
-
-    def _is_transient_error(self, exc: Exception) -> bool:
-        if isinstance(exc, (ValueError, TypeError)):
-            return False
-        status_code = self._extract_status_code(exc)
-        if status_code in {401, 403, 408, 409, 429, 500, 502, 503, 504}:
-            return True
-        exc_name = type(exc).__name__
-        if exc_name in {"APIConnectionError", "APITimeoutError"}:
-            return True
-        return False
-
     async def _run_prompt_once(self, prompt: str, index: int, total: int) -> str:
         # Configure model parameters for translation quality
         req_settings = self.kernel.get_prompt_execution_settings_from_service_id(
             LLMProvider.OPENAI.value
         )
-        req_settings.temperature = 0
-        req_settings.top_p = 0.8
 
         # Use different logging format for system vs. content prompts
         if index == "disclaimer" or isinstance(index, str):
@@ -154,28 +119,23 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
                 logger.error(f"Error in prompt {index}/{total} - {prompt}: {e}")
                 return ""
 
-        logger.debug("OpenAI env sets available: %s", [s.index for s in env_sets])
+        async def _call_once():
+            return await self._run_prompt_once(prompt, index, total)
 
-        last_exc: Exception | None = None
-        for attempt_idx, env_set in enumerate(env_sets):
-            if attempt_idx > 0:
-                set_preferred_env_set(OpenAIConfig._GROUP, env_set.index)
+        def _on_env_set_change(env_set):
+            if self._env_set_index != env_set.index:
                 self.kernel = self._initialize_kernel()
-            try:
-                return await self._run_prompt_once(prompt, index, total)
-            except Exception as e:
-                last_exc = e
-                status_code = self._extract_status_code(e)
-                if self._is_transient_error(e):
-                    logger.warning(
-                        "OpenAI request failed (status=%s); trying next env set (next_index=%s)",
-                        status_code,
-                        env_set.index,
-                    )
-                    continue
-                logger.error(f"Error in prompt {index}/{total} - {prompt}: {e}")
-                return ""
+                self._env_set_index = env_set.index
 
-        if last_exc is not None:
-            logger.error(f"Error in prompt {index}/{total} - {prompt}: {last_exc}")
-        return ""
+        try:
+            return await run_with_env_set_fallback_async(
+                env_sets=env_sets,
+                group=OpenAIConfig._GROUP,
+                op_name=f"OpenAI prompt {index}/{total}",
+                fn=_call_once,
+                on_env_set_change=_on_env_set_change,
+                call_on_env_set_change_for_first_attempt=True,
+            )
+        except Exception as e:
+            logger.error(f"Error in prompt {index}/{total} - {prompt}: {e}")
+            return ""

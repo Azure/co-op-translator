@@ -1,12 +1,11 @@
 import logging
 from azure.ai.vision.imageanalysis import ImageAnalysisClient
-from azure.core.exceptions import HttpResponseError, ServiceRequestError
 from azure.core.credentials import AzureKeyCredential
 from co_op_translator.core.vision.image_translator import ImageTranslator
 from co_op_translator.config.vision_config.azure_computer_vision import (
     AzureAIVisionConfig,
 )
-from co_op_translator.utils.common.env_set_utils import set_preferred_env_set
+from co_op_translator.utils.common.env_set_utils import run_with_env_set_fallback
 
 logger = logging.getLogger(__name__)
 
@@ -37,38 +36,14 @@ class AzureImageTranslator(ImageTranslator):
         if not env_sets:
             return super().extract_line_bounding_boxes(image_path)
 
-        logger.debug("Azure AI Vision env sets available: %s", [s.index for s in env_sets])
+        def _call_once():
+            return super(AzureImageTranslator, self).extract_line_bounding_boxes(
+                image_path
+            )
 
-        last_exc = None
-        for env_set in env_sets:
-            set_preferred_env_set(AzureAIVisionConfig._GROUP, env_set.index)
-            try:
-                result = super().extract_line_bounding_boxes(image_path)
-                return result
-            except HttpResponseError as e:
-                status_code = getattr(e, "status_code", None)
-                if status_code is None and getattr(e, "response", None) is not None:
-                    status_code = getattr(e.response, "status_code", None)
-
-                last_exc = e
-                if status_code in {401, 403, 408, 409, 429, 500, 502, 503, 504}:
-                    logger.warning(
-                        "Azure AI Vision request failed (status=%s) on env set %s; trying next env set",
-                        status_code,
-                        env_set.index,
-                    )
-                    continue
-                raise
-            except ServiceRequestError as e:
-                last_exc = e
-                logger.warning(
-                    "Azure AI Vision request error on env set %s; trying next env set: %s",
-                    env_set.index,
-                    str(e),
-                )
-                continue
-
-        if last_exc is not None:
-            raise last_exc
-
-        return super().extract_line_bounding_boxes(image_path)
+        return run_with_env_set_fallback(
+            env_sets=env_sets,
+            group=AzureAIVisionConfig._GROUP,
+            op_name="Azure AI Vision READ",
+            fn=_call_once,
+        )

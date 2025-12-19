@@ -64,8 +64,6 @@ class AzureMarkdownEvaluator(MarkdownEvaluator):
             req_settings = self.kernel.get_prompt_execution_settings_from_service_id(
                 LLMProvider.AZURE_OPENAI.value
             )
-            req_settings.temperature = 0
-            req_settings.top_p = 0.95
 
             # Log progress
             logger.info(f"Running evaluation prompt {index}/{total}")

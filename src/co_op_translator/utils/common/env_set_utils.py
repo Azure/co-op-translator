@@ -1,6 +1,17 @@
 import os
+import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence
+from typing import Any, Callable, Dict, List, Optional, Sequence, TypeVar
+
+
+logger = logging.getLogger(__name__)
+
+
+_DEFAULT_FALLBACK_STATUS_CODES = {400, 401, 403, 408, 409, 429, 500, 502, 503, 504}
+_DEFAULT_FALLBACK_EXCEPTION_NAMES = {"APIConnectionError", "APITimeoutError", "ServiceRequestError"}
+
+
+T = TypeVar("T")
 
 
 @dataclass(frozen=True)
@@ -19,6 +30,154 @@ def set_preferred_env_set(group: str, index: int) -> None:
 
 def get_preferred_env_set(group: str) -> Optional[int]:
     return _preferred_env_set_index.get(group)
+
+
+def iter_exception_candidates(exc: Exception):
+    candidates = [
+        exc,
+        getattr(exc, "__cause__", None),
+        getattr(exc, "__context__", None),
+    ]
+    if getattr(exc, "args", None):
+        candidates.extend(list(exc.args))
+
+    for obj in candidates:
+        if obj is None:
+            continue
+        if not isinstance(obj, BaseException):
+            continue
+        yield obj
+
+
+def extract_status_code(exc: Exception) -> Optional[int]:
+    for obj in iter_exception_candidates(exc):
+        status_code = getattr(obj, "status_code", None)
+        if status_code is None and getattr(obj, "response", None) is not None:
+            status_code = getattr(obj.response, "status_code", None)
+        if status_code is not None:
+            try:
+                return int(status_code)
+            except Exception:
+                return status_code
+
+    return None
+
+
+def is_fallback_eligible_error(
+    exc: Exception,
+    *,
+    status_codes: Optional[set[int]] = None,
+    exception_names: Optional[set[str]] = None,
+) -> bool:
+    if isinstance(exc, (ValueError, TypeError)):
+        return False
+
+    status_codes = status_codes or _DEFAULT_FALLBACK_STATUS_CODES
+    exception_names = exception_names or _DEFAULT_FALLBACK_EXCEPTION_NAMES
+
+    status_code = extract_status_code(exc)
+    if status_code in status_codes:
+        return True
+
+    for obj in iter_exception_candidates(exc):
+        if type(obj).__name__ in exception_names:
+            return True
+
+    return False
+
+
+def run_with_env_set_fallback(
+    *,
+    env_sets: Sequence[EnvSet],
+    group: str,
+    op_name: str,
+    fn: Callable[[], T],
+    on_env_set_change: Optional[Callable[[EnvSet], None]] = None,
+    is_eligible_error: Optional[Callable[[Exception], bool]] = None,
+    log_env_sets: bool = True,
+    call_on_env_set_change_for_first_attempt: bool = False,
+) -> T:
+    if not env_sets:
+        return fn()
+
+    if log_env_sets:
+        logger.debug("%s env sets available: %s", op_name, [s.index for s in env_sets])
+
+    last_exc: Exception | None = None
+    for attempt_idx, env_set in enumerate(env_sets):
+        set_preferred_env_set(group, env_set.index)
+        if on_env_set_change is not None and (
+            call_on_env_set_change_for_first_attempt or attempt_idx > 0
+        ):
+            on_env_set_change(env_set)
+
+        try:
+            return fn()
+        except Exception as e:
+            last_exc = e
+            eligible = (
+                is_eligible_error(e) if is_eligible_error is not None else is_fallback_eligible_error(e)
+            )
+            if eligible:
+                logger.warning(
+                    "%s failed (status=%s) on env set %s; trying next env set",
+                    op_name,
+                    extract_status_code(e),
+                    env_set.index,
+                )
+                continue
+            raise
+
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError(f"{op_name} failed without exception")
+
+
+async def run_with_env_set_fallback_async(
+    *,
+    env_sets: Sequence[EnvSet],
+    group: str,
+    op_name: str,
+    fn: Callable[[], Any],
+    on_env_set_change: Optional[Callable[[EnvSet], None]] = None,
+    is_eligible_error: Optional[Callable[[Exception], bool]] = None,
+    log_env_sets: bool = True,
+    call_on_env_set_change_for_first_attempt: bool = False,
+) -> Any:
+    if not env_sets:
+        return await fn()
+
+    if log_env_sets:
+        logger.debug("%s env sets available: %s", op_name, [s.index for s in env_sets])
+
+    last_exc: Exception | None = None
+    for attempt_idx, env_set in enumerate(env_sets):
+        set_preferred_env_set(group, env_set.index)
+        if on_env_set_change is not None and (
+            call_on_env_set_change_for_first_attempt or attempt_idx > 0
+        ):
+            on_env_set_change(env_set)
+
+        try:
+            return await fn()
+        except Exception as e:
+            last_exc = e
+            eligible = (
+                is_eligible_error(e) if is_eligible_error is not None else is_fallback_eligible_error(e)
+            )
+            if eligible:
+                logger.warning(
+                    "%s failed (status=%s) on env set %s; trying next env set",
+                    op_name,
+                    extract_status_code(e),
+                    env_set.index,
+                )
+                continue
+            raise
+
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError(f"{op_name} failed without exception")
 
 
 def _env_name(base: str, index: int) -> str:

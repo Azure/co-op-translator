@@ -5,6 +5,9 @@ from co_op_translator.utils.llm.text_utils import (
     remove_code_backticks,
     TranslationResponse,
 )
+from co_op_translator.utils.common.env_set_utils import run_with_env_set_fallback
+from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
+from co_op_translator.config.llm_config.openai import OpenAIConfig
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.config.font_config import FontConfig
@@ -21,6 +24,23 @@ class TextTranslator(ABC):
     def __init__(self):
         self.client = self.get_openai_client()
         self.font_config = FontConfig()
+
+        env_sets, _group = self._get_env_sets_and_group()
+        self._env_set_index = env_sets[0].index if env_sets else None
+
+    def _get_env_sets_and_group(self):
+        module = self.__class__.__module__
+        if ".providers.azure." in module:
+            return AzureOpenAIConfig.get_env_sets(), AzureOpenAIConfig._GROUP
+        if ".providers.openai." in module:
+            return OpenAIConfig.get_env_sets(), OpenAIConfig._GROUP
+
+        provider = LLMConfig.get_available_provider()
+        if provider == LLMProvider.AZURE_OPENAI:
+            return AzureOpenAIConfig.get_env_sets(), AzureOpenAIConfig._GROUP
+        if provider == LLMProvider.OPENAI:
+            return OpenAIConfig.get_env_sets(), OpenAIConfig._GROUP
+        return [], ""
 
     @abstractmethod
     def get_openai_client(self):
@@ -55,24 +75,42 @@ class TextTranslator(ABC):
         language_name = self.font_config.get_language_name(target_language)
         prompt = gen_image_translation_prompt(text_data, target_language, language_name)
 
-        response = self.client.chat.completions.parse(
-            model=self.get_model_name(),
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a translator. Return exactly the same number of translations as input lines.",
-                },
-                {"role": "user", "content": prompt},
-            ],
-            response_format=TranslationResponse,
-            temperature=0,
-        )
+        def _call_once():
+            response = self.client.chat.completions.parse(
+                model=self.get_model_name(),
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a translator. Return exactly the same number of translations as input lines.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                response_format=TranslationResponse,
+            )
 
-        translations = response.choices[0].message.parsed.translations
-        logger.debug(
-            f"Structured output: {len(translations)} translations for {len(text_data)} input lines"
+            translations = response.choices[0].message.parsed.translations
+            logger.debug(
+                f"Structured output: {len(translations)} translations for {len(text_data)} input lines"
+            )
+            return translations
+
+        env_sets, group = self._get_env_sets_and_group()
+        if not env_sets or not group:
+            return _call_once()
+
+        def _on_env_set_change(env_set):
+            if self._env_set_index != env_set.index:
+                self.client = self.get_openai_client()
+                self._env_set_index = env_set.index
+
+        return run_with_env_set_fallback(
+            env_sets=env_sets,
+            group=group,
+            op_name="translate_image_text",
+            fn=_call_once,
+            on_env_set_change=_on_env_set_change,
+            call_on_env_set_change_for_first_attempt=True,
         )
-        return translations
 
     def translate_text(self, text: str, target_language: str) -> str:
         """Translate plain text to specified target language.
@@ -85,16 +123,34 @@ class TextTranslator(ABC):
             Translated text content
         """
         prompt = f"Translate the following text into {target_language}:\n\n{text}"
-        response = self.client.chat.completions.create(
-            model=self.get_model_name(),
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0,
+
+        def _call_once():
+            response = self.client.chat.completions.create(
+                model=self.get_model_name(),
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt},
+                ],
+            )
+            return remove_code_backticks(response.choices[0].message.content)
+
+        env_sets, group = self._get_env_sets_and_group()
+        if not env_sets or not group:
+            return _call_once()
+
+        def _on_env_set_change(env_set):
+            if self._env_set_index != env_set.index:
+                self.client = self.get_openai_client()
+                self._env_set_index = env_set.index
+
+        return run_with_env_set_fallback(
+            env_sets=env_sets,
+            group=group,
+            op_name="translate_text",
+            fn=_call_once,
+            on_env_set_change=_on_env_set_change,
+            call_on_env_set_change_for_first_attempt=True,
         )
-        translated_text = remove_code_backticks(response.choices[0].message.content)
-        return translated_text
 
     @classmethod
     def create(cls) -> "TextTranslator":

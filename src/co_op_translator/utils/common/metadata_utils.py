@@ -146,15 +146,25 @@ def extract_content_without_metadata(content: str) -> str:
     Returns:
         str: The content with metadata comments removed
     """
-    # Remove metadata comment block
+    # Remove metadata comment block while preserving surrounding line structure.
+    # We only remove the comment itself and at most a single following newline,
+    # so the overall number of blank lines in the document stays stable.
     metadata_start = content.find("<!--\nCO_OP_TRANSLATOR_METADATA:")
     if metadata_start != -1:
-        comment_end = content.find("-->\n", metadata_start)
+        # Find the closing marker first (independent of trailing newline)
+        comment_end = content.find("-->", metadata_start)
         if comment_end != -1:
-            # Remove the metadata block and the newline after it
-            content = content[:metadata_start] + content[comment_end + 4 :]
+            end_index = comment_end + len("-->")
+            # If there is exactly one newline immediately after the closing
+            # marker, skip it as part of the metadata block removal.
+            if end_index < len(content) and content[end_index] == "\n":
+                end_index += 1
 
-    return content.strip()
+            content = content[:metadata_start] + content[end_index:]
+
+    # Do not strip the entire document; callers rely on preserving
+    # original blank lines, especially at the end of README files.
+    return content
 
 
 def format_metadata_comment(metadata: dict) -> str:

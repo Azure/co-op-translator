@@ -386,7 +386,7 @@ class MarkdownEvaluator(ABC):
             # Create updated content with new metadata followed by original content
             updated_content = metadata_comment
             if content_without_metadata.strip():
-                updated_content += "\n" + content_without_metadata
+                updated_content += content_without_metadata
 
             # Write back to file
             with open(translated_file, "w", encoding="utf-8") as f:

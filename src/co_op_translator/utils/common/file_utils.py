@@ -40,7 +40,12 @@ def _replace_between_markers_generic(
     pieces.append(new_block.strip())
     if after:
         pieces.append(after)
-    return "\n\n".join(pieces) + ("\n" if readme_text.endswith("\n") else "")
+    result = "\n\n".join(pieces)
+    if readme_text.endswith("\n"):
+        result = result.rstrip("\n") + "\n"
+    else:
+        result = result.rstrip("\n")
+    return result
 
 
 def replace_between_markers(readme_text: str, new_block: str) -> str:

@@ -15,6 +15,7 @@ from co_op_translator.utils.common.file_utils import (
     get_filename_and_extension,
     generate_translated_filename,
     handle_empty_document,
+    migrate_translated_image_filenames,
 )
 from co_op_translator.utils.common.metadata_utils import calculate_file_hash
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
@@ -577,6 +578,23 @@ class TranslationManager:
         all_errors = []
 
         try:
+            # Migrate legacy translated image filenames and update markdown links
+            try:
+                rename_map = migrate_translated_image_filenames(
+                    self.image_dir, self.language_codes
+                )
+                if rename_map:
+                    migrated_md = self.directory_manager.migrate_markdown_image_links(
+                        rename_map
+                    )
+                    logger.info(
+                        "Migrated %d image files and updated %d markdown files",
+                        len(rename_map),
+                        migrated_md,
+                    )
+            except Exception as e:
+                logger.warning(f"Image filename/link migration skipped: {e}")
+
             # Clean up files no longer needed in target directories
             logger.info("Removing orphaned files...")
             with tqdm(total=1, desc="🧹 Cleaning orphaned files") as cleanup_progress:

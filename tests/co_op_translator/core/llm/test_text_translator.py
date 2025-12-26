@@ -8,10 +8,22 @@ class MockTextTranslator(TextTranslator):
     """Mock implementation of TextTranslator for testing."""
 
     def __init__(self):
+        # Do not call super().__init__ to avoid real env/config lookups.
+        # Instead, manually set the attributes used by translate_image_text.
         self.client = self.get_openai_client()
-        # Mock font_config
         self.font_config = MagicMock()
         self.font_config.get_language_name.return_value = "Korean"
+        # Ensure any code path that inspects this attribute has a safe default.
+        self._env_set_index = None
+
+    def _get_env_sets_and_group(self):
+        """Return empty env set so run_with_env_set_fallback is not used in tests.
+
+        This keeps translate_image_text on the simple code path that directly
+        calls the mocked client without touching real environment configuration.
+        """
+
+        return [], ""
 
     def get_openai_client(self):
         mock_client = MagicMock()

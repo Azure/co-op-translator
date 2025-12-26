@@ -352,19 +352,27 @@ class DirectoryManager:
                         parts = image_file.name.split(".")
                         if (
                             len(parts) < 4
-                        ):  # Need at least name, hash, lang_code, and extension
+                        ):  # Need at least name, hash/prefix, lang_code, and extension
                             continue
 
-                        # Last part is extension, second to last is lang_code, third to last is path_hash
+                        # Last part is extension, second to last is lang_code, third to last is path hash or prefix
                         extension = parts[-1]
                         lang_code = parts[-2]
-                        path_hash = parts[-3]
+                        path_hash_segment = parts[-3]
 
                         if lang_code not in self.language_codes:
                             continue
 
-                        # Check if original file with matching path hash exists
-                        if path_hash not in original_images:
+                        # Determine if this translated image corresponds to any known original
+                        if len(path_hash_segment) < 64:
+                            has_match = any(
+                                h.startswith(path_hash_segment)
+                                for h in original_images.keys()
+                            )
+                        else:
+                            has_match = path_hash_segment in original_images
+
+                        if not has_match:
                             image_file.unlink()
                             removed_count += 1
                             logger.debug(f"Removed orphaned image: {image_file}")
@@ -391,3 +399,53 @@ class DirectoryManager:
                         continue
 
         return removed_count
+
+
+    def migrate_markdown_image_links(self, rename_map: dict[str, str]) -> int:
+        """Update translated markdown files to use new image basenames.
+
+        The rename_map keys and values are basenames (no directory component).
+        This helper scans all translated markdown files and replaces any
+        occurrences of old basenames with the corresponding new basenames.
+        """
+
+        if not rename_map:
+            return 0
+
+        updated_files = 0
+
+        for lang_code in self.language_codes:
+            translation_dir = self.translations_dir / lang_code
+            if not translation_dir.exists():
+                continue
+
+            try:
+                md_files = list(translation_dir.rglob("*.md"))
+            except Exception as e:
+                logger.warning(
+                    f"Error scanning markdown files for migration in {translation_dir}: {e}"
+                )
+                continue
+
+            for md_file in md_files:
+                try:
+                    original_content = md_file.read_text(encoding="utf-8")
+                except Exception as e:
+                    logger.warning(f"Error reading markdown file {md_file}: {e}")
+                    continue
+
+                migrated_content = original_content
+                for old_name, new_name in rename_map.items():
+                    if old_name in migrated_content:
+                        migrated_content = migrated_content.replace(old_name, new_name)
+
+                if migrated_content != original_content:
+                    try:
+                        md_file.write_text(migrated_content, encoding="utf-8")
+                        updated_files += 1
+                    except Exception as e:
+                        logger.warning(
+                            f"Error writing migrated markdown file {md_file}: {e}"
+                        )
+
+        return updated_files

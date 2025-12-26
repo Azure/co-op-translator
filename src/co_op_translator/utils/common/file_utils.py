@@ -137,6 +137,36 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+# Minimum and fallback hash prefix lengths for translated image filenames.
+_HASH_PREFIX_LENGTHS = (16, 20, 24)
+
+# Registry used to detect hash prefix collisions within a single process.
+# Keys are (language_code, hash_prefix); values are the corresponding full hash.
+_HASH_PREFIX_REGISTRY: dict[tuple[str, str], str] = {}
+
+
+def _select_hash_prefix(full_hash: str, language_code: str) -> str:
+    """Select a collision-aware hash prefix for a translated filename.
+
+    Uses the shared in-memory registry to prefer the shortest prefix length
+    while ensuring that (language_code, prefix) is never associated with two
+    different full hashes within a single process.
+    """
+
+    hash_prefix = full_hash
+    for prefix_len in _HASH_PREFIX_LENGTHS:
+        candidate_prefix = full_hash[:prefix_len]
+        key = (language_code, candidate_prefix)
+        existing_full = _HASH_PREFIX_REGISTRY.get(key)
+
+        if existing_full is None or existing_full == full_hash:
+            _HASH_PREFIX_REGISTRY[key] = full_hash
+            hash_prefix = candidate_prefix
+            break
+
+    return hash_prefix
+
+
 def read_input_file(input_file: str | Path) -> str:
     """
     Read the content of an input file and return it as a stripped string.
@@ -317,11 +347,14 @@ def generate_translated_filename(
     # Extract original file components
     original_filename, file_ext = get_filename_and_extension(original_filepath)
 
-    # Extract filename and extension
-    unique_hash = get_unique_id(str(original_filepath), root_dir)
+    # Compute the full path hash based on the normalized path
+    full_hash = get_unique_id(str(original_filepath), root_dir)
 
-    # Generate the new filename with the unique hash and language code
-    new_filename = f"{original_filename}.{unique_hash}.{language_code}{file_ext}"
+    # Choose the shortest available prefix that does not collide (per language)
+    hash_prefix = _select_hash_prefix(full_hash, language_code)
+
+    # Generate the new filename with the selected hash prefix and language code
+    new_filename = f"{original_filename}.{hash_prefix}.{language_code}{file_ext}"
 
     return new_filename
 
@@ -374,6 +407,80 @@ def filter_files(directory: str | Path, excluded_dirs, extension: str = None) ->
             files.append(path)
 
     return files
+
+
+def migrate_translated_image_filenames(
+    image_dir: Path, language_codes: list[str]
+) -> dict[str, str]:
+    """Rename translated images that still use full 64-hex hashes in filenames.
+
+    This helper only operates within the given image_dir and for the specified
+    language codes. Files already using truncated hashes are left untouched.
+
+    Returns a mapping from old basenames to new basenames for use when
+    updating markdown links.
+    """
+
+    image_dir = Path(image_dir)
+    if not image_dir.exists():
+        return {}
+
+    rename_map: dict[str, str] = {}
+
+    try:
+        image_files = sorted(image_dir.rglob("*"))
+    except Exception:
+        return {}
+
+    for image_file in image_files:
+        if not image_file.is_file():
+            continue
+
+        if image_file.suffix.lower() not in [
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+        ]:
+            continue
+
+        parts = image_file.name.split(".")
+        if len(parts) < 4:
+            continue
+
+        extension = parts[-1]
+        lang_code = parts[-2]
+        raw_hash = parts[-3]
+
+        if lang_code not in language_codes:
+            continue
+
+        # Only migrate legacy filenames that embed a full 64-hex path hash.
+        if not re.fullmatch(r"[0-9a-f]{64}", raw_hash):
+            continue
+
+        base_name = ".".join(parts[:-3])
+        full_hash = raw_hash
+        hash_prefix = _select_hash_prefix(full_hash, lang_code)
+        new_name = f"{base_name}.{hash_prefix}.{lang_code}.{extension}"
+
+        if new_name == image_file.name:
+            continue
+
+        new_path = image_file.with_name(new_name)
+
+        if new_path.exists():
+            logger.warning(
+                "Skipping migration for %s because target already exists: %s",
+                image_file,
+                new_path,
+            )
+            continue
+
+        image_file.rename(new_path)
+        rename_map[image_file.name] = new_name
+
+    return rename_map
 
 
 def reset_translation_directories(

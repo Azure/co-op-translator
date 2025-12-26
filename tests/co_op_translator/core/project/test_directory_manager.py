@@ -152,6 +152,41 @@ class TestDirectoryManager:
         # Orphaned translation should be removed
         assert not orphaned_trans_img.exists()
 
+    def test_migrate_markdown_image_links(self, setup_test_dirs):
+        """Test that markdown image basenames are updated using the rename map."""
+
+        root_dir = setup_test_dirs
+        translations_dir = root_dir / "translations"
+        language_codes = ["ko"]
+        excluded_dirs = []
+
+        translations_dir.mkdir(exist_ok=True)
+        ko_dir = translations_dir / "ko"
+        ko_dir.mkdir(parents=True)
+
+        md_file = ko_dir / "readme.md"
+        old_image_name = "logo.0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.ko.png"
+        new_image_name = "logo.0123456789abcdef.ko.png"
+        original_content = f"# Test\n![Logo]({old_image_name})\n"
+        md_file.write_text(original_content, encoding="utf-8")
+
+        manager = DirectoryManager(
+            root_dir=root_dir,
+            translations_dir=translations_dir,
+            language_codes=language_codes,
+            excluded_dirs=excluded_dirs,
+        )
+
+        updated_files = manager.migrate_markdown_image_links({old_image_name: new_image_name})
+
+        # One file should be updated
+        assert updated_files == 1
+
+        # Content should now reference the new image basename
+        migrated_content = md_file.read_text(encoding="utf-8")
+        assert old_image_name not in migrated_content
+        assert new_image_name in migrated_content
+
     def test_cross_platform_path_handling(self, setup_test_dirs):
         """Test handling of cross-platform path separators in metadata."""
         import json

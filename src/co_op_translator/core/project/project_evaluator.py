@@ -8,6 +8,7 @@ from typing import List, Tuple
 from tqdm import tqdm
 
 from co_op_translator.core.llm.markdown_evaluator import MarkdownEvaluator
+from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.utils.common.metadata_utils import extract_metadata_from_content
 
 logger = logging.getLogger(__name__)
@@ -348,13 +349,16 @@ class ProjectEvaluator:
         Returns:
             List of Path objects for all markdown files
         """
-        markdown_files = []
-        for path in self.root_dir.rglob("*.md"):
+        markdown_files: List[Path] = []
+        for path in self.root_dir.rglob("*"):
+            if not path.is_file():
+                continue
+            if path.suffix.lower() not in SUPPORTED_MARKDOWN_EXTENSIONS:
+                continue
             # Skip files in excluded directories
             if any(excluded in str(path) for excluded in self.excluded_dirs):
                 continue
-            if path.is_file():
-                markdown_files.append(path)
+            markdown_files.append(path)
         return markdown_files
 
     def _get_translation_path(self, original_file: Path, language_code: str) -> Path:

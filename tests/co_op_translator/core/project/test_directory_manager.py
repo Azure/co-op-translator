@@ -177,7 +177,9 @@ class TestDirectoryManager:
             excluded_dirs=excluded_dirs,
         )
 
-        updated_files = manager.migrate_markdown_image_links({old_image_name: new_image_name})
+        updated_files = manager.migrate_markdown_image_links(
+            {old_image_name: new_image_name}
+        )
 
         # One file should be updated
         assert updated_files == 1
@@ -228,7 +230,9 @@ class TestDirectoryManager:
             excluded_dirs=excluded_dirs,
         )
 
-        updated_files = manager.migrate_notebook_image_links({old_image_name: new_image_name})
+        updated_files = manager.migrate_notebook_image_links(
+            {old_image_name: new_image_name}
+        )
 
         assert updated_files == 1
 

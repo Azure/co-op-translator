@@ -14,7 +14,9 @@ class AzureAIVisionConfig:
 
     @staticmethod
     def get_env_sets():
-        return get_env_sets(group=AzureAIVisionConfig._GROUP, required=AzureAIVisionConfig._REQUIRED)
+        return get_env_sets(
+            group=AzureAIVisionConfig._GROUP, required=AzureAIVisionConfig._REQUIRED
+        )
 
     @staticmethod
     def get_active_env_set():

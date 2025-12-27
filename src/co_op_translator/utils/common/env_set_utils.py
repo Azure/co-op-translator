@@ -8,7 +8,11 @@ logger = logging.getLogger(__name__)
 
 
 _DEFAULT_FALLBACK_STATUS_CODES = {400, 401, 403, 408, 409, 429, 500, 502, 503, 504}
-_DEFAULT_FALLBACK_EXCEPTION_NAMES = {"APIConnectionError", "APITimeoutError", "ServiceRequestError"}
+_DEFAULT_FALLBACK_EXCEPTION_NAMES = {
+    "APIConnectionError",
+    "APITimeoutError",
+    "ServiceRequestError",
+}
 
 
 T = TypeVar("T")
@@ -116,7 +120,9 @@ def run_with_env_set_fallback(
         except Exception as e:
             last_exc = e
             eligible = (
-                is_eligible_error(e) if is_eligible_error is not None else is_fallback_eligible_error(e)
+                is_eligible_error(e)
+                if is_eligible_error is not None
+                else is_fallback_eligible_error(e)
             )
             if eligible:
                 logger.warning(
@@ -163,7 +169,9 @@ async def run_with_env_set_fallback_async(
         except Exception as e:
             last_exc = e
             eligible = (
-                is_eligible_error(e) if is_eligible_error is not None else is_fallback_eligible_error(e)
+                is_eligible_error(e)
+                if is_eligible_error is not None
+                else is_fallback_eligible_error(e)
             )
             if eligible:
                 logger.warning(
@@ -275,7 +283,9 @@ def get_active_env_set(
     optional: Sequence[str] = (),
     defaults: Optional[Dict[str, str]] = None,
 ) -> Optional[EnvSet]:
-    sets = get_env_sets(group=group, required=required, optional=optional, defaults=defaults)
+    sets = get_env_sets(
+        group=group, required=required, optional=optional, defaults=defaults
+    )
     if not sets:
         return None
 

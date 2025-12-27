@@ -6,6 +6,10 @@ from pathlib import PurePosixPath
 from co_op_translator.utils.common.metadata_utils import (
     extract_metadata_from_content,
 )
+from co_op_translator.config.constants import (
+    SUPPORTED_MARKDOWN_EXTENSIONS,
+    SUPPORTED_NOTEBOOK_EXTENSIONS,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -65,9 +69,13 @@ class DirectoryManager:
                 excluded in str(path) for excluded in self.excluded_dirs
             ):
                 # Determine if this dir contains relevant file types per flags
-                has_md = any(path.glob("*.md"))
+                has_md = any(
+                    any(path.glob(f"*{ext}")) for ext in SUPPORTED_MARKDOWN_EXTENSIONS
+                )
                 has_img = any(path.glob("*.png")) or any(path.glob("*.jpg"))
-                has_nb = any(path.glob("*.ipynb"))
+                has_nb = any(
+                    any(path.glob(f"*{ext}")) for ext in SUPPORTED_NOTEBOOK_EXTENSIONS
+                )
 
                 if not (
                     (markdown and has_md)
@@ -113,14 +121,20 @@ class DirectoryManager:
                     try:
                         # Only remove if empty or contains no relevant files
                         has_relevant_files = False
-                        if markdown and any(target_dir.rglob("*.md")):
+                        if markdown and any(
+                            any(target_dir.rglob(f"*{ext}"))
+                            for ext in SUPPORTED_MARKDOWN_EXTENSIONS
+                        ):
                             has_relevant_files = True
                         if images and (
                             any(target_dir.rglob("*.png"))
                             or any(target_dir.rglob("*.jpg"))
                         ):
                             has_relevant_files = True
-                        if notebooks and any(target_dir.rglob("*.ipynb")):
+                        if notebooks and any(
+                            any(target_dir.rglob(f"*{ext}"))
+                            for ext in SUPPORTED_NOTEBOOK_EXTENSIONS
+                        ):
                             has_relevant_files = True
 
                         if not has_relevant_files:
@@ -168,11 +182,13 @@ class DirectoryManager:
 
                 logger.info(f"Checking translations in: {translation_dir}")
 
-                md_files = []
                 try:
-                    md_files = list(translation_dir.rglob("*.md"))
+                    md_files: list[Path] = []
+                    for ext in SUPPORTED_MARKDOWN_EXTENSIONS:
+                        md_files.extend(translation_dir.rglob(f"*{ext}"))
                 except Exception as e:
                     logger.warning(f"Error scanning for MD files: {e}")
+                    md_files = []
 
                 for trans_file in md_files:
                     try:
@@ -240,7 +256,9 @@ class DirectoryManager:
                 logger.info(f"Checking translated notebooks in: {translation_dir}")
 
                 try:
-                    notebook_files = list(translation_dir.rglob("*.ipynb"))
+                    notebook_files: list[Path] = []
+                    for ext in SUPPORTED_NOTEBOOK_EXTENSIONS:
+                        notebook_files.extend(translation_dir.rglob(f"*{ext}"))
                 except Exception as e:
                     logger.warning(f"Error scanning for notebook files: {e}")
                     notebook_files = []
@@ -400,7 +418,6 @@ class DirectoryManager:
 
         return removed_count
 
-
     def migrate_markdown_image_links(self, rename_map: dict[str, str]) -> int:
         """Update translated markdown files to use new image basenames.
 
@@ -414,39 +431,39 @@ class DirectoryManager:
 
         updated_files = 0
 
-        for lang_code in self.language_codes:
-            translation_dir = self.translations_dir / lang_code
-            if not translation_dir.exists():
-                continue
+        try:
+            md_files = [
+                path
+                for path in self.translations_dir.rglob("*")
+                if path.is_file()
+                and path.suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS
+            ]
+        except Exception as e:
+            logger.warning(
+                f"Error scanning markdown files for migration in {self.translations_dir}: {e}"
+            )
+            return 0
 
+        for md_file in md_files:
             try:
-                md_files = list(translation_dir.rglob("*.md"))
+                original_content = md_file.read_text(encoding="utf-8")
             except Exception as e:
-                logger.warning(
-                    f"Error scanning markdown files for migration in {translation_dir}: {e}"
-                )
+                logger.warning(f"Error reading markdown file {md_file}: {e}")
                 continue
 
-            for md_file in md_files:
+            migrated_content = original_content
+            for old_name, new_name in rename_map.items():
+                if old_name in migrated_content:
+                    migrated_content = migrated_content.replace(old_name, new_name)
+
+            if migrated_content != original_content:
                 try:
-                    original_content = md_file.read_text(encoding="utf-8")
+                    md_file.write_text(migrated_content, encoding="utf-8")
+                    updated_files += 1
                 except Exception as e:
-                    logger.warning(f"Error reading markdown file {md_file}: {e}")
-                    continue
-
-                migrated_content = original_content
-                for old_name, new_name in rename_map.items():
-                    if old_name in migrated_content:
-                        migrated_content = migrated_content.replace(old_name, new_name)
-
-                if migrated_content != original_content:
-                    try:
-                        md_file.write_text(migrated_content, encoding="utf-8")
-                        updated_files += 1
-                    except Exception as e:
-                        logger.warning(
-                            f"Error writing migrated markdown file {md_file}: {e}"
-                        )
+                    logger.warning(
+                        f"Error writing migrated markdown file {md_file}: {e}"
+                    )
 
         return updated_files
 
@@ -457,64 +474,64 @@ class DirectoryManager:
 
         updated_files = 0
 
-        for lang_code in self.language_codes:
-            translation_dir = self.translations_dir / lang_code
-            if not translation_dir.exists():
-                continue
+        try:
+            nb_files = [
+                path
+                for path in self.translations_dir.rglob("*")
+                if path.is_file()
+                and path.suffix.lower() in SUPPORTED_NOTEBOOK_EXTENSIONS
+            ]
+        except Exception as e:
+            logger.warning(
+                f"Error scanning notebook files for migration in {self.translations_dir}: {e}"
+            )
+            return 0
 
+        for nb_file in nb_files:
             try:
-                nb_files = list(translation_dir.rglob("*.ipynb"))
+                with nb_file.open("r", encoding="utf-8") as f:
+                    notebook = json.load(f)
             except Exception as e:
-                logger.warning(
-                    f"Error scanning notebook files for migration in {translation_dir}: {e}"
-                )
+                logger.warning(f"Error reading notebook file {nb_file}: {e}")
                 continue
 
-            for nb_file in nb_files:
-                try:
-                    with nb_file.open("r", encoding="utf-8") as f:
-                        notebook = json.load(f)
-                except Exception as e:
-                    logger.warning(f"Error reading notebook file {nb_file}: {e}")
+            changed = False
+
+            for cell in notebook.get("cells", []):
+                if cell.get("cell_type") != "markdown":
                     continue
 
-                changed = False
+                source = cell.get("source", [])
+                if isinstance(source, list):
+                    original_text = "".join(source)
+                else:
+                    original_text = str(source)
 
-                for cell in notebook.get("cells", []):
-                    if cell.get("cell_type") != "markdown":
-                        continue
+                migrated_text = original_text
+                for old_name, new_name in rename_map.items():
+                    if old_name in migrated_text:
+                        migrated_text = migrated_text.replace(old_name, new_name)
 
-                    source = cell.get("source", [])
+                if migrated_text != original_text:
+                    changed = True
                     if isinstance(source, list):
-                        original_text = "".join(source)
+                        lines = migrated_text.splitlines(keepends=True)
+                        lines = [
+                            line if line.endswith("\n") else line + "\n"
+                            for line in lines
+                        ]
+                        cell["source"] = lines
                     else:
-                        original_text = str(source)
+                        cell["source"] = migrated_text
 
-                    migrated_text = original_text
-                    for old_name, new_name in rename_map.items():
-                        if old_name in migrated_text:
-                            migrated_text = migrated_text.replace(old_name, new_name)
-
-                    if migrated_text != original_text:
-                        changed = True
-                        if isinstance(source, list):
-                            lines = migrated_text.splitlines(keepends=True)
-                            lines = [
-                                line if line.endswith("\n") else line + "\n"
-                                for line in lines
-                            ]
-                            cell["source"] = lines
-                        else:
-                            cell["source"] = migrated_text
-
-                if changed:
-                    try:
-                        with nb_file.open("w", encoding="utf-8") as f:
-                            json.dump(notebook, f, ensure_ascii=False, indent=1)
-                        updated_files += 1
-                    except Exception as e:
-                        logger.warning(
-                            f"Error writing migrated notebook file {nb_file}: {e}"
-                        )
+            if changed:
+                try:
+                    with nb_file.open("w", encoding="utf-8") as f:
+                        json.dump(notebook, f, ensure_ascii=False, indent=1)
+                    updated_files += 1
+                except Exception as e:
+                    logger.warning(
+                        f"Error writing migrated notebook file {nb_file}: {e}"
+                    )
 
         return updated_files

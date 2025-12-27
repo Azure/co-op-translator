@@ -18,6 +18,7 @@ from co_op_translator.utils.common.file_utils import (
     migrate_translated_image_filenames,
 )
 from co_op_translator.utils.common.metadata_utils import calculate_file_hash
+from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.directory_manager import DirectoryManager
 from co_op_translator.utils.common.task_utils import worker
@@ -292,29 +293,31 @@ class TranslationManager:
         for md_file_path in markdown_files:
             md_file_path = md_file_path.resolve()
 
-            if md_file_path.suffix == ".md":
-                for language_code in self.language_codes:
-                    relative_path = md_file_path.relative_to(self.root_dir)
-                    translated_md_path = (
-                        self.translations_dir / language_code / relative_path
-                    )
+            if md_file_path.suffix.lower() not in SUPPORTED_MARKDOWN_EXTENSIONS:
+                continue
 
-                    if not update and translated_md_path.exists():
-                        logger.info(
-                            f"Skipping already translated markdown file: {translated_md_path}"
-                        )
-                        continue
+            for language_code in self.language_codes:
+                relative_path = md_file_path.relative_to(self.root_dir)
+                translated_md_path = (
+                    self.translations_dir / language_code / relative_path
+                )
 
+                if not update and translated_md_path.exists():
                     logger.info(
-                        f"Translating markdown file: {md_file_path} for language: {language_code}"
+                        f"Skipping already translated markdown file: {translated_md_path}"
                     )
-                    # Create a task for each markdown file translation
-                    tasks.append(
-                        lambda md_file_path=md_file_path, language_code=language_code: self.translate_markdown(
-                            md_file_path, language_code
-                        )
+                    continue
+
+                logger.info(
+                    f"Translating markdown file: {md_file_path} for language: {language_code}"
+                )
+                # Create a task for each markdown file translation
+                tasks.append(
+                    lambda md_file_path=md_file_path, language_code=language_code: self.translate_markdown(
+                        md_file_path, language_code
                     )
-                    task_info.append((str(md_file_path), language_code))
+                )
+                task_info.append((str(md_file_path), language_code))
 
         if tasks:  # Check if there are tasks to process
             # Process translations sequentially to avoid rate limiting
@@ -360,9 +363,10 @@ class TranslationManager:
                 # Find and delete translated notebook files
                 translation_dir = self.translations_dir / language_code
                 if translation_dir.exists():
-                    for notebook_file in translation_dir.rglob("*.ipynb"):
-                        notebook_file.unlink()
-                        logger.info(f"Deleted translated notebook: {notebook_file}")
+                    for ext in self.supported_notebook_extensions:
+                        for notebook_file in translation_dir.rglob(f"*{ext}"):
+                            notebook_file.unlink()
+                            logger.info(f"Deleted translated notebook: {notebook_file}")
 
         # Discover notebook files requiring translation using supported_notebook_extensions
         notebook_files = []
@@ -526,9 +530,13 @@ class TranslationManager:
                     translation_dir = self.translations_dir / lang_code
                     if not translation_dir.exists():
                         continue
-                    for trans_file in list(translation_dir.rglob("*.md")) + list(
-                        translation_dir.rglob("*.ipynb")
-                    ):
+                    trans_files: list[Path] = []
+                    for ext in SUPPORTED_MARKDOWN_EXTENSIONS:
+                        trans_files.extend(translation_dir.rglob(f"*{ext}"))
+                    for ext in self.supported_notebook_extensions:
+                        trans_files.extend(translation_dir.rglob(f"*{ext}"))
+
+                    for trans_file in trans_files:
                         try:
                             rel = trans_file.relative_to(translation_dir)
                             original = self.root_dir / rel
@@ -691,10 +699,12 @@ class TranslationManager:
             translation_dir = self.translations_dir / lang_code
             if not translation_dir.exists():
                 continue
-            for md_file in translation_dir.rglob("*.md"):
-                all_translation_files.append((lang_code, md_file))
-            for nb_file in translation_dir.rglob("*.ipynb"):
-                all_translation_files.append((lang_code, nb_file))
+            for ext in SUPPORTED_MARKDOWN_EXTENSIONS:
+                for md_file in translation_dir.rglob(f"*{ext}"):
+                    all_translation_files.append((lang_code, md_file))
+            for ext in self.supported_notebook_extensions:
+                for nb_file in translation_dir.rglob(f"*{ext}"):
+                    all_translation_files.append((lang_code, nb_file))
 
         if not all_translation_files:
             return []
@@ -759,7 +769,7 @@ class TranslationManager:
         markdown_items = [
             (original_file, language_code)
             for original_file, language_code in files_to_translate
-            if original_file.suffix.lower() == ".md"
+            if original_file.suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS
         ]
 
         # Notebooks
@@ -798,7 +808,7 @@ class TranslationManager:
         markdown_files = [
             file
             for file in filter_files(self.root_dir, self.excluded_dirs)
-            if file.suffix == ".md"
+            if file.suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS
         ]
         all_markdown_files = [
             (file, language_code)
@@ -981,7 +991,7 @@ class TranslationManager:
 
         try:
             # Handle notebook files differently from markdown files
-            if translation_file.suffix == ".ipynb":
+            if translation_file.suffix.lower() in self.supported_notebook_extensions:
                 # Use the dedicated notebook metadata comparison function
                 return not is_notebook_up_to_date(original_file, translation_file)
 

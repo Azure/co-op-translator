@@ -187,6 +187,56 @@ class TestDirectoryManager:
         assert old_image_name not in migrated_content
         assert new_image_name in migrated_content
 
+    def test_migrate_notebook_image_links(self, setup_test_dirs):
+        """Test that notebook markdown cells are updated using the rename map."""
+
+        import json
+
+        root_dir = setup_test_dirs
+        translations_dir = root_dir / "translations"
+        language_codes = ["ko"]
+        excluded_dirs = []
+
+        translations_dir.mkdir(exist_ok=True)
+        ko_dir = translations_dir / "ko"
+        ko_dir.mkdir(parents=True)
+
+        nb_file = ko_dir / "test.ipynb"
+        old_image_name = "logo.0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.ko.png"
+        new_image_name = "logo.0123456789abcdef.ko.png"
+
+        notebook_content = {
+            "cells": [
+                {
+                    "cell_type": "markdown",
+                    "source": [f"# Test\n![Logo]({old_image_name})\n"],
+                },
+                {
+                    "cell_type": "code",
+                    "source": ["print('hello')\n"],
+                },
+            ],
+            "metadata": {},
+        }
+
+        nb_file.write_text(json.dumps(notebook_content), encoding="utf-8")
+
+        manager = DirectoryManager(
+            root_dir=root_dir,
+            translations_dir=translations_dir,
+            language_codes=language_codes,
+            excluded_dirs=excluded_dirs,
+        )
+
+        updated_files = manager.migrate_notebook_image_links({old_image_name: new_image_name})
+
+        assert updated_files == 1
+
+        loaded = json.loads(nb_file.read_text(encoding="utf-8"))
+        cell_source = "".join(loaded["cells"][0]["source"])
+        assert old_image_name not in cell_source
+        assert new_image_name in cell_source
+
     def test_cross_platform_path_handling(self, setup_test_dirs):
         """Test handling of cross-platform path separators in metadata."""
         import json

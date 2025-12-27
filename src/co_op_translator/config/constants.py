@@ -6,6 +6,9 @@ SUPPORTED_IMAGE_EXTENSIONS = RGBA_IMAGE_EXTENSIONS.union(RGB_IMAGE_EXTENSIONS)
 # Supported notebook file extensions
 SUPPORTED_NOTEBOOK_EXTENSIONS = {".ipynb"}
 
+# Supported markdown file extensions
+SUPPORTED_MARKDOWN_EXTENSIONS = {".md", ".mdx", ".markdown"}
+
 EXCLUDED_DIRS = {
     "translations",
     "translated_images",

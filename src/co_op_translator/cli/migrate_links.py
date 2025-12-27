@@ -23,6 +23,10 @@ from co_op_translator.utils.llm.markdown_utils import (
 )
 from co_op_translator.utils.common.file_utils import map_original_to_translated
 from co_op_translator.utils.common.logging_utils import setup_logging
+from co_op_translator.config.constants import (
+    SUPPORTED_MARKDOWN_EXTENSIONS,
+    SUPPORTED_NOTEBOOK_EXTENSIONS,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -174,7 +178,9 @@ def migrate_links_command(
                 continue
 
             # Find translated markdowns and show progress bar
-            md_files = list(lang_dir.rglob("*.md"))
+            md_files: list[Path] = []
+            for ext in SUPPORTED_MARKDOWN_EXTENSIONS:
+                md_files.extend(lang_dir.rglob(f"*{ext}"))
             for md_translated in tqdm(md_files, desc=f"{lang} md", unit="file"):
                 total_scanned += 1
                 try:
@@ -183,8 +189,8 @@ def migrate_links_command(
                     logger.warning(f"Failed to read: {md_translated}")
                     continue
 
-                # Quick filter: only process files containing .ipynb links
-                if ".ipynb" not in content:
+                # Quick filter: only process files containing supported notebook links
+                if not any(ext in content for ext in SUPPORTED_NOTEBOOK_EXTENSIONS):
                     continue
 
                 # Derive original md path from translated path (needed to resolve links)
@@ -217,7 +223,10 @@ def migrate_links_command(
                     if parsed.scheme in ("mailto", "http", "https") or "@" in link:
                         continue
                     path = parsed.path
-                    if not path.lower().endswith(".ipynb"):
+                    if not any(
+                        path.lower().endswith(ext)
+                        for ext in SUPPORTED_NOTEBOOK_EXTENSIONS
+                    ):
                         continue
                     # Resolve absolute path of the linked notebook
                     if path.startswith("/"):

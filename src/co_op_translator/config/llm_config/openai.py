@@ -76,4 +76,6 @@ class OpenAIConfig:
         env_set = OpenAIConfig.get_active_env_set()
         if env_set is None:
             return OpenAIConfig._DEFAULTS["OPENAI_BASE_URL"]
-        return env_set.values.get("OPENAI_BASE_URL", OpenAIConfig._DEFAULTS["OPENAI_BASE_URL"])
+        return env_set.values.get(
+            "OPENAI_BASE_URL", OpenAIConfig._DEFAULTS["OPENAI_BASE_URL"]
+        )

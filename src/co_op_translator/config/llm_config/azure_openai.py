@@ -21,11 +21,15 @@ class AzureOpenAIConfig:
 
     @staticmethod
     def get_env_sets():
-        return get_env_sets(group=AzureOpenAIConfig._GROUP, required=AzureOpenAIConfig._REQUIRED)
+        return get_env_sets(
+            group=AzureOpenAIConfig._GROUP, required=AzureOpenAIConfig._REQUIRED
+        )
 
     @staticmethod
     def get_active_env_set():
-        return get_active_env_set(group=AzureOpenAIConfig._GROUP, required=AzureOpenAIConfig._REQUIRED)
+        return get_active_env_set(
+            group=AzureOpenAIConfig._GROUP, required=AzureOpenAIConfig._REQUIRED
+        )
 
     @staticmethod
     def get_api_key():

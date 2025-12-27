@@ -14,6 +14,8 @@ from markdown_it import MarkdownIt
 from co_op_translator.config.constants import (
     SUPPORTED_IMAGE_EXTENSIONS,
     LINE_BREAK_MARGIN,
+    SUPPORTED_NOTEBOOK_EXTENSIONS,
+    SUPPORTED_MARKDOWN_EXTENSIONS,
 )
 from co_op_translator.utils.common.file_utils import (
     generate_translated_filename,
@@ -395,7 +397,7 @@ def migrate_notebook_links(
 
         path = parsed.path
         _, ext = get_filename_and_extension(path)
-        if ext.lower() != ".ipynb":
+        if ext.lower() not in SUPPORTED_NOTEBOOK_EXTENSIONS:
             logger.debug(f"Skipping non-notebook link: {link}")
             continue
 
@@ -527,7 +529,7 @@ def update_notebook_links(
 
         path = parsed.path
         _, ext = get_filename_and_extension(path)
-        if ext.lower() != ".ipynb":
+        if ext.lower() not in SUPPORTED_NOTEBOOK_EXTENSIONS:
             # Only handle notebook links here
             continue
 
@@ -847,11 +849,11 @@ def update_untranslated_file_links(
             logger.info(f"Skipping image file {link}")
             continue
 
-        if file_ext == ".md":
+        if file_ext in SUPPORTED_MARKDOWN_EXTENSIONS:
             logger.info(f"Skipping markdown file {link}")
             continue
 
-        if file_ext == ".ipynb" and use_translated_notebook:
+        if file_ext in SUPPORTED_NOTEBOOK_EXTENSIONS and use_translated_notebook:
             logger.info(f"Skipping notebook file {link}")
             continue
 

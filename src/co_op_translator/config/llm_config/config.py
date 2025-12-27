@@ -8,7 +8,10 @@ from az_ai_healthcheck import check_azure_openai
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
 from co_op_translator.config.llm_config.openai import OpenAIConfig
-from co_op_translator.utils.common.env_set_utils import any_env_var_present, set_preferred_env_set
+from co_op_translator.utils.common.env_set_utils import (
+    any_env_var_present,
+    set_preferred_env_set,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +41,12 @@ class LLMConfig:
         - "Incomplete" if some are set but not all (or required ones are missing).
         """
         if provider == LLMProvider.OPENAI:
-            bases = ["OPENAI_API_KEY", "OPENAI_CHAT_MODEL_ID", "OPENAI_ORG_ID", "OPENAI_BASE_URL"]
+            bases = [
+                "OPENAI_API_KEY",
+                "OPENAI_CHAT_MODEL_ID",
+                "OPENAI_ORG_ID",
+                "OPENAI_BASE_URL",
+            ]
             if not any_env_var_present(bases):
                 raise ValueError("NO_CONFIG_OPENAI")
 
@@ -166,7 +174,9 @@ class LLMConfig:
 
             last_message: Optional[str] = None
             for env_set in env_sets:
-                endpoint = (env_set.values.get("AZURE_OPENAI_ENDPOINT") or "").rstrip("/")
+                endpoint = (env_set.values.get("AZURE_OPENAI_ENDPOINT") or "").rstrip(
+                    "/"
+                )
                 api_version = env_set.values.get("AZURE_OPENAI_API_VERSION")
                 api_key = env_set.values.get("AZURE_OPENAI_API_KEY")
                 deployment = env_set.values.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")

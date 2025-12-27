@@ -52,6 +52,9 @@ def setup_logging(
 
     logger.setLevel(root_level)
 
+    markdown_it_logger = logging.getLogger("markdown_it")
+    markdown_it_logger.setLevel(logging.INFO)
+
     # Console handler
     console_handler = logging.StreamHandler(stream=sys.stderr)
     console_handler.setLevel(logging.DEBUG if debug else logging.CRITICAL)

@@ -449,3 +449,72 @@ class DirectoryManager:
                         )
 
         return updated_files
+
+    def migrate_notebook_image_links(self, rename_map: dict[str, str]) -> int:
+
+        if not rename_map:
+            return 0
+
+        updated_files = 0
+
+        for lang_code in self.language_codes:
+            translation_dir = self.translations_dir / lang_code
+            if not translation_dir.exists():
+                continue
+
+            try:
+                nb_files = list(translation_dir.rglob("*.ipynb"))
+            except Exception as e:
+                logger.warning(
+                    f"Error scanning notebook files for migration in {translation_dir}: {e}"
+                )
+                continue
+
+            for nb_file in nb_files:
+                try:
+                    with nb_file.open("r", encoding="utf-8") as f:
+                        notebook = json.load(f)
+                except Exception as e:
+                    logger.warning(f"Error reading notebook file {nb_file}: {e}")
+                    continue
+
+                changed = False
+
+                for cell in notebook.get("cells", []):
+                    if cell.get("cell_type") != "markdown":
+                        continue
+
+                    source = cell.get("source", [])
+                    if isinstance(source, list):
+                        original_text = "".join(source)
+                    else:
+                        original_text = str(source)
+
+                    migrated_text = original_text
+                    for old_name, new_name in rename_map.items():
+                        if old_name in migrated_text:
+                            migrated_text = migrated_text.replace(old_name, new_name)
+
+                    if migrated_text != original_text:
+                        changed = True
+                        if isinstance(source, list):
+                            lines = migrated_text.splitlines(keepends=True)
+                            lines = [
+                                line if line.endswith("\n") else line + "\n"
+                                for line in lines
+                            ]
+                            cell["source"] = lines
+                        else:
+                            cell["source"] = migrated_text
+
+                if changed:
+                    try:
+                        with nb_file.open("w", encoding="utf-8") as f:
+                            json.dump(notebook, f, ensure_ascii=False, indent=1)
+                        updated_files += 1
+                    except Exception as e:
+                        logger.warning(
+                            f"Error writing migrated notebook file {nb_file}: {e}"
+                        )
+
+        return updated_files

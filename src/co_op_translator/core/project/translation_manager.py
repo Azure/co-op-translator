@@ -578,7 +578,7 @@ class TranslationManager:
         all_errors = []
 
         try:
-            # Migrate legacy translated image filenames and update markdown links
+            # Migrate legacy translated image filenames and update markdown/notebook links
             try:
                 rename_map = migrate_translated_image_filenames(
                     self.image_dir, self.language_codes
@@ -587,10 +587,14 @@ class TranslationManager:
                     migrated_md = self.directory_manager.migrate_markdown_image_links(
                         rename_map
                     )
+                    migrated_nb = self.directory_manager.migrate_notebook_image_links(
+                        rename_map
+                    )
                     logger.info(
-                        "Migrated %d image files and updated %d markdown files",
+                        "Migrated %d image files and updated %d markdown and %d notebook files",
                         len(rename_map),
                         migrated_md,
+                        migrated_nb,
                     )
             except Exception as e:
                 logger.warning(f"Image filename/link migration skipped: {e}")

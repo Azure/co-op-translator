@@ -41,7 +41,11 @@ class DirectoryManager:
         self.language_codes = language_codes
         self.excluded_dirs = excluded_dirs
         # Default to root_dir / "translated_images" if not provided
-        self.image_dir = image_dir if image_dir is not None else (self.root_dir / "translated_images")
+        self.image_dir = (
+            image_dir
+            if image_dir is not None
+            else (self.root_dir / "translated_images")
+        )
 
     def sync_directory_structure(
         self, markdown: bool = True, images: bool = True, notebooks: bool = True
@@ -379,7 +383,8 @@ class DirectoryManager:
                         # Match by full hash or by prefix
                         if len(path_hash_segment) < 64:
                             has_match = any(
-                                h.startswith(path_hash_segment) for h in original_images.keys()
+                                h.startswith(path_hash_segment)
+                                for h in original_images.keys()
                             )
                         else:
                             has_match = path_hash_segment in original_images
@@ -390,7 +395,9 @@ class DirectoryManager:
                                 removed_count += 1
                                 logger.debug(f"Removed orphaned image: {image_file}")
                             except Exception as e:
-                                logger.warning(f"Failed to delete orphaned image {image_file}: {e}")
+                                logger.warning(
+                                    f"Failed to delete orphaned image {image_file}: {e}"
+                                )
                                 continue
 
                             parent = image_file.parent
@@ -398,9 +405,13 @@ class DirectoryManager:
                                 if parent.exists() and not any(parent.iterdir()):
                                     try:
                                         parent.rmdir()
-                                        logger.debug(f"Removed empty directory: {parent}")
+                                        logger.debug(
+                                            f"Removed empty directory: {parent}"
+                                        )
                                     except OSError as e:
-                                        logger.warning(f"Could not remove directory {parent}: {e}")
+                                        logger.warning(
+                                            f"Could not remove directory {parent}: {e}"
+                                        )
                                         break
                                 else:
                                     break

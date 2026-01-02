@@ -615,13 +615,33 @@ class TranslationManager:
             # Clean up files no longer needed in target directories
             logger.info("Removing orphaned files...")
             with tqdm(total=1, desc="🧹 Cleaning orphaned files") as cleanup_progress:
-                removed_count = self.directory_manager.cleanup_orphaned_translations(
+                # Markdown/Notebook cleanup scoped to selected languages
+                removed_md_nb = self.directory_manager.cleanup_orphaned_translations(
                     markdown="markdown" in self.translation_types,
-                    images="images" in self.translation_types,
+                    images=False,
                     notebooks="notebook" in self.translation_types,
                 )
+
+                # Image cleanup should consider ALL supported languages to avoid removing other languages
+                removed_imgs = 0
+                if "images" in self.translation_types:
+                    cleanup_langs = Config.get_language_codes()
+                    img_dm = DirectoryManager(
+                        self.root_dir,
+                        self.translations_dir,
+                        cleanup_langs,
+                        self.excluded_dirs,
+                        image_dir=self.image_dir,
+                    )
+                    removed_imgs = img_dm.cleanup_orphaned_translations(
+                        markdown=False,
+                        images=True,
+                        notebooks=False,
+                    )
+
+                removed_total = (removed_md_nb or 0) + (removed_imgs or 0)
                 cleanup_progress.set_postfix_str(
-                    "None" if removed_count == 0 else f"Removed: {removed_count}"
+                    "None" if removed_total == 0 else f"Removed: {removed_total}"
                 )
                 cleanup_progress.update(1)
 
@@ -679,16 +699,16 @@ class TranslationManager:
                 total_modified += img_modified
                 all_errors.extend(img_errors)
 
-                # Final cleanup pass for translated images: only for selected languages
+                # Final image cleanup: ALWAYS across ALL supported languages (like -l "all").
+                cleanup_langs = Config.get_language_codes()
                 logger.info(
-                    "Performing final cleanup of translated images for selected languages..."
+                    "Performing final cleanup of translated images across ALL supported languages..."
                 )
-                all_langs = list(self.language_codes)
 
                 dm_all = DirectoryManager(
                     self.root_dir,
                     self.translations_dir,
-                    all_langs,
+                    cleanup_langs,
                     self.excluded_dirs,
                     image_dir=self.image_dir,
                 )
@@ -709,7 +729,7 @@ class TranslationManager:
                     temp_dm = DirectoryManager(
                         self.root_dir,
                         self.translations_dir,
-                        all_langs,
+                        cleanup_langs,
                         self.excluded_dirs,
                         image_dir=fast_image_dir,
                     )

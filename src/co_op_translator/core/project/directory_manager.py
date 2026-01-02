@@ -385,8 +385,18 @@ class DirectoryManager:
                         path_hash_segment = parts[-3]
                         base_name = ".".join(parts[:-3])
 
-                        # If language code is not one of the selected languages, skip it (do not delete)
+                        # If language code is not supported (not in language_codes), delete it
                         if lang_code not in self.language_codes:
+                            try:
+                                image_file.unlink()
+                                removed_count += 1
+                                logger.debug(
+                                    f"Removed image with unsupported language code: {image_file}"
+                                )
+                            except Exception as e:
+                                logger.warning(
+                                    f"Failed to delete image with unsupported language {image_file}: {e}"
+                                )
                             continue
 
                         # Validate hash segment: only 16 or 64 lowercase hex characters are allowed

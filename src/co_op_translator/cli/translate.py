@@ -82,6 +82,11 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help="Automatically confirm all prompts (useful for CI/CD pipelines).",
 )
+@click.option(
+    "--repo-url",
+    default=None,
+    help="Repository URL to show in the 'Prefer to Clone Locally?' advisory inside the languages table.",
+)
 def translate_command(
     language_codes,
     root_dir,
@@ -96,6 +101,7 @@ def translate_command(
     yes,
     min_confidence,
     add_disclaimer,
+    repo_url,
 ):
     """
     CLI for translating project files.
@@ -273,7 +279,7 @@ def translate_command(
         # Update README shared sections BEFORE translation
         readme_path = root_path / "README.md"
         try:
-            if update_readme_languages_table(readme_path):
+            if update_readme_languages_table(readme_path, repo_url=repo_url):
                 click.echo("✅ Updated README languages table from template.")
             else:
                 click.echo(

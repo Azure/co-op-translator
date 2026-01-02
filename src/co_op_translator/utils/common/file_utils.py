@@ -83,9 +83,16 @@ def load_other_courses_template() -> str:
         return ""
 
 
-def update_readme_languages_table(readme_path: Path) -> bool:
+def update_readme_languages_table(
+    readme_path: Path, repo_url: str | None = None
+) -> bool:
     """
     Update README languages table between markers using bundled template.
+    Optionally appends a 'Prefer to Clone Locally?' advisory block INSIDE the markers.
+
+    If repo_url is provided, it will be used to personalize the snippet; otherwise
+    the advisory will be shown with placeholder stars as given by the user.
+
     Returns True if updated, False otherwise.
     """
     if not readme_path.exists():
@@ -101,8 +108,46 @@ def update_readme_languages_table(readme_path: Path) -> bool:
         template,
         flags=re.IGNORECASE,
     )
+
+    # Build advisory block (with optional repo URL substitution)
+    repo_url_value = (
+        repo_url.strip() if isinstance(repo_url, str) and repo_url.strip() else None
+    )
+    repo_name_value: str | None = None
+    if repo_url_value:
+        try:
+            tail = repo_url_value.rstrip("/").split("/")[-1]
+            repo_name_value = tail[:-4] if tail.endswith(".git") else tail
+        except Exception:
+            repo_name_value = None
+
+    advisory_repo_url = repo_url_value or "https://github.com/*****.git"
+    advisory_repo_name = repo_name_value or "*****"
+
+    advisory_block = (
+        "> **Prefer to Clone Locally?**\n\n"
+        "> This repository includes 50+ language translations which significantly increases the download size. To clone without translations, use sparse checkout:\n"
+        "> ```bash\n"
+        f"> git clone --filter=blob:none --sparse {advisory_repo_url}\n"
+        f"> cd {advisory_repo_name}\n"
+        "> git sparse-checkout set --no-cone '/*' '!translations' '!translated_images'\n"
+        "> ```\n"
+        "> This gives you everything you need to complete the course with a much faster download."
+    )
+
+    # Insert advisory INSIDE the template's markers
+    lower_t = template.lower()
+    start_idx = lower_t.find(LANG_TABLE_START.lower())
+    end_idx = lower_t.find(LANG_TABLE_END.lower())
+    if start_idx == -1 or end_idx == -1 or end_idx < start_idx:
+        return False
+
+    inner_content = template[start_idx + len(LANG_TABLE_START) : end_idx].strip()
+    combined_inner = (inner_content + "\n\n" + advisory_block).strip()
+    new_block = f"{LANG_TABLE_START}\n{combined_inner}\n{LANG_TABLE_END}"
+
     updated = _replace_between_markers_generic(
-        original, template, LANG_TABLE_START, LANG_TABLE_END
+        original, new_block, LANG_TABLE_START, LANG_TABLE_END
     )
     if updated != original:
         readme_path.write_text(updated, encoding="utf-8", newline="\n")

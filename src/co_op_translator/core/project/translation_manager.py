@@ -84,7 +84,11 @@ class TranslationManager:
         self.translation_types = translation_types
         self.add_disclaimer = add_disclaimer
         self.directory_manager = DirectoryManager(
-            root_dir, translations_dir, language_codes, excluded_dirs
+            root_dir,
+            translations_dir,
+            language_codes,
+            excluded_dirs,
+            image_dir=image_dir,
         )
 
     async def translate_image(

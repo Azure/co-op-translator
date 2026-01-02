@@ -167,9 +167,8 @@ def test_generate_translated_filename(temp_dir):
     assert lang == language_code
     assert ext == ".txt"
 
-    # Hash prefix should be a truncated leading segment of the full 64-hex hash
-    assert len(hash_prefix) in (16, 20, 24)
-    assert len(hash_prefix) < 64
+    # Hash prefix should be exactly 16 hex (truncated from the full 64-hex hash)
+    assert len(hash_prefix) == 16
     assert full_hash.startswith(hash_prefix)
 
 
@@ -209,8 +208,7 @@ def test_migrate_translated_image_filenames(temp_dir):
     assert base == "logo"
     assert lang_code == lang
     assert extension == "png"
-    assert len(hash_prefix) in (16, 20, 24)
-    assert len(hash_prefix) < 64
+    assert len(hash_prefix) == 16
     assert full_hash.startswith(hash_prefix)
 
     # The already-truncated file should remain untouched

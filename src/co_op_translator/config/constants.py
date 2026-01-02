@@ -12,6 +12,7 @@ SUPPORTED_MARKDOWN_EXTENSIONS = {".md", ".mdx", ".markdown"}
 EXCLUDED_DIRS = {
     "translations",
     "translated_images",
+    "translated_images_fast",
     ".git",
     ".github",
     ".vscode",

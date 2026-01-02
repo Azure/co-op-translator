@@ -24,6 +24,7 @@ from co_op_translator.core.project.directory_manager import DirectoryManager
 from co_op_translator.utils.common.task_utils import worker
 from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
 from co_op_translator.utils.common.metadata_utils import is_notebook_up_to_date
+from co_op_translator.config.base_config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -614,13 +615,33 @@ class TranslationManager:
             # Clean up files no longer needed in target directories
             logger.info("Removing orphaned files...")
             with tqdm(total=1, desc="🧹 Cleaning orphaned files") as cleanup_progress:
-                removed_count = self.directory_manager.cleanup_orphaned_translations(
+                # Markdown/Notebook cleanup scoped to selected languages
+                removed_md_nb = self.directory_manager.cleanup_orphaned_translations(
                     markdown="markdown" in self.translation_types,
-                    images="images" in self.translation_types,
+                    images=False,
                     notebooks="notebook" in self.translation_types,
                 )
+
+                # Image cleanup should consider ALL supported languages to avoid removing other languages
+                removed_imgs = 0
+                if "images" in self.translation_types:
+                    cleanup_langs = Config.get_language_codes()
+                    img_dm = DirectoryManager(
+                        self.root_dir,
+                        self.translations_dir,
+                        cleanup_langs,
+                        self.excluded_dirs,
+                        image_dir=self.image_dir,
+                    )
+                    removed_imgs = img_dm.cleanup_orphaned_translations(
+                        markdown=False,
+                        images=True,
+                        notebooks=False,
+                    )
+
+                removed_total = (removed_md_nb or 0) + (removed_imgs or 0)
                 cleanup_progress.set_postfix_str(
-                    "None" if removed_count == 0 else f"Removed: {removed_count}"
+                    "None" if removed_total == 0 else f"Removed: {removed_total}"
                 )
                 cleanup_progress.update(1)
 
@@ -677,6 +698,47 @@ class TranslationManager:
                 )
                 total_modified += img_modified
                 all_errors.extend(img_errors)
+
+                # Final image cleanup: ALWAYS across ALL supported languages (like -l "all").
+                cleanup_langs = Config.get_language_codes()
+                logger.info(
+                    "Performing final cleanup of translated images across ALL supported languages..."
+                )
+
+                dm_all = DirectoryManager(
+                    self.root_dir,
+                    self.translations_dir,
+                    cleanup_langs,
+                    self.excluded_dirs,
+                    image_dir=self.image_dir,
+                )
+                with tqdm(total=1, desc="🧹 Final image cleanup") as cleanup_progress:
+                    removed_after = dm_all.cleanup_orphaned_translations(
+                        markdown=False,
+                        images=True,
+                        notebooks=False,
+                    )
+                    cleanup_progress.set_postfix_str(
+                        "None" if removed_after == 0 else f"Removed: {removed_after}"
+                    )
+                    cleanup_progress.update(1)
+
+                # Also cleanup fast-mode images if that directory exists
+                fast_image_dir = self.root_dir / "translated_images_fast"
+                if fast_image_dir.exists():
+                    temp_dm = DirectoryManager(
+                        self.root_dir,
+                        self.translations_dir,
+                        cleanup_langs,
+                        self.excluded_dirs,
+                        image_dir=fast_image_dir,
+                    )
+                    removed_fast = temp_dm.cleanup_orphaned_translations(
+                        markdown=False, images=True, notebooks=False
+                    )
+                    logger.info(
+                        f"Final cleanup (fast) removed {removed_fast} files from {fast_image_dir}"
+                    )
 
         except Exception as e:
             logger.error(f"Error during translation: {e}")

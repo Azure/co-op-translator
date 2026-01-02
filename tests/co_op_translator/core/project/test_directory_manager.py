@@ -115,12 +115,11 @@ class TestDirectoryManager:
         original_img = img_dir / "test.png"
         original_img.write_bytes(b"test image content")
 
-        # Create translated image with hash
+        # Create translated image with hash under image_dir (default: root_dir/translated_images)
         translations_dir.mkdir(exist_ok=True)
-        ko_dir = translations_dir / "ko"
-        ko_dir.mkdir(exist_ok=True)
-        ko_img_dir = ko_dir / "img"
-        ko_img_dir.mkdir(exist_ok=True)
+        image_dir = root_dir / "translated_images"
+        ko_img_dir = image_dir / "img"
+        ko_img_dir.mkdir(parents=True, exist_ok=True)
 
         # Valid translated image (with correct hash)
         from co_op_translator.utils.common.file_utils import get_unique_id

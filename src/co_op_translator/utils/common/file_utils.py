@@ -557,12 +557,20 @@ def migrate_translated_image_filenames(
                     image_file.rename(new_path)
                 except Exception:
                     continue
-            # Insert mappings in order: with translated_images/fast prefixes, then lang-prefixed basename, then plain basename
-            rename_map[f"translated_images/{full_rel}"] = (
-                f"translated_images/{new_rel_for_links}"
+            # Insert mappings in order: with base image dir/fast prefixes, then lang-prefixed basename, then plain basename
+            base_dir_name = image_dir.name
+            # Current configured base image directory
+            rename_map[f"{base_dir_name}/{full_rel}"] = (
+                f"{base_dir_name}/{new_rel_for_links}"
             )
+            # Backward compatibility: previous defaults that may appear in existing content
+            if base_dir_name != "translated_images":
+                rename_map[f"translated_images/{full_rel}"] = (
+                    f"{base_dir_name}/{new_rel_for_links}"
+                )
+            # Fast directory historical default
             rename_map[f"translated_images_fast/{full_rel}"] = (
-                f"translated_images_fast/{new_rel_for_links}"
+                f"{base_dir_name}/{new_rel_for_links}"
             )
             # If the old path already had a language directory, provide that form too
             if lang_code and not full_rel.startswith(lang_code + "/"):

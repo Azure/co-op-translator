@@ -485,8 +485,7 @@ class DirectoryManager:
         occurrences of old basenames with the corresponding new basenames.
         """
 
-        if not rename_map:
-            return 0
+        # Proceed even if rename_map is empty to apply regex-based rewrites
 
         updated_files = 0
 
@@ -515,6 +514,27 @@ class DirectoryManager:
                 if old_name in migrated_content:
                     migrated_content = migrated_content.replace(old_name, new_name)
 
+            # Additionally, rewrite legacy flattened image links to folder-based structure via regex
+            # Pattern matches: [../]*/<base_dir>/<basename>.<hash>.<lang>.<ext>
+            base_dir_name = self.image_dir.name
+            pattern = re.compile(
+                rf"(?P<prefix>(?:\.\./)*/?)?"
+                rf"(?P<bdir>{re.escape(base_dir_name)}|translated_images|translated_images_fast)"
+                rf"/"
+                rf"(?P<basename>[^/]+?)\.(?P<hash>[0-9a-fA-F]{{16,64}})\.(?P<lang>[a-z]{{2}})(?P<ext>\.(?:png|jpg|jpeg|gif))"
+            )
+
+            def _rewrite_legacy(m: re.Match) -> str:
+                prefix = m.group("prefix") or ""
+                lang = m.group("lang")
+                basename = m.group("basename")
+                hashseg = m.group("hash")
+                ext = m.group("ext")
+                # Normalize to configured base dir name and folder-based path
+                return f"{prefix}{base_dir_name}/{lang}/{basename}.{hashseg}{ext}"
+
+            migrated_content = pattern.sub(_rewrite_legacy, migrated_content)
+
             if migrated_content != original_content:
                 try:
                     md_file.write_text(migrated_content, encoding="utf-8")
@@ -527,9 +547,7 @@ class DirectoryManager:
         return updated_files
 
     def migrate_notebook_image_links(self, rename_map: dict[str, str]) -> int:
-
-        if not rename_map:
-            return 0
+        # Proceed even if rename_map is empty to apply regex-based rewrites
 
         updated_files = 0
 
@@ -570,6 +588,25 @@ class DirectoryManager:
                 for old_name, new_name in rename_map.items():
                     if old_name in migrated_text:
                         migrated_text = migrated_text.replace(old_name, new_name)
+
+                # Regex-based rewrite for legacy flattened image links in notebook markdown cells
+                base_dir_name = self.image_dir.name
+                pattern = re.compile(
+                    rf"(?P<prefix>(?:\.\./)*/?)?"
+                    rf"(?P<bdir>{re.escape(base_dir_name)}|translated_images|translated_images_fast)"
+                    rf"/"
+                    rf"(?P<basename>[^/]+?)\.(?P<hash>[0-9a-fA-F]{{16,64}})\.(?P<lang>[a-z]{{2}})(?P<ext>\.(?:png|jpg|jpeg|gif))"
+                )
+
+                def _rewrite_legacy_nb(m: re.Match) -> str:
+                    prefix = m.group("prefix") or ""
+                    lang = m.group("lang")
+                    basename = m.group("basename")
+                    hashseg = m.group("hash")
+                    ext = m.group("ext")
+                    return f"{prefix}{base_dir_name}/{lang}/{basename}.{hashseg}{ext}"
+
+                migrated_text = pattern.sub(_rewrite_legacy_nb, migrated_text)
 
                 if migrated_text != original_text:
                     changed = True

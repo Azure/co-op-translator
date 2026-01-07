@@ -74,7 +74,11 @@ logger = logging.getLogger(__name__)
     "--fast",
     "-f",
     is_flag=True,
-    help="Use fast mode for image translation (up to 3x faster at a slight cost to quality and alignment).",
+    help=(
+        "[Deprecated] Use fast mode for image translation (up to 3x faster at a slight "
+        "cost to quality and alignment). This option is deprecated and may be removed in a "
+        "future release."
+    ),
 )
 @click.option(
     "--yes",
@@ -249,6 +253,13 @@ def translate_command(
                         )
             except (FileNotFoundError, yaml.YAMLError) as e:
                 raise click.ClickException(f"Failed to load font mappings: {str(e)}")
+
+        # Show deprecation warning when fast image mode is enabled
+        if fast and "images" in translation_types:
+            click.echo(
+                "⚠️ Image fast mode is deprecated and may be removed in a future release. "
+                "Consider running without --fast for the recommended behavior."
+            )
 
         # Show warning and prompt if update is selected
         if update:

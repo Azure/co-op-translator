@@ -453,7 +453,9 @@ def test_image_paths_in_nested_structure(complex_dir_structure):
 
     # Check that image paths reference the translated images directory in translated images mode
     assert "translated_images" in result
-    assert ".ko." in result  # Should contain language code in filename
+    assert (
+        "translated_images/ko/" in result
+    )  # Should contain language code in directory path
 
     # Now test with use_translated_images=False (original images mode)
     result_md_only = update_image_links(

@@ -376,16 +376,29 @@ class DirectoryManager:
 
                     try:
                         parts = image_file.name.split(".")
-                        # Expect at least: base, hash/prefix, lang, ext
-                        if len(parts) < 4:
+                        if len(parts) < 3:
                             continue
 
-                        extension = parts[-1]
-                        lang_code = parts[-2]
-                        path_hash_segment = parts[-3]
-                        base_name = ".".join(parts[:-3])
+                        # Determine language code primarily from subdirectory (new format)
+                        try:
+                            rel_parts = image_file.relative_to(image_dir).parts
+                        except Exception:
+                            rel_parts = ()
 
-                        # If language code is not supported (not in language_codes), delete it
+                        lang_code = None
+                        if len(rel_parts) >= 2 and rel_parts[0] in self.language_codes:
+                            lang_code = rel_parts[0]
+                            # New format: base.hash.ext
+                            path_hash_segment = parts[-2]
+                            base_name = ".".join(parts[:-2])
+                        else:
+                            # Legacy format: base.hash.lang.ext
+                            if len(parts) < 4:
+                                continue
+                            lang_code = parts[-2]
+                            path_hash_segment = parts[-3]
+                            base_name = ".".join(parts[:-3])
+
                         if lang_code not in self.language_codes:
                             try:
                                 image_file.unlink()
@@ -399,8 +412,7 @@ class DirectoryManager:
                                 )
                             continue
 
-                        # Validate hash segment: only 16 or 64 lowercase hex characters are allowed
-                        segment = path_hash_segment.lower()
+                        segment = (path_hash_segment or "").lower()
                         hex_allowed = re.fullmatch(
                             r"[0-9a-f]{16}|[0-9a-f]{64}", segment
                         )
@@ -408,7 +420,6 @@ class DirectoryManager:
                         if not hex_allowed:
                             has_match = False
                         else:
-                            # Match by full hash (64) or by 16-char prefix, and require base filename match
                             if len(segment) == 16:
                                 candidates = [
                                     h

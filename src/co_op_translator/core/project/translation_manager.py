@@ -475,7 +475,10 @@ class TranslationManager:
                     translated_filename = generate_translated_filename(
                         image_file_path, language_code, self.root_dir
                     )
-                    translated_image_path = Path(self.image_dir) / translated_filename
+                    # New canonical path includes the language as a subdirectory
+                    translated_image_path = (
+                        Path(self.image_dir) / language_code / translated_filename
+                    )
 
                     if not update and translated_image_path.exists():
                         logger.info(

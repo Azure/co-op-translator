@@ -191,6 +191,7 @@ class ImageTranslator(ABC):
         )
         base_dir = "./translated_images_fast/" if fast_mode else "./translated_images/"
         dest = Path(destination_path) if destination_path else Path(base_dir)
+        dest = dest / target_language_code
         dest.mkdir(parents=True, exist_ok=True)
         output_path = dest / new_filename
 
@@ -456,20 +457,28 @@ class ImageTranslator(ABC):
         image_path = Path(image_path)
 
         try:
-            # Extract text and bounding boxes from the image
-            line_bounding_boxes = self.extract_line_bounding_boxes(image_path)
-
-            # Generate the new filename based on the original file name, hash, and language code
+            # Compute expected output path first and skip if it already exists
             actual_image_path = Path(image_path).resolve()
             new_filename = generate_translated_filename(
                 actual_image_path, target_language_code, self.root_dir
             )
-
-            # Determine the output path using pathlib
             if destination_path is None:
-                output_path = Path(self.default_output_dir) / new_filename
+                output_path = (
+                    Path(self.default_output_dir) / target_language_code / new_filename
+                )
             else:
-                output_path = Path(destination_path) / new_filename
+                output_path = (
+                    Path(destination_path) / target_language_code / new_filename
+                )
+
+            if output_path.exists():
+                logger.info(
+                    f"Skipping image translation; up-to-date output exists: {output_path}"
+                )
+                return str(output_path)
+
+            # Extract text and bounding boxes from the image
+            line_bounding_boxes = self.extract_line_bounding_boxes(image_path)
 
             # Check if any text was recognized
             if not line_bounding_boxes:
@@ -480,6 +489,7 @@ class ImageTranslator(ABC):
                 )
 
                 # Load the original image and save it with the new name
+                output_path.parent.mkdir(parents=True, exist_ok=True)
                 original_image = Image.open(image_path)
                 original_image.save(output_path)
 
@@ -516,8 +526,11 @@ class ImageTranslator(ABC):
             new_filename = generate_translated_filename(
                 actual_image_path, target_language_code, self.root_dir
             )
-            output_path = Path(self.default_output_dir) / new_filename
+            output_path = (
+                Path(self.default_output_dir) / target_language_code / new_filename
+            )
 
+            output_path.parent.mkdir(parents=True, exist_ok=True)
             original_image = Image.open(image_path)
             original_image.save(output_path)
 

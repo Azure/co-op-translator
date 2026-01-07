@@ -375,8 +375,8 @@ def generate_translated_filename(
     # Use a fixed-size prefix for deterministic filenames across runs/OS
     hash_prefix = full_hash[:HASH_PREFIX_LENGTH]
 
-    # Generate the new filename with the selected hash prefix and language code
-    new_filename = f"{original_filename}.{hash_prefix}.{language_code}{file_ext}"
+    # Generate the new filename with the selected hash prefix (language is now expressed via directory)
+    new_filename = f"{original_filename}.{hash_prefix}{file_ext}"
 
     return new_filename
 
@@ -434,18 +434,16 @@ def filter_files(directory: str | Path, excluded_dirs, extension: str = None) ->
 def migrate_translated_image_filenames(
     image_dir: Path, language_codes: list[str]
 ) -> dict[str, str]:
-    """Rename translated images to use a fixed 16-hex hash prefix.
+    """Migrate translated images to language subdirectories with 16-hex hash prefixes.
 
-    This helper operates within the given image_dir and for the specified
-    language codes.
+    This performs two migrations:
+    1) Flattened files named like base.hash.lang.ext → move to image_dir/lang/base.hash.ext
+       and remove the language segment from the filename.
+    2) Normalize hash segment to 16-hex prefix when legacy lengths are found (64/24/20).
 
-    It handles the following cases:
-    - Legacy filenames that embed a full 64-hex path hash → shorten to first 16 hex
-    - Older truncated prefixes with 20 or 24 hex → shorten to first 16 hex
-    Files already using a 16-hex prefix are left untouched.
-
-    Returns a mapping from old basenames to new basenames for use when
-    updating markdown/notebook links.
+    Returns a mapping from old basenames to new relative paths including the language
+    directory (e.g., {"diagram.abcdef0123456789.ko.png": "ko/diagram.abcdef0123456789.png"})
+    for updating markdown/notebook links.
     """
 
     image_dir = Path(image_dir)
@@ -462,7 +460,6 @@ def migrate_translated_image_filenames(
     for image_file in image_files:
         if not image_file.is_file():
             continue
-
         if image_file.suffix.lower() not in [
             ".png",
             ".jpg",
@@ -471,47 +468,116 @@ def migrate_translated_image_filenames(
         ]:
             continue
 
+        rel_parts = ()
+        try:
+            rel_parts = image_file.relative_to(image_dir).parts
+        except Exception:
+            rel_parts = ()
+
         parts = image_file.name.split(".")
-        if len(parts) < 4:
+        if len(parts) < 3:
             continue
 
         extension = parts[-1]
-        lang_code = parts[-2]
-        raw_hash = parts[-3]
+
+        # Detect language either from directory or from legacy filename
+        under_lang_dir = len(rel_parts) >= 2 and rel_parts[0] in language_codes
+        lang_code: str | None = rel_parts[0] if under_lang_dir else None
+
+        # Legacy filename pattern includes trailing language segment
+        has_legacy_lang_in_name = len(parts) >= 4 and parts[-2] in language_codes
+
+        if not under_lang_dir and not has_legacy_lang_in_name:
+            # Cannot determine language; skip conservatively
+            continue
+
+        if has_legacy_lang_in_name and lang_code is None:
+            lang_code = parts[-2]
 
         if lang_code not in language_codes:
+            # Skip unsupported languages
             continue
 
-        # Operate on hex segments of length 64 (legacy full) or 24/20 (older truncation).
-        if not re.fullmatch(r"[0-9a-f]+", raw_hash):
+        # Determine raw hash and base name depending on pattern
+        if has_legacy_lang_in_name:
+            raw_hash = parts[-3]
+            base_name = ".".join(parts[:-3])
+        else:
+            raw_hash = parts[-2]
+            base_name = ".".join(parts[:-2])
+
+        # Validate and normalize hash
+        if not re.fullmatch(r"[0-9a-f]+", raw_hash or ""):
             continue
         seg_len = len(raw_hash)
-        if seg_len == HASH_PREFIX_LENGTH:
-            # Already standardized to 16 hex; nothing to do
+        if seg_len not in (HASH_PREFIX_LENGTH, 64, 24, 20):
             continue
-        if seg_len not in (64, 24, 20):
-            # Unknown pattern length; skip to be conservative
-            continue
+        new_prefix = (
+            raw_hash if seg_len == HASH_PREFIX_LENGTH else raw_hash[:HASH_PREFIX_LENGTH]
+        )
 
-        base_name = ".".join(parts[:-3])
-        new_prefix = raw_hash[:HASH_PREFIX_LENGTH]
-        new_name = f"{base_name}.{new_prefix}.{lang_code}.{extension}"
+        new_basename = f"{base_name}.{new_prefix}.{extension}"
+        target_dir = image_dir / lang_code
+        target_dir.mkdir(parents=True, exist_ok=True)
+        new_path = target_dir / new_basename
 
-        if new_name == image_file.name:
-            continue
+        # Compute textual mapping entries for link migration
+        old_basename = image_file.name
+        new_rel_for_links = f"{lang_code}/{new_basename}"
+        # Prefer most specific replacements first (full paths), then less specific
+        full_rel = None
+        try:
+            full_rel = str(image_file.relative_to(image_dir)).replace("\\", "/")
+        except Exception:
+            full_rel = old_basename
 
-        new_path = image_file.with_name(new_name)
-
-        if new_path.exists():
-            logger.warning(
-                "Skipping migration for %s because target already exists: %s",
-                image_file,
-                new_path,
+        # If path is unchanged (already in place), consider only renaming to drop legacy lang
+        if image_file.resolve() == new_path.resolve():
+            # If only the hash length needs normalization or the name still contains lang segment under lang dir
+            if has_legacy_lang_in_name:
+                # Under lang dir with legacy language in name → rename to drop it
+                try:
+                    image_file.rename(new_path)
+                    rename_map[old_basename] = new_rel_for_links
+                except Exception:
+                    pass
+            else:
+                # Already correct location and naming; nothing to do
+                continue
+        else:
+            # Move/rename to the new path
+            if new_path.exists():
+                # If target exists, remove the source to dedupe
+                try:
+                    image_file.unlink()
+                except Exception:
+                    pass
+            else:
+                try:
+                    image_file.rename(new_path)
+                except Exception:
+                    continue
+            # Insert mappings in order: with base image dir/fast prefixes, then lang-prefixed basename, then plain basename
+            base_dir_name = image_dir.name
+            # Current configured base image directory
+            rename_map[f"{base_dir_name}/{full_rel}"] = (
+                f"{base_dir_name}/{new_rel_for_links}"
             )
-            continue
-
-        image_file.rename(new_path)
-        rename_map[image_file.name] = new_name
+            # Backward compatibility: previous defaults that may appear in existing content
+            if base_dir_name != "translated_images":
+                rename_map[f"translated_images/{full_rel}"] = (
+                    f"{base_dir_name}/{new_rel_for_links}"
+                )
+            # Fast directory historical default
+            rename_map[f"translated_images_fast/{full_rel}"] = (
+                f"{base_dir_name}/{new_rel_for_links}"
+            )
+            # If the old path already had a language directory, provide that form too
+            if lang_code and not full_rel.startswith(lang_code + "/"):
+                rename_map[f"{lang_code}/{old_basename}"] = (
+                    f"{lang_code}/{new_basename}"
+                )
+            rename_map[old_basename] = new_rel_for_links
 
     return rename_map
 

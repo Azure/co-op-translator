@@ -475,7 +475,10 @@ class TranslationManager:
                     translated_filename = generate_translated_filename(
                         image_file_path, language_code, self.root_dir
                     )
-                    translated_image_path = Path(self.image_dir) / translated_filename
+                    # New canonical path includes the language as a subdirectory
+                    translated_image_path = (
+                        Path(self.image_dir) / language_code / translated_filename
+                    )
 
                     if not update and translated_image_path.exists():
                         logger.info(
@@ -596,19 +599,20 @@ class TranslationManager:
                 rename_map = migrate_translated_image_filenames(
                     self.image_dir, self.language_codes
                 )
-                if rename_map:
-                    migrated_md = self.directory_manager.migrate_markdown_image_links(
-                        rename_map
-                    )
-                    migrated_nb = self.directory_manager.migrate_notebook_image_links(
-                        rename_map
-                    )
-                    logger.info(
-                        "Migrated %d image files and updated %d markdown and %d notebook files",
-                        len(rename_map),
-                        migrated_md,
-                        migrated_nb,
-                    )
+                # Always run link migration to rewrite legacy flattened links in content,
+                # even when no files were moved (empty rename_map)
+                migrated_md = self.directory_manager.migrate_markdown_image_links(
+                    rename_map
+                )
+                migrated_nb = self.directory_manager.migrate_notebook_image_links(
+                    rename_map
+                )
+                logger.info(
+                    "Migrated %d image files and updated %d markdown and %d notebook files",
+                    len(rename_map),
+                    migrated_md,
+                    migrated_nb,
+                )
             except Exception as e:
                 logger.warning(f"Image filename/link migration skipped: {e}")
 

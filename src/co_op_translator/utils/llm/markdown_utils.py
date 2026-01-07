@@ -710,9 +710,9 @@ def update_image_links(
                         new_filename = generate_translated_filename(
                             actual_image_path, language_code, root_dir
                         )
-                        updated_link = os.path.join(rel_path, new_filename).replace(
-                            os.path.sep, "/"
-                        )
+                        updated_link = os.path.join(
+                            rel_path, language_code, new_filename
+                        ).replace(os.path.sep, "/")
                         logger.info(f"Using translated image link: {updated_link}")
                     except Exception as e:
                         logger.error(f"Error processing image path {path}: {e}")
@@ -780,9 +780,9 @@ def update_image_links(
                 new_filename = generate_translated_filename(
                     actual_image_path, language_code, root_dir
                 )
-                updated_src = os.path.join(rel_path, new_filename).replace(
-                    os.path.sep, "/"
-                )
+                updated_src = os.path.join(
+                    rel_path, language_code, new_filename
+                ).replace(os.path.sep, "/")
         except Exception as e:
             logger.error(f"Error processing HTML <img> path {src}: {e}")
             updated_src = src

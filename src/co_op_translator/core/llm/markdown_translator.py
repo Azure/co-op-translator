@@ -207,17 +207,18 @@ class MarkdownTranslator(ABC):
                     f"Request exceeded {self.TRANSLATION_TIMEOUT_SECONDS} seconds. "
                     f"Check your network connection and API response time."
                 )
-                results.append(
-                    f"Translation for chunk {index + 1} of '{md_file_path.name}' skipped due to timeout."
+                raise RuntimeError(
+                    f"Markdown translation timed out for chunk {index + 1} of '{md_file_path.name}'"
                 )
             except Exception as e:
                 logger.error(
                     f"Translation failed for chunk {index + 1} of file '{md_file_path.name}': {str(e)}. "
-                    f"Check your API configuration and network connection."
+                    f"Check your API configuration and network connection.",
+                    exc_info=True,
                 )
-                results.append(
-                    f"Error translating chunk {index + 1} of '{md_file_path.name}': {str(e)}"
-                )
+                raise RuntimeError(
+                    f"Markdown translation failed for chunk {index + 1} of '{md_file_path.name}': {e}"
+                ) from e
         return results
 
     @abstractmethod
@@ -257,7 +258,15 @@ class MarkdownTranslator(ABC):
         user_text = template_text
         disclaimer_prompt = system_text + SPLIT_DELIMITER + user_text
 
-        disclaimer = await self._run_prompt(disclaimer_prompt, "disclaimer prompt", 1)
+        try:
+            disclaimer = await self._run_prompt(
+                disclaimer_prompt, "disclaimer prompt", 1
+            )
+        except Exception as e:
+            logger.warning(
+                f"Failed to generate disclaimer for language '{output_lang}': {e}"
+            )
+            return ""
 
         return disclaimer
 

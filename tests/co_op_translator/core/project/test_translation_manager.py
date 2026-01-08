@@ -237,8 +237,14 @@ async def test_translate_project_async_with_outdated(
         return_value=[(test_md, temp_project_dir / "translations" / "ko" / "test.md")]
     )
     mock_translation_manager.retranslate_outdated_files = AsyncMock()
-    mock_translation_manager.translate_all_markdown_files = AsyncMock()
-    mock_translation_manager.translate_all_image_files = AsyncMock()
+    # Ensure translate_* methods return the expected (modified_count, errors) tuple
+    mock_translation_manager.translate_all_markdown_files = AsyncMock(
+        return_value=(0, [])
+    )
+    mock_translation_manager.translate_all_notebook_files = AsyncMock(
+        return_value=(0, [])
+    )
+    mock_translation_manager.translate_all_image_files = AsyncMock(return_value=(0, []))
     mock_translation_manager.directory_manager = MagicMock()
     mock_translation_manager.directory_manager.sync_directory_structure = MagicMock(
         return_value=(0, 0, [])

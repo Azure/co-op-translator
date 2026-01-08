@@ -172,7 +172,9 @@ class TranslationManager:
                 logger.error(
                     f"Translation failed for {file_path}: Empty translation result"
                 )
-                return ""
+                raise RuntimeError(
+                    f"Markdown translation returned empty content for {file_path}"
+                )
 
             # Validate translation format and line break consistency
             if compare_line_breaks(document, translated_content):
@@ -189,7 +191,9 @@ class TranslationManager:
                     logger.error(
                         f"Retry translation failed for {file_path}: Empty translation result"
                     )
-                    return ""
+                    raise RuntimeError(
+                        f"Markdown translation retry returned empty content for {file_path}"
+                    )
 
             relative_path = file_path.relative_to(self.root_dir)
             translated_path = self.translations_dir / language_code / relative_path
@@ -204,11 +208,11 @@ class TranslationManager:
                 return str(translated_path)
             except Exception as e:
                 logger.error(f"Failed to write translation to {translated_path}: {e}")
-                return ""
+                raise
 
         except Exception as e:
             logger.error(f"Failed to translate {file_path}: {e}")
-            return ""
+            raise
 
     async def translate_notebook(self, file_path: Path, language_code: str) -> str:
         """Translate a Jupyter notebook file to the specified language.
@@ -746,7 +750,8 @@ class TranslationManager:
 
         except Exception as e:
             logger.error(f"Error during translation: {e}")
-            all_errors.append(str(e))
+            # Fail fast: propagate to CLI so the process exits
+            raise
 
         logger.info(f"Translation completed. Modified {total_modified} files.")
         if all_errors:

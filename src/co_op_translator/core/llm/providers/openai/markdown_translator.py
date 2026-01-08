@@ -117,7 +117,7 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
                 return await self._run_prompt_once(prompt, index, total)
             except Exception as e:
                 logger.error(f"Error in prompt {index}/{total} - {prompt}: {e}")
-                return ""
+                raise
 
         async def _call_once():
             return await self._run_prompt_once(prompt, index, total)
@@ -138,4 +138,4 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
             )
         except Exception as e:
             logger.error(f"Error in prompt {index}/{total} - {prompt}: {e}")
-            return ""
+            raise

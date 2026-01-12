@@ -353,20 +353,13 @@ class ImageTranslator(ABC):
 
         # ------------------------------------- Neat Mode -------------------------------------#
         else:
-            # Regular (neat) method.
+            # Regular (neat) method with dynamic font sizing.
             mode = get_image_mode(image_path)
             image = Image.open(image_path).convert(mode)
 
-            font_size = 40
             font_path = self.font_config.get_font_path(target_language_code)
-            try:
-                font = ImageFont.truetype(font_path, font_size)
-            except IOError:
-                logger.error(
-                    f"Font file not found for language '{target_language_code}' at '{font_path}' in image '{Path(image_path).name}': "
-                    f"Using default font. Install the required font or check font configuration."
-                )
-                font = ImageFont.load_default()
+            # Supersampling factor for high-quality rendering
+            SUPERSAMPLE = 2
 
             iterator = zip(grouped_boxes, grouped_translations)
             if verbose:
@@ -383,6 +376,45 @@ class ImageTranslator(ABC):
 
                 for line_info, translated_text in zip(group_info, group_translated):
                     bounding_box = line_info["bounding_box"]
+
+                    # Calculate bounding box dimensions
+                    pts = np.array(bounding_box, dtype=np.float32).reshape(4, 2)
+                    widthA = np.linalg.norm(pts[0] - pts[1])
+                    widthB = np.linalg.norm(pts[2] - pts[3])
+                    maxWidth = max(widthA, widthB)
+                    heightA = np.linalg.norm(pts[0] - pts[3])
+                    heightB = np.linalg.norm(pts[1] - pts[2])
+                    maxHeight = max(heightA, heightB)
+                    target_aspect = maxWidth / maxHeight if maxHeight != 0 else 1
+
+                    # Dynamic font size based on bounding box height (with supersampling)
+                    base_font_size = int(maxHeight * 0.85 * SUPERSAMPLE)
+                    base_font_size = max(base_font_size, 12)  # Minimum font size
+
+                    try:
+                        font = ImageFont.truetype(font_path, base_font_size)
+                    except IOError:
+                        logger.error(
+                            f"Font file not found for language '{target_language_code}' at '{font_path}': "
+                            f"Using default font."
+                        )
+                        font = ImageFont.load_default()
+
+                    # Measure text width and adjust font size if text is too wide
+                    dummy_img = Image.new("RGBA", (1, 1))
+                    dummy_draw = ImageDraw.Draw(dummy_img)
+                    bbox = dummy_draw.textbbox((0, 0), translated_text, font=font)
+                    text_width = bbox[2] - bbox[0]
+                    target_width = maxWidth * SUPERSAMPLE * 0.95  # 95% of box width
+
+                    if text_width > target_width and text_width > 0:
+                        # Scale down font to fit width
+                        scale_factor = target_width / text_width
+                        adjusted_font_size = max(int(base_font_size * scale_factor), 10)
+                        try:
+                            font = ImageFont.truetype(font_path, adjusted_font_size)
+                        except IOError:
+                            pass  # Keep previous font
 
                     bg_color, _ = get_dominant_color(image, bounding_box)
                     final_bg_color = adjust_bg_color(bg_color)
@@ -403,15 +435,6 @@ class ImageTranslator(ABC):
                         font_path=font_path,
                     )
                     text_image_array = np.array(text_image)
-
-                    pts = np.array(bounding_box, dtype=np.float32).reshape(4, 2)
-                    widthA = np.linalg.norm(pts[0] - pts[1])
-                    widthB = np.linalg.norm(pts[2] - pts[3])
-                    maxWidth = max(widthA, widthB)
-                    heightA = np.linalg.norm(pts[0] - pts[3])
-                    heightB = np.linalg.norm(pts[1] - pts[2])
-                    maxHeight = max(heightA, heightB)
-                    target_aspect = maxWidth / maxHeight if maxHeight != 0 else 1
 
                     padded_text_image = pad_text_image_to_target_aspect(
                         text_image_array, target_aspect, effective_alignment_group

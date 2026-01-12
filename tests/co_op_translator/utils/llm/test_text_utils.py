@@ -1,6 +1,7 @@
 from co_op_translator.utils.llm.text_utils import (
     remove_code_backticks,
     gen_image_translation_prompt,
+    strip_line_number_prefix,
     TranslationResponse,
 )
 
@@ -20,7 +21,7 @@ def test_remove_code_backticks():
 
 
 def test_gen_image_translation_prompt():
-    """Test generating image translation prompts without numbering."""
+    """Test generating image translation prompts with numbered lines."""
     text_data = ["Line 1", "Line 2", "Line 3"]
     language_code = "ko"
     language_name = "Korean"
@@ -30,15 +31,30 @@ def test_gen_image_translation_prompt():
     assert isinstance(prompt, str)
     assert language_code in prompt
     assert language_name in prompt
-    assert "Keep exact same number of lines" in prompt
-    assert "preserve original formatting" in prompt
-    assert "Line 1\n" in prompt
-    assert "Line 2\n" in prompt
-    assert "Line 3\n" in prompt
-    # Ensure no numbering is added
-    assert "1. Line 1" not in prompt
-    assert "2. Line 2" not in prompt
-    assert "3. Line 3" not in prompt
+    # Check for new prompt format
+    assert "EXACTLY 3 items" in prompt
+    assert "without line numbers" in prompt
+    # Check numbered lines are included
+    assert "1. Line 1" in prompt
+    assert "2. Line 2" in prompt
+    assert "3. Line 3" in prompt
+
+
+def test_strip_line_number_prefix():
+    """Test stripping line number prefixes from text."""
+    test_cases = [
+        ("[1] Hello", "Hello"),
+        ("[12] World", "World"),
+        ("1. Hello", "Hello"),
+        ("12. World", "World"),
+        ("No prefix", "No prefix"),
+        ("[1]  Extra space", "Extra space"),
+        ("1.  Extra space", "Extra space"),
+    ]
+
+    for input_text, expected in test_cases:
+        result = strip_line_number_prefix(input_text)
+        assert result == expected, f"Failed for input: {input_text}"
 
 
 def test_gen_image_translation_prompt_empty():

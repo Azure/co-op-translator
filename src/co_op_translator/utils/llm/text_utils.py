@@ -17,6 +17,21 @@ class TranslationResponse(BaseModel):
 
 logger = logging.getLogger(__name__)
 
+# Pattern to match line number prefixes like "1.", "2.", "[1]", "[2]", etc.
+LINE_NUMBER_PREFIX_PATTERN = re.compile(r"^(?:\[\d+\]|\d+\.)\s*")
+
+
+def strip_line_number_prefix(text: str) -> str:
+    """Remove line number prefix (e.g., "1.", "[1]") from text if present.
+
+    Args:
+        text: Text that may contain a line number prefix
+
+    Returns:
+        Text with line number prefix removed
+    """
+    return LINE_NUMBER_PREFIX_PATTERN.sub("", text)
+
 
 def gen_image_translation_prompt(text_data, language_code, language_name):
     """
@@ -30,9 +45,17 @@ def gen_image_translation_prompt(text_data, language_code, language_name):
     Returns:
         str: Generated translation prompt for structured output.
     """
-    prompt = f"Translate each line to {language_name} ({language_code}). Keep exact same number of lines and preserve original formatting:\n\n"
-    for line in text_data:
-        prompt += f"{line}\n"
+    line_count = len(text_data)
+    numbered_lines = "\n".join(f"{i}. {line}" for i, line in enumerate(text_data, 1))
+
+    prompt = f"""Translate to {language_name} ({language_code}). Return EXACTLY {line_count} items.
+
+RULES:
+- Output translated text only, without line numbers
+- Keep symbols/numbers unchanged: +, -, →, 123
+- Empty input → empty string ""
+
+{numbered_lines}"""
     return prompt
 
 

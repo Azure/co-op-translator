@@ -621,7 +621,9 @@ class TranslationManager:
 
                 # Convert existing PNG/JPG images to WebP format for optimal compression
                 # This reduces storage requirements by 25-35% compared to PNG
-                webp_rename_map = migrate_images_to_webp(self.image_dir)
+                webp_rename_map = migrate_images_to_webp(
+                    self.image_dir, self.language_codes
+                )
                 rename_map.update(webp_rename_map)
 
                 # Always run link migration to rewrite legacy flattened links in content,

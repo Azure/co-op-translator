@@ -240,6 +240,118 @@ class TestDirectoryManager:
         assert old_image_name not in cell_source
         assert new_image_name in cell_source
 
+    def test_migrate_markdown_image_links_scoped_to_language_codes(
+        self, setup_test_dirs
+    ):
+        root_dir = setup_test_dirs
+        translations_dir = root_dir / "translations"
+        language_codes = ["ko"]
+        excluded_dirs = []
+
+        translations_dir.mkdir(exist_ok=True)
+        ko_dir = translations_dir / "ko"
+        ja_dir = translations_dir / "ja"
+        ko_dir.mkdir(parents=True)
+        ja_dir.mkdir(parents=True)
+
+        old_image_name = "logo.png"
+        new_image_name = "logo.webp"
+
+        ko_md = ko_dir / "readme.md"
+        ja_md = ja_dir / "readme.md"
+        ko_original = f"# KO\n![Logo]({old_image_name})\n"
+        ja_original = f"# JA\n![Logo]({old_image_name})\n"
+        ko_md.write_text(ko_original, encoding="utf-8")
+        ja_md.write_text(ja_original, encoding="utf-8")
+
+        manager = DirectoryManager(
+            root_dir=root_dir,
+            translations_dir=translations_dir,
+            language_codes=language_codes,
+            excluded_dirs=excluded_dirs,
+        )
+
+        updated_files = manager.migrate_markdown_image_links(
+            {old_image_name: new_image_name}
+        )
+
+        # Only the selected language (ko) should be updated
+        assert updated_files == 1
+        assert new_image_name in ko_md.read_text(encoding="utf-8")
+        assert old_image_name not in ko_md.read_text(encoding="utf-8")
+
+        # Non-selected language (ja) should remain unchanged
+        assert ja_md.read_text(encoding="utf-8") == ja_original
+
+    def test_migrate_notebook_image_links_scoped_to_language_codes(
+        self, setup_test_dirs
+    ):
+        import json
+
+        root_dir = setup_test_dirs
+        translations_dir = root_dir / "translations"
+        language_codes = ["ko"]
+        excluded_dirs = []
+
+        translations_dir.mkdir(exist_ok=True)
+        ko_dir = translations_dir / "ko"
+        ja_dir = translations_dir / "ja"
+        ko_dir.mkdir(parents=True)
+        ja_dir.mkdir(parents=True)
+
+        old_image_name = "logo.png"
+        new_image_name = "logo.webp"
+
+        ko_nb = ko_dir / "test.ipynb"
+        ja_nb = ja_dir / "test.ipynb"
+
+        ko_notebook = {
+            "cells": [
+                {
+                    "cell_type": "markdown",
+                    "source": [f"# KO\n![Logo]({old_image_name})\n"],
+                }
+            ],
+            "metadata": {},
+        }
+
+        ja_notebook = {
+            "cells": [
+                {
+                    "cell_type": "markdown",
+                    "source": [f"# JA\n![Logo]({old_image_name})\n"],
+                }
+            ],
+            "metadata": {},
+        }
+
+        ko_nb.write_text(json.dumps(ko_notebook), encoding="utf-8")
+        ja_nb.write_text(json.dumps(ja_notebook), encoding="utf-8")
+
+        manager = DirectoryManager(
+            root_dir=root_dir,
+            translations_dir=translations_dir,
+            language_codes=language_codes,
+            excluded_dirs=excluded_dirs,
+        )
+
+        updated_files = manager.migrate_notebook_image_links(
+            {old_image_name: new_image_name}
+        )
+
+        # Only the selected language (ko) should be updated
+        assert updated_files == 1
+
+        ko_loaded = json.loads(ko_nb.read_text(encoding="utf-8"))
+        ko_cell_source = "".join(ko_loaded["cells"][0]["source"])
+        assert old_image_name not in ko_cell_source
+        assert new_image_name in ko_cell_source
+
+        ja_loaded = json.loads(ja_nb.read_text(encoding="utf-8"))
+        ja_cell_source = "".join(ja_loaded["cells"][0]["source"])
+        # Non-selected language (ja) should remain unchanged
+        assert ja_cell_source == "# JA\n![Logo](logo.png)\n"
+
     def test_cross_platform_path_handling(self, setup_test_dirs):
         """Test handling of cross-platform path separators in metadata."""
         import json

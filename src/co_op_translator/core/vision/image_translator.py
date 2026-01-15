@@ -35,6 +35,7 @@ from co_op_translator.utils.vision.image_utils import (
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from co_op_translator.core.llm.text_translator import TextTranslator
 from co_op_translator.utils.common.file_utils import generate_translated_filename
+from co_op_translator.utils.common.metadata_utils import save_image_metadata
 from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
@@ -123,6 +124,7 @@ class ImageTranslator(ABC):
         destination_path=None,
         verbose=False,
         fast_mode=False,
+        original_image_path=None,
     ):
         """Render translated text onto original image at appropriate positions.
 
@@ -138,10 +140,14 @@ class ImageTranslator(ABC):
             destination_path: Directory to save the output image (optional)
             verbose: Whether to display processing progress
             fast_mode: Whether to use faster rendering (3x faster but less precise)
+            original_image_path: Path to the original image for metadata (defaults to image_path)
 
         Returns:
             Path to the annotated image with translated text
         """
+        # Use image_path as original if not specified
+        if original_image_path is None:
+            original_image_path = image_path
         style = "fast" if fast_mode else "neat"
         logger.info("=" * 50)
         logger.info(f"Starting annotation ({style} mode) for image: {image_path} ")
@@ -454,8 +460,15 @@ class ImageTranslator(ABC):
         if output_path.suffix.lower() in RGB_IMAGE_EXTENSIONS:
             image = image.convert("RGB")
 
-        # Save the image
+        # Save the image and update central metadata file
         image.save(output_path)
+        save_image_metadata(
+            output_path,
+            Path(original_image_path),
+            target_language_code,
+            self.root_dir,
+            image_dir=Path(self.default_output_dir),
+        )
 
         logger.info(f"Annotated image saved to {output_path}")
         return str(output_path)
@@ -511,10 +524,17 @@ class ImageTranslator(ABC):
                     f"The image may not contain readable text or text may be too small/blurry to detect."
                 )
 
-                # Load the original image and save it with the new name
+                # Load the original image and save it with the new name and metadata
                 output_path.parent.mkdir(parents=True, exist_ok=True)
                 original_image = Image.open(image_path)
                 original_image.save(output_path)
+                save_image_metadata(
+                    output_path,
+                    image_path,
+                    target_language_code,
+                    self.root_dir,
+                    image_dir=Path(self.default_output_dir),
+                )
 
                 return str(
                     output_path
@@ -535,7 +555,8 @@ class ImageTranslator(ABC):
                 translated_text_list,
                 target_language_code,
                 destination_path,
-                fast_mode=fast_mode,  # Add this parameter
+                fast_mode=fast_mode,
+                original_image_path=image_path,
             )
 
         except Exception as e:
@@ -544,7 +565,7 @@ class ImageTranslator(ABC):
                 f"Saving original image instead."
             )
 
-            # Load the original image and save it with the new name
+            # Load the original image and save it with the new name and metadata
             actual_image_path = Path(image_path).resolve()
             new_filename = generate_translated_filename(
                 actual_image_path, target_language_code, self.root_dir
@@ -556,6 +577,13 @@ class ImageTranslator(ABC):
             output_path.parent.mkdir(parents=True, exist_ok=True)
             original_image = Image.open(image_path)
             original_image.save(output_path)
+            save_image_metadata(
+                output_path,
+                image_path,
+                target_language_code,
+                self.root_dir,
+                image_dir=Path(self.default_output_dir),
+            )
 
             return str(
                 output_path

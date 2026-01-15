@@ -17,7 +17,12 @@ from co_op_translator.utils.common.file_utils import (
     handle_empty_document,
     migrate_translated_image_filenames,
 )
-from co_op_translator.utils.common.metadata_utils import calculate_file_hash
+from co_op_translator.utils.common.metadata_utils import (
+    calculate_file_hash,
+    is_image_up_to_date,
+    remove_image_metadata,
+    cleanup_orphan_image_metadata,
+)
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.directory_manager import DirectoryManager
@@ -484,11 +489,20 @@ class TranslationManager:
                         Path(self.image_dir) / language_code / translated_filename
                     )
 
-                    if not update and translated_image_path.exists():
+                    # Skip if file exists and is up-to-date (outdated images handled separately)
+                    if translated_image_path.exists() and not update:
+                        if is_image_up_to_date(
+                            image_file_path, translated_image_path, self.image_dir
+                        ):
+                            logger.info(
+                                f"Skipping up-to-date image: {translated_image_path}"
+                            )
+                            continue
+                        # Note: outdated images should have been handled by retranslate_outdated_images()
+                        # If we reach here, the image was modified after the outdated check
                         logger.info(
-                            f"Skipping already translated image: {translated_image_path}"
+                            f"Image metadata mismatch detected: {image_file_path} -> {translated_image_path}"
                         )
-                        continue
 
                     logger.info(
                         f"Translating image: {image_file_path} for language: {language_code}"
@@ -668,7 +682,7 @@ class TranslationManager:
                 )
                 sync_progress.update(1)
 
-            # Find files needing translation due to source changes
+            # Find files needing translation due to source changes (markdown + notebooks)
             if (
                 "markdown" in self.translation_types
                 or "notebook" in self.translation_types
@@ -684,6 +698,28 @@ class TranslationManager:
 
                 if outdated_files:
                     await self.retranslate_outdated_files(outdated_files)
+
+            # Find outdated images needing retranslation
+            if "images" in self.translation_types:
+                # Clean up orphan metadata entries (images deleted but metadata remains)
+                for lang_code in self.language_codes:
+                    lang_dir = self.image_dir / lang_code
+                    if lang_dir.exists():
+                        cleanup_orphan_image_metadata(lang_dir)
+
+                with tqdm(total=1, desc="🔍 Checking images") as check_progress:
+                    outdated_images = self.get_outdated_images()
+                    check_progress.set_postfix_str(
+                        "None"
+                        if not outdated_images
+                        else f"Found: {len(outdated_images)}"
+                    )
+                    check_progress.update(1)
+
+                if outdated_images:
+                    await self.retranslate_outdated_images(
+                        outdated_images, fast_mode=fast_mode
+                    )
 
             # Execute translation for markdown, notebook and image files
             if "markdown" in self.translation_types:
@@ -866,6 +902,82 @@ class TranslationManager:
                     await self.translate_markdown(original_file, language_code)
                     progress_bar.update(1)
                     progress_bar.set_postfix_str(f"Current: {original_file.name}")
+
+    def get_outdated_images(self) -> List[tuple[Path, Path, str]]:
+        """Identify translated images that need updates based on metadata hash comparison.
+
+        Scans all translated image files and compares their metadata with source images.
+
+        Returns:
+            List of (original_file, translated_file, language_code) tuples that need updates
+        """
+        outdated_images = []
+
+        # Discover original image files
+        image_files = filter_files(self.root_dir, self.excluded_dirs)
+        original_images = [
+            f.resolve()
+            for f in image_files
+            if get_filename_and_extension(f)[1] in self.supported_image_extensions
+        ]
+
+        if not original_images:
+            return []
+
+        for image_file_path in original_images:
+            for language_code in self.language_codes:
+                translated_filename = generate_translated_filename(
+                    image_file_path, language_code, self.root_dir
+                )
+                translated_image_path = (
+                    Path(self.image_dir) / language_code / translated_filename
+                )
+
+                if not translated_image_path.exists():
+                    # File doesn't exist - not outdated, just new (will be handled by translate_all)
+                    continue
+
+                # Check if the translation is outdated using metadata
+                if not is_image_up_to_date(
+                    image_file_path, translated_image_path, self.image_dir
+                ):
+                    outdated_images.append(
+                        (image_file_path, translated_image_path, language_code)
+                    )
+
+        return outdated_images
+
+    async def retranslate_outdated_images(
+        self, outdated_images: List[tuple[Path, Path, str]], fast_mode: bool = False
+    ) -> None:
+        """Retranslate images identified as outdated.
+
+        Args:
+            outdated_images: List of (original_file, translated_file, language_code) tuples
+            fast_mode: Whether to use faster translation method
+        """
+        if not outdated_images:
+            return
+
+        with tqdm(
+            total=len(outdated_images), desc="🖼️  Retranslating outdated images"
+        ) as progress_bar:
+            for original_file, translated_file, language_code in outdated_images:
+                # Delete the outdated translated file and remove from central metadata
+                try:
+                    translated_file.unlink()
+                    remove_image_metadata(translated_file, self.image_dir)
+                except Exception as e:
+                    logger.warning(
+                        f"Failed to delete outdated image {translated_file}: {e}"
+                    )
+
+                # Retranslate
+                await self.translate_image(
+                    original_file, language_code, fast_mode=fast_mode
+                )
+                progress_bar.update(1)
+                progress_bar.set_postfix_str(f"Current: {original_file.name}")
 
     async def check_and_retry_translations(self):
         """Check translated files for formatting errors and retry failed translations.

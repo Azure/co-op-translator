@@ -31,6 +31,7 @@ from co_op_translator.utils.vision.image_utils import (
     group_bounding_boxes,
     pad_text_image_to_target_aspect,
     adjust_bg_color,
+    save_optimized_image,
 )
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from co_op_translator.core.llm.text_translator import TextTranslator
@@ -460,8 +461,8 @@ class ImageTranslator(ABC):
         if output_path.suffix.lower() in RGB_IMAGE_EXTENSIONS:
             image = image.convert("RGB")
 
-        # Save the image and update central metadata file
-        image.save(output_path)
+        # Save the image with optimization and update central metadata file
+        save_optimized_image(image, output_path)
         save_image_metadata(
             output_path,
             Path(original_image_path),
@@ -527,7 +528,7 @@ class ImageTranslator(ABC):
                 # Load the original image and save it with the new name and metadata
                 output_path.parent.mkdir(parents=True, exist_ok=True)
                 original_image = Image.open(image_path)
-                original_image.save(output_path)
+                save_optimized_image(original_image, output_path)
                 save_image_metadata(
                     output_path,
                     image_path,
@@ -576,7 +577,7 @@ class ImageTranslator(ABC):
 
             output_path.parent.mkdir(parents=True, exist_ok=True)
             original_image = Image.open(image_path)
-            original_image.save(output_path)
+            save_optimized_image(original_image, output_path)
             save_image_metadata(
                 output_path,
                 image_path,

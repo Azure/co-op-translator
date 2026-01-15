@@ -16,6 +16,7 @@ from co_op_translator.utils.common.file_utils import (
     generate_translated_filename,
     handle_empty_document,
     migrate_translated_image_filenames,
+    migrate_images_to_webp,
 )
 from co_op_translator.utils.common.metadata_utils import (
     calculate_file_hash,
@@ -617,6 +618,12 @@ class TranslationManager:
                 rename_map = migrate_translated_image_filenames(
                     self.image_dir, self.language_codes
                 )
+
+                # Convert existing PNG/JPG images to WebP format for optimal compression
+                # This reduces storage requirements by 25-35% compared to PNG
+                webp_rename_map = migrate_images_to_webp(self.image_dir)
+                rename_map.update(webp_rename_map)
+
                 # Always run link migration to rewrite legacy flattened links in content,
                 # even when no files were moved (empty rename_map)
                 migrated_md = self.directory_manager.migrate_markdown_image_links(

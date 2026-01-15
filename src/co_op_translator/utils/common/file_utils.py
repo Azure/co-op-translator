@@ -352,6 +352,9 @@ def generate_translated_filename(
     """
     Generate a filename for a translated file, including a unique hash and language code.
 
+    All translated images are saved as WebP format for optimal compression.
+    The original extension is preserved in the base filename for traceability.
+
     Note:
     If the file path and the file name are identical, the same hash will be generated.
     This is because the hash is based on the entire file path.
@@ -361,8 +364,9 @@ def generate_translated_filename(
         language_code (str): The language code for the translation (e.g., 'en', 'fr').
 
     Returns:
-        str: The translated file's new filename.
+        str: The translated file's new filename (always .webp extension).
     """
+    from co_op_translator.config.constants import WEBP_EXTENSION
 
     original_filepath = Path(original_filepath)
 
@@ -375,8 +379,9 @@ def generate_translated_filename(
     # Use a fixed-size prefix for deterministic filenames across runs/OS
     hash_prefix = full_hash[:HASH_PREFIX_LENGTH]
 
-    # Generate the new filename with the selected hash prefix (language is now expressed via directory)
-    new_filename = f"{original_filename}.{hash_prefix}{file_ext}"
+    # Generate the new filename with WebP extension for optimal compression
+    # All translated images are saved as WebP regardless of original format
+    new_filename = f"{original_filename}.{hash_prefix}{WEBP_EXTENSION}"
 
     return new_filename
 
@@ -578,6 +583,133 @@ def migrate_translated_image_filenames(
                     f"{lang_code}/{new_basename}"
                 )
             rename_map[old_basename] = new_rel_for_links
+
+    return rename_map
+
+
+def migrate_images_to_webp(image_dir: Path) -> dict[str, str]:
+    """Migrate existing translated images (PNG, JPG, JPEG) to WebP format.
+
+    This function:
+    1. Finds all non-WebP images in the translated_images directory
+    2. Converts them to WebP format with optimal compression (quality=90)
+    3. Updates the metadata file to reflect the new filenames
+    4. Deletes the original PNG/JPG files after successful conversion
+
+    Returns a mapping from old filenames to new WebP filenames for updating
+    markdown/notebook links (e.g., {"image.abc123.png": "image.abc123.webp"}).
+
+    Args:
+        image_dir: Path to the translated_images directory
+
+    Returns:
+        dict mapping old relative paths to new WebP paths
+    """
+    from PIL import Image
+    import json
+
+    image_dir = Path(image_dir)
+    if not image_dir.exists():
+        logger.info(f"Image directory does not exist: {image_dir}")
+        return {}
+
+    rename_map: dict[str, str] = {}
+    converted_count = 0
+    failed_count = 0
+    skipped_count = 0
+
+    # Process each language subdirectory
+    for lang_dir in image_dir.iterdir():
+        if not lang_dir.is_dir():
+            continue
+
+        metadata_file = lang_dir / ".co-op-translator.json"
+        metadata = {}
+        if metadata_file.exists():
+            try:
+                metadata = json.loads(metadata_file.read_text(encoding="utf-8"))
+            except Exception as e:
+                logger.warning(f"Failed to load metadata from {metadata_file}: {e}")
+
+        updated_metadata = {}
+
+        for image_file in sorted(lang_dir.iterdir()):
+            if not image_file.is_file():
+                continue
+
+            suffix = image_file.suffix.lower()
+
+            # Skip non-image files and already converted WebP files
+            if suffix == ".webp":
+                # Keep existing WebP metadata
+                key = image_file.name
+                if key in metadata:
+                    updated_metadata[key] = metadata[key]
+                skipped_count += 1
+                continue
+
+            if suffix not in {".png", ".jpg", ".jpeg"}:
+                continue
+
+            # Generate new WebP filename
+            new_name = image_file.stem + ".webp"
+            new_path = lang_dir / new_name
+
+            try:
+                # Open and convert to WebP
+                with Image.open(image_file) as img:
+                    # Preserve RGBA mode for transparency
+                    if img.mode in ("RGBA", "LA") or (
+                        img.mode == "P" and "transparency" in img.info
+                    ):
+                        img = img.convert("RGBA")
+                    else:
+                        img = img.convert("RGB")
+
+                    # Save as WebP with high quality
+                    img.save(new_path, format="WEBP", quality=90, method=6)
+
+                # Update metadata: copy old entry to new key
+                old_key = image_file.name
+                if old_key in metadata:
+                    updated_metadata[new_name] = metadata[old_key]
+                else:
+                    # If no metadata exists, we can't preserve it
+                    logger.debug(f"No metadata found for {old_key}")
+
+                # Add to rename map for link migration
+                old_rel = f"{lang_dir.name}/{image_file.name}"
+                new_rel = f"{lang_dir.name}/{new_name}"
+                rename_map[old_rel] = new_rel
+                rename_map[image_file.name] = new_name
+
+                # Delete the original file after successful conversion
+                image_file.unlink()
+                converted_count += 1
+                logger.debug(f"Converted {image_file.name} -> {new_name}")
+
+            except Exception as e:
+                logger.error(f"Failed to convert {image_file}: {e}")
+                failed_count += 1
+                # Keep original metadata if conversion failed
+                old_key = image_file.name
+                if old_key in metadata:
+                    updated_metadata[old_key] = metadata[old_key]
+
+        # Write updated metadata
+        if updated_metadata:
+            try:
+                metadata_file.write_text(
+                    json.dumps(updated_metadata, indent=2, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+            except Exception as e:
+                logger.error(f"Failed to update metadata file {metadata_file}: {e}")
+
+    logger.info(
+        f"WebP migration complete: {converted_count} converted, "
+        f"{skipped_count} already WebP, {failed_count} failed"
+    )
 
     return rename_map
 

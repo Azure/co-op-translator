@@ -151,8 +151,8 @@ def test_generate_translated_filename(temp_dir):
     full_hash = get_unique_id(file_path, temp_dir)
     filename = generate_translated_filename(file_path, language_code, temp_dir)
 
-    # Basic structure checks (language is no longer part of filename)
-    assert filename.endswith(".txt")
+    # All translated images are now saved as WebP for optimal compression
+    assert filename.endswith(".webp")
 
     parts = filename.split(".")
     # Expect: basename, hash_prefix, ext
@@ -162,7 +162,7 @@ def test_generate_translated_filename(temp_dir):
     ext = "." + parts[-1]
 
     assert basename == "file"
-    assert ext == ".txt"
+    assert ext == ".webp"  # Always WebP for translated images
 
     # Hash prefix should be exactly 16 hex (truncated from the full 64-hex hash)
     assert len(hash_prefix) == 16

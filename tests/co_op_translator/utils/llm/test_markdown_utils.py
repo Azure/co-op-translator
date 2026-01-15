@@ -74,7 +74,7 @@ def test_update_image_links(temp_dir, sample_markdown):
     )
 
     assert "ko" in result
-    assert ".png" in result
+    assert ".webp" in result  # All translated images are now WebP format
     assert "test.png" not in result  # Original image links should be updated
 
 

@@ -21,6 +21,53 @@ from co_op_translator.config.constants import (
 logger = logging.getLogger(__name__)
 
 
+def save_optimized_image(image, output_path):
+    """
+    Save an image with optimized compression settings based on file format.
+
+    For WebP files: Uses quality=90 for excellent compression with minimal quality loss
+                   (25-35% smaller than PNG, visually near-lossless)
+    For PNG files: Uses maximum lossless compression (optimize=True, compress_level=9)
+    For JPEG files: Uses quality=85 with optimization for good balance of size/quality
+
+    This can reduce file sizes significantly, which is crucial for large-scale
+    translation projects with thousands of images.
+
+    Args:
+        image (PIL.Image.Image): The PIL Image object to save.
+        output_path (str or Path): The destination path for the saved image.
+    """
+    from pathlib import Path
+
+    output_path = Path(output_path)
+    suffix = output_path.suffix.lower()
+
+    # Ensure image is in a compatible mode for the output format
+    if suffix == ".webp":
+        # WebP: Excellent compression with near-lossless quality
+        # Quality 90 provides great balance between size and visual quality
+        # method=6 uses slowest but best compression
+        if image.mode == "RGBA":
+            image.save(output_path, format="WEBP", quality=90, method=6)
+        else:
+            # Convert to RGB if not RGBA (WebP supports both)
+            image.save(output_path, format="WEBP", quality=90, method=6)
+    elif suffix == ".png":
+        # PNG: Lossless compression - optimize encoder and use max compression level
+        image.save(output_path, optimize=True, compress_level=9)
+    elif suffix in {".jpg", ".jpeg"}:
+        # JPEG: Lossy compression - quality 85 is visually near-lossless
+        # Convert RGBA to RGB for JPEG (doesn't support transparency)
+        if image.mode == "RGBA":
+            image = image.convert("RGB")
+        image.save(output_path, quality=85, optimize=True)
+    else:
+        # Fallback for other formats
+        image.save(output_path)
+
+    logger.debug(f"Saved optimized image to {output_path}")
+
+
 def save_bounding_boxes(image_path, bounding_boxes):
     """
     Save bounding boxes and confidence scores to a JSON file.
@@ -388,9 +435,9 @@ def plot_bounding_boxes(
             (x, y), f"{line_info['text']} ({confidence:.2f})", font=font, fill="black"
         )
 
-    # Save the annotated image
+    # Save the annotated image with optimization
     output_path = os.path.join("./analyzed_images", os.path.basename(image_path))
-    image.save(output_path)
+    save_optimized_image(image, output_path)
 
     if display:
         # Display the image

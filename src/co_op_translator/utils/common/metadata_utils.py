@@ -359,8 +359,9 @@ def _save_lang_metadata(lang_dir: Path, metadata: dict) -> None:
     metadata_file = _get_metadata_file_path(lang_dir)
     try:
         metadata_file.parent.mkdir(parents=True, exist_ok=True)
+        ordered_metadata = {key: metadata[key] for key in sorted(metadata.keys())}
         with open(metadata_file, "w", encoding="utf-8") as f:
-            json.dump(metadata, f, indent=2, ensure_ascii=False)
+            json.dump(ordered_metadata, f, indent=2, ensure_ascii=False)
         logger.debug(f"Saved image metadata to: {metadata_file}")
     except Exception as e:
         logger.warning(f"Failed to save image metadata to {metadata_file}: {e}")

@@ -433,6 +433,35 @@ def test_save_multiple_images_different_languages(tmp_path):
     assert len(ja_metadata) == 1
 
 
+@freeze_time("2025-01-26T14:30:00Z")
+def test_image_metadata_keys_are_sorted_by_filename(tmp_path):
+    image_dir = tmp_path / "translated_images"
+    lang_dir = image_dir / "ko"
+    lang_dir.mkdir(parents=True)
+
+    original_path = tmp_path / "original.png"
+    img = Image.new("RGB", (100, 100), color="red")
+    img.save(original_path)
+
+    first_translated = lang_dir / "z_last.png"
+    second_translated = lang_dir / "a_first.png"
+    img.save(first_translated)
+    img.save(second_translated)
+
+    save_image_metadata(first_translated, original_path, "ko", tmp_path)
+    save_image_metadata(second_translated, original_path, "ko", tmp_path)
+
+    metadata_file = _get_metadata_file_path(lang_dir)
+    contents = metadata_file.read_text(encoding="utf-8")
+
+    first_index = contents.find("a_first.png")
+    second_index = contents.find("z_last.png")
+
+    assert first_index != -1
+    assert second_index != -1
+    assert first_index < second_index
+
+
 def test_read_image_metadata(tmp_path):
     """Test reading metadata from language-specific file."""
     # Setup

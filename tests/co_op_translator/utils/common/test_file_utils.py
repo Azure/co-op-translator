@@ -15,6 +15,7 @@ from co_op_translator.utils.common.file_utils import (
     delete_translated_images_by_language_code,
     map_original_to_translated,
     migrate_translated_image_filenames,
+    migrate_images_to_webp,
 )
 
 
@@ -213,6 +214,39 @@ def test_migrate_translated_image_filenames(temp_dir):
     # Accept either presence under new canonical naming or original truncated name
     truncated_new = lang_dir / ("icon.abcdef1234567890.png")
     assert (truncated_new.exists()) or (lang_dir / truncated_name).exists()
+
+
+def test_migrate_images_to_webp_scoped_to_language_codes(temp_dir):
+    from PIL import Image
+
+    image_dir = temp_dir / "translated_images"
+    ko_dir = image_dir / "ko"
+    ja_dir = image_dir / "ja"
+    ko_dir.mkdir(parents=True, exist_ok=True)
+    ja_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create simple PNG images for each language
+    img = Image.new("RGB", (10, 10), color="red")
+    ko_png = ko_dir / "sample.ko.png"
+    ja_png = ja_dir / "sample.ja.png"
+    img.save(ko_png)
+    img.save(ja_png)
+
+    rename_map = migrate_images_to_webp(image_dir, ["ko"])
+
+    # ko images should be converted to WebP
+    ko_webp = ko_dir / "sample.ko.webp"
+    assert not ko_png.exists()
+    assert ko_webp.exists()
+    assert "ko/sample.ko.png" in rename_map
+    assert rename_map["ko/sample.ko.png"] == "ko/sample.ko.webp"
+
+    # ja images should remain untouched
+    ja_webp = ja_dir / "sample.ja.webp"
+    assert ja_png.exists()
+    assert not ja_webp.exists()
+    assert "ja/sample.ja.png" not in rename_map
+    assert "sample.ja.png" not in rename_map
 
 
 def test_get_actual_image_path(temp_dir):

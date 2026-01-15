@@ -587,7 +587,9 @@ def migrate_translated_image_filenames(
     return rename_map
 
 
-def migrate_images_to_webp(image_dir: Path) -> dict[str, str]:
+def migrate_images_to_webp(
+    image_dir: Path, language_codes: list[str] | None = None
+) -> dict[str, str]:
     """Migrate existing translated images (PNG, JPG, JPEG) to WebP format.
 
     This function:
@@ -618,9 +620,11 @@ def migrate_images_to_webp(image_dir: Path) -> dict[str, str]:
     failed_count = 0
     skipped_count = 0
 
-    # Process each language subdirectory
+    # Process each language subdirectory (optionally scoped to specific languages)
     for lang_dir in image_dir.iterdir():
         if not lang_dir.is_dir():
+            continue
+        if language_codes is not None and lang_dir.name not in language_codes:
             continue
 
         metadata_file = lang_dir / ".co-op-translator.json"

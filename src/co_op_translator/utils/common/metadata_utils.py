@@ -4,9 +4,12 @@ This module contains utility functions for handling file metadata and hashing op
 
 import hashlib
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional
+
+logger = logging.getLogger(__name__)
 
 
 def calculate_file_hash(file_path: Path) -> str:
@@ -304,3 +307,238 @@ def add_notebook_metadata(
     notebook["metadata"]["coopTranslator"] = translation_metadata
 
     return notebook
+
+
+# ============================================================================
+# Image-specific metadata utilities
+# ============================================================================
+
+# Metadata file name (placed in each language folder)
+IMAGE_METADATA_FILENAME = ".co-op-translator.json"
+
+# Lock for thread-safe metadata file access (per-language locks)
+import threading
+
+_metadata_locks: dict[str, threading.Lock] = {}
+_locks_lock = threading.Lock()
+
+
+def _get_lock_for_path(path: Path) -> threading.Lock:
+    """Get or create a lock for a specific metadata file path."""
+    path_str = str(path)
+    with _locks_lock:
+        if path_str not in _metadata_locks:
+            _metadata_locks[path_str] = threading.Lock()
+        return _metadata_locks[path_str]
+
+
+def _get_metadata_file_path(lang_dir: Path) -> Path:
+    """Get the path to the metadata file in a language directory."""
+    return Path(lang_dir) / IMAGE_METADATA_FILENAME
+
+
+def _get_image_key(image_path: Path) -> str:
+    """Get the filename as the key (without language prefix)."""
+    return Path(image_path).name
+
+
+def _load_lang_metadata(lang_dir: Path) -> dict:
+    """Load metadata from a language-specific metadata file."""
+    metadata_file = _get_metadata_file_path(lang_dir)
+    if metadata_file.exists():
+        try:
+            with open(metadata_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            logger.debug(f"Failed to load image metadata from {metadata_file}: {e}")
+    return {}
+
+
+def _save_lang_metadata(lang_dir: Path, metadata: dict) -> None:
+    """Save metadata to a language-specific metadata file."""
+    metadata_file = _get_metadata_file_path(lang_dir)
+    try:
+        metadata_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(metadata_file, "w", encoding="utf-8") as f:
+            json.dump(metadata, f, indent=2, ensure_ascii=False)
+        logger.debug(f"Saved image metadata to: {metadata_file}")
+    except Exception as e:
+        logger.warning(f"Failed to save image metadata to {metadata_file}: {e}")
+
+
+def create_image_metadata(
+    original_file: Path, language_code: str, root_dir: Path | None = None
+) -> dict:
+    """
+    Create metadata for a translated image file.
+
+    This creates the same metadata structure as used for markdown and notebooks,
+    ensuring consistency across all translated content types.
+
+    Args:
+        original_file (Path): Path to the original image file
+        language_code (str): Target language code
+        root_dir (Path, optional): Root directory for relative path calculation
+
+    Returns:
+        dict: Metadata dictionary containing file information
+    """
+    return create_metadata(original_file, language_code, root_dir)
+
+
+def save_image_metadata(
+    image_path: Path,
+    original_file: Path,
+    language_code: str,
+    root_dir: Path | None = None,
+    image_dir: Path | None = None,
+) -> None:
+    """
+    Save translation metadata to the language-specific metadata file.
+
+    Each language folder has its own .metadata.json file for efficient
+    management and isolation.
+
+    Args:
+        image_path: Path to the translated image file
+        original_file: Path to the original image file
+        language_code: Target language code
+        root_dir: Root directory for relative path calculation
+        image_dir: Base directory for translated images (not used, kept for compatibility)
+    """
+    metadata = create_image_metadata(original_file, language_code, root_dir)
+
+    # Get the language directory (parent of the image file)
+    # Structure: translated_images/<lang>/<filename>
+    lang_dir = Path(image_path).parent
+    image_key = _get_image_key(image_path)
+
+    lock = _get_lock_for_path(_get_metadata_file_path(lang_dir))
+    with lock:
+        all_metadata = _load_lang_metadata(lang_dir)
+        all_metadata[image_key] = metadata
+        _save_lang_metadata(lang_dir, all_metadata)
+
+    logger.debug(f"Saved metadata for image: {image_key} in {lang_dir.name}")
+
+
+def read_image_metadata(image_path: Path, image_dir: Path | None = None) -> dict:
+    """
+    Read metadata for a specific translated image from the language metadata file.
+
+    Args:
+        image_path: Path to the image file
+        image_dir: Base directory for translated images (not used, kept for compatibility)
+
+    Returns:
+        dict: Metadata dictionary, or empty dict if not found or on error
+    """
+    image_path = Path(image_path)
+
+    # Get the language directory (parent of the image file)
+    lang_dir = image_path.parent
+    image_key = _get_image_key(image_path)
+    all_metadata = _load_lang_metadata(lang_dir)
+
+    return all_metadata.get(image_key, {})
+
+
+def remove_image_metadata(image_path: Path, image_dir: Path | None = None) -> None:
+    """
+    Remove metadata for a specific image from the language metadata file.
+
+    Args:
+        image_path: Path to the image file
+        image_dir: Base directory for translated images (not used, kept for compatibility)
+    """
+    image_path = Path(image_path)
+
+    # Get the language directory (parent of the image file)
+    lang_dir = image_path.parent
+    image_key = _get_image_key(image_path)
+
+    lock = _get_lock_for_path(_get_metadata_file_path(lang_dir))
+    with lock:
+        all_metadata = _load_lang_metadata(lang_dir)
+        if image_key in all_metadata:
+            del all_metadata[image_key]
+            _save_lang_metadata(lang_dir, all_metadata)
+            logger.debug(
+                f"Removed metadata for image: {image_key} from {lang_dir.name}"
+            )
+
+
+def cleanup_orphan_image_metadata(lang_dir: Path) -> int:
+    """
+    Remove metadata entries for images that no longer exist.
+
+    This cleans up orphan metadata entries that remain after image files
+    are manually deleted.
+
+    Args:
+        lang_dir: Language directory containing images and .co-op-translator.json
+
+    Returns:
+        Number of orphan entries removed
+    """
+    lang_dir = Path(lang_dir)
+    metadata_file = _get_metadata_file_path(lang_dir)
+
+    if not metadata_file.exists():
+        return 0
+
+    lock = _get_lock_for_path(metadata_file)
+    with lock:
+        all_metadata = _load_lang_metadata(lang_dir)
+        original_count = len(all_metadata)
+
+        # Keep only entries where the image file exists
+        cleaned_metadata = {
+            key: value
+            for key, value in all_metadata.items()
+            if (lang_dir / key).exists()
+        }
+
+        removed_count = original_count - len(cleaned_metadata)
+
+        if removed_count > 0:
+            _save_lang_metadata(lang_dir, cleaned_metadata)
+            logger.info(
+                f"Cleaned up {removed_count} orphan metadata entries from {lang_dir.name}"
+            )
+
+        return removed_count
+
+
+def is_image_up_to_date(
+    original_path: Path, translated_path: Path, image_dir: Path | None = None
+) -> bool:
+    """
+    Determine if a translated image is up to date with its original.
+
+    Compares the current hash of the original image with the stored
+    metadata in the language-specific metadata file.
+
+    Args:
+        original_path: Path to the original image
+        translated_path: Path to the translated image
+        image_dir: Deprecated, not used (kept for backwards compatibility)
+
+    Returns:
+        True if translated image is up to date, False otherwise
+    """
+    try:
+        if not translated_path.exists():
+            return False
+
+        stored_metadata = read_image_metadata(translated_path)
+        stored_hash = stored_metadata.get("original_hash")
+
+        if not stored_hash:
+            return False
+
+        current_hash = calculate_file_hash(original_path)
+        return stored_hash == current_hash
+    except Exception as e:
+        logger.debug(f"Error checking image up-to-date status: {e}")
+        return False

@@ -598,7 +598,6 @@ def save_text_metadata_for_source(
     root_dir: Path | None = None,
     extra_fields: Optional[dict] = None,
 ) -> dict:
-    # Always create canonical relative metadata with POSIX-style source_file
     metadata = create_metadata(original_file, language_code, root_dir)
     if extra_fields:
         metadata.update(extra_fields)

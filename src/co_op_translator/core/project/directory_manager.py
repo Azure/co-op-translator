@@ -10,6 +10,7 @@ from pathlib import PurePosixPath
 from co_op_translator.utils.common.metadata_utils import (
     extract_metadata_from_content,
     remove_image_metadata,
+    remove_text_metadata_for_source,
 )
 from co_op_translator.config.constants import (
     SUPPORTED_MARKDOWN_EXTENSIONS,
@@ -210,29 +211,54 @@ class DirectoryManager:
                             continue
 
                         logger.info(f"Processing translation file: {trans_file}")
-                        # Read translation file and extract metadata using utility
-                        content = trans_file.read_text(encoding="utf-8")
-                        metadata = extract_metadata_from_content(content)
-                        if not metadata:
-                            logger.warning(f"No metadata found in: {trans_file}")
-                            continue
 
-                        source_file = metadata.get("source_file")
-                        if not source_file:
-                            logger.warning(f"No source_file in metadata: {trans_file}")
-                            continue
+                        original_file = None
+                        # Prefer legacy inline metadata if present to resolve original path robustly
+                        try:
+                            content = trans_file.read_text(encoding="utf-8")
+                            metadata = extract_metadata_from_content(content)
+                            source_file = (
+                                metadata.get("source_file") if metadata else None
+                            )
+                            if source_file:
+                                # Normalize backslashes and construct a proper relative Path
+                                rel_parts = (
+                                    str(source_file).replace("\\", "/").split("/")
+                                )
+                                rel_path = Path(*rel_parts)
+                                original_file = self.root_dir / rel_path
+                        except Exception:
+                            # Ignore content read/parse issues; will fallback to relative mapping
+                            pass
 
-                        normalized_path = str(PurePosixPath(source_file))
-                        original_file = self.root_dir / normalized_path
+                        if original_file is None:
+                            # Fallback: compute original path by relative path from language dir
+                            try:
+                                rel = trans_file.relative_to(translation_dir)
+                                original_file = self.root_dir / rel
+                            except ValueError:
+                                logger.warning(
+                                    f"Unable to determine source for: {trans_file}"
+                                )
+                                continue
 
                         logger.info(f"Checking original file: {original_file}")
                         if not original_file.exists():
                             logger.info(
                                 f"Original file not found, deleting: {trans_file}"
                             )
-                            trans_file.unlink()
-                            removed_count += 1
-                            logger.info(f"Successfully deleted: {trans_file}")
+                            try:
+                                trans_file.unlink()
+                                removed_count += 1
+                                logger.info(f"Successfully deleted: {trans_file}")
+                            finally:
+                                # Remove centralized metadata entry for this source
+                                try:
+                                    remove_text_metadata_for_source(
+                                        translation_dir, original_file
+                                    )
+                                except Exception:
+                                    pass
 
                             parent = trans_file.parent
                             while parent != translation_dir:
@@ -282,28 +308,51 @@ class DirectoryManager:
                         if not nb_file.exists():
                             continue
 
-                        with open(nb_file, "r", encoding="utf-8") as f:
-                            nb_json = json.load(f)
-
-                        coop_meta = nb_json.get("metadata", {}).get(
-                            "coopTranslator", {}
-                        )
-                        source_file = coop_meta.get("source_file")
-                        if not source_file:
-                            logger.warning(
-                                f"No source_file in notebook metadata: {nb_file}"
+                        original_file = None
+                        # Prefer legacy notebook inline metadata if present
+                        try:
+                            with open(nb_file, "r", encoding="utf-8") as f:
+                                nb_json = json.load(f)
+                            coop_meta = nb_json.get("metadata", {}).get(
+                                "coopTranslator", {}
                             )
-                            continue
+                            source_file = coop_meta.get("source_file")
+                            if source_file:
+                                rel_parts = (
+                                    str(source_file).replace("\\", "/").split("/")
+                                )
+                                rel_path = Path(*rel_parts)
+                                original_file = self.root_dir / rel_path
+                        except Exception:
+                            # Ignore JSON read/parse issues; will fallback to relative mapping
+                            pass
 
-                        normalized_path = str(PurePosixPath(source_file))
-                        original_file = self.root_dir / normalized_path
+                        if original_file is None:
+                            # Fallback: compute original notebook path by relative path from language dir
+                            try:
+                                rel = nb_file.relative_to(translation_dir)
+                                original_file = self.root_dir / rel
+                            except ValueError:
+                                logger.warning(
+                                    f"Unable to determine source for notebook: {nb_file}"
+                                )
+                                continue
 
                         if not original_file.exists():
                             logger.info(
                                 f"Original notebook not found, deleting: {nb_file}"
                             )
-                            nb_file.unlink()
-                            removed_count += 1
+                            try:
+                                nb_file.unlink()
+                                removed_count += 1
+                            finally:
+                                # Remove centralized metadata entry for this source
+                                try:
+                                    remove_text_metadata_for_source(
+                                        translation_dir, original_file
+                                    )
+                                except Exception:
+                                    pass
 
                             parent = nb_file.parent
                             while parent != translation_dir:

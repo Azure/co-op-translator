@@ -10,10 +10,7 @@ import logging
 from pathlib import Path
 
 from .markdown_translator import MarkdownTranslator
-from co_op_translator.utils.common.metadata_utils import (
-    calculate_file_hash,
-    add_notebook_metadata,
-)
+from co_op_translator.utils.common.metadata_utils import calculate_file_hash
 
 logger = logging.getLogger(__name__)
 
@@ -163,14 +160,6 @@ class JupyterNotebookTranslator:
                 }
                 notebook["cells"].append(disclaimer_cell)
                 logger.debug(f"Added disclaimer cell to {notebook_path.name}")
-
-        # Add coopTranslator metadata to the notebook
-        notebook_path = Path(notebook_path)
-        notebook = add_notebook_metadata(
-            notebook, notebook_path, language_code, self.root_dir
-        )
-
-        logger.debug(f"Added coopTranslator metadata to {notebook_path.name}")
 
         # Return the modified notebook as JSON string
         return json.dumps(notebook, ensure_ascii=False, indent=1)

@@ -8,7 +8,8 @@ from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.utils.common.metadata_utils import (
     extract_metadata_from_content,
     extract_content_without_metadata,
-    format_metadata_comment,
+    read_text_metadata_for_source,
+    save_text_metadata_for_source,
 )
 from co_op_translator.utils.llm.markdown_utils import (
     generate_evaluation_prompt,
@@ -254,11 +255,46 @@ class MarkdownEvaluator(ABC):
             with open(translated_file, "r", encoding="utf-8") as f:
                 translated_content = f.read()
 
-            # Extract existing metadata from translated file
-            metadata = extract_metadata_from_content(translated_content)
-            if not metadata:
-                logger.warning(f"No metadata found in {translated_file}")
-                return {}, False
+            # Determine language directory and original file path
+            translated_file = Path(translated_file)
+
+            # Ascend to find the language directory containing .co-op-translator.json
+            def _find_lang_dir(path: Path) -> Path | None:
+                cur = path.parent
+                while True:
+                    meta = cur / ".co-op-translator.json"
+                    if meta.exists():
+                        return cur
+                    parent = cur.parent
+                    if parent == cur:
+                        return None
+                    cur = parent
+
+            lang_dir = _find_lang_dir(translated_file)
+            if lang_dir is None:
+                # Fallback: try to locate 'translations/<lang>' in the path
+                parts = translated_file.resolve().parts
+                try:
+                    idx = parts.index("translations")
+                    lang_dir = Path(*parts[: idx + 2])
+                except ValueError:
+                    lang_dir = translated_file.parent
+
+            try:
+                rel = translated_file.resolve().relative_to(lang_dir)
+                original_file = (self.root_dir or Path.cwd()) / rel
+            except Exception:
+                # As last resort, attempt to extract from legacy inline metadata
+                metadata_legacy = extract_metadata_from_content(translated_content)
+                source_file = (
+                    metadata_legacy.get("source_file") if metadata_legacy else None
+                )
+                if not source_file:
+                    logger.warning(
+                        f"Unable to resolve original path for {translated_file}"
+                    )
+                    return {}, False
+                original_file = (self.root_dir or Path.cwd()) / source_file
 
             # Initialize evaluation results
             rule_based_result = {"confidence_score": 1.0, "issues_found": []}
@@ -371,29 +407,26 @@ class MarkdownEvaluator(ABC):
                 rule_based_result, chunk_evaluations
             )
 
-            # Update metadata with evaluation
-            metadata["evaluation"] = evaluation_result
-
-            # Format updated metadata
-            metadata_comment = format_metadata_comment(metadata)
-
-            # Update the file with new metadata
-            # Extract the actual content without metadata
-            content_without_metadata = extract_content_without_metadata(
-                translated_content
-            )
-
-            # Create updated content with new metadata followed by original content
-            updated_content = metadata_comment
-            if content_without_metadata.strip():
-                updated_content += content_without_metadata
-
-            # Write back to file
-            with open(translated_file, "w", encoding="utf-8") as f:
-                f.write(updated_content)
-
-            logger.info(f"Updated evaluation metadata for {translated_file}")
-            return evaluation_result, True
+            # Save evaluation into centralized language metadata
+            language_code = lang_dir.name if lang_dir else ""
+            extra_fields = {"evaluation": evaluation_result}
+            try:
+                save_text_metadata_for_source(
+                    lang_dir,
+                    original_file,
+                    language_code,
+                    root_dir=self.root_dir,
+                    extra_fields=extra_fields,
+                )
+                logger.info(
+                    f"Updated evaluation metadata for {translated_file} in centralized JSON"
+                )
+                return evaluation_result, True
+            except Exception as e:
+                logger.error(
+                    f"Failed to save evaluation metadata for {translated_file}: {e}"
+                )
+                return {}, False
 
         except Exception as e:
             logger.error(f"Error evaluating {translated_file}: {e}")

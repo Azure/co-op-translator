@@ -266,7 +266,20 @@ def is_notebook_up_to_date(original_path: Path, translated_path: Path) -> bool:
     Returns:
         True if translated notebook is up to date, False otherwise
     """
+
     try:
+        translated_path = Path(translated_path)
+        if not translated_path.exists():
+            return False
+
+        lang_dir = _find_lang_dir_for_translated_file(translated_path)
+        if lang_dir is not None:
+            metadata = read_text_metadata_for_source(lang_dir, original_path)
+            stored_hash = metadata.get("original_hash")
+            if stored_hash:
+                current_hash = calculate_file_hash(Path(original_path))
+                return stored_hash == current_hash
+
         stored_hash = read_notebook_metadata(translated_path, "coopTranslator").get(
             "original_hash"
         )
@@ -307,6 +320,23 @@ def add_notebook_metadata(
     notebook["metadata"]["coopTranslator"] = translation_metadata
 
     return notebook
+
+
+def _find_lang_dir_for_translated_file(translated_path: Path) -> Optional[Path]:
+    translated_path = Path(translated_path)
+    current = translated_path.parent
+
+    while True:
+        metadata_file = _get_metadata_file_path(current)
+        if metadata_file.exists():
+            return current
+
+        parent = current.parent
+        if parent == current:
+            break
+        current = parent
+
+    return None
 
 
 # ============================================================================
@@ -543,3 +573,102 @@ def is_image_up_to_date(
     except Exception as e:
         logger.debug(f"Error checking image up-to-date status: {e}")
         return False
+
+
+def _normalize_source_key(source: str | Path) -> str:
+    return str(source).replace("\\", "/")
+
+
+def load_language_metadata(lang_dir: Path) -> dict:
+    return _load_lang_metadata(lang_dir)
+
+
+def save_language_metadata(lang_dir: Path, metadata: dict) -> None:
+    lock = _get_lock_for_path(_get_metadata_file_path(lang_dir))
+    with lock:
+        existing = _load_lang_metadata(lang_dir)
+        existing.update(metadata)
+        _save_lang_metadata(lang_dir, existing)
+
+
+def save_text_metadata_for_source(
+    lang_dir: Path,
+    original_file: Path,
+    language_code: str,
+    root_dir: Path | None = None,
+    extra_fields: Optional[dict] = None,
+) -> dict:
+    # Always create canonical relative metadata with POSIX-style source_file
+    metadata = create_metadata(original_file, language_code, root_dir)
+    if extra_fields:
+        metadata.update(extra_fields)
+
+    source_key = metadata.get("source_file")
+    if not source_key:
+        return metadata
+
+    normalized_key = _normalize_source_key(source_key)  # relative, POSIX-style
+
+    lock = _get_lock_for_path(_get_metadata_file_path(lang_dir))
+    with lock:
+        all_metadata = _load_lang_metadata(lang_dir)
+        all_metadata[normalized_key] = metadata
+        _save_lang_metadata(lang_dir, all_metadata)
+
+    return metadata
+
+
+def read_text_metadata_for_source(lang_dir: Path, source_file: str | Path) -> dict:
+    """Read text metadata by source path.
+
+    Keys are stored as repo-relative, POSIX-style paths. This lookup accepts any
+    of the following and resolves to the best matching relative key:
+    - relative POSIX-style path (exact match)
+    - absolute path (Windows or POSIX): matched by the longest suffix against stored keys
+    - paths with backslashes: normalized prior to matching
+    """
+    all_metadata = _load_lang_metadata(lang_dir)
+    if not all_metadata:
+        return {}
+
+    normalized = _normalize_source_key(source_file)
+    # Direct hit (already relative POSIX-style)
+    if normalized in all_metadata:
+        return all_metadata.get(normalized, {})
+
+    # If absolute or otherwise not directly found, try suffix matching against stored relative keys
+    # Build candidate suffixes from the provided path
+    parts = normalized.split("/")
+    best_key = None
+    best_len = -1
+    for i in range(len(parts)):
+        suffix = "/".join(parts[i:])
+        if suffix in all_metadata and len(suffix) > best_len:
+            best_key = suffix
+            best_len = len(suffix)
+
+    if best_key is not None:
+        return all_metadata.get(best_key, {})
+
+    return {}
+
+
+def remove_text_metadata_for_source(lang_dir: Path, source_file: str | Path) -> None:
+    normalized_key = _normalize_source_key(source_file)
+    lock = _get_lock_for_path(_get_metadata_file_path(lang_dir))
+    with lock:
+        all_metadata = _load_lang_metadata(lang_dir)
+        changed = False
+        if normalized_key in all_metadata:
+            del all_metadata[normalized_key]
+            changed = True
+        # Also try absolute key variant if source_file was a Path
+        try:
+            absolute_key = _normalize_source_key(Path(source_file).resolve())
+            if absolute_key in all_metadata:
+                del all_metadata[absolute_key]
+                changed = True
+        except Exception:
+            pass
+        if changed:
+            _save_lang_metadata(lang_dir, all_metadata)

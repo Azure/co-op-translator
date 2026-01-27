@@ -9,7 +9,10 @@ from tqdm import tqdm
 
 from co_op_translator.core.llm.markdown_evaluator import MarkdownEvaluator
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
-from co_op_translator.utils.common.metadata_utils import extract_metadata_from_content
+from co_op_translator.utils.common.metadata_utils import (
+    extract_metadata_from_content,
+    read_text_metadata_for_source,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +101,9 @@ class ProjectEvaluator:
                 bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
             )
 
+            # Precompute language directory for centralized metadata
+            lang_dir = self.translations_dir / language_code
+
             # Perform rule-based evaluation for all files
             for orig_file, trans_file in translation_pairs:
                 try:
@@ -108,11 +114,10 @@ class ProjectEvaluator:
                     with open(trans_file, "r", encoding="utf-8") as f:
                         translated_content = f.read()
 
-                    # Extract existing metadata
-                    metadata = extract_metadata_from_content(translated_content)
+                    # Prefer centralized metadata; fall back to inline
+                    metadata = read_text_metadata_for_source(lang_dir, orig_file)
                     if not metadata:
-                        logger.warning(f"No metadata found in {trans_file}")
-                        continue
+                        metadata = extract_metadata_from_content(translated_content)
 
                     # Store file info for later LLM evaluation
                     file_key = str(trans_file)
@@ -399,23 +404,24 @@ class ProjectEvaluator:
         translation_pairs = await self._get_translation_pairs(language_code)
         low_confidence_translations = []
 
-        for _, trans_file in translation_pairs:
+        # Prefer centralized JSON metadata
+        lang_dir = self.translations_dir / language_code
+
+        for orig_file, trans_file in translation_pairs:
             try:
-                with open(trans_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-
-                from co_op_translator.utils.common.metadata_utils import (
-                    extract_metadata_from_content,
-                )
-
-                metadata = extract_metadata_from_content(content)
+                metadata = read_text_metadata_for_source(lang_dir, orig_file)
+                if not metadata:
+                    # Fallback to inline
+                    with open(trans_file, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    metadata = extract_metadata_from_content(content)
 
                 if metadata and "evaluation" in metadata:
                     confidence = metadata["evaluation"].get("confidence_score", 1.0)
                     if confidence < threshold:
                         low_confidence_translations.append((trans_file, confidence))
             except Exception as e:
-                logger.error(f"Error reading metadata from {trans_file}: {e}")
+                logger.error(f"Error reading evaluation metadata for {trans_file}: {e}")
 
         return low_confidence_translations
 
@@ -434,16 +440,15 @@ class ProjectEvaluator:
         translation_pairs = await self._get_translation_pairs(language_code)
         translations_with_issues = []
 
-        for _, trans_file in translation_pairs:
+        lang_dir = self.translations_dir / language_code
+
+        for orig_file, trans_file in translation_pairs:
             try:
-                with open(trans_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-
-                from co_op_translator.utils.common.metadata_utils import (
-                    extract_metadata_from_content,
-                )
-
-                metadata = extract_metadata_from_content(content)
+                metadata = read_text_metadata_for_source(lang_dir, orig_file)
+                if not metadata:
+                    with open(trans_file, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    metadata = extract_metadata_from_content(content)
 
                 if metadata and "evaluation" in metadata:
                     confidence = metadata["evaluation"].get("confidence_score", 1.0)
@@ -453,7 +458,9 @@ class ProjectEvaluator:
                             (trans_file, confidence, issues)
                         )
             except Exception as e:
-                logger.error(f"Error reading metadata from {trans_file}: {e}")
+                logger.error(
+                    f"Error reading evaluation metadata from {trans_file}: {e}"
+                )
 
         return translations_with_issues
 
@@ -473,16 +480,15 @@ class ProjectEvaluator:
         translation_pairs = await self._get_translation_pairs(language_code)
         problematic_translations = []
 
-        for _, trans_file in translation_pairs:
+        lang_dir = self.translations_dir / language_code
+
+        for orig_file, trans_file in translation_pairs:
             try:
-                with open(trans_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-
-                from co_op_translator.utils.common.metadata_utils import (
-                    extract_metadata_from_content,
-                )
-
-                metadata = extract_metadata_from_content(content)
+                metadata = read_text_metadata_for_source(lang_dir, orig_file)
+                if not metadata:
+                    with open(trans_file, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    metadata = extract_metadata_from_content(content)
 
                 if metadata and "evaluation" in metadata:
                     confidence = metadata["evaluation"].get("confidence_score", 1.0)
@@ -493,6 +499,8 @@ class ProjectEvaluator:
                             (trans_file, confidence, issues)
                         )
             except Exception as e:
-                logger.error(f"Error reading metadata from {trans_file}: {e}")
+                logger.error(
+                    f"Error reading evaluation metadata from {trans_file}: {e}"
+                )
 
         return problematic_translations

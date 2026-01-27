@@ -196,18 +196,14 @@ class TestJupyterNotebookTranslator:
         assert all(isinstance(line, str) for line in cell_source)
 
     @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
-    @patch(
-        "co_op_translator.core.llm.jupyter_notebook_translator.add_notebook_metadata"
-    )
     @pytest.mark.asyncio
-    async def test_translate_notebook_adds_metadata(
+    async def test_translate_notebook_does_not_embed_metadata(
         self,
-        mock_add_metadata,
         mock_markdown_translator_class,
         temp_notebook_file,
         tmp_path,
     ):
-        """Test that notebook translation adds coopTranslator metadata."""
+        """Notebook translation should NOT embed coopTranslator metadata (centralized JSON is used)."""
         # Setup mock translator
         mock_translator = AsyncMock()
         mock_translator.translate_markdown = AsyncMock(
@@ -215,38 +211,16 @@ class TestJupyterNotebookTranslator:
         )
         mock_markdown_translator_class.create.return_value = mock_translator
 
-        # Setup mock metadata function
-        expected_metadata = {
-            "metadata": {
-                "kernelspec": {
-                    "display_name": "Python 3",
-                    "language": "python",
-                    "name": "python3",
-                },
-                "coopTranslator": {
-                    "original_hash": "test_hash",
-                    "translation_date": "2025-01-26T14:30:00+00:00",
-                    "source_file": "test.ipynb",
-                    "language_code": "ko",
-                },
-            }
-        }
-        mock_add_metadata.return_value = {"cells": [], **expected_metadata}
-
-        # Create translator with root directory
+        # Create translator with root directory and translate without disclaimer for simplicity
         translator = JupyterNotebookTranslator.create(tmp_path)
-        result = await translator.translate_notebook(temp_notebook_file, "ko")
+        result = await translator.translate_notebook(
+            temp_notebook_file, "ko", add_disclaimer=False
+        )
 
-        # Verify add_notebook_metadata was called with correct parameters
-        mock_add_metadata.assert_called_once()
-        call_args = mock_add_metadata.call_args
-        assert call_args[0][1] == temp_notebook_file  # original_path
-        assert call_args[0][2] == "ko"  # language_code
-        assert call_args[0][3] == tmp_path  # root_dir
-
-        # Verify result includes metadata
+        # Verify result includes notebook metadata but not coopTranslator section
         translated_notebook = json.loads(result)
         assert "metadata" in translated_notebook
+        assert "coopTranslator" not in translated_notebook["metadata"]
 
     @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
     @pytest.mark.asyncio

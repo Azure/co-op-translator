@@ -23,6 +23,10 @@ from co_op_translator.utils.common.metadata_utils import (
     is_image_up_to_date,
     remove_image_metadata,
     cleanup_orphan_image_metadata,
+    save_text_metadata_for_source,
+    read_text_metadata_for_source,
+    extract_metadata_from_content,
+    extract_content_without_metadata,
 )
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
@@ -166,12 +170,13 @@ class TranslationManager:
                 handle_empty_document(file_path, output_file)
                 return str(output_file)
 
-            # Perform initial translation attempt
+            # Perform initial translation attempt (do not embed inline metadata; use centralized JSON instead)
             translated_content = await self.markdown_translator.translate_markdown(
                 document,
                 language_code,
                 file_path,
                 translation_types=self.translation_types,
+                add_metadata=False,
                 add_disclaimer=self.add_disclaimer,
             )
             if not translated_content:
@@ -191,6 +196,7 @@ class TranslationManager:
                     language_code,
                     file_path,
                     translation_types=self.translation_types,
+                    add_metadata=False,
                     add_disclaimer=self.add_disclaimer,
                 )
                 if not translated_content:
@@ -210,6 +216,14 @@ class TranslationManager:
                     f.write(translated_content)
                 logger.info(
                     f"Translated {file_path} to {language_code} and saved to {translated_path}"
+                )
+                # Save centralized text metadata for this source file in the language directory
+                lang_dir = self.translations_dir / language_code
+                save_text_metadata_for_source(
+                    lang_dir,
+                    file_path,
+                    language_code,
+                    root_dir=self.root_dir,
                 )
                 return str(translated_path)
             except Exception as e:
@@ -264,6 +278,14 @@ class TranslationManager:
                     f.write(translated_content)
                 logger.info(
                     f"Translated {file_path} to {language_code} and saved to {translated_path}"
+                )
+                # Save centralized text metadata for this source notebook in the language directory
+                lang_dir = self.translations_dir / language_code
+                save_text_metadata_for_source(
+                    lang_dir,
+                    file_path,
+                    language_code,
+                    root_dir=self.root_dir,
                 )
                 return str(translated_path)
             except Exception as e:
@@ -1186,34 +1208,84 @@ class TranslationManager:
             return True
 
         try:
-            # Handle notebook files differently from markdown files
+            # Handle notebook files using dedicated helper (centralized JSON preferred inside helper)
             if translation_file.suffix.lower() in self.supported_notebook_extensions:
-                # Use the dedicated notebook metadata comparison function
                 return not is_notebook_up_to_date(original_file, translation_file)
 
-            # Handle markdown files with HTML comment metadata
-            content = translation_file.read_text(encoding="utf-8")
-            metadata_match = re.search(
-                r"<!--\s*CO_OP_TRANSLATOR_METADATA:\s*(.*?)\s*-->",
-                content,
-                re.DOTALL,
-            )
-            if not metadata_match:
-                return True
-
+            # Determine language directory from translation path
+            lang_dir = None
             try:
-                metadata = json.loads(metadata_match.group(1))
-            except json.JSONDecodeError:
+                rel = translation_file.resolve().relative_to(self.translations_dir)
+                lang_code = rel.parts[0]
+                lang_dir = self.translations_dir / lang_code
+            except Exception:
+                # Fallback: use the parent directory (may be incorrect for deeply nested paths)
+                lang_dir = translation_file.parent
+
+            # Prefer centralized JSON metadata
+            metadata = read_text_metadata_for_source(lang_dir, original_file)
+            if metadata and isinstance(metadata, dict):
+                stored_hash = metadata.get("original_hash")
+                if stored_hash:
+                    current_hash = calculate_file_hash(original_file)
+                    return stored_hash != current_hash
+
+            # Legacy fallback: read inline HTML comment metadata and migrate
+            try:
+                content = translation_file.read_text(encoding="utf-8")
+            except Exception:
                 return True
 
-            # Determine if content has changed since last translation
-            original_hash = calculate_file_hash(original_file)
-            stored_hash = metadata.get("original_hash")
+            legacy_meta = extract_metadata_from_content(content)
+            stored_hash = (
+                legacy_meta.get("original_hash")
+                if isinstance(legacy_meta, dict)
+                else None
+            )
+            if stored_hash:
+                # Migrate legacy metadata into centralized JSON
+                extra_fields = {}
+                # Preserve original_hash and translation_date from legacy metadata if present
+                extra_fields["original_hash"] = stored_hash
+                if "translation_date" in legacy_meta:
+                    extra_fields["translation_date"] = legacy_meta.get(
+                        "translation_date"
+                    )
 
-            if not stored_hash:
-                return True
+                # Compute language code again for save (if available)
+                language_code = None
+                try:
+                    if "rel" not in locals():
+                        rel = translation_file.resolve().relative_to(
+                            self.translations_dir
+                        )
+                    language_code = rel.parts[0]
+                except Exception:
+                    language_code = None
 
-            return stored_hash != original_hash
+                if language_code:
+                    save_text_metadata_for_source(
+                        lang_dir,
+                        original_file,
+                        language_code,
+                        root_dir=self.root_dir,
+                        extra_fields=extra_fields,
+                    )
+
+                # Remove inline metadata from the translated markdown file
+                cleaned = extract_content_without_metadata(content)
+                if cleaned != content:
+                    try:
+                        translation_file.write_text(cleaned, encoding="utf-8")
+                    except Exception:
+                        # Non-fatal; continue
+                        pass
+
+                current_hash = calculate_file_hash(original_file)
+                return stored_hash != current_hash
+
+            # No metadata available; consider it outdated
+            return True
 
         except Exception:
             return True

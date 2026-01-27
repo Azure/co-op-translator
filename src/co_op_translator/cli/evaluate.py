@@ -182,15 +182,29 @@ def evaluate_command(
                 except ValueError:
                     display_path = str(file_path).replace("\\", "/")
 
-                # Read file to get issues for reference
+                # Read centralized metadata to get issues for reference
                 try:
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        content = f.read()
                     from co_op_translator.utils.common.metadata_utils import (
+                        read_text_metadata_for_source,
                         extract_metadata_from_content,
                     )
 
-                    metadata = extract_metadata_from_content(content)
+                    trans_path = Path(file_path)
+                    lang_dir = root_path / "translations" / language_code
+                    try:
+                        rel = trans_path.resolve().relative_to(lang_dir)
+                        orig_path = root_path / rel
+                    except Exception:
+                        orig_path = None
+
+                    metadata = {}
+                    if orig_path is not None:
+                        metadata = read_text_metadata_for_source(lang_dir, orig_path)
+                    if not metadata:
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            content = f.read()
+                        metadata = extract_metadata_from_content(content)
+
                     issues = []
                     if metadata and "evaluation" in metadata:
                         # Only check issues field

@@ -90,47 +90,22 @@ class LanguageFolderMigrator:
             return False, str(e)
 
     def _rewrite_lang_metadata(self, lang_dir: Path, canonical_code: str) -> None:
-        """Rewrite language_code fields in the per-language metadata file after rename.
+        """Ensure per-language metadata under lang_dir stores canonical language_code.
 
-        This updates translations/<lang>/.co-op-translator.json and
-        translated_images/<lang>/.co-op-translator.json formats (both are dicts mapping
-        keys to per-file metadata dicts) so that their 'language_code' aligns with the
-        canonical folder name.
+        Delegates to normalize_language_codes_in_lang_metadata to avoid duplication.
         """
         try:
-            metadata_path = lang_dir / ".co-op-translator.json"
-            if not metadata_path.exists() or not metadata_path.is_file():
-                return
-            import json
+            from co_op_translator.utils.common.metadata_utils import (
+                normalize_language_codes_in_lang_metadata,
+            )
 
-            data = {}
-            try:
-                with open(metadata_path, "r", encoding="utf-8") as f:
-                    data = json.load(f) or {}
-            except Exception:
-                # If unreadable, skip silently
-                return
-
-            if isinstance(data, dict):
-                changed = False
-                for k, v in list(data.items()):
-                    if isinstance(v, dict):
-                        if v.get("language_code") != canonical_code:
-                            v["language_code"] = canonical_code
-                            changed = True
-                if changed:
-                    try:
-                        # Keep keys sorted for determinism
-                        ordered = {key: data[key] for key in sorted(data.keys())}
-                        with open(metadata_path, "w", encoding="utf-8") as f:
-                            json.dump(ordered, f, indent=2, ensure_ascii=False)
-                    except Exception:
-                        pass
+            normalize_language_codes_in_lang_metadata(lang_dir, canonical_code)
         except Exception:
+            # Non-fatal if metadata normalization fails
             pass
 
     def execute(
-        self, entries: List[MigrationEntry], use_git: bool = True, dry_run: bool = False
+        self, entries: List[MigrationEntry], dry_run: bool = False
     ) -> Tuple[int, List[str]]:
         """Execute migration entries. Skips conflicting destinations.
 

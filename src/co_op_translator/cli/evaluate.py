@@ -242,7 +242,7 @@ def evaluate_command(
                 f"\n{click.style('Note:', fg='yellow')} Files with issues were found during evaluation, but none fall below the confidence threshold of {min_confidence}."
             )
             click.echo(
-                f"Consider running with a higher threshold: {click.style(f'evaluate -l {language_code} --min-confidence 0.9', bold=True)}"
+                f"Consider running with a higher threshold: {click.style(f'evaluate -l {canonical_code} --min-confidence 0.9', bold=True)}"
             )
 
         else:
@@ -250,7 +250,7 @@ def evaluate_command(
                 f"\n{click.style('✓ All translations look good!', fg='green', bold=True)}"
             )
 
-        logger.info(f"Evaluation completed for language: {language_code}")
+        logger.info(f"Evaluation completed for language: {canonical_code}")
 
     except Exception as e:
         if debug:

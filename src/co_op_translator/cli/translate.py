@@ -100,7 +100,7 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help=(
         "Detect and optionally rename alias-based language folders (e.g., tw, cn, br) "
-        "to canonical BCP 47 (zh-TW, zh-CN, pt-BR). Uses 'git mv' when in a Git repo."
+        "to canonical BCP 47 (zh-TW, zh-CN, pt-BR)."
     ),
 )
 @click.option(
@@ -290,9 +290,7 @@ def translate_command(
                             do_migrate = confirm.strip().lower() == "yes"
 
                         if do_migrate:
-                            renamed, msgs = migrator.execute(
-                                relevant, use_git=True, dry_run=False
-                            )
+                            renamed, msgs = migrator.execute(relevant, dry_run=False)
                             click.echo(f"Auto-migrate: renamed {renamed} folder(s).")
                             for m in msgs:
                                 click.echo(f"- {m}")

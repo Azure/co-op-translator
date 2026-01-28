@@ -64,7 +64,21 @@ class Config:
                     for key, meta in font_mappings.items():
                         if not isinstance(meta, dict):
                             continue
-                        canon = normalize_language_code(str(key))
+                        key_str = str(key)
+                        canon = normalize_language_code(key_str)
+                        # Optional developer warning when a non-canonical key is present
+                        try:
+                            if os.getenv("COOP_STRICT_CANON_KEYS") == "1" and (
+                                not canon or canon != key_str
+                            ):
+                                logger.warning(
+                                    "Non-canonical or invalid language code '%s' in font_language_mappings.yml (normalized to '%s')",
+                                    key_str,
+                                    canon,
+                                )
+                        except Exception:
+                            # Do not fail on logging issues
+                            pass
                         if canon and canon not in seen:
                             seen.add(canon)
                             ordered.append(canon)

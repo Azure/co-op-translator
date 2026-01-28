@@ -47,6 +47,11 @@ logger = logging.getLogger(__name__)
     help="Root directory of the project (default is current directory).",
 )
 @click.option(
+    "--image-dir",
+    default="translated_images",
+    help="Base directory for translated images (relative to --root-dir).",
+)
+@click.option(
     "--dry-run",
     is_flag=True,
     default=False,
@@ -76,6 +81,7 @@ logger = logging.getLogger(__name__)
 def migrate_links_command(
     language_codes,
     root_dir,
+    image_dir,
     dry_run,
     fallback_to_original,
     debug,
@@ -112,7 +118,7 @@ def migrate_links_command(
         try:
             md_fix, nb_fix = canonicalize_image_links_in_translations(
                 translations_dir=translations_dir,
-                image_dir=root_path / "translated_images",
+                image_dir=(root_path / image_dir),
             )
             if md_fix or nb_fix:
                 click.echo(

@@ -1,16 +1,16 @@
-# ?Œ Multi-Language Support (Template)
+ï»¿# ğŸŒ Multi-Language Support (Template)
 
-Maintainers: The block below is an "all languages" example managed by Co?‘op Translator.
+Maintainers: The block below is an "all languages" example managed by Co?ëª‚p Translator.
 
-- If you want Co?‘op Translator to keep this list fully up?‘to?‘date automatically when you run `translate` (any language selection), keep the two comment markers as-is.
-- If you only want to show a subset of languages, delete the two comment markers and remove any languages you don't want to list. After removing the markers, Co?‘op Translator will no longer auto?‘replace this section.
+- If you want Co?ëª‚p Translator to keep this list fully up?ëª‹o?ë©¶ate automatically when you run `translate` (any language selection), keep the two comment markers as-is.
+- If you only want to show a subset of languages, delete the two comment markers and remove any languages you don't want to list. After removing the markers, Co?ëª‚p Translator will no longer auto?ëª‰eplace this section.
 
 - The section now includes a "Prefer to Clone Locally?" advisory to help users clone without the large translations payload. You can personalize the advisory with your repository URL by running, for example:
   - `translate -l "ko" --repo-url "https://github.com/org/repo.git"`
 
 ```markdown
 
-### ?Œ Multi-Language Support
+### ?ë™‹ Multi-Language Support
 
 #### Supported by [Co-op Translator](https://github.com/Azure/Co-op-Translator)
 
@@ -29,3 +29,4 @@ Maintainers: The block below is an "all languages" example managed by Co?‘op Tra
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 
 ```
+

@@ -157,7 +157,7 @@ def evaluate_command(
 
         # Get low confidence translations
         low_confidence = asyncio.run(
-            evaluator.get_low_confidence_translations(language_code, min_confidence)
+            evaluator.get_low_confidence_translations(canonical_code, min_confidence)
         )
 
         if low_confidence:
@@ -178,10 +178,10 @@ def evaluate_command(
 
                     # Check if the path already contains translations/language_code
                     # to avoid duplication
-                    if rel_path.startswith(f"translations/{language_code}/"):
+                    if rel_path.startswith(f"translations/{canonical_code}/"):
                         display_path = f"./{rel_path}"
                     else:
-                        display_path = f"./translations/{language_code}/{rel_path}"
+                        display_path = f"./translations/{canonical_code}/{rel_path}"
                 except ValueError:
                     display_path = str(file_path).replace("\\", "/")
 
@@ -193,7 +193,7 @@ def evaluate_command(
                     )
 
                     trans_path = Path(file_path)
-                    lang_dir = root_path / "translations" / language_code
+                    lang_dir = root_path / "translations" / canonical_code
                     try:
                         rel = trans_path.resolve().relative_to(lang_dir)
                         orig_path = root_path / rel

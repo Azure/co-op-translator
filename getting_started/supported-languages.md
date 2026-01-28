@@ -12,10 +12,10 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | ar            | Arabic               | NotoSansArabic-Medium.ttf         | Yes         | No           |
 | fa            | Persian (Farsi)      | NotoSansArabic-Medium.ttf         | Yes         | No           |
 | ur            | Urdu                 | NotoSansArabic-Medium.ttf         | Yes         | No           |
-| zh            | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
-| mo            | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc    | No          | No           |
-| hk            | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc| No          | No           |
-| tw            | Chinese (Traditional, Taiwan) | NotoSansCJK-Medium.ttc   | No          | No           |
+| zh-CN         | Chinese (Simplified) | NotoSansCJK-Medium.ttc            | No          | No           |
+| zh-MO         | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc    | No          | No           |
+| zh-HK         | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc| No          | No           |
+| zh-TW         | Chinese (Traditional, Taiwan) | NotoSansCJK-Medium.ttc   | No          | No           |
 | ja            | Japanese             | NotoSansCJK-Medium.ttc            | No          | No           |
 | ko            | Korean               | NotoSansCJK-Medium.ttc            | No          | No           |
 | hi            | Hindi                | NotoSansDevanagari-Medium.ttf     | No          | No           |
@@ -23,8 +23,8 @@ The table below lists the languages currently supported by **Co-op Translator**.
 | mr            | Marathi              | NotoSansDevanagari-Medium.ttf     | No          | No           |
 | ne            | Nepali               | NotoSansDevanagari-Medium.ttf     | No          | No           |
 | pa            | Punjabi (Gurmukhi)   | NotoSansGurmukhi-Medium.ttf       | No          | No           |
-| pt            | Portuguese (Portugal)| NotoSans-Medium.ttf               | No          | No           |
-| br            | Portuguese (Brazil)  | NotoSans-Medium.ttf               | No          | No           |
+| pt-PT         | Portuguese (Portugal)| NotoSans-Medium.ttf               | No          | No           |
+| pt-BR         | Portuguese (Brazil)  | NotoSans-Medium.ttf               | No          | No           |
 | it            | Italian              | NotoSans-Medium.ttf               | No          | No           |
 | lt            | Lithuanian           | NotoSans-Medium.ttf               | No          | No           |
 | pl            | Polish               | NotoSans-Medium.ttf               | No          | No           |

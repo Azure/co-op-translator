@@ -423,15 +423,49 @@ def filter_files(directory: str | Path, excluded_dirs, extension: str = None) ->
     directory = Path(directory)
     files = []
 
+    # Normalize excluded directories into two buckets: absolute paths and names
+    abs_excluded: list[Path] = []
+    name_excluded: set[str] = set()
+    for item in excluded_dirs:
+        try:
+            p = Path(item)
+            if p.is_absolute():
+                abs_excluded.append(p.resolve())
+            else:
+                name_excluded.add(str(item))
+        except Exception:
+            name_excluded.add(str(item))
+
     # Recursively traverse the directory
     for path in directory.rglob("*"):
-        # Check if the path is a file, matches extension if specified, and doesn't contain excluded dirs
-        if (
-            path.is_file()
-            and (extension is None or path.suffix.lower() == extension.lower())
-            and not any(excluded_dir in path.parts for excluded_dir in excluded_dirs)
-        ):
-            files.append(path)
+        if not path.is_file():
+            continue
+        if extension is not None and path.suffix.lower() != extension.lower():
+            continue
+
+        # Exclude by absolute path ancestry
+        excluded_by_abs = False
+        try:
+            resolved = path.resolve()
+            for abs_dir in abs_excluded:
+                try:
+                    resolved.relative_to(abs_dir)
+                    excluded_by_abs = True
+                    break
+                except Exception:
+                    continue
+        except Exception:
+            # If resolve() fails, fall back to name-based exclusion only
+            excluded_by_abs = False
+
+        if excluded_by_abs:
+            continue
+
+        # Name-based exclusion (segment match)
+        if any(ex in path.parts for ex in name_excluded):
+            continue
+
+        files.append(path)
 
     return files
 
@@ -462,6 +496,8 @@ def migrate_translated_image_filenames(
     except Exception:
         return {}
 
+    from co_op_translator.utils.common.lang_utils import normalize_language_code
+
     for image_file in image_files:
         if not image_file.is_file():
             continue
@@ -486,18 +522,26 @@ def migrate_translated_image_filenames(
         extension = parts[-1]
 
         # Detect language either from directory or from legacy filename
-        under_lang_dir = len(rel_parts) >= 2 and rel_parts[0] in language_codes
-        lang_code: str | None = rel_parts[0] if under_lang_dir else None
+        under_lang_dir = False
+        lang_code: str | None = None
+        if len(rel_parts) >= 2:
+            parent_lang = rel_parts[0]
+            normalized_parent = normalize_language_code(parent_lang)
+            if normalized_parent in language_codes:
+                under_lang_dir = True
+                lang_code = normalized_parent
 
         # Legacy filename pattern includes trailing language segment
-        has_legacy_lang_in_name = len(parts) >= 4 and parts[-2] in language_codes
+        has_legacy_lang_in_name = (
+            len(parts) >= 4 and normalize_language_code(parts[-2]) in language_codes
+        )
 
         if not under_lang_dir and not has_legacy_lang_in_name:
             # Cannot determine language; skip conservatively
             continue
 
         if has_legacy_lang_in_name and lang_code is None:
-            lang_code = parts[-2]
+            lang_code = normalize_language_code(parts[-2])
 
         if lang_code not in language_codes:
             # Skip unsupported languages
@@ -801,3 +845,88 @@ def delete_translated_markdown_files_by_language_code(
     # Remove the entire directory and its contents
     shutil.rmtree(language_dir)
     logger.info(f"Deleted the directory and all files for language: {language_code}")
+
+
+def canonicalize_image_links_in_translations(
+    translations_dir: Path, image_dir: Path
+) -> tuple[int, int]:
+    """
+    Canonicalize image links in translated markdown and notebooks by rewriting
+    alias-based language directory segments to canonical BCP 47.
+
+    Examples:
+      translated_images/tw/...  -> translated_images/zh-TW/...
+      translated_images/cn/...  -> translated_images/zh-CN/...
+      <base_dir>/br/...         -> <base_dir>/pt-BR/...
+
+    The function scans under translations_dir and updates files in-place.
+
+    Returns:
+      (md_files_updated, nb_files_updated)
+    """
+    from co_op_translator.utils.common.lang_utils import ALIAS_TO_BCP47
+    from co_op_translator.config.constants import (
+        SUPPORTED_MARKDOWN_EXTENSIONS,
+        SUPPORTED_NOTEBOOK_EXTENSIONS,
+    )
+
+    translations_dir = Path(translations_dir)
+    image_dir = Path(image_dir)
+    base_dir_name = image_dir.name
+    base_dirs = [base_dir_name, "translated_images", "translated_images_fast"]
+
+    def _canonicalize_text(text: str) -> str:
+        updated = text
+        for bdir in base_dirs:
+            for alias, canonical in ALIAS_TO_BCP47.items():
+                updated = updated.replace(f"{bdir}/{alias}/", f"{bdir}/{canonical}/")
+                # Also replace Windows-style separators just in case
+                updated = updated.replace(
+                    f"{bdir}\\{alias}\\", f"{bdir}\\{canonical}\\"
+                )
+        return updated
+
+    md_updated = 0
+    nb_updated = 0
+
+    # Markdown files
+    try:
+        md_files: list[Path] = []
+        for ext in SUPPORTED_MARKDOWN_EXTENSIONS:
+            md_files.extend(translations_dir.rglob(f"*{ext}"))
+        for md in md_files:
+            try:
+                original = md.read_text(encoding="utf-8")
+            except Exception:
+                continue
+            updated = _canonicalize_text(original)
+            if updated != original:
+                try:
+                    md.write_text(updated, encoding="utf-8")
+                    md_updated += 1
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+    # Notebooks (JSON)
+    try:
+        nb_files: list[Path] = []
+        for ext in SUPPORTED_NOTEBOOK_EXTENSIONS:
+            nb_files.extend(translations_dir.rglob(f"*{ext}"))
+        for nb in nb_files:
+            try:
+                content = nb.read_text(encoding="utf-8")
+            except Exception:
+                continue
+            updated = _canonicalize_text(content)
+            if updated != content:
+                try:
+                    nb.write_text(updated, encoding="utf-8")
+                    nb_updated += 1
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+    return md_updated, nb_updated

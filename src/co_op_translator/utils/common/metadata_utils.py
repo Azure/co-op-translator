@@ -671,3 +671,35 @@ def remove_text_metadata_for_source(lang_dir: Path, source_file: str | Path) -> 
             pass
         if changed:
             _save_lang_metadata(lang_dir, all_metadata)
+
+
+def normalize_language_codes_in_lang_metadata(
+    lang_dir: Path, canonical_code: str
+) -> int:
+    """Normalize 'language_code' fields in .co-op-translator.json under a language folder.
+
+    Args:
+        lang_dir: Path to translations/<lang> or translated_images/<lang> directory
+        canonical_code: Expected canonical BCP47 language code (e.g., 'pt-BR')
+
+    Returns:
+        Number of entries updated.
+    """
+    lang_dir = Path(lang_dir)
+    metadata_path = _get_metadata_file_path(lang_dir)
+    if not metadata_path.exists():
+        return 0
+    try:
+        data = _load_lang_metadata(lang_dir)
+        if not isinstance(data, dict) or not data:
+            return 0
+        changed = 0
+        for k, v in list(data.items()):
+            if isinstance(v, dict) and v.get("language_code") != canonical_code:
+                v["language_code"] = canonical_code
+                changed += 1
+        if changed:
+            _save_lang_metadata(lang_dir, data)
+        return changed
+    except Exception:
+        return 0

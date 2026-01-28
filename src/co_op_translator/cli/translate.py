@@ -5,9 +5,6 @@ Translate command implementation for Co-op Translator CLI.
 import asyncio
 import logging
 import click
-import importlib.resources
-import yaml
-import os
 from pathlib import Path
 
 from co_op_translator.core.project.project_translator import ProjectTranslator
@@ -19,6 +16,13 @@ from co_op_translator.utils.common.file_utils import (
     update_readme_languages_table,
     update_readme_other_courses,
 )
+from co_op_translator.utils.common.lang_utils import (
+    normalize_language_codes,
+)
+from co_op_translator.utils.common.metadata_utils import (
+    normalize_language_codes_in_lang_metadata,
+)
+from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +95,19 @@ logger = logging.getLogger(__name__)
     default=None,
     help="Repository URL to show in the 'Prefer to Clone Locally?' advisory inside the languages table.",
 )
+@click.option(
+    "--migrate-language-folders",
+    is_flag=True,
+    help=(
+        "Detect and optionally rename alias-based language folders (e.g., tw, cn, br) "
+        "to canonical BCP 47 (zh-TW, zh-CN, pt-BR)."
+    ),
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Preview migration plan without making changes (use with --migrate-language-folders).",
+)
 def translate_command(
     language_codes,
     root_dir,
@@ -106,6 +123,8 @@ def translate_command(
     min_confidence,
     add_disclaimer,
     repo_url,
+    migrate_language_folders,
+    dry_run,
 ):
     """
     CLI for translating project files.
@@ -193,6 +212,8 @@ def translate_command(
         if save_logs and log_file_path is not None:
             click.echo(f"📄 Logs will be saved to: {log_file_path}")
 
+        # (Preview moved after language normalization)
+
         # Now run the LLM health check; raises on failure
         LLMConfig.validate_connectivity()
         logger.info("LLM health check passed.")
@@ -205,7 +226,7 @@ def translate_command(
             logger.info("Vision health check passed.")
             click.echo("✅ Vision health check passed.")
 
-        # Show warning if 'all' is selected
+        # Normalize language codes and handle 'all'
         all_languages_selected = language_codes == "all"
         if all_languages_selected:
             click.echo(
@@ -228,31 +249,76 @@ def translate_command(
                     click.echo("Proceeding with translation for all languages...")
             else:
                 click.echo("Auto-confirming translation for all languages...")
+            # Use canonical list from config and normalize
+            lang_list = Config.get_language_codes()
+            if not lang_list:
+                raise click.ClickException(
+                    "No valid language codes found in font mappings"
+                )
+            language_codes = " ".join(normalize_language_codes(lang_list))
+        else:
+            # Normalize explicit input codes to canonical form
+            lang_list = normalize_language_codes(
+                [code.strip() for code in language_codes.split()]
+            )
+            if not lang_list:
+                raise click.ClickException("No valid language codes provided")
+            language_codes = " ".join(lang_list)
 
-            try:
-                with importlib.resources.path(
-                    "co_op_translator.fonts", "font_language_mappings.yml"
-                ) as mappings_path:
-                    with open(mappings_path, "r", encoding="utf-8") as file:
-                        font_mappings = yaml.safe_load(file)
-                        if not font_mappings:
-                            raise click.ClickException("Empty font mappings file")
-                        language_codes = " ".join(
-                            [
-                                lang_code
-                                for lang_code in font_mappings
-                                if isinstance(font_mappings[lang_code], dict)
-                            ]
-                        )
-                        if not language_codes:
-                            raise click.ClickException(
-                                "No valid language codes found in font mappings"
+        # Detect and migrate alias-based language folders for the SELECTED languages
+        # This runs before any translation work to avoid redundant re-translation.
+        try:
+            migrator = LanguageFolderMigrator(root_path)
+            alias_entries = migrator.detect_alias_folders()
+            if alias_entries:
+                # Filter only entries relevant to selected canonical languages
+                relevant = [e for e in alias_entries if e.canonical in lang_list]
+                if relevant:
+                    click.echo("\nMigration plan (selected languages):")
+                    click.echo(LanguageFolderMigrator.format_plan(relevant))
+                    if dry_run:
+                        click.echo("Dry-run: no changes will be made.")
+                    else:
+                        do_migrate = migrate_language_folders or yes
+                        if not do_migrate:
+                            # Ask for confirmation when not explicitly requested and not auto-confirmed
+                            confirm = click.prompt(
+                                "Migrate alias folders now? Type 'yes' to continue",
+                                type=str,
+                                default="no",
                             )
-                        logging.debug(
-                            f"Loaded language codes from font mapping: {language_codes}"
-                        )
-            except (FileNotFoundError, yaml.YAMLError) as e:
-                raise click.ClickException(f"Failed to load font mappings: {str(e)}")
+                            do_migrate = confirm.strip().lower() == "yes"
+
+                        if do_migrate:
+                            renamed, msgs = migrator.execute(relevant, dry_run=False)
+                            click.echo(f"Auto-migrate: renamed {renamed} folder(s).")
+                            for m in msgs:
+                                click.echo(f"- {m}")
+                        else:
+                            click.echo("Proceeding without migration.")
+            else:
+                if migrate_language_folders and dry_run:
+                    click.echo("No non-standard language folders detected.")
+        except Exception as e:
+            logger.warning(f"Language folder migration step skipped: {e}")
+
+        # Ensure per-language metadata files store canonical language_code values
+        try:
+            for lang in lang_list:
+                # translations/<lang>/.co-op-translator.json
+                normalize_language_codes_in_lang_metadata(
+                    root_path / "translations" / lang, lang
+                )
+                # translated_images/<lang>/.co-op-translator.json
+                normalize_language_codes_in_lang_metadata(
+                    root_path / "translated_images" / lang, lang
+                )
+                # translated_images_fast/<lang>/.co-op-translator.json (best-effort)
+                normalize_language_codes_in_lang_metadata(
+                    root_path / "translated_images_fast" / lang, lang
+                )
+        except Exception as e:
+            logger.debug(f"Metadata normalization skipped: {e}")
 
         # Show deprecation warning when fast image mode is enabled
         if fast and "images" in translation_types:

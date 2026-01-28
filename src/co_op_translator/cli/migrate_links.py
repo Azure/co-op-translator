@@ -13,20 +13,22 @@ import os
 import re
 from urllib.parse import urlparse
 from tqdm import tqdm
-import importlib.resources
-import yaml
 
 from co_op_translator.config.base_config import Config
 from co_op_translator.utils.llm.markdown_utils import (
     migrate_notebook_links,
     update_notebook_links,
 )
-from co_op_translator.utils.common.file_utils import map_original_to_translated
+from co_op_translator.utils.common.file_utils import (
+    map_original_to_translated,
+    canonicalize_image_links_in_translations,
+)
 from co_op_translator.utils.common.logging_utils import setup_logging
 from co_op_translator.config.constants import (
     SUPPORTED_MARKDOWN_EXTENSIONS,
     SUPPORTED_NOTEBOOK_EXTENSIONS,
 )
+from co_op_translator.utils.common.lang_utils import normalize_language_codes
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,11 @@ logger = logging.getLogger(__name__)
     "-r",
     default=".",
     help="Root directory of the project (default is current directory).",
+)
+@click.option(
+    "--image-dir",
+    default="translated_images",
+    help="Base directory for translated images (relative to --root-dir).",
 )
 @click.option(
     "--dry-run",
@@ -74,6 +81,7 @@ logger = logging.getLogger(__name__)
 def migrate_links_command(
     language_codes,
     root_dir,
+    image_dir,
     dry_run,
     fallback_to_original,
     debug,
@@ -106,6 +114,19 @@ def migrate_links_command(
             click.echo(f"No translations directory found at: {translations_dir}")
             return
 
+        # Canonicalize legacy alias-based language segments in links across translated content
+        try:
+            md_fix, nb_fix = canonicalize_image_links_in_translations(
+                translations_dir=translations_dir,
+                image_dir=(root_path / image_dir),
+            )
+            if md_fix or nb_fix:
+                click.echo(
+                    f"✅ Canonicalized alias language segments in links: markdown={md_fix}, notebooks={nb_fix}"
+                )
+        except Exception as e:
+            logger.debug(f"Canonicalization step skipped: {e}")
+
         # Warning and confirmation when processing all languages
         if isinstance(language_codes, str) and language_codes.lower() == "all":
             click.echo(
@@ -129,34 +150,12 @@ def migrate_links_command(
 
         # Parse language codes list (support "all")
         if isinstance(language_codes, str) and language_codes.lower() == "all":
-            try:
-                with importlib.resources.path(
-                    "co_op_translator.fonts", "font_language_mappings.yml"
-                ) as mappings_path:
-                    with open(mappings_path, "r", encoding="utf-8") as file:
-                        font_mappings = yaml.safe_load(file)
-                        if not font_mappings:
-                            raise click.ClickException("Empty font mappings file")
-                        lang_list = [
-                            lang_code
-                            for lang_code in font_mappings
-                            if isinstance(font_mappings[lang_code], dict)
-                        ]
-                        if not lang_list:
-                            raise click.ClickException(
-                                "No valid language codes found in font mappings"
-                            )
-                        logging.debug(
-                            f"Expanded 'all' to language codes from font mapping: {lang_list}"
-                        )
-            except (FileNotFoundError, yaml.YAMLError) as e:
-                raise click.ClickException(
-                    f"Failed to load language codes for 'all': {str(e)}"
-                )
+            lang_list = Config.get_language_codes()
         else:
             lang_list = [
                 code.strip() for code in language_codes.split() if code.strip()
             ]
+            lang_list = normalize_language_codes(lang_list)
         if not lang_list:
             raise click.ClickException("No valid language codes provided.")
 
@@ -181,7 +180,9 @@ def migrate_links_command(
             md_files: list[Path] = []
             for ext in SUPPORTED_MARKDOWN_EXTENSIONS:
                 md_files.extend(lang_dir.rglob(f"*{ext}"))
-            for md_translated in tqdm(md_files, desc=f"{lang} md", unit="file"):
+            for md_translated in tqdm(
+                md_files, desc=f"{lang_dir.name} md", unit="file"
+            ):
                 total_scanned += 1
                 try:
                     content = md_translated.read_text(encoding="utf-8")
@@ -260,7 +261,7 @@ def migrate_links_command(
                     # Determine translated counterpart if exists
                     candidate_translated = map_original_to_translated(
                         original_abs=linked_abs,
-                        language_code=lang,
+                        language_code=lang_dir.name,
                         root_dir=root_path,
                     )
 
@@ -278,7 +279,7 @@ def migrate_links_command(
                 # Compute translated_md_dir for later comparisons
                 translated_md_dir = (
                     translations_dir
-                    / lang
+                    / lang_dir.name
                     / original_md_path.relative_to(root_path).parent
                 )
 
@@ -329,7 +330,7 @@ def migrate_links_command(
                     updated = update_notebook_links(
                         markdown_string=content,
                         md_file_path=original_md_path,
-                        language_code=lang,
+                        language_code=lang_dir.name,
                         translations_dir=translations_dir,
                         root_dir=root_path,
                         use_translated_notebook=True,
@@ -338,7 +339,7 @@ def migrate_links_command(
                     updated = migrate_notebook_links(
                         markdown_string=content,
                         md_file_path=original_md_path,
-                        language_code=lang,
+                        language_code=lang_dir.name,
                         root_dir=root_path,
                     )
 

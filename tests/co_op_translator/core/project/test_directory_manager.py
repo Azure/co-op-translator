@@ -118,7 +118,7 @@ class TestDirectoryManager:
         # Create translated image with hash under image_dir (default: root_dir/translated_images)
         translations_dir.mkdir(exist_ok=True)
         image_dir = root_dir / "translated_images"
-        ko_img_dir = image_dir / "img"
+        ko_img_dir = image_dir / "ko" / "img"
         ko_img_dir.mkdir(parents=True, exist_ok=True)
 
         # Valid translated image (with correct hash)
@@ -126,12 +126,13 @@ class TestDirectoryManager:
 
         original_name, ext = os.path.splitext(original_img.name)
         path_hash = get_unique_id(original_img, root_dir)
-        valid_trans_name = f"{original_name}.{path_hash}.ko{ext}"
+        # Canonical layout: translated_images/<lang>/<basename>.<hash>.<ext>
+        valid_trans_name = f"{original_name}.{path_hash}{ext}"
         valid_trans_img = ko_img_dir / valid_trans_name
         valid_trans_img.write_bytes(b"translated content")
 
         # Orphaned translated image (with incorrect hash)
-        orphaned_trans_img = ko_img_dir / "test.invalid_hash.ko.png"
+        orphaned_trans_img = ko_img_dir / "test.invalid_hash.png"
         orphaned_trans_img.write_bytes(b"orphaned content")
 
         manager = DirectoryManager(

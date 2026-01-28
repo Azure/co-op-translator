@@ -35,6 +35,9 @@ from co_op_translator.utils.common.task_utils import worker
 from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
 from co_op_translator.utils.common.metadata_utils import is_notebook_up_to_date
 from co_op_translator.config.base_config import Config
+from co_op_translator.utils.common.file_utils import (
+    canonicalize_image_links_in_translations,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -662,6 +665,20 @@ class TranslationManager:
                     migrated_md,
                     migrated_nb,
                 )
+
+                # As a safety net, canonicalize any remaining alias-based language dir segments in links
+                try:
+                    md_fix, nb_fix = canonicalize_image_links_in_translations(
+                        self.translations_dir, self.image_dir
+                    )
+                    if md_fix or nb_fix:
+                        logger.info(
+                            "Canonicalized image links in %d markdown and %d notebooks",
+                            md_fix,
+                            nb_fix,
+                        )
+                except Exception as e:
+                    logger.warning(f"Image link canonicalization skipped: {e}")
             except Exception as e:
                 logger.warning(f"Image filename/link migration skipped: {e}")
 

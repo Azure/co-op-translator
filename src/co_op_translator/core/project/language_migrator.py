@@ -105,11 +105,13 @@ class LanguageFolderMigrator:
             pass
 
     def execute(
-        self, entries: List[MigrationEntry], dry_run: bool = False
+        self, entries: List[MigrationEntry], use_git: bool | None = None, dry_run: bool = False
     ) -> Tuple[int, List[str]]:
         """Execute migration entries. Skips conflicting destinations.
 
         Returns number of successful renames and a list of messages for errors or conflicts.
+
+        Note: `use_git` is currently ignored and preserved only for backward compatibility.
         """
         if not entries:
             return 0, []

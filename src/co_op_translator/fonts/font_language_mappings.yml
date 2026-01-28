@@ -25,16 +25,16 @@ ur:
   name: "Urdu"
   font: "NotoSansArabic-Medium.ttf"
   rtl: true
-zh:
+zh-CN:
   name: "Chinese (Simplified)"
   font: "NotoSansCJK-Medium.ttc"
-mo:
+zh-MO:
   name: "Chinese (Traditional, Macau)"
   font: "NotoSansCJK-Medium.ttc"
-hk:
+zh-HK:
   name: "Chinese (Traditional, Hong Kong)"
   font: "NotoSansCJK-Medium.ttc"
-tw:
+zh-TW:
   name: "Chinese (Traditional, Taiwan)"
   font: "NotoSansCJK-Medium.ttc"
 ja:
@@ -58,11 +58,11 @@ ne:
 pa:
   name: "Punjabi (Gurmukhi)"
   font: "NotoSansGurmukhi-Medium.ttf"  
-pt:
+pt-PT:
   name: "Portuguese (Portugal)"
   font: "NotoSans-Medium.ttf"
 
-br:
+pt-BR:
   name: "Portuguese (Brazil)"
   font: "NotoSans-Medium.ttf"
 

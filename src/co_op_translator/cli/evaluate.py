@@ -11,6 +11,7 @@ import os
 from co_op_translator.core.project.project_evaluator import ProjectEvaluator
 from co_op_translator.config.base_config import Config
 from co_op_translator.utils.common.logging_utils import setup_logging
+from co_op_translator.utils.common.lang_utils import normalize_language_code
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +94,9 @@ def evaluate_command(
         if save_logs and log_file_path is not None:
             click.echo(f"📄 Logs will be saved to: {log_file_path}")
 
-        click.echo(f"Evaluating {language_code} translations in {root_path}...")
+        # Normalize to canonical BCP 47 (accept alias input like tw/cn/br)
+        canonical_code = normalize_language_code(language_code)
+        click.echo(f"Evaluating {canonical_code} translations in {root_path}...")
 
         # Create evaluator
         # Determine evaluation mode (fast, deep or default mode)
@@ -121,7 +124,7 @@ def evaluate_command(
         evaluator = ProjectEvaluator(
             root_dir=root_path,
             translations_dir=root_path / "translations",
-            language_codes=[language_code],
+            language_codes=[canonical_code],
             excluded_dirs=["node_modules", ".git", "__pycache__", "venv"],
             use_llm=use_llm,
             use_rule=use_rule,
@@ -129,7 +132,7 @@ def evaluate_command(
 
         # Run evaluation
         total_files, issue_files, avg_confidence = asyncio.run(
-            evaluator.evaluate_project(language_code)
+            evaluator.evaluate_project(canonical_code)
         )
 
         # Display results with color highlighting

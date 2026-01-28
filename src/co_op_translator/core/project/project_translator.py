@@ -14,6 +14,11 @@ from co_op_translator.config.constants import (
     SUPPORTED_IMAGE_EXTENSIONS,
     SUPPORTED_NOTEBOOK_EXTENSIONS,
 )
+from co_op_translator.utils.common.lang_utils import (
+    normalize_language_codes,
+    get_supported_language_codes,
+    ALIAS_TO_BCP47,
+)
 
 from .directory_manager import DirectoryManager
 from .translation_manager import TranslationManager
@@ -46,7 +51,8 @@ class ProjectTranslator:
             root_dir: Root directory of the project to translate
             translation_types: List of file types to translate (e.g., ["markdown", "images", "notebook"])
         """
-        self.language_codes = language_codes.split()
+        # Normalize to canonical BCP 47 (accept alias input like tw/cn/br)
+        self.language_codes = normalize_language_codes(language_codes.split())
         self.root_dir = Path(root_dir).resolve()
         # Resolve translations_dir relative to root_dir when a relative path is provided.
         if translations_dir is not None:
@@ -83,6 +89,21 @@ class ProjectTranslator:
             except ValueError:
                 # Directory is outside root_dir; no need to exclude from root scans
                 continue
+        # Dynamically add root-level language code folders (canonical or alias) to exclusions
+        try:
+            present_subdirs = [p for p in self.root_dir.iterdir() if p.is_dir()]
+        except Exception:
+            present_subdirs = []
+        supported = set(get_supported_language_codes())
+        aliases = set(ALIAS_TO_BCP47.keys())
+        for sub in present_subdirs:
+            name = sub.name
+            if name in supported or name in aliases:
+                # Only add absolute path strings to avoid substring false-positives in DirectoryManager
+                try:
+                    excluded_dirs.add(str(sub.resolve()))
+                except Exception:
+                    excluded_dirs.add(str(sub))
         self.excluded_dirs = list(excluded_dirs)
 
         # Initialize text translator

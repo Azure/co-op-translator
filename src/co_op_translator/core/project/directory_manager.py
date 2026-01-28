@@ -17,6 +17,7 @@ from co_op_translator.config.constants import (
     SUPPORTED_NOTEBOOK_EXTENSIONS,
     SUPPORTED_IMAGE_EXTENSIONS,
 )
+from co_op_translator.utils.common.lang_utils import normalize_language_code
 
 logger = logging.getLogger(__name__)
 
@@ -436,16 +437,19 @@ class DirectoryManager:
                             rel_parts = ()
 
                         lang_code = None
-                        if len(rel_parts) >= 2 and rel_parts[0] in self.language_codes:
-                            lang_code = rel_parts[0]
-                            # New format: base.hash.ext
-                            path_hash_segment = parts[-2]
-                            base_name = ".".join(parts[:-2])
+                        # Accept alias language folder names by normalizing to canonical
+                        if len(rel_parts) >= 2:
+                            parent_lang = rel_parts[0]
+                            normalized_parent = normalize_language_code(parent_lang)
+                            if normalized_parent in self.language_codes:
+                                lang_code = normalized_parent
+                                path_hash_segment = parts[-2]
+                                base_name = ".".join(parts[:-2])
                         else:
                             # Legacy format: base.hash.lang.ext
                             if len(parts) < 4:
                                 continue
-                            lang_code = parts[-2]
+                            lang_code = normalize_language_code(parts[-2])
                             path_hash_segment = parts[-3]
                             base_name = ".".join(parts[:-3])
 

@@ -6,6 +6,7 @@ import importlib.resources
 import yaml
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.vision_config.config import VisionConfig
+from co_op_translator.utils.common.lang_utils import normalize_language_code
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,8 @@ class Config:
     @staticmethod
     def get_language_codes() -> list[str]:
         """
-        Return the full list of supported language codes from the packaged font mappings.
+        Return the full list of supported language codes from the packaged font mappings,
+        normalized to canonical BCP 47 (e.g., zh-TW, zh-CN, pt-BR, pt-PT).
 
         Falls back to an empty list on error.
         """
@@ -56,12 +58,17 @@ class Config:
             ) as mappings_path:
                 with open(mappings_path, "r", encoding="utf-8") as file:
                     font_mappings = yaml.safe_load(file) or {}
-                    # Only include entries with a dict mapping (same rule as CLI)
-                    return [
-                        lang_code
-                        for lang_code in font_mappings
-                        if isinstance(font_mappings[lang_code], dict)
-                    ]
+                    # Only include entries with a dict mapping and normalize
+                    seen: set[str] = set()
+                    ordered: list[str] = []
+                    for key, meta in font_mappings.items():
+                        if not isinstance(meta, dict):
+                            continue
+                        canon = normalize_language_code(str(key))
+                        if canon and canon not in seen:
+                            seen.add(canon)
+                            ordered.append(canon)
+                    return ordered
         except Exception as e:
             logger.warning(f"Failed to load language codes from font mappings: {e}")
             return []

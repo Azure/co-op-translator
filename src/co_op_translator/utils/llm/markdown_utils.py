@@ -657,11 +657,14 @@ def update_image_links(
 
             try:
                 # We'll resolve actual_image_path later based on the path type
+                # Target translated markdown directory structure: translations/<lang>/<relative_path_to_parent>
+                # The translated file will be saved at: translations_dir / language_code / (md_file_path relative to root_dir)
+                # Its directory is:
                 translated_md_dir = (
                     translations_dir
                     / language_code
                     / md_file_path.relative_to(root_dir).parent
-                )
+                ).resolve()
 
                 if not use_translated_images:
                     # Link to original image when using original images
@@ -705,7 +708,7 @@ def update_image_links(
                             )
 
                         rel_path = os.path.relpath(
-                            translated_images_dir, translated_md_dir
+                            translated_images_dir.resolve(), translated_md_dir
                         )
                         new_filename = generate_translated_filename(
                             actual_image_path, language_code, root_dir
@@ -756,7 +759,7 @@ def update_image_links(
                 translations_dir
                 / language_code
                 / md_file_path.relative_to(root_dir).parent
-            )
+            ).resolve()
 
             if not use_translated_images:
                 # Link to original image when using original images
@@ -776,7 +779,9 @@ def update_image_links(
                 else:
                     actual_image_path = get_actual_image_path(path, md_file_path)
 
-                rel_path = os.path.relpath(translated_images_dir, translated_md_dir)
+                rel_path = os.path.relpath(
+                    translated_images_dir.resolve(), translated_md_dir
+                )
                 new_filename = generate_translated_filename(
                     actual_image_path, language_code, root_dir
                 )

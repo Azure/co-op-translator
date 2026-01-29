@@ -105,7 +105,10 @@ class LanguageFolderMigrator:
             pass
 
     def execute(
-        self, entries: List[MigrationEntry], use_git: bool | None = None, dry_run: bool = False
+        self,
+        entries: List[MigrationEntry],
+        use_git: bool | None = None,
+        dry_run: bool = False,
     ) -> Tuple[int, List[str]]:
         """Execute migration entries. Skips conflicting destinations.
 

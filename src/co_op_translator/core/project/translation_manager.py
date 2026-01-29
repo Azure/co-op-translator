@@ -832,6 +832,10 @@ class TranslationManager:
                         f"Final cleanup (fast) removed {removed_fast} files from {fast_image_dir}"
                     )
 
+            # Final step: Fix any incorrect image paths in existing translations
+            if "markdown" in self.translation_types:
+                await self.fix_incorrect_image_paths()
+
         except Exception as e:
             logger.error(f"Error during translation: {e}")
             # Fail fast: propagate to CLI so the process exits
@@ -1026,6 +1030,60 @@ class TranslationManager:
                 )
                 progress_bar.update(1)
                 progress_bar.set_postfix_str(f"Current: {original_file.name}")
+
+    async def fix_incorrect_image_paths(self):
+        """Scan all translated markdown files and fix incorrect relative image paths.
+
+        This identifies and corrects paths with excessive '../' segments that were
+        previously generated incorrectly.
+        """
+        logger.info("Checking for incorrect image paths in existing translations...")
+        fixed_count = 0
+        translations_dir = self.translations_dir
+
+        for lang_code in self.language_codes:
+            lang_dir = translations_dir / lang_code
+            if not lang_dir.exists():
+                continue
+
+            md_files = []
+            for ext in SUPPORTED_MARKDOWN_EXTENSIONS:
+                md_files.extend(list(lang_dir.rglob(f"*{ext}")))
+
+            if not md_files:
+                continue
+
+            for md_translated in md_files:
+                try:
+                    content = md_translated.read_text(encoding="utf-8")
+                    # Derive original md path to correctly resolve relative links
+                    rel_to_lang = md_translated.relative_to(lang_dir)
+                    original_md_path = (self.root_dir / rel_to_lang).resolve()
+
+                    # Use existing update_image_links with resolved paths to get correct links
+                    updated = self.markdown_translator.update_image_links(
+                        content,
+                        original_md_path,
+                        lang_code,
+                        translations_dir=self.translations_dir,
+                        image_dir=self.image_dir,
+                        root_dir=self.root_dir,
+                        use_translated_images=True,
+                    )
+
+                    if updated != content:
+                        md_translated.write_text(updated, encoding="utf-8")
+                        fixed_count += 1
+                        logger.debug(f"Fixed image paths in: {md_translated}")
+                except Exception as e:
+                    logger.error(f"Failed to fix paths in {md_translated}: {e}")
+
+        if fixed_count > 0:
+            logger.info(f"Successfully fixed image paths in {fixed_count} files.")
+        else:
+            logger.info("No incorrect image paths found.")
+
+        return fixed_count
 
     async def check_and_retry_translations(self):
         """Check translated files for formatting errors and retry failed translations.

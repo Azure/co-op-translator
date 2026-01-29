@@ -1,5 +1,6 @@
 import pytest
 import os
+from pathlib import Path
 
 from co_op_translator.utils.llm.markdown_utils import (
     update_links,
@@ -516,6 +517,56 @@ def test_image_paths_in_nested_structure(complex_dir_structure):
     assert (
         expected_root_markup in result_md_only
     ), f"Expected root image markup: '{expected_root_markup}' not found"
+
+
+def test_image_path_depth_in_nested_translations(complex_dir_structure):
+    """
+    Regression test for incorrect relative path depth (e.g., ../../../../../ vs ../../../).
+    Tests a file at '15-rag-and-vector-databases/README.md' translated to 'et'.
+    The translated file is at 'translations/et/15-rag-and-vector-databases/README.md'.
+    The images are at 'translated_images/et/'.
+    The relative path from 'translations/et/15-rag-and-vector-databases/' to 'translated_images/et/'
+    should be '../../../translated_images/et/'.
+    """
+    root_dir = complex_dir_structure
+    translations_dir = root_dir / "translations"
+    translated_images_dir = root_dir / "translated_images"
+    
+    # Create the nested directory structure
+    md_rel_path = Path("15-rag-and-vector-databases/README.md")
+    md_file_path = root_dir / md_rel_path
+    md_file_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Create a dummy image file to ensure generate_translated_filename works
+    img_rel_path = Path("imgs/banner.png")
+    img_file_path = root_dir / img_rel_path
+    img_file_path.parent.mkdir(parents=True, exist_ok=True)
+    img_file_path.write_text("dummy image content")
+    
+    language_code = "et"
+    markdown_content = f"![Banner]({img_rel_path.as_posix()})"
+    
+    # Process
+    result = update_image_links(
+        markdown_content,
+        md_file_path,
+        language_code,
+        translations_dir,
+        translated_images_dir,
+        root_dir,
+        use_translated_images=True
+    )
+    
+    # The translated MD will be at: translations/et/15-rag-and-vector-databases/README.md
+    # The translated images at: translated_images/et/
+    # Distance:
+    # 1. 15-rag-and-vector-databases/ -> ..
+    # 2. et/ -> ..
+    # 3. translations/ -> ..
+    # Total: ../../../
+    
+    assert "../../../translated_images/et/" in result
+    assert "../../../../../" not in result
 
 
 def test_update_notebook_links_prefers_translated(tmp_path):

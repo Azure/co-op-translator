@@ -35,6 +35,7 @@ def mock_translation_manager(temp_project_dir):
     manager.process_api_requests_parallel = AsyncMock()
     manager.process_api_requests_sequential = AsyncMock()
     manager.translate_notebook = AsyncMock()
+    manager.fix_incorrect_image_paths = AsyncMock()
 
     # Set up common attributes
     manager.root_dir = temp_project_dir

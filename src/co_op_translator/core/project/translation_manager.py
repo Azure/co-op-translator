@@ -601,6 +601,11 @@ class TranslationManager:
                             continue
                 outdated_files = files
             else:
+                # Ensure legacy inline metadata is migrated before outdated detection.
+                try:
+                    self._migrate_legacy_inline_text_metadata()
+                except Exception as e:
+                    logger.warning(f"Legacy text metadata migration skipped: {e}")
                 outdated_files = self.get_outdated_translations()
 
             modified_count = len(outdated_files)
@@ -738,6 +743,13 @@ class TranslationManager:
                 "markdown" in self.translation_types
                 or "notebook" in self.translation_types
             ):
+                # Pre-migrate legacy inline markdown metadata into centralized JSON before
+                # outdated detection to avoid first-run false positives.
+                try:
+                    self._migrate_legacy_inline_text_metadata()
+                except Exception as e:
+                    logger.warning(f"Legacy text metadata migration skipped: {e}")
+
                 with tqdm(total=1, desc="🔍 Checking translations") as check_progress:
                     outdated_files = self.get_outdated_translations()
                     check_progress.set_postfix_str(
@@ -1321,44 +1333,7 @@ class TranslationManager:
                 else None
             )
             if stored_hash:
-                # Migrate legacy metadata into centralized JSON
-                extra_fields = {}
-                # Preserve original_hash and translation_date from legacy metadata if present
-                extra_fields["original_hash"] = stored_hash
-                if "translation_date" in legacy_meta:
-                    extra_fields["translation_date"] = legacy_meta.get(
-                        "translation_date"
-                    )
-
-                # Compute language code again for save (if available)
-                language_code = None
-                try:
-                    if "rel" not in locals():
-                        rel = translation_file.resolve().relative_to(
-                            self.translations_dir
-                        )
-                    language_code = rel.parts[0]
-                except Exception:
-                    language_code = None
-
-                if language_code:
-                    save_text_metadata_for_source(
-                        lang_dir,
-                        original_file,
-                        language_code,
-                        root_dir=self.root_dir,
-                        extra_fields=extra_fields,
-                    )
-
-                # Remove inline metadata from the translated markdown file
-                cleaned = extract_content_without_metadata(content)
-                if cleaned != content:
-                    try:
-                        translation_file.write_text(cleaned, encoding="utf-8")
-                    except Exception:
-                        # Non-fatal; continue
-                        pass
-
+                # Read-only fallback: compare against inline stored hash.
                 current_hash = calculate_file_hash(original_file)
                 return stored_hash != current_hash
 
@@ -1367,3 +1342,65 @@ class TranslationManager:
 
         except Exception:
             return True
+
+    def _migrate_legacy_inline_text_metadata(self) -> int:
+        migrated = 0
+
+        for lang_code in self.language_codes:
+            lang_dir = self.translations_dir / lang_code
+            if not lang_dir.exists():
+                continue
+
+            md_files: list[Path] = []
+            for ext in SUPPORTED_MARKDOWN_EXTENSIONS:
+                md_files.extend(list(lang_dir.rglob(f"*{ext}")))
+
+            for trans_file in md_files:
+                try:
+                    rel_to_lang = trans_file.relative_to(lang_dir)
+                    original_file = (self.root_dir / rel_to_lang).resolve()
+                    if not original_file.exists():
+                        continue
+
+                    existing = read_text_metadata_for_source(lang_dir, original_file)
+                    if isinstance(existing, dict) and existing.get("original_hash"):
+                        continue
+
+                    content = trans_file.read_text(encoding="utf-8")
+                    legacy_meta = extract_metadata_from_content(content)
+                    legacy_hash = (
+                        legacy_meta.get("original_hash")
+                        if isinstance(legacy_meta, dict)
+                        else None
+                    )
+                    if not legacy_hash:
+                        continue
+
+                    extra_fields = {"original_hash": legacy_hash}
+                    if isinstance(legacy_meta, dict) and legacy_meta.get(
+                        "translation_date"
+                    ):
+                        extra_fields["translation_date"] = legacy_meta.get(
+                            "translation_date"
+                        )
+
+                    save_text_metadata_for_source(
+                        lang_dir,
+                        original_file,
+                        lang_code,
+                        root_dir=self.root_dir,
+                        extra_fields=extra_fields,
+                    )
+
+                    cleaned = extract_content_without_metadata(content)
+                    if cleaned != content:
+                        try:
+                            trans_file.write_text(cleaned, encoding="utf-8")
+                        except Exception:
+                            pass
+
+                    migrated += 1
+                except Exception:
+                    continue
+
+        return migrated

@@ -1,12 +1,12 @@
 # Different approaches are used for RGB and RGBA images
 RGBA_IMAGE_EXTENSIONS = {".png"}
 RGB_IMAGE_EXTENSIONS = {".jpg", ".jpeg"}
-SUPPORTED_IMAGE_EXTENSIONS = RGBA_IMAGE_EXTENSIONS.union(RGB_IMAGE_EXTENSIONS)
-
 # WebP is used for translated images (supports both lossy and lossless compression)
 WEBP_EXTENSION = ".webp"
+SUPPORTED_IMAGE_EXTENSIONS = RGBA_IMAGE_EXTENSIONS.union(RGB_IMAGE_EXTENSIONS)
+
 # All input image formats that can be translated (includes WebP for re-processing)
-TRANSLATABLE_IMAGE_EXTENSIONS = SUPPORTED_IMAGE_EXTENSIONS.union({WEBP_EXTENSION})
+SUPPORTED_IMAGE_EXTENSIONS = SUPPORTED_IMAGE_EXTENSIONS.union({WEBP_EXTENSION})
 
 # Supported notebook file extensions
 SUPPORTED_NOTEBOOK_EXTENSIONS = {".ipynb"}

@@ -531,21 +531,21 @@ def test_image_path_depth_in_nested_translations(complex_dir_structure):
     root_dir = complex_dir_structure
     translations_dir = root_dir / "translations"
     translated_images_dir = root_dir / "translated_images"
-    
+
     # Create the nested directory structure
     md_rel_path = Path("15-rag-and-vector-databases/README.md")
     md_file_path = root_dir / md_rel_path
     md_file_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     # Create a dummy image file to ensure generate_translated_filename works
     img_rel_path = Path("imgs/banner.png")
     img_file_path = root_dir / img_rel_path
     img_file_path.parent.mkdir(parents=True, exist_ok=True)
     img_file_path.write_text("dummy image content")
-    
+
     language_code = "et"
     markdown_content = f"![Banner]({img_rel_path.as_posix()})"
-    
+
     # Process
     result = update_image_links(
         markdown_content,
@@ -554,9 +554,9 @@ def test_image_path_depth_in_nested_translations(complex_dir_structure):
         translations_dir,
         translated_images_dir,
         root_dir,
-        use_translated_images=True
+        use_translated_images=True,
     )
-    
+
     # The translated MD will be at: translations/et/15-rag-and-vector-databases/README.md
     # The translated images at: translated_images/et/
     # Distance:
@@ -564,7 +564,7 @@ def test_image_path_depth_in_nested_translations(complex_dir_structure):
     # 2. et/ -> ..
     # 3. translations/ -> ..
     # Total: ../../../
-    
+
     assert "../../../translated_images/et/" in result
     assert "../../../../../" not in result
 

@@ -779,7 +779,9 @@ def update_image_links(
                 else:
                     actual_image_path = get_actual_image_path(path, md_file_path)
 
-                rel_path = os.path.relpath(translated_images_dir.resolve(), translated_md_dir)
+                rel_path = os.path.relpath(
+                    translated_images_dir.resolve(), translated_md_dir
+                )
                 new_filename = generate_translated_filename(
                     actual_image_path, language_code, root_dir
                 )

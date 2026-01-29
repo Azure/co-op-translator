@@ -569,6 +569,37 @@ def test_image_path_depth_in_nested_translations(complex_dir_structure):
     assert "../../../../../" not in result
 
 
+def test_webp_translated_images_prefix_depth_is_normalized(complex_dir_structure):
+    root_dir = complex_dir_structure
+    translations_dir = root_dir / "translations"
+    translated_images_dir = root_dir / "translated_images"
+    translations_dir.mkdir(parents=True, exist_ok=True)
+    translated_images_dir.mkdir(parents=True, exist_ok=True)
+
+    md_rel_path = Path("15-rag-and-vector-databases/README.md")
+    md_file_path = root_dir / md_rel_path
+    md_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    language_code = "et"
+    # Intentionally wrong depth (one extra ../) pointing to an already-translated WebP
+    markdown_content = (
+        "![Banner](../../../../translated_images/et/foo.1234567890abcdef.webp)"
+    )
+
+    result = update_image_links(
+        markdown_content,
+        md_file_path,
+        language_code,
+        translations_dir,
+        translated_images_dir,
+        root_dir,
+        use_translated_images=True,
+    )
+
+    assert "../../../translated_images/et/foo.1234567890abcdef.webp" in result
+    assert "../../../../translated_images/et/foo.1234567890abcdef.webp" not in result
+
+
 def test_update_notebook_links_prefers_translated(tmp_path):
     """When translated notebook exists, link should point to translated notebook relative to translated md dir."""
     root_dir = tmp_path

@@ -32,7 +32,10 @@ from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.directory_manager import DirectoryManager
 from co_op_translator.utils.common.task_utils import worker
-from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
+from co_op_translator.utils.llm.markdown_utils import (
+    compare_line_breaks,
+    update_image_links,
+)
 from co_op_translator.utils.common.metadata_utils import is_notebook_up_to_date
 from co_op_translator.config.base_config import Config
 from co_op_translator.utils.common.file_utils import (
@@ -1060,13 +1063,13 @@ class TranslationManager:
                     rel_to_lang = md_translated.relative_to(lang_dir)
                     original_md_path = (self.root_dir / rel_to_lang).resolve()
 
-                    # Use existing update_image_links with resolved paths to get correct links
-                    updated = self.markdown_translator.update_image_links(
+                    # Use module-level update_image_links with resolved paths to get correct links
+                    updated = update_image_links(
                         content,
                         original_md_path,
                         lang_code,
                         translations_dir=self.translations_dir,
-                        image_dir=self.image_dir,
+                        translated_images_dir=self.image_dir,
                         root_dir=self.root_dir,
                         use_translated_images=True,
                     )

@@ -3,6 +3,15 @@ from unittest.mock import AsyncMock, MagicMock
 from co_op_translator.core.project.translation_manager import TranslationManager
 
 
+def _write_lang_metadata(lang_dir, data: dict) -> None:
+    import json
+
+    lang_dir.mkdir(parents=True, exist_ok=True)
+    (lang_dir / ".co-op-translator.json").write_text(
+        json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+
+
 @pytest.fixture
 def temp_project_dir(tmp_path):
     """Creates a temporary project directory structure."""
@@ -184,6 +193,56 @@ async def test_get_outdated_translations(mock_translation_manager, temp_project_
     original_file, translation_file = outdated_files[0]
     assert original_file.name == "test.md"
     assert translation_file.parent.name == "ko"
+
+
+def test_is_translation_outdated_walks_up_to_lang_dir(tmp_path):
+    root_dir = tmp_path
+    translations_dir = root_dir / "translations"
+    lang_dir = translations_dir / "ko"
+
+    root_readme = root_dir / "README.md"
+    root_readme.write_text("# Root\n", encoding="utf-8")
+    nested_readme = root_dir / "lesson-1" / "README.md"
+    nested_readme.parent.mkdir(parents=True, exist_ok=True)
+    nested_readme.write_text("# Nested\n", encoding="utf-8")
+
+    (lang_dir / "README.md").parent.mkdir(parents=True, exist_ok=True)
+    (lang_dir / "README.md").write_text("# 번역\n", encoding="utf-8")
+    (lang_dir / "lesson-1" / "README.md").parent.mkdir(parents=True, exist_ok=True)
+    (lang_dir / "lesson-1" / "README.md").write_text(
+        '<!--\nCO_OP_TRANSLATOR_METADATA:\n{\n  "original_hash": "deadbeef",\n  "translation_date": "2026-01-01T00:00:00+00:00",\n  "source_file": "lesson-1/README.md",\n  "language_code": "ko"\n}\n-->\n# 번역\n',
+        encoding="utf-8",
+    )
+
+    from co_op_translator.utils.common.metadata_utils import calculate_file_hash
+
+    _write_lang_metadata(
+        lang_dir,
+        {
+            "README.md": {
+                "original_hash": calculate_file_hash(root_readme),
+                "translation_date": "2026-01-01T00:00:00+00:00",
+                "source_file": "README.md",
+                "language_code": "ko",
+            }
+        },
+    )
+
+    manager = MagicMock()
+    manager.root_dir = root_dir
+    manager.translations_dir = translations_dir
+    manager.language_codes = ["ko"]
+    manager._migrate_legacy_inline_text_metadata = (
+        TranslationManager._migrate_legacy_inline_text_metadata.__get__(manager)
+    )
+
+    migrated = manager._migrate_legacy_inline_text_metadata()
+    assert migrated >= 1
+
+    import json
+
+    data = json.loads((lang_dir / ".co-op-translator.json").read_text(encoding="utf-8"))
+    assert "lesson-1/README.md" in data
 
 
 @pytest.mark.asyncio

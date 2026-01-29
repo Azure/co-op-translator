@@ -635,6 +635,22 @@ def read_text_metadata_for_source(lang_dir: Path, source_file: str | Path) -> di
     if normalized in all_metadata:
         return all_metadata.get(normalized, {})
 
+    looks_absolute = False
+    try:
+        if isinstance(source_file, Path):
+            looks_absolute = source_file.is_absolute()
+        else:
+            s = str(source_file)
+            if len(s) >= 2 and s[1] == ":":
+                looks_absolute = True
+            elif s.startswith("/") or s.startswith("\\"):
+                looks_absolute = True
+    except Exception:
+        looks_absolute = False
+
+    if not looks_absolute:
+        return {}
+
     # If absolute or otherwise not directly found, try suffix matching against stored relative keys
     # Build candidate suffixes from the provided path
     parts = normalized.split("/")

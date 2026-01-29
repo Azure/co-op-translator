@@ -1313,7 +1313,14 @@ class TranslationManager:
                 lang_dir = translation_file.parent
 
             # Prefer centralized JSON metadata
-            metadata = read_text_metadata_for_source(lang_dir, original_file)
+            source_key: str | Path
+            try:
+                source_key = str(original_file.relative_to(self.root_dir)).replace(
+                    "\\", "/"
+                )
+            except Exception:
+                source_key = original_file
+            metadata = read_text_metadata_for_source(lang_dir, source_key)
             if metadata and isinstance(metadata, dict):
                 stored_hash = metadata.get("original_hash")
                 if stored_hash:
@@ -1362,7 +1369,14 @@ class TranslationManager:
                     if not original_file.exists():
                         continue
 
-                    existing = read_text_metadata_for_source(lang_dir, original_file)
+                    source_key: str | Path
+                    try:
+                        source_key = str(
+                            original_file.relative_to(self.root_dir)
+                        ).replace("\\", "/")
+                    except Exception:
+                        source_key = original_file
+                    existing = read_text_metadata_for_source(lang_dir, source_key)
                     if isinstance(existing, dict) and existing.get("original_hash"):
                         continue
 
@@ -1374,6 +1388,13 @@ class TranslationManager:
                         else None
                     )
                     if not legacy_hash:
+                        save_text_metadata_for_source(
+                            lang_dir,
+                            original_file,
+                            lang_code,
+                            root_dir=self.root_dir,
+                        )
+                        migrated += 1
                         continue
 
                     extra_fields = {"original_hash": legacy_hash}

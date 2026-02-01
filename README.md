@@ -55,8 +55,8 @@ Example of how translated content is organized:
 Co-op Translator manages translated content as versioned artifacts,
 not static files.
 
-Co-op Translator tracks the freshness of translations using
-language-scoped state metadata.
+Co-op Translator tracks the freshness of translated Markdown,
+images, and notebooks using language-scoped state metadata.
 
 This design allows the tool to:
 
@@ -161,6 +161,7 @@ Join us in revolutionizing how educational content is shared globally! Give [Co-
 
 ### Explore Microsoft educational content in your language
 
+- [LangChain4j-for-Beginners](https://github.com/microsoft/LangChain4j-for-Beginners)
 - [AZD for Beginners](https://github.com/microsoft/AZD-for-beginners)
 - [Edge AI for Beginners](https://github.com/microsoft/edgeai-for-beginners)
 - [Model Context Protocol (MCP) For Beginners](https://github.com/microsoft/mcp-for-beginners)

@@ -1,6 +1,6 @@
 # Co-op Translator
 
-_Easily automate the translation of your educational GitHub content into multiple languages to reach a global audience._
+_Easily automate and maintain translations for your educational GitHub content across multiple languages as your project evolves._
 
 ![Python 3.10–3.12](https://img.shields.io/badge/python-3.10--3.12-blue)
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
@@ -49,6 +49,24 @@ When you update your Markdown files, images, or notebooks, translations stay aut
 Example of how translated content is organized:
 
 ![Example](./imgs/translation-ex.png)
+
+## How translation state is managed
+
+Co-op Translator manages translated content as versioned artifacts,
+not static files.
+
+Co-op Translator tracks the freshness of translations using
+language-scoped state metadata.
+
+This design allows the tool to:
+
+- Reliably detect outdated translations
+- Treat Markdown, images, and notebooks consistently
+- Avoid fragile inline markers inside content
+- Scale safely across large, multi-language repositories
+
+This approach aligns translation workflows with modern software
+dependency and artifact management practices.
 
 ## Quick start
 

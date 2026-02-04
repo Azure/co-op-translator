@@ -52,21 +52,24 @@ Example of how translated content is organized:
 
 ## How translation state is managed
 
-Co-op Translator manages translated content as versioned artifacts,
-not static files.
+Co-op Translator manages translated content as **versioned software artifacts**,  
+not as static files.
 
-Co-op Translator tracks the freshness of translated Markdown,
-images, and notebooks using language-scoped state metadata.
+The tool tracks the state of translated Markdown, images, and notebooks
+using **language-scoped metadata**.
 
-This design allows the tool to:
+This design allows Co-op Translator to:
 
 - Reliably detect outdated translations
 - Treat Markdown, images, and notebooks consistently
-- Avoid fragile inline markers inside content
-- Scale safely across large, multi-language repositories
+- Scale safely across large, fast-moving, multi-language repositories
 
-This approach aligns translation workflows with modern software
-dependency and artifact management practices.
+By modeling translations as managed artifacts,
+translation workflows align naturally with modern
+software dependency and artifact management practices.
+
+→ [How translation state is managed](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
+
 
 ## Quick start
 

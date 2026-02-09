@@ -189,6 +189,49 @@ class TestDirectoryManager:
         assert old_image_name not in migrated_content
         assert new_image_name in migrated_content
 
+    def test_migrate_markdown_image_links_rewrites_flattened_translated_paths(
+        self, setup_test_dirs
+    ):
+        """Legacy translated links without language folders should be rewritten via regex."""
+
+        root_dir = setup_test_dirs
+        translations_dir = root_dir / "translations"
+        translations_dir.mkdir(exist_ok=True)
+
+        language_codes = ["ja"]
+        excluded_dirs = []
+
+        ja_md_dir = translations_dir / "ja" / "03-GettingStarted" / "01-first-server"
+        ja_md_dir.mkdir(parents=True, exist_ok=True)
+        md_file = ja_md_dir / "README.md"
+
+        legacy_path = (
+            "../../../../translated_images/"
+            "connected.73d1e042c24075d386cacdd4ee7cd748c16364c277d814e646ff2f7b5eefde85.ja.png"
+        )
+        md_file.write_text(
+            f"![MCP Inspector server connection]({legacy_path})\n",
+            encoding="utf-8",
+        )
+
+        manager = DirectoryManager(
+            root_dir=root_dir,
+            translations_dir=translations_dir,
+            language_codes=language_codes,
+            excluded_dirs=excluded_dirs,
+        )
+
+        updated = manager.migrate_markdown_image_links({})
+
+        assert updated == 1
+        migrated_content = md_file.read_text(encoding="utf-8")
+        expected = (
+            "../../../../translated_images/ja/"
+            "connected.73d1e042c24075d386cacdd4ee7cd748c16364c277d814e646ff2f7b5eefde85.png"
+        )
+        assert expected in migrated_content
+        assert legacy_path not in migrated_content
+
     def test_migrate_notebook_image_links(self, setup_test_dirs):
         """Test that notebook markdown cells are updated using the rename map."""
 

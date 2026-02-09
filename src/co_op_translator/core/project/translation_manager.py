@@ -647,18 +647,29 @@ class TranslationManager:
 
         try:
             # Migrate legacy translated image filenames and update markdown/notebook links
+            rename_map: dict[str, str] = {}
+            migrated_image_count = 0
+
             try:
                 rename_map = migrate_translated_image_filenames(
                     self.image_dir, self.language_codes
                 )
+                migrated_image_count += len(rename_map)
+            except Exception as e:
+                logger.warning(f"Image filename migration skipped: {e}")
+                rename_map = {}
 
-                # Convert existing PNG/JPG images to WebP format for optimal compression
-                # This reduces storage requirements by 25-35% compared to PNG
+            try:
                 webp_rename_map = migrate_images_to_webp(
                     self.image_dir, self.language_codes
                 )
+            except Exception as e:
+                logger.warning(f"WebP migration skipped: {e}")
+            else:
                 rename_map.update(webp_rename_map)
+                migrated_image_count += len(webp_rename_map)
 
+            try:
                 # Always run link migration to rewrite legacy flattened links in content,
                 # even when no files were moved (empty rename_map)
                 migrated_md = self.directory_manager.migrate_markdown_image_links(
@@ -669,26 +680,26 @@ class TranslationManager:
                 )
                 logger.info(
                     "Migrated %d image files and updated %d markdown and %d notebook files",
-                    len(rename_map),
+                    migrated_image_count,
                     migrated_md,
                     migrated_nb,
                 )
-
-                # As a safety net, canonicalize any remaining alias-based language dir segments in links
-                try:
-                    md_fix, nb_fix = canonicalize_image_links_in_translations(
-                        self.translations_dir, self.image_dir
-                    )
-                    if md_fix or nb_fix:
-                        logger.info(
-                            "Canonicalized image links in %d markdown and %d notebooks",
-                            md_fix,
-                            nb_fix,
-                        )
-                except Exception as e:
-                    logger.warning(f"Image link canonicalization skipped: {e}")
             except Exception as e:
-                logger.warning(f"Image filename/link migration skipped: {e}")
+                logger.warning(f"Image link migration skipped: {e}")
+
+            # As a safety net, canonicalize any remaining alias-based language dir segments in links
+            try:
+                md_fix, nb_fix = canonicalize_image_links_in_translations(
+                    self.translations_dir, self.image_dir
+                )
+                if md_fix or nb_fix:
+                    logger.info(
+                        "Canonicalized image links in %d markdown and %d notebooks",
+                        md_fix,
+                        nb_fix,
+                    )
+            except Exception as e:
+                logger.warning(f"Image link canonicalization skipped: {e}")
 
             # Clean up files no longer needed in target directories
             logger.info("Removing orphaned files...")

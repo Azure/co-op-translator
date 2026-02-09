@@ -5,6 +5,7 @@ import re
 from co_op_translator.utils.common.file_utils import (
     get_unique_id,
     get_filename_and_extension,
+    HASH_PREFIX_LENGTH,
 )
 from pathlib import PurePosixPath
 from co_op_translator.utils.common.metadata_utils import (
@@ -598,6 +599,8 @@ class DirectoryManager:
 
             migrated_content = pattern.sub(_rewrite_legacy, migrated_content)
 
+            migrated_content = self._rewrite_existing_webp_links(migrated_content)
+
             if migrated_content != original_content:
                 try:
                     md_file.write_text(migrated_content, encoding="utf-8")
@@ -608,6 +611,47 @@ class DirectoryManager:
                     )
 
         return updated_files
+
+    def _rewrite_existing_webp_links(self, text: str) -> str:
+        """Replace .png/.jpg/.jpeg translated_images links with .webp when available."""
+
+        if not self.image_dir.exists():
+            return text
+
+        base_dir_name = self.image_dir.name
+        pattern = re.compile(
+            rf"(?P<prefix>(?:\.\./)*/?)?"
+            rf"(?P<bdir>{re.escape(base_dir_name)}|translated_images|translated_images_fast)"
+            rf"/(?P<lang>[A-Za-z0-9-]+)/"
+            rf"(?P<basename>[^/]+?)\.(?P<hash>[0-9a-fA-F]{{16,64}})(?P<ext>\.(?:png|jpg|jpeg))"
+        )
+
+        def _rewrite_existing(m: re.Match) -> str:
+            ext = m.group("ext").lower()
+            if ext == ".webp":
+                return m.group(0)
+
+            lang = m.group("lang")
+            basename = m.group("basename")
+            hashseg = m.group("hash")
+            prefix = m.group("prefix") or ""
+
+            candidate_hash = (
+                hashseg[:HASH_PREFIX_LENGTH]
+                if len(hashseg) > HASH_PREFIX_LENGTH
+                else hashseg
+            )
+            candidate_rel = Path(lang) / f"{basename}.{candidate_hash}.webp"
+            candidate_path = self.image_dir / candidate_rel
+
+            if candidate_path.exists():
+                return (
+                    f"{prefix}{base_dir_name}/{lang}/{basename}.{candidate_hash}.webp"
+                )
+
+            return m.group(0)
+
+        return pattern.sub(_rewrite_existing, text)
 
     def migrate_notebook_image_links(self, rename_map: dict[str, str]) -> int:
         # Proceed even if rename_map is empty to apply regex-based rewrites
@@ -675,6 +719,8 @@ class DirectoryManager:
                     return f"{prefix}{base_dir_name}/{lang}/{basename}.{hashseg}{ext}"
 
                 migrated_text = pattern.sub(_rewrite_legacy_nb, migrated_text)
+
+                migrated_text = self._rewrite_existing_webp_links(migrated_text)
 
                 if migrated_text != original_text:
                     changed = True

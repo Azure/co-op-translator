@@ -336,6 +336,55 @@ async def test_translate_project_async_with_outdated(
     mock_translation_manager.translate_all_markdown_files.assert_called_once()
 
 
+@pytest.mark.asyncio
+async def test_translate_project_runs_link_migration_when_no_images(
+    mock_translation_manager, temp_project_dir, monkeypatch
+):
+    """Even when no image files are migrated, markdown/notebook link rewrites should run."""
+
+    # Force migration helpers to return empty rename maps
+    monkeypatch.setattr(
+        "co_op_translator.core.project.translation_manager.migrate_translated_image_filenames",
+        lambda *args, **kwargs: {},
+    )
+    monkeypatch.setattr(
+        "co_op_translator.core.project.translation_manager.migrate_images_to_webp",
+        lambda *args, **kwargs: {},
+    )
+    monkeypatch.setattr(
+        "co_op_translator.core.project.translation_manager.canonicalize_image_links_in_translations",
+        lambda *args, **kwargs: (0, 0),
+    )
+
+    mock_translation_manager.translation_types = ["markdown"]
+    mock_translation_manager.directory_manager = MagicMock()
+    mock_translation_manager.directory_manager.cleanup_orphaned_translations = (
+        MagicMock(return_value=0)
+    )
+    mock_translation_manager.directory_manager.sync_directory_structure = MagicMock(
+        return_value=(0, 0, [])
+    )
+    mock_translation_manager.directory_manager.migrate_markdown_image_links = MagicMock(
+        return_value=0
+    )
+    mock_translation_manager.directory_manager.migrate_notebook_image_links = MagicMock(
+        return_value=0
+    )
+
+    mock_translation_manager.get_outdated_translations = MagicMock(return_value=[])
+    mock_translation_manager.translate_all_markdown_files = AsyncMock(
+        return_value=(0, [])
+    )
+    mock_translation_manager.translate_project_async = (
+        TranslationManager.translate_project_async.__get__(mock_translation_manager)
+    )
+
+    await mock_translation_manager.translate_project_async()
+
+    mock_translation_manager.directory_manager.migrate_markdown_image_links.assert_called_once()
+    mock_translation_manager.directory_manager.migrate_notebook_image_links.assert_called_once()
+
+
 # ============================================================================
 # Notebook-specific tests
 # ============================================================================

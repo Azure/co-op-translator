@@ -109,33 +109,37 @@ def update_readme_languages_table(
         flags=re.IGNORECASE,
     )
 
-    # Build advisory block (with optional repo URL substitution)
+    # Personalize advisory block in template (if repo_url provided)
     repo_url_value = (
         repo_url.strip() if isinstance(repo_url, str) and repo_url.strip() else None
     )
-    repo_name_value: str | None = None
     if repo_url_value:
+        repo_url_value = repo_url_value.rstrip()
+        repo_url_without_git = (
+            repo_url_value[:-4] if repo_url_value.endswith(".git") else repo_url_value
+        )
+        repo_url_with_git = (
+            repo_url_value
+            if repo_url_value.endswith(".git")
+            else f"{repo_url_value}.git"
+        )
+
+        # Handle `<repo_url>.git` first to avoid double-appending `.git`
+        template = template.replace("<repo_url>.git", repo_url_with_git)
+        # Replace bare placeholders with the raw value (preserving whatever suffix user provided)
+        template = template.replace("<repo_url>", repo_url_value)
+        # Replace legacy placeholder block
+        template = template.replace("https://github.com/*****.git", repo_url_with_git)
         try:
-            tail = repo_url_value.rstrip("/").split("/")[-1]
+            tail = repo_url_without_git.rstrip("/").split("/")[-1]
             repo_name_value = tail[:-4] if tail.endswith(".git") else tail
         except Exception:
             repo_name_value = None
 
-    advisory_repo_url = repo_url_value or "https://github.com/*****.git"
-    advisory_repo_name = repo_name_value or "*****"
+        if repo_name_value:
+            for placeholder in ("cd <repo_name>", "cd *****"):
+                template = template.replace(placeholder, f"cd {repo_name_value}")
 
-    advisory_block = (
-        "> **Prefer to Clone Locally?**\n\n"
-        "> This repository includes 50+ language translations which significantly increases the download size. To clone without translations, use sparse checkout:\n"
-        "> ```bash\n"
-        f"> git clone --filter=blob:none --sparse {advisory_repo_url}\n"
-        f"> cd {advisory_repo_name}\n"
-        "> git sparse-checkout set --no-cone '/*' '!translations' '!translated_images'\n"
-        "> ```\n"
-        "> This gives you everything you need to complete the course with a much faster download."
-    )
-
-    # Insert advisory INSIDE the template's markers
     lower_t = template.lower()
     start_idx = lower_t.find(LANG_TABLE_START.lower())
     end_idx = lower_t.find(LANG_TABLE_END.lower())
@@ -143,8 +147,7 @@ def update_readme_languages_table(
         return False
 
     inner_content = template[start_idx + len(LANG_TABLE_START) : end_idx].strip()
-    combined_inner = (inner_content + "\n\n" + advisory_block).strip()
-    new_block = f"{LANG_TABLE_START}\n{combined_inner}\n{LANG_TABLE_END}"
+    new_block = f"{LANG_TABLE_START}\n{inner_content}\n{LANG_TABLE_END}"
 
     updated = _replace_between_markers_generic(
         original, new_block, LANG_TABLE_START, LANG_TABLE_END

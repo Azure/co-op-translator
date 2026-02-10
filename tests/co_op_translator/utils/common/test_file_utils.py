@@ -1,21 +1,23 @@
 from pathlib import Path
 import tempfile
 import pytest
+import co_op_translator.utils.common.file_utils as file_utils
 from co_op_translator.utils.common.file_utils import (
-    read_input_file,
-    write_output_file,
-    handle_empty_document,
-    get_unique_id,
-    get_filename_and_extension,
+    delete_translated_images_by_language_code,
+    delete_translated_markdown_files_by_language_code,
     filter_files,
     generate_translated_filename,
     get_actual_image_path,
-    reset_translation_directories,
-    delete_translated_markdown_files_by_language_code,
-    delete_translated_images_by_language_code,
+    get_filename_and_extension,
+    get_unique_id,
+    handle_empty_document,
     map_original_to_translated,
-    migrate_translated_image_filenames,
     migrate_images_to_webp,
+    migrate_translated_image_filenames,
+    read_input_file,
+    reset_translation_directories,
+    update_readme_languages_table,
+    write_output_file,
 )
 
 
@@ -361,3 +363,72 @@ def test_delete_translated_images_by_language_code():
         delete_translated_images_by_language_code("fr", image_dir)
         assert not (image_dir / "fr").exists()
         assert (image_dir / "de").is_dir() and any((image_dir / "de").iterdir())
+
+
+def _make_readme_with_markers(tmp_path: Path) -> Path:
+    readme = tmp_path / "README.md"
+    readme.write_text(
+        "before\n"
+        f"{file_utils.LANG_TABLE_START}\nold-content\n{file_utils.LANG_TABLE_END}\n"
+        "after",
+        encoding="utf-8",
+    )
+    return readme
+
+
+def test_update_readme_languages_table_with_repo_url(monkeypatch, tmp_path):
+    template = (
+        f"{file_utils.LANG_TABLE_START}\n"
+        "[Lang](./translations/lang/README.md)\n\n"
+        "> **Prefer to Clone Locally?**\n\n"
+        "> ```bash\n"
+        "> git clone <repo_url>\n"
+        "> cd <repo_name>\n"
+        "> ```\n\n"
+        "> ```cmd\n"
+        "> git clone https://github.com/*****.git\n"
+        "> cd *****\n"
+        "> ```\n"
+        f"{file_utils.LANG_TABLE_END}"
+    )
+    monkeypatch.setattr(
+        file_utils,
+        "load_languages_table_template",
+        lambda: template,
+    )
+
+    readme = _make_readme_with_markers(tmp_path)
+    repo_url = "https://github.com/org/repo.git"
+
+    updated = update_readme_languages_table(readme, repo_url=repo_url)
+    assert updated is True
+
+    final_text = readme.read_text(encoding="utf-8")
+    assert repo_url in final_text
+    assert "<repo_url>" not in final_text
+    assert "cd repo" in final_text
+    assert "cd *****" not in final_text
+
+
+def test_update_readme_languages_table_without_repo_url(monkeypatch, tmp_path):
+    template = (
+        f"{file_utils.LANG_TABLE_START}\n"
+        "[Lang](./translations/lang/README.md)\n"
+        "> git clone <repo_url>\n"
+        "> cd <repo_name>\n"
+        f"{file_utils.LANG_TABLE_END}"
+    )
+    monkeypatch.setattr(
+        file_utils,
+        "load_languages_table_template",
+        lambda: template,
+    )
+
+    readme = _make_readme_with_markers(tmp_path)
+
+    updated = update_readme_languages_table(readme)
+    assert updated is True
+
+    final_text = readme.read_text(encoding="utf-8")
+    assert "<repo_url>" in final_text
+    assert "<repo_name>" in final_text

@@ -863,8 +863,11 @@ class TranslationManager:
                         f"Final cleanup (fast) removed {removed_fast} files from {fast_image_dir}"
                     )
 
-            # Final step: Fix any incorrect image paths in existing translations
-            if "markdown" in self.translation_types:
+            # Final step: Fix incorrect translated-image links only when image translations ran
+            if (
+                "markdown" in self.translation_types
+                and "images" in self.translation_types
+            ):
                 await self.fix_incorrect_image_paths()
 
         except Exception as e:

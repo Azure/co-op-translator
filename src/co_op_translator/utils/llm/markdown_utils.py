@@ -150,19 +150,18 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
                 current_chunk.append(part_text)
                 current_length += part_tokens
             else:
-                lines = part_text.split("\n")
+                lines = _group_lines_preserving_list_items(part_text)
                 current_line_buffer = []
                 current_line_tokens = 0
 
                 for line in lines:
-                    line_with_break = line + "\n"
-                    line_tokens = count_tokens(line_with_break, tokenizer)
+                    line_tokens = count_tokens(line, tokenizer)
 
                     if (
                         current_length + current_line_tokens + line_tokens
                         <= extended_max
                     ):
-                        current_line_buffer.append(line_with_break)
+                        current_line_buffer.append(line)
                         current_line_tokens += line_tokens
                     else:
                         if current_chunk or current_line_buffer:
@@ -192,7 +191,7 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
                             if word_chunk:
                                 chunks.append("".join(word_chunk))
                         else:
-                            current_chunk = [line_with_break]
+                            current_chunk = [line]
                             current_length = line_tokens
                             current_line_buffer = []
                             current_line_tokens = 0
@@ -206,6 +205,46 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
         chunks.append("".join(current_chunk))
 
     return chunks
+
+
+def _group_lines_preserving_list_items(text: str) -> list[str]:
+    """Group markdown text into split units while keeping list-item blocks together."""
+    lines = text.splitlines(keepends=True)
+    if not lines:
+        return []
+
+    grouped_lines: list[str] = []
+    idx = 0
+    list_item_pattern = re.compile(r"^\s{0,3}(?:[*+-]|\d+[.)])\s+")
+
+    while idx < len(lines):
+        line = lines[idx]
+
+        if list_item_pattern.match(line):
+            block = [line]
+            idx += 1
+
+            while idx < len(lines):
+                next_line = lines[idx]
+                if next_line.strip() == "":
+                    block.append(next_line)
+                    idx += 1
+                    continue
+
+                if next_line.startswith((" ", "\t")) or list_item_pattern.match(next_line):
+                    block.append(next_line)
+                    idx += 1
+                    continue
+
+                break
+
+            grouped_lines.append("".join(block))
+            continue
+
+        grouped_lines.append(line)
+        idx += 1
+
+    return grouped_lines
 
 
 def process_markdown(

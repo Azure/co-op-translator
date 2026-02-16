@@ -175,6 +175,20 @@ def test_split_markdown_content():
     assert all(isinstance(chunk, str) for chunk in chunks)
 
 
+def test_split_markdown_content_keeps_list_item_with_code_placeholder():
+    """List item text and indented code placeholder should stay in the same chunk."""
+    content = """- Step 1: run this command\n    @@CODE_BLOCK_0@@\n\nParagraph after list item.\n"""
+
+    class MockTokenizer:
+        def encode(self, text):
+            return [0] * len(text)
+
+    chunks = split_markdown_content(content, 30, MockTokenizer())
+
+    assert len(chunks) >= 1
+    assert any("- Step 1" in chunk and "@@CODE_BLOCK_0@@" in chunk for chunk in chunks)
+
+
 @pytest.fixture
 def complex_dir_structure(tmp_path):
     """Create a more complex directory structure for testing nested paths."""

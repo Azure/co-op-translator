@@ -1407,13 +1407,10 @@ class TranslationManager:
                         else None
                     )
                     if not legacy_hash:
-                        save_text_metadata_for_source(
-                            lang_dir,
-                            original_file,
-                            lang_code,
-                            root_dir=self.root_dir,
-                        )
-                        migrated += 1
+                        # If there is no legacy inline metadata, do not synthesize
+                        # a fresh metadata record from the current source hash.
+                        # Doing so would incorrectly mark unknown/manual translations
+                        # as up-to-date and skip retranslation.
                         continue
 
                     extra_fields = {"original_hash": legacy_hash}

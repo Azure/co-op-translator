@@ -245,6 +245,32 @@ def test_is_translation_outdated_walks_up_to_lang_dir(tmp_path):
     assert "lesson-1/README.md" in data
 
 
+def test_migrate_legacy_inline_text_metadata_skips_files_without_legacy_block(tmp_path):
+    root_dir = tmp_path
+    translations_dir = root_dir / "translations"
+    lang_dir = translations_dir / "ko"
+
+    source_file = root_dir / "guide.md"
+    source_file.write_text("# Source\n", encoding="utf-8")
+
+    translated_file = lang_dir / "guide.md"
+    translated_file.parent.mkdir(parents=True, exist_ok=True)
+    translated_file.write_text("# Manual translated content\n", encoding="utf-8")
+
+    manager = MagicMock()
+    manager.root_dir = root_dir
+    manager.translations_dir = translations_dir
+    manager.language_codes = ["ko"]
+    manager._migrate_legacy_inline_text_metadata = (
+        TranslationManager._migrate_legacy_inline_text_metadata.__get__(manager)
+    )
+
+    migrated = manager._migrate_legacy_inline_text_metadata()
+
+    assert migrated == 0
+    assert not (lang_dir / ".co-op-translator.json").exists()
+
+
 @pytest.mark.asyncio
 async def test_retranslate_outdated_files(mock_translation_manager, temp_project_dir):
     """Tests retranslation of outdated files."""

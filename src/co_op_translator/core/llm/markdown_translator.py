@@ -253,7 +253,9 @@ class MarkdownTranslator(ABC):
 
         language_name = self.font_config.get_language_name(output_lang)
         system_text = (
-            f"Translate the following text to {language_name} ({output_lang})."
+            f"Translate the following text to {language_name} ({output_lang}). "
+            "Preserve Markdown syntax and tokens exactly as written; "
+            "if links are present, keep Markdown link structure [text](URL) and do not rewrite links as plain text."
         )
         user_text = template_text
         disclaimer_prompt = system_text + SPLIT_DELIMITER + user_text

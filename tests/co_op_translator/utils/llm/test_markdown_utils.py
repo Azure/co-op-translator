@@ -139,6 +139,23 @@ def test_generate_prompt_template():
     assert document_chunk in prompt
 
 
+def test_generate_prompt_template_includes_japanese_language_template():
+    """Japanese prompt should include strict markdown-preservation template text."""
+    document_chunk = "This document uses [Co-op Translator](https://github.com/Azure/co-op-translator)."
+
+    prompt = generate_prompt_template("ja", "Japanese", document_chunk, False)
+
+    assert "STRUCTURE IS MORE IMPORTANT THAN STYLE." in prompt
+    assert "NEVER rewrite links as plain text" in prompt
+
+
+def test_generate_prompt_template_without_language_template_for_non_configured_language():
+    """Languages without a dedicated template should use the default prompt only."""
+    prompt = generate_prompt_template("ko", "Korean", "Test content", False)
+
+    assert "STRUCTURE IS MORE IMPORTANT THAN STYLE." not in prompt
+
+
 def test_count_links_in_markdown():
     """Test counting links in markdown content."""
     content = """

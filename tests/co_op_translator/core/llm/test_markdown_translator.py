@@ -65,6 +65,29 @@ def real_markdown_translator(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_generate_disclaimer_includes_markdown_safety_rules(real_markdown_translator):
+    """Disclaimer prompt should include minimal markdown-structure preservation rules."""
+
+    captured_prompts = []
+
+    async def fake_prompt(prompt, index, total):
+        captured_prompts.append(prompt)
+        return "Translated disclaimer"
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        result = await real_markdown_translator.generate_disclaimer("ja")
+
+    assert result == "Translated disclaimer"
+    assert len(captured_prompts) == 1
+    assert "Preserve Markdown syntax and tokens exactly as written" in captured_prompts[0]
+    assert "keep Markdown link structure [text](URL)" in captured_prompts[0]
+
+
+@pytest.mark.asyncio
 async def test_translate_markdown_partial_mock(real_markdown_translator, tmp_path):
     """Test the translation logic using the real code for:
     - replace_code_blocks

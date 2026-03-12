@@ -69,24 +69,33 @@ def normalize_cjk_emphasis_markers(
     cjk_adjacent_italic_star_pattern = re.compile(
         rf"(?P<left>[{CJK_CHAR_CLASS}])(?<!\*)\*(?P<text>[^\n*][^\n]*?)\*(?!\*)(?P<right>[{CJK_CHAR_CLASS}])"
     )
-    cjk_adjacent_italic_underscore_pattern = re.compile(
-        rf"(?P<left>[{CJK_CHAR_CLASS}])_(?P<text>[^\n_][^\n]*?)_(?P<right>[{CJK_CHAR_CLASS}])"
-    )
+    def _normalize_text_segment(segment: str) -> str:
+        segment = cjk_adjacent_bold_pattern.sub(
+            lambda m: f"{m.group('left')}<strong>{m.group('text')}</strong>{m.group('right')}",
+            segment,
+        )
+        segment = cjk_adjacent_italic_star_pattern.sub(
+            lambda m: f"{m.group('left')}<em>{m.group('text')}</em>{m.group('right')}",
+            segment,
+        )
+        return segment
 
-    content = cjk_adjacent_bold_pattern.sub(
-        lambda m: f"{m.group('left')}<strong>{m.group('text')}</strong>{m.group('right')}",
-        content,
-    )
-    content = cjk_adjacent_italic_star_pattern.sub(
-        lambda m: f"{m.group('left')}<em>{m.group('text')}</em>{m.group('right')}",
-        content,
-    )
-    content = cjk_adjacent_italic_underscore_pattern.sub(
-        lambda m: f"{m.group('left')}<em>{m.group('text')}</em>{m.group('right')}",
-        content,
-    )
+    # Skip inline code spans so literal examples are never rewritten.
+    output_parts: list[str] = []
+    cursor = 0
+    inline_code_pattern = re.compile(r"(`+)([^`\n]|`(?!\1))*?\1")
 
-    return content
+    for match in inline_code_pattern.finditer(content):
+        start, end = match.span()
+        if start > cursor:
+            output_parts.append(_normalize_text_segment(content[cursor:start]))
+        output_parts.append(content[start:end])
+        cursor = end
+
+    if cursor < len(content):
+        output_parts.append(_normalize_text_segment(content[cursor:]))
+
+    return "".join(output_parts)
 
 
 def generate_prompt_template(

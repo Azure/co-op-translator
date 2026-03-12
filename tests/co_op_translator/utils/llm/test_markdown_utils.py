@@ -12,6 +12,7 @@ from co_op_translator.utils.llm.markdown_utils import (
     count_links_in_markdown,
     split_markdown_content,
     update_notebook_links,
+    normalize_cjk_emphasis_markers,
 )
 
 
@@ -187,6 +188,43 @@ def test_split_markdown_content_keeps_list_item_with_code_placeholder():
 
     assert len(chunks) >= 1
     assert any("- Step 1" in chunk and "@@CODE_BLOCK_0@@" in chunk for chunk in chunks)
+
+
+def test_normalize_cjk_emphasis_markers_for_italic_and_bold():
+    """CJK-adjacent emphasis markers should be normalized to HTML tags."""
+    content = "これは*重要*です。これは**太字**です。"
+
+    normalized = normalize_cjk_emphasis_markers(content)
+
+    assert "これは<em>重要</em>です" in normalized
+    assert "これは<strong>太字</strong>です" in normalized
+
+
+def test_normalize_cjk_emphasis_markers_keeps_non_cjk_markdown_emphasis():
+    """Non-CJK emphasis formatting should remain unchanged."""
+    content = "This is *important* and **bold** text."
+
+    normalized = normalize_cjk_emphasis_markers(content)
+
+    assert normalized == content
+
+
+def test_normalize_cjk_emphasis_markers_skips_non_cjk_target_language():
+    """Normalization should not run when target language is not CJK."""
+    content = "これは*重要*です。これは**太字**です。"
+
+    normalized = normalize_cjk_emphasis_markers(content, language_code="fr")
+
+    assert normalized == content
+
+
+def test_normalize_cjk_emphasis_markers_runs_for_zh_regional_codes():
+    """Normalization should run for regional Chinese codes (e.g., zh-TW)."""
+    content = "這是*重點*。"
+
+    normalized = normalize_cjk_emphasis_markers(content, language_code="zh-TW")
+
+    assert "這是<em>重點</em>。" == normalized
 
 
 @pytest.fixture

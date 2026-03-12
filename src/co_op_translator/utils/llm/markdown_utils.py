@@ -23,11 +23,70 @@ from co_op_translator.utils.common.file_utils import (
     get_filename_and_extension,
     map_original_to_translated,
 )
+from co_op_translator.utils.common.lang_utils import normalize_language_code
 
 logger = logging.getLogger(__name__)
 
 
 SPLIT_DELIMITER = "\n\n===SYSTEM_USER_SPLIT===\n\n"
+
+CJK_CHAR_CLASS = r"\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af"
+CJK_EMPHASIS_LANGUAGE_PREFIXES = ("ja", "ko", "zh")
+
+
+def normalize_cjk_emphasis_markers(
+    content: str,
+    language_code: str | None = None,
+    enabled_language_prefixes: tuple[str, ...] = CJK_EMPHASIS_LANGUAGE_PREFIXES,
+) -> str:
+    """Normalize emphasis markup around CJK text for renderer compatibility.
+
+    Some Markdown renderers fail to apply `*`/`**` emphasis when delimiters are
+    directly adjacent to CJK characters. To preserve visual intent without adding
+    visible spaces, convert those cases into equivalent HTML tags.
+
+    Args:
+        content: Markdown text that may include emphasis markers near CJK chars.
+        language_code: Optional translation target language code.
+        enabled_language_prefixes: Language prefixes where normalization is enabled.
+
+    Returns:
+        Markdown text with CJK-adjacent emphasis markers converted to HTML tags.
+    """
+
+    if language_code:
+        normalized_language = normalize_language_code(language_code).lower()
+        if not any(
+            normalized_language == prefix
+            or normalized_language.startswith(f"{prefix}-")
+            for prefix in enabled_language_prefixes
+        ):
+            return content
+
+    cjk_adjacent_bold_pattern = re.compile(
+        rf"(?P<left>[{CJK_CHAR_CLASS}])\*\*(?P<text>[^\n*][^\n]*?)\*\*(?P<right>[{CJK_CHAR_CLASS}])"
+    )
+    cjk_adjacent_italic_star_pattern = re.compile(
+        rf"(?P<left>[{CJK_CHAR_CLASS}])(?<!\*)\*(?P<text>[^\n*][^\n]*?)\*(?!\*)(?P<right>[{CJK_CHAR_CLASS}])"
+    )
+    cjk_adjacent_italic_underscore_pattern = re.compile(
+        rf"(?P<left>[{CJK_CHAR_CLASS}])_(?P<text>[^\n_][^\n]*?)_(?P<right>[{CJK_CHAR_CLASS}])"
+    )
+
+    content = cjk_adjacent_bold_pattern.sub(
+        lambda m: f"{m.group('left')}<strong>{m.group('text')}</strong>{m.group('right')}",
+        content,
+    )
+    content = cjk_adjacent_italic_star_pattern.sub(
+        lambda m: f"{m.group('left')}<em>{m.group('text')}</em>{m.group('right')}",
+        content,
+    )
+    content = cjk_adjacent_italic_underscore_pattern.sub(
+        lambda m: f"{m.group('left')}<em>{m.group('text')}</em>{m.group('right')}",
+        content,
+    )
+
+    return content
 
 
 def generate_prompt_template(

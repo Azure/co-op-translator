@@ -85,6 +85,8 @@ async def test_generate_disclaimer_includes_markdown_safety_rules(real_markdown_
     assert len(captured_prompts) == 1
     assert "Preserve Markdown syntax and tokens exactly as written" in captured_prompts[0]
     assert "keep Markdown link structure [text](URL)" in captured_prompts[0]
+    assert "Japanese mode: preserve Markdown tokens strictly." in captured_prompts[0]
+    assert "NEVER rewrite links as plain text" in captured_prompts[0]
 
 
 @pytest.mark.asyncio

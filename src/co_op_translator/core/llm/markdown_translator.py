@@ -9,6 +9,7 @@ from co_op_translator.utils.llm.markdown_utils import (
     process_markdown,
     update_links,
     generate_prompt_template,
+    _read_language_prompt_template,
     replace_code_blocks,
     restore_code_blocks,
     SPLIT_DELIMITER,
@@ -257,6 +258,9 @@ class MarkdownTranslator(ABC):
             "Preserve Markdown syntax and tokens exactly as written; "
             "if links are present, keep Markdown link structure [text](URL) and do not rewrite links as plain text."
         )
+        language_template = _read_language_prompt_template(output_lang)
+        if language_template:
+            system_text += f"\n\n{language_template}"
         user_text = template_text
         disclaimer_prompt = system_text + SPLIT_DELIMITER + user_text
 

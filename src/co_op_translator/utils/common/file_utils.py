@@ -124,8 +124,13 @@ def update_readme_languages_table(
             else f"{repo_url_value}.git"
         )
 
-        # Handle `<repo_url>.git` first to avoid double-appending `.git`
+        # Handle `<repo_url>` placeholders before appending repo name snippets
         template = template.replace("<repo_url>.git", repo_url_with_git)
+        template = template.replace("<repo_url>", repo_url_value)
+
+        # Replace generic GitHub snippet placeholders when present in template
+        template = template.replace("https://github.com/*****.git", repo_url_with_git)
+
         try:
             tail = repo_url_without_git.rstrip("/").split("/")[-1]
             repo_name_value = tail[:-4] if tail.endswith(".git") else tail

@@ -646,10 +646,11 @@ class TranslationManager:
         all_errors = []
 
         try:
+            rename_map: dict[str, str] = {}
+            migrated_image_count = 0
+
             if "images" in self.translation_types:
                 # Migrate legacy translated image filenames and update markdown/notebook links
-                rename_map: dict[str, str] = {}
-                migrated_image_count = 0
 
                 try:
                     rename_map = migrate_translated_image_filenames(
@@ -705,6 +706,38 @@ class TranslationManager:
                 logger.info(
                     "Skipping translated image migration because image translation is disabled"
                 )
+
+            try:
+                # Always run link migration to rewrite legacy flattened links in content,
+                # even when no files were moved (empty rename_map)
+                migrated_md = self.directory_manager.migrate_markdown_image_links(
+                    rename_map
+                )
+                migrated_nb = self.directory_manager.migrate_notebook_image_links(
+                    rename_map
+                )
+                logger.info(
+                    "Migrated %d image files and updated %d markdown and %d notebook files",
+                    migrated_image_count,
+                    migrated_md,
+                    migrated_nb,
+                )
+            except Exception as e:
+                logger.warning(f"Image link migration skipped: {e}")
+
+            # As a safety net, canonicalize any remaining alias-based language dir segments in links
+            try:
+                md_fix, nb_fix = canonicalize_image_links_in_translations(
+                    self.translations_dir, self.image_dir
+                )
+                if md_fix or nb_fix:
+                    logger.info(
+                        "Canonicalized image links in %d markdown and %d notebooks",
+                        md_fix,
+                        nb_fix,
+                    )
+            except Exception as e:
+                logger.warning(f"Image link canonicalization skipped: {e}")
 
             # Clean up files no longer needed in target directories
             logger.info("Removing orphaned files...")

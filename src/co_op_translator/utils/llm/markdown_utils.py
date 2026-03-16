@@ -8,6 +8,7 @@ import os
 import re
 import tiktoken
 from pathlib import Path
+from importlib import resources
 from urllib.parse import urlparse
 import logging
 from markdown_it import MarkdownIt
@@ -194,6 +195,32 @@ def normalize_cjk_emphasis_markers(
     return "".join(output_parts)
 
 
+def _read_language_prompt_template(language_code: str) -> str:
+    """Read a language-specific prompt template from packaged templates.
+
+    Looks for `co_op_translator/templates/language/<language_code>.md`.
+    Returns an empty string if not found or unreadable.
+    """
+
+    normalized_code = language_code.lower().strip()
+    template_name = f"{normalized_code}.md"
+
+    try:
+        template_file = (
+            resources.files("co_op_translator.templates")
+            .joinpath("language")
+            .joinpath(template_name)
+        )
+        return template_file.read_text(encoding="utf-8").strip()
+    except FileNotFoundError:
+        return ""
+    except Exception:
+        logger.warning(
+            "Failed to read language prompt template '%s'", template_name, exc_info=True
+        )
+        return ""
+
+
 def generate_prompt_template(
     language_code: str, language_name: str, document_chunk: str, is_rtl: bool
 ) -> str:
@@ -233,6 +260,10 @@ def generate_prompt_template(
         prompt += "Please write the output from right to left, respecting that this is a right-to-left language.\n"
     else:
         prompt += "Please write the output from left to right.\n"
+
+    language_template = _read_language_prompt_template(language_code)
+    if language_template:
+        prompt += f"\n{language_template}\n"
 
     # Explicit delimiter between system rules and user content
     prompt += SPLIT_DELIMITER

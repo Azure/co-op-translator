@@ -246,6 +246,16 @@ def test_normalize_cjk_emphasis_markers_skips_inline_code_spans():
     assert "本文の漢<em>字</em>語" in normalized
 
 
+def test_normalize_cjk_emphasis_markers_skips_multibacktick_inline_code_spans():
+    """Inline code with multi-backtick delimiters should also be preserved."""
+    content = "説明 ``漢`*字*`語`` と本文の漢*字*語"
+
+    normalized = normalize_cjk_emphasis_markers(content, language_code="ja")
+
+    assert "``漢`*字*`語``" in normalized
+    assert "本文の漢<em>字</em>語" in normalized
+
+
 @pytest.fixture
 def complex_dir_structure(tmp_path):
     """Create a more complex directory structure for testing nested paths."""

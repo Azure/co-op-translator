@@ -34,6 +34,68 @@ CJK_CHAR_CLASS = r"\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\u
 CJK_EMPHASIS_LANGUAGE_PREFIXES = ("ja", "ko", "zh")
 
 
+def _collect_inline_code_spans_with_markdown_ast(content: str) -> list[tuple[int, int]]:
+    """Collect absolute character ranges for inline code spans using Markdown AST context."""
+    md = MarkdownIt("commonmark")
+    tokens = md.parse(content)
+
+    lines = content.splitlines(keepends=True)
+    offsets = [0]
+    for ln in lines:
+        offsets.append(offsets[-1] + len(ln))
+
+    inline_spans: list[tuple[int, int]] = []
+
+    for tok in tokens:
+        if tok.type != "inline" or not tok.map or not tok.children:
+            continue
+
+        if not any(child.type == "code_inline" for child in tok.children):
+            continue
+
+        start_line, end_line = tok.map
+        seg_start = offsets[start_line]
+        seg_end = offsets[end_line]
+        segment = content[seg_start:seg_end]
+
+        idx = 0
+        while idx < len(segment):
+            if segment[idx] != "`":
+                idx += 1
+                continue
+
+            open_len = 1
+            while idx + open_len < len(segment) and segment[idx + open_len] == "`":
+                open_len += 1
+
+            close_idx = idx + open_len
+            while close_idx < len(segment):
+                if segment[close_idx] != "`":
+                    close_idx += 1
+                    continue
+
+                run_len = 1
+                while (
+                    close_idx + run_len < len(segment)
+                    and segment[close_idx + run_len] == "`"
+                ):
+                    run_len += 1
+
+                if run_len == open_len:
+                    inline_spans.append(
+                        (seg_start + idx, seg_start + close_idx + run_len)
+                    )
+                    idx = close_idx + run_len
+                    break
+
+                close_idx += run_len
+            else:
+                idx += open_len
+
+    inline_spans.sort(key=lambda x: x[0])
+    return inline_spans
+
+
 def normalize_cjk_emphasis_markers(
     content: str,
     language_code: str | None = None,
@@ -81,12 +143,12 @@ def normalize_cjk_emphasis_markers(
         return segment
 
     # Skip inline code spans so literal examples are never rewritten.
+    # Use markdown-it AST to scope scanning to inline regions.
     output_parts: list[str] = []
     cursor = 0
-    inline_code_pattern = re.compile(r"(`+)([^`\n]|`(?!\1))*?\1")
+    inline_code_spans = _collect_inline_code_spans_with_markdown_ast(content)
 
-    for match in inline_code_pattern.finditer(content):
-        start, end = match.span()
+    for start, end in inline_code_spans:
         if start > cursor:
             output_parts.append(_normalize_text_segment(content[cursor:start]))
         output_parts.append(content[start:end])

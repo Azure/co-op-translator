@@ -33,7 +33,9 @@ SPLIT_DELIMITER = "\n\n===SYSTEM_USER_SPLIT===\n\n"
 CJK_CHAR_CLASS = r"\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af"
 CJK_EMPHASIS_LANGUAGE_PREFIXES = ("ja", "ko", "zh")
 
-_EMPHASIS_INNER_TEXT_PATTERN = r"[^\n*][^\n]*?"
+# Inner emphasis text must not contain '*' so a match cannot bleed into
+# neighboring emphasis regions.
+_EMPHASIS_INNER_TEXT_PATTERN = r"[^\n*]+?"
 _CJK_ONE_SIDED_TRIPLE_ASTERISK_PATTERN = re.compile(
     rf"(?:"
     rf"(?P<left>[{CJK_CHAR_CLASS}])\*\*\*(?P<text_left>{_EMPHASIS_INNER_TEXT_PATTERN})\*\*\*"

@@ -32,39 +32,49 @@ SPLIT_DELIMITER = "\n\n===SYSTEM_USER_SPLIT===\n\n"
 
 CJK_CHAR_CLASS = r"\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af"
 CJK_EMPHASIS_LANGUAGE_PREFIXES = ("ja", "ko", "zh")
+_CJK_CHAR_RE = re.compile(rf"[{CJK_CHAR_CLASS}]")
+_CJK_FULL_TEXT_RE = re.compile(rf"^[{CJK_CHAR_CLASS}]+$")
 
 # Inner emphasis text must not contain '*' so a match cannot bleed into
 # neighboring emphasis regions.
 _EMPHASIS_INNER_TEXT_PATTERN = r"[^\n*]+?"
-_CJK_ONE_SIDED_TRIPLE_ASTERISK_PATTERN = re.compile(
-    rf"(?:"
-    rf"(?P<left>[{CJK_CHAR_CLASS}])\*\*\*(?P<text_left>{_EMPHASIS_INNER_TEXT_PATTERN})\*\*\*"
-    rf"|"
-    rf"\*\*\*(?P<text_right>{_EMPHASIS_INNER_TEXT_PATTERN})\*\*\*(?P<right>[{CJK_CHAR_CLASS}])"
-    rf")"
-)
-_CJK_ONE_SIDED_DOUBLE_ASTERISK_PATTERN = re.compile(
-    rf"(?:"
-    rf"(?P<left>[{CJK_CHAR_CLASS}])\*\*(?P<text_left>{_EMPHASIS_INNER_TEXT_PATTERN})\*\*"
-    rf"|"
-    rf"\*\*(?P<text_right>{_EMPHASIS_INNER_TEXT_PATTERN})\*\*(?P<right>[{CJK_CHAR_CLASS}])"
-    rf")"
-)
-_CJK_ONE_SIDED_SINGLE_ASTERISK_PATTERN = re.compile(
-    rf"(?:"
-    rf"(?P<left>[{CJK_CHAR_CLASS}])(?<!\*)\*(?P<text_left>{_EMPHASIS_INNER_TEXT_PATTERN})\*(?!\*)"
-    rf"|"
-    rf"(?<!\*)\*(?P<text_right>{_EMPHASIS_INNER_TEXT_PATTERN})\*(?!\*)(?P<right>[{CJK_CHAR_CLASS}])"
-    rf")"
-)
 
 
-def _replace_emphasis_match(match: re.Match[str], inner_html: str) -> str:
-    """Build replacement preserving optional CJK boundary chars."""
-    left = match.group("left") or ""
-    right = match.group("right") or ""
-    text = match.group("text_left") or match.group("text_right") or ""
-    return f"{left}{inner_html.format(text=text)}{right}"
+def _build_cjk_emphasis_pattern(delim: str) -> re.Pattern[str]:
+    escaped = re.escape(delim)
+    return re.compile(
+        rf"(?<!\*){escaped}(?P<text>{_EMPHASIS_INNER_TEXT_PATTERN}){escaped}(?!\*)"
+    )
+
+
+_CJK_EMPHASIS_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (_build_cjk_emphasis_pattern("***"), "<strong><em>{text}</em></strong>"),
+    (_build_cjk_emphasis_pattern("**"), "<strong>{text}</strong>"),
+    (_build_cjk_emphasis_pattern("*"), "<em>{text}</em>"),
+]
+
+
+def _apply_cjk_emphasis_pattern(
+    segment: str, pattern: re.Pattern[str], html_template: str
+) -> str:
+    def _replace(match: re.Match[str]) -> str:
+        inner_text = match.group("text")
+        if not inner_text:
+            return match.group(0)
+
+        source = match.string
+        start, end = match.span()
+        left_char = source[start - 1] if start > 0 else ""
+        right_char = source[end] if end < len(source) else ""
+        left_is_cjk = bool(_CJK_CHAR_RE.fullmatch(left_char))
+        right_is_cjk = bool(_CJK_CHAR_RE.fullmatch(right_char))
+        pure_cjk_inner = bool(_CJK_FULL_TEXT_RE.fullmatch(inner_text))
+
+        if left_is_cjk or right_is_cjk or pure_cjk_inner:
+            return html_template.format(text=inner_text)
+        return match.group(0)
+
+    return pattern.sub(_replace, segment)
 
 
 def _collect_inline_code_spans_with_markdown_ast(content: str) -> list[tuple[int, int]]:
@@ -162,20 +172,8 @@ def normalize_cjk_emphasis_markers(
         return content
 
     def _normalize_text_segment(segment: str) -> str:
-        segment = _CJK_ONE_SIDED_TRIPLE_ASTERISK_PATTERN.sub(
-            lambda m: _replace_emphasis_match(
-                m, "<strong><em>{text}</em></strong>"
-            ),
-            segment,
-        )
-        segment = _CJK_ONE_SIDED_DOUBLE_ASTERISK_PATTERN.sub(
-            lambda m: _replace_emphasis_match(m, "<strong>{text}</strong>"),
-            segment,
-        )
-        segment = _CJK_ONE_SIDED_SINGLE_ASTERISK_PATTERN.sub(
-            lambda m: _replace_emphasis_match(m, "<em>{text}</em>"),
-            segment,
-        )
+        for pattern, html_template in _CJK_EMPHASIS_PATTERNS:
+            segment = _apply_cjk_emphasis_pattern(segment, pattern, html_template)
         return segment
 
     # Skip inline code spans so literal examples are never rewritten.
@@ -338,24 +336,29 @@ def split_markdown_content(content: str, max_tokens: int, tokenizer) -> list:
                         current_length = 0
 
                         if line_tokens > max_tokens:
-                            words = line.split()
-                            word_chunk = []
-                            word_chunk_tokens = 0
+                            if "@@CODE_BLOCK" in line or "@@INLINE_CODE" in line:
+                                chunks.append(line)
+                            else:
+                                words = line.split()
+                                word_chunk = []
+                                word_chunk_tokens = 0
 
-                            for word in words:
-                                word_with_space = word + " "
-                                word_tokens = count_tokens(word_with_space, tokenizer)
+                                for word in words:
+                                    word_with_space = word + " "
+                                    word_tokens = count_tokens(
+                                        word_with_space, tokenizer
+                                    )
 
-                                if word_chunk_tokens + word_tokens <= max_tokens:
-                                    word_chunk.append(word_with_space)
-                                    word_chunk_tokens += word_tokens
-                                else:
+                                    if word_chunk_tokens + word_tokens <= max_tokens:
+                                        word_chunk.append(word_with_space)
+                                        word_chunk_tokens += word_tokens
+                                    else:
+                                        chunks.append("".join(word_chunk))
+                                        word_chunk = [word_with_space]
+                                        word_chunk_tokens = word_tokens
+
+                                if word_chunk:
                                     chunks.append("".join(word_chunk))
-                                    word_chunk = [word_with_space]
-                                    word_chunk_tokens = word_tokens
-
-                            if word_chunk:
-                                chunks.append("".join(word_chunk))
                         else:
                             current_chunk = [line]
                             current_length = line_tokens
@@ -397,7 +400,9 @@ def _group_lines_preserving_list_items(text: str) -> list[str]:
                     idx += 1
                     continue
 
-                if next_line.startswith((" ", "\t")) or list_item_pattern.match(next_line):
+                if next_line.startswith((" ", "\t")) or list_item_pattern.match(
+                    next_line
+                ):
                     block.append(next_line)
                     idx += 1
                     continue

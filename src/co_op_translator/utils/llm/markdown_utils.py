@@ -125,20 +125,37 @@ def normalize_cjk_emphasis_markers(
         ):
             return content
 
-    cjk_adjacent_bold_pattern = re.compile(
-        rf"(?P<left>[{CJK_CHAR_CLASS}])\*\*(?P<text>[^\n*][^\n]*?)\*\*(?P<right>[{CJK_CHAR_CLASS}])"
+    cjk_adjacent_or_one_sided_bold_pattern = re.compile(
+        rf"(?:"
+        rf"(?P<left>[{CJK_CHAR_CLASS}])\*\*(?P<text_left>[^\n*][^\n]*?)\*\*"
+        rf"|"
+        rf"\*\*(?P<text_right>[^\n*][^\n]*?)\*\*(?P<right>[{CJK_CHAR_CLASS}])"
+        rf")"
     )
-    cjk_adjacent_italic_star_pattern = re.compile(
-        rf"(?P<left>[{CJK_CHAR_CLASS}])(?<!\*)\*(?P<text>[^\n*][^\n]*?)\*(?!\*)(?P<right>[{CJK_CHAR_CLASS}])"
+    cjk_adjacent_or_one_sided_italic_star_pattern = re.compile(
+        rf"(?:"
+        rf"(?P<left>[{CJK_CHAR_CLASS}])(?<!\*)\*(?P<text_left>[^\n*][^\n]*?)\*(?!\*)"
+        rf"|"
+        rf"(?<!\*)\*(?P<text_right>[^\n*][^\n]*?)\*(?!\*)(?P<right>[{CJK_CHAR_CLASS}])"
+        rf")"
     )
+
+    def _replace_bold(match: re.Match[str]) -> str:
+        left = match.group("left") or ""
+        right = match.group("right") or ""
+        text = match.group("text_left") or match.group("text_right") or ""
+        return f"{left}<strong>{text}</strong>{right}"
+
+    def _replace_italic(match: re.Match[str]) -> str:
+        left = match.group("left") or ""
+        right = match.group("right") or ""
+        text = match.group("text_left") or match.group("text_right") or ""
+        return f"{left}<em>{text}</em>{right}"
+
     def _normalize_text_segment(segment: str) -> str:
-        segment = cjk_adjacent_bold_pattern.sub(
-            lambda m: f"{m.group('left')}<strong>{m.group('text')}</strong>{m.group('right')}",
-            segment,
-        )
-        segment = cjk_adjacent_italic_star_pattern.sub(
-            lambda m: f"{m.group('left')}<em>{m.group('text')}</em>{m.group('right')}",
-            segment,
+        segment = cjk_adjacent_or_one_sided_bold_pattern.sub(_replace_bold, segment)
+        segment = cjk_adjacent_or_one_sided_italic_star_pattern.sub(
+            _replace_italic, segment
         )
         return segment
 

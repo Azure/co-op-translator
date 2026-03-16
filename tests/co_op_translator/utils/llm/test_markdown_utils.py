@@ -227,6 +227,17 @@ def test_normalize_cjk_emphasis_markers_runs_for_zh_regional_codes():
     assert "這是<em>重點</em>。" == normalized
 
 
+def test_normalize_cjk_emphasis_markers_converts_one_sided_cjk_boundaries():
+    """Emphasis should normalize when either left or right boundary is CJK."""
+    content = "Start **太字** and *強調*です。次にこれは**Bold** end。"
+
+    normalized = normalize_cjk_emphasis_markers(content, language_code="ja")
+
+    assert "<strong>太字</strong>" in normalized
+    assert "<em>強調</em>です" in normalized
+    assert "これは<strong>Bold</strong>" in normalized
+
+
 def test_normalize_cjk_emphasis_markers_does_not_convert_underscore_patterns():
     """Underscore-delimited fragments should remain unchanged to avoid identifier mutations."""
     content = "変数_name_を確認します。"

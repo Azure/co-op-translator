@@ -227,6 +227,25 @@ def test_normalize_cjk_emphasis_markers_runs_for_zh_regional_codes():
     assert "這是<em>重點</em>。" == normalized
 
 
+def test_normalize_cjk_emphasis_markers_converts_bold_italic_triple_asterisk():
+    """Triple-asterisk emphasis should convert to combined strong+em tags."""
+    content = "これは***重要***です。"
+
+    normalized = normalize_cjk_emphasis_markers(content, language_code="ja")
+
+    assert "これは<strong><em>重要</em></strong>です。" == normalized
+
+
+def test_normalize_cjk_emphasis_markers_converts_one_sided_bold_italic_boundaries():
+    """Triple-asterisk emphasis should normalize with one-sided CJK boundaries."""
+    content = "Start ***重要*** and これは***Configure*** end。"
+
+    normalized = normalize_cjk_emphasis_markers(content, language_code="ja")
+
+    assert "<strong><em>重要</em></strong>" in normalized
+    assert "これは<strong><em>Configure</em></strong>" in normalized
+
+
 def test_normalize_cjk_emphasis_markers_converts_one_sided_cjk_boundaries():
     """Emphasis should normalize when either left or right boundary is CJK."""
     content = "Start **太字** and *強調*です。次にこれは**Bold** end。"

@@ -320,7 +320,7 @@ def test_normalize_internal_anchor_links_does_not_change_translated_headings():
     assert "## Section One" not in result
 
 
-def test_normalize_internal_anchor_links_skips_when_link_count_differs():
+def test_normalize_internal_anchor_links_handles_missing_links_without_positional_mapping():
     source = """## A
 ## B
 
@@ -335,7 +335,29 @@ def test_normalize_internal_anchor_links_skips_when_link_count_differs():
 
     result = normalize_internal_anchor_links(source, translated)
 
-    assert result == translated
+    assert "(#에이)" in result
+    assert "- [에이](#a)" not in result
+
+
+def test_normalize_internal_anchor_links_handles_reordered_toc_links():
+    source = """## A
+## B
+
+- [A](#a)
+- [B](#b)
+"""
+    translated = """## 에이
+## 비
+
+- [비](#b)
+- [에이](#a)
+"""
+
+    result = normalize_internal_anchor_links(source, translated)
+
+    # Reordered links should still map to their own translated headings.
+    assert "- [비](#비)" in result
+    assert "- [에이](#에이)" in result
 
 
 def test_normalize_internal_anchor_links_matches_translated_headings():

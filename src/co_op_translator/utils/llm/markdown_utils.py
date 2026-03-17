@@ -665,33 +665,20 @@ def normalize_internal_anchor_links(
     source_slug_to_index = {slug: idx for idx, (_, slug) in enumerate(source_headings)}
     translated_slugs = [slug for _, slug in translated_headings]
 
-    source_link_pattern = re.compile(r"\[[^\]]+\]\(#([^\)]+)\)")
-    source_link_target_indexes: list[int | None] = []
-    for match in source_link_pattern.finditer(source_markdown):
-        source_fragment = unquote(match.group(1)).strip().lower()
-        source_link_target_indexes.append(source_slug_to_index.get(source_fragment))
-
     translated_link_pattern = re.compile(r"(\[[^\]]+\]\(#)([^\)]+)(\))")
-    translated_link_matches = list(
-        translated_link_pattern.finditer(translated_markdown)
-    )
-
-    # Safety guard: if chunk translation changed number/order of links,
-    # skip normalization to avoid rewriting unrelated fragments.
-    if len(source_link_target_indexes) != len(translated_link_matches):
-        return translated_markdown
-
-    link_index = 0
 
     def _replace_fragment(match: re.Match[str]) -> str:
-        nonlocal link_index
-        target_index = source_link_target_indexes[link_index]
-        link_index += 1
+        current_fragment = unquote(match.group(2)).strip().lower()
+        source_target_index = source_slug_to_index.get(current_fragment)
 
-        if target_index is None or target_index >= len(translated_slugs):
+        # If the translated link is no longer using the source fragment,
+        # keep it untouched instead of doing positional remapping.
+        if source_target_index is None or source_target_index >= len(translated_slugs):
             return match.group(0)
 
-        return f"{match.group(1)}{translated_slugs[target_index]}{match.group(3)}"
+        return (
+            f"{match.group(1)}{translated_slugs[source_target_index]}{match.group(3)}"
+        )
 
     return translated_link_pattern.sub(_replace_fragment, translated_markdown)
 

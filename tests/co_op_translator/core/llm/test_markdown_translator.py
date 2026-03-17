@@ -50,6 +50,19 @@ TEST_MD_WITH_DETAILS = """
 """
 
 
+TEST_MD_WITH_INTERNAL_LINK_IN_CODE = """
+# Sample
+
+- [Section One](#section-one)
+
+## Section One
+
+```md
+[Example](#section-one)
+```
+"""
+
+
 class ConcreteMarkdownTranslator(MarkdownTranslator):
     """A concrete implementation of MarkdownTranslator for testing."""
 
@@ -65,7 +78,9 @@ def real_markdown_translator(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_generate_disclaimer_includes_markdown_safety_rules(real_markdown_translator):
+async def test_generate_disclaimer_includes_markdown_safety_rules(
+    real_markdown_translator,
+):
     """Disclaimer prompt should include minimal markdown-structure preservation rules."""
 
     captured_prompts = []
@@ -83,7 +98,9 @@ async def test_generate_disclaimer_includes_markdown_safety_rules(real_markdown_
 
     assert result == "Translated disclaimer"
     assert len(captured_prompts) == 1
-    assert "Preserve Markdown syntax and tokens exactly as written" in captured_prompts[0]
+    assert (
+        "Preserve Markdown syntax and tokens exactly as written" in captured_prompts[0]
+    )
     assert "keep Markdown link structure [text](URL)" in captured_prompts[0]
     assert "Japanese mode: preserve Markdown tokens strictly." in captured_prompts[0]
     assert "NEVER rewrite links as plain text" in captured_prompts[0]
@@ -307,6 +324,49 @@ async def test_translate_markdown_preserves_details_blocks(
     # The shell code block content should still be present after
     # placeholder replacement and restoration.
     assert "npm install @modelcontextprotocol/sdk zod" in result
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_keeps_internal_links_inside_code_blocks_unchanged(
+    real_markdown_translator, tmp_path
+):
+    """Internal-link normalization must not mutate markdown shown inside code blocks."""
+    test_file = tmp_path / "example_internal_links_in_code.md"
+    test_file.write_text(TEST_MD_WITH_INTERNAL_LINK_IN_CODE)
+
+    async def fake_prompt(prompt, index, total):
+        if "Disclaimer" in prompt.lower():
+            return "Aviso Legal: Este es un documento traducido."
+
+        if "# Sample" in prompt:
+            placeholder_match = re.search(r"@@CODE_BLOCK_\d+@@", prompt)
+            code_placeholder = placeholder_match.group(0) if placeholder_match else ""
+            return """# 샘플
+
+- [섹션 1](#section-one)
+
+## 섹션 1
+
+{code_placeholder}
+""".format(
+                code_placeholder=code_placeholder
+            )
+
+        return prompt
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        result = await real_markdown_translator.translate_markdown(
+            document=TEST_MD_WITH_INTERNAL_LINK_IN_CODE,
+            language_code="ko",
+            md_file_path=test_file,
+        )
+
+    assert "- [섹션 1](#섹션-1)" in result
+    assert "```md\n[Example](#section-one)\n```" in result
 
 
 @pytest.mark.asyncio

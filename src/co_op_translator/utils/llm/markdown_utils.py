@@ -622,20 +622,19 @@ def _extract_headings_with_slugs(markdown: str) -> list[tuple[str, str]]:
     """Extract headings and generated unique slugs from markdown content."""
     headings: list[tuple[str, str]] = []
     slug_counts: dict[str, int] = {}
-    in_fence = False
+    tokens = MarkdownIt("commonmark").parse(markdown)
 
-    for line in markdown.splitlines():
-        if re.match(r"^\s*```", line):
-            in_fence = not in_fence
-            continue
-        if in_fence:
+    for index, token in enumerate(tokens):
+        if token.type != "heading_open":
             continue
 
-        match = re.match(r"^\s{0,3}(#{1,6})\s+(.+?)\s*$", line)
-        if not match:
+        if index + 1 >= len(tokens):
+            continue
+        inline_token = tokens[index + 1]
+        if inline_token.type != "inline":
             continue
 
-        heading_text = re.sub(r"\s+#+\s*$", "", match.group(2)).strip()
+        heading_text = inline_token.content.strip()
         base_slug = _slugify_heading_text(heading_text)
         if not base_slug:
             continue
@@ -646,6 +645,28 @@ def _extract_headings_with_slugs(markdown: str) -> list[tuple[str, str]]:
         headings.append((heading_text, slug))
 
     return headings
+
+
+def _extract_internal_link_fragments(markdown: str) -> set[str]:
+    """Extract internal markdown-link fragments (without '#') using markdown-it AST."""
+    fragments: set[str] = set()
+    tokens = MarkdownIt("commonmark").parse(markdown)
+
+    for token in tokens:
+        if token.type != "inline" or not token.children:
+            continue
+
+        for child in token.children:
+            if child.type != "link_open":
+                continue
+
+            href = child.attrGet("href")
+            if not href or not href.startswith("#"):
+                continue
+
+            fragments.add(unquote(href[1:]).strip().lower())
+
+    return fragments
 
 
 def normalize_internal_anchor_links(
@@ -664,11 +685,17 @@ def normalize_internal_anchor_links(
 
     source_slug_to_index = {slug: idx for idx, (_, slug) in enumerate(source_headings)}
     translated_slugs = [slug for _, slug in translated_headings]
+    translated_internal_fragments = _extract_internal_link_fragments(
+        translated_markdown
+    )
 
     translated_link_pattern = re.compile(r"(\[[^\]]+\]\(#)([^\)]+)(\))")
 
     def _replace_fragment(match: re.Match[str]) -> str:
         current_fragment = unquote(match.group(2)).strip().lower()
+        if current_fragment not in translated_internal_fragments:
+            return match.group(0)
+
         source_target_index = source_slug_to_index.get(current_fragment)
 
         # If the translated link is no longer using the source fragment,

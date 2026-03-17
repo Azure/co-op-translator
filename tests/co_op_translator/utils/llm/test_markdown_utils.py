@@ -360,6 +360,29 @@ def test_normalize_internal_anchor_links_handles_reordered_toc_links():
     assert "- [에이](#에이)" in result
 
 
+def test_normalize_internal_anchor_links_ignores_headings_inside_fenced_code():
+    source = """## Real Section
+
+~~~md
+## Fake Section
+~~~
+
+- [Go](#real-section)
+"""
+    translated = """## 실제 섹션
+
+~~~md
+## 가짜 섹션
+~~~
+
+- [이동](#real-section)
+"""
+
+    result = normalize_internal_anchor_links(source, translated)
+
+    assert "- [이동](#실제-섹션)" in result
+
+
 def test_normalize_internal_anchor_links_matches_translated_headings():
     source = """# Fine-tune and Integrate custom Phi-3 models with Prompt flow
 

@@ -109,6 +109,25 @@ def test_update_untranslated_file_links(temp_dir, sample_markdown):
     assert "[link to text file]" in result  # Link text should remain unchanged
 
 
+def test_update_untranslated_file_links_skips_internal_anchor_links(temp_dir):
+    """Same-document anchor links should remain unchanged."""
+    md_file_path = temp_dir / "test.md"
+    md_file_path.touch()
+
+    translations_dir = temp_dir / "translations"
+    translations_dir.mkdir(exist_ok=True)
+    (translations_dir / "ko").mkdir(exist_ok=True)
+
+    test_markdown = "# Doc\n\n- [Section](#section-one)"
+
+    result = update_untranslated_file_links(
+        test_markdown, md_file_path, "ko", translations_dir, temp_dir
+    )
+
+    assert "[Section](#section-one)" in result
+    assert "../.." not in result
+
+
 def test_process_markdown():
     """Test processing markdown content into chunks."""
     content = "# Test\n" * 100  # Create large content

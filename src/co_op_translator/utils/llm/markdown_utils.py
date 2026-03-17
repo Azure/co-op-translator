@@ -1229,6 +1229,12 @@ def update_untranslated_file_links(
 
     for alt_text, link in file_matches:
         parsed_url = urlparse(link)
+
+        # Keep same-document anchors untouched (e.g., [Section](#section)).
+        if parsed_url.fragment and not parsed_url.path:
+            logger.info(f"Skipping internal anchor link {link}")
+            continue
+
         if (
             parsed_url.scheme in ("mailto", "http", "https")
             or "@" in link

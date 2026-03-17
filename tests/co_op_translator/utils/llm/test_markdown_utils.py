@@ -13,6 +13,7 @@ from co_op_translator.utils.llm.markdown_utils import (
     split_markdown_content,
     update_notebook_links,
     normalize_cjk_emphasis_markers,
+    normalize_internal_anchor_links,
 )
 
 
@@ -106,6 +107,25 @@ def test_update_untranslated_file_links(temp_dir, sample_markdown):
     # Verify that non-markdown, non-image links are updated with correct relative paths
     assert "../../docs/example.txt" in result  # Updated relative path
     assert "[link to text file]" in result  # Link text should remain unchanged
+
+
+def test_update_untranslated_file_links_skips_internal_anchor_links(temp_dir):
+    """Same-document anchor links should remain unchanged."""
+    md_file_path = temp_dir / "test.md"
+    md_file_path.touch()
+
+    translations_dir = temp_dir / "translations"
+    translations_dir.mkdir(exist_ok=True)
+    (translations_dir / "ko").mkdir(exist_ok=True)
+
+    test_markdown = "# Doc\n\n- [Section](#section-one)"
+
+    result = update_untranslated_file_links(
+        test_markdown, md_file_path, "ko", translations_dir, temp_dir
+    )
+
+    assert "[Section](#section-one)" in result
+    assert "../.." not in result
 
 
 def test_process_markdown():
@@ -301,6 +321,122 @@ def test_normalize_cjk_emphasis_markers_skips_multibacktick_inline_code_spans():
 
     assert "``漢`*字*`語``" in normalized
     assert "本文の漢<em>字</em>語" in normalized
+
+
+def test_normalize_internal_anchor_links_does_not_change_translated_headings():
+    source = """## Section One
+
+- [Go](#section-one)
+"""
+    translated = """## 섹션 하나
+
+- [이동](#section-one)
+"""
+
+    result = normalize_internal_anchor_links(source, translated)
+
+    assert "## 섹션 하나" in result
+    assert "## Section One" not in result
+
+
+def test_normalize_internal_anchor_links_handles_missing_links_without_positional_mapping():
+    source = """## A
+## B
+
+- [A](#a)
+- [B](#b)
+"""
+    translated = """## 에이
+## 비
+
+- [에이](#a)
+"""
+
+    result = normalize_internal_anchor_links(source, translated)
+
+    assert "(#에이)" in result
+    assert "- [에이](#a)" not in result
+
+
+def test_normalize_internal_anchor_links_handles_reordered_toc_links():
+    source = """## A
+## B
+
+- [A](#a)
+- [B](#b)
+"""
+    translated = """## 에이
+## 비
+
+- [비](#b)
+- [에이](#a)
+"""
+
+    result = normalize_internal_anchor_links(source, translated)
+
+    # Reordered links should still map to their own translated headings.
+    assert "- [비](#비)" in result
+    assert "- [에이](#에이)" in result
+
+
+def test_normalize_internal_anchor_links_ignores_headings_inside_fenced_code():
+    source = """## Real Section
+
+~~~md
+## Fake Section
+~~~
+
+- [Go](#real-section)
+"""
+    translated = """## 실제 섹션
+
+~~~md
+## 가짜 섹션
+~~~
+
+- [이동](#real-section)
+"""
+
+    result = normalize_internal_anchor_links(source, translated)
+
+    assert "- [이동](#실제-섹션)" in result
+
+
+def test_normalize_internal_anchor_links_matches_translated_headings():
+    source = """# Fine-tune and Integrate custom Phi-3 models with Prompt flow
+
+## Table of Contents
+
+1. [Scenario 1](#scenario-1-set-up-azure-resources-and-prepare-for-fine-tuning)
+1. [Scenario 2](#scenario-2-fine-tune-phi-3-model-and-deploy-in-azure-machine-learning-studio)
+
+## Scenario 1: Set up Azure resources and Prepare for fine-tuning
+text
+
+## Scenario 2: Fine-tune Phi-3 model and Deploy in Azure Machine Learning Studio
+text
+"""
+
+    translated = """# Phi-3 모델 파인튜닝 및 Prompt flow 통합
+
+## 목차
+
+1. [시나리오 1](#scenario-1-set-up-azure-resources-and-prepare-for-fine-tuning)
+1. [시나리오 2](#scenario-2-fine-tune-phi-3-model-and-deploy-in-azure-machine-learning-studio)
+
+## 시나리오 1: 파인튜닝 준비 및 Azure 리소스 구성
+내용
+
+## 시나리오 2: Phi-3 파인튜닝 및 Azure Machine Learning Studio 배포
+내용
+"""
+
+    result = normalize_internal_anchor_links(source, translated)
+
+    assert "(#시나리오-1-파인튜닝-준비-및-azure-리소스-구성)" in result
+    assert (
+        "(#시나리오-2-phi-3-파인튜닝-및-azure-machine-learning-studio-배포)" in result
+    )
 
 
 @pytest.fixture

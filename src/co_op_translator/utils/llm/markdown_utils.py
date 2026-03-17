@@ -9,7 +9,7 @@ import re
 import tiktoken
 from pathlib import Path
 from importlib import resources
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 import logging
 from markdown_it import MarkdownIt
 from co_op_translator.config.constants import (
@@ -604,6 +604,96 @@ def update_links(
     )
 
     return markdown_string
+
+
+def _slugify_heading_text(text: str) -> str:
+    """Create a GitHub-style anchor slug from heading text."""
+    text = re.sub(r"`([^`]*)`", r"\1", text)
+    text = re.sub(r"!?\[([^\]]+)\]\([^\)]+\)", r"\1", text)
+    text = re.sub(r"[*_~]", "", text)
+    text = text.strip().lower()
+    text = re.sub(r"\s+", "-", text)
+    text = re.sub(r"[^\w\-\u00C0-\uFFFF]", "", text)
+    text = re.sub(r"-+", "-", text).strip("-")
+    return text
+
+
+def _extract_headings_with_slugs(markdown: str) -> list[tuple[str, str]]:
+    """Extract headings and generated unique slugs from markdown content."""
+    headings: list[tuple[str, str]] = []
+    slug_counts: dict[str, int] = {}
+    in_fence = False
+
+    for line in markdown.splitlines():
+        if re.match(r"^\s*```", line):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+
+        match = re.match(r"^\s{0,3}(#{1,6})\s+(.+?)\s*$", line)
+        if not match:
+            continue
+
+        heading_text = re.sub(r"\s+#+\s*$", "", match.group(2)).strip()
+        base_slug = _slugify_heading_text(heading_text)
+        if not base_slug:
+            continue
+
+        count = slug_counts.get(base_slug, 0)
+        slug = f"{base_slug}-{count}" if count else base_slug
+        slug_counts[base_slug] = count + 1
+        headings.append((heading_text, slug))
+
+    return headings
+
+
+def normalize_internal_anchor_links(
+    source_markdown: str, translated_markdown: str
+) -> str:
+    """Align translated internal fragment links with translated heading slugs.
+
+    This function only rewrites fragment identifiers (the `#...` part of links).
+    Heading text in the translated document is never modified.
+    """
+    source_headings = _extract_headings_with_slugs(source_markdown)
+    translated_headings = _extract_headings_with_slugs(translated_markdown)
+
+    if not source_headings or not translated_headings:
+        return translated_markdown
+
+    source_slug_to_index = {slug: idx for idx, (_, slug) in enumerate(source_headings)}
+    translated_slugs = [slug for _, slug in translated_headings]
+
+    source_link_pattern = re.compile(r"\[[^\]]+\]\(#([^\)]+)\)")
+    source_link_target_indexes: list[int | None] = []
+    for match in source_link_pattern.finditer(source_markdown):
+        source_fragment = unquote(match.group(1)).strip().lower()
+        source_link_target_indexes.append(source_slug_to_index.get(source_fragment))
+
+    translated_link_pattern = re.compile(r"(\[[^\]]+\]\(#)([^\)]+)(\))")
+    translated_link_matches = list(
+        translated_link_pattern.finditer(translated_markdown)
+    )
+
+    # Safety guard: if chunk translation changed number/order of links,
+    # skip normalization to avoid rewriting unrelated fragments.
+    if len(source_link_target_indexes) != len(translated_link_matches):
+        return translated_markdown
+
+    link_index = 0
+
+    def _replace_fragment(match: re.Match[str]) -> str:
+        nonlocal link_index
+        target_index = source_link_target_indexes[link_index]
+        link_index += 1
+
+        if target_index is None or target_index >= len(translated_slugs):
+            return match.group(0)
+
+        return f"{match.group(1)}{translated_slugs[target_index]}{match.group(3)}"
+
+    return translated_link_pattern.sub(_replace_fragment, translated_markdown)
 
 
 def migrate_notebook_links(

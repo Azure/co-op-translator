@@ -166,3 +166,7 @@ ml:
 kn:
   name: "Kannada"
   font: "NotoSansKannada-Medium.ttf"
+km:
+  name: "Khmer"
+  font: "NotoSansKhmer-Medium.ttf"
+  

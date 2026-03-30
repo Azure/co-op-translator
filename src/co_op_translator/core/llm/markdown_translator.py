@@ -36,7 +36,7 @@ class MarkdownTranslator(ABC):
     Provides common utilities and abstract methods to be implemented by providers.
     """
 
-    TRANSLATION_TIMEOUT_SECONDS = 300  # Translation timeout in seconds
+    TRANSLATION_TIMEOUT_SECONDS = 1000  # Translation timeout in seconds
 
     def __init__(
         self,

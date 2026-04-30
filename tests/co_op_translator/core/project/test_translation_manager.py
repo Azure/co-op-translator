@@ -1,20 +1,73 @@
-import pytest
+import json
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+
 from co_op_translator.core.project.translation_manager import TranslationManager
+from co_op_translator.utils.common.metadata_utils import calculate_file_hash
+
+
+class FakeMarkdownTranslator:
+    def __init__(self):
+        self.calls = []
+
+    async def translate_markdown(self, document, language_code, file_path, **kwargs):
+        self.calls.append((document, language_code, Path(file_path), kwargs))
+        return f"# Translated {language_code}\n\n{document}"
+
+
+class FakeImageTranslator:
+    def __init__(self):
+        self.calls = []
+
+    def translate_image(self, image_path, language_code, image_dir, fast_mode=False):
+        self.calls.append((Path(image_path), language_code, Path(image_dir), fast_mode))
+        output_path = Path(image_dir) / language_code / Path(image_path).name
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_bytes(Path(image_path).read_bytes())
+        return output_path
+
+
+class FakeNotebookTranslator:
+    def __init__(self):
+        self.calls = []
+
+    async def translate_notebook(
+        self, file_path, language_code, use_translated_images=True, add_disclaimer=True
+    ):
+        self.calls.append(
+            (Path(file_path), language_code, use_translated_images, add_disclaimer)
+        )
+        notebook = json.loads(Path(file_path).read_text(encoding="utf-8"))
+        notebook.setdefault("metadata", {})["translated_to"] = language_code
+        return json.dumps(notebook)
 
 
 def _write_lang_metadata(lang_dir, data: dict) -> None:
-    import json
-
     lang_dir.mkdir(parents=True, exist_ok=True)
     (lang_dir / ".co-op-translator.json").write_text(
         json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
 
+def _write_notebook(path: Path, text: str = "# Notebook") -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "cells": [{"cell_type": "markdown", "metadata": {}, "source": [text]}],
+                "metadata": {},
+                "nbformat": 4,
+                "nbformat_minor": 5,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
 @pytest.fixture
 def temp_project_dir(tmp_path):
-    """Creates a temporary project directory structure."""
+    """Create a small source tree with markdown, notebook, and image inputs."""
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     (docs_dir / "test.md").write_text(
@@ -23,189 +76,143 @@ def temp_project_dir(tmp_path):
 
     images_dir = tmp_path / "images"
     images_dir.mkdir()
-    (images_dir / "test.png").touch()
+    (images_dir / "test.png").write_bytes(b"fake-image")
 
-    translations_dir = tmp_path / "translations"
-    translations_dir.mkdir()
+    (tmp_path / "translations").mkdir()
+    (tmp_path / "translated_images").mkdir()
 
     return tmp_path
 
 
 @pytest.fixture
-def mock_translation_manager(temp_project_dir):
-    """Creates a fully mocked instance of TranslationManager."""
-    manager = MagicMock()
-
-    # Mock all async methods
-    manager.translate_markdown = AsyncMock()
-    manager.translate_image = AsyncMock()
-    manager.translate_all_markdown_files = AsyncMock()
-    manager.translate_all_image_files = AsyncMock()
-    manager.process_api_requests_parallel = AsyncMock()
-    manager.process_api_requests_sequential = AsyncMock()
-    manager.translate_notebook = AsyncMock()
-    manager.fix_incorrect_image_paths = AsyncMock()
-
-    # Set up common attributes
-    manager.root_dir = temp_project_dir
-    manager.translations_dir = temp_project_dir / "translations"
-    manager.image_dir = temp_project_dir / "translated_images"
-    manager.language_codes = ["ko", "ja"]
-    manager.supported_notebook_extensions = [".ipynb"]
-
-    return manager
+def translation_manager(temp_project_dir):
+    return TranslationManager(
+        root_dir=temp_project_dir,
+        translations_dir=temp_project_dir / "translations",
+        image_dir=temp_project_dir / "translated_images",
+        language_codes=["ko", "ja"],
+        excluded_dirs=["translations", "translated_images", "logs"],
+        supported_image_extensions=[".png"],
+        supported_notebook_extensions=[".ipynb"],
+        markdown_translator=FakeMarkdownTranslator(),
+        image_translator=FakeImageTranslator(),
+        notebook_translator=FakeNotebookTranslator(),
+        translation_types=["markdown", "notebook", "images"],
+        add_disclaimer=False,
+    )
 
 
 @pytest.mark.asyncio
-async def test_translate_markdown(mock_translation_manager, temp_project_dir):
-    """Tests the translation of a single markdown file."""
+async def test_translate_markdown_writes_translation_and_metadata(
+    translation_manager, temp_project_dir
+):
     md_file = temp_project_dir / "docs" / "test.md"
-    translated_content = "# Test Document\nThis is a translated test."
 
-    # Setup mock
-    mock_translation_manager.markdown_translator = MagicMock()
-    mock_translation_manager.markdown_translator.translate_markdown = AsyncMock(
-        return_value=translated_content
-    )
-    mock_translation_manager.translate_markdown = AsyncMock(
-        return_value=translated_content
-    )
+    result = await translation_manager.translate_markdown(md_file, "ko")
 
-    # Call and verify
-    mock_translation_manager.translate_markdown.assert_not_called()
-    result = await mock_translation_manager.translate_markdown(md_file, "ko")
-    assert result == translated_content
-    mock_translation_manager.translate_markdown.assert_awaited_once_with(md_file, "ko")
+    translated_path = temp_project_dir / "translations" / "ko" / "docs" / "test.md"
+    assert Path(result) == translated_path
+    assert translated_path.exists()
+    assert "# Translated ko" in translated_path.read_text(encoding="utf-8")
+    assert (
+        temp_project_dir / "translations" / "ko" / ".co-op-translator.json"
+    ).exists()
 
 
 @pytest.mark.asyncio
-async def test_translate_image(mock_translation_manager, temp_project_dir):
-    """Tests the translation of a single image file."""
+async def test_translate_image_uses_configured_image_translator(
+    translation_manager, temp_project_dir
+):
     image_file = temp_project_dir / "images" / "test.png"
-    expected_translated_path = str(
-        temp_project_dir / "translated_images" / "ko" / "images" / "test.png"
-    )
 
-    # Setup mock
-    mock_translation_manager.image_translator = MagicMock()
-    mock_translation_manager.image_translator.translate_image = MagicMock(
-        return_value=expected_translated_path
-    )
-    mock_translation_manager.translate_image = AsyncMock(
-        return_value=expected_translated_path
-    )
+    result = await translation_manager.translate_image(image_file, "ko")
 
-    # Call and verify
-    mock_translation_manager.translate_image.assert_not_called()
-    result = await mock_translation_manager.translate_image(image_file, "ko")
-    assert result == expected_translated_path
-    mock_translation_manager.translate_image.assert_awaited_once_with(image_file, "ko")
+    translated_path = temp_project_dir / "translated_images" / "ko" / "test.png"
+    assert Path(result) == translated_path
+    assert translated_path.exists()
+    assert translation_manager.image_translator.calls == [
+        (image_file.resolve(), "ko", temp_project_dir / "translated_images", False)
+    ]
 
 
 @pytest.mark.asyncio
-async def test_translate_all_markdown_files(mock_translation_manager, temp_project_dir):
-    """Tests the translation of all markdown files."""
-    expected_count = 2  # One for each language
-    mock_translation_manager.translate_all_markdown_files = AsyncMock(
-        return_value=(expected_count, [])
-    )
+async def test_translate_all_markdown_files_uses_public_workflow(
+    translation_manager, temp_project_dir
+):
+    count, errors = await translation_manager.translate_all_markdown_files()
 
-    # Call and verify
-    mock_translation_manager.translate_all_markdown_files.assert_not_called()
-    count, errors = await mock_translation_manager.translate_all_markdown_files()
-    assert count == expected_count
-    assert not errors
-    mock_translation_manager.translate_all_markdown_files.assert_awaited_once()
+    assert count == 2
+    assert errors == []
+    assert (temp_project_dir / "translations" / "ko" / "docs" / "test.md").exists()
+    assert (temp_project_dir / "translations" / "ja" / "docs" / "test.md").exists()
 
 
 @pytest.mark.asyncio
-async def test_translate_all_image_files(mock_translation_manager, temp_project_dir):
-    """Tests the translation of all image files."""
-    expected_count = 2  # One for each language
-    mock_translation_manager.translate_all_image_files = AsyncMock(
-        return_value=(expected_count, [])
+async def test_process_api_requests_sequential_executes_tasks(translation_manager):
+    seen = []
+
+    async def task(value):
+        seen.append(value)
+        return value
+
+    results = await translation_manager.process_api_requests_sequential(
+        [lambda: task(1), lambda: task(2)], "Test tasks"
     )
 
-    # Call and verify
-    mock_translation_manager.translate_all_image_files.assert_not_called()
-    count, errors = await mock_translation_manager.translate_all_image_files()
-    assert count == expected_count
-    assert not errors
-    mock_translation_manager.translate_all_image_files.assert_awaited_once()
+    assert seen == [1, 2]
+    assert results == [1, 2]
 
 
 @pytest.mark.asyncio
-async def test_process_api_requests_parallel(mock_translation_manager):
-    """Tests parallel API request processing."""
-    mock_tasks = [AsyncMock() for _ in range(3)]
-    mock_translation_manager.process_api_requests_parallel = AsyncMock()
+async def test_process_api_requests_parallel_executes_tasks(translation_manager):
+    seen = []
 
-    await mock_translation_manager.process_api_requests_parallel(
-        mock_tasks, "Test tasks"
+    async def task(value):
+        seen.append(value)
+
+    await translation_manager.process_api_requests_parallel(
+        [task(1), task(2), task(3)], "Test tasks"
     )
 
-    mock_translation_manager.process_api_requests_parallel.assert_called_once_with(
-        mock_tasks, "Test tasks"
+    assert sorted(seen) == [1, 2, 3]
+
+
+def test_get_outdated_translations_detects_stale_metadata(
+    translation_manager, temp_project_dir
+):
+    source_file = temp_project_dir / "docs" / "test.md"
+    translated_file = temp_project_dir / "translations" / "ko" / "docs" / "test.md"
+    translated_file.parent.mkdir(parents=True, exist_ok=True)
+    translated_file.write_text("# Old translation\n", encoding="utf-8")
+    _write_lang_metadata(
+        temp_project_dir / "translations" / "ko",
+        {
+            "docs/test.md": {
+                "original_hash": "old-hash",
+                "translation_date": "2026-01-01T00:00:00+00:00",
+                "source_file": "docs/test.md",
+                "language_code": "ko",
+            }
+        },
     )
+    translation_manager.language_codes = ["ko"]
+
+    outdated_files = translation_manager.get_outdated_translations()
+
+    assert outdated_files == [(source_file, translated_file)]
 
 
 @pytest.mark.asyncio
-async def test_process_api_requests_sequential(mock_translation_manager):
-    """Tests sequential API request processing."""
-    mock_tasks = [AsyncMock() for _ in range(3)]
-    mock_translation_manager.process_api_requests_sequential = AsyncMock()
-
-    await mock_translation_manager.process_api_requests_sequential(
-        mock_tasks, "Test tasks"
-    )
-
-    mock_translation_manager.process_api_requests_sequential.assert_called_once_with(
-        mock_tasks, "Test tasks"
-    )
-
-
-@pytest.mark.asyncio
-async def test_get_outdated_translations(mock_translation_manager, temp_project_dir):
-    """Tests the detection of outdated translation files."""
-    # Setup test files
-    ko_dir = temp_project_dir / "translations" / "ko"
-    ko_dir.mkdir(parents=True, exist_ok=True)
-    test_md = temp_project_dir / "test.md"
-    test_md.write_text("# Test Document\nThis is a test.", encoding="utf-8")
-    ko_test_md = ko_dir / "test.md"
-    ko_test_md.parent.mkdir(parents=True, exist_ok=True)
-    ko_test_md.write_text("# Test Document\nThis is a test.", encoding="utf-8")
-
-    # Mock _is_translation_outdated to return True for our test file
-    mock_translation_manager._is_translation_outdated = MagicMock(return_value=True)
-    mock_translation_manager.get_outdated_translations = (
-        TranslationManager.get_outdated_translations.__get__(mock_translation_manager)
-    )
-    mock_translation_manager.root_dir = temp_project_dir
-    mock_translation_manager.translations_dir = temp_project_dir / "translations"
-    mock_translation_manager.language_codes = ["ko"]
-
-    # Get outdated translations
-    outdated_files = mock_translation_manager.get_outdated_translations()
-
-    # Verify results
-    assert len(outdated_files) == 1
-    original_file, translation_file = outdated_files[0]
-    assert original_file.name == "test.md"
-    assert translation_file.parent.name == "ko"
-
-
-def test_is_translation_outdated_walks_up_to_lang_dir(tmp_path):
-    root_dir = tmp_path
-    translations_dir = root_dir / "translations"
-    lang_dir = translations_dir / "ko"
-
-    root_readme = root_dir / "README.md"
+async def test_check_outdated_files_migrates_legacy_inline_metadata(
+    translation_manager, temp_project_dir
+):
+    root_readme = temp_project_dir / "README.md"
     root_readme.write_text("# Root\n", encoding="utf-8")
-    nested_readme = root_dir / "lesson-1" / "README.md"
+    nested_readme = temp_project_dir / "lesson-1" / "README.md"
     nested_readme.parent.mkdir(parents=True, exist_ok=True)
     nested_readme.write_text("# Nested\n", encoding="utf-8")
 
+    lang_dir = temp_project_dir / "translations" / "ko"
     (lang_dir / "README.md").parent.mkdir(parents=True, exist_ok=True)
     (lang_dir / "README.md").write_text("# 번역\n", encoding="utf-8")
     (lang_dir / "lesson-1" / "README.md").parent.mkdir(parents=True, exist_ok=True)
@@ -213,9 +220,6 @@ def test_is_translation_outdated_walks_up_to_lang_dir(tmp_path):
         '<!--\nCO_OP_TRANSLATOR_METADATA:\n{\n  "original_hash": "deadbeef",\n  "translation_date": "2026-01-01T00:00:00+00:00",\n  "source_file": "lesson-1/README.md",\n  "language_code": "ko"\n}\n-->\n# 번역\n',
         encoding="utf-8",
     )
-
-    from co_op_translator.utils.common.metadata_utils import calculate_file_hash
-
     _write_lang_metadata(
         lang_dir,
         {
@@ -227,455 +231,208 @@ def test_is_translation_outdated_walks_up_to_lang_dir(tmp_path):
             }
         },
     )
+    translation_manager.language_codes = ["ko"]
+    translation_manager.retranslate_outdated_files = AsyncMock()
 
-    manager = MagicMock()
-    manager.root_dir = root_dir
-    manager.translations_dir = translations_dir
-    manager.language_codes = ["ko"]
-    manager._migrate_legacy_inline_text_metadata = (
-        TranslationManager._migrate_legacy_inline_text_metadata.__get__(manager)
+    modified_count, errors = await translation_manager.check_outdated_files()
+
+    metadata = json.loads(
+        (lang_dir / ".co-op-translator.json").read_text(encoding="utf-8")
     )
-
-    migrated = manager._migrate_legacy_inline_text_metadata()
-    assert migrated >= 1
-
-    import json
-
-    data = json.loads((lang_dir / ".co-op-translator.json").read_text(encoding="utf-8"))
-    assert "lesson-1/README.md" in data
+    assert errors == []
+    assert modified_count >= 1
+    assert "lesson-1/README.md" in metadata
+    translation_manager.retranslate_outdated_files.assert_awaited_once()
 
 
-def test_migrate_legacy_inline_text_metadata_skips_files_without_legacy_block(tmp_path):
-    root_dir = tmp_path
-    translations_dir = root_dir / "translations"
-    lang_dir = translations_dir / "ko"
-
-    source_file = root_dir / "guide.md"
+@pytest.mark.asyncio
+async def test_check_outdated_files_does_not_synthesize_missing_legacy_metadata(
+    translation_manager, temp_project_dir
+):
+    source_file = temp_project_dir / "guide.md"
     source_file.write_text("# Source\n", encoding="utf-8")
-
+    lang_dir = temp_project_dir / "translations" / "ko"
     translated_file = lang_dir / "guide.md"
     translated_file.parent.mkdir(parents=True, exist_ok=True)
     translated_file.write_text("# Manual translated content\n", encoding="utf-8")
 
-    manager = MagicMock()
-    manager.root_dir = root_dir
-    manager.translations_dir = translations_dir
-    manager.language_codes = ["ko"]
-    manager._migrate_legacy_inline_text_metadata = (
-        TranslationManager._migrate_legacy_inline_text_metadata.__get__(manager)
-    )
+    translation_manager.language_codes = ["ko"]
+    translation_manager.retranslate_outdated_files = AsyncMock()
 
-    migrated = manager._migrate_legacy_inline_text_metadata()
+    modified_count, errors = await translation_manager.check_outdated_files()
 
-    assert migrated == 0
+    assert errors == []
+    assert modified_count == 1
     assert not (lang_dir / ".co-op-translator.json").exists()
+    translation_manager.retranslate_outdated_files.assert_awaited_once_with(
+        [(source_file, translated_file)]
+    )
 
 
 @pytest.mark.asyncio
-async def test_retranslate_outdated_files(mock_translation_manager, temp_project_dir):
-    """Tests retranslation of outdated files."""
-    # Setup test files
-    test_md = temp_project_dir / "test.md"
-    test_md.write_text("# Test Document\nThis is a test.", encoding="utf-8")
-
-    ko_dir = temp_project_dir / "translations" / "ko"
-    ko_dir.mkdir(parents=True, exist_ok=True)
-    ko_test_md = ko_dir / "test.md"
-    ko_test_md.write_text("# Test Document\nThis is a test.", encoding="utf-8")
-
-    # Create a list of outdated files
-    outdated_files = [(test_md, ko_test_md)]
-
-    # Mock translate_markdown
-    mock_translation_manager.markdown_translator = MagicMock()
-    mock_translation_manager.markdown_translator.translate_markdown = AsyncMock(
-        return_value="# Test Document\nThis is a test."
-    )
-    mock_translation_manager.markdown_translator.create_metadata = MagicMock(
-        return_value={"file_hash": "test_hash"}
-    )
-    mock_translation_manager.translate_markdown = AsyncMock(
-        return_value=str(ko_test_md)
-    )
-    mock_translation_manager.retranslate_outdated_files = (
-        TranslationManager.retranslate_outdated_files.__get__(mock_translation_manager)
-    )
-    mock_translation_manager.translations_dir = ko_dir.parent
-
-    # Call retranslate_outdated_files
-    await mock_translation_manager.retranslate_outdated_files(outdated_files)
-
-    # Verify results
-    mock_translation_manager.translate_markdown.assert_awaited_once_with(test_md, "ko")
-
-
-@pytest.mark.asyncio
-async def test_translate_project_async_with_outdated(
-    mock_translation_manager, temp_project_dir
+async def test_retranslate_outdated_files_routes_markdown_and_notebooks(
+    translation_manager, temp_project_dir
 ):
-    """Tests the full project translation process with outdated files."""
-    # Setup test files
-    test_md = temp_project_dir / "test.md"
-    test_md.write_text("# Test Document\nThis is a test.", encoding="utf-8")
-
-    # Mock necessary methods
-    mock_translation_manager.get_outdated_translations = MagicMock(
-        return_value=[(test_md, temp_project_dir / "translations" / "ko" / "test.md")]
-    )
-    mock_translation_manager.retranslate_outdated_files = AsyncMock()
-    mock_translation_manager.get_outdated_images = MagicMock(return_value=[])
-    mock_translation_manager.retranslate_outdated_images = AsyncMock()
-    # Ensure translate_* methods return the expected (modified_count, errors) tuple
-    mock_translation_manager.translate_all_markdown_files = AsyncMock(
-        return_value=(0, [])
-    )
-    mock_translation_manager.translate_all_notebook_files = AsyncMock(
-        return_value=(0, [])
-    )
-    mock_translation_manager.translate_all_image_files = AsyncMock(return_value=(0, []))
-    mock_translation_manager.directory_manager = MagicMock()
-    mock_translation_manager.directory_manager.sync_directory_structure = MagicMock(
-        return_value=(0, 0, [])
-    )
-    mock_translation_manager.directory_manager.cleanup_orphaned_translations = (
-        MagicMock(return_value=0)
-    )
-    mock_translation_manager.directory_manager.migrate_markdown_image_links = MagicMock(
-        return_value=0
-    )
-    mock_translation_manager.directory_manager.migrate_notebook_image_links = MagicMock(
-        return_value=0
-    )
-    mock_translation_manager.translation_types = ["markdown", "notebook", "images"]
-    mock_translation_manager.translate_project_async = (
-        TranslationManager.translate_project_async.__get__(mock_translation_manager)
-    )
-
-    # Call translate_project_async
-    await mock_translation_manager.translate_project_async()
-
-    # Verify the sequence of operations
-    mock_translation_manager.directory_manager.sync_directory_structure.assert_called_once()
-    mock_translation_manager.directory_manager.cleanup_orphaned_translations.assert_called_once()
-    mock_translation_manager.get_outdated_translations.assert_called_once()
-    mock_translation_manager.retranslate_outdated_files.assert_called_once()
-    mock_translation_manager.translate_all_markdown_files.assert_called_once()
-
-
-@pytest.mark.asyncio
-async def test_translate_project_runs_link_migration_when_no_images(
-    mock_translation_manager, temp_project_dir, monkeypatch
-):
-    """Even when no image files are migrated, markdown/notebook link rewrites should run."""
-
-    # Force migration helpers to return empty rename maps
-    monkeypatch.setattr(
-        "co_op_translator.core.project.translation_manager.migrate_translated_image_filenames",
-        lambda *args, **kwargs: {},
-    )
-    monkeypatch.setattr(
-        "co_op_translator.core.project.translation_manager.migrate_images_to_webp",
-        lambda *args, **kwargs: {},
-    )
-    monkeypatch.setattr(
-        "co_op_translator.core.project.translation_manager.canonicalize_image_links_in_translations",
-        lambda *args, **kwargs: (0, 0),
-    )
-
-    mock_translation_manager.translation_types = ["markdown"]
-    mock_translation_manager.directory_manager = MagicMock()
-    mock_translation_manager.directory_manager.cleanup_orphaned_translations = (
-        MagicMock(return_value=0)
-    )
-    mock_translation_manager.directory_manager.sync_directory_structure = MagicMock(
-        return_value=(0, 0, [])
-    )
-    mock_translation_manager.directory_manager.migrate_markdown_image_links = MagicMock(
-        return_value=0
-    )
-    mock_translation_manager.directory_manager.migrate_notebook_image_links = MagicMock(
-        return_value=0
-    )
-
-    mock_translation_manager.get_outdated_translations = MagicMock(return_value=[])
-    mock_translation_manager.translate_all_markdown_files = AsyncMock(
-        return_value=(0, [])
-    )
-    mock_translation_manager.translate_project_async = (
-        TranslationManager.translate_project_async.__get__(mock_translation_manager)
-    )
-
-    await mock_translation_manager.translate_project_async()
-
-    mock_translation_manager.directory_manager.migrate_markdown_image_links.assert_called_once()
-    mock_translation_manager.directory_manager.migrate_notebook_image_links.assert_called_once()
-
-
-# ============================================================================
-# Notebook-specific tests
-# ============================================================================
-
-
-@pytest.mark.asyncio
-async def test_translate_notebook_basic(mock_translation_manager, temp_project_dir):
-    """Tests the translation of a single notebook file."""
-    import json
-
-    # Create test notebook
     notebook_file = temp_project_dir / "test.ipynb"
-    notebook_content = {
-        "cells": [
-            {"cell_type": "markdown", "source": ["# Test Notebook"]},
-            {"cell_type": "code", "source": ["print('hello')"]},
-        ],
-        "metadata": {},
-    }
-    notebook_file.write_text(json.dumps(notebook_content), encoding="utf-8")
-
-    # Mock the notebook translator
-    mock_translation_manager.notebook_translator = MagicMock()
-    mock_translation_manager.notebook_translator.translate_notebook = AsyncMock(
-        return_value=json.dumps(
-            {
-                "cells": [
-                    {"cell_type": "markdown", "source": ["# Test Notebook"]},
-                    {"cell_type": "code", "source": ["print('hello')"]},
-                ],
-                "metadata": {
-                    "coopTranslator": {
-                        "original_hash": "test_hash",
-                        "translation_date": "2025-01-26T14:30:00+00:00",
-                        "source_file": "test.ipynb",
-                        "language_code": "ko",
-                    }
-                },
-            }
-        )
-    )
-
-    # Add missing attributes
-    mock_translation_manager.translation_types = ["markdown", "notebook"]
-
-    # Instead of using the real method, mock the method directly
-    mock_translation_manager.translate_notebook = AsyncMock(
-        return_value="translated_notebook_path"
-    )
-
-    # Call translate_notebook
-    result = await mock_translation_manager.translate_notebook(notebook_file, "ko")
-
-    # Verify translation was called with correct parameters
-    mock_translation_manager.translate_notebook.assert_called_once_with(
-        notebook_file, "ko"
-    )
-
-    # Verify result contains path
-    assert result != ""
-
-
-@pytest.mark.asyncio
-async def test_retranslate_outdated_files_with_notebooks(temp_project_dir):
-    """Test that retranslate_outdated_files correctly handles notebook files."""
-    import json
-    from unittest.mock import patch
-
-    # Create test notebook file
-    notebook_file = temp_project_dir / "test.ipynb"
-    notebook_content = {"cells": [], "metadata": {}}
-    notebook_file.write_text(json.dumps(notebook_content), encoding="utf-8")
-
-    # Create markdown file
+    _write_notebook(notebook_file)
     md_file = temp_project_dir / "test.md"
     md_file.write_text("# Test", encoding="utf-8")
-
-    # Setup outdated files list with both types
     outdated_files = [
         (notebook_file, temp_project_dir / "translations" / "ko" / "test.ipynb"),
         (md_file, temp_project_dir / "translations" / "ko" / "test.md"),
     ]
+    translation_manager.language_codes = ["ko"]
+    translation_manager.translate_notebook = AsyncMock(return_value="notebook_result")
+    translation_manager.translate_markdown = AsyncMock(return_value="markdown_result")
 
-    # Create translation manager without strict spec to allow attribute access
-    manager = MagicMock()
-    manager.translations_dir = temp_project_dir / "translations"
-    manager.language_codes = ["ko"]
-    manager.supported_notebook_extensions = [".ipynb"]
-    manager.translate_notebook = AsyncMock(return_value="notebook_result")
-    manager.translate_markdown = AsyncMock(return_value="markdown_result")
+    await translation_manager.retranslate_outdated_files(outdated_files)
 
-    # Bind the actual method
-    manager.retranslate_outdated_files = (
-        TranslationManager.retranslate_outdated_files.__get__(manager)
-    )
-
-    # Call retranslate_outdated_files
-    await manager.retranslate_outdated_files(outdated_files)
-
-    # Verify correct translation methods were called
-    manager.translate_notebook.assert_called_once_with(notebook_file, "ko")
-    manager.translate_markdown.assert_called_once_with(md_file, "ko")
+    translation_manager.translate_notebook.assert_called_once_with(notebook_file, "ko")
+    translation_manager.translate_markdown.assert_called_once_with(md_file, "ko")
 
 
 @pytest.mark.asyncio
-async def test_translate_all_notebook_files_with_hash_check(temp_project_dir):
-    """Test notebook translation with hash-based up-to-date checking."""
-    import json
-    from unittest.mock import patch
+async def test_translate_project_async_runs_public_workflow_for_outdated_files(
+    translation_manager, temp_project_dir
+):
+    test_md = temp_project_dir / "docs" / "test.md"
+    translation_manager.language_codes = ["ko"]
+    translation_manager.get_outdated_translations = MagicMock(
+        return_value=[
+            (test_md, temp_project_dir / "translations" / "ko" / "docs" / "test.md")
+        ]
+    )
+    translation_manager.retranslate_outdated_files = AsyncMock()
+    translation_manager.translate_all_markdown_files = AsyncMock(return_value=(0, []))
+    translation_manager.translation_types = ["markdown"]
+    translation_manager.directory_manager = MagicMock()
+    translation_manager.directory_manager.cleanup_orphaned_translations.return_value = 0
+    translation_manager.directory_manager.sync_directory_structure.return_value = (
+        0,
+        0,
+        [],
+    )
+    translation_manager.directory_manager.migrate_markdown_image_links.return_value = 0
+    translation_manager.directory_manager.migrate_notebook_image_links.return_value = 0
 
-    # Create original notebook
+    await translation_manager.translate_project_async()
+
+    translation_manager.directory_manager.cleanup_orphaned_translations.assert_called_once()
+    translation_manager.directory_manager.sync_directory_structure.assert_called_once()
+    translation_manager.get_outdated_translations.assert_called_once()
+    translation_manager.retranslate_outdated_files.assert_awaited_once()
+    translation_manager.translate_all_markdown_files.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_translate_project_runs_link_migration_when_no_images(
+    translation_manager, monkeypatch
+):
+    monkeypatch.setattr(
+        "co_op_translator.core.project.translation.translation_workflow.migrate_translated_image_filenames",
+        lambda *args, **kwargs: {},
+    )
+    monkeypatch.setattr(
+        "co_op_translator.core.project.translation.translation_workflow.migrate_images_to_webp",
+        lambda *args, **kwargs: {},
+    )
+    monkeypatch.setattr(
+        "co_op_translator.core.project.translation.translation_workflow.canonicalize_image_links_in_translations",
+        lambda *args, **kwargs: (0, 0),
+    )
+    translation_manager.translation_types = ["markdown"]
+    translation_manager.get_outdated_translations = MagicMock(return_value=[])
+    translation_manager.translate_all_markdown_files = AsyncMock(return_value=(0, []))
+    translation_manager.directory_manager = MagicMock()
+    translation_manager.directory_manager.cleanup_orphaned_translations.return_value = 0
+    translation_manager.directory_manager.sync_directory_structure.return_value = (
+        0,
+        0,
+        [],
+    )
+    translation_manager.directory_manager.migrate_markdown_image_links.return_value = 0
+    translation_manager.directory_manager.migrate_notebook_image_links.return_value = 0
+
+    await translation_manager.translate_project_async()
+
+    translation_manager.directory_manager.migrate_markdown_image_links.assert_called_once()
+    translation_manager.directory_manager.migrate_notebook_image_links.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_translate_notebook_writes_translation_and_metadata(
+    translation_manager, temp_project_dir
+):
+    notebook_file = temp_project_dir / "test.ipynb"
+    _write_notebook(notebook_file)
+
+    result = await translation_manager.translate_notebook(notebook_file, "ko")
+
+    translated_path = temp_project_dir / "translations" / "ko" / "test.ipynb"
+    assert Path(result) == translated_path
+    assert translated_path.exists()
+    assert (
+        json.loads(translated_path.read_text(encoding="utf-8"))["metadata"][
+            "translated_to"
+        ]
+        == "ko"
+    )
+    assert (
+        temp_project_dir / "translations" / "ko" / ".co-op-translator.json"
+    ).exists()
+
+
+@pytest.mark.asyncio
+async def test_translate_all_notebook_files_skips_up_to_date_notebook(
+    translation_manager, temp_project_dir
+):
     original_notebook = temp_project_dir / "test.ipynb"
-    notebook_content = {"cells": [{"cell_type": "markdown", "source": ["# Original"]}]}
-    original_notebook.write_text(json.dumps(notebook_content), encoding="utf-8")
-
-    # Create translations directory
-    translations_dir = temp_project_dir / "translations"
-    ko_dir = translations_dir / "ko"
-    ko_dir.mkdir(parents=True)
-
-    # Create existing translated notebook (up-to-date)
-    translated_notebook = ko_dir / "test.ipynb"
-    translated_content = {
-        "cells": [{"cell_type": "markdown", "source": ["# Original"]}],
-        "metadata": {
-            "coopTranslator": {
-                "original_hash": "current_hash",  # Will be mocked to match
-                "translation_date": "2025-01-26T14:30:00+00:00",
-                "source_file": "test.ipynb",
-                "language_code": "ko",
-            }
-        },
+    _write_notebook(original_notebook, "# Original")
+    translated_notebook = temp_project_dir / "translations" / "ko" / "test.ipynb"
+    translated_notebook.parent.mkdir(parents=True)
+    translated_payload = json.loads(original_notebook.read_text(encoding="utf-8"))
+    translated_payload["metadata"]["coopTranslator"] = {
+        "original_hash": calculate_file_hash(original_notebook),
+        "translation_date": "2026-01-01T00:00:00+00:00",
+        "source_file": "test.ipynb",
+        "language_code": "ko",
     }
-    translated_notebook.write_text(json.dumps(translated_content), encoding="utf-8")
+    translated_notebook.write_text(json.dumps(translated_payload), encoding="utf-8")
+    translation_manager.language_codes = ["ko"]
+    translation_manager.translate_notebook = AsyncMock(return_value="translated_result")
 
-    # Create translation manager
-    manager = MagicMock()
-    manager.root_dir = temp_project_dir
-    manager.translations_dir = translations_dir
-    manager.language_codes = ["ko"]
-    manager.supported_notebook_extensions = [".ipynb"]
-    manager.excluded_dirs = {"translations"}
-    manager.translate_notebook = AsyncMock(return_value="translated_result")
+    modified_count, errors = await translation_manager.translate_all_notebook_files()
 
-    # Mock notebook translator
-    manager.notebook_translator = MagicMock()
-    manager.notebook_translator.translate_notebook = AsyncMock(
-        return_value="notebook_json"
-    )
-
-    # Mock process_api_requests_sequential to actually execute the tasks
-    async def mock_process_sequential(tasks, description):
-        results = []
-        for task in tasks:
-            try:
-                result = await task()
-                results.append(result)
-            except Exception as e:
-                results.append(None)
-        return results
-
-    manager.process_api_requests_sequential = mock_process_sequential
-
-    # Bind the actual method
-    manager.translate_all_notebook_files = (
-        TranslationManager.translate_all_notebook_files.__get__(manager)
-    )
-
-    # Mock filter_files to return only the original notebook
-    with patch(
-        "co_op_translator.core.project.translation_manager.filter_files",
-        return_value=[original_notebook],
-    ):
-        # Mock is_notebook_up_to_date to return True (up-to-date)
-        with patch(
-            "co_op_translator.core.project.translation_manager.is_notebook_up_to_date",
-            return_value=True,
-        ):
-            result = await manager.translate_all_notebook_files(update=False)
-
-    # Verify no translation was performed (file is up-to-date)
-    manager.translate_notebook.assert_not_called()
-    modified_count, errors = result
-    assert modified_count == 0  # No files translated (skipped)
+    assert modified_count == 0
     assert errors == []
+    translation_manager.translate_notebook.assert_not_called()
 
 
 @pytest.mark.asyncio
-async def test_translate_all_notebook_files_outdated(temp_project_dir):
-    """Test notebook translation when files are outdated."""
-    import json
-    from unittest.mock import patch
-
-    # Create original notebook
+async def test_translate_all_notebook_files_retranslates_outdated_notebook(
+    translation_manager, temp_project_dir
+):
     original_notebook = temp_project_dir / "test.ipynb"
-    notebook_content = {"cells": [{"cell_type": "markdown", "source": ["# Original"]}]}
-    original_notebook.write_text(json.dumps(notebook_content), encoding="utf-8")
-
-    # Create translations directory
-    translations_dir = temp_project_dir / "translations"
-    ko_dir = translations_dir / "ko"
-    ko_dir.mkdir(parents=True)
-
-    # Create existing translated notebook (outdated)
-    translated_notebook = ko_dir / "test.ipynb"
-    translated_content = {
-        "cells": [{"cell_type": "markdown", "source": ["# Previous version"]}],
-        "metadata": {
-            "coopTranslator": {
-                "original_hash": "old_hash",  # Different from current
-                "translation_date": "2025-01-25T14:30:00+00:00",
-                "source_file": "test.ipynb",
-                "language_code": "ko",
-            }
-        },
+    _write_notebook(original_notebook, "# Original")
+    translated_notebook = temp_project_dir / "translations" / "ko" / "test.ipynb"
+    translated_notebook.parent.mkdir(parents=True)
+    translated_payload = json.loads(original_notebook.read_text(encoding="utf-8"))
+    translated_payload["metadata"]["coopTranslator"] = {
+        "original_hash": "old-hash",
+        "translation_date": "2026-01-01T00:00:00+00:00",
+        "source_file": "test.ipynb",
+        "language_code": "ko",
     }
-    translated_notebook.write_text(json.dumps(translated_content), encoding="utf-8")
-
-    # Create translation manager
-    manager = MagicMock()
-    manager.root_dir = temp_project_dir
-    manager.translations_dir = translations_dir
-    manager.language_codes = ["ko"]
-    manager.supported_notebook_extensions = [".ipynb"]
-    manager.excluded_dirs = {"translations"}
-    manager.translate_notebook = AsyncMock(return_value="updated_translation")
-
-    # Mock notebook translator
-    manager.notebook_translator = MagicMock()
-    manager.notebook_translator.translate_notebook = AsyncMock(
-        return_value="notebook_json"
+    translated_notebook.write_text(json.dumps(translated_payload), encoding="utf-8")
+    translation_manager.language_codes = ["ko"]
+    translation_manager.translate_notebook = AsyncMock(
+        return_value="updated_translation"
     )
 
-    # Mock process_api_requests_sequential to actually execute the tasks
-    async def mock_process_sequential(tasks, description):
-        results = []
-        for task in tasks:
-            try:
-                result = await task()
-                results.append(result)
-            except Exception as e:
-                results.append(None)
-        return results
+    modified_count, errors = await translation_manager.translate_all_notebook_files()
 
-    manager.process_api_requests_sequential = mock_process_sequential
-
-    # Bind the actual method
-    manager.translate_all_notebook_files = (
-        TranslationManager.translate_all_notebook_files.__get__(manager)
-    )
-
-    # Mock filter_files to return only the original notebook
-    with patch(
-        "co_op_translator.core.project.translation_manager.filter_files",
-        return_value=[original_notebook],
-    ):
-        # Mock is_notebook_up_to_date to return False (outdated)
-        with patch(
-            "co_op_translator.core.project.translation_manager.is_notebook_up_to_date",
-            return_value=False,
-        ):
-            result = await manager.translate_all_notebook_files(update=False)
-
-    # Verify translation was performed (file is outdated)
-    manager.translate_notebook.assert_called_once()
-    modified_count, errors = result
     assert modified_count == 1
     assert errors == []
+    translation_manager.translate_notebook.assert_called_once_with(
+        original_notebook.resolve(), "ko"
+    )

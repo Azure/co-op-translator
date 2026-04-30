@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from co_op_translator.core.project.translation_manager import TranslationManager
+from co_op_translator.core.project.translation import TranslationManager
 from co_op_translator.config.constants import (
     EXCLUDED_DIRS,
     SUPPORTED_IMAGE_EXTENSIONS,

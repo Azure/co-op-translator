@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from co_op_translator.core.project.translation_manager import TranslationManager
+from co_op_translator.core.project.translation import TranslationManager
 from co_op_translator.utils.common.metadata_utils import calculate_file_hash
 
 

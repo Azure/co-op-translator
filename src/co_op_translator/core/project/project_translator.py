@@ -21,7 +21,7 @@ from co_op_translator.utils.common.lang_utils import (
 )
 
 from .directory_manager import DirectoryManager
-from .translation_manager import TranslationManager
+from .translation import TranslationManager
 from co_op_translator.utils.common.file_utils import read_input_file
 from co_op_translator.utils.common.token_estimation import count_tokens
 

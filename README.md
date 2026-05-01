@@ -97,6 +97,9 @@ source .venv/bin/activate
 pip install co-op-translator
 # Translate
 translate -l "ko ja fr" -md
+
+# Review translated content without API keys
+co-op-review -l "ko ja"
 ```
 
 Docker:
@@ -145,6 +148,12 @@ Only notebooks:
 translate -l "zh" -nb
 ```
 
+Review translation structure and freshness without API credentials:
+
+```bash
+co-op-review -l "ko ja"
+```
+
 More flags: [Command reference](./getting_started/command-reference.md)
 
 ## Features
@@ -153,6 +162,7 @@ More flags: [Command reference](./getting_started/command-reference.md)
 - Keeps translations in sync with source changes
 - Works locally (CLI) or in CI (GitHub Actions)
 - Uses Azure OpenAI or OpenAI; optional Azure AI Vision for images
+- Reviews translation structure and freshness with deterministic checks
 - Preserves Markdown formatting and structure
 
 ## Docs

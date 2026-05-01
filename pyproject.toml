@@ -22,6 +22,7 @@ documentation = "https://github.com/Azure/co-op-translator/tree/main/getting_sta
 translate = "co_op_translator.__main__:main"
 evaluate = "co_op_translator.__main__:main"
 migrate-links = "co_op_translator.__main__:main"
+co-op-review = "co_op_translator.__main__:main"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"

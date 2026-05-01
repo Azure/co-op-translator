@@ -1,0 +1,101 @@
+name: Co-op review
+
+on:
+  pull_request:
+    paths:
+      - "**/*.md"
+      - "**/*.mdx"
+      - "**/*.ipynb"
+      - "translations/**"
+      - ".github/workflows/co-op-review.yml"
+      - "src/co_op_translator/review/**"
+      - "src/co_op_translator/cli/review.py"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: co-op-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    env:
+      AZURE_OPENAI_API_KEY: dummy
+      AZURE_OPENAI_ENDPOINT: https://example.openai.azure.com/
+      AZURE_OPENAI_MODEL_NAME: gpt-4o
+      AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: dummy
+      AZURE_OPENAI_API_VERSION: 2024-12-01-preview
+      AZURE_AI_SERVICE_API_KEY: dummy
+      AZURE_AI_SERVICE_ENDPOINT: https://example.cognitiveservices.azure.com/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        run: python -m pip install --upgrade pip poetry
+
+      - name: Install dependencies
+        run: poetry install --with dev --no-interaction
+
+      - name: Run co-op review
+        id: co_op_review
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          set +e
+          poetry run co-op-review --changed-from "origin/${{ github.base_ref }}" --format github > co-op-review-summary.md
+          status=$?
+          cat co-op-review-summary.md
+          cat co-op-review-summary.md >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+
+      - name: Comment on co-op review failure
+        if: failure() && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const marker = "<!-- co-op-review-failure -->";
+            const summary = fs.readFileSync("co-op-review-summary.md", "utf8");
+            const body = [
+              marker,
+              summary,
+              "",
+              "_This comment is updated only when co-op review fails. Passing runs are reported in the check summary._",
+            ].join("\n");
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }

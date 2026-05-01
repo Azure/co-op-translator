@@ -23,6 +23,10 @@ evaluate -l "language_code" -c 0.8           | Evaluates translations with custo
 evaluate -l "language_code" -f               | Fast evaluation mode (rule-based only, no LLM)
 evaluate -l "language_code" -D               | Deep evaluation mode (LLM-based only, more thorough but slower)
 evaluate -l "language_code" --save-logs, -s  | Save DEBUG-level logs to files under <root_dir>/logs/
+co-op-review -l "language_code"              | Runs deterministic translation review checks without API credentials.
+co-op-review -l "language_codes" -r "root_dir" | Reviews translations from a specific project root.
+co-op-review -l "language_codes" --changed-from origin/main | Reviews only source files changed against a Git ref.
+co-op-review -l "language_codes" --format github | Prints GitHub-flavored Markdown output for CI summaries.
 migrate-links -l "language_codes"             | Reprocess translated Markdown files to update links to notebooks (.ipynb). Prefers translated notebooks when available; otherwise can fall back to original notebooks.
 migrate-links -l "language_codes" -r          | Specify the project root directory (default: current directory).
 migrate-links -l "language_codes" --dry-run   | Show which files would change without writing changes.
@@ -84,3 +88,18 @@ migrate-links -l "all" -y                      | Process all languages and auto-
   3. Fast evaluation (rule-based only): evaluate -l "ko" -f
 
   4. Deep evaluation (LLM-based only): evaluate -l "ko" -D
+
+### Co-op Review Examples
+
+> [!NOTE]
+> `co-op-review` is deterministic and does not call an LLM provider. It is suitable for CI checks that should run on every pull request.
+
+  1. Review all discovered Korean translations: co-op-review -l "ko"
+
+  2. Review multiple languages: co-op-review -l "ko ja"
+
+  3. Review a specific project root: co-op-review -l "ko" -r "./my_project"
+
+  4. Review only changed source files in a pull request: co-op-review -l "ko" --changed-from origin/main
+
+  5. Emit GitHub-flavored Markdown for workflow summaries: co-op-review -l "ko" --changed-from origin/main --format github

@@ -44,7 +44,7 @@ The tool auto-detects providers in this order:
 1. Azure OpenAI
 2. OpenAI
 
-If neither provider is configured, `translate`, `evaluate`, `migrate-links`, and `run_translation` fail during configuration checks.
+If neither provider is configured, `translate`, `evaluate`, `migrate-links`, and `run_translation` fail during configuration checks. `co-op-review` and `run_review` are deterministic maintenance checks and do not require provider credentials.
 
 ## Azure OpenAI
 
@@ -114,8 +114,10 @@ Each set must be complete. The health check selects a working set before transla
 | `translate` with no type flags | Yes | Yes | Default mode includes Markdown, notebooks, and images. |
 | `evaluate` | Yes | No | Uses LLM evaluation unless `--fast` is selected. |
 | `migrate-links` | Yes | No | Performs link migration, but still runs shared configuration checks. |
+| `co-op-review` | No | No | Runs deterministic translation structure, freshness, Markdown, notebook, and local link checks. |
 | `run_translation(markdown=True)` | Yes | No | Programmatic Markdown translation. |
 | `run_translation(images=True)` | Yes | Yes | Programmatic image translation. |
+| `run_review(...)` | No | No | Programmatic deterministic review. |
 
 ## Output directories
 

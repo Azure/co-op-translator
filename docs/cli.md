@@ -1,10 +1,11 @@
 # CLI Reference
 
-Co-op Translator installs three command-line entry points:
+Co-op Translator installs four command-line entry points:
 
 - `translate`
 - `evaluate`
 - `migrate-links`
+- `co-op-review`
 
 The dispatch logic lives in `co_op_translator.__main__`, which selects the command implementation based on the invoked script name.
 
@@ -118,6 +119,51 @@ evaluate -l "ja" -D
 | `-D`, `--deep` | No | LLM-based evaluation only. |
 
 By default, `evaluate` uses both rule-based and LLM-based evaluation. Results are written into translation metadata and summarized in the console.
+
+## co-op-review
+
+Run deterministic translation maintenance checks without API credentials.
+
+```bash
+co-op-review -l "ko"
+```
+
+### Common examples
+
+Review Korean and Japanese translations from the current directory:
+
+```bash
+co-op-review -l "ko ja"
+```
+
+Review a specific project root:
+
+```bash
+co-op-review -l "fr" -r ./my-course
+```
+
+Review only source files changed against a base ref:
+
+```bash
+co-op-review -l "ko" --changed-from origin/main
+```
+
+Print GitHub-flavored Markdown output for CI summaries:
+
+```bash
+co-op-review -l "ko ja" --changed-from origin/main --format github
+```
+
+### Options
+
+| Option | Required | Description |
+| --- | --- | --- |
+| `-l`, `--language-code` | No | Language code to review. Can be passed multiple times or as a space-separated value. Defaults to all discovered translation languages. |
+| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
+| `--changed-from` | No | Git ref used to limit review to changed source files. |
+| `--format` | No | Output format: `text` or `github`. Defaults to `text`. |
+
+`co-op-review` currently checks for missing translated files, missing or stale translation metadata, Markdown frontmatter and code fence integrity, invalid translated notebook JSON, and missing local Markdown or image link targets. Missing links are warnings by default; structural and freshness problems fail the command.
 
 ## migrate-links
 

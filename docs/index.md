@@ -3,8 +3,8 @@
   <h1>Co-op Translator Documentation</h1>
   <p class="home-lede">
     Configure an LLM provider, choose your target languages, and use Co-op
-    Translator from the CLI or Python API to keep translated project content
-    synchronized with the source.
+    Translator from the CLI or Python API to translate and review project
+    content as the source changes.
   </p>
   <a class="home-link" href="cli/">Start with the CLI -></a>
 </section>
@@ -22,14 +22,14 @@
   <a class="quickstart-card" href="cli/">
     <span class="quickstart-step">Step 2</span>
     <strong>Translate with CLI</strong>
-    <span>Run translation, evaluation, and link migration commands.</span>
+    <span>Run translation, evaluation, review, and link migration commands.</span>
     <em>Open guide -></em>
   </a>
 
   <a class="quickstart-card" href="api/">
     <span class="quickstart-step">Step 3</span>
     <strong>Python API</strong>
-    <span>Call <code>run_translation</code> from scripts and automation.</span>
+    <span>Call <code>run_translation</code> and <code>run_review</code> from scripts and automation.</span>
     <em>Open guide -></em>
   </a>
 

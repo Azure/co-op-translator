@@ -22,16 +22,16 @@ Before configuring the GitHub Action, ensure you have the necessary AI service c
 You need credentials for at least one supported Language Model:
 
 - **Azure OpenAI**: Requires Endpoint, API Key, Model/Deployment Names, API Version.
-- **OpenAI**: Requires API Key, (Optional: Org ID, Base URL, Model ID).
-- See [Supported Models and Services](../../README.md/#-supported-models-and-services) for details.
-- Setup Guide: [Set up Azure OpenAI](../set-up-resources/set-up-azure-openai.md).
+- **OpenAI**: Requires API Key and Model ID. Org ID and Base URL are optional.
+- See [Configuration](../../docs/configuration.md) for the current provider and environment variable reference.
+- Setup Guide: [Set up Azure AI](../set-up-azure-ai.md).
 
-**2. Optional: Computer Vision Credentials (for Image Translation)**
+**2. Optional: AI Vision Credentials (for Image Translation)**
 
 - Required only if you need to translate text within images.
-- **Azure Computer Vision**: Requires Endpoint and Subscription Key.
-- If not provided, the action defaults to [Markdown-only mode](../markdown-only-mode.md).
-- Setup Guide: [Set up Azure Computer Vision](../set-up-resources/set-up-azure-computer-vision.md).
+- **Azure AI Vision**: Requires `AZURE_AI_SERVICE_ENDPOINT` and `AZURE_AI_SERVICE_API_KEY`.
+- If Vision secrets are not configured, keep the workflow scoped to text content with `-md` or `-nb`. The default all-content mode and `-img` include image translation and require Vision credentials.
+- Setup Guide: [Set up Azure AI](../set-up-azure-ai.md).
 
 ## Setup and Configuration
 
@@ -86,17 +86,17 @@ You need to add the GitHub App credentials and your AI service credentials as en
 
 | Secret Name                         | Description                               | Value Source                     |
 | :---------------------------------- | :---------------------------------------- | :------------------------------- |
-| `AZURE_AI_SERVICE_API_KEY`            | Key for Azure AI Service (Computer Vision)  | Azure AI Foundry                    |
-| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint for Azure AI Service (Computer Vision) | Azure AI Foundry                     |
+| `AZURE_AI_SERVICE_API_KEY`            | Key for Azure AI Vision image translation   | Azure AI Foundry                    |
+| `AZURE_AI_SERVICE_ENDPOINT`         | Endpoint for Azure AI Vision image translation | Azure AI Foundry                     |
 | `AZURE_OPENAI_API_KEY`              | Key for Azure OpenAI service              | Azure AI Foundry                     |
 | `AZURE_OPENAI_ENDPOINT`             | Endpoint for Azure OpenAI service         | Azure AI Foundry                     |
 | `AZURE_OPENAI_MODEL_NAME`           | Your Azure OpenAI Model Name              | Azure AI Foundry                     |
 | `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Your Azure OpenAI Deployment Name         | Azure AI Foundry                     |
 | `AZURE_OPENAI_API_VERSION`          | API Version for Azure OpenAI              | Azure AI Foundry                     |
 | `OPENAI_API_KEY`                    | API Key for OpenAI                        | OpenAI Platform                  |
-| `OPENAI_ORG_ID`                     | OpenAI Organization ID                    | OpenAI Platform                  |
-| `OPENAI_CHAT_MODEL_ID`              | Specific OpenAI model ID                  | OpenAI Platform                    |
-| `OPENAI_BASE_URL`                   | Custom OpenAI API Base URL                | OpenAI Platform                    |
+| `OPENAI_ORG_ID`                     | OpenAI Organization ID (optional)         | OpenAI Platform                  |
+| `OPENAI_CHAT_MODEL_ID`              | Specific OpenAI model ID (required when using OpenAI) | OpenAI Platform                    |
+| `OPENAI_BASE_URL`                   | Custom OpenAI API Base URL (optional)     | OpenAI Platform                    |
 
 ![Enter environment variable name](./imgs/add-secrets-done.png)
 
@@ -165,8 +165,9 @@ jobs:
           # =====================================================================
           # IMPORTANT: Set your target languages here (REQUIRED CONFIGURATION)
           # =====================================================================
-          # Example: Translate to Spanish, French, German. Add -y to auto-confirm.
-          translate -l "es fr de" -y  # <--- MODIFY THIS LINE with your desired languages
+          # Example: Translate Markdown to Spanish, French, German. Add -y to auto-confirm.
+          # Add -nb for notebooks or -img after configuring Azure AI Vision secrets.
+          translate -l "es fr de" -md -y  # <--- MODIFY THIS LINE with your desired languages and content flags
 
       - name: Authenticate GitHub App
         id: generate_token
@@ -186,7 +187,6 @@ jobs:
 
             ### 📋 Changes included
             - Translated contents are available in the `translations/` directory
-            - Translated images are available in the `translated_images/` directory
 
             ---
             🌐 Automatically generated by the [Co-op Translator](https://github.com/Azure/co-op-translator) GitHub Action.
@@ -196,12 +196,12 @@ jobs:
           delete-branch: true
           add-paths: |
             translations/
-            translated_images/
 
 ```
 
 4.  **Customize the Workflow:**
-  - **[!IMPORTANT] Target Languages:** In the `Run Co-op Translator` step, you **MUST review and modify the list of language codes** within the `translate -l "..." -y` command to match your project's requirements. The example list (`ar de es...`) needs to be replaced or adjusted.
+  - **[!IMPORTANT] Target Languages and Content:** In the `Run Co-op Translator` step, you **MUST review and modify** the language codes and content flags in the `translate -l "..." -md -y` command. Add `-nb` for notebooks or `-img` only after configuring Azure AI Vision secrets.
+  - **Image Translation:** If you add `-img`, also add `translated_images/` under `add-paths` and mention it in the pull request body.
   - **Trigger (`on:`):** The current trigger runs on every push to `main`. For large repositories, consider adding a `paths:` filter (see commented example in the YAML) to run the workflow only when relevant files (e.g., source documentation) change, saving runner minutes.
   - **PR Details:** Customize the `commit-message`, `title`, `body`, `branch` name, and `labels` in the `Create Pull Request` step if needed.
 

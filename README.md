@@ -86,6 +86,8 @@ software dependency and artifact management practices.
 
 ## Quick start
 
+Full documentation is available in the [Co-op Translator docs site](https://azure.github.io/co-op-translator/). The README keeps the shortest path only; the docs site is the source of truth for CLI, API, configuration, review, and glossary details.
+
 ```bash
 # Create and activate a virtual environment (recommended)
 python -m venv .venv
@@ -113,18 +115,18 @@ docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-transl
 
 ## Minimal setup
 
-1. Assert that you have a supported Python version (currently 3.10-3.12). In poetry (pyproject.toml) this is handeled automatically.
+1. Use a supported Python version: 3.10 through 3.12. Poetry enforces this for repository development.
 2. Create a `.env` file using the template: [.env.template](./.env.template)
 3. Configure one LLM provider (Azure OpenAI or OpenAI)
-4. (Optional) For image translation (`-img`), configure Azure AI Vision
+4. Configure Azure AI Vision when translating images or running the default all-content mode
 5. (Optional) You can configure multiple credential sets by duplicating variables with suffixes like `_1`, `_2`, etc. All variables in a set must share the same suffix.
 6. (Recommended) Clean up any previous translations to avoid conflicts (e.g., `translations/`)
 7. (Recommended) Add a translation section to your README using the [README languages template](./getting_started/README_languages_template.md)
-8. See: [Set up Azure AI](./getting_started/set-up-azure-ai.md)
+8. See: [Configuration](./docs/configuration.md) and [Set up Azure AI](./getting_started/set-up-azure-ai.md)
 
 ## Usage
 
-Translate all supported types:
+Translate all supported content types:
 
 ```bash
 translate -l "ko ja"
@@ -154,7 +156,7 @@ Review translation structure and freshness without API credentials:
 co-op-review -l "ko ja"
 ```
 
-More flags: [Command reference](./getting_started/command-reference.md)
+More flags: [CLI reference](./docs/cli.md)
 
 ## Features
 
@@ -167,7 +169,12 @@ More flags: [Command reference](./getting_started/command-reference.md)
 
 ## Docs
 
-- [Command-line guide](./getting_started/command-line-guide/command-line-guide.md)
+- [Documentation site](https://azure.github.io/co-op-translator/)
+- [Configuration](./docs/configuration.md)
+- [CLI reference](./docs/cli.md)
+- [Python API](./docs/api.md)
+- [Examples](./docs/examples.md)
+- [Command-line walkthrough](./getting_started/command-line-guide/command-line-guide.md)
 - [GitHub Actions guide (Public repositories & standard secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md)
 - [GitHub Actions guide (Microsoft organization repositories & org-level setups)](./getting_started/github-actions-guide/github-actions-guide-org.md)
 - [README languages template](./getting_started/README_languages_template.md)

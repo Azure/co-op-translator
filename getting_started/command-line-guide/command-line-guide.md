@@ -1,13 +1,38 @@
-# How to use Co-op Translator command line interface (CLI)
+# Command-line guide
+
+This walkthrough keeps the setup path short. The detailed and current references live in the MkDocs documentation:
+
+- [Configuration](../../docs/configuration.md)
+- [CLI reference](../../docs/cli.md)
+- [Examples](../../docs/examples.md)
 
 ## Prerequisites
 
-- **Python 3.10 or higher**: Required for running the Co-op Translator.
+- Python 3.10 through 3.12
+- One configured LLM provider: Azure OpenAI or OpenAI
+- Azure AI Vision only when translating images or running the default all-content mode
 
-## Table of Contents
+## Setup path
 
-1. [Create an '.env' file in the root directory](./create-env-file.md)
-   - Include necessary keys for the chosen language model service.
-   - If Azure Computer Vision keys are omitted or `-md` is specified, the translator will operate in Markdown-only mode.
-1. [Install the Co-op translator package](./install-package.md)
-1. [Translate your project using Co-op Translator](./translator-your-project.md)
+1. [Install Co-op Translator](./install-package.md).
+2. [Create a `.env` file](./create-env-file.md) with one LLM provider.
+3. Run a narrow first translation, such as Markdown only:
+
+   ```bash
+   translate -l "ko" -md
+   ```
+
+4. Add notebooks or images when you have the matching configuration:
+
+   ```bash
+   translate -l "ko" -nb
+   translate -l "ko" -img
+   ```
+
+5. Run deterministic review checks before opening a pull request:
+
+   ```bash
+   co-op-review -l "ko"
+   ```
+
+For all flags and command behavior, use the [CLI reference](../../docs/cli.md). This prevents the tutorial from drifting away from the documentation site as new options are added.

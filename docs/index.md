@@ -40,3 +40,12 @@
     <em>Open guide -></em>
   </a>
 </div>
+
+## Documentation map
+
+- Use [Configuration](configuration.md) for environment variables and provider requirements.
+- Use [CLI Reference](cli.md) as the canonical source for `translate`, `evaluate`, `co-op-review`, and `migrate-links`.
+- Use [Python API](api.md) as the canonical source for `run_translation`, `run_review`, and glossary terms.
+- Use [Examples](examples.md) for copyable workflows.
+
+The repository's `getting_started/` guides are shorter walkthroughs that link back to these canonical pages instead of repeating every option table.

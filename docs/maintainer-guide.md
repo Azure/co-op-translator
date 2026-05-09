@@ -46,8 +46,8 @@ co-op-review = "co_op_translator.__main__:main"
 When adding or changing CLI options, update:
 
 - the relevant `src/co_op_translator/cli/*.py` command
-- `getting_started/command-reference.md`
 - `docs/cli.md`
+- `getting_started/command-reference.md` only when the common-command summary changes
 - CLI-related tests, if behavior changes
 
 ## Translation flow
@@ -102,6 +102,17 @@ python -m mkdocs serve
 ```
 
 The generated site is written to `site/`, which is ignored by git.
+
+## Documentation source of truth
+
+Keep detailed reference material in MkDocs pages:
+
+- `docs/configuration.md` owns provider setup, environment variables, and command requirements.
+- `docs/cli.md` owns complete command syntax and option tables.
+- `docs/api.md` owns public API parameters, including `run_translation`, `run_review`, and glossary behavior.
+- `docs/examples.md` owns copyable end-to-end examples.
+
+Use `README.md` and `getting_started/` as entry points and walkthroughs. They should link to the MkDocs pages instead of duplicating full CLI/API tables. This keeps the website, README, and older tutorial links from drifting apart when command options change.
 
 ## GitHub Pages workflow
 

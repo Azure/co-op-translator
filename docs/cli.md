@@ -9,6 +9,8 @@ Co-op Translator installs four command-line entry points:
 
 The dispatch logic lives in `co_op_translator.__main__`, which selects the command implementation based on the invoked script name.
 
+This page is the canonical CLI reference. README and `getting_started/` pages should link here instead of repeating full option tables.
+
 ## translate
 
 Translate Markdown files, notebooks, and image text into one or more target languages.

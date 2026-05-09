@@ -113,7 +113,9 @@ docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-transl
 
 ## Minimal setup
 
-1. Assert that you have a supported Python version (currently 3.10-3.12). In poetry (pyproject.toml) this is handeled automatically.
+For a beginner-friendly walkthrough, see the [installation guide](./getting_started/command-line-guide/install-package.md).
+
+1. Use a supported Python version: 3.10 through 3.12. Poetry enforces this for repository development.
 2. Create a `.env` file using the template: [.env.template](./.env.template)
 3. Configure one LLM provider (Azure OpenAI or OpenAI)
 4. (Optional) For image translation (`-img`), configure Azure AI Vision

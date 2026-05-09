@@ -2,12 +2,12 @@
 
 ## Prerequisites
 
-- **Python 3.10 or higher**: Required for running the Co-op Translator.
+- **Python 3.10 through 3.12**: Required for running Co-op Translator.
 
 ## Table of Contents
 
-1. [Create an '.env' file in the root directory](./create-env-file.md)
+1. [Create a `.env` file in the root directory](./create-env-file.md)
    - Include necessary keys for the chosen language model service.
-   - If Azure Computer Vision keys are omitted or `-md` is specified, the translator will operate in Markdown-only mode.
-1. [Install the Co-op translator package](./install-package.md)
+   - Configure Azure AI Vision only when you need image translation. Use `-md` or `-nb` for text-only runs.
+1. [Install the Co-op Translator package](./install-package.md)
 1. [Translate your project using Co-op Translator](./translator-your-project.md)

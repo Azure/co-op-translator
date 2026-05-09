@@ -1,82 +1,79 @@
-# Install the Co-op translator package
+# Install Co-op Translator
 
-The **Co-op Translator** is a command-line interface (CLI) tool designed to help you translate all the markdown files and images in your project into multiple languages. This tutorial will guide you through configuring the translator and running it for various use cases.
+Co-op Translator supports Python 3.10 through 3.12. Use a virtual environment so the CLI dependencies stay separate from your system Python packages.
 
-### Create a virtual environment
+## Install from PyPI
 
-You can create a virtual environment using either `pip` or `Poetry`. Type one of the following commands inside your terminal.
+Use this path when you want to run the published CLI in your own documentation project.
 
-#### Using pip
+### Windows
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install co-op-translator
+translate --help
+```
+
+### macOS / Linux
 
 ```bash
 python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install co-op-translator
+translate --help
 ```
 
-#### Using Poetry
+After installation, create a `.env` file and configure one language model provider before running translation. See [Create a `.env` file](./create-env-file.md) and the full [configuration reference](../../docs/configuration.md).
+
+## Install from a repository clone
+
+Use this path when you want to contribute to Co-op Translator itself.
+
+1. Fork the repository on GitHub.
+2. Clone your fork:
+
+   ```bash
+   git clone https://github.com/<your-account>/co-op-translator.git
+   cd co-op-translator
+   ```
+
+3. Install dependencies with Poetry:
+
+   ```bash
+   poetry install
+   poetry run translate --help
+   ```
+
+If you prefer pip for local development, install the development requirements and then install the package in editable mode:
 
 ```bash
-poetry init
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements-dev.txt
+pip install -e .
+translate --help
 ```
 
-### Activate the virtual environment
+On Windows, replace `source .venv/bin/activate` with:
 
-After creating the virtual environment, you'll need to activate it. The steps differ based on your operating system. Type the following command inside your terminal.
-
-#### For both pip and Poetry
-
-- Windows:
-
-    ```bash
-    .venv\Scripts\activate
-    ```
-
-- Mac/Linux:
-
-    ```bash
-    source .venv/bin/activate
-    ```
-
-#### Using Poetry
-
-1. If you created the environment with Poetry, type the following command inside your terminal to activate it.
-
-    ```bash
-    poetry shell
-    ```
-
-### Installing the Package and required Packages
-
-Once your virtual environment is set up and activated, the next step is to install the necessary dependencies.
-
-### Quick install
-
-Install via Co-Op Translator via pip
-
-```
-pip install co-op-translator
-```
-Or 
-
-Install via poetry
-```
-poetry add co-op-translator
+```powershell
+.venv\Scripts\activate
 ```
 
-#### Using pip (from requirements.txt) if you clone this repo 
+## First translation check
 
-> [!NOTE]
-> Please do NOT do this if you install co-op translator via the quick install.
+Run a narrow Markdown-only command first. This confirms that the CLI, credentials, and output folder are working before you add notebooks or images.
 
-1. If you're using pip, type the following command inside your terminal. It will automatically install the required packages specified in the `requirements.txt` file:
+```bash
+translate -l "ko" -md
+```
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+Image translation requires Azure AI Vision credentials in addition to an LLM provider:
 
-#### Using Poetry (from pyproject.toml)
-
-1. If you're using Poetry, type the following command inside your terminal. It will automatically install the required packages specified in the `pyproject.toml` file:
-
-    ```bash
-    poetry install
-    ```
+```bash
+translate -l "ko" -img
+```

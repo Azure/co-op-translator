@@ -3,11 +3,11 @@
 In this tutorial, we will guide you through setting up your environment variables for Azure services using an *.env* file. Environment variables allow you to securely manage sensitive credentials, such as API keys, without hard-coding them into your codebase.
 
 > [!IMPORTANT]
-> - Only one language model service (Azure OpenAI or OpenAI) needs to be configured. Fill in the environment variables for your preferred service. If environment variables for multiple language models are set, the co-op translator will select one based on priority.
-> - If Computer Vision environment variables are not set, the translator will automatically switch to [Markdown-only mode](./markdown-only-mode.md).
+> - Configure either Azure OpenAI or OpenAI. You do not need both.
+> - Azure AI Vision is required only for image translation. If Vision variables are not set, run text-only commands such as `translate -l "ko" -md` or `translate -l "ko" -nb`.
 
 > [!NOTE]
-> This guide primarily focuses on Azure services, but you can choose any supported language model from the [supported models and services list](../README.md#-supported-models-and-services).
+> This guide focuses on the local `.env` file. For the current provider matrix and command requirements, see the [configuration reference](../../docs/configuration.md).
 
 ## Create the *.env* file
 
@@ -44,7 +44,7 @@ In the root directory of your project, create a file named *.env*. This file wil
     OPENAI_API_KEY="your_openai_api_key"
     OPENAI_ORG_ID="your_openai_org_id"
     OPENAI_CHAT_MODEL_ID="your_chat_model_id(ex. gpt-4o)"
-    OPENAI_BASE_URL="https://api.openai.com/v1 (If you don't have a custom base URL, you can delete this lin, then it will use the default base URL)"
+    OPENAI_BASE_URL="https://api.openai.com/v1" # Optional. Remove this line to use the default OpenAI base URL.
 
     # Optional fallback sets: duplicate the full OPENAI_* set with suffix _1/_2 (same index for all variables)
     ```

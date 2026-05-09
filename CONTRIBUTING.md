@@ -1,6 +1,6 @@
 # Contributing to Co-op Translator
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
@@ -8,53 +8,81 @@ When you submit a pull request, a CLA bot will automatically determine whether y
 a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
 provided by the bot. You will only need to do this once across all repos using our CLA.
 
+## New contributor quick start
+
+1. Fork the repository and create a branch in your fork.
+2. Pick a focused issue, such as a documentation typo, a test improvement, or a small bug fix.
+3. Read the relevant guide before editing:
+   - [Installation guide](./getting_started/command-line-guide/install-package.md)
+   - [Configuration reference](./docs/configuration.md)
+   - [CLI reference](./docs/cli.md)
+4. Make the smallest complete change that addresses the issue.
+5. Run the relevant checks before opening a pull request.
+6. Open a pull request and mention the issue number it addresses.
+
+Helpful GitHub resources:
+
+- [Fork a repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
+- [Create a pull request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request)
+
 ## Development environment setup
 
-To set up the development environment for this project, we recommend using Poetry for managing dependencies. We use `pyproject.toml` to manage project dependencies, and therefore, to install dependencies, you should use Poetry.
+Co-op Translator supports Python 3.10 through 3.12. We recommend Poetry for repository development because it reads the dependency groups from `pyproject.toml`. Use the pip path only when you need an editable local install outside Poetry.
 
-### Create a virtual environment
+### Poetry setup
 
-#### Using pip
-
-```bash
-python -m venv .venv
-```
-
-#### Using Poetry
-
-```bash
-poetry init
-```
-
-### Activate the virtual environment
-
-#### For both pip and Poetry
-
-- Windows:
-
-    ```bash
-    .venv\Scripts\activate.bat
-    ```
-
-- Mac/Linux:
-
-    ```bash
-    source .venv/bin/activate
-    ```
-
-#### Using Poetry
-
-```bash
-poetry shell
-```
-
-### Installing the Package and required Packages
-
-#### Using Poetry (from pyproject.toml)
+Install Poetry, then run the following commands from the repository root:
 
 ```bash
 poetry install
+poetry run translate --help
 ```
+
+### pip setup
+
+Create and activate a virtual environment, then install development dependencies and the editable package.
+
+Windows:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r requirements-dev.txt
+pip install -e .
+translate --help
+```
+
+macOS / Linux:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements-dev.txt
+pip install -e .
+translate --help
+```
+
+### Environment variables
+
+1. Create an `.env` file in the root directory by copying the provided `.env.template` file.
+2. Configure either Azure OpenAI or OpenAI.
+3. Configure Azure AI Vision only when testing image translation.
+
+See the [configuration reference](./docs/configuration.md) for the current variable names and command requirements.
+
+### Quick checks
+
+Run the checks that match your change:
+
+```bash
+poetry run black .
+poetry run ruff check .
+poetry run pytest -m "not api_key_required"
+```
+
+If you are using the pip setup, omit `poetry run`.
 
 ### Manual testing
 
@@ -76,23 +104,23 @@ Before submitting a PR, it's important to test the translation functionality wit
     pip install -e .
     ```
 
-4. Run Co-op Translator on your test documents:
+4. Run Co-op Translator on your test documents. Translation commands require provider credentials in `.env`.
     ```bash
-    python -m co_op_translator --language-codes ko --root-dir test_docs
+    translate -l "ko" -md -r test_docs
     ```
 
-5. Check the translated files in `test_docs/translations` and `test_docs/translated_images` to verify:
+5. Run deterministic review checks. This command does not require API credentials.
+    ```bash
+    co-op-review -l "ko" -r test_docs
+    ```
+
+6. Check the translated files in `test_docs/translations` and `test_docs/translated_images` to verify:
    - The translation quality
    - The metadata comments are correct
    - The original markdown structure is preserved
    - Links and images are working properly
 
 This manual testing helps ensure that your changes work well in real-world scenarios.
-
-### Environment variables
-
-1. Create an `.env` file in the root directory by copying the provided `.env.template` file.
-1. Fill in the environment variables as guided.
 
 > [!TIP]
 >
@@ -102,7 +130,7 @@ This manual testing helps ensure that your changes work well in real-world scena
 >
 > #### GitHub Codespaces
 >
-> You can run this samples virtually by using GitHub Codespaces and no additional settings or setup are required.
+> You can run this sample virtually by using GitHub Codespaces. No additional local setup is required.
 >
 > The button will open a web-based VS Code instance in your browser:
 >
@@ -190,14 +218,14 @@ To run Co-op Translator using Poetry in your environment, follow these steps:
 
 1. Navigate to the directory where you want to perform translation tests or create a temporary folder for testing purposes.
 
-2. Execute the following command. Replace `-l ko` with the language code you wish to translate into. The `-d` flag indicates debug mode.
+2. Execute the following command. Replace `ko` with the language code you wish to translate into. The `-d` flag enables debug mode.
 
     ```bash
-    poetry run co-op-translator translate -l ko -d
+    poetry run translate -l "ko" -md -r test_docs -d
     ```
 
 > [!NOTE]
-> Ensure your Poetry environment is activated (poetry shell) before running the command.
+> Translation commands require provider credentials in `.env`. For deterministic checks without API credentials, run `poetry run co-op-review -l "ko" -r test_docs`.
 
 ## Contribute a new language
 

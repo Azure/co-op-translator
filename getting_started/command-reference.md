@@ -27,6 +27,8 @@ co-op-review -l "language_code"              | Runs deterministic translation re
 co-op-review -l "language_codes" -r "root_dir" | Reviews translations from a specific project root.
 co-op-review -l "language_codes" --changed-from origin/main | Reviews only source files changed against a Git ref.
 co-op-review -l "language_codes" --format github | Prints GitHub-flavored Markdown output for CI summaries.
+co-op-translator-mcp                          | Starts the Co-op Translator MCP server over stdio.
+co-op-translator-mcp --transport streamable-http | Starts the MCP server with the Streamable HTTP transport.
 migrate-links -l "language_codes"             | Reprocess translated Markdown files to update links to notebooks (.ipynb). Prefers translated notebooks when available; otherwise can fall back to original notebooks.
 migrate-links -l "language_codes" -r          | Specify the project root directory (default: current directory).
 migrate-links -l "language_codes" --dry-run   | Show which files would change without writing changes.
@@ -103,3 +105,14 @@ migrate-links -l "all" -y                      | Process all languages and auto-
   4. Review only changed source files in a pull request: co-op-review -l "ko" --changed-from origin/main
 
   5. Emit GitHub-flavored Markdown for workflow summaries: co-op-review -l "ko" --changed-from origin/main --format github
+
+### MCP Server Examples
+
+> [!NOTE]
+> `co-op-translator-mcp` exposes Co-op Translator's public APIs as MCP tools. Repository translation tools default to dry-run behavior and require explicit confirmation before writing files.
+
+  1. Start the default stdio server: co-op-translator-mcp
+
+  2. Start with an explicit transport: co-op-translator-mcp --transport stdio
+
+  3. Start with Streamable HTTP: co-op-translator-mcp --transport streamable-http

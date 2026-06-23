@@ -46,6 +46,7 @@ translate = "co_op_translator.__main__:main"
 evaluate = "co_op_translator.__main__:main"
 migrate-links = "co_op_translator.__main__:main"
 co-op-review = "co_op_translator.__main__:main"
+co-op-translator-mcp = "co_op_translator.mcp.server:main"
 ```
 
 `src/co_op_translator/__main__.py` dispatches by script name:
@@ -55,12 +56,33 @@ co-op-review = "co_op_translator.__main__:main"
 - `migrate-links` calls `co_op_translator.cli.migrate_links.migrate_links_command`
 - `co-op-review` calls `co_op_translator.cli.review.review_command`
 
+`co-op-translator-mcp` bypasses `__main__.py` and calls `co_op_translator.mcp.server:main` directly.
+
 When adding or changing CLI options, update:
 
 - the relevant `src/co_op_translator/cli/*.py` command
 - `getting_started/command-reference.md`
 - `docs/cli.md`
 - CLI-related tests, if behavior changes
+
+## MCP server
+
+The MCP server is implemented in:
+
+```python
+co_op_translator.mcp.server
+```
+
+The server intentionally wraps the public Python API rather than calling lower-level `core` modules. Keep this boundary intact so MCP clients, Python callers, and the CLI share the same behavior.
+
+When adding or changing MCP tools, update:
+
+- `src/co_op_translator/mcp/server.py`
+- `tests/co_op_translator/test_mcp_server.py`
+- `docs/mcp.md`
+- `docs/api.md` if the public API surface changes
+
+Repository translation tools are model-callable through MCP and can write many files. Keep `dry_run=True` as the default and require `confirm_write=True` before non-dry-run project translation.
 
 ## Translation flow
 

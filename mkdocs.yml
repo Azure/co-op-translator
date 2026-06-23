@@ -80,5 +80,6 @@ nav:
   - Configuration: configuration.md
   - Examples: examples.md
   - Python API: api.md
+  - MCP Server: mcp.md
   - CLI Reference: cli.md
   - Maintainer Guide: maintainer-guide.md

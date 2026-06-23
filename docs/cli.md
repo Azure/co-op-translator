@@ -1,13 +1,14 @@
 # CLI Reference
 
-Co-op Translator installs four command-line entry points:
+Co-op Translator installs these command-line entry points:
 
 - `translate`
 - `evaluate`
 - `migrate-links`
 - `co-op-review`
+- `co-op-translator-mcp`
 
-The dispatch logic lives in `co_op_translator.__main__`, which selects the command implementation based on the invoked script name.
+The `translate`, `evaluate`, `migrate-links`, and `co-op-review` commands dispatch through `co_op_translator.__main__`, which selects the command implementation based on the invoked script name. The MCP server uses `co_op_translator.mcp.server` directly.
 
 ## translate
 
@@ -164,6 +165,22 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 | `--format` | No | Output format: `text` or `github`. Defaults to `text`. |
 
 `co-op-review` currently checks for missing translated files, missing or stale translation metadata, Markdown frontmatter and code fence integrity, invalid translated notebook JSON, and missing local Markdown or image link targets. Missing links are warnings by default; structural and freshness problems fail the command.
+
+## co-op-translator-mcp
+
+Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+
+```bash
+co-op-translator-mcp
+```
+
+The default transport is `stdio`. See the [MCP Server](mcp.md) guide for client configuration, tools, resources, and safety notes.
+
+### Options
+
+| Option | Required | Description |
+| --- | --- | --- |
+| `--transport` | No | MCP transport: `stdio`, `streamable-http`, or `sse`. Defaults to `stdio`. |
 
 ## migrate-links
 

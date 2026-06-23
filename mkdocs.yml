@@ -77,8 +77,9 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Choose Your Workflow: workflows.md
   - Configuration: configuration.md
+  - CLI Reference: cli.md
   - Python API: api.md
   - MCP Server: mcp.md
-  - CLI Reference: cli.md
   - Maintainer Guide: maintainer-guide.md

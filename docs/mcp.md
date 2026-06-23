@@ -4,6 +4,8 @@ Co-op Translator includes a Model Context Protocol server for agents, editors, a
 
 For the default local setup, users do not keep a separate server running by hand. They configure their MCP client, and the client starts `co-op-translator-mcp` automatically over `stdio` when it needs Co-op Translator tools.
 
+If you are deciding between CLI, Python API, and MCP, start with [Choose Your Workflow](workflows.md).
+
 Use MCP when an agent or editor should call Co-op Translator directly:
 
 | User goal | MCP tools |

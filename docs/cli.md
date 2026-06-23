@@ -10,6 +10,8 @@ Co-op Translator installs these command-line entry points:
 
 The `translate`, `evaluate`, `migrate-links`, and `co-op-review` commands dispatch through `co_op_translator.__main__`, which selects the command implementation based on the invoked script name. The MCP server uses `co_op_translator.mcp.server` directly.
 
+If you are deciding between CLI, Python API, and MCP, start with [Choose Your Workflow](workflows.md).
+
 ## First-Time CLI Flow
 
 Start here if you are using Co-op Translator from a terminal:

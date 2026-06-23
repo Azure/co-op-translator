@@ -10,7 +10,7 @@ from semantic_kernel.connectors.ai.chat_completion_client_base import (
 from semantic_kernel.contents.chat_history import ChatHistory
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
 from co_op_translator.utils.common.env_set_utils import run_with_env_set_fallback_async
-from co_op_translator.utils.llm.markdown_utils import SPLIT_DELIMITER
+from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 

@@ -1,15 +1,24 @@
 """File utility modules split by responsibility."""
 
-from .cleanup import (
+from co_op_translator.utils.common.files.cleanup import (
     delete_translated_images_by_language_code,
     delete_translated_markdown_files_by_language_code,
     reset_translation_directories,
 )
-from .discovery import filter_files
-from .image_migration import migrate_images_to_webp, migrate_translated_image_filenames
-from .io import handle_empty_document, read_input_file, write_output_file
-from .link_canonicalization import canonicalize_image_links_in_translations
-from .paths import (
+from co_op_translator.utils.common.files.discovery import filter_files
+from co_op_translator.utils.common.files.image_migration import (
+    migrate_images_to_webp,
+    migrate_translated_image_filenames,
+)
+from co_op_translator.utils.common.files.io import (
+    handle_empty_document,
+    read_input_file,
+    write_output_file,
+)
+from co_op_translator.utils.common.files.link_canonicalization import (
+    canonicalize_image_links_in_translations,
+)
+from co_op_translator.utils.common.files.paths import (
     HASH_PREFIX_LENGTH,
     generate_translated_filename,
     get_actual_image_path,
@@ -17,7 +26,7 @@ from .paths import (
     get_unique_id,
     map_original_to_translated,
 )
-from .readme_templates import (
+from co_op_translator.utils.common.files.readme_templates import (
     OTHER_COURSES_END,
     OTHER_COURSES_START,
     LANG_TABLE_END,

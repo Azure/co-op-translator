@@ -9,8 +9,11 @@ import json
 import logging
 from pathlib import Path
 
-from .markdown_translator import MarkdownTranslator
-from co_op_translator.utils.common.metadata_utils import calculate_file_hash
+from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
+from co_op_translator.utils.markdown.path_rewriter import (
+    MarkdownPathRewritePolicy,
+    rewrite_markdown_paths,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -45,12 +48,65 @@ class JupyterNotebookTranslator:
             lang_subdir=self.lang_subdir,
         )
 
+    def _get_notebook_target_path(
+        self,
+        notebook_path: Path,
+        language_code: str,
+        target_path: str | Path | None = None,
+    ) -> Path | None:
+        if target_path is not None:
+            return Path(target_path).resolve()
+        if self.root_dir is None:
+            return None
+
+        root_dir = Path(self.root_dir).resolve()
+        try:
+            relative_path = notebook_path.resolve().relative_to(root_dir)
+        except ValueError:
+            return None
+
+        translations_dir = (
+            Path(self.translations_dir)
+            if self.translations_dir is not None
+            else root_dir / "translations"
+        )
+        language_root = translations_dir / language_code
+        if self.lang_subdir:
+            language_root = language_root / self.lang_subdir
+        return (language_root / relative_path).resolve()
+
+    def _rewrite_markdown_cell_paths(
+        self,
+        content: str,
+        notebook_path: Path,
+        target_notebook_path: Path | None,
+        language_code: str,
+        translation_types: list[str],
+    ) -> str:
+        if target_notebook_path is None or self.root_dir is None:
+            return content
+
+        return rewrite_markdown_paths(
+            content,
+            source_path=notebook_path,
+            target_path=target_notebook_path,
+            policy=MarkdownPathRewritePolicy(
+                language_code=language_code,
+                root_dir=self.root_dir,
+                translations_dir=self.translations_dir,
+                translated_images_dir=self.image_dir,
+                translation_types=translation_types,
+                lang_subdir=self.lang_subdir,
+            ),
+        )
+
     async def translate_notebook(
         self,
         notebook_path: str | Path,
         language_code: str,
         use_translated_images: bool = True,
         add_disclaimer: bool = True,
+        target_path: str | Path | None = None,
     ) -> str:
         """Translate a Jupyter Notebook file to the target language.
 
@@ -63,18 +119,19 @@ class JupyterNotebookTranslator:
             language_code: Target language code
             use_translated_images: Whether to use translated images (False = skip image translation)
             add_disclaimer: Add disclaimer cell at the end of notebook if True
+            target_path: Optional translated notebook path used as the relative-link base
 
         Returns:
             str: The translated notebook content as JSON string
         """
         notebook_path = Path(notebook_path)
+        target_notebook_path = self._get_notebook_target_path(
+            notebook_path, language_code, target_path=target_path
+        )
 
         # Read the notebook file
         with open(notebook_path, "r", encoding="utf-8") as f:
             notebook = json.load(f)
-
-        # Compute notebook-level hash of the original file content
-        original_hash = calculate_file_hash(notebook_path)
 
         # Track which cells were translated for logging
         translated_cells = 0
@@ -112,11 +169,17 @@ class JupyterNotebookTranslator:
                         await self.markdown_translator.translate_markdown(
                             markdown_content,
                             language_code,
-                            notebook_path,
-                            translation_types=notebook_translation_types,
+                            source_path=notebook_path,
                             add_metadata=False,
                             add_disclaimer=False,
                         )
+                    )
+                    translated_content = self._rewrite_markdown_cell_paths(
+                        translated_content,
+                        notebook_path,
+                        target_notebook_path,
+                        language_code,
+                        notebook_translation_types,
                     )
 
                     # Convert back to the original format (list or string)

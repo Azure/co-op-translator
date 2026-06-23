@@ -20,8 +20,8 @@ from co_op_translator.utils.common.lang_utils import (
     ALIAS_TO_BCP47,
 )
 
-from .directory_manager import DirectoryManager
-from .translation import TranslationManager
+from co_op_translator.core.project.directory_manager import DirectoryManager
+from co_op_translator.core.project.translation import TranslationManager
 from co_op_translator.utils.common.file_utils import read_input_file
 from co_op_translator.utils.common.token_estimation import count_tokens
 
@@ -302,7 +302,6 @@ class ProjectTranslator:
                 # drop first part (lang code)
                 if len(rel.parts) < 2:
                     raise ValueError("Unexpected translation path structure")
-                lang_code = rel.parts[0]
                 orig_rel = Path(*rel.parts[1:])
                 orig_file = (self.root_dir / orig_rel).resolve()
 

@@ -2,7 +2,7 @@ import logging
 import re
 from typing import Awaitable, Callable, Dict, List, Tuple
 
-from co_op_translator.utils.llm.markdown_utils import SPLIT_DELIMITER
+from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
 
 logger = logging.getLogger(__name__)
 

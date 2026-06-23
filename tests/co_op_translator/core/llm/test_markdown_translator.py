@@ -4,7 +4,7 @@ import re
 
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.utils.common.lang_utils import get_supported_language_codes
-from co_op_translator.utils.llm.markdown_utils import SPLIT_DELIMITER
+from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
 
 # A sample markdown with a code block and a link for testing.
 TEST_MD_CONTENT = """
@@ -159,7 +159,6 @@ async def test_translate_markdown_partial_mock(real_markdown_translator, tmp_pat
     """Test the translation logic using the real code for:
     - replace_code_blocks
     - restore_code_blocks
-    - update_links
     but mock _run_prompt to avoid calling a real external translator.
 
     This ensures we verify the actual internal workflow,
@@ -201,7 +200,7 @@ async def test_translate_markdown_partial_mock(real_markdown_translator, tmp_pat
 
         # Execute the markdown translation
         result = await real_markdown_translator.translate_markdown(
-            document=TEST_MD_CONTENT, language_code="es", md_file_path=test_file
+            document=TEST_MD_CONTENT, language_code="es", source_path=test_file
         )
 
         # Verify that the code block content is still present in the final output
@@ -218,6 +217,37 @@ async def test_translate_markdown_partial_mock(real_markdown_translator, tmp_pat
         assert (
             mock_run_prompt.call_count > 0
         ), "Expected at least one call to _run_prompt for the translation process."
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_skips_project_path_rewrite(
+    real_markdown_translator,
+):
+    """Content-only translation should keep links as translated by the model."""
+
+    document = "# Sample\n\n![Hero](images/hero.png)\n"
+
+    async def fake_prompt(prompt, index, total):
+        if "Disclaimer" in prompt.lower():
+            return "Aviso Legal: Este es un documento traducido."
+        if "# Sample" in prompt:
+            _, body = prompt.split(SPLIT_DELIMITER, 1)
+            return body.replace("# Sample", "# Ejemplo")
+        return prompt
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        result = await real_markdown_translator.translate_markdown(
+            document,
+            "es",
+        )
+
+    assert "# Ejemplo" in result
+    assert "![Hero](images/hero.png)" in result
+    assert "translated_images" not in result
 
 
 @pytest.mark.asyncio
@@ -260,7 +290,7 @@ async def test_translate_markdown_translates_code_comments(
         result = await real_markdown_translator.translate_markdown(
             document=TEST_MD_WITH_COMMENTS,
             language_code="es",
-            md_file_path=test_file,
+            source_path=test_file,
         )
 
     # Code line must remain intact
@@ -310,7 +340,7 @@ async def test_translate_markdown_translates_mermaid_block(
         result = await real_markdown_translator.translate_markdown(
             document=TEST_MD_WITH_MERMAID,
             language_code="es",
-            md_file_path=test_file,
+            source_path=test_file,
         )
 
     # Mermaid syntax must still be present
@@ -352,7 +382,7 @@ async def test_translate_markdown_keeps_mermaid_closing_fence_separate_from_text
         result = await real_markdown_translator.translate_markdown(
             document=TEST_MD_WITH_MERMAID_AND_PARAGRAPH,
             language_code="ja",
-            md_file_path=test_file,
+            source_path=test_file,
             add_metadata=False,
             add_disclaimer=False,
         )
@@ -400,7 +430,7 @@ async def test_translate_markdown_preserves_details_blocks(
         result = await real_markdown_translator.translate_markdown(
             document=TEST_MD_WITH_DETAILS,
             language_code="es",
-            md_file_path=test_file,
+            source_path=test_file,
         )
 
     # <details>/<summary> HTML structure should be preserved
@@ -447,7 +477,7 @@ async def test_translate_markdown_keeps_internal_links_inside_code_blocks_unchan
         result = await real_markdown_translator.translate_markdown(
             document=TEST_MD_WITH_INTERNAL_LINK_IN_CODE,
             language_code="ko",
-            md_file_path=test_file,
+            source_path=test_file,
         )
 
     assert "- [섹션 1](#섹션-1)" in result
@@ -465,7 +495,7 @@ async def test_translate_markdown_full_integration(real_markdown_translator, tmp
 
     try:
         result = await real_markdown_translator.translate_markdown(
-            document=TEST_MD_CONTENT, language_code="es", md_file_path=test_file
+            document=TEST_MD_CONTENT, language_code="es", source_path=test_file
         )
     except NotImplementedError:
         pytest.skip(

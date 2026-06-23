@@ -12,8 +12,10 @@ class FakeMarkdownTranslator:
     def __init__(self):
         self.calls = []
 
-    async def translate_markdown(self, document, language_code, file_path, **kwargs):
-        self.calls.append((document, language_code, Path(file_path), kwargs))
+    async def translate_markdown(
+        self, document, language_code, source_path=None, **kwargs
+    ):
+        self.calls.append((document, language_code, Path(source_path), kwargs))
         return f"# Translated {language_code}\n\n{document}"
 
 
@@ -34,10 +36,21 @@ class FakeNotebookTranslator:
         self.calls = []
 
     async def translate_notebook(
-        self, file_path, language_code, use_translated_images=True, add_disclaimer=True
+        self,
+        file_path,
+        language_code,
+        use_translated_images=True,
+        add_disclaimer=True,
+        target_path=None,
     ):
         self.calls.append(
-            (Path(file_path), language_code, use_translated_images, add_disclaimer)
+            (
+                Path(file_path),
+                language_code,
+                use_translated_images,
+                add_disclaimer,
+                Path(target_path) if target_path is not None else None,
+            )
         )
         notebook = json.loads(Path(file_path).read_text(encoding="utf-8"))
         notebook.setdefault("metadata", {})["translated_to"] = language_code

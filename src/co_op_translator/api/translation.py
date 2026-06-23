@@ -2,8 +2,9 @@ import importlib.resources
 import logging
 import os
 from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Mapping
 
 import click
 import yaml
@@ -11,6 +12,7 @@ import yaml
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.vision_config.config import VisionConfig
+from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.glossary import glossary_terms_scope
@@ -27,8 +29,65 @@ from co_op_translator.utils.common.metadata_utils import (
 )
 from co_op_translator.utils.common.token_estimation import estimate_translation_tokens
 from co_op_translator.utils.common.word_estimation import estimate_translation_words
+from co_op_translator.utils.markdown.path_rewriter import (
+    MarkdownPathRewritePolicy,
+    rewrite_markdown_paths as rewrite_markdown_paths_for_project,
+)
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class MarkdownTranslationOptions:
+    """Options for content-only markdown translation."""
+
+    source_path: str | Path | None = None
+    add_metadata: bool = False
+    add_disclaimer: bool = False
+
+
+def _coerce_markdown_translation_options(
+    options: MarkdownTranslationOptions | Mapping[str, object] | None,
+) -> MarkdownTranslationOptions:
+    if options is None:
+        return MarkdownTranslationOptions()
+    if isinstance(options, MarkdownTranslationOptions):
+        return options
+    return MarkdownTranslationOptions(**dict(options))
+
+
+async def translate_markdown_content(
+    document: str,
+    language_code: str,
+    options: MarkdownTranslationOptions | Mapping[str, object] | None = None,
+) -> str:
+    """Translate markdown content without project path rewriting or file I/O."""
+
+    resolved_options = _coerce_markdown_translation_options(options)
+    translator = MarkdownTranslator.create()
+    return await translator.translate_markdown(
+        document,
+        language_code,
+        source_path=resolved_options.source_path,
+        add_metadata=resolved_options.add_metadata,
+        add_disclaimer=resolved_options.add_disclaimer,
+    )
+
+
+def rewrite_markdown_paths(
+    content: str,
+    source_path: str | Path,
+    target_path: str | Path,
+    policy: MarkdownPathRewritePolicy | Mapping[str, object],
+) -> str:
+    """Rewrite markdown/frontmatter paths for a translated project target."""
+
+    return rewrite_markdown_paths_for_project(
+        content,
+        source_path=source_path,
+        target_path=target_path,
+        policy=policy,
+    )
 
 
 def compute_pretranslation_virtual_inputs(
@@ -533,3 +592,9 @@ def run_translation(
                     repo_url=repo_url,
                     dry_run=dry_run,
                 )
+
+
+def translate_project(*args, **kwargs) -> None:
+    """Programmatic project translation entrypoint."""
+
+    return run_translation(*args, **kwargs)

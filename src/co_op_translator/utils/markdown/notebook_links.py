@@ -144,6 +144,7 @@ def update_notebook_links(
     translations_dir: Path,
     root_dir: Path,
     use_translated_notebook: bool = True,
+    target_path: Path | None = None,
 ) -> str:
     """
     Update links to .ipynb files in markdown content.
@@ -186,9 +187,13 @@ def update_notebook_links(
         try:
             # Determine directory of the translated markdown (target doc location)
             translated_md_dir = (
-                translations_dir
-                / language_code
-                / md_file_path.relative_to(root_dir).parent
+                Path(target_path).parent.resolve()
+                if target_path is not None
+                else (
+                    translations_dir
+                    / language_code
+                    / md_file_path.relative_to(root_dir).parent
+                )
             )
 
             # Resolve the original linked notebook absolute path

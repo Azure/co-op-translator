@@ -2,7 +2,7 @@
 Migrate-links command: reprocess translated markdowns that contain .ipynb links
 to update them to translated notebooks when available (and keep originals otherwise).
 
-This performs link-only processing using utils.llm.markdown_utils.update_links(),
+This performs link-only processing using markdown link utilities,
 so there are no LLM calls and it's fast and idempotent.
 """
 
@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 from tqdm import tqdm
 
 from co_op_translator.config.base_config import Config
-from co_op_translator.utils.llm.markdown_utils import (
+from co_op_translator.utils.markdown.notebook_links import (
     migrate_notebook_links,
     update_notebook_links,
 )
@@ -207,10 +207,6 @@ def migrate_links_command(
 
                 # Analyze .ipynb links within root for this file
                 actionable_links = []
-                already_translated = (
-                    True  # assume already translated until proven otherwise
-                )
-                missing_translation = True  # assume missing until we find at least one translated counterpart
 
                 for alt_text, link in re.findall(r"\[(.*?)\]\((.*?)\)", content):
                     # Normalize possible angle-bracketed URL and strip markdown title
@@ -296,8 +292,6 @@ def migrate_links_command(
                         candidate_translated is None
                         or not candidate_translated.exists()
                     ):
-                        # There is at least one link without translated counterpart
-                        already_translated = False
                         continue
 
                     all_missing = False
@@ -314,7 +308,6 @@ def migrate_links_command(
 
                     if link != expected_link:
                         needs_update = True
-                        already_translated = False
 
                 if needs_update:
                     total_candidates_updatable += 1

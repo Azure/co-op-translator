@@ -367,3 +367,78 @@ async def test_run_translation_accepts_glossaries_and_restores_previous_terms(tm
         )
     finally:
         set_glossary_terms([])
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_content_uses_content_only_translator(monkeypatch):
+    class FakeMarkdownTranslator:
+        def __init__(self):
+            self.calls = []
+
+        async def translate_markdown(self, document, language_code, **kwargs):
+            self.calls.append((document, language_code, kwargs))
+            return f"translated:{language_code}:{document}"
+
+    fake = FakeMarkdownTranslator()
+    monkeypatch.setattr(api.MarkdownTranslator, "create", MagicMock(return_value=fake))
+
+    result = await api.translate_markdown_content(
+        "# Hello",
+        "ko",
+        {
+            "source_path": "docs/guide.md",
+            "add_metadata": False,
+            "add_disclaimer": True,
+        },
+    )
+
+    assert result == "translated:ko:# Hello"
+    assert fake.calls == [
+        (
+            "# Hello",
+            "ko",
+            {
+                "source_path": "docs/guide.md",
+                "add_metadata": False,
+                "add_disclaimer": True,
+            },
+        )
+    ]
+
+
+def test_rewrite_markdown_paths_uses_target_path(tmp_path):
+    root_dir = tmp_path
+    source_path = root_dir / "docs" / "guide.md"
+    target_path = root_dir / "out" / "ko" / "docs" / "guide.md"
+    image_path = root_dir / "docs" / "images" / "hero.png"
+
+    source_path.parent.mkdir(parents=True)
+    image_path.parent.mkdir(parents=True)
+    source_path.write_text("# Guide", encoding="utf-8")
+    image_path.write_text("image", encoding="utf-8")
+
+    content = """---
+title: Guide
+image: images/hero.png
+---
+# Guide
+
+![Hero](images/hero.png)
+"""
+
+    rewritten = api.rewrite_markdown_paths(
+        content,
+        source_path=source_path,
+        target_path=target_path,
+        policy={
+            "language_code": "ko",
+            "root_dir": root_dir,
+            "translations_dir": root_dir / "out",
+            "translated_images_dir": root_dir / "translated_images",
+            "translation_types": ["markdown", "images"],
+        },
+    )
+
+    assert "translated_images/ko/hero." in rewritten
+    assert "images/hero.png" not in rewritten
+    assert "../../../translated_images/ko/" in rewritten

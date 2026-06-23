@@ -8,14 +8,15 @@ from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.utils.common.metadata_utils import (
     extract_metadata_from_content,
     extract_content_without_metadata,
-    read_text_metadata_for_source,
     save_text_metadata_for_source,
 )
-from co_op_translator.utils.llm.markdown_utils import (
+from co_op_translator.utils.markdown.evaluation import (
     generate_evaluation_prompt,
+    extract_json_from_markdown_codeblock,
+)
+from co_op_translator.utils.markdown.processing import (
     process_markdown,
     replace_code_blocks,
-    extract_json_from_markdown_codeblock,
 )
 from co_op_translator.config.font_config import FontConfig
 
@@ -57,7 +58,6 @@ def evaluate_translation_rule_based(
     chunks = clean_translated_content.split("\n\n")
 
     # Check if there's at least one chunk
-    has_disclaimer = False
     if chunks:
         # Get the last chunk and split it into lines
         last_chunk = chunks[-1]
@@ -65,7 +65,6 @@ def evaluate_translation_rule_based(
 
         # Check if the last line of the last chunk contains the disclaimer marker
         if lines and disclaimer_marker in lines[-1]:
-            has_disclaimer = True
             logging.debug("Found disclaimer in last line of last chunk")
 
             # If the last chunk is just the disclaimer, remove the entire chunk

@@ -9,7 +9,7 @@ from unittest.mock import patch
 from co_op_translator.core.llm.providers.openai.markdown_evaluator import (
     OpenAIMarkdownEvaluator,
 )
-from co_op_translator.utils.llm.markdown_utils import generate_evaluation_prompt
+from co_op_translator.utils.markdown.evaluation import generate_evaluation_prompt
 
 
 # Sample test data for markdown evaluation

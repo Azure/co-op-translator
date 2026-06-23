@@ -18,7 +18,7 @@ from typing import Dict, List, Tuple, Any, Optional
 from urllib.parse import urlparse
 import yaml
 from importlib import resources
-from co_op_translator.utils.llm.markdown_utils import (
+from co_op_translator.utils.markdown.image_links import (
     build_translated_image_link,
     get_translated_markdown_dir,
 )
@@ -434,6 +434,7 @@ def adjust_frontmatter_links(
     translated_images_dir: Path,
     translation_types: List[str],
     lang_subdir: Path | None = None,
+    target_path: Path | None = None,
 ) -> Dict[str, Any]:
     """Adjust file paths in frontmatter fields to point to correct locations.
 
@@ -466,6 +467,7 @@ def adjust_frontmatter_links(
             translations_dir,
             root_dir,
             lang_subdir=lang_subdir,
+            target_path=target_path,
         )
     except ValueError:
         logger.warning(

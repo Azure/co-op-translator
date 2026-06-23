@@ -4,7 +4,7 @@ import logging
 import re
 from pathlib import Path
 
-from .paths import HASH_PREFIX_LENGTH
+from co_op_translator.utils.common.files.paths import HASH_PREFIX_LENGTH
 
 logger = logging.getLogger(__name__)
 

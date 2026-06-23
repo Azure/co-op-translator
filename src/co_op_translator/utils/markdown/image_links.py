@@ -22,8 +22,12 @@ def get_translated_markdown_dir(
     translations_dir: Path,
     root_dir: Path,
     lang_subdir: Path | None = None,
+    target_path: Path | None = None,
 ) -> Path:
     """Return the directory containing the translated markdown file."""
+    if target_path is not None:
+        return Path(target_path).parent.resolve()
+
     language_root = translations_dir / language_code
     if lang_subdir:
         language_root = language_root / Path(lang_subdir)
@@ -76,6 +80,7 @@ def update_image_links(
     translated_images_dir: Path,
     root_dir: Path,
     use_translated_images: bool = True,
+    target_path: Path | None = None,
 ) -> str:
     """
     Update image links in markdown content based on mode and Azure AI Service availability.
@@ -126,6 +131,7 @@ def update_image_links(
                     language_code,
                     translations_dir,
                     root_dir,
+                    target_path=target_path,
                 )
 
                 if not use_translated_images:
@@ -203,6 +209,7 @@ def update_image_links(
                 language_code,
                 translations_dir,
                 root_dir,
+                target_path=target_path,
             )
 
             if not use_translated_images:

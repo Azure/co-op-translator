@@ -5,7 +5,7 @@ from importlib import resources
 
 from co_op_translator.glossary import inject_markdown_glossary
 
-from .constants import SPLIT_DELIMITER
+from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
 
 logger = logging.getLogger(__name__)
 

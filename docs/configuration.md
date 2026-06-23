@@ -4,6 +4,8 @@ Co-op Translator requires one language model provider. Image translation additio
 
 Configuration is read from environment variables. For local projects, place them in a `.env` file at the project root.
 
+For Azure resource setup, see [Azure AI Setup](azure-ai-setup.md).
+
 ## Local runtime setup
 
 Use a virtual environment before running the CLI locally. Co-op Translator supports Python 3.10 through 3.12.

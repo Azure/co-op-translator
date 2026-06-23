@@ -105,6 +105,9 @@ If no type flag is provided, `translate` processes Markdown, notebooks, and imag
 
 Evaluate translated Markdown quality for one language.
 
+!!! warning "Experimental"
+    `evaluate` is experimental. It can use rule-based and LLM-based quality checks, writes evaluation results into translation metadata, and its scoring model and metadata behavior may change.
+
 ```bash
 evaluate -l "ko"
 ```
@@ -146,6 +149,9 @@ By default, `evaluate` uses both rule-based and LLM-based evaluation. Results ar
 ## co-op-review
 
 Run deterministic translation maintenance checks without API credentials.
+
+!!! note "Beta"
+    `co-op-review` is a beta deterministic review command. It does not call model providers or write files, but its checks and issue output schema may evolve.
 
 ```bash
 co-op-review -l "ko"
@@ -329,10 +335,10 @@ Run CI-friendly Markdown translation:
 translate -l "ko ja" -md -y -s
 ```
 
-Review translated Markdown and notebooks:
+Review translated output:
 
 ```bash
-co-op-review -l "ko ja" -md -nb
+co-op-review -l "ko ja"
 ```
 
 Preview link migration:

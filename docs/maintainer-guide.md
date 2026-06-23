@@ -61,7 +61,6 @@ co-op-translator-mcp = "co_op_translator.mcp.server:main"
 When adding or changing CLI options, update:
 
 - the relevant `src/co_op_translator/cli/*.py` command
-- `getting_started/command-reference.md`
 - `docs/cli.md`
 - CLI-related tests, if behavior changes
 
@@ -133,6 +132,8 @@ mkdocs.yml
 requirements-docs.txt
 docs/
 ```
+
+The `docs/` directory is the canonical documentation source. Do not add new end-user guides outside this directory unless the project intentionally introduces another published documentation surface.
 
 Build locally:
 

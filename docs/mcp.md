@@ -174,6 +174,9 @@ To allow writes, the caller must set both `dry_run=false` and `confirm_write=tru
 
 Use `run_review` for deterministic checks that do not require LLM or Vision credentials:
 
+!!! note "Beta"
+    MCP exposes the beta `run_review` API. It is safe for read-only review workflows, but review checks and issue schemas may evolve.
+
 ```json
 {
   "language_codes": "ko ja",

@@ -20,10 +20,6 @@ from co_op_translator.utils.markdown.notebook_links import (
     migrate_notebook_links,
     update_notebook_links,
 )
-from co_op_translator.utils.markdown.path_rewriter import (
-    MarkdownPathRewritePolicy,
-    rewrite_markdown_paths,
-)
 from co_op_translator.utils.markdown.processing import (
     _group_lines_preserving_list_items,
     _parse_markdown_text_and_code_parts,
@@ -44,7 +40,6 @@ from co_op_translator.utils.markdown.prompts import (
 
 __all__ = [
     "SPLIT_DELIMITER",
-    "MarkdownPathRewritePolicy",
     "_group_lines_preserving_list_items",
     "_parse_markdown_text_and_code_parts",
     "_read_language_prompt_template",
@@ -64,7 +59,6 @@ __all__ = [
     "process_markdown_with_many_links",
     "replace_code_blocks",
     "restore_code_blocks",
-    "rewrite_markdown_paths",
     "split_markdown_content",
     "update_image_links",
     "update_links",

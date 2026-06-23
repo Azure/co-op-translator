@@ -383,8 +383,6 @@ async def test_translate_markdown_keeps_mermaid_closing_fence_separate_from_text
             document=TEST_MD_WITH_MERMAID_AND_PARAGRAPH,
             language_code="ja",
             source_path=test_file,
-            add_metadata=False,
-            add_disclaimer=False,
         )
 
     assert "end\n```\nユニバーサルコネクターにより" in result
@@ -509,41 +507,3 @@ async def test_translate_markdown_full_integration(real_markdown_translator, tmp
         "[Default Translation]" in result
     ), "Expected the default translation text in the output."
 
-
-def test_insert_metadata_comment_after_frontmatter(tmp_path):
-    translator = ConcreteMarkdownTranslator(root_dir=tmp_path)
-
-    content_with_frontmatter = """---
-layout: ../layouts/DocsLayout.astro
-title: Co-op Translator - Quick Start Guide
----
-
-# Heading
-Body
-"""
-
-    metadata = {
-        "original_hash": "hash",
-        "translation_date": "2025-10-15T03:44:55+00:00",
-        "source_file": "README.md",
-        "language_code": "sw",
-    }
-    metadata_comment = translator.format_metadata_comment(metadata)
-
-    result = translator._insert_metadata_comment(
-        content_with_frontmatter, metadata_comment
-    )
-
-    lines = result.splitlines()
-
-    assert lines[0] == "---"
-    assert lines[1].startswith("layout:")
-    assert lines[2].startswith("title:")
-    assert lines[3] == "---"
-
-    # There should be a blank line after frontmatter, then the metadata comment
-    assert lines[4] == ""
-    assert lines[5] == "<!--"
-
-    # CO_OP_TRANSLATOR_METADATA label should appear inside the comment block
-    assert any("CO_OP_TRANSLATOR_METADATA:" in line for line in lines)

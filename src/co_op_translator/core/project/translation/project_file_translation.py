@@ -29,6 +29,21 @@ logger = logging.getLogger(__name__)
 
 
 class ProjectFileTranslationMixin:
+    async def _append_markdown_disclaimer(
+        self, content: str, language_code: str
+    ) -> str:
+        if not self.add_disclaimer:
+            return content
+
+        disclaimer = await self.markdown_translator.generate_disclaimer(language_code)
+        if not disclaimer:
+            return content
+
+        start_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER START -->"
+        end_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER END -->"
+        disclaimer_block = f"{start_marker}\n{disclaimer}\n{end_marker}"
+        return content + "\n\n---\n\n" + disclaimer_block
+
     def _rewrite_markdown_paths_for_target(
         self,
         content: str,
@@ -125,8 +140,6 @@ class ProjectFileTranslationMixin:
                     document,
                     language_code,
                     source_path=file_path,
-                    add_metadata=False,
-                    add_disclaimer=self.add_disclaimer,
                 )
             )
             translated_content = self._rewrite_markdown_paths_for_target(
@@ -151,8 +164,6 @@ class ProjectFileTranslationMixin:
                         document,
                         language_code,
                         source_path=file_path,
-                        add_metadata=False,
-                        add_disclaimer=self.add_disclaimer,
                     )
                 )
                 translated_content = self._rewrite_markdown_paths_for_target(
@@ -168,6 +179,10 @@ class ProjectFileTranslationMixin:
                     raise RuntimeError(
                         f"Markdown translation retry returned empty content for {file_path}"
                     )
+
+            translated_content = await self._append_markdown_disclaimer(
+                translated_content, language_code
+            )
 
             translated_path.parent.mkdir(parents=True, exist_ok=True)
 

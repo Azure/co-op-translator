@@ -387,8 +387,6 @@ async def test_translate_markdown_content_uses_content_only_translator(monkeypat
         "ko",
         {
             "source_path": "docs/guide.md",
-            "add_metadata": False,
-            "add_disclaimer": True,
         },
     )
 
@@ -399,8 +397,6 @@ async def test_translate_markdown_content_uses_content_only_translator(monkeypat
             "ko",
             {
                 "source_path": "docs/guide.md",
-                "add_metadata": False,
-                "add_disclaimer": True,
             },
         )
     ]

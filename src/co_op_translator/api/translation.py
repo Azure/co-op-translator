@@ -42,8 +42,6 @@ class MarkdownTranslationOptions:
     """Options for content-only markdown translation."""
 
     source_path: str | Path | None = None
-    add_metadata: bool = False
-    add_disclaimer: bool = False
 
 
 def _coerce_markdown_translation_options(
@@ -69,8 +67,6 @@ async def translate_markdown_content(
         document,
         language_code,
         source_path=resolved_options.source_path,
-        add_metadata=resolved_options.add_metadata,
-        add_disclaimer=resolved_options.add_disclaimer,
     )
 
 

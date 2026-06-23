@@ -170,8 +170,6 @@ class JupyterNotebookTranslator:
                             markdown_content,
                             language_code,
                             source_path=notebook_path,
-                            add_metadata=False,
-                            add_disclaimer=False,
                         )
                     )
                     translated_content = self._rewrite_markdown_cell_paths(

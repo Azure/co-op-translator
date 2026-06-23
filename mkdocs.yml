@@ -78,7 +78,6 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Configuration: configuration.md
-  - Examples: examples.md
   - Python API: api.md
   - MCP Server: mcp.md
   - CLI Reference: cli.md

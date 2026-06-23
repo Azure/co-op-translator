@@ -1,10 +1,12 @@
 # MCP Server
 
-Co-op Translator includes a Model Context Protocol server for agents, editors, and local automation that need translation tools without shelling out to the CLI for every operation.
+Co-op Translator includes a Model Context Protocol server for agents, editors, and MCP-compatible clients.
 
-Use the MCP server when an MCP client should call Co-op Translator directly:
+For the default local setup, users do not keep a separate server running by hand. They configure their MCP client, and the client starts `co-op-translator-mcp` automatically over `stdio` when it needs Co-op Translator tools.
 
-| Scenario | MCP tools |
+Use MCP when an agent or editor should call Co-op Translator directly:
+
+| User goal | MCP tools |
 | --- | --- |
 | Translate one Markdown document, notebook, or image | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
 | Rewrite translated Markdown or notebook links after choosing the output path | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
@@ -12,35 +14,44 @@ Use the MCP server when an MCP client should call Co-op Translator directly:
 | Review translated output without LLM credentials | `run_review` |
 | Inspect capabilities and environment status | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-The MCP server uses the same public Python API documented in [Python API](api.md). It does not reimplement translation logic.
+The MCP server wraps the same public Python API documented in [Python API](api.md). It does not reimplement translation logic.
 
-## Start the Server
+## Step 1: Install and Configure Co-op Translator
 
-Install Co-op Translator, configure your environment variables, then run:
-
-```bash
-co-op-translator-mcp
-```
-
-The default transport is `stdio`, which is the usual choice for local MCP clients.
-
-You can run the server from a source checkout without installing the script:
+Install Co-op Translator in the Python environment your MCP client will use:
 
 ```bash
-python -m co_op_translator.mcp.server
+pip install co-op-translator
 ```
 
-Explicit transport selection is also available:
+For local development from this repository, install the package in editable mode:
 
 ```bash
-co-op-translator-mcp --transport stdio
-co-op-translator-mcp --transport streamable-http
-co-op-translator-mcp --transport sse
+pip install -e .
 ```
 
-## Client Configuration
+Then configure an LLM provider in your environment. Markdown and notebook translation require Azure OpenAI or OpenAI. Image translation also requires Azure AI Vision.
 
-For a local MCP client that supports stdio servers, configure Co-op Translator with the installed command:
+```bash
+AZURE_OPENAI_API_KEY="..."
+AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
+AZURE_OPENAI_MODEL_NAME="gpt-4o"
+AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
+AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+```
+
+Image translation additionally needs:
+
+```bash
+AZURE_AI_SERVICE_API_KEY="..."
+AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
+```
+
+## Step 2: Configure Your MCP Client
+
+For the normal local `stdio` setup, add Co-op Translator to your MCP client configuration. The client will start and stop the process automatically.
+
+Installed package configuration:
 
 ```json
 {
@@ -53,34 +64,72 @@ For a local MCP client that supports stdio servers, configure Co-op Translator w
 }
 ```
 
-When working directly from a repository checkout, point the client at Python instead:
+Source checkout configuration on Windows:
 
 ```json
 {
   "mcpServers": {
     "co-op-translator": {
-      "command": "python",
-      "args": ["-m", "co_op_translator.mcp.server"]
+      "command": "C:\\Users\\you\\dev\\co-op-translator\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "co_op_translator.mcp.server"],
+      "cwd": "C:\\Users\\you\\dev\\co-op-translator"
     }
   }
 }
 ```
 
-## Workflow 1: Translate Individual Files or Documents
+Source checkout configuration on macOS or Linux:
 
-Use content tools when the MCP client already has the document content or a path to one image.
+```json
+{
+  "mcpServers": {
+    "co-op-translator": {
+      "command": "/Users/you/dev/co-op-translator/.venv/bin/python",
+      "args": ["-m", "co_op_translator.mcp.server"],
+      "cwd": "/Users/you/dev/co-op-translator"
+    }
+  }
+}
+```
+
+After changing MCP client configuration, restart or reload the client so it can discover the new server.
+
+## Step 3: Verify the Server in the Client
+
+Ask the MCP client to list available tools, or call one of the read-only helpers first:
+
+```json
+{
+  "tool": "get_api_overview",
+  "arguments": {}
+}
+```
+
+Useful first checks:
+
+| Tool | What to check |
+| --- | --- |
+| `get_api_overview` | Confirms the server is reachable and shows available workflows. |
+| `list_supported_languages` | Confirms packaged language data can be loaded. |
+| `get_configuration_status` | Confirms LLM and Vision provider availability without exposing secret values. |
+
+## Step 4: Choose a Workflow
+
+### Translate Individual Files or Documents
+
+Use content tools when the MCP client already has document content or an image path.
 
 For Markdown:
 
 1. Call `translate_markdown_content` with `document`, `language_code`, and optionally `source_path`.
 2. If the translated result will be written into a Co-op Translator output layout, call `rewrite_markdown_paths`.
-3. Let the client write the returned `content` wherever the user wants it.
+3. Let the client write or return the final `content`.
 
 For notebooks:
 
 1. Call `translate_notebook_content` with notebook JSON and `language_code`.
 2. Call `rewrite_notebook_paths` if translated notebook links need to be adjusted for a target path.
-3. Write the returned notebook JSON.
+3. Write or return the final notebook JSON.
 
 For images:
 
@@ -90,11 +139,11 @@ For images:
 
 The content tools do not perform project discovery, metadata updates, disclaimers, or automatic path rewriting.
 
-## Workflow 2: Translate an Entire Repository
+### Translate an Entire Repository
 
 Use `run_translation` when the user wants Co-op Translator to behave like the `translate` CLI.
 
-The MCP tool defaults to `dry_run=true` so an agent can inspect the scope before making file changes:
+Repository translation defaults to `dry_run=true` so an agent can inspect scope before file changes:
 
 ```json
 {
@@ -119,7 +168,7 @@ To allow writes, the caller must set both `dry_run=false` and `confirm_write=tru
 
 `translate_project` is exposed as a compatibility alias for `run_translation`.
 
-## Workflow 3: Review Translated Output
+### Review Translated Output
 
 Use `run_review` for deterministic checks that do not require LLM or Vision credentials:
 
@@ -133,6 +182,31 @@ Use `run_review` for deterministic checks that do not require LLM or Vision cred
 ```
 
 The result includes captured text output and a structured review summary when available.
+
+## Manual Server Runs
+
+Manual runs are mainly for debugging or for transports that behave like long-running servers.
+
+Debug the default stdio server:
+
+```bash
+co-op-translator-mcp
+```
+
+Run from a source checkout:
+
+```bash
+python -m co_op_translator.mcp.server
+```
+
+Run a long-lived HTTP or SSE server:
+
+```bash
+co-op-translator-mcp --transport streamable-http
+co-op-translator-mcp --transport sse
+```
+
+For local editor and agent integrations, prefer the client-managed `stdio` configuration in Step 2.
 
 ## Tools
 
@@ -164,6 +238,65 @@ The result includes captured text output and a structured review summary when av
 | --- | --- |
 | `translate_markdown_document_prompt` | Guide an MCP client through content translation plus optional path rewriting. |
 | `translate_repository_prompt` | Guide an MCP client through dry-run-first repository translation. |
+
+## Copy-Paste Examples
+
+Translate Markdown content:
+
+```json
+{
+  "tool": "translate_markdown_content",
+  "arguments": {
+    "document": "# Hello\n\nWelcome to the course.",
+    "language_code": "ko",
+    "source_path": "docs/guide.md"
+  }
+}
+```
+
+Rewrite translated Markdown links:
+
+```json
+{
+  "tool": "rewrite_markdown_paths",
+  "arguments": {
+    "content": "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
+    "source_path": "docs/guide.md",
+    "target_path": "translations/ko/docs/guide.md",
+    "policy": {
+      "language_code": "ko",
+      "root_dir": ".",
+      "translations_dir": "translations",
+      "translated_images_dir": "translated_images",
+      "translation_types": ["markdown", "images"]
+    }
+  }
+}
+```
+
+Preview repository translation:
+
+```json
+{
+  "tool": "run_translation",
+  "arguments": {
+    "language_codes": "ko",
+    "root_dir": ".",
+    "markdown": true,
+    "dry_run": true
+  }
+}
+```
+
+## Troubleshooting
+
+| Problem | What to try |
+| --- | --- |
+| The MCP client cannot find `co-op-translator-mcp`. | Use the absolute Python executable path and `["-m", "co_op_translator.mcp.server"]` source checkout configuration. |
+| The server is listed but translation fails. | Call `get_configuration_status` and confirm an LLM provider is available. |
+| Image translation fails. | Confirm Azure AI Vision variables are set and call `get_configuration_status`. |
+| Repository translation does not write files. | Set `dry_run=false` and `confirm_write=true` only after explicit user approval. |
+| Changes to client config do not appear. | Restart or reload the MCP client. |
 
 ## Safety Notes
 

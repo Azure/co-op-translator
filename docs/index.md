@@ -33,15 +33,8 @@
     <em>Open guide -></em>
   </a>
 
-  <a class="quickstart-card" href="examples/">
-    <span class="quickstart-step">Step 4</span>
-    <strong>Examples</strong>
-    <span>Copy practical workflows for Markdown, notebooks, images, and repairs.</span>
-    <em>Open guide -></em>
-  </a>
-
   <a class="quickstart-card" href="mcp/">
-    <span class="quickstart-step">Step 5</span>
+    <span class="quickstart-step">Step 4</span>
     <strong>MCP Server</strong>
     <span>Expose Co-op Translator tools to agents, editors, and MCP-compatible clients.</span>
     <em>Open guide -></em>

@@ -11,6 +11,25 @@ Most lower-level modules under `core`, `config`, `review`, and `utils` are imple
 
 MCP clients use the same public API through the [MCP Server](mcp.md). Use this page when calling Python directly, and the MCP guide when exposing Co-op Translator to an agent or editor.
 
+## First-Time API Flow
+
+Start here if you are calling Co-op Translator from Python code:
+
+1. Configure an LLM provider as described in [Configuration](configuration.md).
+2. Decide whether your application owns file I/O.
+3. Use content APIs when your application reads and writes individual files.
+4. Use `run_translation` when Co-op Translator should process a repository like the CLI.
+5. Use `run_review` after translation if you need deterministic checks in automation.
+
+| Goal | API to start with |
+| --- | --- |
+| Translate one Markdown string or file | `translate_markdown_content` |
+| Translate one notebook payload | `translate_notebook_content` |
+| Translate one image | `translate_image_content` |
+| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
+| Translate a full repository | `run_translation` |
+| Review translated output | `run_review` |
+
 ## Scenario 1: Translate Individual Files or Documents
 
 Use this workflow when you already have a file, editor buffer, notebook payload, MCP request, or custom pipeline input. Your code owns file I/O:
@@ -247,6 +266,103 @@ run_review(
     notebook=True,
     changed_from="origin/main",
     output_format="github",
+)
+```
+
+## Copy-Paste API Examples
+
+Translate Markdown content without file writes:
+
+```python
+import asyncio
+
+from co_op_translator.api import translate_markdown_content
+
+
+async def main() -> None:
+    translated = await translate_markdown_content(
+        "# Hello\n\nWelcome to the course.",
+        "ko",
+    )
+    print(translated)
+
+
+asyncio.run(main())
+```
+
+Translate and rewrite Markdown links:
+
+```python
+import asyncio
+
+from co_op_translator.api import rewrite_markdown_paths, translate_markdown_content
+
+
+async def main() -> None:
+    translated = await translate_markdown_content(
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
+        "ko",
+        {"source_path": "docs/guide.md"},
+    )
+    rewritten = rewrite_markdown_paths(
+        translated,
+        source_path="docs/guide.md",
+        target_path="translations/ko/docs/guide.md",
+        policy={
+            "language_code": "ko",
+            "root_dir": ".",
+            "translations_dir": "translations",
+            "translated_images_dir": "translated_images",
+            "translation_types": ["markdown", "images"],
+        },
+    )
+    print(rewritten)
+
+
+asyncio.run(main())
+```
+
+Translate a repository from Python:
+
+```python
+from co_op_translator.api import run_translation
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./course",
+    markdown=True,
+    yes=True,
+)
+```
+
+Translate multiple roots:
+
+```python
+from co_op_translator.api import run_translation
+
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    root_dirs=[
+        "./docs",
+        "./labs",
+    ],
+)
+```
+
+Preserve glossary terms:
+
+```python
+from co_op_translator.api import run_translation
+
+run_translation(
+    language_codes="fr",
+    markdown=True,
+    glossaries=[
+        "Co-op Translator",
+        "Azure AI Foundry",
+        "GitHub Actions",
+    ],
 )
 ```
 

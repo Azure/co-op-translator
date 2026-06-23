@@ -1,6 +1,19 @@
 """Public programmatic API for Co-op Translator."""
 
-from co_op_translator.api.translation import run_translation
+from co_op_translator.api.translation import (
+    MarkdownTranslationOptions,
+    run_translation,
+    rewrite_markdown_paths,
+    translate_markdown_content,
+    translate_project,
+)
 from co_op_translator.api.review import run_review
 
-__all__ = ["run_review", "run_translation"]
+__all__ = [
+    "MarkdownTranslationOptions",
+    "rewrite_markdown_paths",
+    "run_review",
+    "run_translation",
+    "translate_markdown_content",
+    "translate_project",
+]

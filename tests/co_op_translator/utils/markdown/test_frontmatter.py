@@ -1,8 +1,7 @@
 """Tests for frontmatter parsing and translation utilities."""
 
-import pytest
 from pathlib import Path
-from co_op_translator.utils.llm.frontmatter_utils import (
+from co_op_translator.utils.markdown.frontmatter import (
     FrontmatterConfig,
     FrontmatterParser,
     QuickLinksFrontmatterParser,

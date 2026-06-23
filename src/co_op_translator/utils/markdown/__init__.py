@@ -1,18 +1,26 @@
 """Markdown utility modules split by responsibility."""
 
-from .anchors import normalize_internal_anchor_links
-from .cjk_emphasis import normalize_cjk_emphasis_markers
-from .constants import SPLIT_DELIMITER
-from .evaluation import extract_json_from_markdown_codeblock, generate_evaluation_prompt
-from .file_links import update_untranslated_file_links
-from .image_links import (
+from co_op_translator.utils.markdown.anchors import normalize_internal_anchor_links
+from co_op_translator.utils.markdown.cjk_emphasis import (
+    normalize_cjk_emphasis_markers,
+)
+from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
+from co_op_translator.utils.markdown.evaluation import (
+    extract_json_from_markdown_codeblock,
+    generate_evaluation_prompt,
+)
+from co_op_translator.utils.markdown.file_links import update_untranslated_file_links
+from co_op_translator.utils.markdown.image_links import (
     build_translated_image_link,
     get_translated_markdown_dir,
     update_image_links,
 )
-from .links import update_links
-from .notebook_links import migrate_notebook_links, update_notebook_links
-from .processing import (
+from co_op_translator.utils.markdown.links import update_links
+from co_op_translator.utils.markdown.notebook_links import (
+    migrate_notebook_links,
+    update_notebook_links,
+)
+from co_op_translator.utils.markdown.processing import (
     _group_lines_preserving_list_items,
     _parse_markdown_text_and_code_parts,
     compare_line_breaks,
@@ -25,7 +33,10 @@ from .processing import (
     restore_code_blocks,
     split_markdown_content,
 )
-from .prompts import _read_language_prompt_template, generate_prompt_template
+from co_op_translator.utils.markdown.prompts import (
+    _read_language_prompt_template,
+    generate_prompt_template,
+)
 
 __all__ = [
     "SPLIT_DELIMITER",

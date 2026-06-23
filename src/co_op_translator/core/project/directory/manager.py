@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .cleanup import DirectoryCleanupMixin
-from .link_migration import DirectoryLinkMigrationMixin
-from .sync import DirectorySyncMixin
+from co_op_translator.core.project.directory.cleanup import DirectoryCleanupMixin
+from co_op_translator.core.project.directory.link_migration import (
+    DirectoryLinkMigrationMixin,
+)
+from co_op_translator.core.project.directory.sync import DirectorySyncMixin
 
 
 class DirectoryManager(

@@ -14,7 +14,7 @@ from co_op_translator.utils.common.metadata_utils import (
     remove_image_metadata,
     save_text_metadata_for_source,
 )
-from co_op_translator.utils.llm.markdown_utils import update_image_links
+from co_op_translator.utils.markdown.image_links import update_image_links
 
 logger = logging.getLogger(__name__)
 

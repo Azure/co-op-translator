@@ -4,7 +4,7 @@ import re
 from co_op_translator.utils.llm.code_comment_translator import (
     translate_comments_in_code_blocks,
 )
-from co_op_translator.utils.llm.markdown_utils import SPLIT_DELIMITER
+from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
 
 
 @pytest.mark.asyncio

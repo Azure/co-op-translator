@@ -1,5 +1,5 @@
 """Directory management pieces for project translations."""
 
-from .manager import DirectoryManager
+from co_op_translator.core.project.directory.manager import DirectoryManager
 
 __all__ = ["DirectoryManager"]

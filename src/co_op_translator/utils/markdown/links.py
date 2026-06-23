@@ -3,9 +3,9 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from .file_links import update_untranslated_file_links
-from .image_links import update_image_links
-from .readme_links import update_readme_translation_links
+from co_op_translator.utils.markdown.file_links import update_untranslated_file_links
+from co_op_translator.utils.markdown.image_links import update_image_links
+from co_op_translator.utils.markdown.readme_links import update_readme_translation_links
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +18,7 @@ def update_links(
     translations_dir: Path | None = None,
     translated_images_dir: Path | None = None,
     translation_types: list[str] = None,
+    target_path: Path | None = None,
 ) -> str:
     logger.info("Updating links in the markdown file")
 
@@ -39,6 +40,7 @@ def update_links(
         translated_images_dir,
         root_dir,
         use_translated_images="images" in translation_types,
+        target_path=target_path,
     )
 
     # Update links to untranslated files (videos, docs, etc.) to point to original files
@@ -49,6 +51,7 @@ def update_links(
         translations_dir,
         root_dir,
         use_translated_notebook="notebook" in translation_types,
+        target_path=target_path,
     )
 
     # Update README translation navigation links (language switcher links)

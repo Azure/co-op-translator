@@ -11,10 +11,17 @@ from co_op_translator.utils.common.metadata_utils import calculate_file_hash
 class FakeMarkdownTranslator:
     def __init__(self):
         self.calls = []
+        self.disclaimer_calls = []
 
-    async def translate_markdown(self, document, language_code, file_path, **kwargs):
-        self.calls.append((document, language_code, Path(file_path), kwargs))
+    async def translate_markdown(
+        self, document, language_code, source_path=None, **kwargs
+    ):
+        self.calls.append((document, language_code, Path(source_path), kwargs))
         return f"# Translated {language_code}\n\n{document}"
+
+    async def generate_disclaimer(self, language_code):
+        self.disclaimer_calls.append(language_code)
+        return f"Disclaimer for {language_code}"
 
 
 class FakeImageTranslator:
@@ -34,10 +41,21 @@ class FakeNotebookTranslator:
         self.calls = []
 
     async def translate_notebook(
-        self, file_path, language_code, use_translated_images=True, add_disclaimer=True
+        self,
+        file_path,
+        language_code,
+        use_translated_images=True,
+        add_disclaimer=True,
+        target_path=None,
     ):
         self.calls.append(
-            (Path(file_path), language_code, use_translated_images, add_disclaimer)
+            (
+                Path(file_path),
+                language_code,
+                use_translated_images,
+                add_disclaimer,
+                Path(target_path) if target_path is not None else None,
+            )
         )
         notebook = json.loads(Path(file_path).read_text(encoding="utf-8"))
         notebook.setdefault("metadata", {})["translated_to"] = language_code
@@ -117,6 +135,37 @@ async def test_translate_markdown_writes_translation_and_metadata(
     assert (
         temp_project_dir / "translations" / "ko" / ".co-op-translator.json"
     ).exists()
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_appends_disclaimer_in_project_layer(
+    temp_project_dir,
+):
+    markdown_translator = FakeMarkdownTranslator()
+    translation_manager = TranslationManager(
+        root_dir=temp_project_dir,
+        translations_dir=temp_project_dir / "translations",
+        image_dir=temp_project_dir / "translated_images",
+        language_codes=["ko"],
+        excluded_dirs=["translations", "translated_images", "logs"],
+        supported_image_extensions=[".png"],
+        supported_notebook_extensions=[".ipynb"],
+        markdown_translator=markdown_translator,
+        image_translator=FakeImageTranslator(),
+        notebook_translator=FakeNotebookTranslator(),
+        translation_types=["markdown"],
+        add_disclaimer=True,
+    )
+
+    md_file = temp_project_dir / "docs" / "test.md"
+
+    result = await translation_manager.translate_markdown(md_file, "ko")
+
+    translated = Path(result).read_text(encoding="utf-8")
+    assert "<!-- CO-OP TRANSLATOR DISCLAIMER START -->" in translated
+    assert "Disclaimer for ko" in translated
+    assert markdown_translator.disclaimer_calls == ["ko"]
+    assert markdown_translator.calls[0][3] == {}
 
 
 @pytest.mark.asyncio

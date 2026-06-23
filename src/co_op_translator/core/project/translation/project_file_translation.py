@@ -19,12 +19,52 @@ from co_op_translator.utils.common.metadata_utils import (
     is_notebook_up_to_date,
     save_text_metadata_for_source,
 )
-from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
+from co_op_translator.utils.markdown.processing import compare_line_breaks
+from co_op_translator.utils.markdown.path_rewriter import (
+    MarkdownPathRewritePolicy,
+    rewrite_markdown_paths,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class ContentTranslationMixin:
+class ProjectFileTranslationMixin:
+    async def _append_markdown_disclaimer(
+        self, content: str, language_code: str
+    ) -> str:
+        if not self.add_disclaimer:
+            return content
+
+        disclaimer = await self.markdown_translator.generate_disclaimer(language_code)
+        if not disclaimer:
+            return content
+
+        start_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER START -->"
+        end_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER END -->"
+        disclaimer_block = f"{start_marker}\n{disclaimer}\n{end_marker}"
+        return content + "\n\n---\n\n" + disclaimer_block
+
+    def _rewrite_markdown_paths_for_target(
+        self,
+        content: str,
+        file_path: Path,
+        translated_path: Path,
+        language_code: str,
+    ) -> str:
+        return rewrite_markdown_paths(
+            content,
+            source_path=file_path,
+            target_path=translated_path,
+            policy=MarkdownPathRewritePolicy(
+                language_code=language_code,
+                root_dir=self.root_dir,
+                translations_dir=self.translations_dir,
+                translated_images_dir=self.image_dir,
+                translation_types=self.translation_types,
+                lang_subdir=self.lang_subdir,
+            ),
+        )
+
     async def translate_image(
         self, image_path: Path, language_code: str, fast_mode: bool = False
     ) -> str:
@@ -87,20 +127,26 @@ class ContentTranslationMixin:
         file_path = Path(file_path).resolve()
         try:
             document = read_input_file(file_path)
-            if not document:
-                relative_path = file_path.relative_to(self.root_dir)
-                output_file = self._get_language_root(language_code) / relative_path
-                handle_empty_document(file_path, output_file)
-                return str(output_file)
+            relative_path = file_path.relative_to(self.root_dir)
+            translated_path = self._get_language_root(language_code) / relative_path
 
-            # Perform initial translation attempt (do not embed inline metadata; use centralized JSON instead)
-            translated_content = await self.markdown_translator.translate_markdown(
-                document,
-                language_code,
+            if not document:
+                handle_empty_document(file_path, translated_path)
+                return str(translated_path)
+
+            # Translate content first, then rewrite project-relative paths for the output target.
+            translated_content = (
+                await self.markdown_translator.translate_markdown(
+                    document,
+                    language_code,
+                    source_path=file_path,
+                )
+            )
+            translated_content = self._rewrite_markdown_paths_for_target(
+                translated_content,
                 file_path,
-                translation_types=self.translation_types,
-                add_metadata=False,
-                add_disclaimer=self.add_disclaimer,
+                translated_path,
+                language_code,
             )
             if not translated_content:
                 logger.error(
@@ -113,14 +159,18 @@ class ContentTranslationMixin:
             # Validate translation format and line break consistency
             if compare_line_breaks(document, translated_content):
                 logger.warning(f"Translation failed for {file_path}. Retrying...")
-                # Retry translation
-                translated_content = await self.markdown_translator.translate_markdown(
-                    document,
-                    language_code,
+                translated_content = (
+                    await self.markdown_translator.translate_markdown(
+                        document,
+                        language_code,
+                        source_path=file_path,
+                    )
+                )
+                translated_content = self._rewrite_markdown_paths_for_target(
+                    translated_content,
                     file_path,
-                    translation_types=self.translation_types,
-                    add_metadata=False,
-                    add_disclaimer=self.add_disclaimer,
+                    translated_path,
+                    language_code,
                 )
                 if not translated_content:
                     logger.error(
@@ -130,8 +180,10 @@ class ContentTranslationMixin:
                         f"Markdown translation retry returned empty content for {file_path}"
                     )
 
-            relative_path = file_path.relative_to(self.root_dir)
-            translated_path = self._get_language_root(language_code) / relative_path
+            translated_content = await self._append_markdown_disclaimer(
+                translated_content, language_code
+            )
+
             translated_path.parent.mkdir(parents=True, exist_ok=True)
 
             try:
@@ -140,7 +192,7 @@ class ContentTranslationMixin:
                 logger.info(
                     f"Translated {file_path} to {language_code} and saved to {translated_path}"
                 )
-                # Save centralized text metadata for this source file in the language directory
+                # Save centralized text metadata for this source notebook in the language directory
                 lang_dir = self._get_language_root(language_code)
                 save_text_metadata_for_source(
                     lang_dir,
@@ -151,7 +203,7 @@ class ContentTranslationMixin:
                 return str(translated_path)
             except Exception as e:
                 logger.error(f"Failed to write translation to {translated_path}: {e}")
-                raise
+                return ""
 
         except Exception as e:
             logger.error(f"Failed to translate {file_path}: {e}")
@@ -180,11 +232,14 @@ class ContentTranslationMixin:
 
             # Perform translation
             use_translated_images = "images" in self.translation_types
+            relative_path = file_path.relative_to(self.root_dir)
+            translated_path = self._get_language_root(language_code) / relative_path
             translated_content = await self.notebook_translator.translate_notebook(
                 file_path,
                 language_code,
                 use_translated_images=use_translated_images,
                 add_disclaimer=self.add_disclaimer,
+                target_path=translated_path,
             )
             if not translated_content:
                 logger.error(
@@ -192,8 +247,6 @@ class ContentTranslationMixin:
                 )
                 return ""
 
-            relative_path = file_path.relative_to(self.root_dir)
-            translated_path = self._get_language_root(language_code) / relative_path
             translated_path.parent.mkdir(parents=True, exist_ok=True)
 
             try:
@@ -202,7 +255,7 @@ class ContentTranslationMixin:
                 logger.info(
                     f"Translated {file_path} to {language_code} and saved to {translated_path}"
                 )
-                # Save centralized text metadata for this source notebook in the language directory
+                # Save centralized text metadata for this source file in the language directory
                 lang_dir = self._get_language_root(language_code)
                 save_text_metadata_for_source(
                     lang_dir,
@@ -213,7 +266,7 @@ class ContentTranslationMixin:
                 return str(translated_path)
             except Exception as e:
                 logger.error(f"Failed to write translation to {translated_path}: {e}")
-                return ""
+                raise
 
         except Exception as e:
             logger.error(f"Failed to translate {file_path}: {e}")

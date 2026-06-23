@@ -197,6 +197,67 @@ class TestJupyterNotebookTranslator:
 
     @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
     @pytest.mark.asyncio
+    async def test_translate_notebook_rewrites_markdown_cell_paths(
+        self, mock_markdown_translator_class, tmp_path
+    ):
+        root_dir = tmp_path
+        notebook_file = root_dir / "docs" / "tutorial.ipynb"
+        image_file = root_dir / "docs" / "images" / "hero.png"
+        translations_dir = root_dir / "translations"
+        image_dir = root_dir / "translated_images"
+        target_path = translations_dir / "ko" / "docs" / "tutorial.ipynb"
+
+        notebook_file.parent.mkdir(parents=True)
+        image_file.parent.mkdir(parents=True)
+        translations_dir.mkdir()
+        image_dir.mkdir()
+        image_file.write_text("image", encoding="utf-8")
+        notebook_file.write_text(
+            json.dumps(
+                {
+                    "cells": [
+                        {
+                            "cell_type": "markdown",
+                            "metadata": {},
+                            "source": ["# Title\n", "![Hero](images/hero.png)\n"],
+                        }
+                    ],
+                    "metadata": {},
+                    "nbformat": 4,
+                    "nbformat_minor": 4,
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        mock_translator = AsyncMock()
+        mock_translator.translate_markdown = AsyncMock(
+            return_value="# Translated\n\n![Hero](images/hero.png)"
+        )
+        mock_markdown_translator_class.create.return_value = mock_translator
+
+        translator = JupyterNotebookTranslator.create(
+            root_dir,
+            translations_dir=translations_dir,
+            image_dir=image_dir,
+        )
+        result = await translator.translate_notebook(
+            notebook_file,
+            "ko",
+            use_translated_images=True,
+            add_disclaimer=False,
+            target_path=target_path,
+        )
+
+        translated_notebook = json.loads(result)
+        cell_source = "".join(translated_notebook["cells"][0]["source"])
+
+        assert "images/hero.png" not in cell_source
+        assert "../../../translated_images/ko/hero." in cell_source
+        assert cell_source.endswith(".webp)\n")
+
+    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
+    @pytest.mark.asyncio
     async def test_translate_notebook_does_not_embed_metadata(
         self,
         mock_markdown_translator_class,

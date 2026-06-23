@@ -8,9 +8,8 @@ from pathlib import Path
 import yaml
 
 from co_op_translator.config.llm_config.provider import LLMProvider
-from co_op_translator.utils.llm.markdown_utils import (
+from co_op_translator.utils.markdown import (
     process_markdown,
-    update_links,
     generate_prompt_template,
     _read_language_prompt_template,
     replace_code_blocks,
@@ -19,9 +18,8 @@ from co_op_translator.utils.llm.markdown_utils import (
     normalize_internal_anchor_links,
     SPLIT_DELIMITER,
 )
-from co_op_translator.utils.llm.frontmatter_utils import (
+from co_op_translator.utils.markdown.frontmatter import (
     get_frontmatter_parser,
-    adjust_frontmatter_links,
 )
 from co_op_translator.utils.llm.code_comment_translator import (
     translate_comments_in_code_blocks,
@@ -31,8 +29,6 @@ from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.utils.common.lang_utils import normalize_language_code
 from co_op_translator.utils.common.metadata_utils import (
     calculate_file_hash,
-    create_metadata,
-    format_metadata_comment,
 )
 
 logger = logging.getLogger(__name__)
@@ -76,82 +72,22 @@ class MarkdownTranslator(ABC):
         """
         return calculate_file_hash(file_path)
 
-    def create_metadata(self, original_file: Path, language_code: str) -> dict:
-        """Create metadata for a translated file.
-
-        Args:
-            original_file: Path to the source file being translated
-            language_code: Target language code
-
-        Returns:
-            Metadata dictionary with source file information
-        """
-        return create_metadata(original_file, language_code, self.root_dir)
-
-    def format_metadata_comment(self, metadata: dict) -> str:
-        """Format metadata dictionary as HTML comment.
-
-        Serializes the metadata as JSON and wraps it in an HTML comment format
-        for embedding in markdown files.
-
-        Args:
-            metadata: Dictionary containing translation metadata
-
-        Returns:
-            Formatted HTML comment string
-        """
-        return format_metadata_comment(metadata)
-
-    @staticmethod
-    def _insert_metadata_comment(content: str, metadata_comment: str) -> str:
-        if not metadata_comment:
-            return content
-
-        frontmatter_pattern = r"^---[ \t]*\n.*?\n---[ \t]*\n"
-        match = re.match(frontmatter_pattern, content, re.DOTALL)
-        if match:
-            end = match.end()
-            return content[:end] + "\n" + metadata_comment + content[end:]
-
-        return metadata_comment + content
-
     async def translate_markdown(
         self,
         document: str,
         language_code: str,
-        md_file_path: str | Path,
-        translation_types: list[str] = None,
-        add_metadata: bool = True,
-        add_disclaimer: bool = True,
+        source_path: str | Path | None = None,
     ) -> str:
-        """Translate markdown document to target language.
+        """Translate markdown content without rewriting project-relative paths.
 
-        Handles complex documents by splitting into manageable chunks while
-        preserving formatting, links, and code blocks. Frontmatter fields are
-        handled deterministically based on configuration.
-
-        Args:
-            document: Content of the markdown file
-            language_code: Target language code
-            md_file_path: Path to the markdown file
-            translation_types: List of file types being translated (e.g., ["markdown", "images", "notebook"])
-            add_metadata: Whether to add metadata comment at the beginning
-            add_disclaimer: Whether to add disclaimer at the end
-
-        Returns:
-            str: The translated content with optional metadata and disclaimer.
+        The same chunking, placeholder restoration, code-comment translation,
+        frontmatter translation, CJK emphasis normalization, and anchor
+        normalization used by project translation are preserved here. Only
+        project path rewriting is skipped so callers can use this for standalone
+        long documents or compose it with a separate path-rewrite pass.
         """
-        md_file_path = Path(md_file_path)
 
-        # Default translation types if not specified
-        if translation_types is None:
-            translation_types = ["markdown", "notebook", "images"]
-
-        # Create and format metadata (only if requested)
-        metadata_comment = ""
-        if add_metadata:
-            metadata = self.create_metadata(md_file_path, language_code)
-            metadata_comment = self.format_metadata_comment(metadata)
+        md_file_path = Path(source_path) if source_path else Path("content.md")
 
         # Determine language display information once
         language_name = self.font_config.get_language_name(language_code)
@@ -266,47 +202,11 @@ class MarkdownTranslator(ABC):
             merged_frontmatter = parser.merge_fields(
                 preserve_fields, translated_frontmatter_fields
             )
-
-            # Step 6.5: Adjust frontmatter links (same logic as markdown-only mode)
-            adjusted_frontmatter = adjust_frontmatter_links(
-                merged_frontmatter,
-                md_file_path,
-                language_code,
-                self.root_dir,
-                self.translations_dir,
-                self.image_dir,
-                translation_types,
-                lang_subdir=self.lang_subdir,
-            )
-
             translated_content = parser.reconstruct_content(
-                adjusted_frontmatter, translated_content
+                merged_frontmatter, translated_content
             )
 
-        # Step 7: Update links
-        updated_content = update_links(
-            md_file_path,
-            translated_content,
-            language_code,
-            self.root_dir,
-            translations_dir=self.translations_dir,
-            translated_images_dir=self.image_dir,
-            translation_types=translation_types,
-        )
-
-        # Step 8: Add metadata and disclaimer (only if requested)
-        result = updated_content
-        if add_metadata:
-            result = self._insert_metadata_comment(updated_content, metadata_comment)
-        if add_disclaimer:
-            disclaimer = await self.generate_disclaimer(language_code)
-            if disclaimer:
-                start_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER START -->"
-                end_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER END -->"
-                disclaimer_block = f"{start_marker}\n{disclaimer}\n{end_marker}"
-                result = result + "\n\n---\n\n" + disclaimer_block
-
-        return result
+        return translated_content
 
     async def _run_prompts_sequentially(self, prompts, md_file_path):
         """Execute translation prompts in sequence with timeout protection.

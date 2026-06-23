@@ -23,6 +23,7 @@ def update_untranslated_file_links(
     translations_dir: Path,
     root_dir: Path,
     use_translated_notebook: bool = True,
+    target_path: Path | None = None,
 ) -> str:
     """Update links to untranslated files to point to original source files.
 
@@ -88,9 +89,13 @@ def update_untranslated_file_links(
         logger.info(f"Processing untranslated file link {link}")
         try:
             translated_md_dir = (
-                translations_dir
-                / language_code
-                / md_file_path.relative_to(root_dir).parent
+                Path(target_path).parent.resolve()
+                if target_path is not None
+                else (
+                    translations_dir
+                    / language_code
+                    / md_file_path.relative_to(root_dir).parent
+                )
             )
             original_linked_file_path = (md_file_path.parent / path).resolve()
 

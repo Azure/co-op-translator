@@ -20,7 +20,7 @@ from co_op_translator.utils.common.token_estimation import (
     estimate_tokens_for_outdated,
     estimate_tokens_for_sources,
 )
-from co_op_translator.utils.llm.markdown_utils import compare_line_breaks
+from co_op_translator.utils.markdown.processing import compare_line_breaks
 
 logger = logging.getLogger(__name__)
 

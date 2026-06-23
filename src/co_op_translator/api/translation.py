@@ -13,6 +13,9 @@ from PIL import Image
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.vision_config.config import VisionConfig
+from co_op_translator.core.llm.jupyter_notebook_translator import (
+    JupyterNotebookTranslator,
+)
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 from co_op_translator.core.project.project_translator import ProjectTranslator
@@ -35,6 +38,9 @@ from co_op_translator.utils.markdown.path_rewriter import (
     MarkdownPathRewritePolicy,
     rewrite_markdown_paths as rewrite_markdown_paths_for_project,
 )
+from co_op_translator.utils.markdown.notebook_path_rewriter import (
+    rewrite_notebook_paths as rewrite_notebook_paths_for_project,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +58,13 @@ class ImageTranslationOptions:
 
     root_dir: str | Path = "."
     fast_mode: bool = False
+
+
+@dataclass(frozen=True)
+class NotebookTranslationOptions:
+    """Options for content-only notebook translation."""
+
+    source_path: str | Path | None = None
 
 
 def _coerce_markdown_translation_options(
@@ -74,6 +87,16 @@ def _coerce_image_translation_options(
     return ImageTranslationOptions(**dict(options))
 
 
+def _coerce_notebook_translation_options(
+    options: NotebookTranslationOptions | Mapping[str, object] | None,
+) -> NotebookTranslationOptions:
+    if options is None:
+        return NotebookTranslationOptions()
+    if isinstance(options, NotebookTranslationOptions):
+        return options
+    return NotebookTranslationOptions(**dict(options))
+
+
 async def translate_markdown_content(
     document: str,
     language_code: str,
@@ -85,6 +108,22 @@ async def translate_markdown_content(
     translator = MarkdownTranslator.create()
     return await translator.translate_markdown(
         document,
+        language_code,
+        source_path=resolved_options.source_path,
+    )
+
+
+async def translate_notebook_content(
+    notebook: str | dict[str, object],
+    language_code: str,
+    options: NotebookTranslationOptions | Mapping[str, object] | None = None,
+) -> str:
+    """Translate notebook markdown cells without project path rewriting or file I/O."""
+
+    resolved_options = _coerce_notebook_translation_options(options)
+    translator = JupyterNotebookTranslator.create()
+    return await translator.translate_notebook(
+        notebook,
         language_code,
         source_path=resolved_options.source_path,
     )
@@ -105,6 +144,22 @@ def translate_image_content(
         image_path,
         language_code,
         fast_mode=resolved_options.fast_mode,
+    )
+
+
+def rewrite_notebook_paths(
+    content: str,
+    source_path: str | Path,
+    target_path: str | Path,
+    policy: MarkdownPathRewritePolicy | Mapping[str, object],
+) -> str:
+    """Rewrite markdown-cell paths for a translated project notebook target."""
+
+    return rewrite_notebook_paths_for_project(
+        content,
+        source_path=source_path,
+        target_path=target_path,
+        policy=policy,
     )
 
 

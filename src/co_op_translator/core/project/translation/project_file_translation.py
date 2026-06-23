@@ -4,6 +4,8 @@ import logging
 import os
 from pathlib import Path
 
+from PIL import Image
+
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.utils.common.file_utils import (
     delete_translated_images_by_language_code,
@@ -17,6 +19,7 @@ from co_op_translator.utils.common.file_utils import (
 from co_op_translator.utils.common.metadata_utils import (
     is_image_up_to_date,
     is_notebook_up_to_date,
+    save_image_metadata,
     save_text_metadata_for_source,
 )
 from co_op_translator.utils.markdown.processing import compare_line_breaks
@@ -24,6 +27,7 @@ from co_op_translator.utils.markdown.path_rewriter import (
     MarkdownPathRewritePolicy,
     rewrite_markdown_paths,
 )
+from co_op_translator.utils.vision.image_utils import save_optimized_image
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +69,27 @@ class ProjectFileTranslationMixin:
             ),
         )
 
+    def _get_translated_image_path(self, image_path: Path, language_code: str) -> Path:
+        translated_filename = generate_translated_filename(
+            image_path, language_code, self.root_dir
+        )
+        return Path(self.image_dir) / language_code / translated_filename
+
+    def _save_original_image_translation(
+        self, image_path: Path, translated_path: Path, language_code: str
+    ) -> str:
+        translated_path.parent.mkdir(parents=True, exist_ok=True)
+        original_image = Image.open(image_path)
+        save_optimized_image(original_image, translated_path)
+        save_image_metadata(
+            translated_path,
+            image_path,
+            language_code,
+            self.root_dir,
+            image_dir=Path(self.image_dir),
+        )
+        return str(translated_path)
+
     async def translate_image(
         self, image_path: Path, language_code: str, fast_mode: bool = False
     ) -> str:
@@ -81,6 +106,9 @@ class ProjectFileTranslationMixin:
             Translated image path if successful, otherwise the original path
         """
         image_path = Path(image_path).resolve()
+        translated_image_path = self._get_translated_image_path(
+            image_path, language_code
+        )
         if not self.image_translator:
             logger.info(
                 f"Image translation skipped for {image_path} due to missing Azure AI Service configuration"
@@ -101,16 +129,43 @@ class ProjectFileTranslationMixin:
             return str(image_path)
 
         try:
-            translated_image_path = self.image_translator.translate_image(
-                image_path, language_code, self.image_dir, fast_mode=fast_mode
+            if translated_image_path.exists() and is_image_up_to_date(
+                image_path, translated_image_path, self.image_dir
+            ):
+                logger.info(
+                    f"Skipping image translation; up-to-date output exists: {translated_image_path}"
+                )
+                return str(translated_image_path)
+
+            translated_image = self.image_translator.translate_image(
+                image_path, language_code, fast_mode=fast_mode
             )
+            translated_image_path.parent.mkdir(parents=True, exist_ok=True)
+            save_optimized_image(translated_image, translated_image_path)
+            save_image_metadata(
+                translated_image_path,
+                image_path,
+                language_code,
+                self.root_dir,
+                image_dir=Path(self.image_dir),
+            )
+
             logger.info(
                 f"Translated image {image_path} to {language_code} and saved to {translated_image_path}"
             )
             return str(translated_image_path)
         except Exception as e:
             logger.error(f"Failed to translate image {image_path}: {e}", exc_info=True)
-            return str(image_path)
+            try:
+                return self._save_original_image_translation(
+                    image_path, translated_image_path, language_code
+                )
+            except Exception:
+                logger.error(
+                    f"Failed to save fallback image translation for {image_path}",
+                    exc_info=True,
+                )
+                return str(image_path)
 
     async def translate_markdown(self, file_path: Path, language_code: str) -> str:
         """Translate a markdown file to the specified language.
@@ -135,12 +190,10 @@ class ProjectFileTranslationMixin:
                 return str(translated_path)
 
             # Translate content first, then rewrite project-relative paths for the output target.
-            translated_content = (
-                await self.markdown_translator.translate_markdown(
-                    document,
-                    language_code,
-                    source_path=file_path,
-                )
+            translated_content = await self.markdown_translator.translate_markdown(
+                document,
+                language_code,
+                source_path=file_path,
             )
             translated_content = self._rewrite_markdown_paths_for_target(
                 translated_content,
@@ -159,12 +212,10 @@ class ProjectFileTranslationMixin:
             # Validate translation format and line break consistency
             if compare_line_breaks(document, translated_content):
                 logger.warning(f"Translation failed for {file_path}. Retrying...")
-                translated_content = (
-                    await self.markdown_translator.translate_markdown(
-                        document,
-                        language_code,
-                        source_path=file_path,
-                    )
+                translated_content = await self.markdown_translator.translate_markdown(
+                    document,
+                    language_code,
+                    source_path=file_path,
                 )
                 translated_content = self._rewrite_markdown_paths_for_target(
                     translated_content,
@@ -519,7 +570,9 @@ class ProjectFileTranslationMixin:
                 tasks, f"{'🏎️  (fast mode)' if fast_mode else '🖼️ '} Translating images"
             )
             modified_count = sum(
-                1 for r in results if r != str(image_file_path)
+                1
+                for (file_path, _lang_code), result in zip(task_info, results)
+                if result != file_path
             )  # Count successful translations
             errors = [
                 f"Failed to translate image file: {file_path} (lang: {lang_code})"

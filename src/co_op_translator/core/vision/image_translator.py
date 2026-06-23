@@ -1,25 +1,20 @@
-import os
 import logging
-import numpy as np
-from PIL import Image, ImageFont
+import math
+import time
+from abc import ABC, abstractmethod
+from math import hypot
 from pathlib import Path
 
-import cv2
-import math
-from math import hypot
-from tqdm import tqdm
-import time
-from PIL import Image, ImageFont, ImageDraw
 import numpy as np
-from pathlib import Path
+from PIL import Image, ImageDraw, ImageFont
+from tqdm import tqdm
+
 
 import arabic_reshaper
 from bidi.algorithm import get_display
 
 
 from co_op_translator.config.font_config import FontConfig
-from co_op_translator.config.constants import RGB_IMAGE_EXTENSIONS
-from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.config.vision_config.provider import VisionProvider
 from co_op_translator.utils.vision.image_utils import (
     get_dominant_color,
@@ -31,33 +26,29 @@ from co_op_translator.utils.vision.image_utils import (
     group_bounding_boxes,
     pad_text_image_to_target_aspect,
     adjust_bg_color,
-    save_optimized_image,
 )
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from co_op_translator.core.llm.text_translator import TextTranslator
-from co_op_translator.utils.common.file_utils import generate_translated_filename
-from co_op_translator.utils.common.metadata_utils import save_image_metadata
-from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
 
 class ImageTranslator(ABC):
     def __init__(self, default_output_dir="./translated_images", root_dir="."):
-        """Initialize translator with output directory and dependencies.
+        """Initialize translator dependencies.
 
-        Sets up required components for image translation workflow including text
-        translation service and font configuration.
+        Sets up the text translation service and font configuration. The
+        default output directory is kept for compatibility, but directories are
+        created only by project-level persistence code.
 
         Args:
-            default_output_dir: Directory where translated images will be saved
+            default_output_dir: Default directory used by project orchestration
             root_dir: Root directory of the project for path calculations
         """
         self.text_translator = TextTranslator.create()
         self.font_config = FontConfig()
         self.root_dir = Path(root_dir)
         self.default_output_dir = default_output_dir
-        os.makedirs(self.default_output_dir, exist_ok=True)
 
     @abstractmethod
     def get_image_analysis_client(self):
@@ -116,18 +107,16 @@ class ImageTranslator(ABC):
                 f"Please ensure the image contains readable text."
             )
 
-    def plot_annotated_image(
+    def render_translated_image(
         self,
         image_path,
         line_bounding_boxes,
         translated_text_list,
         target_language_code,
-        destination_path=None,
         verbose=False,
         fast_mode=False,
-        original_image_path=None,
-    ):
-        """Render translated text onto original image at appropriate positions.
+    ) -> Image.Image:
+        """Render translated text onto an image and return the processed image.
 
         Uses either a fast or high-quality ("neat") rendering approach based on the
         fast_mode parameter. Handles text orientation, RTL languages, and maintains
@@ -138,17 +127,12 @@ class ImageTranslator(ABC):
             line_bounding_boxes: List of detected text regions with coordinates
             translated_text_list: List of translated texts corresponding to each region
             target_language_code: Language code determining font and text direction
-            destination_path: Directory to save the output image (optional)
             verbose: Whether to display processing progress
             fast_mode: Whether to use faster rendering (3x faster but less precise)
-            original_image_path: Path to the original image for metadata (defaults to image_path)
 
         Returns:
-            Path to the annotated image with translated text
+            PIL image with translated text rendered in place
         """
-        # Use image_path as original if not specified
-        if original_image_path is None:
-            original_image_path = image_path
         style = "fast" if fast_mode else "neat"
         logger.info("=" * 50)
         logger.info(f"Starting annotation ({style} mode) for image: {image_path} ")
@@ -190,17 +174,6 @@ class ImageTranslator(ABC):
                 processed_text_list[text_index : text_index + group_size]
             )
             text_index += group_size
-
-        # Generate output path
-        actual_image_path = Path(image_path).resolve()
-        new_filename = generate_translated_filename(
-            actual_image_path, target_language_code, self.root_dir
-        )
-        base_dir = "./translated_images_fast/" if fast_mode else "./translated_images/"
-        dest = Path(destination_path) if destination_path else Path(base_dir)
-        dest = dest / target_language_code
-        dest.mkdir(parents=True, exist_ok=True)
-        output_path = dest / new_filename
 
         # ------------------------------------- Fast Mode -------------------------------------#
         if fast_mode:
@@ -457,138 +430,50 @@ class ImageTranslator(ABC):
                 f"Total time taken to plot annotated image (Neat Mode): {elapsed_time:.4f} seconds for {image_path}"
             )
 
-        # Convert to RGB for file formats that don't support transparency
-        if output_path.suffix.lower() in RGB_IMAGE_EXTENSIONS:
-            image = image.convert("RGB")
-
-        # Save the image with optimization and update central metadata file
-        save_optimized_image(image, output_path)
-        save_image_metadata(
-            output_path,
-            Path(original_image_path),
-            target_language_code,
-            self.root_dir,
-            image_dir=Path(self.default_output_dir),
-        )
-
-        logger.info(f"Annotated image saved to {output_path}")
-        return str(output_path)
+        return image
 
     def translate_image(
-        self, image_path, target_language_code, destination_path=None, fast_mode=False
-    ):
-        """Process an image to detect, translate, and render text in target language.
+        self, image_path, target_language_code, fast_mode=False, verbose=False
+    ) -> Image.Image:
+        """Translate text in an image and return the rendered image.
 
-        Orchestrates the full image translation workflow including error handling.
-        When no text is found or errors occur, saves a copy of the original image.
+        This method performs text extraction, text translation, and in-memory image
+        rendering. It performs no output path calculation, no image saving, and no
+        metadata writes; project-level callers decide where and how to persist the
+        returned image.
 
         Args:
             image_path: Path to the image file
             target_language_code: Language code to translate text into
-            destination_path: Directory to save the output image (optional)
             fast_mode: Whether to use faster rendering with slightly lower quality
+            verbose: Whether to display rendering progress
 
         Returns:
-            Path to the result image (translated or copied original in case of errors)
+            PIL image with translated text rendered in place
         """
         image_path = Path(image_path)
 
-        try:
-            # Compute expected output path first and skip if it already exists
-            actual_image_path = Path(image_path).resolve()
-            new_filename = generate_translated_filename(
-                actual_image_path, target_language_code, self.root_dir
+        line_bounding_boxes = self.extract_line_bounding_boxes(image_path)
+        if not line_bounding_boxes:
+            logger.info(
+                f"No text detected in image '{image_path.name}': "
+                f"The image may not contain readable text or text may be too small/blurry to detect."
             )
-            if destination_path is None:
-                output_path = (
-                    Path(self.default_output_dir) / target_language_code / new_filename
-                )
-            else:
-                output_path = (
-                    Path(destination_path) / target_language_code / new_filename
-                )
+            with Image.open(image_path) as original_image:
+                return original_image.copy()
 
-            if output_path.exists():
-                logger.info(
-                    f"Skipping image translation; up-to-date output exists: {output_path}"
-                )
-                return str(output_path)
-
-            # Extract text and bounding boxes from the image
-            line_bounding_boxes = self.extract_line_bounding_boxes(image_path)
-
-            # Check if any text was recognized
-            if not line_bounding_boxes:
-                logger.info(
-                    f"No text detected in image '{image_path.name}': "
-                    f"Saving original image as translation result. "
-                    f"The image may not contain readable text or text may be too small/blurry to detect."
-                )
-
-                # Load the original image and save it with the new name and metadata
-                output_path.parent.mkdir(parents=True, exist_ok=True)
-                original_image = Image.open(image_path)
-                save_optimized_image(original_image, output_path)
-                save_image_metadata(
-                    output_path,
-                    image_path,
-                    target_language_code,
-                    self.root_dir,
-                    image_dir=Path(self.default_output_dir),
-                )
-
-                return str(
-                    output_path
-                )  # Return the new image path with original content
-
-            # Extract the text data from the bounding boxes
-            text_data = [line["text"] for line in line_bounding_boxes]
-
-            # Translate the text data into the target language
-            translated_text_list = self.text_translator.translate_image_text(
-                text_data, target_language_code
-            )
-
-            # Annotate the image with the translated text and save the result
-            return self.plot_annotated_image(
-                image_path,
-                line_bounding_boxes,
-                translated_text_list,
-                target_language_code,
-                destination_path,
-                fast_mode=fast_mode,
-                original_image_path=image_path,
-            )
-
-        except Exception as e:
-            logger.error(
-                f"Failed to translate image '{image_path.name}': {str(e)}. "
-                f"Saving original image instead."
-            )
-
-            # Load the original image and save it with the new name and metadata
-            actual_image_path = Path(image_path).resolve()
-            new_filename = generate_translated_filename(
-                actual_image_path, target_language_code, self.root_dir
-            )
-            output_path = (
-                Path(self.default_output_dir) / target_language_code / new_filename
-            )
-
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-            original_image = Image.open(image_path)
-            save_optimized_image(original_image, output_path)
-            save_image_metadata(
-                output_path,
-                image_path,
-                target_language_code,
-                self.root_dir,
-                image_dir=Path(self.default_output_dir),
-            )
-
-            return str(
-                output_path
-            )  # Return the path to the original image with the new name
+        text_data = [line["text"] for line in line_bounding_boxes]
+        translated_text_list = self.text_translator.translate_image_text(
+            text_data, target_language_code
+        )
+        return self.render_translated_image(
+            image_path,
+            line_bounding_boxes,
+            translated_text_list,
+            target_language_code,
+            verbose=verbose,
+            fast_mode=fast_mode,
+        )
 
     @classmethod
     def create(
@@ -600,7 +485,7 @@ class ImageTranslator(ABC):
         implementation (currently only Azure AI Service is supported).
 
         Args:
-            default_output_dir: Directory where translated images will be saved
+            default_output_dir: Default directory used by project orchestration
             root_dir: Root directory of the project for path calculations
 
         Returns:

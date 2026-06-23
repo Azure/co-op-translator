@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import pytest
+from PIL import Image
 
 from co_op_translator.api import translation as api
 from co_op_translator.glossary import get_glossary_terms, set_glossary_terms
@@ -400,6 +401,36 @@ async def test_translate_markdown_content_uses_content_only_translator(monkeypat
             },
         )
     ]
+
+
+def test_translate_image_content_uses_content_only_translator(monkeypatch):
+    class FakeImageTranslator:
+        def __init__(self):
+            self.calls = []
+
+        def translate_image(self, image_path, language_code, fast_mode=False):
+            self.calls.append((image_path, language_code, fast_mode))
+            return Image.new("RGB", (10, 10), "blue")
+
+    fake = FakeImageTranslator()
+    create = MagicMock(return_value=fake)
+    monkeypatch.setattr(api.ImageTranslator, "create", create)
+
+    result = api.translate_image_content(
+        "docs/hero.png",
+        "ko",
+        {
+            "root_dir": "docs",
+            "fast_mode": True,
+        },
+    )
+
+    assert isinstance(result, Image.Image)
+    assert result.size == (10, 10)
+    assert fake.calls == [("docs/hero.png", "ko", True)]
+    create.assert_called_once_with(
+        root_dir="docs",
+    )
 
 
 def test_rewrite_markdown_paths_uses_target_path(tmp_path):

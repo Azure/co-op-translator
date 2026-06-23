@@ -8,6 +8,7 @@ from typing import Iterable, Mapping
 
 import click
 import yaml
+from PIL import Image
 
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.llm_config.config import LLMConfig
@@ -15,6 +16,7 @@ from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 from co_op_translator.core.project.project_translator import ProjectTranslator
+from co_op_translator.core.vision.image_translator import ImageTranslator
 from co_op_translator.glossary import glossary_terms_scope
 from co_op_translator.utils.common.file_utils import (
     render_updated_readme_languages_table,
@@ -44,6 +46,14 @@ class MarkdownTranslationOptions:
     source_path: str | Path | None = None
 
 
+@dataclass(frozen=True)
+class ImageTranslationOptions:
+    """Options for content-only image translation."""
+
+    root_dir: str | Path = "."
+    fast_mode: bool = False
+
+
 def _coerce_markdown_translation_options(
     options: MarkdownTranslationOptions | Mapping[str, object] | None,
 ) -> MarkdownTranslationOptions:
@@ -52,6 +62,16 @@ def _coerce_markdown_translation_options(
     if isinstance(options, MarkdownTranslationOptions):
         return options
     return MarkdownTranslationOptions(**dict(options))
+
+
+def _coerce_image_translation_options(
+    options: ImageTranslationOptions | Mapping[str, object] | None,
+) -> ImageTranslationOptions:
+    if options is None:
+        return ImageTranslationOptions()
+    if isinstance(options, ImageTranslationOptions):
+        return options
+    return ImageTranslationOptions(**dict(options))
 
 
 async def translate_markdown_content(
@@ -67,6 +87,24 @@ async def translate_markdown_content(
         document,
         language_code,
         source_path=resolved_options.source_path,
+    )
+
+
+def translate_image_content(
+    image_path: str | Path,
+    language_code: str,
+    options: ImageTranslationOptions | Mapping[str, object] | None = None,
+) -> Image.Image:
+    """Translate image text and return a rendered image without saving metadata."""
+
+    resolved_options = _coerce_image_translation_options(options)
+    translator = ImageTranslator.create(
+        root_dir=resolved_options.root_dir,
+    )
+    return translator.translate_image(
+        image_path,
+        language_code,
+        fast_mode=resolved_options.fast_mode,
     )
 
 

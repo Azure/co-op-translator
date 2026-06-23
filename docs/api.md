@@ -243,6 +243,9 @@ If none of `markdown`, `notebook`, or `images` are set, the API translates all s
 
 `run_review` runs deterministic translation checks without LLM or Vision credentials.
 
+!!! note "Beta"
+    `run_review` is a beta deterministic review API. It does not call model providers or write files, but checks and issue schemas may evolve.
+
 ```python
 from co_op_translator.api import run_review
 

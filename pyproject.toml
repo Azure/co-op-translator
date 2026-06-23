@@ -16,7 +16,7 @@ readme = "README.md"
 keywords = ["translator", "translation","azure", "openai", "gpt"]
 packages = [{ include = "co_op_translator", from = "src" }]
 include = ["src/co_op_translator/fonts/*", "src/co_op_translator/templates/**/*"]
-documentation = "https://github.com/Azure/co-op-translator/tree/main/getting_started"
+documentation = "https://azure.github.io/co-op-translator/"
 
 [tool.poetry.scripts]
 translate = "co_op_translator.__main__:main"

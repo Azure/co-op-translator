@@ -119,8 +119,8 @@ docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-transl
 4. (Optional) For image translation (`-img`), configure Azure AI Vision
 5. (Optional) You can configure multiple credential sets by duplicating variables with suffixes like `_1`, `_2`, etc. All variables in a set must share the same suffix.
 6. (Recommended) Clean up any previous translations to avoid conflicts (e.g., `translations/`)
-7. (Recommended) Add a translation section to your README using the [README languages template](./getting_started/README_languages_template.md)
-8. See: [Set up Azure AI](./getting_started/set-up-azure-ai.md)
+7. (Recommended) Add a translation section to your README using the [README languages template](./docs/readme-languages-template.md)
+8. See: [Azure AI Setup](./docs/azure-ai-setup.md)
 
 ## Usage
 
@@ -154,7 +154,7 @@ Review translation structure and freshness without API credentials:
 co-op-review -l "ko ja"
 ```
 
-More flags: [Command reference](./getting_started/command-reference.md)
+More flags: [CLI Reference](./docs/cli.md)
 
 ## Features
 
@@ -167,19 +167,23 @@ More flags: [Command reference](./getting_started/command-reference.md)
 
 ## Docs
 
-- [Command-line guide](./getting_started/command-line-guide/command-line-guide.md)
-- [GitHub Actions guide (Public repositories & standard secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md)
-- [GitHub Actions guide (Microsoft organization repositories & org-level setups)](./getting_started/github-actions-guide/github-actions-guide-org.md)
-- [README languages template](./getting_started/README_languages_template.md)
-- [Supported languages](./getting_started/supported-languages.md)
+- [Documentation site](https://azure.github.io/co-op-translator/)
+- [Choose your workflow](./docs/workflows.md)
+- [Configuration](./docs/configuration.md)
+- [CLI Reference](./docs/cli.md)
+- [Python API](./docs/api.md)
+- [MCP Server](./docs/mcp.md)
+- [GitHub Actions](./docs/github-actions.md)
+- [README languages template](./docs/readme-languages-template.md)
+- [Supported languages](./docs/supported-languages.md)
 - [Contributing](./CONTRIBUTING.md)
-- [Troubleshooting](./getting_started/troubleshooting.md)
+- [Troubleshooting](./docs/troubleshooting.md)
 
 ### Microsoft-specific guide
 > [!NOTE]
 > For maintainers of the Microsoft “For Beginners” repositories only.
 
-- [Updating the “other courses” list (for MS Beginners repositories only)](./getting_started/update-other-courses.md)
+- [Updating the “other courses” list (for MS Beginners repositories only)](./docs/microsoft-beginners.md)
 
 ## Support us and foster global learning
 

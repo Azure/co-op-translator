@@ -11,6 +11,8 @@
 
 ## Quick start
 
+These `docs/` pages are the canonical Co-op Translator documentation. Older setup guides have been consolidated here so CLI, API, MCP, CI, and troubleshooting guidance stay in one place.
+
 <div class="quickstart-grid">
   <a class="quickstart-card" href="configuration/">
     <span class="quickstart-step">Step 1</span>

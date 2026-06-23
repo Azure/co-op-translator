@@ -85,7 +85,7 @@ translate -l "fr es" -md
 
 ### Environment configuration
 
-Create a `.env` file at the repository root and provide credentials/endpoints for your chosen language model and (optionally) vision service. For provider‑specific setup, see `getting_started/set-up-azure-ai.md`.
+Create a `.env` file at the repository root and provide credentials/endpoints for your chosen language model and (optionally) vision service. For provider-specific setup, see `docs/azure-ai-setup.md`.
 
 ### Required Environment Variables
 
@@ -153,7 +153,7 @@ translate -l "zh" -md -img       # Markdown + images
 migrate-links -l "all" -y
 ```
 
-See additional usage docs in `getting_started/`.
+See additional usage docs in `docs/`.
 
 ## Testing Instructions
 
@@ -212,8 +212,7 @@ pip install dist/*.whl
 
 Automation via GitHub Actions is supported; see:
 
-- `getting_started/github-actions-guide/github-actions-guide-public.md`
-- `getting_started/github-actions-guide/github-actions-guide-org.md`
+- `docs/github-actions.md`
 
 ### Container Image (GHCR)
 
@@ -286,8 +285,8 @@ Use clear, concise titles. Prefer the same structure as the final squash commit:
 
 ## Debugging and Troubleshooting
 
-- Common issues and fixes: `getting_started/troubleshooting.md`
-- Supported languages and notes (including fonts/known issues): `getting_started/supported-languages.md`
+- Common issues and fixes: `docs/troubleshooting.md`
+- Supported languages and notes (including fonts/known issues): `docs/supported-languages.md`
 - For link issues in notebooks, re‑run: `migrate-links -l "all" -y`
 
 ## Notes for Agents

@@ -79,7 +79,13 @@ nav:
   - Home: index.md
   - Choose Your Workflow: workflows.md
   - Configuration: configuration.md
+  - Azure AI Setup: azure-ai-setup.md
   - CLI Reference: cli.md
   - Python API: api.md
   - MCP Server: mcp.md
+  - GitHub Actions: github-actions.md
+  - Supported Languages: supported-languages.md
+  - README Languages Template: readme-languages-template.md
+  - Troubleshooting: troubleshooting.md
+  - Microsoft Beginners: microsoft-beginners.md
   - Maintainer Guide: maintainer-guide.md

@@ -3,8 +3,10 @@ from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from PIL import Image
 
 from co_op_translator.core.project.translation import TranslationManager
+from co_op_translator.utils.common.file_utils import generate_translated_filename
 from co_op_translator.utils.common.metadata_utils import calculate_file_hash
 
 
@@ -28,12 +30,16 @@ class FakeImageTranslator:
     def __init__(self):
         self.calls = []
 
-    def translate_image(self, image_path, language_code, image_dir, fast_mode=False):
-        self.calls.append((Path(image_path), language_code, Path(image_dir), fast_mode))
-        output_path = Path(image_dir) / language_code / Path(image_path).name
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_bytes(Path(image_path).read_bytes())
-        return output_path
+    def translate_image(self, image_path, language_code, fast_mode=False):
+        self.calls.append((Path(image_path), language_code, fast_mode))
+        return Image.new("RGB", (10, 10), "blue")
+
+
+class FakeNoTextImageTranslator(FakeImageTranslator):
+    def translate_image(self, image_path, language_code, fast_mode=False):
+        self.calls.append((Path(image_path), language_code, fast_mode))
+        with Image.open(image_path) as original_image:
+            return original_image.copy()
 
 
 class FakeNotebookTranslator:
@@ -176,11 +182,42 @@ async def test_translate_image_uses_configured_image_translator(
 
     result = await translation_manager.translate_image(image_file, "ko")
 
-    translated_path = temp_project_dir / "translated_images" / "ko" / "test.png"
+    translated_path = (
+        temp_project_dir
+        / "translated_images"
+        / "ko"
+        / generate_translated_filename(image_file.resolve(), "ko", temp_project_dir)
+    )
     assert Path(result) == translated_path
     assert translated_path.exists()
     assert translation_manager.image_translator.calls == [
-        (image_file.resolve(), "ko", temp_project_dir / "translated_images", False)
+        (image_file.resolve(), "ko", False)
+    ]
+    assert (
+        temp_project_dir / "translated_images" / "ko" / ".co-op-translator.json"
+    ).exists()
+
+
+@pytest.mark.asyncio
+async def test_translate_image_saves_original_when_no_text_detected(
+    translation_manager, temp_project_dir
+):
+    image_file = temp_project_dir / "images" / "blank.png"
+    Image.new("RGB", (10, 10), "white").save(image_file)
+    translation_manager.image_translator = FakeNoTextImageTranslator()
+
+    result = await translation_manager.translate_image(image_file, "ko")
+
+    translated_path = (
+        temp_project_dir
+        / "translated_images"
+        / "ko"
+        / generate_translated_filename(image_file.resolve(), "ko", temp_project_dir)
+    )
+    assert Path(result) == translated_path
+    assert translated_path.exists()
+    assert translation_manager.image_translator.calls == [
+        (image_file.resolve(), "ko", False)
     ]
 
 

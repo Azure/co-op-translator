@@ -25,6 +25,10 @@ class MockTextTranslator(TextTranslator):
         """Mock implementation of translate_batch."""
         return [f"Translated: {text}" for text in texts]
 
+    def translate_image_text(self, text_data, target_language):
+        """Mock implementation of translate_image_text."""
+        return self.translate_batch(text_data, target_language)
+
 
 class MockImageTranslator(ImageTranslator):
     """Mock implementation of ImageTranslator for testing."""
@@ -38,8 +42,8 @@ class MockImageTranslator(ImageTranslator):
     def get_image_analysis_client(self):
         return MagicMock()
 
-    def extract_text_from_image(self, image_path):
-        """Mock implementation of extract_text_from_image."""
+    def extract_line_bounding_boxes(self, image_path):
+        """Mock implementation of extract_line_bounding_boxes."""
         return [
             {
                 "text": "LIFE IS LIKE",
@@ -48,20 +52,17 @@ class MockImageTranslator(ImageTranslator):
             }
         ]
 
-    def translate_image(self, image_path, target_language):
-        """Mock implementation of translate_image."""
-        bounding_boxes = self.extract_text_from_image(image_path)
-        texts = [box["text"] for box in bounding_boxes]
-        translated_texts = self.text_translator.translate_batch(texts, target_language)
-        return self.plot_annotated_image(
-            image_path, bounding_boxes, translated_texts, target_language
-        )
-
-    def plot_annotated_image(
-        self, image_path, bounding_boxes, translated_texts, target_language
+    def render_translated_image(
+        self,
+        image_path,
+        bounding_boxes,
+        translated_texts,
+        target_language,
+        verbose=False,
+        fast_mode=False,
     ):
-        """Mock implementation of plot_annotated_image."""
-        return Path(self.default_output_dir) / "translated_image.png"
+        """Mock implementation of render_translated_image."""
+        return Image.new("RGB", (20, 20), "white")
 
 
 @pytest.fixture
@@ -70,6 +71,19 @@ def image_translator(tmp_path):
     Fixture to provide an instance of MockImageTranslator for each test.
     """
     return MockImageTranslator(default_output_dir=tmp_path, root_dir=ROOT_DIR)
+
+
+def test_image_translator_init_does_not_create_output_dir(tmp_path):
+    class InitOnlyImageTranslator(ImageTranslator):
+        def get_image_analysis_client(self):
+            return MagicMock()
+
+    output_dir = tmp_path / "translated_images"
+
+    with patch.object(TextTranslator, "create", return_value=MockTextTranslator()):
+        InitOnlyImageTranslator(default_output_dir=output_dir, root_dir=tmp_path)
+
+    assert not output_dir.exists()
 
 
 @pytest.fixture
@@ -95,30 +109,13 @@ def mock_line_bounding_boxes():
 @patch("PIL.Image.open", return_value=MagicMock(spec=Image.Image))
 @patch("PIL.Image.Image.save")
 @patch("os.makedirs")
-def test_extract_text_from_image(
+def test_extract_line_bounding_boxes(
     mock_makedirs, mock_image_save, mock_image_open, mock_file_open, image_translator
 ):
     """
-    Test extract_text_from_image method to ensure it extracts text and bounding boxes correctly.
+    Test extract_line_bounding_boxes method to ensure it extracts text and bounding boxes correctly.
     """
-    mock_client = image_translator.get_image_analysis_client()
-    mock_result = MagicMock()
-    mock_block = MagicMock()
-    mock_line = MagicMock()
-
-    mock_line.text = "LIFE IS LIKE"
-    mock_line.bounding_polygon = [
-        MagicMock(x=41, y=111),
-        MagicMock(x=963, y=77),
-        MagicMock(x=966, y=147),
-        MagicMock(x=41, y=185),
-    ]
-    mock_line.words = [MagicMock(confidence=0.988)]
-    mock_block.lines = [mock_line]
-    mock_result.read.blocks = [mock_block]
-    mock_client.analyze_document.return_value = mock_result
-
-    bounding_boxes = image_translator.extract_text_from_image(TEST_IMAGE_PATH)
+    bounding_boxes = image_translator.extract_line_bounding_boxes(TEST_IMAGE_PATH)
 
     assert (
         len(bounding_boxes) == 1
@@ -138,40 +135,37 @@ def test_extract_text_from_image(
     ], f"Bounding box mismatch: {bounding_boxes[0]['bounding_box']}"
 
 
-@patch(
-    "co_op_translator.core.vision.image_translator.ImageTranslator.plot_annotated_image"
-)
-def test_translate_image(
-    mock_plot_annotated_image, image_translator, mock_line_bounding_boxes, tmp_path
-):
+def test_translate_image(image_translator, mock_line_bounding_boxes):
     """
-    Test translate_image method to ensure the image is correctly translated and annotated.
+    Test translate_image method to ensure image text is extracted, translated, and rendered.
     """
-    # Set up mocks
-    mock_plot_annotated_image.return_value = tmp_path / "translated_image.png"
-    image_translator.plot_annotated_image = mock_plot_annotated_image
-
-    with patch.object(
-        image_translator,
-        "extract_text_from_image",
-        return_value=mock_line_bounding_boxes,
+    with (
+        patch.object(
+            image_translator,
+            "extract_line_bounding_boxes",
+            return_value=mock_line_bounding_boxes,
+        ) as mock_extract,
+        patch.object(
+            image_translator,
+            "render_translated_image",
+            return_value=Image.new("RGB", (20, 20), "white"),
+        ) as mock_render,
     ):
         target_language = "es"
-        result_path = image_translator.translate_image(TEST_IMAGE_PATH, target_language)
-
-        assert str(result_path) == str(tmp_path / "translated_image.png")
-
-        # Verify that extract_text_from_image was called with correct arguments
-        image_translator.extract_text_from_image.assert_called_once_with(
-            TEST_IMAGE_PATH
+        translated_image = image_translator.translate_image(
+            TEST_IMAGE_PATH, target_language
         )
 
-        # Verify that plot_annotated_image was called with correct arguments
-        mock_plot_annotated_image.assert_called_once_with(
+        assert isinstance(translated_image, Image.Image)
+
+        mock_extract.assert_called_once_with(TEST_IMAGE_PATH)
+        mock_render.assert_called_once_with(
             TEST_IMAGE_PATH,
             mock_line_bounding_boxes,
             ["Translated: LIFE IS LIKE", "Translated: RIDING A BICYCLE"],
             target_language,
+            verbose=False,
+            fast_mode=False,
         )
 
 
@@ -216,9 +210,9 @@ def test_translate_batch_with_various_inputs():
         assert translated == f"Translated: {original}"
 
 
-def test_plot_annotated_image_with_multiple_boxes(image_translator, tmp_path):
+def test_render_translated_image_with_multiple_boxes(image_translator):
     """
-    Test plot_annotated_image method with multiple bounding boxes.
+    Test render_translated_image method with multiple bounding boxes.
     """
     image_path = TEST_IMAGE_PATH
     bounding_boxes = [
@@ -236,13 +230,11 @@ def test_plot_annotated_image_with_multiple_boxes(image_translator, tmp_path):
     translated_texts = ["Translation 1", "Translation 2"]
     target_language = "ko"
 
-    result_path = image_translator.plot_annotated_image(
+    translated_image = image_translator.render_translated_image(
         image_path, bounding_boxes, translated_texts, target_language
     )
 
-    assert isinstance(result_path, Path)
-    assert result_path.parent == tmp_path
-    assert str(result_path).endswith("translated_image.png")
+    assert isinstance(translated_image, Image.Image)
 
 
 @pytest.mark.parametrize("target_language", ["ko", "en", "ja", "zh"])
@@ -252,17 +244,15 @@ def test_translate_image_with_different_languages(
     """
     Test translate_image method with different target languages.
     """
-    result_path = image_translator.translate_image(TEST_IMAGE_PATH, target_language)
+    result = image_translator.translate_image(TEST_IMAGE_PATH, target_language)
 
-    assert isinstance(result_path, Path)
-    assert str(result_path).endswith("translated_image.png")
+    assert isinstance(result, Image.Image)
 
 
 def test_extract_text_with_low_confidence(image_translator):
     """
-    Test extract_text_from_image method's handling of low confidence text.
+    Test extract_line_bounding_boxes method's handling of low confidence text.
     """
-    mock_client = image_translator.get_image_analysis_client()
 
     # Override the mock implementation for this specific test
     def mock_extract_text(*args, **kwargs):
@@ -274,9 +264,9 @@ def test_extract_text_with_low_confidence(image_translator):
             }
         ]
 
-    image_translator.extract_text_from_image = mock_extract_text
+    image_translator.extract_line_bounding_boxes = mock_extract_text
 
-    result = image_translator.extract_text_from_image(TEST_IMAGE_PATH)
+    result = image_translator.extract_line_bounding_boxes(TEST_IMAGE_PATH)
     assert len(result) == 1
     assert result[0]["confidence"] < 0.5
     assert result[0]["text"] == "Low confidence text"

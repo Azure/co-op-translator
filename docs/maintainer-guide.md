@@ -10,10 +10,22 @@ The stable Python API is exported from:
 co_op_translator.api
 ```
 
-Currently, that package exports:
+The public API is organized into content translation helpers, path rewriting helpers, project orchestration, and review:
 
 ```python
-from co_op_translator.api import run_review, run_translation
+from co_op_translator.api import (
+    ImageTranslationOptions,
+    MarkdownTranslationOptions,
+    NotebookTranslationOptions,
+    run_review,
+    run_translation,
+    rewrite_markdown_paths,
+    rewrite_notebook_paths,
+    translate_image_content,
+    translate_markdown_content,
+    translate_notebook_content,
+    translate_project,
+)
 ```
 
 When adding new public APIs, update:
@@ -52,7 +64,7 @@ When adding or changing CLI options, update:
 
 ## Translation flow
 
-The high-level translation flow is:
+The high-level project translation flow is:
 
 1. Parse CLI arguments or API parameters.
 2. Validate LLM configuration with `LLMConfig`.
@@ -63,6 +75,18 @@ The high-level translation flow is:
 7. Update README language/course sections when applicable.
 8. Delegate project translation to `ProjectTranslator`.
 9. `ProjectTranslator` delegates file processing to `TranslationManager`.
+
+`TranslationManager` is composed from focused file-type mixins:
+
+- `ProjectMarkdownTranslationMixin` handles Markdown file reads, content translation, path rewriting, metadata, disclaimers, and writes.
+- `ProjectNotebookTranslationMixin` handles notebook file reads, Markdown-cell translation, path rewriting, metadata, disclaimers, and writes.
+- `ProjectImageTranslationMixin` handles image discovery, text extraction/translation, rendered image writes, and metadata.
+
+The lower-level content APIs skip the project workflow:
+
+1. `translate_markdown_content` and `translate_notebook_content` translate in-memory content only.
+2. `translate_image_content` translates text in a single image and returns a rendered image object.
+3. `rewrite_markdown_paths` and `rewrite_notebook_paths` are explicit post-processing helpers. They perform no translation and no project writes.
 
 ## Review flow
 

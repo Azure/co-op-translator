@@ -1,20 +1,145 @@
 # Python API
 
-The stable public Python API is intentionally small. The package exports `run_translation` and `run_review` from `co_op_translator.api`; most lower-level modules under `core`, `config`, `review`, and `utils` are implementation details used by the CLI and API entry points.
+The stable public Python API is exported from `co_op_translator.api`. Most integrations use one of two workflows:
+
+| Scenario | Use this when | Main APIs |
+| --- | --- | --- |
+| Translate individual files or documents | Your application reads source content, calls Co-op Translator for translation, and decides where to save the result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Translate an entire repository | You want the Python API to behave like the CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
+
+Most lower-level modules under `core`, `config`, `review`, and `utils` are implementation details used by these API entry points.
+
+## Scenario 1: Translate Individual Files or Documents
+
+Use this workflow when you already have a file, editor buffer, notebook payload, MCP request, or custom pipeline input. Your code owns file I/O:
+
+1. Read the source content.
+2. Call a content translation API.
+3. Optionally call a path rewriting API if the translated content will be written into a project translation folder.
+4. Save or return the result from your application.
+
+The content translation APIs do not run project discovery, do not write metadata, do not append disclaimers, and do not rewrite links automatically.
+
+### Markdown File
 
 ```python
-from co_op_translator.api import run_review, run_translation
+import asyncio
+from pathlib import Path
+
+from co_op_translator.api import (
+    rewrite_markdown_paths,
+    translate_markdown_content,
+)
+
+
+async def main() -> None:
+    source_path = Path("docs/guide.md")
+    target_path = Path("translations/ko/docs/guide.md")
+
+    translated = await translate_markdown_content(
+        source_path.read_text(encoding="utf-8"),
+        "ko",
+        {"source_path": source_path},
+    )
+
+    rewritten = rewrite_markdown_paths(
+        translated,
+        source_path=source_path,
+        target_path=target_path,
+        policy={
+            "language_code": "ko",
+            "root_dir": ".",
+            "translations_dir": "translations",
+            "translated_images_dir": "translated_images",
+            "translation_types": ["markdown", "images"],
+        },
+    )
+
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    target_path.write_text(rewritten, encoding="utf-8")
+
+
+asyncio.run(main())
 ```
 
-## Public entry points
+If the translated Markdown will not live in a Co-op Translator project layout, skip `rewrite_markdown_paths` and save the translated string directly.
 
-::: co_op_translator.api.run_translation
+### Notebook File
 
-::: co_op_translator.api.run_review
+```python
+import asyncio
+from pathlib import Path
 
-## Typical usage
+from co_op_translator.api import (
+    rewrite_notebook_paths,
+    translate_notebook_content,
+)
 
-Translate Markdown files in the current project into Korean and Japanese:
+
+async def main() -> None:
+    source_path = Path("docs/tutorial.ipynb")
+    target_path = Path("translations/ja/docs/tutorial.ipynb")
+
+    translated_json = await translate_notebook_content(
+        source_path.read_text(encoding="utf-8"),
+        "ja",
+        {"source_path": source_path},
+    )
+
+    rewritten_json = rewrite_notebook_paths(
+        translated_json,
+        source_path=source_path,
+        target_path=target_path,
+        policy={
+            "language_code": "ja",
+            "root_dir": ".",
+            "translations_dir": "translations",
+            "translated_images_dir": "translated_images",
+            "translation_types": ["notebook", "images"],
+        },
+    )
+
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    target_path.write_text(rewritten_json, encoding="utf-8")
+
+
+asyncio.run(main())
+```
+
+`translate_notebook_content` translates Markdown cells and preserves non-Markdown cells. Path rewriting is applied only to Markdown cells.
+
+### Image File
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import translate_image_content
+
+source_path = Path("docs/images/hero.png")
+target_path = Path("translated_images/fr/hero.png")
+
+translated_image = translate_image_content(
+    source_path,
+    "fr",
+    {
+        "root_dir": ".",
+        "fast_mode": False,
+    },
+)
+
+target_path.parent.mkdir(parents=True, exist_ok=True)
+translated_image.save(target_path)
+```
+
+`translate_image_content` reads the source image and returns a rendered `PIL.Image.Image`. It does not write translated image metadata.
+
+## Scenario 2: Translate an Entire Repository
+
+Use this workflow when you want the Python API to behave like the `translate` CLI. `run_translation` discovers supported files, translates selected content types, rewrites paths, writes output files, updates metadata, and performs translation maintenance tasks such as cleanup.
+
+`run_translation` is the preferred project orchestration entry point. `translate_project` is exported as a compatibility alias with the same behavior.
+
+Translate Markdown files in the current repository into Korean and Japanese:
 
 ```python
 from co_op_translator.api import run_translation
@@ -91,7 +216,11 @@ run_translation(
 )
 ```
 
-Run deterministic review checks without API credentials:
+If none of `markdown`, `notebook`, or `images` are set, the API translates all supported types: Markdown, notebooks, and images.
+
+## Review Translated Output
+
+`run_review` runs deterministic translation checks without LLM or Vision credentials.
 
 ```python
 from co_op_translator.api import run_review
@@ -119,7 +248,99 @@ run_review(
 )
 ```
 
-## Translation parameters
+## Public Entry Points
+
+```python
+from co_op_translator.api import (
+    ImageTranslationOptions,
+    MarkdownTranslationOptions,
+    NotebookTranslationOptions,
+    run_review,
+    run_translation,
+    rewrite_markdown_paths,
+    rewrite_notebook_paths,
+    translate_image_content,
+    translate_markdown_content,
+    translate_notebook_content,
+    translate_project,
+)
+```
+
+::: co_op_translator.api.translate_markdown_content
+
+::: co_op_translator.api.translate_notebook_content
+
+::: co_op_translator.api.translate_image_content
+
+::: co_op_translator.api.rewrite_markdown_paths
+
+::: co_op_translator.api.rewrite_notebook_paths
+
+::: co_op_translator.api.MarkdownTranslationOptions
+
+::: co_op_translator.api.NotebookTranslationOptions
+
+::: co_op_translator.api.ImageTranslationOptions
+
+::: co_op_translator.api.run_translation
+
+::: co_op_translator.api.translate_project
+
+::: co_op_translator.api.run_review
+
+## Content Translation APIs
+
+Content translation APIs are intended for integrations that already have content in memory, such as an editor extension, MCP tool, notebook processor, or custom pipeline.
+
+| Function | Input | Output | File I/O | Notes |
+| --- | --- | --- | --- | --- |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Translates Markdown content only. It does not rewrite links, write metadata, or append disclaimers. |
+| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Translates Markdown cells and preserves non-Markdown cells. It does not rewrite links, write metadata, or append disclaimers. |
+| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Extracts and translates image text, then returns a rendered image. It does not save translated image metadata. |
+
+`translate_markdown_content` and `translate_notebook_content` accept an optional `source_path` through their options. The path is passed as context to the translator; callers remain responsible for any project-specific path rewriting after translation.
+
+```python
+from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
+
+translated = await translate_markdown_content(
+    document,
+    "ko",
+    MarkdownTranslationOptions(source_path="docs/guide.md"),
+)
+```
+
+The same options can be passed as dictionaries:
+
+```python
+translated = await translate_markdown_content(
+    document,
+    "ko",
+    {"source_path": "docs/guide.md"},
+)
+```
+
+## Path Rewriting APIs
+
+Path rewriting APIs perform no translation. They update links and frontmatter paths after callers know the source path, translated target path, and project layout.
+
+| Function | Scope | Notes |
+| --- | --- | --- |
+| `rewrite_markdown_paths` | Markdown body and frontmatter | Rewrites Markdown links and supported frontmatter path fields for a translated target. |
+| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Applies Markdown path rewriting to each Markdown cell and leaves non-Markdown cells unchanged. |
+
+The `policy` argument may be a dictionary with these fields:
+
+| Field | Required | Purpose |
+| --- | --- | --- |
+| `language_code` | Yes | Target language code, such as `"ko"` or `"pt-BR"`. |
+| `root_dir` | No | Source project root. Defaults to `"."`. |
+| `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
+| `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
+| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
+| `lang_subdir` | No | Optional subdirectory under each language folder. |
+
+## Project Translation Parameters
 
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
@@ -141,9 +362,7 @@ run_review(
 | `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
 | `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
 
-If none of `markdown`, `notebook`, or `images` are set, the API translates all supported types: Markdown, notebooks, and images.
-
-## Review parameters
+## Review Parameters
 
 `run_review` intentionally mirrors the `run_translation` signature where possible so automation can switch between translation and review workflows with minimal branching.
 
@@ -165,13 +384,14 @@ If none of `markdown`, `notebook`, or `images` are set, the API translates all s
 
 If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
 
-## Configuration requirements
+## Configuration Requirements
 
-`run_translation` checks configuration before translating:
+Translation APIs require provider configuration before translating:
 
-- An LLM provider is required. Configure either Azure OpenAI or OpenAI.
+- Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
 - Image translation requires Azure AI Vision in addition to the LLM provider.
-- The API runs lightweight connectivity checks before translation begins.
+- `run_translation` runs lightweight connectivity checks before project translation begins.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` are deterministic and do not require provider credentials.
 
 Required Azure OpenAI variables:
 
@@ -199,9 +419,11 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 
 `run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
 
-## Behavior notes
+## Behavior Notes
 
-- The API prints progress and estimate summaries through Click, matching the CLI user experience.
+- Content translation APIs keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content needs project-relative links adjusted for a target location.
+- Project orchestration APIs add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
+- `run_translation` prints progress and estimate summaries through Click, matching the CLI user experience.
 - `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
 - `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
 - When image translation is selected, missing Vision configuration raises an error before translation starts.
@@ -209,17 +431,20 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 - `run_review` fails on missing translated files, missing or stale translation metadata, malformed Markdown frontmatter/code fences, and invalid translated notebook JSON.
 - `run_review` reports missing local Markdown and image link targets as warnings by default.
 
-## Internal call path
+## Internal Call Path
 
 The API delegates to the same core implementation used by the CLI:
 
 Translation:
 
-1. `co_op_translator.api.translation.run_translation`
-2. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`
-3. `co_op_translator.core.project.ProjectTranslator`
-4. `co_op_translator.core.project.TranslationManager`
-5. Markdown, notebook, text, and image translators under `co_op_translator.core`
+1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.
+2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.
+3. `co_op_translator.api.translation.run_translation` for full project orchestration.
+4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
+5. `co_op_translator.core.project.ProjectTranslator`.
+6. `co_op_translator.core.project.TranslationManager`.
+7. Focused project translation mixins for Markdown, notebooks, and images.
+8. Markdown, notebook, text, and image translators under `co_op_translator.core`.
 
 Review:
 
@@ -234,6 +459,9 @@ The following classes are useful for maintainers, but are not exported as the pa
 | --- | --- | --- |
 | `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Coordinates project-level translation, directory management, per-language metadata normalization, and delegation to Markdown, notebook, and image translators. |
 | `TranslationManager` | `co_op_translator.core.project.translation` | Performs the async file processing work for Markdown, notebooks, images, stale detection, and translation metadata updates. |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Orchestrates Markdown file reads, content translation, path rewriting, metadata, disclaimers, and writes. |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Orchestrates notebook file reads, Markdown-cell translation, path rewriting, metadata, disclaimers, and writes. |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Orchestrates source image discovery, image translation, output paths, metadata, and writes. |
 | `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Finds translated Markdown pairs, evaluates translation quality, and reads confidence metadata for low-confidence repair workflows. |
 | `ReviewRunner` | `co_op_translator.review.runner` | Coordinates deterministic review checks across source files, target languages, and configured translation roots. |
 | `ReviewTarget` | `co_op_translator.review.targets` | Describes a source root and the translation output directory reviewed for that root. |

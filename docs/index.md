@@ -14,29 +14,29 @@
 <div class="quickstart-grid">
   <a class="quickstart-card" href="configuration/">
     <span class="quickstart-step">Step 1</span>
-    <strong>Configuration</strong>
-    <span>Set up Azure OpenAI, OpenAI, Azure AI Vision, and output directories.</span>
-    <em>Open guide -></em>
+    <strong>Configure your project</strong>
+    <span>Set up providers, credentials, target languages, and output directories.</span>
+    <em>Read the guide -></em>
   </a>
 
   <a class="quickstart-card" href="cli/">
     <span class="quickstart-step">Step 2</span>
     <strong>Translate with CLI</strong>
     <span>Run translation, evaluation, review, and link migration commands.</span>
-    <em>Open guide -></em>
+    <em>Read the guide -></em>
   </a>
 
   <a class="quickstart-card" href="api/">
     <span class="quickstart-step">Step 3</span>
-    <strong>Python API</strong>
-    <span>Call content translation, path rewriting, project translation, and review APIs from scripts and automation.</span>
-    <em>Open guide -></em>
+    <strong>Automate with the Python API</strong>
+    <span>Use Co-op Translator from scripts and automation workflows.</span>
+    <em>Read the guide -></em>
   </a>
 
   <a class="quickstart-card" href="mcp/">
     <span class="quickstart-step">Step 4</span>
-    <strong>MCP Server</strong>
+    <strong>Connect with the MCP Server</strong>
     <span>Expose Co-op Translator tools to agents, editors, and MCP-compatible clients.</span>
-    <em>Open guide -></em>
+    <em>Read the guide -></em>
   </a>
 </div>

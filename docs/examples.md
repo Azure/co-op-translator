@@ -71,6 +71,59 @@ run_translation(
 )
 ```
 
+## Translate Markdown content from Python
+
+```python
+import asyncio
+
+from co_op_translator.api import translate_markdown_content
+
+
+async def main() -> None:
+    translated = await translate_markdown_content(
+        "# Hello\n\nWelcome to the course.",
+        "ko",
+    )
+    print(translated)
+
+
+asyncio.run(main())
+```
+
+This translates the Markdown string only. It does not rewrite links or write translation files.
+
+## Translate then rewrite Markdown paths
+
+```python
+import asyncio
+
+from co_op_translator.api import rewrite_markdown_paths, translate_markdown_content
+
+
+async def main() -> None:
+    translated = await translate_markdown_content(
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
+        "ko",
+        {"source_path": "docs/guide.md"},
+    )
+    rewritten = rewrite_markdown_paths(
+        translated,
+        source_path="docs/guide.md",
+        target_path="translations/ko/docs/guide.md",
+        policy={
+            "language_code": "ko",
+            "root_dir": ".",
+            "translations_dir": "translations",
+            "translated_images_dir": "translated_images",
+            "translation_types": ["markdown", "images"],
+        },
+    )
+    print(rewritten)
+
+
+asyncio.run(main())
+```
+
 ## Translate multiple roots from Python
 
 ```python

@@ -29,7 +29,7 @@
   <a class="quickstart-card" href="api/">
     <span class="quickstart-step">Step 3</span>
     <strong>Python API</strong>
-    <span>Call <code>run_translation</code> and <code>run_review</code> from scripts and automation.</span>
+    <span>Call content translation, path rewriting, project translation, and review APIs from scripts and automation.</span>
     <em>Open guide -></em>
   </a>
 

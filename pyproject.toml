@@ -23,6 +23,7 @@ translate = "co_op_translator.__main__:main"
 evaluate = "co_op_translator.__main__:main"
 migrate-links = "co_op_translator.__main__:main"
 co-op-review = "co_op_translator.__main__:main"
+co-op-translator-mcp = "co_op_translator.mcp.server:main"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
@@ -91,6 +92,7 @@ python-bidi = "^0.6.6"
 az-ai-healthcheck = { version = "^0.1.7", extras = ["vision"] }
 ai-healthcheck = "^0.1.2"
 markdown-it-py = "^3.0.0"
+mcp = ">=1.27,<2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"

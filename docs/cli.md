@@ -1,13 +1,34 @@
 # CLI Reference
 
-Co-op Translator installs four command-line entry points:
+Co-op Translator installs these command-line entry points:
 
 - `translate`
 - `evaluate`
 - `migrate-links`
 - `co-op-review`
+- `co-op-translator-mcp`
 
-The dispatch logic lives in `co_op_translator.__main__`, which selects the command implementation based on the invoked script name.
+The `translate`, `evaluate`, `migrate-links`, and `co-op-review` commands dispatch through `co_op_translator.__main__`, which selects the command implementation based on the invoked script name. The MCP server uses `co_op_translator.mcp.server` directly.
+
+## First-Time CLI Flow
+
+Start here if you are using Co-op Translator from a terminal:
+
+1. Configure an LLM provider as described in [Configuration](configuration.md).
+2. Choose the content type you want to translate.
+3. Run a focused command first, such as Markdown-only translation.
+4. Use `--dry-run` before large repository changes.
+5. Use `co-op-review` after translation to check structure and freshness.
+
+| Goal | Command to start with |
+| --- | --- |
+| Translate Markdown documents | `translate -l "ko" -md` |
+| Translate notebooks | `translate -l "ko" -nb` |
+| Translate image text | `translate -l "ko" -img` |
+| Preview work without writing files | `translate -l "ko" -md --dry-run` |
+| Review existing translations | `co-op-review -l "ko" -md -nb` |
+| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
+| Expose tools to an MCP client | Configure the [MCP Server](mcp.md) instead of running CLI commands directly. |
 
 ## translate
 
@@ -165,6 +186,22 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 `co-op-review` currently checks for missing translated files, missing or stale translation metadata, Markdown frontmatter and code fence integrity, invalid translated notebook JSON, and missing local Markdown or image link targets. Missing links are warnings by default; structural and freshness problems fail the command.
 
+## co-op-translator-mcp
+
+Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+
+```bash
+co-op-translator-mcp
+```
+
+The default transport is `stdio`. See the [MCP Server](mcp.md) guide for client configuration, tools, resources, and safety notes.
+
+### Options
+
+| Option | Required | Description |
+| --- | --- | --- |
+| `--transport` | No | MCP transport: `stdio`, `streamable-http`, or `sse`. Defaults to `stdio`. |
+
 ## migrate-links
 
 Reprocess translated Markdown files and update notebook links so they point to translated notebooks when available.
@@ -249,4 +286,55 @@ For example, translating `README.md` and `docs/setup.md` into Korean produces:
 ```text
 translations/ko/README.md
 translations/ko/docs/setup.md
+```
+
+## Copy-Paste CLI Examples
+
+Translate Markdown into three languages:
+
+```bash
+translate -l "ko ja fr" -md
+```
+
+Translate notebooks only:
+
+```bash
+translate -l "zh-CN" -nb
+```
+
+Translate images only:
+
+```bash
+translate -l "pt-BR" -img
+```
+
+Preview Markdown translation without writing files:
+
+```bash
+translate -l "de es" -md --dry-run
+```
+
+Repair low-confidence Markdown translations:
+
+```bash
+evaluate -l "ko" -c 0.8
+translate -l "ko" --fix -c 0.8 -md
+```
+
+Run CI-friendly Markdown translation:
+
+```bash
+translate -l "ko ja" -md -y -s
+```
+
+Review translated Markdown and notebooks:
+
+```bash
+co-op-review -l "ko ja" -md -nb
+```
+
+Preview link migration:
+
+```bash
+migrate-links -l "ko" --dry-run
 ```

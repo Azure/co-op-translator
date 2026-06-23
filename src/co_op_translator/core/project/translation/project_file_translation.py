@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import os
 from pathlib import Path
@@ -26,6 +27,9 @@ from co_op_translator.utils.markdown.processing import compare_line_breaks
 from co_op_translator.utils.markdown.path_rewriter import (
     MarkdownPathRewritePolicy,
     rewrite_markdown_paths,
+)
+from co_op_translator.utils.markdown.notebook_path_rewriter import (
+    rewrite_notebook_paths,
 )
 from co_op_translator.utils.vision.image_utils import save_optimized_image
 
@@ -68,6 +72,56 @@ class ProjectFileTranslationMixin:
                 lang_subdir=self.lang_subdir,
             ),
         )
+
+    def _rewrite_notebook_paths_for_target(
+        self,
+        content: str,
+        file_path: Path,
+        translated_path: Path,
+        language_code: str,
+    ) -> str:
+        notebook_translation_types = ["markdown", "notebook"]
+        if "images" in self.translation_types:
+            notebook_translation_types.append("images")
+
+        return rewrite_notebook_paths(
+            content,
+            source_path=file_path,
+            target_path=translated_path,
+            policy=MarkdownPathRewritePolicy(
+                language_code=language_code,
+                root_dir=self.root_dir,
+                translations_dir=self.translations_dir,
+                translated_images_dir=self.image_dir,
+                translation_types=notebook_translation_types,
+                lang_subdir=self.lang_subdir,
+            ),
+        )
+
+    async def _append_notebook_disclaimer(
+        self, content: str, language_code: str
+    ) -> str:
+        if not self.add_disclaimer:
+            return content
+
+        disclaimer_text = await self.markdown_translator.generate_disclaimer(
+            language_code
+        )
+        if not disclaimer_text:
+            return content
+
+        notebook = json.loads(content)
+        start_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER START -->"
+        end_marker = "<!-- CO-OP TRANSLATOR DISCLAIMER END -->"
+        disclaimer_block = f"---\n\n{start_marker}\n{disclaimer_text}\n{end_marker}"
+        notebook.setdefault("cells", []).append(
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [disclaimer_block + "\n"],
+            }
+        )
+        return json.dumps(notebook, ensure_ascii=False, indent=1)
 
     def _get_translated_image_path(self, image_path: Path, language_code: str) -> Path:
         translated_filename = generate_translated_filename(
@@ -281,16 +335,22 @@ class ProjectFileTranslationMixin:
                 handle_empty_document(file_path, output_file)
                 return str(output_file)
 
-            # Perform translation
-            use_translated_images = "images" in self.translation_types
             relative_path = file_path.relative_to(self.root_dir)
             translated_path = self._get_language_root(language_code) / relative_path
             translated_content = await self.notebook_translator.translate_notebook(
-                file_path,
+                document,
                 language_code,
-                use_translated_images=use_translated_images,
-                add_disclaimer=self.add_disclaimer,
-                target_path=translated_path,
+                source_path=file_path,
+            )
+            translated_content = self._rewrite_notebook_paths_for_target(
+                translated_content,
+                file_path,
+                translated_path,
+                language_code,
+            )
+            translated_content = await self._append_notebook_disclaimer(
+                translated_content,
+                language_code,
             )
             if not translated_content:
                 logger.error(

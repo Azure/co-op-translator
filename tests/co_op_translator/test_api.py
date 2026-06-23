@@ -1,3 +1,4 @@
+import json
 from unittest.mock import MagicMock
 
 import pytest
@@ -403,6 +404,53 @@ async def test_translate_markdown_content_uses_content_only_translator(monkeypat
     ]
 
 
+@pytest.mark.asyncio
+async def test_translate_notebook_content_uses_content_only_translator(monkeypatch):
+    class FakeNotebookTranslator:
+        def __init__(self):
+            self.calls = []
+
+        async def translate_notebook(self, notebook, language_code, **kwargs):
+            self.calls.append((notebook, language_code, kwargs))
+            payload = json.loads(notebook)
+            payload["metadata"]["translated_to"] = language_code
+            return json.dumps(payload)
+
+    notebook = json.dumps(
+        {
+            "cells": [
+                {"cell_type": "markdown", "metadata": {}, "source": ["# Hello\n"]}
+            ],
+            "metadata": {},
+            "nbformat": 4,
+            "nbformat_minor": 5,
+        }
+    )
+    fake = FakeNotebookTranslator()
+    monkeypatch.setattr(
+        api.JupyterNotebookTranslator, "create", MagicMock(return_value=fake)
+    )
+
+    result = await api.translate_notebook_content(
+        notebook,
+        "ko",
+        {
+            "source_path": "docs/tutorial.ipynb",
+        },
+    )
+
+    assert json.loads(result)["metadata"]["translated_to"] == "ko"
+    assert fake.calls == [
+        (
+            notebook,
+            "ko",
+            {
+                "source_path": "docs/tutorial.ipynb",
+            },
+        )
+    ]
+
+
 def test_translate_image_content_uses_content_only_translator(monkeypatch):
     class FakeImageTranslator:
         def __init__(self):
@@ -469,3 +517,47 @@ image: images/hero.png
     assert "translated_images/ko/hero." in rewritten
     assert "images/hero.png" not in rewritten
     assert "../../../translated_images/ko/" in rewritten
+
+
+def test_rewrite_notebook_paths_uses_target_path(tmp_path):
+    root_dir = tmp_path
+    source_path = root_dir / "docs" / "tutorial.ipynb"
+    target_path = root_dir / "out" / "ko" / "docs" / "tutorial.ipynb"
+    image_path = root_dir / "docs" / "images" / "hero.png"
+
+    source_path.parent.mkdir(parents=True)
+    image_path.parent.mkdir(parents=True)
+    image_path.write_text("image", encoding="utf-8")
+
+    content = json.dumps(
+        {
+            "cells": [
+                {
+                    "cell_type": "markdown",
+                    "metadata": {},
+                    "source": ["# Tutorial\n", "![Hero](images/hero.png)\n"],
+                }
+            ],
+            "metadata": {},
+            "nbformat": 4,
+            "nbformat_minor": 5,
+        }
+    )
+
+    rewritten = api.rewrite_notebook_paths(
+        content,
+        source_path=source_path,
+        target_path=target_path,
+        policy={
+            "language_code": "ko",
+            "root_dir": root_dir,
+            "translations_dir": root_dir / "out",
+            "translated_images_dir": root_dir / "translated_images",
+            "translation_types": ["markdown", "notebook", "images"],
+        },
+    )
+
+    cell_source = "".join(json.loads(rewritten)["cells"][0]["source"])
+    assert "images/hero.png" not in cell_source
+    assert "../../../translated_images/ko/hero." in cell_source
+    assert cell_source.endswith(".webp)\n")

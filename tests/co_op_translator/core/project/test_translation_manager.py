@@ -48,22 +48,18 @@ class FakeNotebookTranslator:
 
     async def translate_notebook(
         self,
-        file_path,
+        document,
         language_code,
-        use_translated_images=True,
-        add_disclaimer=True,
-        target_path=None,
+        source_path=None,
     ):
         self.calls.append(
             (
-                Path(file_path),
+                document,
                 language_code,
-                use_translated_images,
-                add_disclaimer,
-                Path(target_path) if target_path is not None else None,
+                Path(source_path) if source_path is not None else None,
             )
         )
-        notebook = json.loads(Path(file_path).read_text(encoding="utf-8"))
+        notebook = json.loads(document)
         notebook.setdefault("metadata", {})["translated_to"] = language_code
         return json.dumps(notebook)
 
@@ -466,6 +462,68 @@ async def test_translate_notebook_writes_translation_and_metadata(
     assert (
         temp_project_dir / "translations" / "ko" / ".co-op-translator.json"
     ).exists()
+
+
+@pytest.mark.asyncio
+async def test_translate_notebook_rewrites_paths_and_appends_disclaimer(
+    temp_project_dir,
+):
+    docs_dir = temp_project_dir / "docs"
+    images_dir = docs_dir / "images"
+    images_dir.mkdir(parents=True, exist_ok=True)
+    image_file = images_dir / "hero.png"
+    image_file.write_text("image", encoding="utf-8")
+    notebook_file = docs_dir / "tutorial.ipynb"
+    notebook_file.write_text(
+        json.dumps(
+            {
+                "cells": [
+                    {
+                        "cell_type": "markdown",
+                        "metadata": {},
+                        "source": ["# Tutorial\n", "![Hero](images/hero.png)\n"],
+                    }
+                ],
+                "metadata": {},
+                "nbformat": 4,
+                "nbformat_minor": 5,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    markdown_translator = FakeMarkdownTranslator()
+    notebook_translator = FakeNotebookTranslator()
+    translation_manager = TranslationManager(
+        root_dir=temp_project_dir,
+        translations_dir=temp_project_dir / "translations",
+        image_dir=temp_project_dir / "translated_images",
+        language_codes=["ko"],
+        excluded_dirs=["translations", "translated_images", "logs"],
+        supported_image_extensions=[".png"],
+        supported_notebook_extensions=[".ipynb"],
+        markdown_translator=markdown_translator,
+        image_translator=FakeImageTranslator(),
+        notebook_translator=notebook_translator,
+        translation_types=["notebook", "images"],
+        add_disclaimer=True,
+    )
+
+    result = await translation_manager.translate_notebook(notebook_file, "ko")
+
+    translated_path = (
+        temp_project_dir / "translations" / "ko" / "docs" / "tutorial.ipynb"
+    )
+    assert Path(result) == translated_path
+    translated_notebook = json.loads(translated_path.read_text(encoding="utf-8"))
+    cell_source = "".join(translated_notebook["cells"][0]["source"])
+    disclaimer_source = "".join(translated_notebook["cells"][-1]["source"])
+
+    assert "images/hero.png" not in cell_source
+    assert "../../../translated_images/ko/hero." in cell_source
+    assert "Disclaimer for ko" in disclaimer_source
+    assert markdown_translator.disclaimer_calls == ["ko"]
+    assert notebook_translator.calls[0][2] == notebook_file.resolve()
 
 
 @pytest.mark.asyncio

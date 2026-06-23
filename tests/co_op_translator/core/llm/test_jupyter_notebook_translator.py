@@ -9,6 +9,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from co_op_translator.core.llm.jupyter_notebook_translator import (
     JupyterNotebookTranslator,
 )
+from co_op_translator.utils.markdown.notebook_path_rewriter import (
+    rewrite_notebook_paths,
+)
+from co_op_translator.utils.markdown.path_rewriter import MarkdownPathRewritePolicy
 
 
 @pytest.fixture
@@ -93,8 +97,9 @@ class TestJupyterNotebookTranslator:
 
         # Create translator and translate
         translator = JupyterNotebookTranslator.create()
+        notebook_content = temp_notebook_file.read_text(encoding="utf-8")
         result = await translator.translate_notebook(
-            temp_notebook_file, "es", use_translated_images=False, add_disclaimer=False
+            notebook_content, "es", source_path=temp_notebook_file
         )
 
         # Verify result is valid JSON
@@ -139,7 +144,9 @@ class TestJupyterNotebookTranslator:
         # Create translator and translate
         translator = JupyterNotebookTranslator.create()
         result = await translator.translate_notebook(
-            notebook_file, "es", add_disclaimer=False
+            notebook_file.read_text(encoding="utf-8"),
+            "es",
+            source_path=notebook_file,
         )
 
         # Verify no translation calls were made for empty cells
@@ -183,7 +190,9 @@ class TestJupyterNotebookTranslator:
         # Create translator and translate
         translator = JupyterNotebookTranslator.create()
         result = await translator.translate_notebook(
-            notebook_file, "es", add_disclaimer=False
+            notebook_file.read_text(encoding="utf-8"),
+            "es",
+            source_path=notebook_file,
         )
 
         # Verify translation was called
@@ -242,11 +251,21 @@ class TestJupyterNotebookTranslator:
             image_dir=image_dir,
         )
         result = await translator.translate_notebook(
-            notebook_file,
+            notebook_file.read_text(encoding="utf-8"),
             "ko",
-            use_translated_images=True,
-            add_disclaimer=False,
+            source_path=notebook_file,
+        )
+        result = rewrite_notebook_paths(
+            result,
+            source_path=notebook_file,
             target_path=target_path,
+            policy=MarkdownPathRewritePolicy(
+                language_code="ko",
+                root_dir=root_dir,
+                translations_dir=translations_dir,
+                translated_images_dir=image_dir,
+                translation_types=["markdown", "notebook", "images"],
+            ),
         )
 
         translated_notebook = json.loads(result)
@@ -275,7 +294,9 @@ class TestJupyterNotebookTranslator:
         # Create translator with root directory and translate without disclaimer for simplicity
         translator = JupyterNotebookTranslator.create(tmp_path)
         result = await translator.translate_notebook(
-            temp_notebook_file, "ko", add_disclaimer=False
+            temp_notebook_file.read_text(encoding="utf-8"),
+            "ko",
+            source_path=temp_notebook_file,
         )
 
         # Verify result includes notebook metadata but not coopTranslator section
@@ -298,7 +319,11 @@ class TestJupyterNotebookTranslator:
 
         # Create translator and translate
         translator = JupyterNotebookTranslator.create()
-        result = await translator.translate_notebook(temp_notebook_file, "ko")
+        result = await translator.translate_notebook(
+            temp_notebook_file.read_text(encoding="utf-8"),
+            "ko",
+            source_path=temp_notebook_file,
+        )
 
         # Verify translation still completes (graceful error handling)
         translated_notebook = json.loads(result)
@@ -333,7 +358,9 @@ class TestJupyterNotebookTranslator:
         # Create translator and translate
         translator = JupyterNotebookTranslator.create()
         result = await translator.translate_notebook(
-            temp_notebook_file, "ko", add_disclaimer=False
+            temp_notebook_file.read_text(encoding="utf-8"),
+            "ko",
+            source_path=temp_notebook_file,
         )
 
         # Parse result
@@ -360,10 +387,10 @@ class TestJupyterNotebookTranslator:
 
     @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
     @pytest.mark.asyncio
-    async def test_translate_notebook_with_disclaimer(
+    async def test_translate_notebook_does_not_add_disclaimer_in_core(
         self, mock_markdown_translator_class, temp_notebook_file
     ):
-        """Test that notebook translation adds disclaimer cell when enabled."""
+        """Notebook core translation leaves disclaimer insertion to the project layer."""
         # Setup mock translator
         mock_translator = AsyncMock()
         mock_translator.translate_markdown = AsyncMock(
@@ -374,48 +401,12 @@ class TestJupyterNotebookTranslator:
         )
         mock_markdown_translator_class.create.return_value = mock_translator
 
-        # Create translator and translate with disclaimer
+        # Create translator and translate
         translator = JupyterNotebookTranslator.create()
         result = await translator.translate_notebook(
-            temp_notebook_file, "ko", add_disclaimer=True
-        )
-
-        # Parse result
-        translated_notebook = json.loads(result)
-
-        # Verify disclaimer cell was added at the end
-        cells = translated_notebook["cells"]
-        assert len(cells) == 4  # Original 3 + 1 disclaimer
-
-        disclaimer_cell = cells[-1]  # Last cell should be disclaimer
-        assert disclaimer_cell["cell_type"] == "markdown"
-        disclaimer_content = "".join(disclaimer_cell["source"])
-        assert "Disclaimer" in disclaimer_content
-        assert "---" in disclaimer_content  # Separator line
-
-        # Verify generate_disclaimer was called
-        mock_translator.generate_disclaimer.assert_called_once_with("ko")
-
-    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
-    @pytest.mark.asyncio
-    async def test_translate_notebook_without_disclaimer(
-        self, mock_markdown_translator_class, temp_notebook_file
-    ):
-        """Test that notebook translation skips disclaimer when disabled."""
-        # Setup mock translator
-        mock_translator = AsyncMock()
-        mock_translator.translate_markdown = AsyncMock(
-            return_value="# Translated Title\n\nTranslated content"
-        )
-        mock_translator.generate_disclaimer = AsyncMock(
-            return_value="**Disclaimer**: This document has been translated using an AI translation service."
-        )
-        mock_markdown_translator_class.create.return_value = mock_translator
-
-        # Create translator and translate without disclaimer
-        translator = JupyterNotebookTranslator.create()
-        result = await translator.translate_notebook(
-            temp_notebook_file, "ko", add_disclaimer=False
+            temp_notebook_file.read_text(encoding="utf-8"),
+            "ko",
+            source_path=temp_notebook_file,
         )
 
         # Parse result
@@ -423,39 +414,7 @@ class TestJupyterNotebookTranslator:
 
         # Verify no disclaimer cell was added
         cells = translated_notebook["cells"]
-        assert len(cells) == 3  # Original 3, no disclaimer
+        assert len(cells) == 3
 
         # Verify generate_disclaimer was not called
         mock_translator.generate_disclaimer.assert_not_called()
-
-    @patch("co_op_translator.core.llm.jupyter_notebook_translator.MarkdownTranslator")
-    @pytest.mark.asyncio
-    async def test_translate_notebook_disclaimer_generation_fails(
-        self, mock_markdown_translator_class, temp_notebook_file
-    ):
-        """Test that notebook translation handles disclaimer generation failure gracefully."""
-        # Setup mock translator with failing disclaimer generation
-        mock_translator = AsyncMock()
-        mock_translator.translate_markdown = AsyncMock(
-            return_value="# Translated Title\n\nTranslated content"
-        )
-        mock_translator.generate_disclaimer = AsyncMock(
-            return_value=""  # Empty disclaimer (failure case)
-        )
-        mock_markdown_translator_class.create.return_value = mock_translator
-
-        # Create translator and translate
-        translator = JupyterNotebookTranslator.create()
-        result = await translator.translate_notebook(
-            temp_notebook_file, "ko", add_disclaimer=True
-        )
-
-        # Parse result
-        translated_notebook = json.loads(result)
-
-        # Verify no disclaimer cell was added when generation fails
-        cells = translated_notebook["cells"]
-        assert len(cells) == 3  # Original 3, no disclaimer due to failure
-
-        # Verify generate_disclaimer was called but failed
-        mock_translator.generate_disclaimer.assert_called_once_with("ko")

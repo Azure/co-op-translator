@@ -5,8 +5,14 @@ from pathlib import Path
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.directory_manager import DirectoryManager
 
-from co_op_translator.core.project.translation.project_file_translation import (
-    ProjectFileTranslationMixin,
+from co_op_translator.core.project.translation.project_image_translation import (
+    ProjectImageTranslationMixin,
+)
+from co_op_translator.core.project.translation.project_markdown_translation import (
+    ProjectMarkdownTranslationMixin,
+)
+from co_op_translator.core.project.translation.project_notebook_translation import (
+    ProjectNotebookTranslationMixin,
 )
 from co_op_translator.core.project.translation.translation_discovery import (
     TranslationDiscoveryMixin,
@@ -26,7 +32,9 @@ from co_op_translator.core.project.translation.translation_workflow import (
 
 
 class TranslationManager(
-    ProjectFileTranslationMixin,
+    ProjectMarkdownTranslationMixin,
+    ProjectNotebookTranslationMixin,
+    ProjectImageTranslationMixin,
     TranslationWorkflowMixin,
     TranslationDiscoveryMixin,
     TranslationStatusMixin,

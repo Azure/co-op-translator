@@ -9,7 +9,7 @@ The stable public Python API is exported from `co_op_translator.api`. Most integ
 
 Most lower-level modules under `core`, `config`, `review`, and `utils` are implementation details used by these API entry points.
 
-MCP clients use the same public API through the [MCP Server](mcp.md). Use this page when calling Python directly, and the MCP guide when exposing Co-op Translator to an agent or editor.
+MCP clients use the same public API through the [MCP Server](mcp.md). Use this page when calling Python directly, and the MCP guide when exposing Co-op Translator to an agent or editor. If you are deciding between CLI, Python API, and MCP, start with [Choose Your Workflow](workflows.md).
 
 ## First-Time API Flow
 

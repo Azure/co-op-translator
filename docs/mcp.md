@@ -40,6 +40,8 @@ Choose the translation mode your MCP client will use:
 | Provider-backed | Co-op Translator calls `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, or `run_translation`. | Markdown and notebook translation require Azure OpenAI or OpenAI. Image translation also requires Azure AI Vision. |
 | Agent-assisted | The MCP host agent translates chunks returned by `start_markdown_agent_translation` or `start_notebook_agent_translation`. | No Co-op Translator LLM provider credentials are required for Markdown or notebook chunks. Image translation is not covered by agent-assisted mode yet. |
 
+If you are starting with Markdown or notebook translation inside an agent such as Codex or Claude Code, start with agent-assisted mode. Use provider-backed mode when you want Co-op Translator itself to call your configured providers, when you are translating images, or when you are running repository-level translation like the CLI.
+
 Configure provider credentials only for provider-backed workflows:
 
 ```bash
@@ -155,6 +157,24 @@ The content tools do not perform project discovery, metadata updates, disclaimer
 ### Translate with the Host Agent Model
 
 Use agent-assisted tools when you want the MCP host agent, such as a coding assistant, to produce the translated text instead of configuring Azure OpenAI or OpenAI for Co-op Translator.
+
+In a chat-based MCP client, you normally do not need to write tool JSON yourself. Ask the agent to use the agent-assisted workflow:
+
+```text
+Translate this Markdown file to Korean with Co-op Translator MCP.
+Use agent-assisted mode: call start_markdown_agent_translation, translate the returned chunks with your own model, then call finish_markdown_agent_translation.
+Keep Markdown formatting, code blocks, and links intact.
+```
+
+For notebooks, use the same pattern:
+
+```text
+Translate this notebook to Korean with Co-op Translator MCP.
+Use start_notebook_agent_translation, translate the returned Markdown-cell chunks with your own model, then call finish_notebook_agent_translation.
+Preserve code cells, outputs, and notebook metadata.
+```
+
+If your MCP client supports server prompts, use `agent_assisted_markdown_translation_prompt` to have the client load the same workflow instructions.
 
 For Markdown:
 

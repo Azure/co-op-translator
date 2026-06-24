@@ -133,7 +133,9 @@ docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translat
 - Keeps translations in sync with source changes
 - Works locally (CLI) or in CI (GitHub Actions)
 - Exposes Markdown, notebook, image, review, and project translation tools through MCP
-- Uses Azure OpenAI or OpenAI; optional Azure AI Vision for images
+- Uses Azure OpenAI or OpenAI for provider-backed translation
+- Lets MCP host agents translate Markdown and notebook chunks without Co-op Translator LLM credentials
+- Uses Azure AI Vision for image text extraction and translation
 - Reviews translation structure and freshness with deterministic checks
 - Preserves Markdown formatting and structure
 

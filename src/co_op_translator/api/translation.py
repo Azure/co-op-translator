@@ -13,6 +13,12 @@ from PIL import Image
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.config.vision_config.config import VisionConfig
+from co_op_translator.core.agent_translation import (
+    finish_markdown_agent_translation as finish_markdown_agent_translation_job,
+    finish_notebook_agent_translation as finish_notebook_agent_translation_job,
+    start_markdown_agent_translation as start_markdown_agent_translation_job,
+    start_notebook_agent_translation as start_notebook_agent_translation_job,
+)
 from co_op_translator.core.llm.jupyter_notebook_translator import (
     JupyterNotebookTranslator,
 )
@@ -127,6 +133,52 @@ async def translate_notebook_content(
         language_code,
         source_path=resolved_options.source_path,
     )
+
+
+def start_markdown_agent_translation(
+    document: str,
+    language_code: str,
+    source_path: str | Path | None = None,
+) -> dict[str, object]:
+    """Prepare provider-free Markdown chunks for host-agent translation."""
+
+    return start_markdown_agent_translation_job(
+        document,
+        language_code,
+        source_path=source_path,
+    )
+
+
+def finish_markdown_agent_translation(
+    job: Mapping[str, object],
+    translated_chunks: Mapping[str, object] | list[Mapping[str, object]],
+) -> dict[str, object]:
+    """Reconstruct Markdown from chunks translated by a host agent."""
+
+    return finish_markdown_agent_translation_job(job, translated_chunks)
+
+
+def start_notebook_agent_translation(
+    notebook: str | Mapping[str, object],
+    language_code: str,
+    source_path: str | Path | None = None,
+) -> dict[str, object]:
+    """Prepare provider-free notebook Markdown chunks for host-agent translation."""
+
+    return start_notebook_agent_translation_job(
+        notebook,
+        language_code,
+        source_path=source_path,
+    )
+
+
+def finish_notebook_agent_translation(
+    job: Mapping[str, object],
+    translated_chunks: Mapping[str, object] | list[Mapping[str, object]],
+) -> dict[str, object]:
+    """Reconstruct a notebook from Markdown chunks translated by a host agent."""
+
+    return finish_notebook_agent_translation_job(job, translated_chunks)
 
 
 def translate_image_content(

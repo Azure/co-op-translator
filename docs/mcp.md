@@ -11,12 +11,13 @@ Use MCP when an agent or editor should call Co-op Translator directly:
 | User goal | MCP tools |
 | --- | --- |
 | Translate one Markdown document, notebook, or image | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
+| Translate Markdown or notebook content with the host agent model | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
 | Rewrite translated Markdown or notebook links after choosing the output path | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
 | Translate a full repository like the CLI | `run_translation`, `translate_project` |
 | Review translated output without LLM credentials | `run_review` |
 | Inspect capabilities and environment status | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-The MCP server wraps the same public Python API documented in [Python API](api.md). It does not reimplement translation logic.
+The MCP server wraps the same public Python API documented in [Python API](api.md). Provider-backed tools use the same configured providers as the CLI and Python API. Agent-assisted tools prepare chunks for the MCP host agent to translate, then use Co-op Translator to reconstruct the final Markdown or notebook.
 
 ## Step 1: Install and Configure Co-op Translator
 
@@ -32,7 +33,14 @@ For local development from this repository, install the package in editable mode
 pip install -e .
 ```
 
-Then configure an LLM provider in your environment. Markdown and notebook translation require Azure OpenAI or OpenAI. Image translation also requires Azure AI Vision.
+Choose the translation mode your MCP client will use:
+
+| Mode | Use this for | Credentials |
+| --- | --- | --- |
+| Provider-backed | Co-op Translator calls `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, or `run_translation`. | Markdown and notebook translation require Azure OpenAI or OpenAI. Image translation also requires Azure AI Vision. |
+| Agent-assisted | The MCP host agent translates chunks returned by `start_markdown_agent_translation` or `start_notebook_agent_translation`. | No Co-op Translator LLM provider credentials are required for Markdown or notebook chunks. Image translation is not covered by agent-assisted mode yet. |
+
+Configure provider credentials only for provider-backed workflows:
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -42,12 +50,15 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Image translation additionally needs:
+Provider-backed image translation additionally needs:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
+
+!!! note
+    Agent-assisted mode currently covers Markdown and notebook Markdown cells. Image translation still uses the provider-backed image pipeline and requires Azure AI Vision for OCR and layout-aware rendering.
 
 ## Step 2: Configure Your MCP Client
 
@@ -119,7 +130,7 @@ Useful first checks:
 
 ### Translate Individual Files or Documents
 
-Use content tools when the MCP client already has document content or an image path.
+Use provider-backed content tools when the MCP client already has document content or an image path and Co-op Translator should call the configured translation providers.
 
 For Markdown:
 
@@ -139,7 +150,27 @@ For images:
 2. Read the returned `data_base64` and `mime_type`.
 3. If `output_path` is provided, the translated image is also saved to that path.
 
-The content tools do not perform project discovery, metadata updates, disclaimers, or automatic path rewriting.
+The content tools do not perform project discovery, metadata updates, disclaimers, or automatic path rewriting. If you want the host agent to translate Markdown or notebook chunks without Co-op Translator LLM provider credentials, use the agent-assisted workflow below.
+
+### Translate with the Host Agent Model
+
+Use agent-assisted tools when you want the MCP host agent, such as a coding assistant, to produce the translated text instead of configuring Azure OpenAI or OpenAI for Co-op Translator.
+
+For Markdown:
+
+1. Call `start_markdown_agent_translation` with `document`, `language_code`, and optionally `source_path`.
+2. Translate each returned chunk in the host agent by following the chunk `prompt`.
+3. Call `finish_markdown_agent_translation` with the original `job` and translated chunks using `chunk_id` and `translated_text`.
+4. If the content will be written to a translated target path, call `rewrite_markdown_paths`.
+
+For notebooks:
+
+1. Call `start_notebook_agent_translation` with notebook JSON and `language_code`.
+2. Translate each returned chunk in the host agent.
+3. Call `finish_notebook_agent_translation` with the original `job` and translated chunks.
+4. Call `rewrite_notebook_paths` if translated notebook links need target-path adjustment.
+
+Agent-assisted tools do not call Azure OpenAI or OpenAI from Co-op Translator. The host agent is responsible for translating the returned chunks. Co-op Translator handles Markdown chunking, placeholder preservation, frontmatter reconstruction, notebook cell replacement, and post-translation normalization.
 
 ### Translate an Entire Repository
 
@@ -220,6 +251,10 @@ For local editor and agent integrations, prefer the client-managed `stdio` confi
 | `translate_markdown_content` | Translate a Markdown string. | No |
 | `translate_notebook_content` | Translate Markdown cells in notebook JSON. | No |
 | `translate_image_content` | Translate text in one image and return base64 image data. | Optional, only when `output_path` is provided |
+| `start_markdown_agent_translation` | Prepare Markdown chunks for the host agent to translate without Co-op Translator LLM credentials. | No |
+| `finish_markdown_agent_translation` | Reconstruct Markdown from host-agent translated chunks. | No |
+| `start_notebook_agent_translation` | Prepare notebook Markdown-cell chunks for the host agent to translate. | No |
+| `finish_notebook_agent_translation` | Reconstruct notebook JSON from host-agent translated chunks. | No |
 | `rewrite_markdown_paths` | Rewrite Markdown body and frontmatter paths for a translated target. | No |
 | `rewrite_notebook_paths` | Rewrite paths inside notebook Markdown cells. | No |
 | `run_translation` | Run project-level translation like the CLI. | Yes when `dry_run=false` and `confirm_write=true` |
@@ -242,6 +277,7 @@ For local editor and agent integrations, prefer the client-managed `stdio` confi
 | Prompt | Purpose |
 | --- | --- |
 | `translate_markdown_document_prompt` | Guide an MCP client through content translation plus optional path rewriting. |
+| `agent_assisted_markdown_translation_prompt` | Guide an MCP client through host-agent Markdown translation without Co-op Translator LLM provider credentials. |
 | `translate_repository_prompt` | Guide an MCP client through dry-run-first repository translation. |
 
 ## Copy-Paste Examples
@@ -279,6 +315,30 @@ Rewrite translated Markdown links:
 }
 ```
 
+Translate Markdown with the host agent model:
+
+```json
+{
+  "tool": "start_markdown_agent_translation",
+  "arguments": {
+    "document": "# Hello\n\nUse `pip install` to get started.",
+    "language_code": "ko",
+    "source_path": "docs/guide.md"
+  }
+}
+```
+
+After the host agent translates each returned chunk, finish the job with the complete `job` object returned by `start_markdown_agent_translation`:
+
+```text
+tool: finish_markdown_agent_translation
+arguments:
+  job: <the full job object returned by start_markdown_agent_translation>
+  translated_chunks:
+    - chunk_id: body:1
+      translated_text: "# 안녕하세요\n\n시작하려면 `pip install`을 사용하세요."
+```
+
 Preview repository translation:
 
 ```json
@@ -299,6 +359,7 @@ Preview repository translation:
 | --- | --- |
 | The MCP client cannot find `co-op-translator-mcp`. | Use the absolute Python executable path and `["-m", "co_op_translator.mcp.server"]` source checkout configuration. |
 | The server is listed but translation fails. | Call `get_configuration_status` and confirm an LLM provider is available. |
+| You want Markdown or notebook translation without Azure OpenAI/OpenAI keys. | Use `start_markdown_agent_translation` / `finish_markdown_agent_translation` or the notebook equivalents so the host agent translates the chunks. |
 | Image translation fails. | Confirm Azure AI Vision variables are set and call `get_configuration_status`. |
 | Repository translation does not write files. | Set `dry_run=false` and `confirm_write=true` only after explicit user approval. |
 | Changes to client config do not appear. | Restart or reload the MCP client. |
@@ -309,3 +370,4 @@ Preview repository translation:
 - Full repository translation can create, update, or remove many files. Require explicit user approval before setting `confirm_write=true`.
 - The configuration status tool never returns API keys, endpoints, or other secret values.
 - Image translation returns base64 image data. Large images can produce large tool responses.
+- Agent-assisted tools return source chunks and prompts to the MCP host. Use them only with content the user is comfortable sending to that host agent model.

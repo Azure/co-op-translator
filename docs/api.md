@@ -1,10 +1,11 @@
 # Python API
 
-The stable public Python API is exported from `co_op_translator.api`. Most integrations use one of two workflows:
+The stable public Python API is exported from `co_op_translator.api`. Most integrations use one of these workflows:
 
 | Scenario | Use this when | Main APIs |
 | --- | --- | --- |
 | Translate individual files or documents | Your application reads source content, calls Co-op Translator for translation, and decides where to save the result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Prepare content for host-agent translation | Your MCP host or application model will translate chunks, while Co-op Translator handles chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
 | Translate an entire repository | You want the Python API to behave like the CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
 
 Most lower-level modules under `core`, `config`, `review`, and `utils` are implementation details used by these API entry points.
@@ -15,7 +16,7 @@ MCP clients use the same public API through the [MCP Server](mcp.md). Use this p
 
 Start here if you are calling Co-op Translator from Python code:
 
-1. Configure an LLM provider as described in [Configuration](configuration.md).
+1. Configure an LLM provider as described in [Configuration](configuration.md), unless you are only preparing Markdown or notebook chunks for host-agent translation.
 2. Decide whether your application owns file I/O.
 3. Use content APIs when your application reads and writes individual files.
 4. Use `run_translation` when Co-op Translator should process a repository like the CLI.
@@ -26,6 +27,7 @@ Start here if you are calling Co-op Translator from Python code:
 | Translate one Markdown string or file | `translate_markdown_content` |
 | Translate one notebook payload | `translate_notebook_content` |
 | Translate one image | `translate_image_content` |
+| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
 | Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
 | Translate a full repository | `run_translation` |
 | Review translated output | `run_review` |
@@ -376,10 +378,14 @@ from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    finish_markdown_agent_translation,
+    finish_notebook_agent_translation,
     run_review,
     run_translation,
     rewrite_markdown_paths,
     rewrite_notebook_paths,
+    start_markdown_agent_translation,
+    start_notebook_agent_translation,
     translate_image_content,
     translate_markdown_content,
     translate_notebook_content,
@@ -392,6 +398,14 @@ from co_op_translator.api import (
 ::: co_op_translator.api.translate_notebook_content
 
 ::: co_op_translator.api.translate_image_content
+
+::: co_op_translator.api.start_markdown_agent_translation
+
+::: co_op_translator.api.finish_markdown_agent_translation
+
+::: co_op_translator.api.start_notebook_agent_translation
+
+::: co_op_translator.api.finish_notebook_agent_translation
 
 ::: co_op_translator.api.rewrite_markdown_paths
 
@@ -440,6 +454,19 @@ translated = await translate_markdown_content(
     {"source_path": "docs/guide.md"},
 )
 ```
+
+## Agent-Assisted Translation APIs
+
+Agent-assisted APIs do not call Azure OpenAI or OpenAI from Co-op Translator. They prepare Markdown or notebook chunks for a host agent to translate, then reconstruct the final content from translated chunks.
+
+| Function | Purpose |
+| --- | --- |
+| `start_markdown_agent_translation` | Return a self-contained Markdown job with chunks, prompts, and reconstruction state. |
+| `finish_markdown_agent_translation` | Reconstruct Markdown from a job and host-agent translated chunks. |
+| `start_notebook_agent_translation` | Return a notebook job with Markdown-cell chunks for host-agent translation. |
+| `finish_notebook_agent_translation` | Reconstruct notebook JSON while preserving code cells, outputs, and metadata. |
+
+This workflow is mainly intended for MCP hosts. If you need production repository translation with Co-op Translator managing provider calls, use `translate_markdown_content`, `translate_notebook_content`, or `run_translation`.
 
 ## Path Rewriting APIs
 
@@ -507,11 +534,12 @@ If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown
 
 ## Configuration Requirements
 
-Translation APIs require provider configuration before translating:
+Provider-backed translation APIs require provider configuration before translating:
 
 - Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
 - Image translation requires Azure AI Vision in addition to the LLM provider.
 - `run_translation` runs lightweight connectivity checks before project translation begins.
+- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
 - `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` are deterministic and do not require provider credentials.
 
 Required Azure OpenAI variables:

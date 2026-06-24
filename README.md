@@ -15,9 +15,11 @@ _Easily automate and maintain translations for your educational GitHub content a
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
+**Start here:** [Choose your workflow](https://azure.github.io/co-op-translator/workflows/) | [Configuration](https://azure.github.io/co-op-translator/configuration/) | [CLI](https://azure.github.io/co-op-translator/cli/) | [Python API](https://azure.github.io/co-op-translator/api/) | [MCP Server](https://azure.github.io/co-op-translator/mcp/)
+
 ### 🌐 Multi-Language Support
 
-#### Supported by [Co-op Translator](https://github.com/Azure/Co-op-Translator)
+#### Supported by [Co-op Translator](https://github.com/Azure/co-op-translator)
 
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
 [Arabic](./translations/ar/README.md) | [Bengali](./translations/bn/README.md) | [Bulgarian](./translations/bg/README.md) | [Burmese (Myanmar)](./translations/my/README.md) | [Chinese (Simplified)](./translations/zh-CN/README.md) | [Chinese (Traditional, Hong Kong)](./translations/zh-HK/README.md) | [Chinese (Traditional, Macau)](./translations/zh-MO/README.md) | [Chinese (Traditional, Taiwan)](./translations/zh-TW/README.md) | [Croatian](./translations/hr/README.md) | [Czech](./translations/cs/README.md) | [Danish](./translations/da/README.md) | [Dutch](./translations/nl/README.md) | [Estonian](./translations/et/README.md) | [Finnish](./translations/fi/README.md) | [French](./translations/fr/README.md) | [German](./translations/de/README.md) | [Greek](./translations/el/README.md) | [Hebrew](./translations/he/README.md) | [Hindi](./translations/hi/README.md) | [Hungarian](./translations/hu/README.md) | [Indonesian](./translations/id/README.md) | [Italian](./translations/it/README.md) | [Japanese](./translations/ja/README.md) | [Kannada](./translations/kn/README.md) | [Khmer](./translations/km/README.md) | [Korean](./translations/ko/README.md) | [Lithuanian](./translations/lt/README.md) | [Malay](./translations/ms/README.md) | [Malayalam](./translations/ml/README.md) | [Marathi](./translations/mr/README.md) | [Nepali](./translations/ne/README.md) | [Nigerian Pidgin](./translations/pcm/README.md) | [Norwegian](./translations/no/README.md) | [Persian (Farsi)](./translations/fa/README.md) | [Polish](./translations/pl/README.md) | [Portuguese (Brazil)](./translations/pt-BR/README.md) | [Portuguese (Portugal)](./translations/pt-PT/README.md) | [Punjabi (Gurmukhi)](./translations/pa/README.md) | [Romanian](./translations/ro/README.md) | [Russian](./translations/ru/README.md) | [Serbian (Cyrillic)](./translations/sr/README.md) | [Slovak](./translations/sk/README.md) | [Slovenian](./translations/sl/README.md) | [Spanish](./translations/es/README.md) | [Swahili](./translations/sw/README.md) | [Swedish](./translations/sv/README.md) | [Tagalog (Filipino)](./translations/tl/README.md) | [Tamil](./translations/ta/README.md) | [Telugu](./translations/te/README.md) | [Thai](./translations/th/README.md) | [Turkish](./translations/tr/README.md) | [Ukrainian](./translations/uk/README.md) | [Urdu](./translations/ur/README.md) | [Vietnamese](./translations/vi/README.md)
@@ -56,6 +58,8 @@ _Easily automate and maintain translations for your educational GitHub content a
 **Co-op Translator** helps you localize your educational GitHub content into multiple languages effortlessly.
 When you update your Markdown files, images, or notebooks, translations stay automatically synchronized, ensuring your content remains accurate and up to date for learners worldwide.
 
+Use it from the CLI for repository translation, from the Python API for automation, or through the MCP server for agent and editor workflows.
+
 Example of how translated content is organized:
 
 ![Example](./imgs/translation-ex.png)
@@ -84,83 +88,51 @@ software dependency and artifact management practices.
 
 - [Fixing Broken Markdown in AI Translation: Hardening a Production Pipeline](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/fixing-broken-markdown-in-ai-translation-hardening-a-production-pipeline/4511378)
 
-## Quick start
+## Get Started
+
+Co-op Translator can be used from the CLI, the Python API, or the MCP server. Start with the workflow guide if you are choosing between local translation, automation, CI, and agent/editor integration.
+
+- [Choose your workflow](./docs/workflows.md)
+- [Configure credentials](./docs/configuration.md)
+- [Translate from the CLI](./docs/cli.md)
+- [Automate with the Python API](./docs/api.md)
+- [Connect with the MCP Server](./docs/mcp.md)
+- [Run in GitHub Actions](./docs/github-actions.md)
+
+Minimal CLI example after configuration:
 
 ```bash
-# Create and activate a virtual environment (recommended)
 python -m venv .venv
 # Windows
 .venv\Scripts\activate
 # macOS/Linux
 source .venv/bin/activate
-# Install the package
+
 pip install co-op-translator
-# Translate
-translate -l "ko ja fr" -md
-
-# Review translated content without API keys
-co-op-review -l "ko ja"
+translate -l "ko" -md
+co-op-review -l "ko"
 ```
 
-Docker:
+For first runs on large repositories, use `--dry-run` before writing translated files. See the [CLI Reference](./docs/cli.md) for content type flags, logs, review, and link migration.
+
+Container quick run with Bash/Zsh:
 
 ```bash
-# Pull the public image from GHCR
-docker pull ghcr.io/azure/co-op-translator:latest
-# Run with current folder mounted and .env provided (Bash/Zsh)
-docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
+docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
 
-## Minimal setup
+Container quick run with PowerShell:
 
-1. Assert that you have a supported Python version (currently 3.10-3.12). In poetry (pyproject.toml) this is handeled automatically.
-2. Create a `.env` file using the template: [.env.template](./.env.template)
-3. Configure one LLM provider (Azure OpenAI or OpenAI)
-4. (Optional) For image translation (`-img`), configure Azure AI Vision
-5. (Optional) You can configure multiple credential sets by duplicating variables with suffixes like `_1`, `_2`, etc. All variables in a set must share the same suffix.
-6. (Recommended) Clean up any previous translations to avoid conflicts (e.g., `translations/`)
-7. (Recommended) Add a translation section to your README using the [README languages template](./docs/readme-languages-template.md)
-8. See: [Azure AI Setup](./docs/azure-ai-setup.md)
-
-## Usage
-
-Translate all supported types:
-
-```bash
-translate -l "ko ja"
+```powershell
+docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
-
-Only Markdown:
-
-```bash
-translate -l "de" -md
-```
-
-Markdown + images:
-
-```bash
-translate -l "pt" -md -img
-```
-
-Only notebooks:
-
-```bash
-translate -l "zh" -nb
-```
-
-Review translation structure and freshness without API credentials:
-
-```bash
-co-op-review -l "ko ja"
-```
-
-More flags: [CLI Reference](./docs/cli.md)
 
 ## Features
 
 - Automated translation for Markdown, notebooks, and images
 - Keeps translations in sync with source changes
 - Works locally (CLI) or in CI (GitHub Actions)
+- Exposes Markdown, notebook, image, review, and project translation tools through MCP
 - Uses Azure OpenAI or OpenAI; optional Azure AI Vision for images
 - Reviews translation structure and freshness with deterministic checks
 - Preserves Markdown formatting and structure
@@ -170,6 +142,7 @@ More flags: [CLI Reference](./docs/cli.md)
 - [Documentation site](https://azure.github.io/co-op-translator/)
 - [Choose your workflow](./docs/workflows.md)
 - [Configuration](./docs/configuration.md)
+- [Azure AI Setup](./docs/azure-ai-setup.md)
 - [CLI Reference](./docs/cli.md)
 - [Python API](./docs/api.md)
 - [MCP Server](./docs/mcp.md)

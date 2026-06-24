@@ -28,7 +28,7 @@ Start here if you are using Co-op Translator from a terminal:
 | Translate notebooks | `translate -l "ko" -nb` |
 | Translate image text | `translate -l "ko" -img` |
 | Preview work without writing files | `translate -l "ko" -md --dry-run` |
-| Review existing translations | `co-op-review -l "ko" -md -nb` |
+| Review existing translations | `co-op-review -l "ko"` |
 | Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
 | Expose tools to an MCP client | Configure the [MCP Server](mcp.md) instead of running CLI commands directly. |
 

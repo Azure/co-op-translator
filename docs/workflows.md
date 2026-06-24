@@ -109,11 +109,20 @@ In the normal local setup, the user does not manually keep a server running. The
 Example user requests an agent could handle:
 
 - "Translate this Markdown file to Korean and keep the links correct."
+- "Translate this Markdown file to Korean with the agent-assisted MCP workflow, using your own model for the translated chunks."
+- "Translate this notebook to Korean, preserve code cells, and use Co-op Translator MCP to reconstruct the notebook."
 - "Translate the text in this image to Japanese and save the result."
 - "Dry-run a repository translation to Spanish and tell me what would change."
 - "Review whether the Korean translation output is up to date."
 
-MCP Markdown tool call shape:
+For Markdown and notebooks, MCP can work in two modes:
+
+| Mode | Use when | Main tools |
+| --- | --- | --- |
+| Agent-assisted | The MCP host agent should translate chunks with its own model, without Co-op Translator LLM provider credentials. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Provider-backed | Co-op Translator should call Azure OpenAI or OpenAI directly. | `translate_markdown_content`, `translate_notebook_content` |
+
+MCP provider-backed Markdown tool call shape:
 
 ```json
 {
@@ -159,6 +168,7 @@ Repository translation is dry-run by default through MCP:
 Good fits:
 
 - You want natural-language translation workflows inside an agent or editor.
+- You want Markdown or notebook translation where the host agent model translates prepared chunks.
 - You want the agent to translate selected content instead of an entire repository.
 - You want an approval step before repository-wide writes.
 - You want one interface that exposes Markdown, notebook, image, review, and path-rewriting tools.

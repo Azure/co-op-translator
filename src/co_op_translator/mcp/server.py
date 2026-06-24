@@ -27,11 +27,16 @@ SERVER_INSTRUCTIONS = """
 Use Co-op Translator tools to translate Markdown, Jupyter notebooks, images,
 and complete documentation repositories. Content translation tools do not write
 files or rewrite links automatically. Project translation tools can write many
-files, so non-dry-run calls require confirm_write=true.
+files, so non-dry-run calls require confirm_write=true. Agent-assisted
+translation tools prepare chunks for the host agent to translate, then
+reconstruct the translated content without requiring Co-op Translator LLM
+provider credentials.
 """.strip()
 
 
-def _capture_call(callback: Callable[[], T]) -> tuple[T | None, str, str, Exception | None]:
+def _capture_call(
+    callback: Callable[[], T],
+) -> tuple[T | None, str, str, Exception | None]:
     stdout = io.StringIO()
     stderr = io.StringIO()
     try:
@@ -69,7 +74,9 @@ def _normalize_image_format(image_format: str | None) -> str:
         normalized = "JPEG"
     if normalized not in SUPPORTED_IMAGE_FORMATS:
         allowed = ", ".join(sorted(SUPPORTED_IMAGE_FORMATS))
-        raise ValueError(f"Unsupported image_format '{image_format}'. Use one of: {allowed}.")
+        raise ValueError(
+            f"Unsupported image_format '{image_format}'. Use one of: {allowed}."
+        )
     return normalized
 
 
@@ -180,6 +187,52 @@ async def translate_notebook_content(
     }
 
 
+def start_markdown_agent_translation(
+    document: str,
+    language_code: str,
+    source_path: str | None = None,
+) -> dict[str, Any]:
+    """Prepare Markdown chunks for host-agent translation without provider calls."""
+
+    return co_op_api.start_markdown_agent_translation(
+        document,
+        language_code,
+        source_path=source_path,
+    )
+
+
+def finish_markdown_agent_translation(
+    job: dict[str, Any],
+    translated_chunks: dict[str, Any] | list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Reconstruct Markdown from chunks translated by the host agent."""
+
+    return co_op_api.finish_markdown_agent_translation(job, translated_chunks)
+
+
+def start_notebook_agent_translation(
+    notebook: str | dict[str, Any],
+    language_code: str,
+    source_path: str | None = None,
+) -> dict[str, Any]:
+    """Prepare notebook Markdown-cell chunks for host-agent translation."""
+
+    return co_op_api.start_notebook_agent_translation(
+        notebook,
+        language_code,
+        source_path=source_path,
+    )
+
+
+def finish_notebook_agent_translation(
+    job: dict[str, Any],
+    translated_chunks: dict[str, Any] | list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Reconstruct a notebook from chunks translated by the host agent."""
+
+    return co_op_api.finish_notebook_agent_translation(job, translated_chunks)
+
+
 def translate_image_content(
     image_path: str,
     language_code: str,
@@ -277,7 +330,9 @@ def run_translation(
     """
 
     if not dry_run and not confirm_write:
-        raise ValueError("Set confirm_write=true to run project translation with dry_run=false.")
+        raise ValueError(
+            "Set confirm_write=true to run project translation with dry_run=false."
+        )
 
     def _run() -> None:
         co_op_api.run_translation(
@@ -443,7 +498,9 @@ def get_configuration_status(validate_connectivity: bool = False) -> dict[str, A
     try:
         vision_provider = VisionConfig.get_available_provider()
         status["vision"]["available"] = vision_provider is not None
-        status["vision"]["provider"] = vision_provider.value if vision_provider else None
+        status["vision"]["provider"] = (
+            vision_provider.value if vision_provider else None
+        )
         if validate_connectivity and vision_provider is not None:
             status["vision"]["connectivity_ok"] = VisionConfig.validate_connectivity()
     except Exception as exc:  # pragma: no cover - depends on local environment
@@ -479,6 +536,15 @@ def get_api_overview() -> dict[str, Any]:
                 ],
             },
             {
+                "name": "Translate with the host agent model",
+                "tools": [
+                    "start_markdown_agent_translation",
+                    "finish_markdown_agent_translation",
+                    "start_notebook_agent_translation",
+                    "finish_notebook_agent_translation",
+                ],
+            },
+            {
                 "name": "Translate an entire repository",
                 "tools": ["run_translation", "translate_project"],
             },
@@ -505,6 +571,10 @@ def create_server() -> FastMCP:
     for tool in (
         translate_markdown_content,
         translate_notebook_content,
+        start_markdown_agent_translation,
+        finish_markdown_agent_translation,
+        start_notebook_agent_translation,
+        finish_notebook_agent_translation,
         translate_image_content,
         rewrite_markdown_paths,
         rewrite_notebook_paths,
@@ -536,6 +606,17 @@ def create_server() -> FastMCP:
             f"{language_code}. Use translate_markdown_content first. If the user "
             "provides source and target paths, call rewrite_markdown_paths before "
             "returning or saving the final content."
+        )
+
+    @mcp.prompt()
+    def agent_assisted_markdown_translation_prompt(language_code: str) -> str:
+        return (
+            "Translate the selected Markdown document to "
+            f"{language_code} without Co-op Translator provider credentials. "
+            "Call start_markdown_agent_translation, translate each returned chunk "
+            "yourself by following its prompt, then call finish_markdown_agent_translation "
+            "with chunk_id and translated_text values. If source and target paths "
+            "are available, call rewrite_markdown_paths after finishing."
         )
 
     @mcp.prompt()

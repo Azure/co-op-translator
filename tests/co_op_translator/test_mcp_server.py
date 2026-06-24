@@ -125,6 +125,37 @@ def test_mcp_rewrite_markdown_paths_uses_public_api(monkeypatch):
     )
 
 
+def test_mcp_agent_translation_tools_use_public_api(monkeypatch):
+    start = MagicMock(return_value={"job_type": "markdown_agent_translation"})
+    finish = MagicMock(return_value={"content": "# 안녕하세요"})
+    monkeypatch.setattr(mcp_server.co_op_api, "start_markdown_agent_translation", start)
+    monkeypatch.setattr(
+        mcp_server.co_op_api, "finish_markdown_agent_translation", finish
+    )
+
+    job = mcp_server.start_markdown_agent_translation(
+        "# Hello",
+        "ko",
+        source_path="docs/guide.md",
+    )
+    result = mcp_server.finish_markdown_agent_translation(
+        job,
+        [{"chunk_id": "body:1", "translated_text": "# 안녕하세요"}],
+    )
+
+    assert job == {"job_type": "markdown_agent_translation"}
+    assert result == {"content": "# 안녕하세요"}
+    start.assert_called_once_with(
+        "# Hello",
+        "ko",
+        source_path="docs/guide.md",
+    )
+    finish.assert_called_once_with(
+        job,
+        [{"chunk_id": "body:1", "translated_text": "# 안녕하세요"}],
+    )
+
+
 def test_mcp_run_translation_requires_confirmation_for_writes():
     with pytest.raises(ValueError, match="confirm_write=true"):
         mcp_server.run_translation(
@@ -196,6 +227,10 @@ async def test_create_server_registers_tools_and_resources(monkeypatch):
     assert {
         "translate_markdown_content",
         "translate_notebook_content",
+        "start_markdown_agent_translation",
+        "finish_markdown_agent_translation",
+        "start_notebook_agent_translation",
+        "finish_notebook_agent_translation",
         "translate_image_content",
         "rewrite_markdown_paths",
         "rewrite_notebook_paths",

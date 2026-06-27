@@ -109,6 +109,14 @@ class ProjectMarkdownTranslationMixin:
                     raise RuntimeError(
                         f"Markdown translation retry returned empty content for {file_path}"
                     )
+                if compare_line_breaks(document, translated_content):
+                    logger.error(
+                        "Retry translation failed for %s: line break counts still differ too much",
+                        file_path,
+                    )
+                    raise RuntimeError(
+                        f"Markdown translation retry produced incomplete content for {file_path}"
+                    )
 
             translated_content = await self._append_markdown_disclaimer(
                 translated_content, language_code

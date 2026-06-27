@@ -42,6 +42,16 @@ class FakeNoTextImageTranslator(FakeImageTranslator):
             return original_image.copy()
 
 
+class FakeTruncatingMarkdownTranslator:
+    async def translate_markdown(
+        self, document, language_code, source_path=None, **kwargs
+    ):
+        return "# Truncated\n\nOnly the beginning survived.\n"
+
+    async def generate_disclaimer(self, language_code):
+        return ""
+
+
 class FakeNotebookTranslator:
     def __init__(self):
         self.calls = []
@@ -282,6 +292,67 @@ def test_get_outdated_translations_detects_stale_metadata(
     outdated_files = translation_manager.get_outdated_translations()
 
     assert outdated_files == [(source_file, translated_file)]
+
+
+def test_get_outdated_translations_detects_truncated_current_hash(
+    translation_manager, temp_project_dir
+):
+    source_file = temp_project_dir / "docs" / "test.md"
+    source_file.write_text(
+        "\n".join(f"Line {index}" for index in range(40)) + "\n",
+        encoding="utf-8",
+    )
+    translated_file = temp_project_dir / "translations" / "ko" / "docs" / "test.md"
+    translated_file.parent.mkdir(parents=True, exist_ok=True)
+    translated_file.write_text("# 번역\n\n중간에서 끝남\n", encoding="utf-8")
+    _write_lang_metadata(
+        temp_project_dir / "translations" / "ko",
+        {
+            "docs/test.md": {
+                "original_hash": calculate_file_hash(source_file),
+                "translation_date": "2026-01-01T00:00:00+00:00",
+                "source_file": "docs/test.md",
+                "language_code": "ko",
+            }
+        },
+    )
+    translation_manager.language_codes = ["ko"]
+
+    outdated_files = translation_manager.get_outdated_translations()
+
+    assert outdated_files == [(source_file, translated_file)]
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_does_not_save_incomplete_retry(temp_project_dir):
+    source_file = temp_project_dir / "docs" / "test.md"
+    source_file.write_text(
+        "\n".join(f"Line {index}" for index in range(40)) + "\n",
+        encoding="utf-8",
+    )
+    translation_manager = TranslationManager(
+        root_dir=temp_project_dir,
+        translations_dir=temp_project_dir / "translations",
+        image_dir=temp_project_dir / "translated_images",
+        language_codes=["ko"],
+        excluded_dirs=["translations", "translated_images", "logs"],
+        supported_image_extensions=[".png"],
+        supported_notebook_extensions=[".ipynb"],
+        markdown_translator=FakeTruncatingMarkdownTranslator(),
+        image_translator=FakeImageTranslator(),
+        notebook_translator=FakeNotebookTranslator(),
+        translation_types=["markdown"],
+        add_disclaimer=False,
+    )
+
+    with pytest.raises(RuntimeError, match="incomplete content"):
+        await translation_manager.translate_markdown(source_file, "ko")
+
+    translated_file = temp_project_dir / "translations" / "ko" / "docs" / "test.md"
+    assert not translated_file.exists()
+    assert not (
+        temp_project_dir / "translations" / "ko" / ".co-op-translator.json"
+    ).exists()
 
 
 @pytest.mark.asyncio

@@ -17,6 +17,7 @@ from co_op_translator.utils.common.metadata_utils import (
     is_notebook_up_to_date,
     read_text_metadata_for_source,
 )
+from co_op_translator.utils.markdown.processing import compare_line_breaks
 
 logger = logging.getLogger(__name__)
 
@@ -250,7 +251,11 @@ class TranslationStatusMixin:
                 stored_hash = metadata.get("original_hash")
                 if stored_hash:
                     current_hash = calculate_file_hash(original_file)
-                    return stored_hash != current_hash
+                    if stored_hash != current_hash:
+                        return True
+                    return self._has_markdown_integrity_drift(
+                        original_file, translation_file
+                    )
 
             # Legacy fallback: read inline HTML comment metadata and migrate
             try:
@@ -267,10 +272,26 @@ class TranslationStatusMixin:
             if stored_hash:
                 # Read-only fallback: compare against inline stored hash.
                 current_hash = calculate_file_hash(original_file)
-                return stored_hash != current_hash
+                if stored_hash != current_hash:
+                    return True
+                return self._has_markdown_integrity_drift(
+                    original_file, translation_file
+                )
 
             # No metadata available; consider it outdated
             return True
 
         except Exception:
             return True
+
+    def _has_markdown_integrity_drift(
+        self, original_file: Path, translation_file: Path
+    ) -> bool:
+        """Detect saved translations that are current by hash but structurally incomplete."""
+        try:
+            original_content = original_file.read_text(encoding="utf-8")
+            translated_content = translation_file.read_text(encoding="utf-8")
+        except Exception:
+            return True
+
+        return compare_line_breaks(original_content, translated_content)

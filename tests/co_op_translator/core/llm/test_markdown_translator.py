@@ -2,7 +2,11 @@ import pytest
 from unittest.mock import AsyncMock, patch
 import re
 
-from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
+from co_op_translator.core.llm.markdown_translator import (
+    MarkdownTranslator,
+    TranslationContentFilterError,
+    TranslationIncompleteError,
+)
 from co_op_translator.utils.common.lang_utils import get_supported_language_codes
 from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
 
@@ -116,6 +120,28 @@ def test_disclaimer_templates_cover_supported_languages(real_markdown_translator
 
     assert set(get_supported_language_codes()).issubset(set(templates))
     assert all(co_op_link in templates[code] for code in get_supported_language_codes())
+
+
+def test_finish_reason_stop_or_missing_is_allowed(real_markdown_translator):
+    real_markdown_translator._raise_for_finish_reason("stop", 1, 1)
+    real_markdown_translator._raise_for_finish_reason(None, 1, 1)
+
+
+def test_finish_reason_length_is_incomplete(real_markdown_translator):
+    with pytest.raises(TranslationIncompleteError):
+        real_markdown_translator._raise_for_finish_reason("length", 1, 1)
+
+
+def test_finish_reason_content_filter_is_separate_error(real_markdown_translator):
+    with pytest.raises(TranslationContentFilterError):
+        real_markdown_translator._raise_for_finish_reason("content_filter", 1, 1)
+
+
+def test_finish_reason_enum_values_are_normalized(real_markdown_translator):
+    class FinishReason:
+        value = "stop"
+
+    real_markdown_translator._raise_for_finish_reason(FinishReason(), 1, 1)
 
 
 @pytest.mark.asyncio
@@ -483,6 +509,130 @@ async def test_translate_markdown_keeps_internal_links_inside_code_blocks_unchan
 
 
 @pytest.mark.asyncio
+async def test_translate_markdown_retries_incomplete_chunk_once(
+    real_markdown_translator,
+    tmp_path,
+):
+    test_file = tmp_path / "retry_once.md"
+    test_file.write_text("# Retry me\n\nStable text.\n")
+    calls = 0
+
+    async def fake_prompt(prompt, index, total):
+        nonlocal calls
+        if "# Retry me" in prompt:
+            calls += 1
+            if calls == 1:
+                raise TranslationIncompleteError("length")
+            return "# Reintentar\n\nTexto estable.\n"
+        return prompt
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        result = await real_markdown_translator.translate_markdown(
+            "# Retry me\n\nStable text.\n",
+            "es",
+            source_path=test_file,
+        )
+
+    assert "# Reintentar" in result
+    assert "Texto estable." in result
+    assert calls == 2
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_splits_incomplete_chunk_after_retry(
+    real_markdown_translator,
+    monkeypatch,
+    tmp_path,
+):
+    test_file = tmp_path / "split_retry.md"
+    document = "# Needs split\n\nFirst part.\n\nSecond part.\n"
+    test_file.write_text(document)
+    split_max_tokens = []
+    original_failures = 0
+
+    def fake_process_markdown(content, max_tokens=2600, encoding="o200k_base"):
+        split_max_tokens.append(max_tokens)
+        if max_tokens == 2600:
+            return [content]
+        return ["# Needs split\n\nFirst part.\n", "Second part.\n"]
+
+    monkeypatch.setattr(
+        "co_op_translator.core.llm.markdown_translator.process_markdown",
+        fake_process_markdown,
+    )
+
+    async def fake_prompt(prompt, index, total):
+        nonlocal original_failures
+        if "First part.\n\nSecond part." in prompt:
+            original_failures += 1
+            raise TranslationIncompleteError("length")
+        if "First part." in prompt:
+            return "# Dividido\n\nPrimera parte.\n"
+        if "Second part." in prompt:
+            return "Segunda parte.\n"
+        return prompt
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        result = await real_markdown_translator.translate_markdown(
+            document,
+            "es",
+            source_path=test_file,
+        )
+
+    assert "# Dividido" in result
+    assert "Primera parte." in result
+    assert "Segunda parte." in result
+    assert original_failures == 2
+    assert split_max_tokens == [2600, 1300]
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_does_not_split_content_filter_errors(
+    real_markdown_translator,
+    monkeypatch,
+    tmp_path,
+):
+    test_file = tmp_path / "content_filter.md"
+    document = "# Blocked\n"
+    test_file.write_text(document)
+    split_max_tokens = []
+
+    def fake_process_markdown(content, max_tokens=2600, encoding="o200k_base"):
+        split_max_tokens.append(max_tokens)
+        return [content]
+
+    monkeypatch.setattr(
+        "co_op_translator.core.llm.markdown_translator.process_markdown",
+        fake_process_markdown,
+    )
+
+    async def fake_prompt(prompt, index, total):
+        raise TranslationContentFilterError("content_filter")
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        with pytest.raises(TranslationContentFilterError):
+            await real_markdown_translator.translate_markdown(
+                document,
+                "es",
+                source_path=test_file,
+            )
+
+    assert split_max_tokens == [2600]
+
+
+@pytest.mark.asyncio
 async def test_translate_markdown_full_integration(real_markdown_translator, tmp_path):
     """A full integration test that avoids mocking _run_prompt at all.
     This only works if the abstract _run_prompt has a default implementation
@@ -506,4 +656,3 @@ async def test_translate_markdown_full_integration(real_markdown_translator, tmp
     assert (
         "[Default Translation]" in result
     ), "Expected the default translation text in the output."
-

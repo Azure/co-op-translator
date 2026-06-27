@@ -34,6 +34,14 @@ from co_op_translator.utils.common.metadata_utils import (
 logger = logging.getLogger(__name__)
 
 
+class TranslationIncompleteError(RuntimeError):
+    """Raised when a provider response does not complete the requested chunk."""
+
+
+class TranslationContentFilterError(RuntimeError):
+    """Raised when a provider stops a translation because of content filtering."""
+
+
 class MarkdownTranslator(ABC):
     """Define interface for markdown translation services.
 
@@ -41,6 +49,9 @@ class MarkdownTranslator(ABC):
     """
 
     TRANSLATION_TIMEOUT_SECONDS = 1000  # Translation timeout in seconds
+    DEFAULT_CHUNK_MAX_TOKENS = 2600
+    RECOVERY_CHUNK_MAX_TOKENS = (1300, 650)
+    CHUNK_RETRY_ATTEMPTS = 1
     _disclaimer_templates_cache: dict[str, str] | None = None
 
     def __init__(
@@ -138,14 +149,19 @@ class MarkdownTranslator(ABC):
         )
 
         # Step 2: Split the document into chunks
-        document_chunks = process_markdown(document_with_placeholders)
+        document_chunks = process_markdown(
+            document_with_placeholders, max_tokens=self.DEFAULT_CHUNK_MAX_TOKENS
+        )
 
-        # Step 3: Generate translation prompts and translate each chunk
-        prompts = [
-            generate_prompt_template(language_code, language_name, chunk, is_rtl)
-            for chunk in document_chunks
-        ]
-        results = await self._run_prompts_sequentially(prompts, md_file_path)
+        # Step 3: Translate each chunk and recover incomplete chunks without
+        # rerunning the whole file.
+        results = await self._translate_chunks_with_recovery(
+            document_chunks,
+            language_code,
+            language_name,
+            is_rtl,
+            md_file_path,
+        )
         translated_content = "\n".join(results)
 
         # Step 4: Normalize emphasis markers for CJK scripts to improve renderer compatibility
@@ -207,6 +223,198 @@ class MarkdownTranslator(ABC):
             )
 
         return translated_content
+
+    async def _translate_chunks_with_recovery(
+        self,
+        chunks: list[str],
+        language_code: str,
+        language_name: str,
+        is_rtl: bool,
+        md_file_path: Path,
+    ) -> list[str]:
+        results = []
+        total = len(chunks)
+        for index, chunk in enumerate(chunks, start=1):
+            results.append(
+                await self._translate_chunk_with_recovery(
+                    chunk,
+                    language_code,
+                    language_name,
+                    is_rtl,
+                    md_file_path,
+                    chunk_label=str(index),
+                    index=index,
+                    total=total,
+                    split_depth=0,
+                )
+            )
+        return results
+
+    async def _translate_chunk_with_recovery(
+        self,
+        chunk: str,
+        language_code: str,
+        language_name: str,
+        is_rtl: bool,
+        md_file_path: Path,
+        chunk_label: str,
+        index: int,
+        total: int,
+        split_depth: int,
+    ) -> str:
+        last_error: TranslationIncompleteError | None = None
+
+        for attempt in range(self.CHUNK_RETRY_ATTEMPTS + 1):
+            try:
+                return await self._translate_chunk_once(
+                    chunk,
+                    language_code,
+                    language_name,
+                    is_rtl,
+                    md_file_path,
+                    chunk_label,
+                    index,
+                    total,
+                )
+            except TranslationContentFilterError:
+                logger.error(
+                    "Translation blocked by content filter for chunk %s of file '%s'.",
+                    chunk_label,
+                    md_file_path.name,
+                    exc_info=True,
+                )
+                raise
+            except TranslationIncompleteError as e:
+                last_error = e
+                if attempt < self.CHUNK_RETRY_ATTEMPTS:
+                    logger.warning(
+                        "Incomplete translation for chunk %s of file '%s'; retrying same chunk.",
+                        chunk_label,
+                        md_file_path.name,
+                    )
+                    continue
+                break
+
+        subchunks = self._split_failed_chunk(chunk, split_depth)
+        if len(subchunks) <= 1:
+            raise TranslationIncompleteError(
+                f"Markdown translation remained incomplete for chunk {chunk_label} "
+                f"of '{md_file_path.name}', and the chunk could not be split further."
+            ) from last_error
+
+        logger.warning(
+            "Incomplete translation for chunk %s of file '%s'; retrying as %s smaller chunks.",
+            chunk_label,
+            md_file_path.name,
+            len(subchunks),
+        )
+
+        sub_results = []
+        for sub_index, subchunk in enumerate(subchunks, start=1):
+            sub_results.append(
+                await self._translate_chunk_with_recovery(
+                    subchunk,
+                    language_code,
+                    language_name,
+                    is_rtl,
+                    md_file_path,
+                    chunk_label=f"{chunk_label}.{sub_index}",
+                    index=sub_index,
+                    total=len(subchunks),
+                    split_depth=split_depth + 1,
+                )
+            )
+
+        return "\n".join(sub_results)
+
+    async def _translate_chunk_once(
+        self,
+        chunk: str,
+        language_code: str,
+        language_name: str,
+        is_rtl: bool,
+        md_file_path: Path,
+        chunk_label: str,
+        index: int,
+        total: int,
+    ) -> str:
+        prompt = generate_prompt_template(language_code, language_name, chunk, is_rtl)
+        try:
+            return await asyncio.wait_for(
+                self._run_prompt(prompt, index, total),
+                timeout=self.TRANSLATION_TIMEOUT_SECONDS,
+            )
+        except asyncio.TimeoutError as exc:
+            logger.warning(
+                f"Translation timeout for chunk {chunk_label} of file '{md_file_path.name}': "
+                f"Request exceeded {self.TRANSLATION_TIMEOUT_SECONDS} seconds. "
+                f"Check your network connection and API response time."
+            )
+            raise TranslationIncompleteError(
+                f"Markdown translation timed out for chunk {chunk_label} of '{md_file_path.name}'"
+            ) from exc
+        except (TranslationIncompleteError, TranslationContentFilterError):
+            raise
+        except Exception as e:
+            logger.error(
+                f"Translation failed for chunk {chunk_label} of file '{md_file_path.name}': {str(e)}. "
+                f"Check your API configuration and network connection.",
+                exc_info=True,
+            )
+            raise RuntimeError(
+                f"Markdown translation failed for chunk {chunk_label} of '{md_file_path.name}': {e}"
+            ) from e
+
+    def _split_failed_chunk(self, chunk: str, split_depth: int) -> list[str]:
+        if split_depth >= len(self.RECOVERY_CHUNK_MAX_TOKENS):
+            return []
+
+        max_tokens = self.RECOVERY_CHUNK_MAX_TOKENS[split_depth]
+        subchunks = process_markdown(chunk, max_tokens=max_tokens)
+        return [subchunk for subchunk in subchunks if subchunk]
+
+    def _raise_for_finish_reason(
+        self,
+        finish_reason,
+        index: int | str,
+        total: int,
+    ) -> None:
+        reason = self._normalize_finish_reason(finish_reason)
+        if reason is None or reason == "stop":
+            return
+
+        prompt_ref = f"{index}/{total}"
+        if reason in {"length", "max_tokens"}:
+            raise TranslationIncompleteError(
+                f"Provider stopped markdown translation at prompt {prompt_ref} "
+                f"because finish_reason was '{reason}'."
+            )
+
+        if reason in {"content_filter", "contentfilter"}:
+            raise TranslationContentFilterError(
+                f"Provider blocked markdown translation at prompt {prompt_ref} "
+                f"because finish_reason was '{reason}'."
+            )
+
+        raise TranslationIncompleteError(
+            f"Provider stopped markdown translation at prompt {prompt_ref} "
+            f"with unsupported finish_reason '{reason}'."
+        )
+
+    @staticmethod
+    def _normalize_finish_reason(finish_reason) -> str | None:
+        if finish_reason is None:
+            return None
+
+        value = getattr(finish_reason, "value", finish_reason)
+        if value is None:
+            return None
+
+        reason = str(value).strip().lower()
+        if not reason:
+            return None
+
+        return reason.rsplit(".", 1)[-1]
 
     async def _run_prompts_sequentially(self, prompts, md_file_path):
         """Execute translation prompts in sequence with timeout protection.

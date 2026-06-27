@@ -95,7 +95,14 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
         result_contents = await service.get_chat_message_contents(
             chat_history=chat, settings=req_settings
         )
-        result = str(result_contents[0].content) if result_contents else ""
+        if not result_contents:
+            self._raise_for_finish_reason("length", index, total)
+
+        result_content = result_contents[0]
+        self._raise_for_finish_reason(
+            getattr(result_content, "finish_reason", None), index, total
+        )
+        result = str(result_content.content) if result_content.content else ""
         end_time = time.time()
         logger.info(
             f"Prompt {index}/{total} completed in {end_time - start_time} seconds"

@@ -64,6 +64,19 @@ Example of how translated content is organized:
 
 ![Example](./imgs/translation-ex.png)
 
+## Why Co-op Translator?
+
+Translating one file is easy. Keeping an entire documentation repository
+translated, linked, and up to date is the hard part.
+
+| Problem | How Co-op Translator helps |
+| --- | --- |
+| Long docs are not one prompt | Large Markdown files are split into chunks, so a long README does not depend on one fragile model response. If a chunk fails, Co-op Translator can retry and re-chunk only the failed part. |
+| Incomplete translations should not be marked current | A truncated translation should never be sealed as up to date. Co-op Translator checks translation integrity before saving and can detect structurally incomplete existing translations. |
+| Links should match the translated repo structure | Manual translations often leave relative links pointing back to the source tree. Co-op Translator rewrites Markdown, notebook, image, and README links to match the `translations/<lang>/...` structure. |
+| Translation should work across an entire repo | Co-op Translator handles README files, docs, notebooks, and image text as part of one repository workflow, instead of translating files one by one. |
+| Maintaining translations matters more than creating them once | Source hashes and translation metadata let Co-op Translator find outdated files, skip unchanged files, and keep translated content synchronized as the source repo evolves. |
+
 ## How translation state is managed
 
 Co-op Translator manages translated content as **versioned software artifacts**,  

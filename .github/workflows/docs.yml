@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload Pages artifact
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 

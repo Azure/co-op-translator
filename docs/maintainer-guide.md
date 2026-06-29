@@ -150,6 +150,10 @@ python -m mkdocs serve
 
 The generated site is written to `site/`, which is ignored by git.
 
+## Repository footprint
+
+Before adding generated translations or image bundles to Git, review the [Repository Artifact Strategy](repository-artifact-strategy.md). The short version is that Git should keep only a curated sample set, while large generated bundles should move to release assets or short-lived workflow artifacts.
+
 ## GitHub Pages workflow
 
 `.github/workflows/docs.yml` builds the site on pull requests and deploys it on pushes to `main`.

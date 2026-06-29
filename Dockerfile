@@ -1,6 +1,6 @@
 # Multi-stage build for Co‑op Translator
 # Builder stage: build wheel using Poetry
-FROM python:3.12-slim AS builder
+FROM python:3.14-slim AS builder
 
 ENV PIP_NO_CACHE_DIR=1 \
     PYTHONUNBUFFERED=1
@@ -38,7 +38,7 @@ RUN poetry build --no-interaction --format wheel
 
 
 # Runtime stage: minimal image with just runtime libs and the package wheel
-FROM python:3.12-slim AS runtime
+FROM python:3.14-slim AS runtime
 
 ENV PIP_NO_CACHE_DIR=1 \
     PYTHONUNBUFFERED=1 \

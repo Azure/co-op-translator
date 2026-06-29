@@ -81,7 +81,6 @@ def test_get_unique_id(temp_dir):
 
 def test_cross_platform_path_hash_consistency(temp_dir, monkeypatch):
     """Test that path hashing is consistent across different OS path separators."""
-    import os
 
     # Setup test directory structure
     test_dir = temp_dir / "test_dir"

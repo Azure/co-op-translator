@@ -82,7 +82,9 @@ def test_gen_image_translation_prompt_special_chars():
 def test_gen_image_translation_prompt_includes_glossary_and_keeps_rules():
     try:
         set_glossary_terms(["Co-op Translator"])
-        prompt = gen_image_translation_prompt(["Co-op Translator Cloud"], "ko", "Korean")
+        prompt = gen_image_translation_prompt(
+            ["Co-op Translator Cloud"], "ko", "Korean"
+        )
         assert "GLOSSARY" in prompt
         assert "Co-op Translator" in prompt
         assert "EXACTLY 1 items" in prompt

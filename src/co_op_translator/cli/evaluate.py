@@ -6,7 +6,6 @@ import asyncio
 import logging
 import click
 from pathlib import Path
-import os
 
 from co_op_translator.core.project.project_evaluator import ProjectEvaluator
 from co_op_translator.config.base_config import Config
@@ -226,12 +225,12 @@ def evaluate_command(
 
                     # Show issues as reference information if available
                     if issues:
-                        click.echo(f"  Issues found:")
+                        click.echo("  Issues found:")
                         for issue in issues:
                             click.echo(f"    - {issue}")
                     else:
                         click.echo(
-                            f"  No specific issues identified, but confidence score is low"
+                            "  No specific issues identified, but confidence score is low"
                         )
                 except Exception as e:
                     logger.error(f"Error reading issues from {file_path}: {e}")

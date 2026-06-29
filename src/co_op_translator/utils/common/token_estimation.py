@@ -120,7 +120,9 @@ def estimate_tokens_for_images(translation_manager: Any, update: bool) -> int:
                 translation_manager.root_dir,
             )
             translated_image_path = (
-                Path(translation_manager.image_dir) / language_code / translated_filename
+                Path(translation_manager.image_dir)
+                / language_code
+                / translated_filename
             )
             if not update and translated_image_path.exists():
                 continue

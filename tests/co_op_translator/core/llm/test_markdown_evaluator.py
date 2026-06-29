@@ -11,7 +11,6 @@ from co_op_translator.core.llm.providers.openai.markdown_evaluator import (
 )
 from co_op_translator.utils.markdown.evaluation import generate_evaluation_prompt
 
-
 # Sample test data for markdown evaluation
 SAMPLE_MD_CONTENT = """
 # Sample Document

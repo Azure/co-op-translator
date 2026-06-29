@@ -18,7 +18,6 @@ from co_op_translator.utils.common.metadata_utils import (
     read_image_metadata,
     is_image_up_to_date,
     remove_image_metadata,
-    IMAGE_METADATA_FILENAME,
     _get_metadata_file_path,
 )
 
@@ -295,7 +294,7 @@ def test_is_notebook_up_to_date(tmp_path):
     translated_file.write_text(json.dumps(translated_content), encoding="utf-8")
 
     # Should be up to date
-    assert is_notebook_up_to_date(original_file, translated_file) == True
+    assert is_notebook_up_to_date(original_file, translated_file)
 
     # Create translated notebook with incorrect hash
     outdated_translated_file = tmp_path / "outdated.ipynb"
@@ -313,7 +312,7 @@ def test_is_notebook_up_to_date(tmp_path):
     outdated_translated_file.write_text(json.dumps(outdated_content), encoding="utf-8")
 
     # Should be outdated
-    assert is_notebook_up_to_date(original_file, outdated_translated_file) == False
+    assert not is_notebook_up_to_date(original_file, outdated_translated_file)
 
     # Test with translated notebook without metadata
     no_metadata_file = tmp_path / "no_metadata.ipynb"
@@ -321,12 +320,12 @@ def test_is_notebook_up_to_date(tmp_path):
     no_metadata_file.write_text(json.dumps(no_metadata_content), encoding="utf-8")
 
     # Should be outdated (no metadata means outdated)
-    assert is_notebook_up_to_date(original_file, no_metadata_file) == False
+    assert not is_notebook_up_to_date(original_file, no_metadata_file)
 
     # Test with non-existent files
     non_existent = tmp_path / "non_existent.ipynb"
-    assert is_notebook_up_to_date(original_file, non_existent) == False
-    assert is_notebook_up_to_date(non_existent, translated_file) == False
+    assert not is_notebook_up_to_date(original_file, non_existent)
+    assert not is_notebook_up_to_date(non_existent, translated_file)
 
 
 # ============================================================================
@@ -543,7 +542,7 @@ def test_is_image_up_to_date(tmp_path):
     save_image_metadata(translated_path, original_path, "ko", tmp_path)
 
     # Should be up to date
-    assert is_image_up_to_date(original_path, translated_path) == True
+    assert is_image_up_to_date(original_path, translated_path)
 
 
 def test_is_image_up_to_date_outdated(tmp_path):
@@ -566,7 +565,7 @@ def test_is_image_up_to_date_outdated(tmp_path):
     img_modified.save(original_path)
 
     # Should be outdated now
-    assert is_image_up_to_date(original_path, translated_path) == False
+    assert not is_image_up_to_date(original_path, translated_path)
 
 
 def test_is_image_up_to_date_no_metadata(tmp_path):
@@ -584,7 +583,7 @@ def test_is_image_up_to_date_no_metadata(tmp_path):
     img.save(translated_path)  # No metadata saved
 
     # Should be outdated (no metadata)
-    assert is_image_up_to_date(original_path, translated_path) == False
+    assert not is_image_up_to_date(original_path, translated_path)
 
 
 def test_is_image_up_to_date_nonexistent_translated(tmp_path):
@@ -600,7 +599,7 @@ def test_is_image_up_to_date_nonexistent_translated(tmp_path):
     translated_path = lang_dir / "non_existent.png"
 
     # Should be outdated (file doesn't exist)
-    assert is_image_up_to_date(original_path, translated_path) == False
+    assert not is_image_up_to_date(original_path, translated_path)
 
 
 def test_cleanup_orphan_image_metadata(tmp_path):

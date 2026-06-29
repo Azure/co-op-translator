@@ -55,26 +55,22 @@ def complex_dir_structure(tmp_path):
 
     # Create markdown files
     with open(tmp_path / "docs/examples/nested.md", "w") as f:
-        f.write(
-            """# Nested Document
+        f.write("""# Nested Document
 This is a test with an image in the same directory: ![Local Image](images/test2.png)
 This is a test with an image from parent: ![Parent Image](../images/test1.png)
 This is a test with an image from root: ![Root Image](../hero.jpg)
-"""
-        )
+""")
 
     # Create markdown file with root-relative paths
     with open(tmp_path / "README.md", "w") as f:
-        f.write(
-            """# Root Document
+        f.write("""# Root Document
 ![Logo](/imgs/logo.png)
 
 ## Video Presentations
 Learn more here:
 
 [![Thumbnail](/imgs/open-ms-thumbnail.jpg)](https://example.com)
-"""
-        )
+""")
 
     return tmp_path
 

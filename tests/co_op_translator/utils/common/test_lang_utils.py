@@ -1,5 +1,3 @@
-import pytest
-
 from co_op_translator.utils.common.lang_utils import (
     normalize_language_code,
     normalize_language_codes,

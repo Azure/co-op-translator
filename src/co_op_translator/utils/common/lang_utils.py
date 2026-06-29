@@ -3,8 +3,7 @@ from __future__ import annotations
 import importlib.resources
 import logging
 import re
-from pathlib import Path
-from typing import Iterable, List, Tuple
+from typing import Iterable, List
 
 import yaml
 

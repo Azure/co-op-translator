@@ -69,7 +69,6 @@ async def project_translator(temp_project_dir):
 async def test_check_and_retry_translations(project_translator, temp_project_dir):
     """Test checking and retrying translations."""
     # Setup
-    md_file = temp_project_dir / "docs" / "test.md"
     translated_file = temp_project_dir / "translations" / "ko" / "docs" / "test.md"
     translated_file.parent.mkdir(parents=True)
     translated_file.write_text(

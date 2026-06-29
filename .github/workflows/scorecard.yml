@@ -8,10 +8,7 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  id-token: write
-  security-events: write
+permissions: {}
 
 concurrency:
   group: scorecard-${{ github.workflow }}-${{ github.ref }}
@@ -21,6 +18,11 @@ jobs:
   scorecard:
     name: Scorecard
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      security-events: write
 
     steps:
       - name: Checkout

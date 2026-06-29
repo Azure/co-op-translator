@@ -1,25 +1,34 @@
-# TODO: The maintainer of this repo has not yet edited this file
-
-**REPO OWNER**: Do you want Customer Service & Support (CSS) support for this product/project?
-
-- **No CSS support:** Fill out this template with information about how to file issues and get help.
-- **Yes CSS support:** Fill out an intake form at [aka.ms/onboardsupport](https://aka.ms/onboardsupport). CSS will work with/help you to determine next steps.
-- **Not sure?** Fill out an intake as though the answer were "Yes". CSS will help you decide.
-
-*Then remove this first heading from this SUPPORT.MD file before publishing your repo.*
-
 # Support
 
-## How to file issues and get help  
+Co-op Translator is an open source project maintained by contributors. Support is provided through public project channels on a best-effort basis.
 
-This project uses GitHub Issues to track bugs and feature requests. Please search the existing 
-issues before filing new issues to avoid duplicates.  For new issues, file your bug or 
-feature request as a new Issue.
+## Where to get help
 
-For help and questions about using this project, please **REPO MAINTAINER: INSERT INSTRUCTIONS HERE 
-FOR HOW TO ENGAGE REPO OWNERS OR COMMUNITY FOR HELP. COULD BE A STACK OVERFLOW TAG OR OTHER
-CHANNEL. WHERE WILL YOU HELP PEOPLE?**.
+- Use [GitHub Issues](https://github.com/Azure/co-op-translator/issues) for reproducible bugs, documentation problems, and feature requests.
+- Use the [Microsoft Foundry Discord](https://discord.gg/nTYy5BXMWG) for community discussion, usage questions, and workflow advice.
+- Search existing issues and documentation before opening a new issue:
+  - [Documentation site](https://azure.github.io/co-op-translator/)
+  - [Troubleshooting](https://azure.github.io/co-op-translator/troubleshooting/)
+  - [Configuration](https://azure.github.io/co-op-translator/configuration/)
 
-## Microsoft Support Policy  
+## Before opening an issue
 
-Support for this **PROJECT or PRODUCT** is limited to the resources listed above.
+Please include enough detail for maintainers and contributors to reproduce the problem:
+
+- Co-op Translator version and installation method, such as PyPI, Docker, or source checkout.
+- Operating system and Python version.
+- The command or API call you ran.
+- Relevant logs or error messages with secrets removed.
+- Whether the issue involves Markdown, notebooks, images, GitHub Actions, MCP, or link migration.
+
+Do not include API keys, private endpoints, access tokens, or private document content in public issues.
+
+## Security issues
+
+Do not report security vulnerabilities in public issues. Follow the instructions in [SECURITY.md](./SECURITY.md) so the report reaches the Microsoft Security Response Center.
+
+## Support policy
+
+This project does not provide paid, guaranteed, or SLA-backed support through this repository. Maintainers review public issues and pull requests as time allows. Community contributions, clear reproduction steps, and small focused pull requests help issues move faster.
+
+For Azure OpenAI, Azure AI Vision, OpenAI, GitHub Actions, Docker, or Python packaging service outages and account-specific problems, use the support channel for the relevant service provider.

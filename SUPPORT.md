@@ -1,6 +1,6 @@
 # Support
 
-Co-op Translator is an open source project maintained by project contributors. Support is provided through public project channels on a best-effort basis.
+Co-op Translator is an open source project maintained by contributors. Support is provided through public project channels on a best-effort basis.
 
 ## Where to get help
 

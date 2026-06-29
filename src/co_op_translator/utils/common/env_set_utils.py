@@ -3,7 +3,6 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Sequence, TypeVar
 
-
 logger = logging.getLogger(__name__)
 
 

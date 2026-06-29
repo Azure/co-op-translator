@@ -1,5 +1,3 @@
-import os
-
 from co_op_translator.utils.common.env_set_utils import get_active_env_set, get_env_sets
 
 

@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime
 import os
 import sys
 

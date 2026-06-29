@@ -9,7 +9,6 @@ def setup_test_dirs(tmp_path):
     """Set up test directory structure"""
     # Create test directories
     root_dir = tmp_path / "test_project"
-    translations_dir = root_dir / "translations"
     root_dir.mkdir()
 
     # Create some test files
@@ -65,24 +64,20 @@ class TestDirectoryManager:
 
         # Create test files
         test_file = ko_dir / "test.md"
-        test_file.write_text(
-            """<!--
+        test_file.write_text("""<!--
 {
     "source_file": "test.md"
 }
 -->
-# Test Translation"""
-        )
+# Test Translation""")
 
         orphaned_file = ko_dir / "orphaned.md"
-        orphaned_file.write_text(
-            """<!--
+        orphaned_file.write_text("""<!--
 {
     "source_file": "nonexistent.md"
 }
 -->
-# Orphaned Translation"""
-        )
+# Orphaned Translation""")
 
         # Create original file only for test.md
         (root_dir / "test.md").write_text("# Original Test")

@@ -39,12 +39,12 @@ def test_get_text_color():
     # Test dark background
     bg_color = (0, 0, 50)  # Dark blue
     text_color = get_text_color(bg_color)
-    assert text_color == (255, 255, 255), f"Expected white text for dark background"
+    assert text_color == (255, 255, 255), "Expected white text for dark background"
 
     # Test light background
     bg_color = (200, 200, 255)  # Light blue
     text_color = get_text_color(bg_color)
-    assert text_color == (0, 0, 0), f"Expected black text for light background"
+    assert text_color == (0, 0, 0), "Expected black text for light background"
 
 
 @patch("PIL.ImageFont.truetype")

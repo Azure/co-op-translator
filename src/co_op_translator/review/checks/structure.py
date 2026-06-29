@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from co_op_translator.review.models import ReviewIssue, ReviewSeverity
 from co_op_translator.review.targets import ReviewTarget
 

@@ -17,7 +17,6 @@ from co_op_translator.config.constants import (
     RGBA_IMAGE_EXTENSIONS,
 )
 
-
 logger = logging.getLogger(__name__)
 
 

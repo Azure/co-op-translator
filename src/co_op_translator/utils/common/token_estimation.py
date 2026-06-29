@@ -154,7 +154,18 @@ def _collect_outdated_translations(
             try:
                 rel = trans_file.relative_to(translation_dir)
                 original = translation_manager.root_dir / rel
-                if original.exists():
+                content_type = (
+                    "notebook"
+                    if trans_file.suffix.lower()
+                    in translation_manager.supported_notebook_extensions
+                    else "markdown"
+                )
+                if original.exists() and (
+                    not hasattr(translation_manager, "_is_source_in_scope")
+                    or translation_manager._is_source_in_scope(
+                        original, content_type=content_type
+                    )
+                ):
                     files.append((original, trans_file))
             except Exception:
                 continue

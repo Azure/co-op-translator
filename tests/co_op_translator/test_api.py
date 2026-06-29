@@ -79,6 +79,40 @@ async def test_run_translation_with_disclaimer_flag(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_run_translation_accepts_readme_only(tmp_path):
+    root_dir = tmp_path
+    (root_dir / "README.md").write_text("# Home", encoding="utf-8")
+
+    api.Config.check_configuration = MagicMock(return_value=None)
+    api.LLMConfig.validate_connectivity = MagicMock(return_value=None)
+    api.setup_logging = MagicMock(return_value=None)
+
+    project_translator_instance = MagicMock()
+    project_translator_class = MagicMock(return_value=project_translator_instance)
+    api.ProjectTranslator = project_translator_class
+
+    api.run_translation(
+        language_codes="ko",
+        root_dir=str(root_dir),
+        readme_only=True,
+    )
+
+    project_translator_class.assert_any_call(
+        "ko",
+        str(root_dir),
+        translation_types=["markdown"],
+        add_disclaimer=False,
+        translations_dir=None,
+        image_dir=None,
+        lang_subdir=None,
+        readme_only=True,
+    )
+    project_translator_instance.translate_project.assert_called_once_with(
+        update=False,
+    )
+
+
+@pytest.mark.asyncio
 async def test_run_translation_with_multiple_root_dirs(tmp_path):
     root1 = tmp_path / "content1"
     root2 = tmp_path / "content2"

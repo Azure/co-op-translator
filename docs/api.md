@@ -198,6 +198,17 @@ run_translation(
 )
 ```
 
+Translate only the root README while keeping links to source documentation:
+
+```python
+from co_op_translator.api import run_translation
+
+run_translation(
+    language_codes="ko ja",
+    readme_only=True,
+)
+```
+
 Translate multiple content roots in one call:
 
 ```python
@@ -240,6 +251,8 @@ run_translation(
 ```
 
 If none of `markdown`, `notebook`, or `images` are set, the API translates all supported types: Markdown, notebooks, and images.
+
+Set `readme_only=True` to translate only `README.md` into `translations/<language-code>/README.md`. README links to other Markdown documents are rewritten back to the source tree, so detailed docs can remain English-only while the README is localized.
 
 ## Review Translated Output
 

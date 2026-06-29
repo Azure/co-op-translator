@@ -60,6 +60,12 @@ Translate Markdown and images:
 translate -l "pt-BR" -md -img
 ```
 
+Translate only the root README and keep links to source docs:
+
+```bash
+translate -l "ko ja" --readme-only
+```
+
 Update existing translations by deleting and recreating them:
 
 ```bash
@@ -88,6 +94,7 @@ translate -l "ko" -s
 | `-img`, `--images` | No | Translate only image files. |
 | `-md`, `--markdown` | No | Translate only Markdown files. |
 | `-nb`, `--notebook` | No | Translate only Jupyter notebook files. |
+| `--readme-only` | No | Translate only root `README.md`. Links to other Markdown documents are rewritten back to the source files. |
 | `-d`, `--debug` | No | Enable debug logging in the console. |
 | `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
 | `-x`, `--fix` | No | Retranslate low-confidence Markdown files based on previous evaluation results. |
@@ -100,6 +107,8 @@ translate -l "ko" -s
 | `--dry-run` | No | Preview language folder migration and translation estimates without writing files. |
 
 If no type flag is provided, `translate` processes Markdown, notebooks, and images. Image translation requires Azure AI Vision configuration.
+
+`--readme-only` is a Markdown-only mode for localized README entry pages. It writes `translations/<language-code>/README.md`, skips other Markdown files, and leaves links to docs such as `docs/cli.md` pointing back to the source documentation.
 
 ## evaluate
 

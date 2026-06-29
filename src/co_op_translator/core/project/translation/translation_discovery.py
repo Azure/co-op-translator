@@ -19,7 +19,10 @@ class TranslationDiscoveryMixin:
 
     def _gather_pending_markdown(self, update: bool) -> List[Path]:
         pending: List[Path] = []
-        markdown_files = filter_files(self.root_dir, self.excluded_dirs)
+        if hasattr(self, "_iter_markdown_source_files"):
+            markdown_files = self._iter_markdown_source_files()
+        else:
+            markdown_files = filter_files(self.root_dir, self.excluded_dirs)
         for md_file_path in markdown_files:
             md_file_path = md_file_path.resolve()
             if md_file_path.suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS:
@@ -35,6 +38,8 @@ class TranslationDiscoveryMixin:
 
     def _gather_pending_notebooks(self, update: bool) -> List[Path]:
         pending: List[Path] = []
+        if getattr(self, "readme_only", False):
+            return pending
         notebook_files: List[Path] = []
         for ext in self.supported_notebook_extensions:
             notebook_files.extend(filter_files(self.root_dir, self.excluded_dirs, ext))

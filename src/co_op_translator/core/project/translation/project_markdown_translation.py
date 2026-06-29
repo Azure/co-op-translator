@@ -11,6 +11,7 @@ from co_op_translator.utils.common.file_utils import (
     read_input_file,
 )
 from co_op_translator.utils.common.metadata_utils import save_text_metadata_for_source
+from co_op_translator.utils.common.metadata_utils import remove_text_metadata_for_source
 from co_op_translator.utils.markdown.path_rewriter import (
     MarkdownPathRewritePolicy,
     rewrite_markdown_paths,
@@ -54,6 +55,7 @@ class ProjectMarkdownTranslationMixin:
                 translated_images_dir=self.image_dir,
                 translation_types=self.translation_types,
                 lang_subdir=self.lang_subdir,
+                use_translated_markdown_links=not getattr(self, "readme_only", False),
             ),
         )
 
@@ -156,14 +158,32 @@ class ProjectMarkdownTranslationMixin:
 
         if update:
             for language_code in self.language_codes:
-                delete_translated_markdown_files_by_language_code(
-                    language_code, self.translations_dir, self.lang_subdir
-                )
-                logger.info(
-                    f"Deleted all translated markdown files for language: {language_code}"
-                )
+                if getattr(self, "readme_only", False):
+                    translated_readme_path = (
+                        self._get_language_root(language_code) / "README.md"
+                    )
+                    if translated_readme_path.exists():
+                        translated_readme_path.unlink()
+                        logger.info(
+                            "Deleted translated README for language: %s",
+                            language_code,
+                        )
+                    remove_text_metadata_for_source(
+                        self._get_language_root(language_code),
+                        "README.md",
+                    )
+                else:
+                    delete_translated_markdown_files_by_language_code(
+                        language_code, self.translations_dir, self.lang_subdir
+                    )
+                    logger.info(
+                        f"Deleted all translated markdown files for language: {language_code}"
+                    )
 
-        markdown_files = filter_files(self.root_dir, self.excluded_dirs)
+        if hasattr(self, "_iter_markdown_source_files"):
+            markdown_files = self._iter_markdown_source_files()
+        else:
+            markdown_files = filter_files(self.root_dir, self.excluded_dirs)
         tasks = []
         task_info = []
 

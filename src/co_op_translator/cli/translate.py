@@ -49,6 +49,11 @@ logger = logging.getLogger(__name__)
 @click.option("--images", "-img", is_flag=True, help="Only translate image files.")
 @click.option("--markdown", "-md", is_flag=True, help="Only translate markdown files.")
 @click.option("--notebook", "-nb", is_flag=True, help="Only translate notebook files.")
+@click.option(
+    "--readme-only",
+    is_flag=True,
+    help="Translate only the root README.md and keep links to other source documents.",
+)
 @click.option("--debug", "-d", is_flag=True, help="Enable debug mode.")
 @click.option(
     "--save-logs",
@@ -115,6 +120,7 @@ def translate_command(
     images,
     markdown,
     notebook,
+    readme_only,
     debug,
     save_logs,
     fix,
@@ -170,14 +176,26 @@ def translate_command(
         # Check that the required environment variables are set
         Config.check_configuration()
 
+        if readme_only and (images or notebook):
+            raise click.ClickException(
+                "--readme-only can only be combined with --markdown."
+            )
+
         # Build translation types list based on user selection
         translation_types = []
-        if markdown:
+        if readme_only:
+            translation_types = ["markdown"]
+        elif markdown:
             translation_types.append("markdown")
-        if images:
-            translation_types.append("images")
-        if notebook:
-            translation_types.append("notebook")
+            if images:
+                translation_types.append("images")
+            if notebook:
+                translation_types.append("notebook")
+        else:
+            if images:
+                translation_types.append("images")
+            if notebook:
+                translation_types.append("notebook")
 
         # Default: translate all supported file types if nothing specified
         if not translation_types:
@@ -351,6 +369,7 @@ def translate_command(
             root_dir,
             translation_types=translation_types,
             add_disclaimer=add_disclaimer,
+            readme_only=readme_only,
         )
 
         # Estimate tokens before running translation and print a concise summary

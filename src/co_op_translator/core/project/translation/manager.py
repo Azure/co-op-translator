@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.directory_manager import DirectoryManager
+from co_op_translator.utils.common.file_utils import filter_files
 
 from co_op_translator.core.project.translation.project_image_translation import (
     ProjectImageTranslationMixin,
@@ -58,6 +60,7 @@ class TranslationManager(
         translation_types: list[str] = None,
         add_disclaimer: bool = True,
         lang_subdir: Path | None = None,
+        readme_only: bool = False,
     ):
         """Initialize translation manager with required components and settings.
 
@@ -93,6 +96,7 @@ class TranslationManager(
         self.translation_types = translation_types
         self.add_disclaimer = add_disclaimer
         self.lang_subdir = Path(lang_subdir) if lang_subdir else None
+        self.readme_only = readme_only
         self.directory_manager = DirectoryManager(
             root_dir,
             translations_dir,
@@ -111,3 +115,30 @@ class TranslationManager(
         if self.lang_subdir:
             lang_dir = lang_dir / self.lang_subdir
         return lang_dir
+
+    def _readme_source_path(self) -> Path:
+        return (self.root_dir / "README.md").resolve()
+
+    def _is_source_in_scope(
+        self,
+        source_path: Path,
+        content_type: str = "markdown",
+    ) -> bool:
+        if not self.readme_only:
+            return True
+        if content_type != "markdown":
+            return False
+        try:
+            return Path(source_path).resolve() == self._readme_source_path()
+        except Exception:
+            return False
+
+    def _iter_markdown_source_files(self) -> list[Path]:
+        if self.readme_only:
+            readme_path = self._readme_source_path()
+            return [readme_path] if readme_path.exists() else []
+        return [
+            Path(path).resolve()
+            for path in filter_files(self.root_dir, self.excluded_dirs)
+            if Path(path).suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS
+        ]

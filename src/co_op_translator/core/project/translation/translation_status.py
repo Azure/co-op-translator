@@ -73,7 +73,15 @@ class TranslationStatusMixin:
                         try:
                             rel = trans_file.relative_to(translation_dir)
                             original = self.root_dir / rel
-                            if original.exists():
+                            content_type = (
+                                "notebook"
+                                if trans_file.suffix.lower()
+                                in self.supported_notebook_extensions
+                                else "markdown"
+                            )
+                            if original.exists() and self._is_source_in_scope(
+                                original, content_type=content_type
+                            ):
                                 files.append((original, trans_file))
                         except Exception:
                             continue
@@ -129,6 +137,15 @@ class TranslationStatusMixin:
                 original_file = self.root_dir / relative_path
 
                 if not original_file.exists():
+                    continue
+                content_type = (
+                    "notebook"
+                    if trans_file.suffix.lower() in self.supported_notebook_extensions
+                    else "markdown"
+                )
+                if not self._is_source_in_scope(
+                    original_file, content_type=content_type
+                ):
                     continue
 
                 # Compare metadata

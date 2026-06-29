@@ -269,6 +269,7 @@ def run_translation(
     groups: Iterable[tuple[str, str | None]] | None = None,
     repo_url: str | None = None,
     glossaries: Iterable[str] | None = None,
+    readme_only: bool = False,
     dry_run: bool = False,
 ) -> None:
     """Programmatic translation entrypoint mirroring the translate CLI options."""
@@ -300,17 +301,29 @@ def run_translation(
         image_dir: str | None,
         lang_subdir: str | None,
         repo_url: str | None,
+        readme_only: bool,
         dry_run: bool,
     ) -> None:
         Config.check_configuration()
 
         translation_types: list[str] = []
-        if markdown:
+        if readme_only:
+            if images or notebook:
+                raise RuntimeError(
+                    "readme_only can only be used with markdown translation."
+                )
+            translation_types = ["markdown"]
+        elif markdown:
             translation_types.append("markdown")
-        if images:
-            translation_types.append("images")
-        if notebook:
-            translation_types.append("notebook")
+            if images:
+                translation_types.append("images")
+            if notebook:
+                translation_types.append("notebook")
+        else:
+            if images:
+                translation_types.append("images")
+            if notebook:
+                translation_types.append("notebook")
         if not translation_types:
             translation_types = ["markdown", "notebook", "images"]
 
@@ -497,14 +510,20 @@ def run_translation(
             except Exception as e:  # pragma: no cover
                 logger.warning(f"Failed to update README 'Other courses': {e}")
 
+        translator_kwargs = {
+            "translation_types": translation_types,
+            "add_disclaimer": add_disclaimer,
+            "translations_dir": translations_dir,
+            "image_dir": image_dir,
+            "lang_subdir": lang_subdir,
+        }
+        if readme_only:
+            translator_kwargs["readme_only"] = True
+
         translator = ProjectTranslator(
             language_codes,
             root_dir,
-            translation_types=translation_types,
-            add_disclaimer=add_disclaimer,
-            translations_dir=translations_dir,
-            image_dir=image_dir,
-            lang_subdir=lang_subdir,
+            **translator_kwargs,
         )
 
         if dry_run:
@@ -589,25 +608,43 @@ def run_translation(
         image_dir: str | None,
         lang_subdir: str | None,
         repo_url: str | None,
+        readme_only: bool,
     ) -> dict[str, int]:
         translation_types: list[str] = []
-        if markdown:
+        if readme_only:
+            if images or notebook:
+                raise RuntimeError(
+                    "readme_only can only be used with markdown translation."
+                )
+            translation_types = ["markdown"]
+        elif markdown:
             translation_types.append("markdown")
-        if images:
-            translation_types.append("images")
-        if notebook:
-            translation_types.append("notebook")
+            if images:
+                translation_types.append("images")
+            if notebook:
+                translation_types.append("notebook")
+        else:
+            if images:
+                translation_types.append("images")
+            if notebook:
+                translation_types.append("notebook")
         if not translation_types:
             translation_types = ["markdown", "notebook", "images"]
+
+        translator_kwargs = {
+            "translation_types": translation_types,
+            "add_disclaimer": add_disclaimer,
+            "translations_dir": translations_dir,
+            "image_dir": image_dir,
+            "lang_subdir": lang_subdir,
+        }
+        if readme_only:
+            translator_kwargs["readme_only"] = True
 
         translator = ProjectTranslator(
             language_codes,
             root_dir,
-            translation_types=translation_types,
-            add_disclaimer=add_disclaimer,
-            translations_dir=translations_dir,
-            image_dir=image_dir,
-            lang_subdir=lang_subdir,
+            **translator_kwargs,
         )
         virtual_file_contents = compute_pretranslation_virtual_inputs(
             Path(root_dir).resolve(),
@@ -666,12 +703,19 @@ def run_translation(
             "words": 0,
         }
         translation_types_for_summary: list[str] = []
-        if markdown:
+        if readme_only:
+            translation_types_for_summary = ["markdown"]
+        elif markdown:
             translation_types_for_summary.append("markdown")
-        if images:
-            translation_types_for_summary.append("images")
-        if notebook:
-            translation_types_for_summary.append("notebook")
+            if images:
+                translation_types_for_summary.append("images")
+            if notebook:
+                translation_types_for_summary.append("notebook")
+        else:
+            if images:
+                translation_types_for_summary.append("images")
+            if notebook:
+                translation_types_for_summary.append("notebook")
         if not translation_types_for_summary:
             translation_types_for_summary = ["markdown", "notebook", "images"]
 
@@ -707,6 +751,7 @@ def run_translation(
                 image_dir=image_dir,
                 lang_subdir=per_lang_subdir,
                 repo_url=repo_url,
+                readme_only=readme_only,
             )
             aggregated_estimate = _merge_estimates(aggregated_estimate, group_estimate)
 
@@ -731,6 +776,7 @@ def run_translation(
                     image_dir=image_dir,
                     lang_subdir=per_lang_subdir,
                     repo_url=repo_url,
+                    readme_only=readme_only,
                     dry_run=dry_run,
                 )
 

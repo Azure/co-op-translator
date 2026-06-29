@@ -128,6 +128,8 @@ co-op-review -l "ko"
 
 For first runs on large repositories, use `--dry-run` before writing translated files. See the [CLI Reference](./docs/cli.md) for content type flags, logs, review, and link migration.
 
+To localize only README entry pages while keeping detailed docs in the source language, run `translate -l "ko ja" --readme-only`.
+
 Container quick run with Bash/Zsh:
 
 ```bash

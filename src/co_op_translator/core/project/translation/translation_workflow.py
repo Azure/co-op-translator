@@ -53,12 +53,13 @@ class TranslationWorkflowMixin:
         all_errors = []
 
         try:
+            readme_only = getattr(self, "readme_only", False)
             rename_map: dict[str, str] = {}
             migrated_image_count = 0
             should_migrate_links = (
                 "markdown" in self.translation_types
                 or "notebook" in self.translation_types
-            )
+            ) and not readme_only
 
             if "images" in self.translation_types:
                 # Migrate legacy translated image filenames and update markdown/notebook links
@@ -120,52 +121,66 @@ class TranslationWorkflowMixin:
                     logger.warning(f"Image link canonicalization skipped: {e}")
 
             # Clean up files no longer needed in target directories
-            logger.info("Removing orphaned files...")
-            with tqdm(total=1, desc="🧹 Cleaning orphaned files") as cleanup_progress:
-                # Markdown/Notebook cleanup scoped to selected languages
-                removed_md_nb = self.directory_manager.cleanup_orphaned_translations(
-                    markdown="markdown" in self.translation_types,
-                    images=False,
-                    notebooks="notebook" in self.translation_types,
-                )
-
-                # Image cleanup should consider ALL supported languages to avoid removing other languages
-                removed_imgs = 0
-                if "images" in self.translation_types:
-                    cleanup_langs = Config.get_language_codes()
-                    img_dm = DirectoryManager(
-                        self.root_dir,
-                        self.translations_dir,
-                        cleanup_langs,
-                        self.excluded_dirs,
-                        image_dir=self.image_dir,
-                    )
-                    removed_imgs = img_dm.cleanup_orphaned_translations(
-                        markdown=False,
-                        images=True,
-                        notebooks=False,
+            if readme_only:
+                logger.info("Skipping orphan cleanup in README-only mode")
+            else:
+                logger.info("Removing orphaned files...")
+                with tqdm(
+                    total=1, desc="🧹 Cleaning orphaned files"
+                ) as cleanup_progress:
+                    # Markdown/Notebook cleanup scoped to selected languages
+                    removed_md_nb = (
+                        self.directory_manager.cleanup_orphaned_translations(
+                            markdown="markdown" in self.translation_types,
+                            images=False,
+                            notebooks="notebook" in self.translation_types,
+                        )
                     )
 
-                removed_total = (removed_md_nb or 0) + (removed_imgs or 0)
-                cleanup_progress.set_postfix_str(
-                    "None" if removed_total == 0 else f"Removed: {removed_total}"
-                )
-                cleanup_progress.update(1)
+                    # Image cleanup should consider ALL supported languages to avoid removing other languages
+                    removed_imgs = 0
+                    if "images" in self.translation_types:
+                        cleanup_langs = Config.get_language_codes()
+                        img_dm = DirectoryManager(
+                            self.root_dir,
+                            self.translations_dir,
+                            cleanup_langs,
+                            self.excluded_dirs,
+                            image_dir=self.image_dir,
+                        )
+                        removed_imgs = img_dm.cleanup_orphaned_translations(
+                            markdown=False,
+                            images=True,
+                            notebooks=False,
+                        )
+
+                    removed_total = (removed_md_nb or 0) + (removed_imgs or 0)
+                    cleanup_progress.set_postfix_str(
+                        "None" if removed_total == 0 else f"Removed: {removed_total}"
+                    )
+                    cleanup_progress.update(1)
 
             # Create and update directory structure to match source
-            logger.info("Synchronizing directory structure...")
-            with tqdm(total=1, desc="📁 Synchronizing directories") as sync_progress:
-                created, removed, _ = self.directory_manager.sync_directory_structure(
-                    markdown="markdown" in self.translation_types,
-                    images="images" in self.translation_types,
-                    notebooks="notebook" in self.translation_types,
-                )
-                sync_progress.set_postfix_str(
-                    "None"
-                    if (created == 0 and removed == 0)
-                    else f"Created: {created}, Removed: {removed}"
-                )
-                sync_progress.update(1)
+            if readme_only:
+                logger.info("Skipping directory sync in README-only mode")
+            else:
+                logger.info("Synchronizing directory structure...")
+                with tqdm(
+                    total=1, desc="📁 Synchronizing directories"
+                ) as sync_progress:
+                    created, removed, _ = (
+                        self.directory_manager.sync_directory_structure(
+                            markdown="markdown" in self.translation_types,
+                            images="images" in self.translation_types,
+                            notebooks="notebook" in self.translation_types,
+                        )
+                    )
+                    sync_progress.set_postfix_str(
+                        "None"
+                        if (created == 0 and removed == 0)
+                        else f"Created: {created}, Removed: {removed}"
+                    )
+                    sync_progress.update(1)
 
             # Find files needing translation due to source changes (markdown + notebooks)
             if (
@@ -340,11 +355,14 @@ class TranslationWorkflowMixin:
         files_to_translate = []
 
         # Collect all markdown files
-        markdown_files = [
-            file
-            for file in filter_files(self.root_dir, self.excluded_dirs)
-            if file.suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS
-        ]
+        if hasattr(self, "_iter_markdown_source_files"):
+            markdown_files = self._iter_markdown_source_files()
+        else:
+            markdown_files = [
+                file
+                for file in filter_files(self.root_dir, self.excluded_dirs)
+                if file.suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS
+            ]
         all_markdown_files = [
             (file, language_code)
             for file in markdown_files

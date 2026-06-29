@@ -23,6 +23,7 @@ def update_untranslated_file_links(
     translations_dir: Path,
     root_dir: Path,
     use_translated_notebook: bool = True,
+    use_translated_markdown: bool = True,
     target_path: Path | None = None,
 ) -> str:
     """Update links to untranslated files to point to original source files.
@@ -34,7 +35,7 @@ def update_untranslated_file_links(
     Skips:
     - Web URLs (http, https, mailto)
     - Image files (handled by update_image_links)
-    - Markdown files (always translated)
+    - Markdown files when use_translated_markdown=True
     - Notebook files (if use_translated_notebook=True, they are translated; if False, processed here)
 
     Args:
@@ -44,6 +45,7 @@ def update_untranslated_file_links(
         translations_dir (Path): Directory containing translations
         root_dir (Path): Root directory of the project
         use_translated_notebook (bool): Whether to use translated notebooks (False = process notebook links here)
+        use_translated_markdown (bool): Whether to use translated markdown links (False = process markdown links here)
 
     Returns:
         str: Updated markdown content with corrected untranslated file links
@@ -78,7 +80,7 @@ def update_untranslated_file_links(
             logger.info(f"Skipping image file {link}")
             continue
 
-        if file_ext in SUPPORTED_MARKDOWN_EXTENSIONS:
+        if file_ext in SUPPORTED_MARKDOWN_EXTENSIONS and use_translated_markdown:
             logger.info(f"Skipping markdown file {link}")
             continue
 
@@ -102,6 +104,10 @@ def update_untranslated_file_links(
             updated_link = os.path.relpath(
                 original_linked_file_path, translated_md_dir
             ).replace(os.path.sep, "/")
+            if parsed_url.query:
+                updated_link = f"{updated_link}?{parsed_url.query}"
+            if parsed_url.fragment:
+                updated_link = f"{updated_link}#{parsed_url.fragment}"
 
             old_file_markup = f"[{alt_text}]({link})"
             new_file_markup = f"[{alt_text}]({updated_link})"

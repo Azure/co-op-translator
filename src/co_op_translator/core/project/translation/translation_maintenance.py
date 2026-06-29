@@ -188,6 +188,13 @@ class TranslationMaintenanceMixin:
                     original_file = (self.root_dir / rel_to_lang).resolve()
                     if not original_file.exists():
                         continue
+                    if hasattr(
+                        self, "_is_source_in_scope"
+                    ) and not self._is_source_in_scope(
+                        original_file,
+                        content_type="markdown",
+                    ):
+                        continue
 
                     source_key: str | Path
                     try:

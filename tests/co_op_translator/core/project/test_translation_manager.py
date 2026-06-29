@@ -181,6 +181,104 @@ async def test_translate_markdown_appends_disclaimer_in_project_layer(
 
 
 @pytest.mark.asyncio
+async def test_readme_only_translates_root_readme_and_keeps_source_doc_links(
+    temp_project_dir,
+):
+    readme_path = temp_project_dir / "README.md"
+    readme_path.write_text(
+        "# Home\n\n[Workflow](docs/test.md#quick-start)\n",
+        encoding="utf-8",
+    )
+    existing_docs_translation = (
+        temp_project_dir / "translations" / "ko" / "docs" / "test.md"
+    )
+    existing_docs_translation.parent.mkdir(parents=True, exist_ok=True)
+    existing_docs_translation.write_text(
+        "# Existing docs translation\n", encoding="utf-8"
+    )
+
+    markdown_translator = FakeMarkdownTranslator()
+    translation_manager = TranslationManager(
+        root_dir=temp_project_dir,
+        translations_dir=temp_project_dir / "translations",
+        image_dir=temp_project_dir / "translated_images",
+        language_codes=["ko"],
+        excluded_dirs=["translations", "translated_images", "logs"],
+        supported_image_extensions=[".png"],
+        supported_notebook_extensions=[".ipynb"],
+        markdown_translator=markdown_translator,
+        image_translator=FakeImageTranslator(),
+        notebook_translator=FakeNotebookTranslator(),
+        translation_types=["markdown"],
+        add_disclaimer=False,
+        readme_only=True,
+    )
+
+    modified_count, errors = await translation_manager.translate_all_markdown_files(
+        update=True
+    )
+
+    translated_readme = temp_project_dir / "translations" / "ko" / "README.md"
+    assert modified_count == 1
+    assert errors == []
+    assert translated_readme.exists()
+    assert "../../docs/test.md#quick-start" in translated_readme.read_text(
+        encoding="utf-8"
+    )
+    assert existing_docs_translation.read_text(encoding="utf-8") == (
+        "# Existing docs translation\n"
+    )
+    assert markdown_translator.calls == [
+        (readme_path.read_text(encoding="utf-8").strip(), "ko", readme_path, {})
+    ]
+
+
+def test_readme_only_legacy_metadata_migration_ignores_non_readme(
+    temp_project_dir,
+):
+    (temp_project_dir / "README.md").write_text("# Home\n", encoding="utf-8")
+    translated_doc = temp_project_dir / "translations" / "ko" / "docs" / "test.md"
+    translated_doc.parent.mkdir(parents=True, exist_ok=True)
+    legacy_content = (
+        "<!--\n"
+        "CO_OP_TRANSLATOR_METADATA:\n"
+        "{\n"
+        '  "original_hash": "deadbeef",\n'
+        '  "translation_date": "2026-01-01T00:00:00+00:00",\n'
+        '  "source_file": "docs/test.md",\n'
+        '  "language_code": "ko"\n'
+        "}\n"
+        "-->\n"
+        "# Existing docs translation\n"
+    )
+    translated_doc.write_text(legacy_content, encoding="utf-8")
+
+    translation_manager = TranslationManager(
+        root_dir=temp_project_dir,
+        translations_dir=temp_project_dir / "translations",
+        image_dir=temp_project_dir / "translated_images",
+        language_codes=["ko"],
+        excluded_dirs=["translations", "translated_images", "logs"],
+        supported_image_extensions=[".png"],
+        supported_notebook_extensions=[".ipynb"],
+        markdown_translator=FakeMarkdownTranslator(),
+        image_translator=FakeImageTranslator(),
+        notebook_translator=FakeNotebookTranslator(),
+        translation_types=["markdown"],
+        add_disclaimer=False,
+        readme_only=True,
+    )
+
+    migrated = translation_manager._migrate_legacy_inline_text_metadata()
+
+    assert migrated == 0
+    assert translated_doc.read_text(encoding="utf-8") == legacy_content
+    assert not (
+        temp_project_dir / "translations" / "ko" / ".co-op-translator.json"
+    ).exists()
+
+
+@pytest.mark.asyncio
 async def test_translate_image_uses_configured_image_translator(
     translation_manager, temp_project_dir
 ):

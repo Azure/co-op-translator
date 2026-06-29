@@ -21,6 +21,7 @@ class MarkdownPathRewritePolicy:
     translated_images_dir: str | Path | None = None
     translation_types: Sequence[str] | None = None
     lang_subdir: str | Path | None = None
+    use_translated_markdown_links: bool | None = None
 
 
 def _resolve_under_root(path: str | Path | None, root_dir: Path, default: str) -> Path:
@@ -101,6 +102,7 @@ def rewrite_markdown_paths(
         translated_images_dir=translated_images_dir,
         translation_types=translation_types,
         target_path=target,
+        use_translated_markdown_links=rewrite_policy.use_translated_markdown_links,
     )
 
 

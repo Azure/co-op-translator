@@ -320,6 +320,7 @@ def run_translation(
     groups: list[dict[str, str | None]] | list[list[str | None]] | None = None,
     repo_url: str | None = None,
     glossaries: list[str] | None = None,
+    readme_only: bool = False,
     dry_run: bool = True,
     confirm_write: bool = False,
 ) -> dict[str, Any]:
@@ -352,6 +353,7 @@ def run_translation(
             groups=_coerce_groups(groups),
             repo_url=repo_url,
             glossaries=glossaries,
+            readme_only=readme_only,
             dry_run=dry_run,
         )
 
@@ -381,6 +383,7 @@ def translate_project(
     groups: list[dict[str, str | None]] | list[list[str | None]] | None = None,
     repo_url: str | None = None,
     glossaries: list[str] | None = None,
+    readme_only: bool = False,
     dry_run: bool = True,
     confirm_write: bool = False,
 ) -> dict[str, Any]:
@@ -403,6 +406,7 @@ def translate_project(
         groups=groups,
         repo_url=repo_url,
         glossaries=glossaries,
+        readme_only=readme_only,
         dry_run=dry_run,
         confirm_write=confirm_write,
     )

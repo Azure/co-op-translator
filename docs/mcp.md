@@ -207,6 +207,17 @@ Repository translation defaults to `dry_run=true` so an agent can inspect scope 
 }
 ```
 
+To translate only localized README entry pages and keep README links pointing to source docs, set `readme_only=true`:
+
+```json
+{
+  "language_codes": "ko ja",
+  "root_dir": ".",
+  "readme_only": true,
+  "dry_run": true
+}
+```
+
 To allow writes, the caller must set both `dry_run=false` and `confirm_write=true`:
 
 ```json

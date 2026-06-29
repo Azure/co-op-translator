@@ -44,6 +44,7 @@ class ProjectTranslator:
         translations_dir=None,
         image_dir=None,
         lang_subdir=None,
+        readme_only: bool = False,
     ):
         """Initialize project translation environment.
 
@@ -58,6 +59,7 @@ class ProjectTranslator:
         self.language_codes = normalize_language_codes(language_codes.split())
         self.root_dir = Path(root_dir).resolve()
         self.lang_subdir = Path(lang_subdir) if lang_subdir else None
+        self.readme_only = readme_only
         # Resolve translations_dir relative to root_dir when a relative path is provided.
         if translations_dir is not None:
             t_dir = Path(translations_dir)
@@ -81,6 +83,13 @@ class ProjectTranslator:
         # Default translation types if not specified (safe fallback for direct API usage)
         if translation_types is None:
             translation_types = ["markdown", "notebook", "images"]
+        if self.readme_only:
+            unsupported = [t for t in translation_types if t != "markdown"]
+            if unsupported:
+                raise ValueError(
+                    "--readme-only can only be used with markdown translation."
+                )
+            translation_types = ["markdown"]
         self.translation_types = translation_types
 
         # Build effective excluded dirs, always excluding the configured translation/image trees
@@ -174,6 +183,7 @@ class ProjectTranslator:
             self.translation_types,
             add_disclaimer=add_disclaimer,
             lang_subdir=self.lang_subdir,
+            readme_only=self.readme_only,
         )
 
     def translate_project(
@@ -306,6 +316,8 @@ class ProjectTranslator:
                 orig_file = (self.root_dir / orig_rel).resolve()
 
                 if orig_file.exists():
+                    if self.readme_only and orig_file != (self.root_dir / "README.md"):
+                        continue
                     files_to_retranslate.append((orig_file, confidence))
                 else:
                     error_msg = (

@@ -347,9 +347,14 @@ def translate_command(
 
         # Show warning and prompt if update is selected
         if update:
-            click.echo(
-                f"Warning: The update command will delete all existing translations for '{language_codes}' and re-translate everything."
-            )
+            if readme_only:
+                click.echo(
+                    f"Warning: The update command will delete existing translated README files for '{language_codes}' and re-translate them."
+                )
+            else:
+                click.echo(
+                    f"Warning: The update command will delete all existing translations for '{language_codes}' and re-translate everything."
+                )
             if not yes:
                 confirmation_update = click.prompt(
                     "Do you want to continue? Type 'yes' to proceed", type=str

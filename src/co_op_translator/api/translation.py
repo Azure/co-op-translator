@@ -411,10 +411,16 @@ def run_translation(
         lang_list = normalize_language_codes(lang_list) if lang_list else []
 
         if update:
-            click.echo(
-                f"Warning: Update mode will delete all existing translations for '{language_codes}' "
-                f"and re-translate them."
-            )
+            if readme_only:
+                click.echo(
+                    f"Warning: Update mode will delete existing translated README files for '{language_codes}' "
+                    f"and re-translate them."
+                )
+            else:
+                click.echo(
+                    f"Warning: Update mode will delete all existing translations for '{language_codes}' "
+                    f"and re-translate them."
+                )
 
         try:
             effective_translations_dir = (

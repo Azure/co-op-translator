@@ -126,6 +126,8 @@ This manual testing helps ensure that your changes work well in real-world scena
 
 We use [Black](https://github.com/psf/black) as our Python code formatter to maintain consistent code style across the project. Black is an uncompromising code formatter that automatically reformats Python code to conform to the Black code style.
 
+For package re-export modules such as `__init__.py`, prefer explicit imports and an explicit `__all__` list instead of wildcard imports.
+
 #### Configuration
 
 The Black configuration is specified in our `pyproject.toml`:

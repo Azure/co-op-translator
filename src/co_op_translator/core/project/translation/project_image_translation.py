@@ -4,8 +4,6 @@ import logging
 import os
 from pathlib import Path
 
-from PIL import Image
-
 from co_op_translator.utils.common.file_utils import (
     delete_translated_images_by_language_code,
     filter_files,
@@ -16,7 +14,6 @@ from co_op_translator.utils.common.metadata_utils import (
     is_image_up_to_date,
     save_image_metadata,
 )
-from co_op_translator.utils.vision.image_utils import save_optimized_image
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +28,10 @@ class ProjectImageTranslationMixin:
     def _save_original_image_translation(
         self, image_path: Path, translated_path: Path, language_code: str
     ) -> str:
+        from PIL import Image
+
+        from co_op_translator.utils.vision.image_utils import save_optimized_image
+
         translated_path.parent.mkdir(parents=True, exist_ok=True)
         original_image = Image.open(image_path)
         save_optimized_image(original_image, translated_path)
@@ -82,6 +83,8 @@ class ProjectImageTranslationMixin:
                 image_path, language_code, fast_mode=fast_mode
             )
             translated_image_path.parent.mkdir(parents=True, exist_ok=True)
+            from co_op_translator.utils.vision.image_utils import save_optimized_image
+
             save_optimized_image(translated_image, translated_image_path)
             save_image_metadata(
                 translated_image_path,

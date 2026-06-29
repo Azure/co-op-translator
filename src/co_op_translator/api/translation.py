@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 import importlib.resources
 import logging
 import os
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Mapping
+from typing import TYPE_CHECKING, Iterable, Mapping
 
 import click
 import yaml
-from PIL import Image
 
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.llm_config.config import LLMConfig
@@ -25,8 +26,8 @@ from co_op_translator.core.llm.jupyter_notebook_translator import (
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 from co_op_translator.core.project.project_translator import ProjectTranslator
-from co_op_translator.core.vision.image_translator import ImageTranslator
 from co_op_translator.glossary import glossary_terms_scope
+from co_op_translator.optional_dependencies import raise_for_optional_dependency
 from co_op_translator.utils.common.file_utils import (
     render_updated_readme_languages_table,
     render_updated_readme_other_courses,
@@ -49,6 +50,29 @@ from co_op_translator.utils.markdown.notebook_path_rewriter import (
 )
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from PIL import Image
+
+
+class _ImageTranslatorProxy:
+    @staticmethod
+    def create(*args: object, **kwargs: object) -> object:
+        try:
+            from co_op_translator.core.vision.image_translator import (
+                ImageTranslator as _ImageTranslator,
+            )
+        except ImportError as exc:
+            raise_for_optional_dependency(
+                feature="Image translation",
+                extra="image",
+                exc=exc,
+            )
+
+        return _ImageTranslator.create(*args, **kwargs)
+
+
+ImageTranslator = _ImageTranslatorProxy
 
 
 @dataclass(frozen=True)

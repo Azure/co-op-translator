@@ -25,8 +25,8 @@ COPY pyproject.toml poetry.lock* ./
 # Export env to ensure Poetry installs with the same Python
 ENV POETRY_VIRTUALENVS_CREATE=false
 
-# Export main dependencies and build a local wheelhouse for all deps
-RUN poetry export --without-hashes --only main -f requirements.txt -o requirements.txt
+# Export the full published feature set used by the container image
+RUN poetry export --without-hashes --only main --all-extras -f requirements.txt -o requirements.txt
 RUN pip wheel -r requirements.txt -w /wheels
 
 # Now copy the application source
@@ -57,7 +57,8 @@ VOLUME ["/work"]
 # Copy the built wheel and dependency wheelhouse from the builder and install them
 COPY --from=builder /app/dist/*.whl /tmp/
 COPY --from=builder /wheels /wheels
-RUN pip install --no-index --find-links=/wheels /tmp/*.whl \
+COPY --from=builder /app/requirements.txt /tmp/requirements.txt
+RUN pip install --no-index --find-links=/wheels -r /tmp/requirements.txt /tmp/*.whl \
  && rm -f /tmp/*.whl
 
 # Default entrypoint to the primary CLI; override with --entrypoint for other commands
@@ -67,5 +68,4 @@ CMD ["--help"]
 # Example runs (documentation only):
 # docker run --rm -it --env-file .env -v ${PWD}:/work IMAGE_TAG translate -l "fr es" -md
 # docker run --rm -it --env-file .env -v ${PWD}:/work --entrypoint migrate-links IMAGE_TAG -l "all" -y
-
 

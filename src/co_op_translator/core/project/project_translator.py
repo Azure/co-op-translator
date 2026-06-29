@@ -6,14 +6,12 @@ from co_op_translator.core.llm import (
     text_translator,
     JupyterNotebookTranslator,
 )
-from co_op_translator.core.vision import (
-    image_translator,
-)
 from co_op_translator.config.constants import (
     EXCLUDED_DIRS,
     SUPPORTED_IMAGE_EXTENSIONS,
     SUPPORTED_NOTEBOOK_EXTENSIONS,
 )
+from co_op_translator.optional_dependencies import raise_for_optional_dependency
 from co_op_translator.utils.common.lang_utils import (
     normalize_language_codes,
     get_supported_language_codes,
@@ -116,8 +114,16 @@ class ProjectTranslator:
         # Initialize image translator if images are enabled
         if "images" in self.translation_types:
             try:
+                from co_op_translator.core.vision import image_translator
+
                 self.image_translator = image_translator.ImageTranslator.create(
                     default_output_dir=self.image_dir, root_dir=self.root_dir
+                )
+            except ImportError as e:
+                raise_for_optional_dependency(
+                    feature="Project image translation",
+                    extra="image",
+                    exc=e,
                 )
             except ValueError as e:
                 logger.error(

@@ -76,7 +76,7 @@ jobs:
       - name: Install Co-op Translator
         run: |
           python -m pip install --upgrade pip
-          pip install co-op-translator
+          pip install "co-op-translator[image]"
 
       - name: Run Co-op Translator
         env:

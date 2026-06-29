@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 import importlib.resources
 import yaml
 from co_op_translator.config.llm_config.config import LLMConfig
-from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.utils.common.lang_utils import normalize_language_code
 
 logger = logging.getLogger(__name__)
@@ -42,6 +41,8 @@ class Config:
         LLMConfig.check_configuration()
 
         # Vision configuration is optional
+        from co_op_translator.config.vision_config.config import VisionConfig
+
         VisionConfig.check_configuration()
 
     @staticmethod

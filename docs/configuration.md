@@ -30,11 +30,22 @@ For normal CLI usage, install the published package inside a virtual environment
     translate --help
     ```
 
+Optional install extras:
+
+- `co-op-translator[image]` adds image translation dependencies.
+- `co-op-translator[full]` installs every optional dependency group.
+
 For repository development, install dependencies from the project root instead:
 
 ```bash
 poetry install
 poetry run translate --help
+```
+
+If you are developing or testing image translation from a source checkout, install the optional group too:
+
+```bash
+poetry install --extras "image"
 ```
 
 After the CLI is available, configure one language model provider in `.env`.
@@ -84,7 +95,7 @@ AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-If image translation is selected with `-img`, `images=True`, or no content-type filter, the tool validates Vision configuration before translation starts.
+If image translation is selected with `-img`, `images=True`, or no content-type filter, the tool validates Vision configuration before translation starts. Install the `image` extra before using image translation outside Docker.
 
 ## Multiple credential sets
 
@@ -112,13 +123,13 @@ Each set must be complete. The health check selects a working set before transla
 | --- | --- | --- | --- |
 | `translate -md` | Yes | No | Translates Markdown only. |
 | `translate -nb` | Yes | No | Translates notebooks only. |
-| `translate -img` | Yes | Yes | Translates images only. |
-| `translate` with no type flags | Yes | Yes | Default mode includes Markdown, notebooks, and images. |
+| `translate -img` | Yes | Yes | Translates images only. Requires the `image` install extra. |
+| `translate` with no type flags | Yes | Yes | Default mode includes Markdown, notebooks, and images, so it also requires the `image` install extra. |
 | `evaluate` | Yes | No | Uses LLM evaluation unless `--fast` is selected. |
 | `migrate-links` | Yes | No | Performs link migration, but still runs shared configuration checks. |
 | `co-op-review` | No | No | Runs deterministic translation structure, freshness, Markdown, notebook, and local link checks. |
 | `run_translation(markdown=True)` | Yes | No | Programmatic Markdown translation. |
-| `run_translation(images=True)` | Yes | Yes | Programmatic image translation. |
+| `run_translation(images=True)` | Yes | Yes | Programmatic image translation. Requires the `image` install extra. |
 | `run_review(...)` | No | No | Programmatic deterministic review. |
 
 ## Output directories

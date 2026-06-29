@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any, Callable, TypeVar
 
 from mcp.server.fastmcp import FastMCP
-from PIL import Image
 
 from co_op_translator import api as co_op_api
 from co_op_translator.config.llm_config.config import LLMConfig
@@ -81,7 +80,7 @@ def _normalize_image_format(image_format: str | None) -> str:
 
 
 def _image_to_result(
-    image: Image.Image,
+    image: Any,
     *,
     image_format: str | None = None,
     output_path: str | None = None,

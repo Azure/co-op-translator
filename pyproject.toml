@@ -23,76 +23,82 @@ translate = "co_op_translator.__main__:main"
 evaluate = "co_op_translator.__main__:main"
 migrate-links = "co_op_translator.__main__:main"
 co-op-review = "co_op_translator.__main__:main"
-co-op-translator-mcp = "co_op_translator.mcp.server:main"
+co-op-translator-mcp = "co_op_translator.mcp_entrypoint:main"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
 annotated-types = "^0.7.0"
 anyio = "^4.4.0"
-appnope = "^0.1.4"
-asttokens = "^2.4.1"
-azure-ai-vision-imageanalysis = "^1.0.0b2"
-azure-cognitiveservices-vision-computervision = "^0.9.0"
-azure-common = "^1.1.28"
+azure-ai-vision-imageanalysis = { version = "^1.0.0b2", optional = true }
+azure-cognitiveservices-vision-computervision = { version = "^0.9.0", optional = true }
+azure-common = { version = "^1.1.28", optional = true }
 azure-core = "^1.38.0"
 certifi = "^2024.7.4"
 charset-normalizer = "^3.3.2"
 click = "^8.1.7"
-comm = "^0.2.2"
-contourpy = "^1.2.1"
-cycler = "^0.12.1"
-decorator = "^5.1.1"
 distro = "^1.9.0"
-executing = "^2.0.1"
-fonttools = "^4.53.0"
+fonttools = { version = "^4.53.0", optional = true }
 h11 = "^0.16.0"
 httpcore = "^1.0.5"
 httpx = "^0.27.0"
 idna = "^3.7"
 isodate = "^0.6.1"
-jedi = "^0.19.1"
-kiwisolver = "^1.4.5"
-matplotlib = "^3.9.0"
-matplotlib-inline = "^0.1.7"
-msrest = "^0.7.1"
-numpy = "^1.25.2"
+matplotlib = { version = "^3.9.0", optional = true }
+msrest = { version = "^0.7.1", optional = true }
+numpy = { version = "^1.25.2", optional = true }
 oauthlib = "^3.2.2"
 openai = ">=1.108.2,<2.0.0"
-opencv-python = "^4.10.0.82"
+opencv-python = { version = "^4.10.0.82", optional = true }
 packaging = "^24.1"
-parso = "^0.8.4"
-pexpect = "^4.9.0"
-pillow = ">=12.2.0,<13.0"
-platformdirs = "^4.2.2"
-prompt_toolkit = "^3.0.47"
-psutil = "^5.9.8"
-ptyprocess = "^0.7.0"
-pure-eval = "^0.2.2"
+pillow = { version = ">=12.2.0,<13.0", optional = true }
 pydantic = ">=2.11.0,<3.0.0"
-pyparsing = "^3.1.2"
 python-dateutil = "^2.9.0.post0"
 python-dotenv = "^1.0.1"
 pyyaml = "^6.0.2"
-pyzmq = "^26.0.3"
 requests = "^2.32.3"
 requests-oauthlib = "^2.0.0"
 semantic_kernel = "^1.39.4"
 six = "^1.16.0"
 sniffio = "^1.3.1"
-stack-data = "^0.6.3"
 tiktoken = "^0.7.0"
-tornado = "^6.4.1"
 tqdm = "^4.66.4"
-traitlets = "^5.14.3"
 typing_extensions = "^4.12.2"
 urllib3 = "^2.2.1"
-wcwidth = "^0.2.13"
-arabic-reshaper = "^3.0.0"
-python-bidi = "^0.6.6"
-az-ai-healthcheck = { version = "^0.1.7", extras = ["vision"] }
+arabic-reshaper = { version = "^3.0.0", optional = true }
+python-bidi = { version = "^0.6.6", optional = true }
+az-ai-healthcheck = { version = "^0.1.7", extras = ["vision"], optional = true }
 ai-healthcheck = "^0.1.2"
 markdown-it-py = "^3.0.0"
-mcp = ">=1.27,<2"
+
+[tool.poetry.extras]
+image = [
+    "arabic-reshaper",
+    "az-ai-healthcheck",
+    "azure-ai-vision-imageanalysis",
+    "azure-cognitiveservices-vision-computervision",
+    "azure-common",
+    "fonttools",
+    "matplotlib",
+    "msrest",
+    "numpy",
+    "opencv-python",
+    "pillow",
+    "python-bidi",
+]
+full = [
+    "arabic-reshaper",
+    "az-ai-healthcheck",
+    "azure-ai-vision-imageanalysis",
+    "azure-cognitiveservices-vision-computervision",
+    "azure-common",
+    "fonttools",
+    "matplotlib",
+    "msrest",
+    "numpy",
+    "opencv-python",
+    "pillow",
+    "python-bidi",
+]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"

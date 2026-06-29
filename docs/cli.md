@@ -8,9 +8,14 @@ Co-op Translator installs these command-line entry points:
 - `co-op-review`
 - `co-op-translator-mcp`
 
-The `translate`, `evaluate`, `migrate-links`, and `co-op-review` commands dispatch through `co_op_translator.__main__`, which selects the command implementation based on the invoked script name. The MCP server uses `co_op_translator.mcp.server` directly.
+The `translate`, `evaluate`, `migrate-links`, and `co-op-review` commands dispatch through `co_op_translator.__main__`, which selects the command implementation based on the invoked script name. The MCP server entry point uses `co_op_translator.mcp_entrypoint`, which imports the server lazily and keeps source-checkout error messages focused when dependencies are incomplete.
 
 If you are deciding between CLI, Python API, and MCP, start with [Choose Your Workflow](workflows.md).
+
+Install extras when you need optional features:
+
+- `pip install "co-op-translator[image]"` for image translation.
+- `pip install "co-op-translator[full]"` for all optional dependency groups.
 
 ## First-Time CLI Flow
 
@@ -99,7 +104,7 @@ translate -l "ko" -s
 | `--migrate-language-folders` | No | Rename legacy alias folders, such as `cn` or `tw`, to canonical BCP 47 folders. |
 | `--dry-run` | No | Preview language folder migration and translation estimates without writing files. |
 
-If no type flag is provided, `translate` processes Markdown, notebooks, and images. Image translation requires Azure AI Vision configuration.
+If no type flag is provided, `translate` processes Markdown, notebooks, and images. Image translation requires both Azure AI Vision configuration and the `image` install extra.
 
 ## evaluate
 
@@ -202,7 +207,7 @@ Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clie
 co-op-translator-mcp
 ```
 
-The default transport is `stdio`. See the [MCP Server](mcp.md) guide for client configuration, tools, resources, and safety notes.
+The base install includes this command. Install `co-op-translator[image]` as well when your MCP workflows need image translation. The default transport is `stdio`. See the [MCP Server](mcp.md) guide for client configuration, tools, resources, and safety notes.
 
 ### Options
 

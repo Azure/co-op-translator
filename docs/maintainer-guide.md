@@ -46,7 +46,7 @@ translate = "co_op_translator.__main__:main"
 evaluate = "co_op_translator.__main__:main"
 migrate-links = "co_op_translator.__main__:main"
 co-op-review = "co_op_translator.__main__:main"
-co-op-translator-mcp = "co_op_translator.mcp.server:main"
+co-op-translator-mcp = "co_op_translator.mcp_entrypoint:main"
 ```
 
 `src/co_op_translator/__main__.py` dispatches by script name:
@@ -56,7 +56,7 @@ co-op-translator-mcp = "co_op_translator.mcp.server:main"
 - `migrate-links` calls `co_op_translator.cli.migrate_links.migrate_links_command`
 - `co-op-review` calls `co_op_translator.cli.review.review_command`
 
-`co-op-translator-mcp` bypasses `__main__.py` and calls `co_op_translator.mcp.server:main` directly.
+`co-op-translator-mcp` uses `co_op_translator.mcp_entrypoint:main`, which imports `co_op_translator.mcp.server:main` lazily and raises a helpful install hint when a source checkout or partial environment is missing MCP dependencies.
 
 When adding or changing CLI options, update:
 

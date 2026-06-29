@@ -5,7 +5,7 @@ from co_op_translator.config.vision_config.provider import VisionProvider
 from co_op_translator.config.vision_config.azure_computer_vision import (
     AzureAIVisionConfig,
 )
-from az_ai_healthcheck import check_azure_ai_vision
+from co_op_translator.optional_dependencies import raise_for_optional_dependency
 from co_op_translator.utils.common.env_set_utils import set_preferred_env_set
 
 logger = logging.getLogger(__name__)
@@ -90,6 +90,15 @@ class VisionConfig:
         provider = VisionConfig.get_available_provider()
         if provider != VisionProvider.AZURE_COMPUTER_VISION:
             return
+
+        try:
+            from az_ai_healthcheck import check_azure_ai_vision
+        except ImportError as exc:
+            raise_for_optional_dependency(
+                feature="Vision connectivity checks",
+                extra="image",
+                exc=exc,
+            )
 
         env_sets = AzureAIVisionConfig.get_env_sets()
         if not env_sets:

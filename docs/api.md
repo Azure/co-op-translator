@@ -133,6 +133,8 @@ asyncio.run(main())
 
 ### Image File
 
+Install `co-op-translator[image]` before calling `translate_image_content`.
+
 ```python
 from pathlib import Path
 
@@ -431,7 +433,7 @@ Content translation APIs are intended for integrations that already have content
 | --- | --- | --- | --- | --- |
 | `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Translates Markdown content only. It does not rewrite links, write metadata, or append disclaimers. |
 | `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Translates Markdown cells and preserves non-Markdown cells. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Extracts and translates image text, then returns a rendered image. It does not save translated image metadata. |
+| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Requires the `image` install extra. Extracts and translates image text, then returns a rendered image. It does not save translated image metadata. |
 
 `translate_markdown_content` and `translate_notebook_content` accept an optional `source_path` through their options. The path is passed as context to the translator; callers remain responsible for any project-specific path rewriting after translation.
 

@@ -33,6 +33,12 @@ For local development from this repository, install the package in editable mode
 pip install -e .
 ```
 
+If your MCP workflow also uses image translation, install the image extra too:
+
+```bash
+pip install "co-op-translator[image]"
+```
+
 Choose the translation mode your MCP client will use:
 
 | Mode | Use this for | Credentials |
@@ -86,7 +92,7 @@ Source checkout configuration on Windows:
   "mcpServers": {
     "co-op-translator": {
       "command": "C:\\Users\\you\\dev\\co-op-translator\\.venv\\Scripts\\python.exe",
-      "args": ["-m", "co_op_translator.mcp.server"],
+      "args": ["-m", "co_op_translator.mcp_entrypoint"],
       "cwd": "C:\\Users\\you\\dev\\co-op-translator"
     }
   }
@@ -100,7 +106,7 @@ Source checkout configuration on macOS or Linux:
   "mcpServers": {
     "co-op-translator": {
       "command": "/Users/you/dev/co-op-translator/.venv/bin/python",
-      "args": ["-m", "co_op_translator.mcp.server"],
+      "args": ["-m", "co_op_translator.mcp_entrypoint"],
       "cwd": "/Users/you/dev/co-op-translator"
     }
   }
@@ -252,7 +258,7 @@ co-op-translator-mcp
 Run from a source checkout:
 
 ```bash
-python -m co_op_translator.mcp.server
+python -m co_op_translator.mcp_entrypoint
 ```
 
 Run a long-lived HTTP or SSE server:
@@ -377,7 +383,7 @@ Preview repository translation:
 
 | Problem | What to try |
 | --- | --- |
-| The MCP client cannot find `co-op-translator-mcp`. | Use the absolute Python executable path and `["-m", "co_op_translator.mcp.server"]` source checkout configuration. |
+| The MCP client cannot find `co-op-translator-mcp`. | Use the absolute Python executable path and `["-m", "co_op_translator.mcp_entrypoint"]` source checkout configuration. |
 | The server is listed but translation fails. | Call `get_configuration_status` and confirm an LLM provider is available. |
 | You want Markdown or notebook translation without Azure OpenAI/OpenAI keys. | Use `start_markdown_agent_translation` / `finish_markdown_agent_translation` or the notebook equivalents so the host agent translates the chunks. |
 | Image translation fails. | Confirm Azure AI Vision variables are set and call `get_configuration_status`. |

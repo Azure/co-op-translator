@@ -126,6 +126,8 @@ translate -l "ko" -md
 co-op-review -l "ko"
 ```
 
+For image translation, install `co-op-translator[image]`. To keep every optional dependency group in one install, use `co-op-translator[full]`.
+
 For first runs on large repositories, use `--dry-run` before writing translated files. See the [CLI Reference](./docs/cli.md) for content type flags, logs, review, and link migration.
 
 Container quick run with Bash/Zsh:

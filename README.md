@@ -107,6 +107,7 @@ Co-op Translator can be used from the CLI, the Python API, or the MCP server. St
 
 - [Choose your workflow](./docs/workflows.md)
 - [Configure credentials](./docs/configuration.md)
+- [Understand privacy and data flow](./docs/privacy.md)
 - [Translate from the CLI](./docs/cli.md)
 - [Automate with the Python API](./docs/api.md)
 - [Connect with the MCP Server](./docs/mcp.md)
@@ -157,6 +158,7 @@ docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translat
 - [Documentation site](https://azure.github.io/co-op-translator/)
 - [Choose your workflow](./docs/workflows.md)
 - [Configuration](./docs/configuration.md)
+- [Privacy and Data Flow](./docs/privacy.md)
 - [Azure AI Setup](./docs/azure-ai-setup.md)
 - [CLI Reference](./docs/cli.md)
 - [Python API](./docs/api.md)

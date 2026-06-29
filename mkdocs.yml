@@ -79,6 +79,7 @@ nav:
   - Home: index.md
   - Choose Your Workflow: workflows.md
   - Configuration: configuration.md
+  - Privacy and Data Flow: privacy.md
   - Azure AI Setup: azure-ai-setup.md
   - CLI Reference: cli.md
   - Python API: api.md

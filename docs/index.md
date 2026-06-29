@@ -42,3 +42,7 @@ These `docs/` pages are the canonical Co-op Translator documentation. Older setu
     <em>Read the guide -></em>
   </a>
 </div>
+
+## Before translating private content
+
+Provider-backed translation can send Markdown, notebook Markdown cells, image data, or extracted image text to configured AI services. Review [Privacy and Data Flow](privacy.md) before processing private repositories, sensitive screenshots, or untrusted source content.

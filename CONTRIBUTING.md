@@ -324,9 +324,12 @@ This section describes the simplest way for maintainers to publish a new release
 
 #### 2. Create a GitHub Release
 
+Before the first trusted publish from this repository, configure PyPI Trusted Publishing for the project so the GitHub Actions workflow can exchange the GitHub OIDC identity for a PyPI upload. This replaces repository-scoped API tokens in the publish workflow.
+
 1. Go to the GitHub repository page and open **Releases** → **Draft a new release**.
 2. Create a new tag (for example, `v0.13.0`) from the `main` branch.
 3. Set the release title to the same version (for example, `v0.13.0`).
 4. Click **Generate release notes** to auto-populate the changelog.
 5. Optionally edit the text (for example, to highlight newly supported languages or important changes).
 6. Publish the release.
+7. Confirm the PyPI publish workflow succeeds and the new package appears on the project page.

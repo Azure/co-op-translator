@@ -22,8 +22,10 @@ python -m venv .venv
 
 #### Using Poetry
 
+Poetry creates and manages the project virtual environment when dependencies are installed:
+
 ```bash
-poetry init
+poetry install
 ```
 
 ### Activate the virtual environment

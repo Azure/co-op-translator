@@ -12,8 +12,8 @@
 
 ## Does this introduce a breaking change?
 
-When developers merge from main and run the server, azd up, or azd deploy, will this produce an error?
-If you're not sure, try it out on an old environment.
+Will this change require users to update commands, configuration, environment variables, generated translation output, or public Python/MCP APIs?
+If you're not sure, test the affected CLI, API, documentation, or GitHub Actions workflow before marking this as "No."
 
 - [ ] Yes
 - [ ] No
@@ -34,7 +34,7 @@ Before submitting your pull request, please confirm the following:
 - [ ] **I have thoroughly tested my changes**: I confirm that I have run the code and manually tested all affected areas.
 - [ ] **All existing tests pass**: I have run all tests and confirmed that nothing is broken.
 - [ ] **I have added new tests** (if applicable): I have written tests that cover the new functionality introduced by my code changes.
-- [ ] **I have followed the Co-op Translators coding conventions**: My code adheres to the style guide and coding conventions outlined in the repository.
+- [ ] **I have followed the Co-op Translator coding conventions**: My code adheres to the style guide and coding conventions outlined in the repository.
 - [ ] **I have documented my changes** (if applicable): I have updated the documentation to reflect the changes where necessary.
 
 ## Additional context

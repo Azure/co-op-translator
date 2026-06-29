@@ -157,11 +157,10 @@ The generated site is written to `site/`, which is ignored by git.
 The workflow installs:
 
 ```bash
-pip install -r requirements.txt
 pip install -r requirements-docs.txt
 ```
 
-Installing runtime dependencies before docs dependencies lets `mkdocstrings` import the package and render the public Python API reference.
+The docs workflow installs only the documentation toolchain. `mkdocs.yml` points `mkdocstrings` at `src/` so public API pages can be rendered from the source tree without installing the full runtime dependency set. If future API docs require importing optional runtime providers during the build, update both `.github/workflows/docs.yml` and this guide together.
 
 ## Docs quality bar
 

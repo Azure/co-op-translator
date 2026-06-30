@@ -1,4 +1,3 @@
-import importlib.resources
 import logging
 import os
 from contextlib import contextmanager
@@ -7,7 +6,6 @@ from pathlib import Path
 from typing import Iterable, Mapping
 
 import click
-import yaml
 from PIL import Image
 
 from co_op_translator.config.base_config import Config
@@ -25,6 +23,10 @@ from co_op_translator.core.llm.jupyter_notebook_translator import (
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 from co_op_translator.core.project.project_translator import ProjectTranslator
+from co_op_translator.core.project.translation.request import (
+    build_translation_request,
+    resolve_translation_types,
+)
 from co_op_translator.core.vision.image_translator import ImageTranslator
 from co_op_translator.glossary import glossary_terms_scope
 from co_op_translator.utils.common.file_utils import (
@@ -33,7 +35,6 @@ from co_op_translator.utils.common.file_utils import (
     update_readme_languages_table,
     update_readme_other_courses,
 )
-from co_op_translator.utils.common.lang_utils import normalize_language_codes
 from co_op_translator.utils.common.logging_utils import setup_logging
 from co_op_translator.utils.common.metadata_utils import (
     normalize_language_codes_in_lang_metadata,
@@ -304,15 +305,13 @@ def run_translation(
     ) -> None:
         Config.check_configuration()
 
-        translation_types: list[str] = []
-        if markdown:
-            translation_types.append("markdown")
-        if images:
-            translation_types.append("images")
-        if notebook:
-            translation_types.append("notebook")
-        if not translation_types:
-            translation_types = ["markdown", "notebook", "images"]
+        translation_types = list(
+            resolve_translation_types(
+                markdown=markdown,
+                images=images,
+                notebook=notebook,
+            )
+        )
 
         if "images" in translation_types:
             cv_available = VisionConfig.check_configuration()
@@ -359,43 +358,16 @@ def run_translation(
                 logger.info("Auto-confirming 'all' languages in non-interactive mode.")
                 click.echo("Auto-confirming translation for all languages...")
 
-            try:
-                with importlib.resources.path(
-                    "co_op_translator.fonts", "font_language_mappings.yml"
-                ) as mappings_path:
-                    with open(mappings_path, "r", encoding="utf-8") as file:
-                        font_mappings = yaml.safe_load(file)
-                        if not font_mappings:
-                            raise RuntimeError("Empty font mappings file")
-                        language_codes = " ".join(
-                            [
-                                lang_code
-                                for lang_code in font_mappings
-                                if isinstance(font_mappings[lang_code], dict)
-                            ]
-                        )
-                        if not language_codes:
-                            raise RuntimeError(
-                                "No valid language codes found in font mappings"
-                            )
-                        logging.debug(
-                            f"Loaded language codes from font mapping: {language_codes}"
-                        )
-            except (FileNotFoundError, yaml.YAMLError) as e:
-                raise RuntimeError(f"Failed to load font mappings: {str(e)}") from e
-
-        if all_languages_selected:
-            try:
-                lang_list = Config.get_language_codes()
-            except Exception:
-                lang_list = [
-                    code.strip() for code in language_codes.split() if code.strip()
-                ]
-        else:
-            lang_list = [
-                code.strip() for code in language_codes.split() if code.strip()
-            ]
-        lang_list = normalize_language_codes(lang_list) if lang_list else []
+        request = build_translation_request(
+            language_codes=language_codes,
+            root_dir=root_dir,
+            markdown=markdown,
+            images=images,
+            notebook=notebook,
+        )
+        language_codes = request.language_codes
+        lang_list = request.language_list_values()
+        translation_types = request.translation_types_list()
 
         if update:
             click.echo(
@@ -590,18 +562,17 @@ def run_translation(
         lang_subdir: str | None,
         repo_url: str | None,
     ) -> dict[str, int]:
-        translation_types: list[str] = []
-        if markdown:
-            translation_types.append("markdown")
-        if images:
-            translation_types.append("images")
-        if notebook:
-            translation_types.append("notebook")
-        if not translation_types:
-            translation_types = ["markdown", "notebook", "images"]
+        request = build_translation_request(
+            language_codes=language_codes,
+            root_dir=root_dir,
+            markdown=markdown,
+            images=images,
+            notebook=notebook,
+        )
+        translation_types = request.translation_types_list()
 
         translator = ProjectTranslator(
-            language_codes,
+            request.language_codes,
             root_dir,
             translation_types=translation_types,
             add_disclaimer=add_disclaimer,
@@ -610,7 +581,7 @@ def run_translation(
             lang_subdir=lang_subdir,
         )
         virtual_file_contents = compute_pretranslation_virtual_inputs(
-            Path(root_dir).resolve(),
+            request.root_path,
             translation_types,
             repo_url=repo_url,
         )
@@ -665,15 +636,13 @@ def run_translation(
             "total": 0,
             "words": 0,
         }
-        translation_types_for_summary: list[str] = []
-        if markdown:
-            translation_types_for_summary.append("markdown")
-        if images:
-            translation_types_for_summary.append("images")
-        if notebook:
-            translation_types_for_summary.append("notebook")
-        if not translation_types_for_summary:
-            translation_types_for_summary = ["markdown", "notebook", "images"]
+        translation_types_for_summary = list(
+            resolve_translation_types(
+                markdown=markdown,
+                images=images,
+                notebook=notebook,
+            )
+        )
 
         execution_targets: list[tuple[str, str | None, str | None]] = []
         if groups is not None:

@@ -16,13 +16,14 @@ from co_op_translator.utils.common.file_utils import (
     update_readme_languages_table,
     update_readme_other_courses,
 )
-from co_op_translator.utils.common.lang_utils import (
-    normalize_language_codes,
-)
 from co_op_translator.utils.common.metadata_utils import (
     normalize_language_codes_in_lang_metadata,
 )
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
+from co_op_translator.core.project.translation.request import (
+    build_translation_request,
+    resolve_translation_types,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -170,18 +171,13 @@ def translate_command(
         # Check that the required environment variables are set
         Config.check_configuration()
 
-        # Build translation types list based on user selection
-        translation_types = []
-        if markdown:
-            translation_types.append("markdown")
-        if images:
-            translation_types.append("images")
-        if notebook:
-            translation_types.append("notebook")
-
-        # Default: translate all supported file types if nothing specified
-        if not translation_types:
-            translation_types = ["markdown", "notebook", "images"]
+        translation_types = list(
+            resolve_translation_types(
+                markdown=markdown,
+                images=images,
+                notebook=notebook,
+            )
+        )
 
         # Check Azure AI Service availability if images are included
         if "images" in translation_types:
@@ -249,21 +245,17 @@ def translate_command(
                     click.echo("Proceeding with translation for all languages...")
             else:
                 click.echo("Auto-confirming translation for all languages...")
-            # Use canonical list from config and normalize
-            lang_list = Config.get_language_codes()
-            if not lang_list:
-                raise click.ClickException(
-                    "No valid language codes found in font mappings"
-                )
-            language_codes = " ".join(normalize_language_codes(lang_list))
-        else:
-            # Normalize explicit input codes to canonical form
-            lang_list = normalize_language_codes(
-                [code.strip() for code in language_codes.split()]
-            )
-            if not lang_list:
-                raise click.ClickException("No valid language codes provided")
-            language_codes = " ".join(lang_list)
+
+        request = build_translation_request(
+            language_codes=language_codes,
+            root_dir=root_dir,
+            markdown=markdown,
+            images=images,
+            notebook=notebook,
+        )
+        language_codes = request.language_codes
+        lang_list = request.language_list_values()
+        translation_types = request.translation_types_list()
 
         # Detect and migrate alias-based language folders for the SELECTED languages
         # This runs before any translation work to avoid redundant re-translation.

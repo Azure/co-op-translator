@@ -23,7 +23,9 @@ from co_op_translator.core.llm.jupyter_notebook_translator import (
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 from co_op_translator.core.project.project_translator import ProjectTranslator
+from co_op_translator.core.project.readme_translator import ReadmeTranslator
 from co_op_translator.core.project.translation.request import (
+    TranslationMode,
     build_translation_request,
     resolve_translation_types,
 )
@@ -37,6 +39,7 @@ from co_op_translator.utils.common.file_utils import (
 )
 from co_op_translator.utils.common.logging_utils import setup_logging
 from co_op_translator.utils.common.metadata_utils import (
+    calculate_string_hash,
     normalize_language_codes_in_lang_metadata,
 )
 from co_op_translator.utils.common.token_estimation import estimate_translation_tokens
@@ -270,9 +273,14 @@ def run_translation(
     groups: Iterable[tuple[str, str | None]] | None = None,
     repo_url: str | None = None,
     glossaries: Iterable[str] | None = None,
+    readme_only: bool = False,
     dry_run: bool = False,
 ) -> None:
-    """Programmatic translation entrypoint mirroring the translate CLI options."""
+    """Programmatic translation entrypoint mirroring the translate CLI options.
+
+    Set ``readme_only`` to translate only the root README while keeping
+    document links pointed at the source tree.
+    """
 
     def _split_lang_placeholder(path: str) -> tuple[str, str | None]:
         placeholder = "<lang>"
@@ -301,6 +309,7 @@ def run_translation(
         image_dir: str | None,
         lang_subdir: str | None,
         repo_url: str | None,
+        readme_only: bool,
         dry_run: bool,
     ) -> None:
         Config.check_configuration()
@@ -310,6 +319,7 @@ def run_translation(
                 markdown=markdown,
                 images=images,
                 notebook=notebook,
+                readme_only=readme_only,
             )
         )
 
@@ -364,16 +374,23 @@ def run_translation(
             markdown=markdown,
             images=images,
             notebook=notebook,
+            readme_only=readme_only,
         )
         language_codes = request.language_codes
         lang_list = request.language_list_values()
         translation_types = request.translation_types_list()
 
         if update:
-            click.echo(
-                f"Warning: Update mode will delete all existing translations for '{language_codes}' "
-                f"and re-translate them."
-            )
+            if request.mode == TranslationMode.README:
+                click.echo(
+                    f"Warning: Update mode will delete existing translated README files for '{language_codes}' "
+                    f"and re-translate them."
+                )
+            else:
+                click.echo(
+                    f"Warning: Update mode will delete all existing translations for '{language_codes}' "
+                    f"and re-translate them."
+                )
 
         try:
             effective_translations_dir = (
@@ -469,6 +486,23 @@ def run_translation(
             except Exception as e:  # pragma: no cover
                 logger.warning(f"Failed to update README 'Other courses': {e}")
 
+        if dry_run:
+            click.echo("🧪 Dry run complete: no changes made.")
+            return
+
+        if request.mode == TranslationMode.README:
+            translator = ReadmeTranslator(
+                language_codes,
+                root_dir,
+                translations_dir=translations_dir,
+                image_dir=image_dir,
+                add_disclaimer=add_disclaimer,
+                lang_subdir=lang_subdir,
+            )
+            translator.translate(update=update)
+            logger.info(f"README translation completed for languages: {language_codes}")
+            return
+
         translator = ProjectTranslator(
             language_codes,
             root_dir,
@@ -478,10 +512,6 @@ def run_translation(
             image_dir=image_dir,
             lang_subdir=lang_subdir,
         )
-
-        if dry_run:
-            click.echo("🧪 Dry run complete: no changes made.")
-            return
 
         translator.translate_project(
             update=update,
@@ -561,6 +591,7 @@ def run_translation(
         image_dir: str | None,
         lang_subdir: str | None,
         repo_url: str | None,
+        readme_only: bool,
     ) -> dict[str, int]:
         request = build_translation_request(
             language_codes=language_codes,
@@ -568,8 +599,51 @@ def run_translation(
             markdown=markdown,
             images=images,
             notebook=notebook,
+            readme_only=readme_only,
         )
         translation_types = request.translation_types_list()
+
+        virtual_file_contents = compute_pretranslation_virtual_inputs(
+            request.root_path,
+            translation_types,
+            repo_url=repo_url,
+        )
+
+        if request.mode == TranslationMode.README:
+            translator = ReadmeTranslator(
+                request.language_codes,
+                root_dir,
+                translations_dir=translations_dir,
+                image_dir=image_dir,
+                add_disclaimer=add_disclaimer,
+                lang_subdir=lang_subdir,
+            )
+            readme_path = request.root_path / "README.md"
+            source_text = virtual_file_contents.get(readme_path.resolve())
+            source_hash = (
+                calculate_string_hash(source_text) if source_text is not None else None
+            )
+            total_tokens = translator.estimate_tokens(
+                update=update,
+                source_text=source_text,
+                source_hash=source_hash,
+            )
+            total_words = translator.estimate_words(
+                update=update,
+                source_text=source_text,
+                source_hash=source_hash,
+            )
+            return {
+                "markdown": total_tokens,
+                "notebook": 0,
+                "images": 0,
+                "outdated_markdown": 0,
+                "outdated_notebook": 0,
+                "outdated_images": 0,
+                "outdated": 0,
+                "total": total_tokens,
+                "words": total_words,
+            }
 
         translator = ProjectTranslator(
             request.language_codes,
@@ -579,11 +653,6 @@ def run_translation(
             translations_dir=translations_dir,
             image_dir=image_dir,
             lang_subdir=lang_subdir,
-        )
-        virtual_file_contents = compute_pretranslation_virtual_inputs(
-            request.root_path,
-            translation_types,
-            repo_url=repo_url,
         )
         est = estimate_translation_tokens(
             translator.translation_manager,
@@ -641,6 +710,7 @@ def run_translation(
                 markdown=markdown,
                 images=images,
                 notebook=notebook,
+                readme_only=readme_only,
             )
         )
 
@@ -676,6 +746,7 @@ def run_translation(
                 image_dir=image_dir,
                 lang_subdir=per_lang_subdir,
                 repo_url=repo_url,
+                readme_only=readme_only,
             )
             aggregated_estimate = _merge_estimates(aggregated_estimate, group_estimate)
 
@@ -700,6 +771,7 @@ def run_translation(
                     image_dir=image_dir,
                     lang_subdir=per_lang_subdir,
                     repo_url=repo_url,
+                    readme_only=readme_only,
                     dry_run=dry_run,
                 )
 

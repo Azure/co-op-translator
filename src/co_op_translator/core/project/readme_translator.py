@@ -24,6 +24,7 @@ from co_op_translator.utils.common.metadata_utils import (
     read_text_metadata_for_source,
     save_text_metadata_for_source,
 )
+from co_op_translator.utils.common.token_estimation import count_tokens
 from co_op_translator.utils.markdown.path_rewriter import (
     MarkdownPathRewritePolicy,
     rewrite_markdown_paths,
@@ -99,7 +100,7 @@ class ReadmeTranslator:
     def get_translated_path(self, language_code: str) -> Path:
         return self._get_language_root(language_code) / "README.md"
 
-    def _is_current(self, language_code: str) -> bool:
+    def _is_current(self, language_code: str, source_hash: str | None = None) -> bool:
         translated_path = self.get_translated_path(language_code)
         if not translated_path.exists():
             return False
@@ -108,7 +109,65 @@ class ReadmeTranslator:
             self._get_language_root(language_code),
             "README.md",
         )
-        return metadata.get("original_hash") == calculate_file_hash(self.source_path)
+        return metadata.get("original_hash") == (
+            source_hash or calculate_file_hash(self.source_path)
+        )
+
+    def get_pending_language_codes(
+        self,
+        *,
+        update: bool = False,
+        source_hash: str | None = None,
+    ) -> list[str]:
+        if update:
+            return list(self.language_codes)
+        return [
+            language_code
+            for language_code in self.language_codes
+            if not self._is_current(language_code, source_hash=source_hash)
+        ]
+
+    def estimate_tokens(
+        self,
+        *,
+        update: bool = False,
+        source_text: str | None = None,
+        source_hash: str | None = None,
+    ) -> int:
+        if not self.source_path.exists():
+            return 0
+
+        text = (
+            source_text
+            if source_text is not None
+            else read_input_file(self.source_path)
+        )
+        pending_languages = self.get_pending_language_codes(
+            update=update,
+            source_hash=source_hash,
+        )
+        return count_tokens(text) * len(pending_languages)
+
+    def estimate_words(
+        self,
+        *,
+        update: bool = False,
+        source_text: str | None = None,
+        source_hash: str | None = None,
+    ) -> int:
+        if not self.source_path.exists():
+            return 0
+
+        text = (
+            source_text
+            if source_text is not None
+            else read_input_file(self.source_path)
+        )
+        pending_languages = self.get_pending_language_codes(
+            update=update,
+            source_hash=source_hash,
+        )
+        return len(re.findall(r"\S+", text)) * len(pending_languages)
 
     async def _append_disclaimer(self, content: str, language_code: str) -> str:
         if not self.add_disclaimer:

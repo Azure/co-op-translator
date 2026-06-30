@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Iterable
 
@@ -10,10 +11,16 @@ from co_op_translator.utils.common.lang_utils import normalize_language_codes
 DEFAULT_TRANSLATION_TYPES = ("markdown", "notebook", "images")
 
 
+class TranslationMode(str, Enum):
+    PROJECT = "project"
+    README = "readme"
+
+
 @dataclass(frozen=True)
 class TranslationRequest:
     """Normalized project translation options shared by CLI and API entrypoints."""
 
+    mode: TranslationMode
     language_codes: str
     language_list: tuple[str, ...]
     translation_types: tuple[str, ...]
@@ -33,8 +40,14 @@ def resolve_translation_types(
     markdown: bool = False,
     images: bool = False,
     notebook: bool = False,
+    readme_only: bool = False,
 ) -> tuple[str, ...]:
     """Return translation types using the existing CLI/API option semantics."""
+    if readme_only:
+        if images or notebook:
+            raise ValueError("readme_only can only be used with markdown translation.")
+        return ("markdown",)
+
     translation_types: list[str] = []
     if markdown:
         translation_types.append("markdown")
@@ -75,6 +88,7 @@ def build_translation_request(
     markdown: bool = False,
     images: bool = False,
     notebook: bool = False,
+    readme_only: bool = False,
 ) -> TranslationRequest:
     """Build normalized request data without performing I/O or provider checks."""
     language_list, all_languages_selected = normalize_requested_language_codes(
@@ -84,10 +98,12 @@ def build_translation_request(
         markdown=markdown,
         images=images,
         notebook=notebook,
+        readme_only=readme_only,
     )
     root_path = Path(root_dir).resolve()
 
     return TranslationRequest(
+        mode=TranslationMode.README if readme_only else TranslationMode.PROJECT,
         language_codes=" ".join(language_list),
         language_list=language_list,
         translation_types=translation_types,

@@ -125,6 +125,27 @@ async def test_readme_translator_update_retranslates_current_readme(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_readme_translator_estimates_only_pending_readmes(tmp_path):
+    _write_readme_project(tmp_path)
+    markdown_translator = FakeMarkdownTranslator()
+    translator = ReadmeTranslator(
+        "ko ja",
+        root_dir=tmp_path,
+        add_disclaimer=False,
+        markdown_translator=markdown_translator,
+    )
+
+    initial_tokens = translator.estimate_tokens()
+    initial_words = translator.estimate_words()
+    await translator.translate_readme("ko")
+
+    assert initial_tokens > translator.estimate_tokens()
+    assert initial_words > translator.estimate_words()
+    assert translator.get_pending_language_codes() == ["ja"]
+    assert translator.get_pending_language_codes(update=True) == ["ko", "ja"]
+
+
+@pytest.mark.asyncio
 async def test_readme_translator_appends_disclaimer(tmp_path):
     _write_readme_project(tmp_path)
     markdown_translator = FakeMarkdownTranslator()

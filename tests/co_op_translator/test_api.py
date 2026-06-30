@@ -316,6 +316,87 @@ async def test_run_translation_dry_run_uses_virtual_readme_without_writing(tmp_p
 
 
 @pytest.mark.asyncio
+async def test_run_translation_readme_only_uses_readme_translator(
+    monkeypatch, tmp_path
+):
+    (tmp_path / "README.md").write_text("# Hello", encoding="utf-8")
+
+    monkeypatch.setattr(api.Config, "check_configuration", MagicMock(return_value=None))
+    monkeypatch.setattr(
+        api.LLMConfig, "validate_connectivity", MagicMock(return_value=None)
+    )
+    monkeypatch.setattr(api, "setup_logging", MagicMock(return_value=None))
+    monkeypatch.setattr(
+        api, "update_readme_languages_table", MagicMock(return_value=False)
+    )
+    monkeypatch.setattr(
+        api, "update_readme_other_courses", MagicMock(return_value=False)
+    )
+    project_translator = MagicMock()
+    monkeypatch.setattr(api, "ProjectTranslator", project_translator)
+
+    estimate_instance = MagicMock()
+    estimate_instance.estimate_tokens.return_value = 10
+    estimate_instance.estimate_words.return_value = 5
+    run_instance = MagicMock()
+    readme_translator = MagicMock(side_effect=[estimate_instance, run_instance])
+    monkeypatch.setattr(api, "ReadmeTranslator", readme_translator)
+
+    api.run_translation(
+        language_codes="ko",
+        root_dir=str(tmp_path),
+        readme_only=True,
+    )
+
+    assert project_translator.call_count == 0
+    assert readme_translator.call_count == 2
+    readme_translator.assert_any_call(
+        "ko",
+        str(tmp_path),
+        translations_dir=None,
+        image_dir=None,
+        add_disclaimer=False,
+        lang_subdir=None,
+    )
+    run_instance.translate.assert_called_once_with(update=False)
+
+
+@pytest.mark.asyncio
+async def test_run_translation_readme_only_dry_run_does_not_write(
+    monkeypatch, tmp_path
+):
+    (tmp_path / "README.md").write_text("# Hello", encoding="utf-8")
+
+    monkeypatch.setattr(api.Config, "check_configuration", MagicMock(return_value=None))
+    monkeypatch.setattr(
+        api.LLMConfig, "validate_connectivity", MagicMock(return_value=None)
+    )
+    monkeypatch.setattr(api, "setup_logging", MagicMock(return_value=None))
+    update_languages = MagicMock(return_value=True)
+    update_courses = MagicMock(return_value=True)
+    monkeypatch.setattr(api, "update_readme_languages_table", update_languages)
+    monkeypatch.setattr(api, "update_readme_other_courses", update_courses)
+
+    estimate_instance = MagicMock()
+    estimate_instance.estimate_tokens.return_value = 10
+    estimate_instance.estimate_words.return_value = 5
+    readme_translator = MagicMock(return_value=estimate_instance)
+    monkeypatch.setattr(api, "ReadmeTranslator", readme_translator)
+
+    api.run_translation(
+        language_codes="ko",
+        root_dir=str(tmp_path),
+        readme_only=True,
+        dry_run=True,
+    )
+
+    assert readme_translator.call_count == 1
+    estimate_instance.translate.assert_not_called()
+    update_languages.assert_not_called()
+    update_courses.assert_not_called()
+
+
+@pytest.mark.asyncio
 async def test_run_translation_accepts_glossaries_and_restores_previous_terms(tmp_path):
     root_dir = tmp_path
 

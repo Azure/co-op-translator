@@ -170,6 +170,7 @@ def test_mcp_run_translation_captures_public_api_output(monkeypatch):
         print("translation started")
         assert kwargs["groups"] == [("docs", "localized")]
         assert kwargs["dry_run"] is True
+        assert kwargs["readme_only"] is True
 
     monkeypatch.setattr(
         mcp_server.co_op_api,
@@ -180,6 +181,7 @@ def test_mcp_run_translation_captures_public_api_output(monkeypatch):
     result = mcp_server.run_translation(
         language_codes="ko",
         markdown=True,
+        readme_only=True,
         groups=[{"root_dir": "docs", "translations_dir": "localized"}],
     )
 

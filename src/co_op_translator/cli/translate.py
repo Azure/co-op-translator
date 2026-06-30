@@ -8,6 +8,7 @@ import click
 from pathlib import Path
 
 from co_op_translator.core.project.project_translator import ProjectTranslator
+from co_op_translator.core.project.readme_translator import ReadmeTranslator
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.config.llm_config.config import LLMConfig
@@ -21,6 +22,7 @@ from co_op_translator.utils.common.metadata_utils import (
 )
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 from co_op_translator.core.project.translation.request import (
+    TranslationMode,
     build_translation_request,
     resolve_translation_types,
 )
@@ -50,6 +52,11 @@ logger = logging.getLogger(__name__)
 @click.option("--images", "-img", is_flag=True, help="Only translate image files.")
 @click.option("--markdown", "-md", is_flag=True, help="Only translate markdown files.")
 @click.option("--notebook", "-nb", is_flag=True, help="Only translate notebook files.")
+@click.option(
+    "--readme-only",
+    is_flag=True,
+    help="Translate only the root README.md and keep links to source documents.",
+)
 @click.option("--debug", "-d", is_flag=True, help="Enable debug mode.")
 @click.option(
     "--save-logs",
@@ -116,6 +123,7 @@ def translate_command(
     images,
     markdown,
     notebook,
+    readme_only,
     debug,
     save_logs,
     fix,
@@ -176,6 +184,7 @@ def translate_command(
                 markdown=markdown,
                 images=images,
                 notebook=notebook,
+                readme_only=readme_only,
             )
         )
 
@@ -252,10 +261,14 @@ def translate_command(
             markdown=markdown,
             images=images,
             notebook=notebook,
+            readme_only=readme_only,
         )
         language_codes = request.language_codes
         lang_list = request.language_list_values()
         translation_types = request.translation_types_list()
+
+        if readme_only and fix:
+            raise click.ClickException("--readme-only cannot be used with --fix.")
 
         # Detect and migrate alias-based language folders for the SELECTED languages
         # This runs before any translation work to avoid redundant re-translation.
@@ -321,9 +334,14 @@ def translate_command(
 
         # Show warning and prompt if update is selected
         if update:
-            click.echo(
-                f"Warning: The update command will delete all existing translations for '{language_codes}' and re-translate everything."
-            )
+            if request.mode == TranslationMode.README:
+                click.echo(
+                    f"Warning: The update command will delete existing translated README files for '{language_codes}' and re-translate them."
+                )
+            else:
+                click.echo(
+                    f"Warning: The update command will delete all existing translations for '{language_codes}' and re-translate everything."
+                )
             if not yes:
                 confirmation_update = click.prompt(
                     "Do you want to continue? Type 'yes' to proceed", type=str
@@ -337,17 +355,35 @@ def translate_command(
             else:
                 click.echo("Auto-confirming update operation...")
 
-        # Initialize ProjectTranslator with determined settings
-        translator = ProjectTranslator(
-            language_codes,
-            root_dir,
-            translation_types=translation_types,
-            add_disclaimer=add_disclaimer,
-        )
+        if request.mode == TranslationMode.README:
+            translator = ReadmeTranslator(
+                language_codes,
+                root_dir,
+                add_disclaimer=add_disclaimer,
+            )
+        else:
+            translator = ProjectTranslator(
+                language_codes,
+                root_dir,
+                translation_types=translation_types,
+                add_disclaimer=add_disclaimer,
+            )
 
         # Estimate tokens before running translation and print a concise summary
         try:
-            est = translator.translation_manager.estimate_tokens(update=update)
+            if request.mode == TranslationMode.README:
+                total_tokens = translator.estimate_tokens(update=update)
+                est = {
+                    "markdown": total_tokens,
+                    "notebook": 0,
+                    "images": 0,
+                    "outdated_markdown": 0,
+                    "outdated_notebook": 0,
+                    "outdated_images": 0,
+                    "total": total_tokens,
+                }
+            else:
+                est = translator.translation_manager.estimate_tokens(update=update)
             translation_parts = []
             if "markdown" in translation_types:
                 translation_parts.append(f"markdown: {est.get('markdown', 0):,}")
@@ -426,7 +462,6 @@ def translate_command(
             total_errors = 0
 
             for lang_code in lang_list:
-
                 logger.info(f"Processing language: {lang_code}")
 
                 try:
@@ -469,11 +504,14 @@ def translate_command(
             )
 
         else:
-            # Call translate_project with determined settings
-            translator.translate_project(
-                update=update,
-                fast_mode=fast,
-            )
+            if request.mode == TranslationMode.README:
+                translator.translate(update=update)
+            else:
+                # Call translate_project with determined settings
+                translator.translate_project(
+                    update=update,
+                    fast_mode=fast,
+                )
 
             logger.info(
                 f"Project translation completed for languages: {language_codes}"

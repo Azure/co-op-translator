@@ -1,6 +1,6 @@
 # Co-op Translator
 
-_Könnyedén automatizálhatja és tarthatja karban oktatási GitHub-tartalmai fordításait több nyelven projektje fejlődése során._
+_Egyszerűen automatizálja és tartsa karban oktatási GitHub-tartalmainak fordításait több nyelven, ahogyan projektje fejlődik._
 
 ![Python 3.10–3.12](https://img.shields.io/badge/python-3.10--3.12-blue)
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
@@ -15,16 +15,18 @@ _Könnyedén automatizálhatja és tarthatja karban oktatási GitHub-tartalmai f
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
+**Kezdje itt:** [Válassza ki a munkafolyamatot](https://azure.github.io/co-op-translator/workflows/) | [Konfiguráció](https://azure.github.io/co-op-translator/configuration/) | [CLI](https://azure.github.io/co-op-translator/cli/) | [Python API](https://azure.github.io/co-op-translator/api/) | [MCP Server](https://azure.github.io/co-op-translator/mcp/)
+
 ### 🌐 Többnyelvű támogatás
 
-#### A [Co-op Translator](https://github.com/Azure/Co-op-Translator) támogatásával
+#### Támogatott a [Co-op Translator](https://github.com/Azure/co-op-translator) által
 
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
-[Arabic](../ar/README.md) | [Bengali](../bn/README.md) | [Bulgarian](../bg/README.md) | [Burmese (Myanmar)](../my/README.md) | [Chinese (Simplified)](../zh-CN/README.md) | [Chinese (Traditional, Hong Kong)](../zh-HK/README.md) | [Chinese (Traditional, Macau)](../zh-MO/README.md) | [Chinese (Traditional, Taiwan)](../zh-TW/README.md) | [Croatian](../hr/README.md) | [Czech](../cs/README.md) | [Danish](../da/README.md) | [Dutch](../nl/README.md) | [Estonian](../et/README.md) | [Finnish](../fi/README.md) | [French](../fr/README.md) | [German](../de/README.md) | [Greek](../el/README.md) | [Hebrew](../he/README.md) | [Hindi](../hi/README.md) | [Hungarian](./README.md) | [Indonesian](../id/README.md) | [Italian](../it/README.md) | [Japanese](../ja/README.md) | [Kannada](../kn/README.md) | [Khmer](../km/README.md) | [Korean](../ko/README.md) | [Lithuanian](../lt/README.md) | [Malay](../ms/README.md) | [Malayalam](../ml/README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Nigerian Pidgin](../pcm/README.md) | [Norwegian](../no/README.md) | [Persian (Farsi)](../fa/README.md) | [Polish](../pl/README.md) | [Portuguese (Brazil)](../pt-BR/README.md) | [Portuguese (Portugal)](../pt-PT/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Romanian](../ro/README.md) | [Russian](../ru/README.md) | [Serbian (Cyrillic)](../sr/README.md) | [Slovak](../sk/README.md) | [Slovenian](../sl/README.md) | [Spanish](../es/README.md) | [Swahili](../sw/README.md) | [Swedish](../sv/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Tamil](../ta/README.md) | [Telugu](../te/README.md) | [Thai](../th/README.md) | [Turkish](../tr/README.md) | [Ukrainian](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnamese](../vi/README.md)
+[Arab](../ar/README.md) | [Bengáli](../bn/README.md) | [Bolgár](../bg/README.md) | [Burmai (Mianmar)](../my/README.md) | [Kínai (egyszerűsített)](../zh-CN/README.md) | [Kínai (hagyományos, Hongkong)](../zh-HK/README.md) | [Kínai (hagyományos, Makaó)](../zh-MO/README.md) | [Kínai (hagyományos, Tajvan)](../zh-TW/README.md) | [Horvát](../hr/README.md) | [Cseh](../cs/README.md) | [Dán](../da/README.md) | [Holland](../nl/README.md) | [Észt](../et/README.md) | [Finn](../fi/README.md) | [Francia](../fr/README.md) | [Német](../de/README.md) | [Görög](../el/README.md) | [Héber](../he/README.md) | [Hindi](../hi/README.md) | [Magyar](./README.md) | [Indonéz](../id/README.md) | [Olasz](../it/README.md) | [Japán](../ja/README.md) | [Kannada](../kn/README.md) | [Khmer](../km/README.md) | [Koreai](../ko/README.md) | [Litván](../lt/README.md) | [Maláj](../ms/README.md) | [Malayalam](../ml/README.md) | [Marathi](../mr/README.md) | [Nepáli](../ne/README.md) | [Nigériai pidgin](../pcm/README.md) | [Norvég](../no/README.md) | [Perzsa (Fárszi)](../fa/README.md) | [Lengyel](../pl/README.md) | [Portugál (Brazília)](../pt-BR/README.md) | [Portugál (Portugália)](../pt-PT/README.md) | [Pandzsábi (Gurmukhi)](../pa/README.md) | [Román](../ro/README.md) | [Orosz](../ru/README.md) | [Szerb (cirill)](../sr/README.md) | [Szlovák](../sk/README.md) | [Szlovén](../sl/README.md) | [Spanyol](../es/README.md) | [Svahili](../sw/README.md) | [Svéd](../sv/README.md) | [Tagalog (filippínó)](../tl/README.md) | [Tamil](../ta/README.md) | [Telugu](../te/README.md) | [Thai](../th/README.md) | [Török](../tr/README.md) | [Ukrán](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnami](../vi/README.md)
 
-> **Szeretné helyben klónozni?**
+> **Szeretne helyben klónozni?**
 >
-> Ez a tároló több mint 50 nyelvű fordítást tartalmaz, ami jelentősen növeli a letöltési méretet. Fordítások nélkül klónozáshoz használja a sparse checkout-ot:
+> Ez a tároló 50+ nyelvű fordítást tartalmaz, ami jelentősen megnöveli a letöltési méretet. Ha a fordítások nélkül szeretne klónozni, használja a sparse checkout-ot:
 >
 > **Bash / macOS / Linux:**
 > ```bash
@@ -40,12 +42,12 @@ _Könnyedén automatizálhatja és tarthatja karban oktatási GitHub-tartalmai f
 > git sparse-checkout set --no-cone "/*" "!translations" "!translated_images"
 > ```
 >
-> Ez mindent megad, amire szüksége van a kurzus elvégzéséhez, sokkal gyorsabb letöltéssel.
+> Ez mindent megad, amire szüksége van a kurzus elvégzéséhez sokkal gyorsabb letöltéssel.
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
-[![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator.svg?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
+[![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
 
 [![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
 
@@ -53,127 +55,128 @@ _Könnyedén automatizálhatja és tarthatja karban oktatási GitHub-tartalmai f
 
 ## Áttekintés
 
-A **Co-op Translator** segít, hogy oktatási GitHub-tartalmait egyszerűen lokalizálja több nyelvre.  
-Amikor frissíti Markdown fájljait, képeit vagy jegyzetfüzeteit, a fordítások automatikusan szinkronban maradnak, biztosítva, hogy tartalma pontos és naprakész legyen a tanulók számára világszerte.
+A **Co-op Translator** segít egyszerűen lokalizálni oktatási GitHub-tartalmait több nyelvre.
+Amikor frissíti Markdown fájljait, képeit vagy jegyzeteit, a fordítások automatikusan szinkronban maradnak, biztosítva, hogy tartalma pontos és naprakész maradjon a tanulók számára világszerte.
 
-A fordított tartalom szervezésének példája:
+Használja a parancssorból (CLI) tárházfordításhoz, a Python API-ból automatizáláshoz, vagy az MCP szerveren ügynök- és szerkesztői munkafolyamatokhoz.
+
+Példa arra, hogyan van rendszerezve a lefordított tartalom:
 
 ![Példa](../../imgs/translation-ex.png)
 
-## Hogyan kezeljük a fordítás állapotát
+## Miért a Co-op Translator?
 
-A Co-op Translator a fordított tartalmat **verziózott szoftveres artefaktumként** kezeli,  
-nem pedig statikus fájlként.
+Egy fájl fordítása egyszerű. Egy teljes dokumentációs tárház
+fordításának, linkelésének és naprakészen tartásának biztosítása a nehéz része.
 
-Az eszköz a fordított Markdown, képek és jegyzetfüzetek állapotát  
-**nyelvi hatókörű metaadatok** segítségével követi nyomon.
+| Probléma | Hogyan segít a Co-op Translator |
+| --- | --- |
+| Hosszú dokumentumok nem egyetlen prompt | A nagy Markdown fájlokat darabokra bontjuk, így egy hosszú README nem függ egyetlen sérülékeny modellválasztól. Ha egy darab megbukik, a Co-op Translator újrapróbálkozhat és csak a sikertelen részt bonthatja újra. |
+| A hiányos fordítások ne legyenek jelölve naprakésznek | Egy csonkított fordítás soha ne legyen lezárva naprakészként. A Co-op Translator ellenőrzi a fordítás integritását mentés előtt, és képes felismerni szerkezetileg hiányos meglévő fordításokat. |
+| A linkeknek illeszkedniük kell a lefordított repo struktúrájához | A manuális fordítások gyakran hagynak relatív linkeket, amelyek visszamutatnak az eredeti fájlszerkezetre. A Co-op Translator átírja a Markdown-, jegyzet-, kép- és README-linkeket, hogy illeszkedjenek a `translations/<lang>/...` struktúrához. |
+| A fordításnak az egész repo-nak működnie kell | A Co-op Translator kezeli a README fájlokat, a dokumentációkat, a jegyzeteket és a képszöveget egyetlen tárház-munkafolyamat részeként, ahelyett, hogy fájlonként fordítana. |
+| A fordítások karbantartása fontosabb, mint egyszeri létrehozásuk | Forrás-hash-ek és fordítási metaadatok segítségével a Co-op Translator megtalálja az elavult fájlokat, kihagyja a nem változott fájlokat, és szinkronban tartja a lefordított tartalmat, ahogy a forrásrepo fejlődik. |
 
-Ez a kialakítás lehetővé teszi, hogy a Co-op Translator:
+## Hogyan kezelik a fordítás állapotát
 
-- Megbízhatóan felismerje az elavult fordításokat
-- Egységesen kezelje a Markdown, képek és jegyzetfüzetek tartalmakat
-- Biztonságosan méretezhető legyen nagy, gyorsan változó, többnyelvű tárolókhoz
+A Co-op Translator a lefordított tartalmakat **verziózott szoftver-artefaktumokként**,  
+nem statikus fájlokként kezeli.
 
-A fordítások menedzselt artefaktumokként való kezelése révén  
-a fordítási munkamenetek természetesen illeszkednek a modern  
-szoftverfüggőség- és artefaktumkezelési gyakorlatokhoz.
+Az eszköz nyelvi hatókörű metaadatok segítségével követi a lefordított Markdown, képek és jegyzetek állapotát.
 
-→ [Hogyan kezeljük a fordítás állapotát](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
+Ez a kialakítás lehetővé teszi a Co-op Translator számára, hogy:
 
+- Megbízhatóan észlelje az elavult fordításokat
+- Következetesen kezelje a Markdown-t, képeket és jegyzeteket
+- Biztonságosan skálázható legyen nagy, gyorsan változó, többnyelvű tárházak esetén
 
-## Gyors kezdés
+Azáltal, hogy a fordításokat kezelt artefaktumokként modellezi,
+a fordítási munkafolyamatok természetesen illeszkednek a modern
+szoftverfüggőségi és artefaktum-kezelési gyakorlatokhoz.
+
+→ [Hogyan kezelik a fordítás állapotát](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
+
+### Kapcsolódó mélyebb elemzések
+
+- [A törött Markdown javítása AI-fordításnál: Egy gyártási pipeline megerősítése](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/fixing-broken-markdown-in-ai-translation-hardening-a-production-pipeline/4511378)
+
+## Kezdjen hozzá
+
+A Co-op Translator használható a CLI-ből, a Python API-ból vagy az MCP szerverből. Kezdje a munkafolyamat útmutatóval, ha a helyi fordítás, automatizálás, CI és ügynök/szerkesztő integráció között választ.
+
+- [Válassza ki a munkafolyamatot](../../docs/workflows.md)
+- [Hitelesítő adatok konfigurálása](../../docs/configuration.md)
+- [Fordítás a CLI-ből](../../docs/cli.md)
+- [Automatizálás a Python API-val](../../docs/api.md)
+- [Kapcsolódás az MCP szerverrel](../../docs/mcp.md)
+- [Futtatás GitHub Actions-ben](../../docs/github-actions.md)
+
+Minimális CLI példa a konfiguráció után:
 
 ```bash
-# Hozzon létre és aktiváljon egy virtuális környezetet (ajánlott)
 python -m venv .venv
 # Windows
 .venv\Scripts\activate
 # macOS/Linux
 source .venv/bin/activate
-# Telepítse a csomagot
+
 pip install co-op-translator
-# Fordítás
-translate -l "ko ja fr" -md
+translate -l "ko" -md
+co-op-review -l "ko"
 ```
 
-Docker:
+Nagy tárházak első futtatásaihoz használja a `--dry-run` opciót, mielőtt valóban írna lefordított fájlokat. Lásd a [CLI Reference](../../docs/cli.md) részt a tartalomtípus-flagek, naplók, felülvizsgálat és linkmigráció kapcsán.
+
+Konténer gyors futtatás Bash/Zsh alatt:
 
 ```bash
-# Töltsük le a nyilvános képet a GHCR-ről
-docker pull ghcr.io/azure/co-op-translator:latest
-# Futtatás a jelenlegi mappa csatolásával és .env megadása mellett (Bash/Zsh)
-docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
+docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
 
-## Minimális beállítás
+Konténer gyors futtatás PowerShell alatt:
 
-1. Ellenőrizze, hogy támogatott Python verziót használ (jelenleg 3.10–3.12). A poetry (pyproject.toml) ezt automatikusan kezeli.
-2. Hozzon létre egy `.env` fájlt az alábbi sablon alapján: [.env.template](../../.env.template)
-3. Állítson be egy LLM szolgáltatót (Azure OpenAI vagy OpenAI)
-4. (Opcionális) Képfordításhoz (`-img`) konfigurálja az Azure AI Vision-t
-5. (Opcionális) Több hitelesítési készlet konfigurálható az `_1`, `_2` stb. végződéssel ellátott változók duplikálásával. Egy készlet minden változója ugyanazzal a végződéssel kell, hogy rendelkezzen.
-6. (Ajánlott) Takarítsa ki az előző fordításokat az esetleges ütközések elkerülése érdekében (pl. `translations/`)
-7. (Ajánlott) Adjon hozzá egy fordítási részt README-jéhez a [README languages template](./getting_started/README_languages_template.md) alapján
-8. Lásd: [Azure AI beállítása](./getting_started/set-up-azure-ai.md)
-
-## Használat
-
-Fordítsa le az összes támogatott típust:
-
-```bash
-translate -l "ko ja"
+```powershell
+docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
 
-Csak Markdown:
+## Funkciók
 
-```bash
-translate -l "de" -md
-```
-
-Markdown + képek:
-
-```bash
-translate -l "pt" -md -img
-```
-
-Csak jegyzetfüzetek:
-
-```bash
-translate -l "zh" -nb
-```
-
-További kapcsolók: [Parancs referencia](./getting_started/command-reference.md)
-
-## Jellemzők
-
-- Automatikus fordítás Markdown, jegyzetfüzetek és képek számára
-- A fordításokat szinkronban tartja a forrásváltozásokkal
-- Helyileg (CLI) vagy CI-ben (GitHub Actions) működik
-- Használja az Azure OpenAI-t vagy az OpenAI-t; opcionálisan Azure AI Vision képekhez
-- Megőrzi a Markdown formázást és szerkezetet
+- Automatikus fordítás Markdownhoz, jegyzetekhez és képekhez
+- A fordítások szinkronban tartása a forrásváltozásokkal
+- Helyben (CLI) vagy CI-ben (GitHub Actions) működik
+- Markdown, jegyzet, kép, felülvizsgálat és projektfordítási eszközöket tesz elérhetővé MCP-n keresztül
+- Azure OpenAI-t vagy OpenAI-t használ szolgáltatóként a fordításhoz
+- Lehetővé teszi, hogy az MCP hosztolt ügynökei LLM hitelesítő adatok nélkül fordítsanak Markdown és jegyzet darabokat
+- Azure AI Vision-t használ a képszöveg kinyeréséhez és fordításához
+- Determinisztikus ellenőrzésekkel vizsgálja a fordítás szerkezetét és frissességét
+- Megőrzi a Markdown formázását és szerkezetét
 
 ## Dokumentáció
 
-- [Parancssori útmutató](./getting_started/command-line-guide/command-line-guide.md)
-- [GitHub Actions útmutató (Publikus tárolók és standard titkok)](./getting_started/github-actions-guide/github-actions-guide-public.md)
-- [GitHub Actions útmutató (Microsoft szervezeti tárolók és szervezeti szintű beállítások)](./getting_started/github-actions-guide/github-actions-guide-org.md)
-- [README languages template](./getting_started/README_languages_template.md)
-- [Támogatott nyelvek](./getting_started/supported-languages.md)
-- [Hozzájárulás](./CONTRIBUTING.md)
-- [Hibaelhárítás](./getting_started/troubleshooting.md)
+- [Dokumentációs oldal](https://azure.github.io/co-op-translator/)
+- [Válassza ki a munkafolyamatot](../../docs/workflows.md)
+- [Konfiguráció](../../docs/configuration.md)
+- [Azure AI beállítása](../../docs/azure-ai-setup.md)
+- [CLI referencia](../../docs/cli.md)
+- [Python API](../../docs/api.md)
+- [MCP Server](../../docs/mcp.md)
+- [GitHub Actions](../../docs/github-actions.md)
+- [README nyelvek sablonja](../../docs/readme-languages-template.md)
+- [Támogatott nyelvek](../../docs/supported-languages.md)
+- [Hozzájárulás](../../CONTRIBUTING.md)
+- [Hibaelhárítás](../../docs/troubleshooting.md)
 
 ### Microsoft-specifikus útmutató
 > [!NOTE]
-> Csak a Microsoft “For Beginners” tárolóinak karbantartói számára.
+> Csak a Microsoft “For Beginners” tárolók karbantartói számára.
 
-- [Az „egyéb kurzusok” lista frissítése (csak MS Beginners tárolókhoz)](./getting_started/update-other-courses.md)
+- [A „további kurzusok” lista frissítése (csak MS Beginners tárolókhoz)](../../docs/microsoft-beginners.md)
 
-## Támogasson minket és segítse elő a globális tanulást
+## Támogasson minket és segítse a globális tanulást
 
-Csatlakozzon hozzánk az oktatási tartalmak globális megosztásának forradalmasításában! Adjon egy ⭐-t a [Co-op Translator](https://github.com/azure/co-op-translator) projektnek a GitHub-on, és támogassa küldetésünket, hogy lebontsuk a nyelvi akadályokat a tanulásban és a technológiában. Az érdeklődése és hozzájárulásai jelentős hatással vannak! Kódhoz való hozzájárulásokat és funkciójavaslatokat mindig szívesen fogadunk.
+Csatlakozzon hozzánk az oktatási tartalmak globális megosztásának forradalmasításában! Adjon egy ⭐-t a [Co-op Translator](https://github.com/azure/co-op-translator) projektnek a GitHubon, és támogassa küldetésünket, hogy lebontsuk a nyelvi akadályokat a tanulásban és a technológiában. Az Ön érdeklődése és hozzájárulásai jelentős hatással vannak! Kódbeli hozzájárulások és funkciójavaslatok mindig szívesen fogadottak.
 
 ### Fedezze fel a Microsoft oktatási tartalmait az Ön nyelvén
-
 - [LangChain4j-for-Beginners](https://github.com/microsoft/LangChain4j-for-Beginners)
 - [AZD for Beginners](https://github.com/microsoft/AZD-for-beginners)
 - [Edge AI for Beginners](https://github.com/microsoft/edgeai-for-beginners)
@@ -190,58 +193,53 @@ Csatlakozzon hozzánk az oktatási tartalmak globális megosztásának forradalm
 - [IoT for Beginners](https://aka.ms/iot-beginners)
 - [PhiCookBook](https://github.com/microsoft/PhiCookBook)
 
-## Videós bemutatók
+## Video presentations
 
-👉 Kattintson az alábbi képre a YouTube-on való megtekintéshez.
+👉 Kattints a lentebbi képre a YouTube-on való megtekintéshez.
 
-- **Open at Microsoft**: Egy rövid, 18 perces bemutató és gyors útmutató a Co-op Translator használatához.
+- **Open at Microsoft**: Rövid, 18 perces bevezető és gyors útmutató a Co-op Translator használatához.
 
   [![Open at Microsoft](../../imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
-## Hozzájárulás
+## Contributing
 
-Ez a projekt szívesen fogad hozzájárulásokat és javaslatokat. Érdekli a részvétel az Azure Co-op Translator fejlesztésében? Kérjük, tekintse meg a [CONTRIBUTING.md](./CONTRIBUTING.md) dokumentumunkat, amely útmutatást nyújt arról, hogyan segíthet abban, hogy a Co-op Translator még hozzáférhetőbb legyen.
+Ez a projekt örömmel fogadja a hozzájárulásokat és javaslatokat. Érdekel a hozzájárulás az Azure Co-op Translatorhoz? Kérjük, olvasd el a [CONTRIBUTING.md](../../CONTRIBUTING.md) fájlunkat az útmutatásért, hogyan segíthetsz abban, hogy a Co-op Translator hozzáférhetőbb legyen.
 
-## Közreműködők
+## Contributors
+
 [![co-op-translator contributors](https://contrib.rocks/image?repo=Azure/co-op-translator)](https://github.com/Azure/co-op-translator/graphs/contributors)
 
-## Magatartási kódex
+## Code of Conduct
 
-Ez a projekt elfogadta a [Microsoft Open Source Magatartási Kódexet](https://opensource.microsoft.com/codeofconduct/).
-További információkért lásd a [Magatartási kódex GYIK](https://opensource.microsoft.com/codeofconduct/faq/) oldalt, vagy lépj kapcsolatba az [opencode@microsoft.com](mailto:opencode@microsoft.com) címen bármilyen további kérdéssel vagy észrevétellel.
+Ez a projekt elfogadta a [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/) dokumentumát.
+További információért lásd a [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) oldalt, vagy
+lépj kapcsolatba az [opencode@microsoft.com](mailto:opencode@microsoft.com) címen további kérdésekkel vagy észrevételekkel.
 
-## Felelős mesterséges intelligencia
+## Responsible AI
 
-A Microsoft elkötelezett amellett, hogy segítse ügyfeleit mesterséges intelligencia termékeink felelős használatában, megossza tapasztalatainkat, és bizalmon alapuló partnerségeket építsen olyan eszközök segítségével, mint a Transzparencia Jegyzetek és Hatáselemzések. Ezek közül sok elérhető a [https://aka.ms/RAI](https://aka.ms/RAI) oldalon.
-A Microsoft felelős mesterséges intelligenciához való megközelítése az AI igazságossági, megbízhatósági és biztonsági, adatvédelmi és biztonsági, befogadási, átláthatósági és elszámoltathatósági elvein alapul.
+A Microsoft elkötelezett amellett, hogy segítse ügyfeleit AI termékeink felelősségteljes használatában, megossza tapasztalatait, és bizalmon alapuló partnerségeket építsen olyan eszközökkel, mint az Átláthatósági jegyzetek és a Hatásvizsgálatok. Ezeknek az erőforrásoknak nagy része megtalálható a [https://aka.ms/RAI](https://aka.ms/RAI) címen.
+A Microsoft felelős MI-hez való megközelítése a méltányosság, megbízhatóság és biztonság, adatvédelem és biztonság, inkluzivitás, átláthatóság és elszámoltathatóság elvein alapul.
 
-A nagy léptékű természetes nyelvi, képi és beszédmodellek – mint amilyenek ebben a mintában is szerepelnek – potenciálisan igazságtalan, megbízhatatlan vagy sértő módon viselkedhetnek, ami károkat okozhat. Kérjük, tekintse meg az [Azure OpenAI szolgáltatás Transzparencia jegyzetét](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) annak érdekében, hogy tájékozódjon a kockázatokról és korlátokról.
+A nagyméretű nyelvi, képi és beszédmodellek - mint amilyeneket ebben a példában is használunk - potenciálisan igazságtalanul, megbízhatatlanul vagy sértően viselkedhetnek, ami károkat okozhat. Kérjük, tekintse meg az [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) dokumentumot, hogy tájékozódjon a kockázatokról és korlátokról.
 
-A kockázatok csökkentésének ajánlott módja egy olyan biztonsági rendszer beépítése az architektúrába, amely képes felismerni és megelőzni a káros viselkedést. Az [Azure AI Tartalombiztonság](https://learn.microsoft.com/azure/ai-services/content-safety/overview) független védelmi réteget biztosít, amely képes felismerni a felhasználók és az AI által generált káros tartalmakat alkalmazásokban és szolgáltatásokban. Az Azure AI Tartalombiztonság szöveges és képi API-kat tartalmaz, amelyek lehetővé teszik a káros anyagok felismerését. Emellett van egy interaktív Content Safety Studio, amelyben megtekintheti, felfedezheti és ki is próbálhatja a káros tartalmak különböző modalitások szerinti felismeréséhez készült mintakódokat. A következő [gyorsinduló dokumentáció](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) útmutatást nyújt a szolgáltatás felé történő lekérésekhez.
+A kockázatok mérséklésének javasolt megközelítése, hogy a rendszerbe olyan biztonsági réteget építsen, amely képes észlelni és megakadályozni a káros viselkedést. Az [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) független védelmi réteget kínál, amely képes felismerni a felhasználók által létrehozott és az MI által generált káros tartalmakat alkalmazásokban és szolgáltatásokban. Az Azure AI Content Safety szöveg- és kép-API-kat tartalmaz, amelyek lehetővé teszik a káros anyagok felismerését. Emellett interaktív Content Safety Studio-t is biztosítunk, amely lehetővé teszi a mintakódok megtekintését, felfedezését és kipróbálását a különböző modalitásokban történő káros tartalom észleléséhez. A következő [quickstart dokumentáció](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) végigvezeti a szolgáltatásnak küldött kérelmek létrehozásán.
 
-Egy másik figyelembe veendő szempont az általános alkalmazási teljesítmény. Többmodális és többmodell alkalmazások esetében a teljesítmény azt jelenti, hogy a rendszer úgy működik, ahogyan Ön és felhasználói elvárják, beleértve azt is, hogy nem generál káros kimeneteket. Fontos értékelni az alkalmazás teljesítményét [a generálási minőség és a kockázat- és biztonsági metrikák](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in) alapján.
+Egy másik szempontra érdemes figyelni az alkalmazás teljesítményét. Többmodalitású és többmodellű alkalmazások esetén a teljesítmény azt jelenti, hogy a rendszer úgy működik, ahogy te és a felhasználóid elvárják, beleértve azt is, hogy nem generál káros kimeneteket. Fontos értékelni az alkalmazás teljesítményét a [generálás minőségére és kockázat- és biztonsági metrikákra vonatkozó](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in) mutatók használatával.
 
-Értékelheti AI alkalmazását fejlesztői környezetében a [prompt flow SDK](https://microsoft.github.io/promptflow/index.html) használatával. Legyen szó tesztadatokról vagy célról, a generatív AI alkalmazás generációi beépített vagy az Ön által választott egyéni értékelőkkel mennyiségileg mérhetők. A prompt flow sdk használatának megkezdéséhez és rendszerének értékeléséhez követheti a [gyorsinduló útmutatót](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). Értékelés lefuttatása után az eredményeket megtekintheti az [Azure AI Studioban](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
+Fejlesztési környezetében kiértékelheti MI alkalmazását a [prompt flow SDK](https://microsoft.github.io/promptflow/index.html) használatával. Legyen szó tesztadatkészletről vagy célról, a generatív MI alkalmazás kimenetei kvantitatívan mérhetők beépített értékelőkkel vagy az Ön által választott egyedi értékelőkkel. A prompt flow sdk-val való értékelés megkezdéséhez kövesse a [quickstart útmutatót](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). Miután végrehajtott egy értékelést, [vizualizálhatja az eredményeket az Azure AI Studio-ban](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
 
-## Márkanevek
+## Trademarks
 
-Ez a projekt tartalmazhat projektek, termékek vagy szolgáltatások márkajelzéseit vagy logóit. A Microsoft márkáit vagy logóit való jogosult használatuk a [Microsoft márka- és védjegyirányelveinek](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general) betartásához kötött.
-A Microsoft márkák vagy logók módosított verziókban történő használata nem okozhat félreértést, és nem sugallhat Microsoft támogatást.
-Harmadik fél márkáinak vagy logóinak bármilyen használata az adott harmadik fél szabályzataihoz kötött.
+Ez a projekt tartalmazhat védjegyeket vagy logókat projektekhez, termékekhez vagy szolgáltatásokhoz kapcsolódóan. A Microsoft védjegyeinek vagy logóinak engedélyezett használata a [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general) szabályainak és feltételeinek megfelelően történhet.
+A Microsoft védjegyeinek vagy logóinak használata a projekt módosított változataiban nem okozhat félreértést és nem sugallhat Microsoft általi támogatást.
+Harmadik felek védjegyeinek vagy logóinak használata a vonatkozó harmadik fél irányelveinek hatálya alá tartozik.
 
-## Segítségkérés
+## Getting Help
 
-Ha elakad vagy kérdése van AI alkalmazások fejlesztésével kapcsolatban, csatlakozzon:
+Ha elakad vagy kérdése van az MI-alkalmazások építésével kapcsolatban, csatlakozz:
 
 [![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
 
-Ha termékvisszajelzése vagy hibák jelentkeznek fejlesztés közben, látogasson el ide:
+Ha termékvisszajelzése van vagy hibába ütközik a fejlesztés során, látogasson el:
 
 [![Microsoft Foundry Developer Forum](https://img.shields.io/badge/GitHub-Microsoft_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
-
----
-
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**Jogi nyilatkozat**:  
-Ez a dokumentum az AI fordítószolgáltatás, a [Co-op Translator](https://github.com/Azure/co-op-translator) segítségével készült. Bár a pontosságra törekszünk, kérjük, vegye figyelembe, hogy az automatikus fordítások hibákat vagy pontatlanságokat tartalmazhatnak. Az eredeti dokumentum az anyanyelvén tekintendő hivatalos forrásnak. Kritikus információk esetén szakmai, emberi fordítást javasolunk. Nem vállalunk felelősséget az ebből a fordításból eredő félreértésekért vagy téves értelmezésekért.
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->

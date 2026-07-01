@@ -1,30 +1,32 @@
 # Co-op Translator
 
-_Tự động hóa và duy trì bản dịch cho nội dung giáo dục GitHub của bạn trên nhiều ngôn ngữ một cách dễ dàng theo sự phát triển của dự án._
+_Dễ dàng tự động hóa và duy trì bản dịch cho nội dung giáo dục trên GitHub của bạn sang nhiều ngôn ngữ khi dự án của bạn phát triển._
 
 ![Python 3.10–3.12](https://img.shields.io/badge/python-3.10--3.12-blue)
-[![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
-[![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
-[![Downloads](https://static.pepy.tech/badge/co-op-translator)](https://pepy.tech/project/co-op-translator)
-[![Downloads](https://static.pepy.tech/badge/co-op-translator/month)](https://pepy.tech/project/co-op-translator)
+[![Gói Python](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
+[![Giấy phép: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)
+[![Lượt tải](https://static.pepy.tech/badge/co-op-translator)](https://pepy.tech/project/co-op-translator)
+[![Lượt tải](https://static.pepy.tech/badge/co-op-translator/month)](https://pepy.tech/project/co-op-translator)
 [![Container: GHCR](https://img.shields.io/badge/Container-GHCR-2496ED?logo=docker&logoColor=fff)](https://github.com/azure/co-op-translator/pkgs/container/co-op-translator)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Phong cách mã: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-[![GitHub contributors](https://img.shields.io/github/contributors/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/graphs/contributors/)
-[![GitHub issues](https://img.shields.io/github/issues/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/issues/)
-[![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![Người đóng góp GitHub](https://img.shields.io/github/contributors/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/graphs/contributors/)
+[![Issue trên GitHub](https://img.shields.io/github/issues/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/issues/)
+[![Pull request trên GitHub](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
+[![Chào đón PR](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-### 🌐 Hỗ trợ Đa Ngôn Ngữ
+**Bắt đầu tại đây:** [Chọn quy trình làm việc của bạn](https://azure.github.io/co-op-translator/workflows/) | [Cấu hình](https://azure.github.io/co-op-translator/configuration/) | [CLI](https://azure.github.io/co-op-translator/cli/) | [Python API](https://azure.github.io/co-op-translator/api/) | [MCP Server](https://azure.github.io/co-op-translator/mcp/)
 
-#### Được hỗ trợ bởi [Co-op Translator](https://github.com/Azure/Co-op-Translator)
+### 🌐 Hỗ trợ đa ngôn ngữ
+
+#### Được hỗ trợ bởi [Co-op Translator](https://github.com/Azure/co-op-translator)
 
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
-[Arabic](../ar/README.md) | [Bengali](../bn/README.md) | [Bulgarian](../bg/README.md) | [Burmese (Myanmar)](../my/README.md) | [Chinese (Simplified)](../zh-CN/README.md) | [Chinese (Traditional, Hong Kong)](../zh-HK/README.md) | [Chinese (Traditional, Macau)](../zh-MO/README.md) | [Chinese (Traditional, Taiwan)](../zh-TW/README.md) | [Croatian](../hr/README.md) | [Czech](../cs/README.md) | [Danish](../da/README.md) | [Dutch](../nl/README.md) | [Estonian](../et/README.md) | [Finnish](../fi/README.md) | [French](../fr/README.md) | [German](../de/README.md) | [Greek](../el/README.md) | [Hebrew](../he/README.md) | [Hindi](../hi/README.md) | [Hungarian](../hu/README.md) | [Indonesian](../id/README.md) | [Italian](../it/README.md) | [Japanese](../ja/README.md) | [Kannada](../kn/README.md) | [Khmer](../km/README.md) | [Korean](../ko/README.md) | [Lithuanian](../lt/README.md) | [Malay](../ms/README.md) | [Malayalam](../ml/README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Nigerian Pidgin](../pcm/README.md) | [Norwegian](../no/README.md) | [Persian (Farsi)](../fa/README.md) | [Polish](../pl/README.md) | [Portuguese (Brazil)](../pt-BR/README.md) | [Portuguese (Portugal)](../pt-PT/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Romanian](../ro/README.md) | [Russian](../ru/README.md) | [Serbian (Cyrillic)](../sr/README.md) | [Slovak](../sk/README.md) | [Slovenian](../sl/README.md) | [Spanish](../es/README.md) | [Swahili](../sw/README.md) | [Swedish](../sv/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Tamil](../ta/README.md) | [Telugu](../te/README.md) | [Thai](../th/README.md) | [Turkish](../tr/README.md) | [Ukrainian](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnamese](./README.md)
+[Tiếng Ả Rập](../ar/README.md) | [Tiếng Bengal](../bn/README.md) | [Tiếng Bulgaria](../bg/README.md) | [Miến Điện (Myanmar)](../my/README.md) | [Tiếng Trung (Giản thể)](../zh-CN/README.md) | [Tiếng Trung (Phồn thể, Hồng Kông)](../zh-HK/README.md) | [Tiếng Trung (Phồn thể, Macau)](../zh-MO/README.md) | [Tiếng Trung (Phồn thể, Đài Loan)](../zh-TW/README.md) | [Tiếng Croatia](../hr/README.md) | [Tiếng Séc](../cs/README.md) | [Tiếng Đan Mạch](../da/README.md) | [Tiếng Hà Lan](../nl/README.md) | [Tiếng Estonia](../et/README.md) | [Tiếng Phần Lan](../fi/README.md) | [Tiếng Pháp](../fr/README.md) | [Tiếng Đức](../de/README.md) | [Tiếng Hy Lạp](../el/README.md) | [Tiếng Do Thái](../he/README.md) | [Tiếng Hindi](../hi/README.md) | [Tiếng Hungary](../hu/README.md) | [Tiếng Indonesia](../id/README.md) | [Tiếng Ý](../it/README.md) | [Tiếng Nhật](../ja/README.md) | [Tiếng Kannada](../kn/README.md) | [Tiếng Khmer](../km/README.md) | [Tiếng Hàn](../ko/README.md) | [Tiếng Litva](../lt/README.md) | [Tiếng Mã Lai](../ms/README.md) | [Tiếng Malayalam](../ml/README.md) | [Tiếng Marathi](../mr/README.md) | [Tiếng Nepal](../ne/README.md) | [Tiếng Pidgin Nigeria](../pcm/README.md) | [Tiếng Na Uy](../no/README.md) | [Tiếng Ba Tư (Farsi)](../fa/README.md) | [Tiếng Ba Lan](../pl/README.md) | [Tiếng Bồ Đào Nha (Brazil)](../pt-BR/README.md) | [Tiếng Bồ Đào Nha (Portugal)](../pt-PT/README.md) | [Tiếng Punjabi (Gurmukhi)](../pa/README.md) | [Tiếng Romania](../ro/README.md) | [Tiếng Nga](../ru/README.md) | [Tiếng Serbia (Chữ Cyrillic)](../sr/README.md) | [Tiếng Slovakia](../sk/README.md) | [Tiếng Slovenia](../sl/README.md) | [Tiếng Tây Ban Nha](../es/README.md) | [Tiếng Swahili](../sw/README.md) | [Tiếng Thụy Điển](../sv/README.md) | [Tiếng Tagalog (Filipino)](../tl/README.md) | [Tiếng Tamil](../ta/README.md) | [Tiếng Telugu](../te/README.md) | [Tiếng Thái](../th/README.md) | [Tiếng Thổ Nhĩ Kỳ](../tr/README.md) | [Tiếng Ukraina](../uk/README.md) | [Tiếng Urdu](../ur/README.md) | [Tiếng Việt](./README.md)
 
-> **Ưu tiên sao chép nội dung về máy?**
+> **Thích sao chép về máy hơn?**
 >
-> Kho lưu trữ này bao gồm hơn 50 bản dịch ngôn ngữ, điều này làm tăng đáng kể kích thước tải về. Để sao chép mà không có bản dịch, hãy sử dụng sparse checkout:
+> Kho lưu trữ này bao gồm hơn 50 bản dịch ngôn ngữ, điều này làm tăng đáng kể kích thước tải xuống. Để clone mà không lấy phần bản dịch, hãy sử dụng sparse checkout:
 >
 > **Bash / macOS / Linux:**
 > ```bash
@@ -40,140 +42,142 @@ _Tự động hóa và duy trì bản dịch cho nội dung giáo dục GitHub c
 > git sparse-checkout set --no-cone "/*" "!translations" "!translated_images"
 > ```
 >
-> Điều này sẽ cung cấp cho bạn mọi thứ cần thiết để hoàn thành khóa học với tốc độ tải về nhanh hơn nhiều.
+> Điều này cung cấp cho bạn mọi thứ cần thiết để hoàn thành khóa học với tốc độ tải xuống nhanh hơn nhiều.
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 
-[![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
-[![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
-[![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator.svg?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
+[![Người theo dõi GitHub](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
+[![Fork trên GitHub](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
+[![Sao GitHub](https://img.shields.io/github/stars/azure/co-op-translator.svg?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
 
 [![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
 
-[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
+[![Mở trong GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 
 ## Tổng quan
 
-**Co-op Translator** giúp bạn bản địa hóa nội dung giáo dục trên GitHub sang nhiều ngôn ngữ một cách dễ dàng.  
-Khi bạn cập nhật các tệp Markdown, hình ảnh hoặc sổ tay, các bản dịch sẽ tự động được đồng bộ, đảm bảo nội dung của bạn luôn chính xác và cập nhật cho người học trên toàn thế giới.
+**Co-op Translator** giúp bạn bản địa hóa nội dung giáo dục trên GitHub của mình sang nhiều ngôn ngữ một cách dễ dàng.
+Khi bạn cập nhật các tệp Markdown, hình ảnh hoặc sổ tay (notebook), các bản dịch sẽ tự động được đồng bộ, đảm bảo nội dung của bạn luôn chính xác và cập nhật cho người học trên toàn thế giới.
 
-Ví dụ về cách tổ chức nội dung đã dịch:
+Sử dụng từ CLI để dịch repository, từ Python API để tự động hóa, hoặc qua MCP server cho các luồng công việc với agent và editor.
 
-![Example](../../imgs/translation-ex.png)
+Ví dụ về cách tổ chức nội dung đã được dịch:
 
-## Cách quản lý trạng thái bản dịch
+![Ví dụ](../../imgs/translation-ex.png)
 
-Co-op Translator quản lý nội dung dịch như các **tác phẩm phần mềm có phiên bản**,  
-không phải là các tệp tĩnh.
+## Tại sao dùng Co-op Translator?
 
-Công cụ theo dõi trạng thái của các tài liệu Markdown, hình ảnh và sổ tay đã dịch  
-bằng **siêu dữ liệu giới hạn theo ngôn ngữ**.
+Dịch một tệp thì dễ. Giữ cho toàn bộ kho tài liệu
+được dịch, liên kết và cập nhật mới là phần khó.
+
+| Vấn đề | Co-op Translator giúp như thế nào |
+| --- | --- |
+| Tài liệu dài không phải là một prompt duy nhất | Các tệp Markdown lớn được chia thành các phần nhỏ, vì vậy một README dài không phụ thuộc vào một phản hồi mô hình mong manh duy nhất. Nếu một phần bị lỗi, Co-op Translator có thể thử lại và chia lại chỉ phần bị lỗi đó. |
+| Bản dịch không hoàn chỉnh không nên được đánh dấu là hiện tại | Một bản dịch bị cắt ngắn không bao giờ nên được đóng dấu là đã cập nhật. Co-op Translator kiểm tra tính toàn vẹn của bản dịch trước khi lưu và có thể phát hiện các bản dịch hiện có bị thiếu cấu trúc. |
+| Các liên kết nên khớp với cấu trúc repo đã dịch | Các bản dịch thủ công thường để các liên kết tương đối trỏ về cây nguồn. Co-op Translator viết lại các liên kết Markdown, notebook, hình ảnh và README để khớp với cấu trúc `translations/<lang>/...`. |
+| Dịch hoạt động trên toàn bộ repository | Co-op Translator xử lý các tệp README, docs, notebooks và văn bản trong hình ảnh như một phần của một luồng công việc repository, thay vì dịch từng tệp một. |
+| Duy trì bản dịch quan trọng hơn là tạo ra chúng một lần | Băm nguồn và siêu dữ liệu bản dịch cho phép Co-op Translator tìm các tệp đã lỗi thời, bỏ qua các tệp không đổi và giữ nội dung dịch được đồng bộ khi repo nguồn phát triển. |
+
+## Cách trạng thái bản dịch được quản lý
+
+Co-op Translator quản lý nội dung đã dịch như các **artifact phần mềm có phiên bản**,  
+không phải như các tệp tĩnh.
+
+Công cụ theo dõi trạng thái của Markdown, hình ảnh và notebooks đã dịch
+sử dụng **siêu dữ liệu theo ngôn ngữ**.
 
 Thiết kế này cho phép Co-op Translator:
 
 - Phát hiện đáng tin cậy các bản dịch đã lỗi thời
-- Xử lý nhất quán Markdown, hình ảnh và sổ tay
-- Mở rộng an toàn trên các kho lưu trữ đa ngôn ngữ lớn và thay đổi nhanh
+- Xem Markdown, hình ảnh và notebooks một cách nhất quán
+- Mở rộng an toàn trên các repository lớn, di chuyển nhanh và đa ngôn ngữ
 
-Bằng cách mô hình hóa các bản dịch dưới dạng tác phẩm được quản lý,  
-quy trình làm việc bản dịch phù hợp tự nhiên với  
-các thực hành hiện đại về quản lý phụ thuộc và tác phẩm phần mềm.
+Bằng cách mô hình hóa bản dịch như các artifact được quản lý,
+các luồng công việc dịch phù hợp tự nhiên với các
+thực hành quản lý phụ thuộc và artifact phần mềm hiện đại.
 
-→ [Cách quản lý trạng thái bản dịch](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
+→ [Cách trạng thái bản dịch được quản lý](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
 
+### Bài phân tích chuyên sâu liên quan
 
-## Bắt đầu nhanh
+- [Khắc phục Markdown bị hỏng trong Dịch AI: Củng cố một pipeline sản xuất](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/fixing-broken-markdown-in-ai-translation-hardening-a-production-pipeline/4511378)
+
+## Bắt đầu
+
+Co-op Translator có thể được sử dụng từ CLI, Python API hoặc MCP server. Bắt đầu với hướng dẫn workflow nếu bạn đang chọn giữa dịch cục bộ, tự động hóa, CI, và tích hợp agent/editor.
+
+- [Chọn quy trình làm việc của bạn](../../docs/workflows.md)
+- [Cấu hình thông tin xác thực](../../docs/configuration.md)
+- [Dịch từ CLI](../../docs/cli.md)
+- [Tự động hóa với Python API](../../docs/api.md)
+- [Kết nối với MCP Server](../../docs/mcp.md)
+- [Chạy trong GitHub Actions](../../docs/github-actions.md)
+
+Ví dụ CLI tối thiểu sau khi cấu hình:
 
 ```bash
-# Tạo và kích hoạt một môi trường ảo (được khuyến nghị)
 python -m venv .venv
 # Windows
 .venv\Scripts\activate
 # macOS/Linux
 source .venv/bin/activate
-# Cài đặt gói
+
 pip install co-op-translator
-# Dịch
-translate -l "ko ja fr" -md
+translate -l "ko" -md
+co-op-review -l "ko"
 ```
 
-Docker:
+Đối với lần chạy đầu trên các repository lớn, hãy sử dụng `--dry-run` trước khi ghi các tệp đã dịch. Xem [CLI Reference](../../docs/cli.md) để biết các cờ loại nội dung, nhật ký, xem xét và di chuyển liên kết.
+
+Chạy nhanh trong container với Bash/Zsh:
 
 ```bash
-# Kéo hình ảnh công khai từ GHCR
-docker pull ghcr.io/azure/co-op-translator:latest
-# Chạy với thư mục hiện tại được gắn và cung cấp .env (Bash/Zsh)
-docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
+docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
 
-## Thiết lập tối thiểu
+Chạy nhanh trong container với PowerShell:
 
-1. Đảm bảo bạn có phiên bản Python được hỗ trợ (hiện tại từ 3.10 đến 3.12). Trong poetry (pyproject.toml) điều này được xử lý tự động.
-2. Tạo tệp `.env` sử dụng mẫu: [.env.template](../../.env.template)
-3. Cấu hình một nhà cung cấp LLM (Azure OpenAI hoặc OpenAI)
-4. (Tùy chọn) Để dịch hình ảnh (`-img`), cấu hình Azure AI Vision
-5. (Tùy chọn) Bạn có thể cấu hình nhiều bộ thông tin xác thực bằng cách nhân bản biến với các hậu tố như `_1`, `_2`, v.v. Tất cả biến trong một bộ phải có cùng hậu tố.
-6. (Khuyến nghị) Dọn sạch các bản dịch trước đó để tránh xung đột (ví dụ: `translations/`)
-7. (Khuyến nghị) Thêm phần bản dịch vào README của bạn sử dụng [mẫu ngôn ngữ README](./getting_started/README_languages_template.md)
-8. Xem thêm: [Thiết lập Azure AI](./getting_started/set-up-azure-ai.md)
-
-## Cách sử dụng
-
-Dịch tất cả các loại được hỗ trợ:
-
-```bash
-translate -l "ko ja"
+```powershell
+docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
-
-Chỉ Markdown:
-
-```bash
-translate -l "de" -md
-```
-
-Markdown + hình ảnh:
-
-```bash
-translate -l "pt" -md -img
-```
-
-Chỉ sổ tay:
-
-```bash
-translate -l "zh" -nb
-```
-
-Thêm cờ tùy chọn: [Tham khảo lệnh](./getting_started/command-reference.md)
 
 ## Tính năng
 
-- Tự động dịch Markdown, sổ tay và hình ảnh
-- Giữ bản dịch đồng bộ với các thay đổi nguồn
+- Dịch tự động cho Markdown, notebooks và hình ảnh
+- Giữ các bản dịch đồng bộ với các thay đổi nguồn
 - Hoạt động cục bộ (CLI) hoặc trong CI (GitHub Actions)
-- Sử dụng Azure OpenAI hoặc OpenAI; có thể thêm Azure AI Vision cho hình ảnh
-- Giữ nguyên định dạng và cấu trúc Markdown
+- Cung cấp công cụ dịch Markdown, notebook, hình ảnh, xem xét và dịch dự án thông qua MCP
+- Sử dụng Azure OpenAI hoặc OpenAI làm nhà cung cấp dịch
+- Cho phép MCP host các agent dịch các đoạn Markdown và notebook mà không cần thông tin xác thực LLM của Co-op Translator
+- Sử dụng Azure AI Vision để trích xuất và dịch văn bản trong hình ảnh
+- Xem xét cấu trúc và độ mới của bản dịch bằng các kiểm tra xác định
+- Bảo toàn định dạng và cấu trúc Markdown
 
 ## Tài liệu
 
-- [Hướng dẫn dòng lệnh](./getting_started/command-line-guide/command-line-guide.md)
-- [Hướng dẫn GitHub Actions (Kho công khai & bí mật tiêu chuẩn)](./getting_started/github-actions-guide/github-actions-guide-public.md)
-- [Hướng dẫn GitHub Actions (Kho tổ chức Microsoft & thiết lập cấp tổ chức)](./getting_started/github-actions-guide/github-actions-guide-org.md)
-- [Mẫu ngôn ngữ README](./getting_started/README_languages_template.md)
-- [Ngôn ngữ được hỗ trợ](./getting_started/supported-languages.md)
-- [Đóng góp](./CONTRIBUTING.md)
-- [Khắc phục sự cố](./getting_started/troubleshooting.md)
+- [Trang tài liệu](https://azure.github.io/co-op-translator/)
+- [Chọn quy trình làm việc của bạn](../../docs/workflows.md)
+- [Cấu hình](../../docs/configuration.md)
+- [Thiết lập Azure AI](../../docs/azure-ai-setup.md)
+- [CLI Reference](../../docs/cli.md)
+- [Python API](../../docs/api.md)
+- [MCP Server](../../docs/mcp.md)
+- [GitHub Actions](../../docs/github-actions.md)
+- [Mẫu README ngôn ngữ](../../docs/readme-languages-template.md)
+- [Ngôn ngữ được hỗ trợ](../../docs/supported-languages.md)
+- [Đóng góp](../../CONTRIBUTING.md)
+- [Khắc phục sự cố](../../docs/troubleshooting.md)
 
-### Hướng dẫn đặc thù Microsoft
+### Hướng dẫn dành riêng cho Microsoft
 > [!NOTE]
-> Dành riêng cho người duy trì các kho “Dành cho người mới bắt đầu” của Microsoft.
+> Dành cho những người duy trì các kho “For Beginners” của Microsoft.
 
-- [Cập nhật danh sách “khóa học khác” (chỉ cho kho MS Beginners)](./getting_started/update-other-courses.md)
+- [Cập nhật danh sách “other courses” (chỉ dành cho kho MS Beginners)](../../docs/microsoft-beginners.md)
 
-## Hỗ trợ chúng tôi và thúc đẩy học tập toàn cầu
+## Ủng hộ chúng tôi và thúc đẩy việc học toàn cầu
 
-Hãy cùng chúng tôi cách mạng hóa cách chia sẻ nội dung giáo dục trên toàn cầu! Hãy cho [Co-op Translator](https://github.com/azure/co-op-translator) một ⭐ trên GitHub và ủng hộ sứ mệnh phá bỏ rào cản ngôn ngữ trong học tập và công nghệ. Sự quan tâm và đóng góp của bạn tạo nên ảnh hưởng lớn! Chúng tôi luôn hoan nghênh những đóng góp mã và đề xuất tính năng.
+Hãy cùng chúng tôi cách mạng hóa cách nội dung giáo dục được chia sẻ trên toàn cầu! Hãy cho [Co-op Translator](https://github.com/azure/co-op-translator) một ⭐ trên GitHub và ủng hộ sứ mệnh của chúng tôi trong việc xóa bỏ rào cản ngôn ngữ trong học tập và công nghệ. Sự quan tâm và đóng góp của bạn tạo ra ảnh hưởng đáng kể! Luôn hoan nghênh đóng góp mã và gợi ý tính năng.
 
-### Khám phá nội dung giáo dục Microsoft bằng ngôn ngữ của bạn
-
+### Khám phá nội dung giáo dục của Microsoft bằng ngôn ngữ của bạn
 - [LangChain4j-for-Beginners](https://github.com/microsoft/LangChain4j-for-Beginners)
 - [AZD for Beginners](https://github.com/microsoft/AZD-for-beginners)
 - [Edge AI for Beginners](https://github.com/microsoft/edgeai-for-beginners)
@@ -190,59 +194,54 @@ Hãy cùng chúng tôi cách mạng hóa cách chia sẻ nội dung giáo dục 
 - [IoT for Beginners](https://aka.ms/iot-beginners)
 - [PhiCookBook](https://github.com/microsoft/PhiCookBook)
 
-## Video giới thiệu
+## Bài thuyết trình video
 
-👉 Bấm vào hình dưới để xem trên YouTube.
+👉 Nhấp vào hình ảnh bên dưới để xem trên YouTube.
 
-- **Open at Microsoft**: Giới thiệu ngắn gọn 18 phút và hướng dẫn nhanh cách sử dụng Co-op Translator.
+- **Open at Microsoft**: Giới thiệu ngắn 18 phút và hướng dẫn nhanh cách sử dụng Co-op Translator.
 
   [![Open at Microsoft](../../imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
 ## Đóng góp
 
-Dự án này hoan nghênh các đóng góp và gợi ý. Bạn quan tâm đóng góp cho Azure Co-op Translator? Vui lòng xem [CONTRIBUTING.md](./CONTRIBUTING.md) để biết hướng dẫn cách bạn có thể giúp Co-op Translator dễ tiếp cận hơn.
+Dự án này hoan nghênh các đóng góp và đề xuất. Quan tâm đến việc đóng góp cho Azure Co-op Translator? Vui lòng xem [CONTRIBUTING.md](../../CONTRIBUTING.md) của chúng tôi để biết hướng dẫn về cách bạn có thể giúp Co-op Translator trở nên dễ tiếp cận hơn.
 
 ## Những người đóng góp
-[![co-op-translator contributors](https://contrib.rocks/image?repo=Azure/co-op-translator)](https://github.com/Azure/co-op-translator/graphs/contributors)
 
-## Quy tắc ứng xử
+[![những người đóng góp co-op-translator](https://contrib.rocks/image?repo=Azure/co-op-translator)](https://github.com/Azure/co-op-translator/graphs/contributors)
 
-Dự án này đã áp dụng [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).  
-Để biết thêm thông tin, hãy xem [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) hoặc  
-liên hệ [opencode@microsoft.com](mailto:opencode@microsoft.com) nếu có bất kỳ câu hỏi hoặc nhận xét bổ sung nào.
+## Quy tắc Ứng xử
 
-## AI Có Trách Nhiệm
+Dự án này đã áp dụng [Bộ Quy tắc Ứng xử Mã nguồn mở của Microsoft](https://opensource.microsoft.com/codeofconduct/).
+Để biết thêm thông tin, xem [Câu hỏi thường gặp về Bộ Quy tắc Ứng xử](https://opensource.microsoft.com/codeofconduct/faq/) hoặc
+liên hệ [opencode@microsoft.com](mailto:opencode@microsoft.com) nếu bạn có thêm câu hỏi hoặc ý kiến.
 
-Microsoft cam kết giúp khách hàng sử dụng các sản phẩm AI của chúng tôi một cách có trách nhiệm, chia sẻ những bài học kinh nghiệm và xây dựng các mối quan hệ đối tác dựa trên sự tin tưởng thông qua các công cụ như Transparency Notes và Impact Assessments. Nhiều tài nguyên này có thể được tìm thấy tại [https://aka.ms/RAI](https://aka.ms/RAI).  
-Phương pháp của Microsoft về AI có trách nhiệm dựa trên các nguyên tắc AI của chúng tôi về sự công bằng, độ tin cậy và an toàn, sự riêng tư và bảo mật, tính bao trùm, minh bạch và trách nhiệm giải trình.
+## Trách nhiệm về AI
 
-Các mô hình ngôn ngữ tự nhiên, hình ảnh và giọng nói ở quy mô lớn - như những mô hình được sử dụng trong ví dụ này - có thể hành xử theo cách không công bằng, không đáng tin cậy hoặc gây khó chịu, từ đó gây ra các tác hại. Vui lòng tham khảo [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) để được biết về những rủi ro và giới hạn.
+Microsoft cam kết giúp khách hàng sử dụng các sản phẩm AI của chúng tôi một cách có trách nhiệm, chia sẻ những bài học của chúng tôi và xây dựng các quan hệ đối tác dựa trên sự tin tưởng thông qua các công cụ như Transparency Notes và Impact Assessments. Nhiều tài nguyên này có thể được tìm thấy tại [https://aka.ms/RAI](https://aka.ms/RAI).
+Cách tiếp cận của Microsoft đối với AI có trách nhiệm được dựa trên các nguyên tắc AI của chúng tôi: công bằng, đáng tin cậy và an toàn, quyền riêng tư và bảo mật, tính bao trùm, minh bạch và trách nhiệm giải trình.
 
-Phương pháp được khuyến nghị để giảm thiểu các rủi ro này là bao gồm một hệ thống an toàn trong kiến trúc của bạn có thể phát hiện và ngăn chặn hành vi gây hại. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) cung cấp một lớp bảo vệ độc lập, có khả năng phát hiện nội dung do người dùng và AI tạo ra có hại trong các ứng dụng và dịch vụ. Azure AI Content Safety bao gồm các API văn bản và hình ảnh cho phép bạn phát hiện tài liệu có hại. Chúng tôi cũng có một Content Safety Studio tương tác cho phép bạn xem, khám phá và thử nghiệm mã mẫu để phát hiện nội dung có hại trên các dạng thức khác nhau. Tài liệu [bắt đầu nhanh sau đây](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) sẽ hướng dẫn bạn cách gửi yêu cầu đến dịch vụ.
+Các mô hình ngôn ngữ, hình ảnh và giọng nói quy mô lớn - giống như những mô hình được sử dụng trong ví dụ này - có thể hành xử theo những cách không công bằng, không đáng tin cậy hoặc gây xúc phạm, từ đó gây ra những tác hại. Vui lòng tham khảo [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) để được thông tin về các rủi ro và hạn chế.
 
-Một khía cạnh khác cần xem xét là hiệu suất tổng thể của ứng dụng. Với các ứng dụng đa mô thức và đa mô hình, chúng tôi xem hiệu suất là hệ thống hoạt động như bạn và người dùng mong đợi, bao gồm cả việc không tạo ra kết quả đầu ra có hại. Việc đánh giá hiệu suất toàn bộ ứng dụng của bạn bằng cách sử dụng [chỉ số chất lượng sinh và rủi ro và an toàn](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in) là rất quan trọng.
+Cách tiếp cận được khuyến nghị để giảm thiểu các rủi ro này là bao gồm một hệ thống an toàn trong kiến trúc của bạn để có thể phát hiện và ngăn chặn hành vi có hại. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) cung cấp một lớp bảo vệ độc lập, có khả năng phát hiện nội dung do người dùng hoặc AI tạo ra có hại trong ứng dụng và dịch vụ. Azure AI Content Safety bao gồm các API văn bản và hình ảnh cho phép bạn phát hiện các tài liệu có hại. Chúng tôi cũng có một Content Safety Studio tương tác cho phép bạn xem, khám phá và thử các đoạn mã mẫu để phát hiện nội dung có hại trên các phương thức khác nhau. Tài liệu [khởi động nhanh sau đây](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) hướng dẫn bạn cách thực hiện các yêu cầu tới dịch vụ.
 
-Bạn có thể đánh giá ứng dụng AI của mình trong môi trường phát triển bằng cách sử dụng [prompt flow SDK](https://microsoft.github.io/promptflow/index.html). Với tập dữ liệu kiểm thử hoặc mục tiêu, các thế hệ AI tạo sinh của bạn được đo lường định lượng bằng các bộ đánh giá tích hợp hoặc bộ đánh giá tùy chỉnh mà bạn chọn. Để bắt đầu với prompt flow sdk để đánh giá hệ thống của bạn, bạn có thể theo hướng dẫn [bắt đầu nhanh](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). Sau khi bạn thực hiện một lần chạy đánh giá, bạn có thể [trực quan hóa kết quả trong Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
+Một khía cạnh khác cần cân nhắc là hiệu năng tổng thể của ứng dụng. Với các ứng dụng đa phương thức và đa mô hình, chúng tôi coi hiệu năng là việc hệ thống hoạt động như bạn và người dùng mong đợi, bao gồm cả không tạo ra các kết quả có hại. Việc đánh giá hiệu năng của toàn bộ ứng dụng bằng [các chỉ số chất lượng sinh và chỉ số rủi ro và an toàn](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in) là rất quan trọng.
+
+Bạn có thể đánh giá ứng dụng AI của mình trong môi trường phát triển bằng cách sử dụng [prompt flow SDK](https://microsoft.github.io/promptflow/index.html). Dựa trên một bộ dữ liệu thử nghiệm hoặc một mục tiêu, các tác phẩm sinh của ứng dụng generative AI của bạn được đo định lượng bằng các bộ đánh giá tích hợp hoặc các bộ đánh giá tùy chỉnh do bạn lựa chọn. Để bắt đầu với prompt flow sdk nhằm đánh giá hệ thống của bạn, bạn có thể làm theo [hướng dẫn khởi động nhanh](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). Sau khi bạn thực hiện một lần chạy đánh giá, bạn có thể [trực quan hóa kết quả trong Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
 
 ## Nhãn hiệu
 
-Dự án này có thể chứa nhãn hiệu hoặc logo cho các dự án, sản phẩm hoặc dịch vụ. Việc sử dụng nhãn hiệu hoặc logo của Microsoft được ủy quyền phải tuân theo và không được vi phạm [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).  
-Việc sử dụng nhãn hiệu hoặc logo của Microsoft trong các phiên bản sửa đổi của dự án này không được gây nhầm lẫn hoặc ngụ ý sự tài trợ của Microsoft.  
-Mọi việc sử dụng nhãn hiệu hoặc logo của bên thứ ba đều phải tuân theo chính sách của bên thứ ba đó.
+Dự án này có thể chứa nhãn hiệu hoặc logo cho các dự án, sản phẩm hoặc dịch vụ. Việc sử dụng nhãn hiệu hoặc logo của Microsoft được ủy quyền phải tuân theo và phải phù hợp với
+[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
+Việc sử dụng nhãn hiệu hoặc logo của Microsoft trong các phiên bản đã chỉnh sửa của dự án này không được gây nhầm lẫn hoặc ngụ ý sự tài trợ của Microsoft.
+Bất kỳ việc sử dụng nhãn hiệu hoặc logo của bên thứ ba nào đều phải tuân theo chính sách của bên thứ ba đó.
 
-## Nhận Hỗ Trợ
+## Nhận trợ giúp
 
-Nếu bạn gặp khó khăn hoặc có câu hỏi về việc xây dựng ứng dụng AI, hãy tham gia:
+Nếu bạn gặp bế tắc hoặc có bất kỳ câu hỏi nào về việc xây dựng ứng dụng AI, hãy tham gia:
 
 [![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
 
-Nếu bạn có phản hồi về sản phẩm hoặc gặp lỗi khi xây dựng, hãy truy cập:
+Nếu bạn có phản hồi về sản phẩm hoặc gặp lỗi khi phát triển, hãy truy cập:
 
 [![Microsoft Foundry Developer Forum](https://img.shields.io/badge/GitHub-Microsoft_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
-
----
-
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**Tuyên bố từ chối trách nhiệm**:  
-Tài liệu này đã được dịch bằng dịch vụ dịch thuật AI [Co-op Translator](https://github.com/Azure/co-op-translator). Mặc dù chúng tôi cố gắng đảm bảo độ chính xác, xin lưu ý rằng các bản dịch tự động có thể chứa lỗi hoặc không chính xác. Tài liệu gốc bằng ngôn ngữ bản địa nên được coi là nguồn đáng tin cậy nhất. Đối với thông tin quan trọng, khuyến nghị sử dụng dịch vụ dịch thuật chuyên nghiệp. Chúng tôi không chịu trách nhiệm đối với bất kỳ sự hiểu lầm hoặc giải thích sai nào phát sinh từ việc sử dụng bản dịch này.
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->

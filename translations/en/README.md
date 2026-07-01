@@ -15,9 +15,11 @@ _Easily automate and maintain translations for your educational GitHub content a
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
+**Start here:** [Choose your workflow](https://azure.github.io/co-op-translator/workflows/) | [Configuration](https://azure.github.io/co-op-translator/configuration/) | [CLI](https://azure.github.io/co-op-translator/cli/) | [Python API](https://azure.github.io/co-op-translator/api/) | [MCP Server](https://azure.github.io/co-op-translator/mcp/)
+
 ### 🌐 Multi-Language Support
 
-#### Supported by [Co-op Translator](https://github.com/Azure/Co-op-Translator)
+#### Supported by [Co-op Translator](https://github.com/Azure/co-op-translator)
 
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
 [Arabic](../ar/README.md) | [Bengali](../bn/README.md) | [Bulgarian](../bg/README.md) | [Burmese (Myanmar)](../my/README.md) | [Chinese (Simplified)](../zh-CN/README.md) | [Chinese (Traditional, Hong Kong)](../zh-HK/README.md) | [Chinese (Traditional, Macau)](../zh-MO/README.md) | [Chinese (Traditional, Taiwan)](../zh-TW/README.md) | [Croatian](../hr/README.md) | [Czech](../cs/README.md) | [Danish](../da/README.md) | [Dutch](../nl/README.md) | [Estonian](../et/README.md) | [Finnish](../fi/README.md) | [French](../fr/README.md) | [German](../de/README.md) | [Greek](../el/README.md) | [Hebrew](../he/README.md) | [Hindi](../hi/README.md) | [Hungarian](../hu/README.md) | [Indonesian](../id/README.md) | [Italian](../it/README.md) | [Japanese](../ja/README.md) | [Kannada](../kn/README.md) | [Khmer](../km/README.md) | [Korean](../ko/README.md) | [Lithuanian](../lt/README.md) | [Malay](../ms/README.md) | [Malayalam](../ml/README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Nigerian Pidgin](../pcm/README.md) | [Norwegian](../no/README.md) | [Persian (Farsi)](../fa/README.md) | [Polish](../pl/README.md) | [Portuguese (Brazil)](../pt-BR/README.md) | [Portuguese (Portugal)](../pt-PT/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Romanian](../ro/README.md) | [Russian](../ru/README.md) | [Serbian (Cyrillic)](../sr/README.md) | [Slovak](../sk/README.md) | [Slovenian](../sl/README.md) | [Spanish](../es/README.md) | [Swahili](../sw/README.md) | [Swedish](../sv/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Tamil](../ta/README.md) | [Telugu](../te/README.md) | [Thai](../th/README.md) | [Turkish](../tr/README.md) | [Ukrainian](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnamese](../vi/README.md)
@@ -56,9 +58,24 @@ _Easily automate and maintain translations for your educational GitHub content a
 **Co-op Translator** helps you localize your educational GitHub content into multiple languages effortlessly.
 When you update your Markdown files, images, or notebooks, translations stay automatically synchronized, ensuring your content remains accurate and up to date for learners worldwide.
 
+Use it from the CLI for repository translation, from the Python API for automation, or through the MCP server for agent and editor workflows.
+
 Example of how translated content is organized:
 
 ![Example](../../imgs/translation-ex.png)
+
+## Why Co-op Translator?
+
+Translating one file is easy. Keeping an entire documentation repository
+translated, linked, and up to date is the hard part.
+
+| Problem | How Co-op Translator helps |
+| --- | --- |
+| Long docs are not one prompt | Large Markdown files are split into chunks, so a long README does not depend on one fragile model response. If a chunk fails, Co-op Translator can retry and re-chunk only the failed part. |
+| Incomplete translations should not be marked current | A truncated translation should never be sealed as up to date. Co-op Translator checks translation integrity before saving and can detect structurally incomplete existing translations. |
+| Links should match the translated repo structure | Manual translations often leave relative links pointing back to the source tree. Co-op Translator rewrites Markdown, notebook, image, and README links to match the `translations/<lang>/...` structure. |
+| Translation should work across an entire repo | Co-op Translator handles README files, docs, notebooks, and image text as part of one repository workflow, instead of translating files one by one. |
+| Maintaining translations matters more than creating them once | Source hashes and translation metadata let Co-op Translator find outdated files, skip unchanged files, and keep translated content synchronized as the source repo evolves. |
 
 ## How translation state is managed
 
@@ -80,100 +97,87 @@ software dependency and artifact management practices.
 
 → [How translation state is managed](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
 
+### Related deep dives
 
-## Quick start
+- [Fixing Broken Markdown in AI Translation: Hardening a Production Pipeline](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/fixing-broken-markdown-in-ai-translation-hardening-a-production-pipeline/4511378)
+
+## Get Started
+
+Co-op Translator can be used from the CLI, the Python API, or the MCP server. Start with the workflow guide if you are choosing between local translation, automation, CI, and agent/editor integration.
+
+- [Choose your workflow](../../docs/workflows.md)
+- [Configure credentials](../../docs/configuration.md)
+- [Translate from the CLI](../../docs/cli.md)
+- [Automate with the Python API](../../docs/api.md)
+- [Connect with the MCP Server](../../docs/mcp.md)
+- [Run in GitHub Actions](../../docs/github-actions.md)
+
+Minimal CLI example after configuration:
 
 ```bash
-# Create and activate a virtual environment (recommended)
 python -m venv .venv
 # Windows
 .venv\Scripts\activate
 # macOS/Linux
 source .venv/bin/activate
-# Install the package
+
 pip install co-op-translator
-# Translate
-translate -l "ko ja fr" -md
+translate -l "ko" -md
+co-op-review -l "ko"
 ```
 
-Docker:
+For first runs on large repositories, use `--dry-run` before writing translated files. See the [CLI Reference](../../docs/cli.md) for content type flags, logs, review, and link migration.
+
+Container quick run with Bash/Zsh:
 
 ```bash
-# Pull the public image from GHCR
-docker pull ghcr.io/azure/co-op-translator:latest
-# Run with current folder mounted and .env provided (Bash/Zsh)
-docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
+docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
 
-## Minimal setup
+Container quick run with PowerShell:
 
-1. Assert that you have a supported Python version (currently 3.10-3.12). In poetry (pyproject.toml) this is handled automatically.
-2. Create a `.env` file using the template: [.env.template](../../.env.template)
-3. Configure one LLM provider (Azure OpenAI or OpenAI)
-4. (Optional) For image translation (`-img`), configure Azure AI Vision
-5. (Optional) You can configure multiple credential sets by duplicating variables with suffixes like `_1`, `_2`, etc. All variables in a set must share the same suffix.
-6. (Recommended) Clean up any previous translations to avoid conflicts (e.g., `translations/`)
-7. (Recommended) Add a translation section to your README using the [README languages template](./getting_started/README_languages_template.md)
-8. See: [Set up Azure AI](./getting_started/set-up-azure-ai.md)
-
-## Usage
-
-Translate all supported types:
-
-```bash
-translate -l "ko ja"
+```powershell
+docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
-
-Only Markdown:
-
-```bash
-translate -l "de" -md
-```
-
-Markdown + images:
-
-```bash
-translate -l "pt" -md -img
-```
-
-Only notebooks:
-
-```bash
-translate -l "zh" -nb
-```
-
-More flags: [Command reference](./getting_started/command-reference.md)
 
 ## Features
 
 - Automated translation for Markdown, notebooks, and images
 - Keeps translations in sync with source changes
 - Works locally (CLI) or in CI (GitHub Actions)
-- Uses Azure OpenAI or OpenAI; optional Azure AI Vision for images
+- Exposes Markdown, notebook, image, review, and project translation tools through MCP
+- Uses Azure OpenAI or OpenAI for provider-backed translation
+- Lets MCP host agents translate Markdown and notebook chunks without Co-op Translator LLM credentials
+- Uses Azure AI Vision for image text extraction and translation
+- Reviews translation structure and freshness with deterministic checks
 - Preserves Markdown formatting and structure
 
 ## Docs
 
-- [Command-line guide](./getting_started/command-line-guide/command-line-guide.md)
-- [GitHub Actions guide (Public repositories & standard secrets)](./getting_started/github-actions-guide/github-actions-guide-public.md)
-- [GitHub Actions guide (Microsoft organization repositories & org-level setups)](./getting_started/github-actions-guide/github-actions-guide-org.md)
-- [README languages template](./getting_started/README_languages_template.md)
-- [Supported languages](./getting_started/supported-languages.md)
-- [Contributing](./CONTRIBUTING.md)
-- [Troubleshooting](./getting_started/troubleshooting.md)
+- [Documentation site](https://azure.github.io/co-op-translator/)
+- [Choose your workflow](../../docs/workflows.md)
+- [Configuration](../../docs/configuration.md)
+- [Azure AI Setup](../../docs/azure-ai-setup.md)
+- [CLI Reference](../../docs/cli.md)
+- [Python API](../../docs/api.md)
+- [MCP Server](../../docs/mcp.md)
+- [GitHub Actions](../../docs/github-actions.md)
+- [README languages template](../../docs/readme-languages-template.md)
+- [Supported languages](../../docs/supported-languages.md)
+- [Contributing](../../CONTRIBUTING.md)
+- [Troubleshooting](../../docs/troubleshooting.md)
 
 ### Microsoft-specific guide
 > [!NOTE]
 > For maintainers of the Microsoft “For Beginners” repositories only.
 
-- [Updating the “other courses” list (for MS Beginners repositories only)](./getting_started/update-other-courses.md)
+- [Updating the “other courses” list (for MS Beginners repositories only)](../../docs/microsoft-beginners.md)
 
 ## Support us and foster global learning
 
 Join us in revolutionizing how educational content is shared globally! Give [Co-op Translator](https://github.com/azure/co-op-translator) a ⭐ on GitHub and support our mission to break down language barriers in learning and technology. Your interest and contributions make a significant impact! Code contributions and feature suggestions are always welcome.
 
 ### Explore Microsoft educational content in your language
-
 - [LangChain4j-for-Beginners](https://github.com/microsoft/LangChain4j-for-Beginners)
 - [AZD for Beginners](https://github.com/microsoft/AZD-for-beginners)
 - [Edge AI for Beginners](https://github.com/microsoft/edgeai-for-beginners)
@@ -200,9 +204,10 @@ Join us in revolutionizing how educational content is shared globally! Give [Co-
 
 ## Contributing
 
-This project welcomes contributions and suggestions. Interested in contributing to Azure Co-op Translator? Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how you can help make Co-op Translator more accessible.
+This project welcomes contributions and suggestions. Interested in contributing to Azure Co-op Translator? Please see our [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines on how you can help make Co-op Translator more accessible.
 
 ## Contributors
+
 [![co-op-translator contributors](https://contrib.rocks/image?repo=Azure/co-op-translator)](https://github.com/Azure/co-op-translator/graphs/contributors)
 
 ## Code of Conduct
@@ -241,10 +246,3 @@ If you get stuck or have any questions about building AI apps, join:
 If you have product feedback or errors while building visit:
 
 [![Microsoft Foundry Developer Forum](https://img.shields.io/badge/GitHub-Microsoft_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
-
----
-
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**Disclaimer**:
-This document has been translated using AI translation service [Co-op Translator](https://github.com/Azure/co-op-translator). While we strive for accuracy, please be aware that automated translations may contain errors or inaccuracies. The original document in its native language should be considered the authoritative source. For critical information, professional human translation is recommended. We are not liable for any misunderstandings or misinterpretations arising from the use of this translation.
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->

@@ -1,6 +1,6 @@
 # Co-op Translator
 
-_Lengvai automatizuokite ir palaikykite vertimus savo edukaciniam GitHub turiniui keliomis kalbomis, kai jūsų projektas vystosi._
+_Easily automate and maintain translations for your educational GitHub content across multiple languages as your project evolves._
 
 ![Python 3.10–3.12](https://img.shields.io/badge/python-3.10--3.12-blue)
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
@@ -15,16 +15,18 @@ _Lengvai automatizuokite ir palaikykite vertimus savo edukaciniam GitHub turiniu
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-### 🌐 Daugiakalbė palaikymas
+**Pradėkite čia:** [Pasirinkite savo darbo eigą](https://azure.github.io/co-op-translator/workflows/) | [Konfigūracija](https://azure.github.io/co-op-translator/configuration/) | [CLI](https://azure.github.io/co-op-translator/cli/) | [Python API](https://azure.github.io/co-op-translator/api/) | [MCP Server](https://azure.github.io/co-op-translator/mcp/)
 
-#### Palaikoma su [Co-op Translator](https://github.com/Azure/Co-op-Translator)
+### 🌐 Daugiakalbis palaikymas
+
+#### Palaiko [Co-op Translator](https://github.com/Azure/co-op-translator)
 
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
 [Arabic](../ar/README.md) | [Bengali](../bn/README.md) | [Bulgarian](../bg/README.md) | [Burmese (Myanmar)](../my/README.md) | [Chinese (Simplified)](../zh-CN/README.md) | [Chinese (Traditional, Hong Kong)](../zh-HK/README.md) | [Chinese (Traditional, Macau)](../zh-MO/README.md) | [Chinese (Traditional, Taiwan)](../zh-TW/README.md) | [Croatian](../hr/README.md) | [Czech](../cs/README.md) | [Danish](../da/README.md) | [Dutch](../nl/README.md) | [Estonian](../et/README.md) | [Finnish](../fi/README.md) | [French](../fr/README.md) | [German](../de/README.md) | [Greek](../el/README.md) | [Hebrew](../he/README.md) | [Hindi](../hi/README.md) | [Hungarian](../hu/README.md) | [Indonesian](../id/README.md) | [Italian](../it/README.md) | [Japanese](../ja/README.md) | [Kannada](../kn/README.md) | [Khmer](../km/README.md) | [Korean](../ko/README.md) | [Lithuanian](./README.md) | [Malay](../ms/README.md) | [Malayalam](../ml/README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Nigerian Pidgin](../pcm/README.md) | [Norwegian](../no/README.md) | [Persian (Farsi)](../fa/README.md) | [Polish](../pl/README.md) | [Portuguese (Brazil)](../pt-BR/README.md) | [Portuguese (Portugal)](../pt-PT/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Romanian](../ro/README.md) | [Russian](../ru/README.md) | [Serbian (Cyrillic)](../sr/README.md) | [Slovak](../sk/README.md) | [Slovenian](../sl/README.md) | [Spanish](../es/README.md) | [Swahili](../sw/README.md) | [Swedish](../sv/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Tamil](../ta/README.md) | [Telugu](../te/README.md) | [Thai](../th/README.md) | [Turkish](../tr/README.md) | [Ukrainian](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnamese](../vi/README.md)
 
-> **Norite klonuoti vietoje?**
+> **Prefer to Clone Locally?**
 >
-> Šiame saugykloje yra daugiau nei 50 kalbų vertimų, kurie žymiai padidina atsisiuntimo dydį. Norėdami klonuoti be vertimų, naudokite ribotą checkout:
+> This repository includes 50+ language translations which significantly increases the download size. To clone without translations, use sparse checkout:
 >
 > **Bash / macOS / Linux:**
 > ```bash
@@ -40,12 +42,12 @@ _Lengvai automatizuokite ir palaikykite vertimus savo edukaciniam GitHub turiniu
 > git sparse-checkout set --no-cone "/*" "!translations" "!translated_images"
 > ```
 >
-> Tai suteikia jums viską, ko reikia kursui užbaigti, daug greičiau atsisiunčiant.
+> This gives you everything you need to complete the course with a much faster download.
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
 [![GitHub forks](https://img.shields.io/github/forks/azure/co-op-translator.svg?style=social&label=Fork)](https://GitHub.com/azure/co-op-translator/network/)
-[![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator.svg?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
+[![GitHub stars](https://img.shields.io/github/stars/azure/co-op-translator?style=social&label=Star)](https://GitHub.com/azure/co-op-translator/stargazers/)
 
 [![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
 
@@ -53,198 +55,190 @@ _Lengvai automatizuokite ir palaikykite vertimus savo edukaciniam GitHub turiniu
 
 ## Apžvalga
 
-**Co-op Translator** padeda lengvai lokalizuoti jūsų edukacinį GitHub turinį keliomis kalbomis.  
-Kai atnaujinate savo Markdown failus, paveikslėlius ar užrašų knygeles, vertimai automatiškai sinchronizuojami, užtikrinantys, kad jūsų turinys išliktų tikslus ir atnaujintas mokiniams visame pasaulyje.
+**Co-op Translator** padeda jums lengvai lokalizuoti edukacinį GitHub turinį į kelias kalbas.
+Kai atnaujinate savo Markdown failus, vaizdus ar užrašų bylas (notebook), vertimai automatiškai sinchronizuojami, užtikrindami, kad jūsų turinys būtų tikslus ir atnaujintas mokiniams visame pasaulyje.
 
-Pavyzdys, kaip organizuojamas išverstas turinys:
+Naudokite įrankį per CLI saugyklos vertimui, per Python API automatizacijai arba per MCP serverį agentų ir redaktorių darbo eigoms.
+
+Example of how translated content is organized:
 
 ![Example](../../imgs/translation-ex.png)
 
-## Kaip valdomas vertimo būsenos valdymas
+## Kodėl Co-op Translator?
+
+Vertimas vieno failo yra lengvas. Išsaugoti visą dokumentacijos saugyklą
+išverstą, susietą ir atnaujintą yra sudėtinga.
+
+| Problem | How Co-op Translator helps |
+| --- | --- |
+| Long docs are not one prompt | Large Markdown files are split into chunks, so a long README does not depend on one fragile model response. If a chunk fails, Co-op Translator can retry and re-chunk only the failed part. |
+| Incomplete translations should not be marked current | A truncated translation should never be sealed as up to date. Co-op Translator checks translation integrity before saving and can detect structurally incomplete existing translations. |
+| Links should match the translated repo structure | Manual translations often leave relative links pointing back to the source tree. Co-op Translator rewrites Markdown, notebook, image, and README links to match the `translations/<lang>/...` structure. |
+| Translation should work across an entire repo | Co-op Translator handles README files, docs, notebooks, and image text as part of one repository workflow, instead of translating files one by one. |
+| Maintaining translations matters more than creating them once | Source hashes and translation metadata let Co-op Translator find outdated files, skip unchanged files, and keep translated content synchronized as the source repo evolves. |
+
+## Kaip valdoma vertimo būsena
 
 Co-op Translator valdo išverstą turinį kaip **versijuotus programinės įrangos artefaktus**,  
 o ne kaip statinius failus.
 
-Įrankis seka išverstų Markdown, paveikslėlių ir užrašų būseną  
-naudodamas **kalbai pritaikytą metaduomenų sistemą**.
+Įrankis seka išverstų Markdown, vaizdų ir užrašų failų būseną
+naudodamas **kalbai pritaikytą metaduomenų** sistemą.
 
-Šis dizainas leidžia Co-op Translator:
+Toks dizainas leidžia Co-op Translator:
 
 - Patikimai aptikti pasenusius vertimus
-- Nuosekliai elgtis su Markdown, paveikslėliais ir užrašų knygelėmis
-- Saugaus mastelio palaikymą didelėse, sparčiai besivystančiose daugakalbėse saugyklose
+- Tvarkyti Markdown, vaizdus ir užrašus vienodai
+- Saugiu būdu išplėsti veikimą didelėms, greitai kintančioms, daugakalbėms saugykloms
 
-Modeliuodama vertimus kaip valdomus artefaktus,  
-vertimų darbo eiga natūraliai dera su šiuolaikinėmis  
+Modeliuodamas vertimus kaip valdomus artefaktus,
+vertimo darbo eigos natūraliai dera su moderniomis
 programinės įrangos priklausomybių ir artefaktų valdymo praktikomis.
 
-→ [Kaip valdomas vertimo būsenos valdymas](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
+→ [How translation state is managed](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
 
+### Related deep dives
 
-## Greitas pradžios vadovas
+- [Fixing Broken Markdown in AI Translation: Hardening a Production Pipeline](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/fixing-broken-markdown-in-ai-translation-hardening-a-production-pipeline/4511378)
+
+## Pradėkite
+
+Co-op Translator galima naudoti per CLI, Python API arba MCP serverį. Pradėkite nuo darbo eigos vadovo, jei renkatės tarp lokalaus vertimo, automatizacijos, CI ar agento/redaktoriaus integracijos.
+
+- [Choose your workflow](../../docs/workflows.md)
+- [Configure credentials](../../docs/configuration.md)
+- [Translate from the CLI](../../docs/cli.md)
+- [Automate with the Python API](../../docs/api.md)
+- [Connect with the MCP Server](../../docs/mcp.md)
+- [Run in GitHub Actions](../../docs/github-actions.md)
+
+Minimalus CLI pavyzdys po konfigūracijos:
 
 ```bash
-# Sukurkite ir suaktyvinkite virtualią aplinką (rekomenduojama)
 python -m venv .venv
 # Windows
 .venv\Scripts\activate
 # macOS/Linux
 source .venv/bin/activate
-# Įdiekite paketą
+
 pip install co-op-translator
-# Išverskite
-translate -l "ko ja fr" -md
+translate -l "ko" -md
+co-op-review -l "ko"
 ```
 
-Docker:
+Pirmiems paleidimams didelėse saugyklose, prieš rašant išverstus failus naudokite `--dry-run`. Daugiau apie turinio tipų parametruose, žurnalus, peržiūrą ir nuorodų migraciją žr. [CLI Reference](../../docs/cli.md).
+
+Greitas konteinerio paleidimas su Bash/Zsh:
 
 ```bash
-# Pasiimkite viešą atvaizdą iš GHCR
-docker pull ghcr.io/azure/co-op-translator:latest
-# Vykdykite su pritvirtinta esama aplanko vieta ir pateiktu .env (Bash/Zsh)
-docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
+docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
 
-## Minimalus nustatymas
+Greitas konteinerio paleidimas su PowerShell:
 
-1. Įsitikinkite, kad turite palaikomą Python versiją (šiuo metu 3.10-3.12). Poetry (pyproject.toml) tai valdo automatiškai.
-2. Sukurkite `.env` failą naudodami šabloną: [.env.template](../../.env.template)
-3. Konfigūruokite vieną LLM teikėją (Azure OpenAI arba OpenAI)
-4. (Pasirinktinai) Vaizdų vertimui (`-img`) konfigūruokite Azure AI Vision
-5. (Pasirinktinai) Galite sukonfigūruoti kelis kredencialų rinkinius, dubliuodami kintamuosius su priesagomis, tokiomis kaip `_1`, `_2` ir pan. Visi kintamieji rinkinyje turi turėti tą pačią priesagą.
-6. (Rekomenduojama) Išvalykite ankstesnius vertimus, kad išvengtumėte konfliktų (pavyzdžiui, `translations/`)
-7. (Rekomenduojama) Pridėkite vertimų skyrių į savo README naudodami [README kalbų šabloną](./getting_started/README_languages_template.md)
-8. Žiūrėkite: [Azure AI nustatymas](./getting_started/set-up-azure-ai.md)
-
-## Naudojimas
-
-Versti visų palaikomų tipų turinį:
-
-```bash
-translate -l "ko ja"
+```powershell
+docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
-
-Tik Markdown:
-
-```bash
-translate -l "de" -md
-```
-
-Markdown + paveikslėliai:
-
-```bash
-translate -l "pt" -md -img
-```
-
-Tik užrašų knygelės:
-
-```bash
-translate -l "zh" -nb
-```
-
-Daugiau parinkčių: [Komandų nuoroda](./getting_started/command-reference.md)
 
 ## Funkcijos
 
-- Automatizuotas vertimas Markdown, užrašų knygelių ir paveikslėlių turiniui
+- Automatizuotas Markdown, užrašų ir vaizdų vertimas
 - Išlaiko vertimus sinchronizuotus su šaltinio pakeitimais
-- Veikia vietoje (CLI) arba CI (GitHub Actions)
-- Naudoja Azure OpenAI arba OpenAI; pasirinktinai Azure AI Vision paveikslėliams
+- Veikia lokaliai (CLI) arba CI (GitHub Actions)
+- Pateikia Markdown, užrašų, vaizdų, peržiūros ir projekto vertimo įrankius per MCP
+- Naudoja Azure OpenAI arba OpenAI kaip vertimo tiekėją
+- Leidžia MCP talpinti agentus, kad jie versti Markdown ir užrašų dalis be Co-op Translator LLM kredencialų
+- Naudoja Azure AI Vision vaizdų teksto ištraukai ir vertimui
+- Peržiūri vertimo struktūrą ir atnaujintumą deterministiniais patikrinimais
 - Išlaiko Markdown formatavimą ir struktūrą
 
 ## Dokumentacija
 
-- [Komandinės eilutės vadovas](./getting_started/command-line-guide/command-line-guide.md)
-- [GitHub Actions vadovas (viešos saugyklos ir standartiniai slaptieji raktai)](./getting_started/github-actions-guide/github-actions-guide-public.md)
-- [GitHub Actions vadovas (Microsoft organizacijos saugyklos ir organizacijos lygio nustatymai)](./getting_started/github-actions-guide/github-actions-guide-org.md)
-- [README kalbų šablonas](./getting_started/README_languages_template.md)
-- [Palaikomos kalbos](./getting_started/supported-languages.md)
-- [Prisidėjimas](./CONTRIBUTING.md)
-- [Trikčių šalinimas](./getting_started/troubleshooting.md)
+- [Documentation site](https://azure.github.io/co-op-translator/)
+- [Choose your workflow](../../docs/workflows.md)
+- [Configuration](../../docs/configuration.md)
+- [Azure AI Setup](../../docs/azure-ai-setup.md)
+- [CLI Reference](../../docs/cli.md)
+- [Python API](../../docs/api.md)
+- [MCP Server](../../docs/mcp.md)
+- [GitHub Actions](../../docs/github-actions.md)
+- [README languages template](../../docs/readme-languages-template.md)
+- [Supported languages](../../docs/supported-languages.md)
+- [Contributing](../../CONTRIBUTING.md)
+- [Troubleshooting](../../docs/troubleshooting.md)
 
-### Microsoft specifinis vadovas
+### Microsoft-specific guide
 > [!NOTE]
-> Tik Microsoft „Pradedantiesiems“ saugyklų prižiūrėtojams.
+> For maintainers of the Microsoft “For Beginners” repositories only.
 
-- [„Kitų kursų“ sąrašo atnaujinimas (tik MS Pradedančiųjų saugykloms)](./getting_started/update-other-courses.md)
+- [Updating the “other courses” list (for MS Beginners repositories only)](../../docs/microsoft-beginners.md)
 
-## Palaikykite mus ir skatinkite pasaulinį mokymąsi
+## Paremkite mus ir skatinkite pasaulinį mokymąsi
 
-Prisijunkite prie mūsų revoliucijoje, kaip edukacinis turinys dalijamasi visame pasaulyje! Duokite [Co-op Translator](https://github.com/azure/co-op-translator) ⭐ GitHub ir palaikykite mūsų misiją pašalinti kalbinius barjerus mokymesi ir technologijose. Jūsų susidomėjimas ir indėlis daro didelį poveikį! Kodo indėliai ir funkcijų pasiūlymai visada laukiami.
+Prisijunkite prie mūsų revoliucijos, kaip edukacinis turinys dalijamas visame pasaulyje! Įvertinkite [Co-op Translator](https://github.com/azure/co-op-translator) ⭐ GitHub ir palaikykite mūsų misiją pašalinti kalbų barjerus mokymesi ir technologijose. Jūsų susidomėjimas ir indėlis turi didelę įtaką! Kodo prisidėjimai ir funkcijų pasiūlymai visuomet laukiami.
 
-### Ištirkite Microsoft edukacinį turinį savo kalba
-
-- [LangChain4j-for-Beginners](https://github.com/microsoft/LangChain4j-for-Beginners)
-- [AZD for Beginners](https://github.com/microsoft/AZD-for-beginners)
-- [Edge AI for Beginners](https://github.com/microsoft/edgeai-for-beginners)
-- [Model Context Protocol (MCP) For Beginners](https://github.com/microsoft/mcp-for-beginners)
-- [AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners)
-- [Generatyvus AI pradedantiesiems naudojant .NET](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
-- [Generatyvus AI pradedantiesiems](https://github.com/microsoft/generative-ai-for-beginners)
-- [Generatyvus AI pradedantiesiems naudojant Java](https://github.com/microsoft/generative-ai-for-beginners-java)
-- [ML pradedantiesiems](https://aka.ms/ml-beginners)
+### Atraskite Microsoft mokomąjį turinį savo kalba
+- [LangChain4j pradedantiesiems](https://github.com/microsoft/LangChain4j-for-Beginners)
+- [AZD pradedantiesiems](https://github.com/microsoft/AZD-for-beginners)
+- [Edge AI pradedantiesiems](https://github.com/microsoft/edgeai-for-beginners)
+- [Model Context Protocol (MCP) pradedantiesiems](https://github.com/microsoft/mcp-for-beginners)
+- [AI agentai pradedantiesiems](https://github.com/microsoft/ai-agents-for-beginners)
+- [Generatyvinė AI pradedantiesiems naudojant .NET](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
+- [Generatyvinė AI pradedantiesiems](https://github.com/microsoft/generative-ai-for-beginners)
+- [Generatyvinė AI pradedantiesiems naudojant Java](https://github.com/microsoft/generative-ai-for-beginners-java)
+- [Mašininis mokymasis pradedantiesiems](https://aka.ms/ml-beginners)
 - [Duomenų mokslas pradedantiesiems](https://aka.ms/datascience-beginners)
-- [AI pradedantiesiems](https://aka.ms/ai-beginners)
+- [Dirbtinis intelektas pradedantiesiems](https://aka.ms/ai-beginners)
 - [Kibernetinis saugumas pradedantiesiems](https://github.com/microsoft/Security-101)
-- [Web kūrimas pradedantiesiems](https://aka.ms/webdev-beginners)
-- [IoT pradedantiesiems](https://aka.ms/iot-beginners)
+- [Tinklalapių kūrimas pradedantiesiems](https://aka.ms/webdev-beginners)
+- [Daiktų internetas pradedantiesiems](https://aka.ms/iot-beginners)
 - [PhiCookBook](https://github.com/microsoft/PhiCookBook)
 
 ## Vaizdo pristatymai
 
-👉 Spustelėkite žemiau esantį paveikslėlį, norėdami žiūrėti YouTube.
+👉 Spustelėkite paveikslėlį žemiau, kad žiūrėtumėte YouTube.
 
-- **Open at Microsoft**: Trumpa 18 minučių įžanga ir greitas gidų, kaip naudoti Co-op Translator.
+- **Open at Microsoft**: Trumpas 18 minučių pristatymas ir greitas vadovas, kaip naudotis Co-op Translator.
 
   [![Open at Microsoft](../../imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
 ## Prisidėjimas
 
-Šis projektas laukia jūsų indėlių ir pasiūlymų. Norite prisidėti prie Azure Co-op Translator? Prašome peržiūrėti mūsų [CONTRIBUTING.md](./CONTRIBUTING.md), kad sužinotumėte, kaip galite padėti padaryti Co-op Translator prieinamesnį.
+Šis projektas kviečia prisidėti ir teikti pasiūlymus. Norite prisidėti prie Azure Co-op Translator? Peržiūrėkite mūsų [CONTRIBUTING.md](../../CONTRIBUTING.md) gaires, kaip galite padėti padaryti Co-op Translator prieinamesnį.
 
-## Dalyviai
-[![co-op-translator contributors](https://contrib.rocks/image?repo=Azure/co-op-translator)](https://github.com/Azure/co-op-translator/graphs/contributors)
+## Bendradarbiai
+
+[![co-op-translator prisidėtojai](https://contrib.rocks/image?repo=Azure/co-op-translator)](https://github.com/Azure/co-op-translator/graphs/contributors)
 
 ## Elgesio kodeksas
 
 Šis projektas priėmė [Microsoft atvirojo kodo elgesio kodeksą](https://opensource.microsoft.com/codeofconduct/).
-Daugiau informacijos rasite [Elgesio kodekso DUK](https://opensource.microsoft.com/codeofconduct/faq/) arba
-kreipkitės el. paštu [opencode@microsoft.com](mailto:opencode@microsoft.com) su bet kokiais papildomais klausimais ar pastabomis.
+Daugiau informacijos rasite [Elgesio kodekso DUK](https://opensource.microsoft.com/codeofconduct/faq/) arba susisiekite su [opencode@microsoft.com](mailto:opencode@microsoft.com) dėl papildomų klausimų ar komentarų.
 
-## Atsakingas Dirbtinis Intelektas
+## Atsakingas DI
 
-Microsoft įsipareigoja padėti mūsų klientams atsakingai naudoti mūsų DI produktus, dalintis savo patirtimi ir kurti pasitikėjimu grįstas partnerystes, naudodama tokias priemones kaip Skaidrumo pastabos ir Poveikio vertinimai. Daugelį šių išteklių rasite adresu [https://aka.ms/RAI](https://aka.ms/RAI).
-Microsoft atsakingo DI požiūris grindžiamas mūsų DI principais: teisingumu, patikimumu ir saugumu, privatumu ir apsauga, įtrauktimi, skaidrumu ir atsakingumu.
+Microsoft įsipareigoja padėti savo klientams atsakingai naudoti mūsų DI produktus, dalintis įžvalgomis ir kurti abipusio pasitikėjimo partnerystes naudodama tokius įrankius kaip Transparency Notes ir Impact Assessments. Daug šių išteklių rasite adresu [https://aka.ms/RAI](https://aka.ms/RAI).
+Microsoft požiūris į atsakingą DI remiasi mūsų DI principais: sąžiningumas, patikimumas ir saugumas, privatumas ir saugumas, įtrauktis, skaidrumas ir atsakingumas.
 
-Didelio masto natūralios kalbos, vaizdų ir kalbos modeliai - pavyzdžiui, naudojami šiame pavyzdyje - gali pasireikšti neteisingu, nepatikimu ar įžeidžiančiu elgesiu, sukeldami žalą. Prašome susipažinti su [Azure OpenAI paslaugos Skaidrumo pastaba](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text), kad sužinotumėte apie rizikas ir apribojimus.
+Didelio masto natūralios kalbos, vaizdų ir kalbos modeliai – tokie, kokie naudojami šiame pavyzdyje – gali elgtis netinkamai, nepatikimai arba įžeidžiamai, kas savo ruožtu gali sukelti žalą. Prašome susipažinti su [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text), kad sužinotumėte apie rizikas ir apribojimus.
 
-Rekomenduojamas būdas mažinti šias rizikas – įtraukti į savo architektūrą saugos sistemą, galinčią aptikti ir užkirsti kelią žalingam elgesiui. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) suteikia nepriklausomą apsaugos sluoksnį, gebantį aptikti žalingą vartotojų ir DI generuojamą turinį programėlėse ir paslaugose. Azure AI Content Safety apima teksto ir vaizdų API, leidžiančias aptikti žalingą medžiagą. Taip pat turime interaktyvų Content Safety Studio, leidžiantį peržiūrėti, tyrinėti ir išbandyti pavyzdinį kodą, skirtą žalingo turinio aptikimui skirtingose modalinėse srityse. Ši [greitojo starto dokumentacija](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) padės jums pateikti užklausas paslaugai.
+Rekomenduojamas rizikų mažinimo požiūris yra įtraukti saugumo sistemą į savo architektūrą, kuri galėtų aptikti ir užkirsti kelią žalingam elgesiui. [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) suteikia nepriklausomą apsaugos sluoksnį, galintį aptikti žalingą vartotojų sukurtą ir DI sukurtą turinį programėlėse ir paslaugose. Azure AI Content Safety apima teksto ir vaizdų API, leidžiančias aptikti žalingą medžiagą. Taip pat turime interaktyvią Content Safety Studio, kurioje galite peržiūrėti, išbandyti ir išbandyti pavyzdinį kodą, skirtą aptikti žalingą turinį per įvairias modalumas. Šią [greito pradžios dokumentaciją](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) rasite instrukcijas, kaip siųsti užklausas į paslaugą.
 
-Kitas svarbus aspektas yra bendras programėlės našumas. Multi-modaliose ir daugmodelių programėlėse, našumas reiškia, kad sistema veikia taip, kaip tikitės jūs ir jūsų naudotojai, įskaitant nekurti žalingų rezultatų. Svarbu įvertinti bendrą jūsų programėlės našumą naudodami [generavimo kokybės bei rizikos ir saugumo metrikas](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in).
+Kitas svarbus aspektas – bendra programėlės našumas. Daugiamodalėse ir daugelių modelių programėlėse našumas reiškia, kad sistema veikia taip, kaip tikitės jūs ir jūsų vartotojai, įskaitant ir tai, kad ji negeneruotų žalingų rezultatų. Svarbu įvertinti bendrą programėlės našumą naudojant [generavimo kokybės ir rizikos bei saugumo metrikas](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in).
 
-Galite įvertinti savo DI programėlę savo kūrimo aplinkoje naudodami [prompt flow SDK](https://microsoft.github.io/promptflow/index.html). Turėdami testinį duomenų rinkinį arba tikslą, jūsų generatyvių DI programėlės generacijų kokybė kiekybiškai vertinama su įmontuotais vertintojais arba pasirinktiniais vertintojais. Norėdami pradėti naudoti prompt flow sdk savo sistemos vertinimui, galite sekti [greitojo starto vadovą](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). Vykdę vertinimo procesą, galite [vizualizuoti rezultatus Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
+Galite įvertinti savo DI programėlę kūrimo aplinkoje naudodami [prompt flow SDK](https://microsoft.github.io/promptflow/index.html). Turėdami testinį duomenų rinkinį arba tikslą, jūsų generatyvinės DI programėlės generacijos kiekybiškai įvertinamos naudojant įmontuotus arba pasirinktinius vertintojo įrankius. Norėdami pradėti naudoti prompt flow SDK savo sistemos vertinimui, sekite [greito pradžios vadovą](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk). Vykdę vertinimo paleidimą, galite [vizualizuoti rezultatus Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results).
 
 ## Prekės ženklai
 
-Šis projektas gali turėti projektų, produktų ar paslaugų prekių ženklus arba logotipus. Leidžiamas Microsoft
-prekių ženklų arba logotipų naudojimas yra reglamentuojamas ir privalo atitikti
-[Microsoft prekių ženklų ir prekės ženklų naudojimo taisykles](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Naudojant Microsoft prekių ženklus ar logotipus modifikuotose šio projekto versijose neturi kilti painiavos ar reikšti Microsoft rėmimą.
-Bet koks trečiųjų šalių prekių ženklų ar logotipų naudojimas yra reglamentuojamas atitinkamų trečiųjų šalių politikos.
+Šis projektas gali turėti prekių ženklus arba logotipus, susijusius su projektais, produktais ar paslaugomis. Leidžiamas Microsoft prekių ženklų arba logotipų naudojimas turi atitikti ir vadovautis [Microsoft prekių ženklų ir prekės ženklo gairėmis](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
+Naudojimas Microsoft prekių ženklų ar logotipų pakeistose šio projekto versijose neturi sukelti painiavos ar nurodyti Microsoft rėmimą. Bet koks trečiųjų šalių prekių ženklų ar logotipų naudojimas yra priklausomas nuo tų trečiųjų šalių politikos.
 
 ## Pagalba
 
-Jei įstrigote arba turite klausimų apie DI programėlių kūrimą, prisijunkite prie:
+Jei užstrigote arba turite klausimų apie DI programėlių kūrimą, prisijunkite:
 
 [![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
 
-Jei turite produktų atsiliepimų arba statymo klaidų, apsilankykite:
+Jei turite atsiliepimų apie produktą arba randate klaidų kūrimo metu, apsilankykite:
 
-[![Microsoft Foundry Developer Forum](https://img.shields.io/badge/GitHub-Microsoft_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
-
----
-
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**Atsakomybės apribojimas**:  
-Šis dokumentas buvo išverstas naudojant dirbtinio intelekto vertimo paslaugą [Co-op Translator](https://github.com/Azure/co-op-translator). Nors stengiamės užtikrinti tikslumą, prašome atkreipti dėmesį, kad automatizuoti vertimai gali turėti klaidų ar netikslumų. Originalus dokumentas jo gimtąja kalba turėtų būti laikomas autoritetingu šaltiniu. Kritinei informacijai rekomenduojamas profesionalus žmogiškas vertimas. Mes neatsakome už jokius nesusipratimus ar klaidų interpretacijas, kylančias naudojant šį vertimą.
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->
+[![Microsoft Foundry kūrėjų forumas](https://img.shields.io/badge/GitHub-Microsoft_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)

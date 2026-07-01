@@ -1,0 +1,81 @@
+{
+  "api.md": {
+    "original_hash": "cad33f84c53744938b5ba99b7a706232",
+    "translation_date": "2026-07-01T04:10:13+09:00",
+    "source_file": "api.md",
+    "language_code": "zh-MO"
+  },
+  "azure-ai-setup.md": {
+    "original_hash": "fccdc2aac2ce159e5217095f4be5ed1b",
+    "translation_date": "2026-07-01T04:14:27+09:00",
+    "source_file": "azure-ai-setup.md",
+    "language_code": "zh-MO"
+  },
+  "cli.md": {
+    "original_hash": "c95737aa76067cd9d54c71b709383a76",
+    "translation_date": "2026-07-01T04:21:22+09:00",
+    "source_file": "cli.md",
+    "language_code": "zh-MO"
+  },
+  "configuration.md": {
+    "original_hash": "f3a5c3ff355f5ec6eb01b6176800bcc2",
+    "translation_date": "2026-07-01T04:25:23+09:00",
+    "source_file": "configuration.md",
+    "language_code": "zh-MO"
+  },
+  "github-actions.md": {
+    "original_hash": "57af928ba225a2a8c6627fad6a934411",
+    "translation_date": "2026-07-01T04:28:31+09:00",
+    "source_file": "github-actions.md",
+    "language_code": "zh-MO"
+  },
+  "index.md": {
+    "original_hash": "565fec280c10f919f3ce18021cf5af66",
+    "translation_date": "2026-07-01T04:31:23+09:00",
+    "source_file": "index.md",
+    "language_code": "zh-MO"
+  },
+  "maintainer-guide.md": {
+    "original_hash": "29967e5b275b484c24ffce6f8f9af811",
+    "translation_date": "2026-07-01T04:40:21+09:00",
+    "source_file": "maintainer-guide.md",
+    "language_code": "zh-MO"
+  },
+  "mcp.md": {
+    "original_hash": "c288eeb96749206d80fc758e6edf9673",
+    "translation_date": "2026-07-01T04:45:30+09:00",
+    "source_file": "mcp.md",
+    "language_code": "zh-MO"
+  },
+  "microsoft-beginners.md": {
+    "original_hash": "68f5f35fd016912a2960e609791f5f45",
+    "translation_date": "2026-07-01T04:47:52+09:00",
+    "source_file": "microsoft-beginners.md",
+    "language_code": "zh-MO"
+  },
+  "readme-languages-template.md": {
+    "original_hash": "aa6961ffd2f156891ee80a2a09351dd4",
+    "translation_date": "2026-07-01T04:49:42+09:00",
+    "source_file": "readme-languages-template.md",
+    "language_code": "zh-MO"
+  },
+  "supported-languages.md": {
+    "original_hash": "5df55df65fa7853f37de2ec19cc19601",
+    "translation_date": "2026-07-01T04:53:27+09:00",
+    "source_file": "supported-languages.md",
+    "language_code": "zh-MO"
+  },
+  "troubleshooting.md": {
+    "original_hash": "e72c3a7af6bb5d9faba75b230a7cc0d8",
+    "translation_date": "2026-07-01T04:58:02+09:00",
+    "source_file": "troubleshooting.md",
+    "language_code": "zh-MO"
+  },
+  "workflows.md": {
+    "original_hash": "a2a01cf6727ce9228e9e66ac0f64810d",
+    "translation_date": "2026-07-01T05:02:05+09:00",
+    "source_file": "workflows.md",
+    "language_code": "zh-MO"
+  }
+}
+

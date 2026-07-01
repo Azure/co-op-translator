@@ -1,6 +1,6 @@
-# Co-op Translator
+# কো-অপ অনুবাদক
 
-_সহজেই আপনার শিক্ষামূলক GitHub সামগ্রী প্রকল্পের বহুভাষিকতার সাথে সাথে স্বয়ংক্রিয়করণ এবং রক্ষণাবেক্ষণ করুন।_
+_আপনার প্রজেক্ট উন্নত হওয়ার সাথে সাথে সহজেই একাধিক ভাষায় আপনার শিক্ষামূলক GitHub বিষয়বস্তুর অনুবাদ স্বয়ংক্রিয়করণ এবং বজায় রাখুন._
 
 ![Python 3.10–3.12](https://img.shields.io/badge/python-3.10--3.12-blue)
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
@@ -15,16 +15,18 @@ _সহজেই আপনার শিক্ষামূলক GitHub সাম
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/azure/co-op-translator.svg)](https://GitHub.com/azure/co-op-translator/pulls/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-### 🌐 বহুভাষিক সমর্থন
+**এখান থেকে শুরু করুন:** [ওয়ার্কফ্লো নির্বাচন করুন](https://azure.github.io/co-op-translator/workflows/) | [কনফিগারেশন](https://azure.github.io/co-op-translator/configuration/) | [CLI](https://azure.github.io/co-op-translator/cli/) | [Python API](https://azure.github.io/co-op-translator/api/) | [MCP সার্ভার](https://azure.github.io/co-op-translator/mcp/)
 
-#### [Co-op Translator](https://github.com/Azure/Co-op-Translator) দ্বারা সমর্থিত
+### 🌐 বহু-ভাষা সমর্থন
+
+#### Supported by [Co-op Translator](https://github.com/Azure/co-op-translator)
 
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
-[Arabic](../ar/README.md) | [Bengali](./README.md) | [Bulgarian](../bg/README.md) | [Burmese (Myanmar)](../my/README.md) | [Chinese (Simplified)](../zh-CN/README.md) | [Chinese (Traditional, Hong Kong)](../zh-HK/README.md) | [Chinese (Traditional, Macau)](../zh-MO/README.md) | [Chinese (Traditional, Taiwan)](../zh-TW/README.md) | [Croatian](../hr/README.md) | [Czech](../cs/README.md) | [Danish](../da/README.md) | [Dutch](../nl/README.md) | [Estonian](../et/README.md) | [Finnish](../fi/README.md) | [French](../fr/README.md) | [German](../de/README.md) | [Greek](../el/README.md) | [Hebrew](../he/README.md) | [Hindi](../hi/README.md) | [Hungarian](../hu/README.md) | [Indonesian](../id/README.md) | [Italian](../it/README.md) | [Japanese](../ja/README.md) | [Kannada](../kn/README.md) | [Khmer](../km/README.md) | [Korean](../ko/README.md) | [Lithuanian](../lt/README.md) | [Malay](../ms/README.md) | [Malayalam](../ml/README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Nigerian Pidgin](../pcm/README.md) | [Norwegian](../no/README.md) | [Persian (Farsi)](../fa/README.md) | [Polish](../pl/README.md) | [Portuguese (Brazil)](../pt-BR/README.md) | [Portuguese (Portugal)](../pt-PT/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Romanian](../ro/README.md) | [Russian](../ru/README.md) | [Serbian (Cyrillic)](../sr/README.md) | [Slovak](../sk/README.md) | [Slovenian](../sl/README.md) | [Spanish](../es/README.md) | [Swahili](../sw/README.md) | [Swedish](../sv/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Tamil](../ta/README.md) | [Telugu](../te/README.md) | [Thai](../th/README.md) | [Turkish](../tr/README.md) | [Ukrainian](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnamese](../vi/README.md)
+[আরবি](../ar/README.md) | [বাংলা](./README.md) | [বুলগেরিয়ান](../bg/README.md) | [বার্মিজ (মায়ানমার)](../my/README.md) | [চীনা (সরলীকৃত)](../zh-CN/README.md) | [চীনা (ট্র্যাডিশনাল, হংকং)](../zh-HK/README.md) | [চীনা (ট্র্যাডিশনাল, ম্যাকাও)](../zh-MO/README.md) | [চীনা (ট্র্যাডিশনাল, তাইওয়ান)](../zh-TW/README.md) | [ক্রোয়েশিয়ান](../hr/README.md) | [চেক](../cs/README.md) | [ডেনিশ](../da/README.md) | [ডাচ](../nl/README.md) | [এস্তোনীয়](../et/README.md) | [ফিনিশ](../fi/README.md) | [ফরাসি](../fr/README.md) | [জার্মান](../de/README.md) | [গ্রিক](../el/README.md) | [হিব্রু](../he/README.md) | [হিন্দি](../hi/README.md) | [হাঙ্গেরিয়ান](../hu/README.md) | [ইন্দোনেশীয়](../id/README.md) | [ইতালিয়ান](../it/README.md) | [জাপানি](../ja/README.md) | [কন্নড়](../kn/README.md) | [খেমার](../km/README.md) | [কোরিয়ান](../ko/README.md) | [লিথুনিয়ান](../lt/README.md) | [মালয়](../ms/README.md) | [মালায়ালম](../ml/README.md) | [মরাঠি](../mr/README.md) | [নেপালি](../ne/README.md) | [নাইজেরিয়ান পিজিন](../pcm/README.md) | [নরওয়েজিয়ান](../no/README.md) | [ফার্সি (Farsi)](../fa/README.md) | [পোলিশ](../pl/README.md) | [পর্তুগীজ (ব্রাজিল)](../pt-BR/README.md) | [পর্তুগীজ (পর্তুগাল)](../pt-PT/README.md) | [পাঞ্জাবি (গুরুমুখি)](../pa/README.md) | [রোমানিয়ান](../ro/README.md) | [রাশিয়ান](../ru/README.md) | [সার্বিয়ান (সিরিলিক)](../sr/README.md) | [স্লোভাক](../sk/README.md) | [স্লোভেনীয়](../sl/README.md) | [স্প্যানিশ](../es/README.md) | [সোয়াহিলি](../sw/README.md) | [সুইডিশ](../sv/README.md) | [তাগালগ (ফিলিপিনো)](../tl/README.md) | [তামিল](../ta/README.md) | [তেলুগু](../te/README.md) | [থাই](../th/README.md) | [তুর্কি](../tr/README.md) | [ইউক্রেনীয়](../uk/README.md) | [উর্দু](../ur/README.md) | [ভিয়েতনামী](../vi/README.md)
 
-> **অনলাইনে ক্লোন করতে চান?**
+> **স্থানীয়ভাবে ক্লোন করতে চান?**
 >
-> এই রেপোজিটরিতে ৫০+ ভাষার অনুবাদ অন্তর্ভুক্ত রয়েছে যা ডাউনলোডের আকার উল্লেখযোগ্যভাবে বৃদ্ধি করে। অনুবাদ ছাড়া ক্লোন করতে sparse checkout ব্যবহার করুন:
+> এই রিপোজিটরিতে 50+ ভাষার অনুবাদ অন্তর্ভুক্ত রয়েছে যা ডাউনলোড সাইজ উল্লেখযোগ্যভাবে বাড়িয়ে দেয়। অনুবাদগুলি ছাড়া ক্লোন করতে sparse checkout ব্যবহার করুন:
 >
 > **Bash / macOS / Linux:**
 > ```bash
@@ -40,7 +42,7 @@ _সহজেই আপনার শিক্ষামূলক GitHub সাম
 > git sparse-checkout set --no-cone "/*" "!translations" "!translated_images"
 > ```
 >
-> এটি আপনাকে দ্রুত ডাউনলোডের মাধ্যমে কোর্স সম্পন্ন করার জন্য প্রয়োজনীয় সবকিছু দেয়।
+> এটি আপনাকে দ্রুত ডাউনলোডে কোর্স সম্পন্ন করার জন্য প্রয়োজনীয় সবকিছু দেবে।
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 
 [![GitHub watchers](https://img.shields.io/github/watchers/azure/co-op-translator.svg?style=social&label=Watch)](https://GitHub.com/azure/co-op-translator/watchers/)
@@ -51,128 +53,130 @@ _সহজেই আপনার শিক্ষামূলক GitHub সাম
 
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=Github%20Codespaces&message=Open&color=24292F&logo=github)](https://codespaces.new/azure/co-op-translator)
 
-## ওভারভিউ
+## সারসংক্ষেপ
 
-**Co-op Translator** আপনার শিক্ষামূলক GitHub সামগ্রী বহুভাষায় অনায়াসে স্থানীয়করণ করতে সহায়তা করে।  
-যখন আপনি আপনার Markdown ফাইল, ছবি, বা নোটবুকগুলো আপডেট করেন, তখন অনুবাদগুলো স্বয়ংক্রিয়ভাবে সিঙ্ক্রোনাইজ থাকে, যা নিশ্চিত করে যে বিশ্বব্যাপী শিক্ষার্থীদের জন্য আপনার সামগ্রী সঠিক এবং সর্বদা আপডেটেড থাকবে।
+**Co-op Translator** আপনার শিক্ষামূলক GitHub বিষয়বস্তু সহজেই একাধিক ভাষায় লোকালাইজ করতে সাহায্য করে।
+আপনি যখন আপনার Markdown ফাইল, ছবি, বা নোটবুক আপডেট করেন, অনুবাদগুলি স্বয়ংক্রিয়ভাবে সিঙ্ক্রোনাইজ থাকে, নিশ্চিত করে যে আপনার বিষয়বস্তু শিক্ষার্থীদের জন্য সঠিক এবং আপ-টু-ডেট থাকে বিশ্বব্যাপী।
 
-অনুবাদিত বিষয়বস্তু কিভাবে সংগঠিত হয় তার উদাহরণ:
+এটি CLI থেকে রিপোজিটরি অনুবাদের জন্য, Python API থেকে অটোমেশন জন্য, বা এজেন্ট ও সম্পাদক ওয়ার্কফ্লো জন্য MCP সার্ভারের মাধ্যমে ব্যবহার করুন।
 
-![Example](../../imgs/translation-ex.png)
+কিভাবে অনুবাদকৃত বিষয়বস্তু সংগঠিত থাকে তার উদাহরণ:
 
-## কিভাবে অনুবাদের অবস্থা পরিচালিত হয়
+![উদাহরণ](../../imgs/translation-ex.png)
 
-Co-op Translator অনুবাদিত বিষয়বস্তু **সংস্করণযুক্ত সফটওয়্যার আর্টিফ্যাক্ট** হিসেবে পরিচালনা করে,  
+## কেন Co-op Translator?
+
+একটি ফাইল অনুবাদ করা সহজ। একটি সম্পূর্ণ ডকুমেন্টেশন রিপোজিটরি
+অনুবাদ করা, লিংক ঠিক রাখা, এবং আপ-টু-ডেট রাখা কঠিন অংশ।
+
+| সমস্যা | Co-op Translator কীভাবে সাহায্য করে |
+| --- | --- |
+| দীর্ঘ ডকুমেন্টগুলো একটি প্রম্পট নয় | বড় Markdown ফাইলগুলো খণ্ডগুলিতে বিভক্ত করা হয়, তাই একটি দীর্ঘ README একটি দুর্বল মডেল রেসপন্সের উপর নির্ভর করে না। যদি কোনো খণ্ড ব্যর্থ হয়, Co-op Translator কেবল সেই ব্যর্থ অংশ পুনরায় চেষ্টা এবং পুনঃখণ্ড করতে পারে। |
+| অসম্পূর্ণ অনুবাদগুলো বর্তমান হিসেবে চিহ্নিত করা উচিত নয় | একটি কাটা অনুবাদ কখনোই আপ-টু-ডেট হিসেবে সিল করা উচিত নয়। Co-op Translator সেভ করার আগে অনুবাদের অখণ্ডতা যাচাই করে এবং কাঠামোগতভাবে অসম্পূর্ণ বিদ্যমান অনুবাদ শনাক্ত করতে পারে। |
+| লিংকগুলো অনুবাদকৃত রিপো স্ট্রাকচারের সাথে মেলে | ম্যানুয়াল অনুবাদ প্রায়ই আপেক্ষিক লিংকগুলোকে সোর্স ট্রির দিকে নির্দেশ করে ছেড়ে দেয়। Co-op Translator Markdown, নোটবুক, চিত্র, এবং README লিংকগুলোকে `translations/<lang>/...` স্ট্রাকচারের সাথে মেলাতে পুনঃলিখন করে। |
+| অনুবাদ একটি সম্পূর্ণ রিপো জুড়ে কাজ করা উচিত | Co-op Translator README ফাইল, ডকস, নোটবুক, এবং ইমেজ টেক্সটকে এক রিপোজিটরি ওয়ার্কফ্লোর অংশ হিসেবে হ্যান্ডেল করে, ফাইলগুলো এককে এক করে অনুবাদ করার পরিবর্তে। |
+| অনুবাদ রক্ষা করাটা একবার তৈরি করার চেয়ে বেশি গুরুত্বপূর্ণ | সোর্স হ্যাশ এবং অনুবাদ মেটাডেটা Co-op Translator-কে পুরোনো ফাইলগুলো খুঁজে বের করতে, অপরিবর্তিত ফাইলগুলি স্কিপ করতে, এবং সোর্স রিপো পরিবর্তিত হওয়ার সাথে সাথে অনুবাদকৃত বিষয়বস্তুকে সিঙ্ক্রোনাইজ রাখতে সাহায্য করে। |
+
+## অনুবাদ অবস্থা কীভাবে পরিচালিত হয়
+
+Co-op Translator অনুবাদকৃত বিষয়বস্তুকে **সংস্করণযুক্ত সফটওয়্যার আর্টিফ্যাক্ট** হিসেবে পরিচালনা করে,  
 স্থির ফাইল হিসেবে নয়।
 
-যন্ত্রটি অনুবাদিত Markdown, ছবি এবং নোটবুকের অবস্থা ট্র্যাক করে  
-**ভাষাভিত্তিক মেটাডেটা ব্যবহার করে**।
+এই টুলটি ভাষা-স্কোপ করা মেটাডেটা ব্যবহার করে অনুবাদকৃত Markdown, চিত্র, এবং নোটবুকগুলোর অবস্থা ট্র্যাক করে।
 
-এই ডিজাইন Co-op Translator কে অনুমতি দেয়:
+এই ডিজাইন Co-op Translator-কে সক্ষম করে:
 
-- পুরানো অনুবাদ নির্ভরযোগ্যভাবে চিহ্নিত করতে  
-- Markdown, ছবি এবং নোটবুককে সঙ্গতিপূর্ণভাবে পরিচালনা করতে  
-- বড়, দ্রুত গতির, বহুভাষিক রেপোজিটরিতে নিরাপদভাবে স্কেল করতে
+- নির্ভরযোগ্যভাবে পুরোনো অনুবাদ শনাক্ত করে
+- Markdown, চিত্র, এবং নোটবুককে সামঞ্জস্যপূর্ণভাবে ট্রিট করে
+- বড়, দ্রুত-গতিসম্পন্ন, বহু-ভাষা রিপোজিটরিগুলোর উপর নিরাপদভাবে স্কেল করে
 
-অনুবাদগুলোকে পরিচালিত আর্টিফ্যাক্ট হিসেবে মডেলিং করে,  
-অনুবাদ কর্মপ্রবাহ আধুনিক সফটওয়্যার নির্ভরতা ও আর্টিফ্যাক্ট ব্যবস্থাপনার সাথে প্রাকৃতিকভাবে সামঞ্জস্যপূর্ণ হয়।
+অনুবাদগুলোকে ব্যবস্থাপিত আর্টিফ্যাক্ট হিসেবে মডেল করার মাধ্যমে,
+অনুবাদ ওয়ার্কফ্লোগুলি স্বাভাবিকভাবে আধুনিক
+সফটওয়্যার ডিপেন্ডেন্সি এবং আর্টিফ্যাক্ট ব্যবস্থাপনা অনুশীলনের সাথে সঙ্গতিপূর্ণ হয়।
 
-→ [কিভাবে অনুবাদের অবস্থা পরিচালিত হয়](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
+→ [অনুবাদ অবস্থা কীভাবে পরিচালিত হয়](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
 
+### সম্পর্কিত গভীর নিবন্ধ
 
-## দ্রুত শুরু
+- [AI অনুবাদে ভাঙ্গা Markdown ঠিক করা: একটি প্রোডাকশন পাইপলাইন কঠিনকরণ](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/fixing-broken-markdown-in-ai-translation-hardening-a-production-pipeline/4511378)
+
+## শুরু করুন
+
+Co-op Translator CLI, Python API, বা MCP সার্ভার থেকে ব্যবহার করা যায়। লোকাল অনুবাদ, অটোমেশন, CI, এবং এজেন্ট/এডিটর ইন্টিগ্রেশনের মধ্যে বেছে নিচ্ছেন এমন হলে ওয়ার্কফ্লো গাইড দিয়ে শুরু করুন।
+
+- [ওয়ার্কফ্লো নির্বাচন করুন](../../docs/workflows.md)
+- [ক্রেডেনশিয়াল কনফিগার করুন](../../docs/configuration.md)
+- [CLI থেকে অনুবাদ করুন](../../docs/cli.md)
+- [Python API দিয়ে অটোমেট করুন](../../docs/api.md)
+- [MCP সার্ভারের সাথে সংযুক্ত করুন](../../docs/mcp.md)
+- [GitHub Actions-এ চালান](../../docs/github-actions.md)
+
+কনফিগারেশনের পরে ন্যূনতম CLI উদাহরণ:
 
 ```bash
-# একটি ভার্চুয়াল এনভায়রনমেন্ট তৈরি করুন এবং সক্রিয় করুন (সফারিশকৃত)
 python -m venv .venv
 # উইন্ডোজ
 .venv\Scripts\activate
 # ম্যাকওএস/লিনাক্স
 source .venv/bin/activate
-# প্যাকেজ ইনস্টল করুন
+
 pip install co-op-translator
-# অনুবাদ করুন
-translate -l "ko ja fr" -md
+translate -l "ko" -md
+co-op-review -l "ko"
 ```
 
-Docker:
+বড় রিপোজিটরিতে প্রথম রানগুলোর জন্য, অনুবাদকৃত ফাইল লেখার আগে `--dry-run` ব্যবহার করুন। কন্টেন্ট টাইপ ফ্ল্যাগ, লগ, রিভিউ, এবং লিংক মাইগ্রেশনের জন্য [CLI Reference](../../docs/cli.md) দেখুন।
+
+Bash/Zsh দিয়ে কন্টেইনার দ্রুত চালান:
 
 ```bash
-# GHCR থেকে পাবলিক ইমেজটি টেনে আনুন
-docker pull ghcr.io/azure/co-op-translator:latest
-# বর্তমান ফোল্ডার মাউন্ট করে এবং .env সরবরাহ করে চালান (Bash/Zsh)
-docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko ja fr" -md
+docker run --rm -it --env-file .env -v "${PWD}:/work" ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
 
-## নূন্যতম সেটআপ
+PowerShell দিয়ে কন্টেইনার দ্রুত চালান:
 
-1. নিশ্চিত করুন যে আপনার কাছে সমর্থিত Python সংস্করণ আছে (বর্তমানে ৩.১০-৩.১২)। poetry (pyproject.toml) এ এটি স্বয়ংক্রিয়ভাবে পরিচালিত হয়।  
-2. টেমপ্লেট ব্যবহার করে একটি `.env` ফাইল তৈরি করুন: [.env.template](../../.env.template)  
-3. একটি LLM প্রদানকারী কনফিগার করুন (Azure OpenAI বা OpenAI)  
-4. (ঐচ্ছিক) ছবি অনুবাদের জন্য (`-img`), Azure AI Vision কনফিগার করুন  
-5. (ঐচ্ছিক) আপনি বহুসংখ্যক ক্রেডেনশিয়াল সেট কনফিগার করতে পারেন `_1`, `_2` ইত্যাদি সাফিক্স দিয়ে ভেরিয়েবলগুলো ডুপ্লিকেট করে। একটি সেটের সমস্ত ভেরিয়েবল একই সাফিক্স থাকতে হবে।  
-6. (প্রস্তাবিত) পূর্ববর্তী অনুবাদসমূহ ক্লিন করুন যাতে দ্বন্দ্ব না হয় (যেমন `translations/`)  
-7. (প্রস্তাবিত) আপনার README তে অনুবাদ বিভাগ যোগ করুন [README languages template](./getting_started/README_languages_template.md) ব্যবহার করে  
-8. দেখুন: [Azure AI সেট আপ করুন](./getting_started/set-up-azure-ai.md)
-
-## ব্যবহার
-
-সমস্ত সমর্থিত টাইপ অনুবাদ করুন:
-
-```bash
-translate -l "ko ja"
+```powershell
+docker run --rm -it --env-file .env -v ${PWD}:/work ghcr.io/azure/co-op-translator:latest -l "ko" -md
 ```
-
-শুধুমাত্র Markdown:
-
-```bash
-translate -l "de" -md
-```
-
-Markdown + ছবি:
-
-```bash
-translate -l "pt" -md -img
-```
-
-শুধুমাত্র নোটবুক:
-
-```bash
-translate -l "zh" -nb
-```
-
-অধিক পতাকা: [Command reference](./getting_started/command-reference.md)
 
 ## বৈশিষ্ট্যসমূহ
 
-- Markdown, নোটবুক, এবং ছবির জন্য স্বয়ংক্রিয় অনুবাদ  
-- উৎস পরিবর্তনের সাথে অনুবাদ সামঞ্জস্য বজায় রাখে  
-- লোকালি (CLI) বা CI (GitHub Actions) এ কাজ করে  
-- Azure OpenAI অথবা OpenAI ব্যবহার করে; ছবির জন্য ঐচ্ছিক Azure AI Vision  
-- Markdown বিন্যাস এবং কাঠামো সংরক্ষণ করে
+- Markdown, নোটবুক, এবং ইমেজগুলোর জন্য স্বয়ংক্রিয় অনুবাদ
+- উৎস পরিবর্তনের সাথে অনুবাদসমূহ সিঙ্কে রাখে
+- লোকালি (CLI) বা CI-তে (GitHub Actions) কাজ করে
+- MCP-এর মাধ্যমে Markdown, নোটবুক, ইমেজ, রিভিউ, এবং প্রজেক্ট অনুবাদ টুল এক্সপোজ করে
+- প্রোভাইডার-ব্যাকড অনুবাদের জন্য Azure OpenAI বা OpenAI ব্যবহার করে
+- MCP-কে এজেন্টদের Co-op Translator LLM ক্রিডেনশিয়াল ছাড়াই Markdown এবং নোটবুক খণ্ড অনুবাদ করতে সক্ষম করে
+- ইমেজ টেক্সট নিষ্কাশন এবং অনুবাদের জন্য Azure AI Vision ব্যবহার করে
+- ডিটারমিনিস্টিক যাচাইয়ের মাধ্যমে অনুবাদ কাঠামো এবং تازা অবস্থার পর্যালোচনা করে
+- Markdown ফরম্যাটিং এবং স্ট্রাকচার সংরক্ষণ করে
 
 ## ডকুমেন্টেশন
 
-- [কমান্ড-লাইন গাইড](./getting_started/command-line-guide/command-line-guide.md)  
-- [GitHub Actions গাইড (পাবলিক রেপোজিটরি ও স্ট্যান্ডার্ড সিক্রেট)](./getting_started/github-actions-guide/github-actions-guide-public.md)  
-- [GitHub Actions গাইড (Microsoft অর্গানাইজেশন রেপোজিটরি ও অর্গ-লেভেল সেটআপ)](./getting_started/github-actions-guide/github-actions-guide-org.md)  
-- [README ভাষার টেমপ্লেট](./getting_started/README_languages_template.md)  
-- [সমর্থিত ভাষাসমূহ](./getting_started/supported-languages.md)  
-- [অবদান](./CONTRIBUTING.md)  
-- [সমস্যা সমাধান](./getting_started/troubleshooting.md)
+- [ডকুমেন্টেশন সাইট](https://azure.github.io/co-op-translator/)
+- [ওয়ার্কফ্লো নির্বাচন করুন](../../docs/workflows.md)
+- [কনফিগারেশন](../../docs/configuration.md)
+- [Azure AI সেটআপ](../../docs/azure-ai-setup.md)
+- [CLI রেফারেন্স](../../docs/cli.md)
+- [Python API](../../docs/api.md)
+- [MCP সার্ভার](../../docs/mcp.md)
+- [GitHub Actions](../../docs/github-actions.md)
+- [README ভাষার টেম্পলেট](../../docs/readme-languages-template.md)
+- [সমর্থিত ভাষাসমূহ](../../docs/supported-languages.md)
+- [অবদান](../../CONTRIBUTING.md)
+- [ট্রাবলশুটিং](../../docs/troubleshooting.md)
 
 ### Microsoft-নির্দিষ্ট গাইড
 > [!NOTE]
-> শুধুমাত্র Microsoft “For Beginners” রেপোজিটরির রক্ষণাবেক্ষকদের জন্য।
+> Microsoft “For Beginners” রিপোজিটরির রক্ষণাবেক্ষণকারীদের জন্য মাত্র।
 
-- [“অন্যান্য কোর্স” তালিকা আপডেট করা (শুধুমাত্র MS Beginners রেপোজিটরির জন্য)](./getting_started/update-other-courses.md)
+- [“অন্যান্য কোর্স” তালিকা আপডেট করা (শুধুমাত্র MS Beginners রিপোজিটরির জন্য)](../../docs/microsoft-beginners.md)
 
-## আমাদের সমর্থন করুন এবং বিশ্বব্যাপী শেখাকে উষ্ণ করুন
+## আমাদের সমর্থন করুন ও বিশ্বব্যাপী শেখাকে এগিয়ে নিন
 
-বিশ্বব্যাপী শিক্ষামূলক সামগ্রী শেয়ার করার বিপ্লবের অংশ হোন! GitHub এ [Co-op Translator](https://github.com/azure/co-op-translator) কে ⭐ দিন এবং শেখা ও প্রযুক্তিতে ভাষাগত বাধা ভেদ করার আমাদের মিশনকে সমর্থন করুন। আপনার আগ্রহ ও অবদান গুরুত্বপূর্ণ প্রভাব ফেলে! কোড অবদান এবং বৈশিষ্ট্য প্রস্তাব সবসময় স্বাগত।
+শিক্ষামূলক বিষয়বস্তু বিশ্বব্যাপী কীভাবে শেয়ার করা হয় তা রূপান্তর করতে আমাদের সাথে যোগ দিন! GitHub-এ [Co-op Translator](https://github.com/azure/co-op-translator)-কে একটি ⭐ দিন এবং শেখা ও প্রযুক্তিতে ভাষাগত বাধা ভাঙার আমাদের মিশনকে সমর্থন করুন। আপনার আগ্রহ ও অবদানগুলি বড় প্রভাব ফেলে! কোড অবদান এবং বৈশিষ্ট্য পরামর্শ সবসময় স্বাগত। 
 
-### আপনার ভাষায় Microsoft শিক্ষামূলক সামগ্রী অন্বেষণ করুন
-
+### আপনার ভাষায় Microsoft শিক্ষামূলক বিষয়বস্তু অন্বেষণ করুন
 - [LangChain4j-for-Beginners](https://github.com/microsoft/LangChain4j-for-Beginners)
 - [AZD for Beginners](https://github.com/microsoft/AZD-for-beginners)
 - [Edge AI for Beginners](https://github.com/microsoft/edgeai-for-beginners)
@@ -189,59 +193,50 @@ translate -l "zh" -nb
 - [IoT for Beginners](https://aka.ms/iot-beginners)
 - [PhiCookBook](https://github.com/microsoft/PhiCookBook)
 
-## ভিডিও উপস্থাপন
+## ভিডিও উপস্থাপনাগুলি
 
-👉 YouTube এ দেখার জন্য নিচের ছবিতে ক্লিক করুন।
+👉 YouTube-এ দেখতে নিচের ছবিতে ক্লিক করুন।
 
-- **Microsoft এ ওপেন**: Co-op Translator ব্যবহার করার একটি সংক্ষিপ্ত ১৮ মিনিটের প্রস্তাবনা ও দ্রুত গাইড।
+- **Open at Microsoft**: Co-op Translator কীভাবে ব্যবহার করবেন তার সংক্ষিপ্ত 18 মিনিটের পরিচিতি এবং দ্রুত নির্দেশিকা।
 
   [![Open at Microsoft](../../imgs/open-ms-thumbnail.jpg)](https://www.youtube.com/watch?v=jX_swfH_KNU)
 
 ## অবদান
 
-এই প্রকল্প অবদান এবং প্রস্তাব বহন করে। Azure Co-op Translator এ অবদান রাখতে আগ্রহী? অনুগ্রহ করে আমাদের [CONTRIBUTING.md](./CONTRIBUTING.md) দেখুন যা নির্দেশনা প্রদান করে কিভাবে আপনি Co-op Translator কে আরও প্রবেশযোগ্য করতে সাহায্য করতে পারেন।
+এই প্রকল্পে অবদান ও পরামর্শ স্বাগত। Azure Co-op Translator-এ অবদান রাখতে আগ্রহী? দয়া করে আমাদের [CONTRIBUTING.md](../../CONTRIBUTING.md) দেখুন যাতে আপনি Co-op Translator-কে আরও সহজলভ্য করতে কীভাবে সাহায্য করতে পারেন তার নির্দেশিকা পান।
 
 ## অবদানকারীরা
+
 [![co-op-translator contributors](https://contrib.rocks/image?repo=Azure/co-op-translator)](https://github.com/Azure/co-op-translator/graphs/contributors)
 
-## আচরণ বিধি
+## আচরণবিধি
 
-এই প্রকল্পটি গ্রহণ করেছে [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/)।
-অতিরিক্ত তথ্যের জন্য দেখুন [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) অথবা
-যেকোনো প্রশ্ন বা মন্তব্যের জন্য যোগাযোগ করুন [opencode@microsoft.com](mailto:opencode@microsoft.com) ঠিকানায়।
+এই প্রকল্পটি [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/) গ্রহণ করেছে।
+আরও তথ্যের জন্য দেখুন [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) অথবা কোনো অতিরিক্ত প্রশ্ন বা মন্তব্য থাকলে [opencode@microsoft.com](mailto:opencode@microsoft.com)-এ যোগাযোগ করুন।
 
 ## দায়িত্বশীল AI
 
-Microsoft আমাদের গ্রাহকদের আমাদের AI পণ্যগুলি দায়িত্বশীলভাবে ব্যবহার করতে সাহায্য করার, আমাদের শেখাগুলো শেয়ার করার, এবং Transparency Notes ও Impact Assessments এর মতো সরঞ্জামের মাধ্যমে বিশ্বাসভিত্তিক অংশীদারিত্ব নির্মাণে প্রতিশ্রুতিবদ্ধ। এই সংস্থানগুলোর অনেকগুলি পাওয়া যেতে পারে [https://aka.ms/RAI](https://aka.ms/RAI)।
-Microsoft এর দায়িত্বশীল AI এপ্রোচ আমাদের AI নীতিমালা অনুযায়ী যেমন ন্যায্যতা, নির্ভরযোগ্যতা ও নিরাপত্তা, গোপনীয়তা ও সুরক্ষা, অন্তর্ভুক্তি, স্বচ্ছতা এবং জবাবদিহিতার উপর ভিত্তি করে গড়ে উঠেছে।
+Microsoft আমাদের গ্রাহকদের আমাদের AI পণ্যগুলি দায়িত্বশীলভাবে ব্যবহার করতে সহায়তা করা, আমাদের শিক্ষা ও অভিজ্ঞতা শেয়ার করা, এবং Transparency Notes এবং Impact Assessments-এর মতো টুলগুলির মাধ্যমে বিশ্বাসভিত্তিক অংশীদারিত্ব গড়ে তোলার ব্যাপারে প্রতিশ্রুতিবদ্ধ। এই রিসোর্সগুলোর অনেককিছু [https://aka.ms/RAI](https://aka.ms/RAI) এ পাওয়া যায়।
+Microsoft-এর দায়িত্বশীল AI পদ্ধতি আমাদের AI নীতিমালার উপর ভিত্তি করে, যার মধ্যে রয়েছে ন্যায্যতা, নির্ভরযোগ্যতা ও নিরাপত্তা, গোপনীয়তা ও সুরক্ষা, অন্তর্ভুক্তি, স্বচ্ছতা, এবং জবাবদিহিতা।
 
-বৃহৎ পরিসরের প্রাকৃতিক ভাষা, ছবি, এবং ভাষণ মডেল - যেমন এই নমুনায় ব্যবহৃত - সম্ভাব্যভাবে এমন আচরণ করতে পারে যা ন্যায্য নয়, নির্ভরযোগ্য নয়, বা আক্রমণাত্মক, এবং এর ফলে ক্ষতি হতে পারে। অনুগ্রহ করে [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) দেখুন যাতে ঝুঁকি এবং সীমাবদ্ধতাগুলি সম্পর্কে অবহিত হওয়া যায়।
+এই নমুনায় ব্যবহৃত বড় আকারের প্রাকৃতিক ভাষা, চিত্র, এবং কথ্য মডেলগুলি এমনভাবে আচরণ করতে পারে যা অন্যায়, অবিশ্বাস্য, বা আপত্তিকর হতে পারে, এবং ফলস্বরূপ ক্ষতি ঘটাতে পারে। ঝুঁকি ও সীমাবদ্ধতা সম্পর্কে জানতে অনুগ্রহ করে [Azure OpenAI service Transparency note](https://learn.microsoft.com/legal/cognitive-services/openai/transparency-note?tabs=text) দেখুন।
 
-এই ঝুঁকিগুলো কমানোর জন্য সুপারিশ করা পদ্ধতি হল আপনার আর্কিটেকচারে একটি নিরাপত্তা ব্যবস্থা অন্তর্ভুক্ত করা যা ক্ষতিকর আচরণ সনাক্ত ও প্রতিরোধ করতে পারে। [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) একটি স্বাধীন সুরক্ষা স্তর প্রদান করে, যা অ্যাপ্লিকেশন ও সেবাগুলিতে ব্যবহারকারী-তৈরি ও AI-তৈরি ক্ষতিকর বিষয়বস্তু সনাক্ত করতে সক্ষম। Azure AI Content Safety টেক্সট এবং চিত্র API অন্তর্ভুক্ত করে যা আপনাকে ক্ষতিকর উপাদান সনাক্ত করতে দেয়। আমাদের একটি ইন্টারেক্টিভ Content Safety Studio ও আছে যা আপনাকে বিভিন্ন মোডালিটির মধ্যে ক্ষতিকর বিষয়বস্তু সনাক্ত করার নমুনা কোড দেখার, অন্বেষণ করার এবং চেষ্টা করার সুযোগ দেয়। নিম্নলিখিত [দ্রুত শুরু ডকুমেন্টেশন](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) আপনাকে সেবাটিতে অনুরোধ পাঠানোর প্রক্রিয়ায় সহায়তা করে।
+এই ঝুঁকিগুলো প্রশমিত করার সুপারিশকৃত উপায় হল আপনার আর্কিটেকচারে একটি নিরাপত্তা ব্যবস্থা অন্তর্ভুক্ত করা যা ক্ষতিকর আচরণ সনাক্ত ও প্রতিরোধ করতে পারে। [Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview) একটি স্বাধীন সুরক্ষা স্তর প্রদান করে, যা অ্যাপ্লিকেশন ও পরিষেবাগুলিতে ক্ষতিকর ব্যবহারকারী-উৎপন্ন এবং AI-উৎপন্ন কনটেন্ট সনাক্ত করতে সক্ষম। Azure AI Content Safety-এ টেক্সট ও ইমেজ API রয়েছে যা আপনাকে ক্ষতিকর উপকরণ সনাক্ত করতে দেয়। আমাদের একটি ইন্টারেক্টিভ Content Safety Studio রয়েছে যা বিভিন্ন মোডালিটিজ জুড়ে ক্ষতিকর কনটেন্ট সনাক্ত করার নমুনা কোড দেখা, অন্বেষণ করা এবং চেষ্টা করে দেখার সুযোগ দেয়। নিম্নলিখিত [quickstart documentation](https://learn.microsoft.com/azure/ai-services/content-safety/quickstart-text?tabs=visual-studio%2Clinux&pivots=programming-language-rest) আপনাকে সার্ভিসে অনুরোধ পাঠানোর মাধ্যমে গাইড করবে।
 
-আরেকটি বিষয় যা বিবেচনা করা দরকার তা হলো সামগ্রিক অ্যাপ্লিকেশন পারফরম্যান্স। মাল্টি-মোডাল এবং মাল্টি-মডেল অ্যাপ্লিকেশনগুলোর ক্ষেত্রে, পারফরম্যান্স বলতে বুঝায় যে সিস্টেমটি আপনি ও আপনার ব্যবহারকারীরা প্রত্যাশা করা অনুযায়ী কাজ করে, যার মধ্যে ক্ষতিকর আউটপুট তৈরি না করাটাও অন্তর্ভুক্ত। আপনার সামগ্রিক অ্যাপ্লিকেশনটির পারফরম্যান্স মূল্যায়ন করা গুরুত্বপূর্ণ, যা [generation quality and risk and safety metrics](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in) ব্যবহার করে করা যেতে পারে।
+আরেকটি বিবেচ্য বিষয় হল সামগ্রিক অ্যাপ্লিকেশন কর্মদক্ষতা। মাল্টি-মোডাল এবং মাল্টি-মডেল অ্যাপ্লিকেশনগুলির ক্ষেত্রে, কর্মদক্ষতা বলতে বোঝায় যে সিস্টেমটি আপনার ও আপনার ব্যবহারকারীর প্রত্যাশা অনুযায়ী কাজ করে, যার মধ্যে ক্ষতিকর আউটপুট তৈরি না করাও অন্তর্ভুক্ত। আপনার সামগ্রিক অ্যাপ্লিকেশনের কর্মদক্ষতা [generation quality and risk and safety metrics](https://learn.microsoft.com/azure/ai-studio/concepts/evaluation-metrics-built-in) ব্যবহার করে মূল্যায়ন করা গুরুত্বপূর্ণ।
 
-আপনি আপনার AI অ্যাপ্লিকেশনটি আপনার উন্নয়ন পরিবেশে [prompt flow SDK](https://microsoft.github.io/promptflow/index.html) ব্যবহার করে মূল্যায়ন করতে পারেন। একটি পরীক্ষার ডেটাসেট বা লক্ষ্য দেওয়ার মাধ্যমে, আপনার জেনারেটিভ AI অ্যাপ্লিকেশনের উৎপাদনগুলি সংখ্যাগতভাবে অন্তর্নির্মিত মূল্যায়ক অথবা আপনার পছন্দের কাস্টম মূল্যায়ক দ্বারা মাপা হয়। prompt flow sdk ব্যবহার করে আপনার সিস্টেম মূল্যায়ন শুরু করতে [দ্রুত শুরু গাইড](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk) অনুসরণ করতে পারেন। মূল্যায়ন চালানোর পর, আপনি [Azure AI Studio তে ফলাফল ভিজ্যুয়ালাইজ](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results) করতে পারেন।
+আপনি আপনার ডেভেলপমেন্ট পরিবেশে [prompt flow SDK](https://microsoft.github.io/promptflow/index.html) ব্যবহার করে আপনার AI অ্যাপ্লিকেশন মূল্যায়ন করতে পারেন। একটি টেস্ট ডেটাসেট বা লক্ষ্য দেওয়া হলে, আপনার জেনারেটিভ AI অ্যাপ্লিকেশন থেকে উৎপন্ন ফলগুলো অন্তর্নির্মিত ইভ্যালুয়েটর বা আপনার পছন্দের কাস্টম ইভ্যালুয়েটর দিয়ে পরিমাণগতভাবে মাপা হয়। আপনার সিস্টেম মূল্যায়ন করার জন্য prompt flow SDK দিয়ে শুরু করতে, আপনি [quickstart guide](https://learn.microsoft.com/azure/ai-studio/how-to/develop/flow-evaluate-sdk) অনুসরণ করতে পারেন। একবার আপনি একটি মূল্যায়ন চালালে, আপনি [visualize the results in Azure AI Studio](https://learn.microsoft.com/azure/ai-studio/how-to/evaluate-flow-results) করতে পারবেন।
 
-## ট্রেডমার্ক
+## ট্রেডমার্কসমূহ
 
-এই প্রকল্পে প্রকল্প, পণ্য বা সেবার জন্য ট্রেডমার্ক বা লোগোগুলি থাকতে পারে। Microsoft ট্রেডমার্ক বা লোগোর অনুমোদিত ব্যবহার [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general) অনুসরণ করতে হবে এবং তার নিয়মাবলী অনুসারে হতে হবে।
-এই প্রকল্পের সংশোধিত সংস্করণে Microsoft ট্রেডমার্ক বা লোগো ব্যবহারে বিভ্রান্তি করা বা Microsoft স্পনসরশিপ বোঝানো যাবে না।
-তৃতীয় পক্ষের ট্রেডমার্ক বা লোগোর যেকোনো ব্যবহার সেই পক্ষের নীতিমালা অনুযায়ী হতে হবে।
+এই প্রকল্পে প্রকল্প, পণ্য, বা সেবার ট্রেডমার্ক বা লোগো থাকতে পারে। Microsoft ট্রেডমার্ক বা লোগোগুলোর অনুমোদিত ব্যবহার [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general) অনুযায়ী হতে হবে। এই প্রকল্পের সংশোধিত সংস্করণে Microsoft ট্রেডমার্ক বা লোগো ব্যবহারে বিভ্রান্তি সৃষ্টির বা Microsoft স্পনসরশিপ বোঝানোর চেষ্টা করা উচিত নয়। তৃতীয় পক্ষের ট্রেডমার্ক বা লোগো ব্যবহারের ক্ষেত্রে সেই তৃতীয় পক্ষের নীতিমালা প্রযোজ্য।
 
-## সাহায্য নেওয়া
+## সহায়তা
 
-যদি আটকে যান বা AI অ্যাপ তৈরি সম্পর্কে কোনো প্রশ্ন থাকে, যোগ দিন:
+যদি আপনি আটকে যান বা AI অ্যাপ তৈরি করার বিষয়ে কোনো প্রশ্ন থাকে, যোগ দিন:
 
 [![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
 
-যদি পণ্য প্রতিক্রিয়া বা ত্রুটি থাকে, বিকাশের সময় পরিদর্শন করুন:
+আপনার যদি পণ্য সংক্রান্ত প্রতিক্রিয়া বা নির্মাণের সময় কোনো ত্রুটি থাকে, পরিদর্শন করুন:
 
 [![Microsoft Foundry Developer Forum](https://img.shields.io/badge/GitHub-Microsoft_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
-
----
-
-<!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**অস্বীকৃতি**:  
-এই নথিটি AI অনুবাদ পরিষেবা [Co-op Translator](https://github.com/Azure/co-op-translator) এর মাধ্যমে অনূদিত হয়েছে। যদিও আমরা সঠিকতার জন্য চেষ্টা করি, অনুগ্রহ করে জানুুন যে স্বয়ংক্রিয় অনুবাদে ভুল বা অসঙ্গতি থাকতে পারে। মূল নথিটি তার নিজস্ব ভাষায় প্রামাণিক উৎস হিসেবে বিবেচিত হওয়া উচিত। গুরুত্বপূর্ণ তথ্যের জন্য পেশাদার মানুষের অনুবাদ সুপারিশ করা হয়। এই অনুবাদের ব্যবহারে কোনো ভুল বোঝাবুঝি বা ভুল ব্যাখ্যার জন্য আমরা দায়ী নই।
-<!-- CO-OP TRANSLATOR DISCLAIMER END -->

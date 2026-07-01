@@ -6,6 +6,8 @@ repo_name: Azure/co-op-translator
 
 docs_dir: docs
 site_dir: site
+not_in_nav: |
+  i18n/**
 
 theme:
   name: material
@@ -42,7 +44,176 @@ extra_css:
 
 extra_javascript:
   - javascripts/tailwind-config.js
+  - javascripts/i18n-navigation.js
   - https://cdn.tailwindcss.com
+
+extra:
+  alternate:
+    - name: English
+      link: /co-op-translator/
+      lang: en
+    - name: French
+      link: /co-op-translator/i18n/fr/
+      lang: fr
+    - name: Spanish
+      link: /co-op-translator/i18n/es/
+      lang: es
+    - name: German
+      link: /co-op-translator/i18n/de/
+      lang: de
+    - name: Russian
+      link: /co-op-translator/i18n/ru/
+      lang: ru
+    - name: Arabic
+      link: /co-op-translator/i18n/ar/
+      lang: ar
+    - name: Persian (Farsi)
+      link: /co-op-translator/i18n/fa/
+      lang: fa
+    - name: Urdu
+      link: /co-op-translator/i18n/ur/
+      lang: ur
+    - name: Chinese (Simplified)
+      link: /co-op-translator/i18n/zh-CN/
+      lang: zh-CN
+    - name: Chinese (Traditional, Macau)
+      link: /co-op-translator/i18n/zh-MO/
+      lang: zh-MO
+    - name: Chinese (Traditional, Hong Kong)
+      link: /co-op-translator/i18n/zh-HK/
+      lang: zh-HK
+    - name: Chinese (Traditional, Taiwan)
+      link: /co-op-translator/i18n/zh-TW/
+      lang: zh-TW
+    - name: Japanese
+      link: /co-op-translator/i18n/ja/
+      lang: ja
+    - name: Korean
+      link: /co-op-translator/i18n/ko/
+      lang: ko
+    - name: Hindi
+      link: /co-op-translator/i18n/hi/
+      lang: hi
+    - name: Bengali
+      link: /co-op-translator/i18n/bn/
+      lang: bn
+    - name: Marathi
+      link: /co-op-translator/i18n/mr/
+      lang: mr
+    - name: Nepali
+      link: /co-op-translator/i18n/ne/
+      lang: ne
+    - name: Punjabi (Gurmukhi)
+      link: /co-op-translator/i18n/pa/
+      lang: pa
+    - name: Portuguese (Portugal)
+      link: /co-op-translator/i18n/pt-PT/
+      lang: pt-PT
+    - name: Portuguese (Brazil)
+      link: /co-op-translator/i18n/pt-BR/
+      lang: pt-BR
+    - name: Italian
+      link: /co-op-translator/i18n/it/
+      lang: it
+    - name: Polish
+      link: /co-op-translator/i18n/pl/
+      lang: pl
+    - name: Turkish
+      link: /co-op-translator/i18n/tr/
+      lang: tr
+    - name: Greek
+      link: /co-op-translator/i18n/el/
+      lang: el
+    - name: Thai
+      link: /co-op-translator/i18n/th/
+      lang: th
+    - name: Swedish
+      link: /co-op-translator/i18n/sv/
+      lang: sv
+    - name: Danish
+      link: /co-op-translator/i18n/da/
+      lang: da
+    - name: Norwegian
+      link: /co-op-translator/i18n/no/
+      lang: "no"
+    - name: Finnish
+      link: /co-op-translator/i18n/fi/
+      lang: fi
+    - name: Dutch
+      link: /co-op-translator/i18n/nl/
+      lang: nl
+    - name: Hebrew
+      link: /co-op-translator/i18n/he/
+      lang: he
+    - name: Vietnamese
+      link: /co-op-translator/i18n/vi/
+      lang: vi
+    - name: Indonesian
+      link: /co-op-translator/i18n/id/
+      lang: id
+    - name: Malay
+      link: /co-op-translator/i18n/ms/
+      lang: ms
+    - name: Tagalog (Filipino)
+      link: /co-op-translator/i18n/tl/
+      lang: tl
+    - name: Swahili
+      link: /co-op-translator/i18n/sw/
+      lang: sw
+    - name: Hungarian
+      link: /co-op-translator/i18n/hu/
+      lang: hu
+    - name: Czech
+      link: /co-op-translator/i18n/cs/
+      lang: cs
+    - name: Slovak
+      link: /co-op-translator/i18n/sk/
+      lang: sk
+    - name: Romanian
+      link: /co-op-translator/i18n/ro/
+      lang: ro
+    - name: Bulgarian
+      link: /co-op-translator/i18n/bg/
+      lang: bg
+    - name: Serbian (Cyrillic)
+      link: /co-op-translator/i18n/sr/
+      lang: sr
+    - name: Croatian
+      link: /co-op-translator/i18n/hr/
+      lang: hr
+    - name: Slovenian
+      link: /co-op-translator/i18n/sl/
+      lang: sl
+    - name: Burmese (Myanmar)
+      link: /co-op-translator/i18n/my/
+      lang: my
+    - name: Ukrainian
+      link: /co-op-translator/i18n/uk/
+      lang: uk
+    - name: Lithuanian
+      link: /co-op-translator/i18n/lt/
+      lang: lt
+    - name: Tamil
+      link: /co-op-translator/i18n/ta/
+      lang: ta
+    - name: Estonian
+      link: /co-op-translator/i18n/et/
+      lang: et
+    - name: Nigerian Pidgin
+      link: /co-op-translator/i18n/pcm/
+      lang: pcm
+    - name: Telugu
+      link: /co-op-translator/i18n/te/
+      lang: te
+    - name: Malayalam
+      link: /co-op-translator/i18n/ml/
+      lang: ml
+    - name: Kannada
+      link: /co-op-translator/i18n/kn/
+      lang: kn
+    - name: Khmer
+      link: /co-op-translator/i18n/km/
+      lang: km
 
 plugins:
   - search

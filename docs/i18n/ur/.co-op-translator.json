@@ -1,0 +1,81 @@
+{
+  "api.md": {
+    "original_hash": "cad33f84c53744938b5ba99b7a706232",
+    "translation_date": "2026-07-01T04:05:08+09:00",
+    "source_file": "api.md",
+    "language_code": "ur"
+  },
+  "azure-ai-setup.md": {
+    "original_hash": "fccdc2aac2ce159e5217095f4be5ed1b",
+    "translation_date": "2026-07-01T04:12:52+09:00",
+    "source_file": "azure-ai-setup.md",
+    "language_code": "ur"
+  },
+  "cli.md": {
+    "original_hash": "c95737aa76067cd9d54c71b709383a76",
+    "translation_date": "2026-07-01T04:18:55+09:00",
+    "source_file": "cli.md",
+    "language_code": "ur"
+  },
+  "configuration.md": {
+    "original_hash": "f3a5c3ff355f5ec6eb01b6176800bcc2",
+    "translation_date": "2026-07-01T04:23:52+09:00",
+    "source_file": "configuration.md",
+    "language_code": "ur"
+  },
+  "github-actions.md": {
+    "original_hash": "57af928ba225a2a8c6627fad6a934411",
+    "translation_date": "2026-07-01T04:27:25+09:00",
+    "source_file": "github-actions.md",
+    "language_code": "ur"
+  },
+  "index.md": {
+    "original_hash": "565fec280c10f919f3ce18021cf5af66",
+    "translation_date": "2026-07-01T04:30:26+09:00",
+    "source_file": "index.md",
+    "language_code": "ur"
+  },
+  "maintainer-guide.md": {
+    "original_hash": "29967e5b275b484c24ffce6f8f9af811",
+    "translation_date": "2026-07-01T04:38:48+09:00",
+    "source_file": "maintainer-guide.md",
+    "language_code": "ur"
+  },
+  "mcp.md": {
+    "original_hash": "c288eeb96749206d80fc758e6edf9673",
+    "translation_date": "2026-07-01T04:43:18+09:00",
+    "source_file": "mcp.md",
+    "language_code": "ur"
+  },
+  "microsoft-beginners.md": {
+    "original_hash": "68f5f35fd016912a2960e609791f5f45",
+    "translation_date": "2026-07-01T04:47:03+09:00",
+    "source_file": "microsoft-beginners.md",
+    "language_code": "ur"
+  },
+  "readme-languages-template.md": {
+    "original_hash": "aa6961ffd2f156891ee80a2a09351dd4",
+    "translation_date": "2026-07-01T04:49:04+09:00",
+    "source_file": "readme-languages-template.md",
+    "language_code": "ur"
+  },
+  "supported-languages.md": {
+    "original_hash": "5df55df65fa7853f37de2ec19cc19601",
+    "translation_date": "2026-07-01T04:52:02+09:00",
+    "source_file": "supported-languages.md",
+    "language_code": "ur"
+  },
+  "troubleshooting.md": {
+    "original_hash": "e72c3a7af6bb5d9faba75b230a7cc0d8",
+    "translation_date": "2026-07-01T04:56:26+09:00",
+    "source_file": "troubleshooting.md",
+    "language_code": "ur"
+  },
+  "workflows.md": {
+    "original_hash": "a2a01cf6727ce9228e9e66ac0f64810d",
+    "translation_date": "2026-07-01T05:00:21+09:00",
+    "source_file": "workflows.md",
+    "language_code": "ur"
+  }
+}
+

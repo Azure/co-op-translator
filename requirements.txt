@@ -59,7 +59,7 @@ tqdm~=4.66.4
 traitlets~=5.14.3
 typing_extensions~=4.12.2
 urllib3>=2.2.1,<2.8.0
-wcwidth~=0.2.13
+wcwidth>=0.2.13,<0.9.0
 
 # Text processing
 arabic-reshaper>=3.0.0

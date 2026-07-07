@@ -342,16 +342,12 @@ async def test_translate_markdown_does_not_save_incomplete_retry(
     result = await translation_manager.translate_markdown(source_file, "ko")
 
     translated_file = temp_project_dir / "translations" / "ko" / "docs" / "test.md"
-    metadata_file = (
-        temp_project_dir / "translations" / "ko" / ".co-op-translator.json"
-    )
+    metadata_file = temp_project_dir / "translations" / "ko" / ".co-op-translator.json"
     metadata = json.loads(metadata_file.read_text(encoding="utf-8"))
 
     assert result == ""
     assert not translated_file.exists()
-    assert (
-        metadata[TEXT_TRANSLATION_FAILURES_KEY]["docs/test.md"]["status"] == "failed"
-    )
+    assert metadata[TEXT_TRANSLATION_FAILURES_KEY]["docs/test.md"]["status"] == "failed"
     assert (
         metadata[TEXT_TRANSLATION_FAILURES_KEY]["docs/test.md"]["error_type"]
         == "RuntimeError"
@@ -454,10 +450,9 @@ async def test_translate_all_markdown_update_keeps_previous_translation_on_failu
     ]
     assert translated_file.read_text(encoding="utf-8") == "# Previous translation\n"
     assert metadata["docs/test.md"]["original_hash"] == old_hash
-    assert (
-        metadata[TEXT_TRANSLATION_FAILURES_KEY]["docs/test.md"]["original_hash"]
-        == calculate_file_hash(source_file)
-    )
+    assert metadata[TEXT_TRANSLATION_FAILURES_KEY]["docs/test.md"][
+        "original_hash"
+    ] == calculate_file_hash(source_file)
 
 
 @pytest.mark.asyncio

@@ -35,6 +35,11 @@ from co_op_translator.utils.common.file_utils import (
     update_readme_other_courses,
 )
 from co_op_translator.utils.common.console import configure_safe_console_output
+from co_op_translator.utils.common.events import (
+    TranslationEventCallback,
+    emit_translation_event,
+    translation_event_context,
+)
 from co_op_translator.utils.common.logging_utils import setup_logging
 from co_op_translator.utils.common.metadata_utils import (
     calculate_string_hash,
@@ -255,7 +260,7 @@ def compute_pretranslation_virtual_inputs(
     return {readme_path: updated}
 
 
-def run_translation(
+def _run_translation_impl(
     language_codes: str,
     root_dir: str = ".",
     update: bool = False,
@@ -275,7 +280,7 @@ def run_translation(
     readme_only: bool = False,
     dry_run: bool = False,
 ) -> None:
-    """Programmatic translation entrypoint mirroring the translate CLI options.
+    """Implementation for the programmatic translation entrypoint.
 
     Set ``readme_only`` to translate only the root README while keeping
     document links pointed at the source tree.
@@ -809,6 +814,72 @@ def run_translation(
                 dry_run=dry_run,
                 output_prepared=output_prepared,
             )
+
+
+def run_translation(
+    language_codes: str,
+    root_dir: str = ".",
+    update: bool = False,
+    images: bool = False,
+    markdown: bool = False,
+    notebook: bool = False,
+    debug: bool = False,
+    save_logs: bool = False,
+    yes: bool = True,
+    add_disclaimer: bool = False,
+    translations_dir: str | None = None,
+    image_dir: str | None = None,
+    root_dirs: Iterable[str] | None = None,
+    groups: Iterable[tuple[str, str | None]] | None = None,
+    repo_url: str | None = None,
+    glossaries: Iterable[str] | None = None,
+    readme_only: bool = False,
+    dry_run: bool = False,
+    progress_callback: TranslationEventCallback | None = None,
+    json_events_path: str | Path | None = None,
+) -> None:
+    """Programmatic translation entrypoint mirroring the translate CLI options.
+
+    ``progress_callback`` receives versioned ``TranslationEvent`` objects for
+    integration code. ``json_events_path`` writes the same events as NDJSON.
+    """
+
+    with translation_event_context(
+        callback=progress_callback,
+        json_events_path=json_events_path,
+    ):
+        try:
+            result = _run_translation_impl(
+                language_codes=language_codes,
+                root_dir=root_dir,
+                update=update,
+                images=images,
+                markdown=markdown,
+                notebook=notebook,
+                debug=debug,
+                save_logs=save_logs,
+                yes=yes,
+                add_disclaimer=add_disclaimer,
+                translations_dir=translations_dir,
+                image_dir=image_dir,
+                root_dirs=root_dirs,
+                groups=groups,
+                repo_url=repo_url,
+                glossaries=glossaries,
+                readme_only=readme_only,
+                dry_run=dry_run,
+            )
+        except Exception as exc:
+            emit_translation_event("run_failed", message=str(exc), level="error")
+            raise
+
+        emit_translation_event(
+            "run_completed",
+            metadata={
+                "dry_run": dry_run,
+            },
+        )
+        return result
 
 
 def translate_project(*args, **kwargs) -> None:

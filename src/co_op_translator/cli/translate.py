@@ -20,6 +20,10 @@ from co_op_translator.utils.common.file_utils import (
 from co_op_translator.utils.common.metadata_utils import (
     normalize_language_codes_in_lang_metadata,
 )
+from co_op_translator.utils.common.events import (
+    emit_translation_event,
+    translation_event_context,
+)
 from co_op_translator.utils.common.progress import get_progress_reporter
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 from co_op_translator.core.project.translation.request import (
@@ -64,6 +68,12 @@ logger = logging.getLogger(__name__)
     "-s",
     is_flag=True,
     help="Save logs to the logs/ directory under --root-dir (always at DEBUG level).",
+)
+@click.option(
+    "--json-events",
+    type=click.Path(dir_okay=False, path_type=Path),
+    default=None,
+    help="Write machine-readable translation events as NDJSON to this file.",
 )
 @click.option(
     "--fix",
@@ -127,6 +137,7 @@ def translate_command(
     readme_only,
     debug,
     save_logs,
+    json_events,
     fix,
     fast,
     yes,
@@ -176,6 +187,8 @@ def translate_command(
     - translate -l "ko" -d: Enable debug logging.
     """
     reporter = get_progress_reporter()
+    event_scope = translation_event_context(json_events_path=json_events)
+    event_scope.__enter__()
 
     try:
         # Check that the required environment variables are set
@@ -461,6 +474,7 @@ def translate_command(
         # If dry-run, stop after estimation without making any changes
         if dry_run:
             reporter.success("Dry run complete: no changes made.")
+            emit_translation_event("run_completed", metadata={"dry_run": True})
             return
 
         # Update README shared sections BEFORE translation
@@ -556,7 +570,12 @@ def translate_command(
                 f"Project translation completed for languages: {language_codes}"
             )
 
+        emit_translation_event("run_completed", metadata={"dry_run": dry_run})
+
     except Exception as e:
         if debug:
             logger.exception("An error occurred during translation")
+        emit_translation_event("run_failed", message=str(e), level="error")
         raise click.ClickException(str(e))
+    finally:
+        event_scope.__exit__(None, None, None)

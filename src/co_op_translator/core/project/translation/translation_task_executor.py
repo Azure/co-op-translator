@@ -57,7 +57,12 @@ class TranslationTaskExecutorMixin:
         return results
 
     async def process_api_requests_sequential(
-        self, tasks, task_desc, file_names=None
+        self,
+        tasks,
+        task_desc,
+        file_names=None,
+        file_info=None,
+        stage_key: str | None = None,
     ) -> list:
         """Execute API requests one at a time in sequence.
 
@@ -80,10 +85,15 @@ class TranslationTaskExecutorMixin:
 
         results = []
         with reporter.task(
-            task_desc, total=total_tasks, unit="request"
+            task_desc, total=total_tasks, unit="request", stage_key=stage_key
         ) as progress_bar:
             for i, task in enumerate(tasks):
                 # Show current file name in progress bar if available
+                current_path = None
+                current_language = None
+                if file_info and i < len(file_info):
+                    current_path, current_language = file_info[i]
+                    progress_bar.file_started(current_path, current_language)
                 if file_names and i < len(file_names):
                     file_name = file_names[i]
                     progress_bar.set_detail(f"Current: {file_name}")
@@ -94,6 +104,15 @@ class TranslationTaskExecutorMixin:
 
                 # Update progress bar
                 progress_bar.update(1)
+                if current_path is not None:
+                    if result:
+                        progress_bar.file_completed(current_path, current_language)
+                    else:
+                        progress_bar.file_failed(
+                            current_path,
+                            current_language,
+                            message=f"Failed to process {current_path}",
+                        )
 
                 # Reset description after completion if needed
                 if i + 1 < total_tasks:

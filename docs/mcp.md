@@ -207,6 +207,12 @@ Repository translation defaults to `dry_run=true` so an agent can inspect scope 
 }
 ```
 
+The `run_translation` result includes an `events` array with versioned
+`co-op.translation.event.v1` progress events. MCP clients should use fields such
+as `type`, `stage_key`, `completed`, `total`, and `current_path` instead of
+parsing captured console text. Pass `json_events_path` to also write those events
+to an NDJSON file.
+
 To allow writes, the caller must set both `dry_run=false` and `confirm_write=true`:
 
 ```json

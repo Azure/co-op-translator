@@ -198,6 +198,30 @@ run_translation(
 )
 ```
 
+Record structured progress events for an integration:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Store payload in your job-event table or stream it to your UI.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Events use the versioned schema `co-op.translation.event.v1`. Integrations should
+depend on stable fields such as `type` and `stage_key`, not on human-facing
+console text or `stage_label`.
+
 Translate multiple content roots in one call:
 
 ```python

@@ -263,6 +263,69 @@ async def test_run_translation_dry_run_groups_shows_single_aggregated_estimate(
     )
 
 
+def test_run_translation_progress_callback_receives_structured_events(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr(api.Config, "check_configuration", MagicMock(return_value=None))
+    monkeypatch.setattr(
+        api.LLMConfig, "validate_connectivity", MagicMock(return_value=None)
+    )
+    monkeypatch.setattr(api, "setup_logging", MagicMock(return_value=None))
+
+    translator = MagicMock()
+    monkeypatch.setattr(api, "ProjectTranslator", MagicMock(return_value=translator))
+    monkeypatch.setattr(
+        api,
+        "estimate_translation_tokens",
+        MagicMock(
+            return_value={
+                "markdown": 10,
+                "notebook": 0,
+                "images": 0,
+                "outdated_markdown": 0,
+                "outdated_notebook": 0,
+                "outdated_images": 0,
+                "outdated": 0,
+                "total": 10,
+            }
+        ),
+    )
+    monkeypatch.setattr(
+        api,
+        "estimate_translation_words",
+        MagicMock(
+            return_value={
+                "markdown": 5,
+                "notebook": 0,
+                "images": 0,
+                "outdated": 0,
+                "total": 5,
+            }
+        ),
+    )
+
+    events = []
+
+    api.run_translation(
+        language_codes="ko",
+        root_dir=str(tmp_path),
+        markdown=True,
+        dry_run=True,
+        progress_callback=events.append,
+    )
+
+    payloads = [event.to_dict() for event in events]
+    event_types = [payload["type"] for payload in payloads]
+
+    assert event_types[0] == "run_started"
+    assert "estimate_ready" in event_types
+    assert event_types[-1] == "run_completed"
+    assert payloads[0]["schema"] == "co-op.translation.event.v1"
+    assert payloads[0]["command"] == "run_translation"
+    assert payloads[0]["languages"] == ["ko"]
+    assert payloads[event_types.index("estimate_ready")]["total_tokens"] == 10
+
+
 @pytest.mark.asyncio
 async def test_run_translation_dry_run_uses_virtual_readme_without_writing(tmp_path):
     readme_path = tmp_path / "README.md"

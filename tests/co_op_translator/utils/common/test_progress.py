@@ -3,6 +3,7 @@ import logging
 
 from rich.console import Console
 
+from co_op_translator.utils.common.events import translation_event_context
 from co_op_translator.utils.common.progress import ProgressReporter
 
 
@@ -141,3 +142,50 @@ def test_reporter_mirrors_user_facing_output_to_file_logs(tmp_path):
     assert "Co-op Translator | Command: translate" in output
     assert "Done: LLM health check passed." in output
     assert "Estimated translation volume before translation" in output
+
+
+def test_reporter_emits_structured_progress_events():
+    stream = io.StringIO()
+    console = Console(file=stream, force_terminal=False, color_system=None)
+    reporter = ProgressReporter(console=console, output_style="plain")
+    events = []
+
+    with translation_event_context(callback=events.append):
+        reporter.header(
+            command="translate",
+            root_dir="C:/repo",
+            languages=["ko"],
+            modes=["markdown"],
+        )
+        reporter.estimate_summary(
+            title="Estimated Translation Volume",
+            total_tokens=20,
+            total_words=10,
+            rows=[("Translation: markdown", 20)],
+            fallback="Estimated translation volume before translation: 20 tokens",
+        )
+        with reporter.task(
+            "Translating markdown files",
+            total=1,
+            unit="request",
+        ) as task:
+            task.file_started("docs/intro.md", "ko")
+            task.update()
+            task.file_completed("docs/intro.md", "ko")
+
+    payloads = [event.to_dict() for event in events]
+    event_types = [payload["type"] for payload in payloads]
+
+    assert event_types == [
+        "run_started",
+        "estimate_ready",
+        "stage_started",
+        "file_started",
+        "stage_progress",
+        "file_completed",
+        "stage_completed",
+    ]
+    assert payloads[2]["stage_key"] == "translating_markdown_files"
+    assert payloads[4]["current_path"] == "docs/intro.md"
+    assert payloads[4]["language"] == "ko"
+    assert payloads[4]["progress"] == 100

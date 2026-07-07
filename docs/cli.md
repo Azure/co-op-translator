@@ -18,6 +18,12 @@ Interactive terminals use Rich formatting for the command header, progress, and 
 
 Set `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` to force plain output, or `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` to force Rich output. Set `CO_OP_TRANSLATOR_NO_PROGRESS=1` to keep summaries while suppressing live progress bars.
 
+Use `translate --json-events progress.ndjson` when another system needs
+machine-readable progress. The CLI continues to render human-facing output, while
+the NDJSON file receives versioned `co-op.translation.event.v1` events with
+stable fields such as `type`, `stage_key`, `completed`, `total`, and
+`current_path`.
+
 ## First-Time CLI Flow
 
 Start here if you are using Co-op Translator from a terminal:
@@ -84,6 +90,12 @@ Save logs:
 translate -l "ko" -s
 ```
 
+Write structured progress events:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
 ### Options
 
 | Option | Required | Description |
@@ -96,6 +108,7 @@ translate -l "ko" -s
 | `-nb`, `--notebook` | No | Translate only Jupyter notebook files. |
 | `-d`, `--debug` | No | Enable debug logging in the console. |
 | `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
+| `--json-events` | No | Write machine-readable translation progress events as NDJSON. |
 | `-x`, `--fix` | No | Retranslate low-confidence Markdown files based on previous evaluation results. |
 | `-c`, `--min-confidence` | No | Confidence threshold for `--fix`. Defaults to `0.7`. |
 | `--add-disclaimer`, `--no-disclaimer` | No | Add or suppress machine translation disclaimers. Defaults to enabled in the CLI. |

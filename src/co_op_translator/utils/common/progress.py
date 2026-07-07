@@ -26,6 +26,11 @@ from rich.progress import (
 from rich.table import Table
 from rich.text import Text
 
+from co_op_translator.utils.common.events import (
+    emit_translation_event,
+    stage_key_for_label,
+)
+
 
 def _env_flag(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "on"}
@@ -48,6 +53,23 @@ def _short_path(value: str | Path | None) -> str:
     except TypeError:
         return str(value)
     return str(path)
+
+
+def _language_values(languages: str | Iterable[str] | None) -> list[str] | None:
+    if languages is None:
+        return None
+    if isinstance(languages, str):
+        return [code for code in languages.split() if code]
+    return [str(code) for code in languages]
+
+
+def _path_from_detail(detail: str | None) -> str | None:
+    if not detail:
+        return None
+    prefix = "Current: "
+    if detail.startswith(prefix):
+        return detail[len(prefix) :].strip() or None
+    return None
 
 
 def _mirror_to_file_logs(message: str) -> None:
@@ -155,6 +177,14 @@ class ProgressReporter:
 
         plain_header = f"Co-op Translator | {' | '.join(log_parts)}"
         _mirror_to_file_logs(plain_header)
+        emit_translation_event(
+            "run_started",
+            command=command,
+            root_dir=_short_path(root_dir) if root_dir is not None else None,
+            languages=_language_values(languages),
+            modes=list(modes) if modes else None,
+            metadata={"version": _package_version()},
+        )
         if not self.rich_enabled:
             self.console.print(plain_header, soft_wrap=True)
             return
@@ -179,7 +209,14 @@ class ProgressReporter:
         fallback: str,
     ) -> None:
         """Print token estimates as a Rich table or as a plain fallback line."""
+        rows = list(rows)
         _mirror_to_file_logs(fallback)
+        emit_translation_event(
+            "estimate_ready",
+            total_tokens=total_tokens,
+            total_words=total_words,
+            metadata={"title": title, "rows": rows},
+        )
         if not self.rich_enabled:
             self.console.print(fallback, soft_wrap=True)
             return
@@ -237,13 +274,41 @@ class ProgressReporter:
         *,
         total: int | None = None,
         unit: str = "item",
+        stage_key: str | None = None,
     ) -> Iterator["ProgressTask"]:
         """Create a polished progress task that degrades cleanly in CI."""
+        resolved_stage_key = stage_key or stage_key_for_label(description)
+        emit_translation_event(
+            "stage_started",
+            stage_key=resolved_stage_key,
+            stage_label=description,
+            total=total,
+            metadata={"unit": unit},
+        )
         if not self.progress_enabled:
-            task = ProgressTask(None, None, description, total, unit)
-            yield task
-            if total is not None and task.completed:
-                self.success(task.summary)
+            task = ProgressTask(
+                None,
+                None,
+                description,
+                total,
+                unit,
+                stage_key=resolved_stage_key,
+            )
+            try:
+                yield task
+            except Exception:
+                raise
+            else:
+                emit_translation_event(
+                    "stage_completed",
+                    stage_key=resolved_stage_key,
+                    stage_label=description,
+                    completed=task.completed,
+                    total=total,
+                    metadata={"unit": unit},
+                )
+                if total is not None and task.completed:
+                    self.success(task.summary)
             return
 
         progress = Progress(
@@ -266,8 +331,27 @@ class ProgressReporter:
                 unit=unit,
                 detail="",
             )
-            task = ProgressTask(progress, task_id, description, total, unit)
-            yield task
+            task = ProgressTask(
+                progress,
+                task_id,
+                description,
+                total,
+                unit,
+                stage_key=resolved_stage_key,
+            )
+            try:
+                yield task
+            except Exception:
+                raise
+            else:
+                emit_translation_event(
+                    "stage_completed",
+                    stage_key=resolved_stage_key,
+                    stage_label=description,
+                    completed=task.completed,
+                    total=total,
+                    metadata={"unit": unit},
+                )
         if task.completed:
             self.success(task.summary)
 
@@ -278,6 +362,7 @@ class ProgressReporter:
         description: str,
         total: int | None = None,
         unit: str = "item",
+        stage_key: str | None = None,
     ) -> Iterator:
         if total is None:
             try:
@@ -285,7 +370,9 @@ class ProgressReporter:
             except TypeError:
                 total = None
 
-        with self.task(description, total=total, unit=unit) as task:
+        with self.task(
+            description, total=total, unit=unit, stage_key=stage_key
+        ) as task:
             for item in iterable:
                 yield item
                 task.update(1)
@@ -300,13 +387,25 @@ class ProgressTask:
     description: str
     total: int | None
     unit: str
+    stage_key: str
     completed: int = 0
     detail: str | None = ""
+    language: str | None = None
 
     def update(self, advance: int = 1) -> None:
         self.completed += advance
         if self.progress is not None and self.task_id is not None:
             self.progress.update(self.task_id, advance=advance)
+        emit_translation_event(
+            "stage_progress",
+            stage_key=self.stage_key,
+            stage_label=self.description,
+            language=self.language,
+            current_path=_path_from_detail(self.detail),
+            completed=self.completed,
+            total=self.total,
+            metadata={"unit": self.unit},
+        )
 
     def set_detail(self, detail: str | None) -> None:
         self.detail = "" if detail is None or detail == "None" else detail
@@ -320,6 +419,50 @@ class ProgressTask:
 
     set_description_str = set_description
     set_postfix_str = set_detail
+
+    def file_started(
+        self,
+        current_path: str | Path,
+        language: str | None = None,
+    ) -> None:
+        self.language = language
+        self.set_detail(f"Current: {current_path}")
+        emit_translation_event(
+            "file_started",
+            stage_key=self.stage_key,
+            stage_label=self.description,
+            language=language,
+            current_path=str(current_path),
+        )
+
+    def file_completed(
+        self,
+        current_path: str | Path,
+        language: str | None = None,
+    ) -> None:
+        emit_translation_event(
+            "file_completed",
+            stage_key=self.stage_key,
+            stage_label=self.description,
+            language=language,
+            current_path=str(current_path),
+        )
+
+    def file_failed(
+        self,
+        current_path: str | Path,
+        language: str | None = None,
+        message: str | None = None,
+    ) -> None:
+        emit_translation_event(
+            "file_failed",
+            stage_key=self.stage_key,
+            stage_label=self.description,
+            language=language,
+            current_path=str(current_path),
+            message=message,
+            level="error",
+        )
 
     @property
     def summary(self) -> str:

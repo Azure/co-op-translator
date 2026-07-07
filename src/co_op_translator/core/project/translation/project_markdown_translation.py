@@ -1,16 +1,24 @@
 from __future__ import annotations
 
 import logging
+import tempfile
 from pathlib import Path
 
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
+from co_op_translator.core.llm.markdown_translator import (
+    TranslationContentFilterError,
+    TranslationIncompleteError,
+)
 from co_op_translator.utils.common.file_utils import (
-    delete_translated_markdown_files_by_language_code,
     filter_files,
     handle_empty_document,
     read_input_file,
 )
-from co_op_translator.utils.common.metadata_utils import save_text_metadata_for_source
+from co_op_translator.utils.common.metadata_utils import (
+    save_text_failure_metadata_for_source,
+    save_text_metadata_for_source,
+    should_retry_text_failure_for_source,
+)
 from co_op_translator.utils.markdown.path_rewriter import (
     MarkdownPathRewritePolicy,
     rewrite_markdown_paths,
@@ -55,6 +63,50 @@ class ProjectMarkdownTranslationMixin:
                 translation_types=self.translation_types,
                 lang_subdir=self.lang_subdir,
             ),
+        )
+
+    def _write_markdown_translation(
+        self, translated_path: Path, translated_content: str
+    ) -> None:
+        translated_path.parent.mkdir(parents=True, exist_ok=True)
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                "w",
+                encoding="utf-8",
+                dir=translated_path.parent,
+                prefix=f".{translated_path.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as temp_file:
+                temp_file.write(translated_content)
+                temp_path = Path(temp_file.name)
+
+            temp_path.replace(translated_path)
+        finally:
+            if temp_path and temp_path.exists():
+                try:
+                    temp_path.unlink()
+                except Exception:
+                    logger.debug("Failed to remove temporary file: %s", temp_path)
+
+    def _should_record_markdown_failure(self, error: Exception) -> bool:
+        if isinstance(
+            error, (TranslationIncompleteError, TranslationContentFilterError)
+        ):
+            return True
+
+        if not isinstance(error, RuntimeError):
+            return False
+
+        error_message = str(error)
+        return any(
+            message in error_message
+            for message in (
+                "Markdown translation returned empty content",
+                "Markdown translation retry returned empty content",
+                "Markdown translation retry produced incomplete content",
+            )
         )
 
     async def translate_markdown(self, file_path: Path, language_code: str) -> str:
@@ -122,11 +174,8 @@ class ProjectMarkdownTranslationMixin:
                 translated_content, language_code
             )
 
-            translated_path.parent.mkdir(parents=True, exist_ok=True)
-
             try:
-                with open(translated_path, "w", encoding="utf-8") as f:
-                    f.write(translated_content)
+                self._write_markdown_translation(translated_path, translated_content)
                 logger.info(
                     f"Translated {file_path} to {language_code} and saved to {translated_path}"
                 )
@@ -144,7 +193,30 @@ class ProjectMarkdownTranslationMixin:
 
         except Exception as e:
             logger.error(f"Failed to translate {file_path}: {e}")
-            raise
+            if not self._should_record_markdown_failure(e):
+                return ""
+
+            try:
+                lang_dir = self._get_language_root(language_code)
+                save_text_failure_metadata_for_source(
+                    lang_dir,
+                    file_path,
+                    language_code,
+                    root_dir=self.root_dir,
+                    error=e,
+                )
+                logger.warning(
+                    "Recorded failed markdown translation for %s in %s",
+                    file_path,
+                    lang_dir / ".co-op-translator.json",
+                )
+            except Exception as metadata_error:
+                logger.warning(
+                    "Failed to record markdown translation failure for %s: %s",
+                    file_path,
+                    metadata_error,
+                )
+            return ""
 
     async def translate_all_markdown_files(
         self, update: bool = False
@@ -153,15 +225,6 @@ class ProjectMarkdownTranslationMixin:
 
         modified_count = 0
         errors = []
-
-        if update:
-            for language_code in self.language_codes:
-                delete_translated_markdown_files_by_language_code(
-                    language_code, self.translations_dir, self.lang_subdir
-                )
-                logger.info(
-                    f"Deleted all translated markdown files for language: {language_code}"
-                )
 
         markdown_files = filter_files(self.root_dir, self.excluded_dirs)
         tasks = []
@@ -178,6 +241,18 @@ class ProjectMarkdownTranslationMixin:
                 translated_md_path = (
                     self._get_language_root(language_code) / relative_path
                 )
+
+                if not update and not should_retry_text_failure_for_source(
+                    self._get_language_root(language_code),
+                    md_file_path,
+                    language_code,
+                ):
+                    logger.info(
+                        "Skipping previously failed markdown file until source or "
+                        "translator changes: %s",
+                        md_file_path,
+                    )
+                    continue
 
                 if not update and translated_md_path.exists():
                     logger.info(

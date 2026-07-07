@@ -7,7 +7,11 @@ from PIL import Image
 
 from co_op_translator.core.project.translation import TranslationManager
 from co_op_translator.utils.common.file_utils import generate_translated_filename
-from co_op_translator.utils.common.metadata_utils import calculate_file_hash
+from co_op_translator.utils.common.metadata_utils import (
+    TEXT_TRANSLATION_FAILURES_KEY,
+    calculate_file_hash,
+    save_text_failure_metadata_for_source,
+)
 
 
 class FakeMarkdownTranslator:
@@ -324,35 +328,179 @@ def test_get_outdated_translations_detects_truncated_current_hash(
 
 
 @pytest.mark.asyncio
-async def test_translate_markdown_does_not_save_incomplete_retry(temp_project_dir):
+async def test_translate_markdown_does_not_save_incomplete_retry(
+    translation_manager, temp_project_dir
+):
     source_file = temp_project_dir / "docs" / "test.md"
     source_file.write_text(
         "\n".join(f"Line {index}" for index in range(40)) + "\n",
         encoding="utf-8",
     )
-    translation_manager = TranslationManager(
-        root_dir=temp_project_dir,
-        translations_dir=temp_project_dir / "translations",
-        image_dir=temp_project_dir / "translated_images",
-        language_codes=["ko"],
-        excluded_dirs=["translations", "translated_images", "logs"],
-        supported_image_extensions=[".png"],
-        supported_notebook_extensions=[".ipynb"],
-        markdown_translator=FakeTruncatingMarkdownTranslator(),
-        image_translator=FakeImageTranslator(),
-        notebook_translator=FakeNotebookTranslator(),
-        translation_types=["markdown"],
-        add_disclaimer=False,
-    )
+    translation_manager.language_codes = ["ko"]
+    translation_manager.markdown_translator = FakeTruncatingMarkdownTranslator()
 
-    with pytest.raises(RuntimeError, match="incomplete content"):
-        await translation_manager.translate_markdown(source_file, "ko")
+    result = await translation_manager.translate_markdown(source_file, "ko")
 
     translated_file = temp_project_dir / "translations" / "ko" / "docs" / "test.md"
-    assert not translated_file.exists()
-    assert not (
+    metadata_file = (
         temp_project_dir / "translations" / "ko" / ".co-op-translator.json"
-    ).exists()
+    )
+    metadata = json.loads(metadata_file.read_text(encoding="utf-8"))
+
+    assert result == ""
+    assert not translated_file.exists()
+    assert (
+        metadata[TEXT_TRANSLATION_FAILURES_KEY]["docs/test.md"]["status"] == "failed"
+    )
+    assert (
+        metadata[TEXT_TRANSLATION_FAILURES_KEY]["docs/test.md"]["error_type"]
+        == "RuntimeError"
+    )
+
+
+@pytest.mark.asyncio
+async def test_translate_all_markdown_skips_unchanged_previous_failure(
+    translation_manager, temp_project_dir
+):
+    source_file = temp_project_dir / "docs" / "test.md"
+    lang_dir = temp_project_dir / "translations" / "ko"
+    markdown_translator = FakeMarkdownTranslator()
+    save_text_failure_metadata_for_source(
+        lang_dir,
+        source_file,
+        "ko",
+        root_dir=temp_project_dir,
+        error=RuntimeError("previous incomplete translation"),
+    )
+    translation_manager.language_codes = ["ko"]
+    translation_manager.markdown_translator = markdown_translator
+
+    modified_count, errors = await translation_manager.translate_all_markdown_files()
+
+    assert modified_count == 0
+    assert errors == []
+    assert markdown_translator.calls == []
+
+
+@pytest.mark.asyncio
+async def test_translate_all_markdown_retries_failure_after_version_change(
+    translation_manager, temp_project_dir
+):
+    source_file = temp_project_dir / "docs" / "test.md"
+    lang_dir = temp_project_dir / "translations" / "ko"
+    markdown_translator = FakeMarkdownTranslator()
+    save_text_failure_metadata_for_source(
+        lang_dir,
+        source_file,
+        "ko",
+        root_dir=temp_project_dir,
+        error=RuntimeError("previous incomplete translation"),
+        translator_version="old-version",
+    )
+    translation_manager.language_codes = ["ko"]
+    translation_manager.markdown_translator = markdown_translator
+
+    modified_count, errors = await translation_manager.translate_all_markdown_files()
+    metadata = json.loads(
+        (lang_dir / ".co-op-translator.json").read_text(encoding="utf-8")
+    )
+
+    assert modified_count == 1
+    assert errors == []
+    assert markdown_translator.calls
+    assert (lang_dir / "docs" / "test.md").exists()
+    assert TEXT_TRANSLATION_FAILURES_KEY not in metadata
+
+
+@pytest.mark.asyncio
+async def test_translate_all_markdown_update_keeps_previous_translation_on_failure(
+    translation_manager, temp_project_dir
+):
+    source_file = temp_project_dir / "docs" / "test.md"
+    translated_file = temp_project_dir / "translations" / "ko" / "docs" / "test.md"
+    translated_file.parent.mkdir(parents=True)
+    translated_file.write_text("# Previous translation\n", encoding="utf-8")
+    old_hash = calculate_file_hash(source_file)
+    _write_lang_metadata(
+        temp_project_dir / "translations" / "ko",
+        {
+            "docs/test.md": {
+                "original_hash": old_hash,
+                "translation_date": "2026-01-01T00:00:00+00:00",
+                "source_file": "docs/test.md",
+                "language_code": "ko",
+            }
+        },
+    )
+    source_file.write_text(
+        "\n".join(f"Updated line {index}" for index in range(40)) + "\n",
+        encoding="utf-8",
+    )
+    translation_manager.language_codes = ["ko"]
+    translation_manager.markdown_translator = FakeTruncatingMarkdownTranslator()
+
+    modified_count, errors = await translation_manager.translate_all_markdown_files(
+        update=True
+    )
+    metadata = json.loads(
+        (temp_project_dir / "translations" / "ko" / ".co-op-translator.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert modified_count == 0
+    assert errors == [
+        f"Failed to translate markdown file: {source_file.resolve()} (lang: ko)"
+    ]
+    assert translated_file.read_text(encoding="utf-8") == "# Previous translation\n"
+    assert metadata["docs/test.md"]["original_hash"] == old_hash
+    assert (
+        metadata[TEXT_TRANSLATION_FAILURES_KEY]["docs/test.md"]["original_hash"]
+        == calculate_file_hash(source_file)
+    )
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_preserves_previous_translation_on_write_failure(
+    translation_manager, temp_project_dir, monkeypatch
+):
+    source_file = temp_project_dir / "docs" / "test.md"
+    translated_file = temp_project_dir / "translations" / "ko" / "docs" / "test.md"
+    translated_file.parent.mkdir(parents=True)
+    translated_file.write_text("# Previous translation\n", encoding="utf-8")
+    old_hash = calculate_file_hash(source_file)
+    _write_lang_metadata(
+        temp_project_dir / "translations" / "ko",
+        {
+            "docs/test.md": {
+                "original_hash": old_hash,
+                "translation_date": "2026-01-01T00:00:00+00:00",
+                "source_file": "docs/test.md",
+                "language_code": "ko",
+            }
+        },
+    )
+    original_replace = Path.replace
+
+    def fail_replace(path, target):
+        if Path(target) == translated_file:
+            raise OSError("replace failed")
+        return original_replace(path, target)
+
+    monkeypatch.setattr(Path, "replace", fail_replace)
+    translation_manager.language_codes = ["ko"]
+
+    result = await translation_manager.translate_markdown(source_file, "ko")
+    metadata = json.loads(
+        (temp_project_dir / "translations" / "ko" / ".co-op-translator.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert result == ""
+    assert translated_file.read_text(encoding="utf-8") == "# Previous translation\n"
+    assert metadata["docs/test.md"]["original_hash"] == old_hash
+    assert TEXT_TRANSLATION_FAILURES_KEY not in metadata
 
 
 @pytest.mark.asyncio

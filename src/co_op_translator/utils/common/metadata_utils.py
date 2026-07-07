@@ -7,10 +7,15 @@ import json
 import logging
 import threading
 from datetime import datetime
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
+
+TEXT_TRANSLATION_FAILURES_KEY = "__translation_failures__"
+TEXT_TRANSLATION_FAILURE_POLICY_VERSION = 1
+_MAX_FAILURE_MESSAGE_LENGTH = 1000
 
 
 def calculate_file_hash(file_path: Path) -> str:
@@ -577,6 +582,15 @@ def _normalize_source_key(source: str | Path) -> str:
     return str(source).replace("\\", "/")
 
 
+def _get_co_op_translator_version() -> str:
+    try:
+        return version("co_op_translator")
+    except PackageNotFoundError:
+        return "unknown"
+    except Exception:
+        return "unknown"
+
+
 def load_language_metadata(lang_dir: Path) -> dict:
     return _load_lang_metadata(lang_dir)
 
@@ -610,6 +624,15 @@ def save_text_metadata_for_source(
     with lock:
         all_metadata = _load_lang_metadata(lang_dir)
         all_metadata[normalized_key] = metadata
+
+        failures = all_metadata.get(TEXT_TRANSLATION_FAILURES_KEY)
+        if isinstance(failures, dict) and normalized_key in failures:
+            del failures[normalized_key]
+            if failures:
+                all_metadata[TEXT_TRANSLATION_FAILURES_KEY] = failures
+            else:
+                all_metadata.pop(TEXT_TRANSLATION_FAILURES_KEY, None)
+
         _save_lang_metadata(lang_dir, all_metadata)
 
     return metadata
@@ -666,6 +689,132 @@ def read_text_metadata_for_source(lang_dir: Path, source_file: str | Path) -> di
     return {}
 
 
+def _create_text_failure_metadata(
+    original_file: Path,
+    language_code: str,
+    error: Exception | None = None,
+    root_dir: Path | None = None,
+    translator_version: str | None = None,
+    policy_version: int = TEXT_TRANSLATION_FAILURE_POLICY_VERSION,
+) -> dict:
+    metadata = create_metadata(original_file, language_code, root_dir)
+    metadata["failure_date"] = metadata.pop("translation_date")
+    metadata["status"] = "failed"
+    metadata["error_type"] = error.__class__.__name__ if error else "TranslationError"
+    metadata["error_message"] = str(error or "")[:_MAX_FAILURE_MESSAGE_LENGTH]
+    metadata["translator_version"] = (
+        translator_version or _get_co_op_translator_version()
+    )
+    metadata["failure_policy_version"] = policy_version
+    return metadata
+
+
+def save_text_failure_metadata_for_source(
+    lang_dir: Path,
+    original_file: Path,
+    language_code: str,
+    root_dir: Path | None = None,
+    error: Exception | None = None,
+    translator_version: str | None = None,
+    policy_version: int = TEXT_TRANSLATION_FAILURE_POLICY_VERSION,
+) -> dict:
+    metadata = _create_text_failure_metadata(
+        original_file,
+        language_code,
+        error=error,
+        root_dir=root_dir,
+        translator_version=translator_version,
+        policy_version=policy_version,
+    )
+    source_key = metadata.get("source_file")
+    if not source_key:
+        return metadata
+
+    normalized_key = _normalize_source_key(source_key)
+
+    lock = _get_lock_for_path(_get_metadata_file_path(lang_dir))
+    with lock:
+        all_metadata = _load_lang_metadata(lang_dir)
+        failures = all_metadata.get(TEXT_TRANSLATION_FAILURES_KEY)
+        if not isinstance(failures, dict):
+            failures = {}
+
+        failures[normalized_key] = metadata
+        all_metadata[TEXT_TRANSLATION_FAILURES_KEY] = failures
+        _save_lang_metadata(lang_dir, all_metadata)
+
+    return metadata
+
+
+def _read_text_failure_metadata_for_source(
+    lang_dir: Path, source_file: str | Path
+) -> dict:
+    all_metadata = _load_lang_metadata(lang_dir)
+    failures = all_metadata.get(TEXT_TRANSLATION_FAILURES_KEY, {})
+    if not isinstance(failures, dict):
+        return {}
+
+    normalized = _normalize_source_key(source_file)
+    if normalized in failures:
+        entry = failures.get(normalized, {})
+        return entry if isinstance(entry, dict) else {}
+
+    looks_absolute = False
+    try:
+        if isinstance(source_file, Path):
+            looks_absolute = source_file.is_absolute()
+        else:
+            source_text = str(source_file)
+            if len(source_text) >= 2 and source_text[1] == ":":
+                looks_absolute = True
+            elif source_text.startswith("/") or source_text.startswith("\\"):
+                looks_absolute = True
+    except Exception:
+        looks_absolute = False
+
+    if not looks_absolute:
+        return {}
+
+    parts = normalized.split("/")
+    best_key = None
+    best_len = -1
+    for i in range(len(parts)):
+        suffix = "/".join(parts[i:])
+        if suffix in failures and len(suffix) > best_len:
+            best_key = suffix
+            best_len = len(suffix)
+
+    if best_key is None:
+        return {}
+
+    entry = failures.get(best_key, {})
+    return entry if isinstance(entry, dict) else {}
+
+
+def should_retry_text_failure_for_source(
+    lang_dir: Path,
+    original_file: Path,
+    language_code: str,
+    translator_version: str | None = None,
+    policy_version: int = TEXT_TRANSLATION_FAILURE_POLICY_VERSION,
+) -> bool:
+    failure = _read_text_failure_metadata_for_source(lang_dir, original_file)
+    if not failure:
+        return True
+
+    if failure.get("original_hash") != calculate_file_hash(original_file):
+        return True
+
+    if failure.get("language_code") != language_code:
+        return True
+
+    current_version = translator_version or _get_co_op_translator_version()
+    if failure.get("translator_version") != current_version:
+        return True
+
+    return failure.get("failure_policy_version") != policy_version
+
+
 def remove_text_metadata_for_source(lang_dir: Path, source_file: str | Path) -> None:
     normalized_key = _normalize_source_key(source_file)
     lock = _get_lock_for_path(_get_metadata_file_path(lang_dir))
@@ -709,6 +858,8 @@ def normalize_language_codes_in_lang_metadata(
             return 0
         changed = 0
         for k, v in list(data.items()):
+            if k == TEXT_TRANSLATION_FAILURES_KEY:
+                continue
             if isinstance(v, dict) and v.get("language_code") != canonical_code:
                 v["language_code"] = canonical_code
                 changed += 1

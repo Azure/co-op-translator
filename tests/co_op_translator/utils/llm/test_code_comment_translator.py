@@ -7,6 +7,24 @@ from co_op_translator.utils.llm.code_comment_translator import (
 from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
 
 
+def _translate_numbered_prompt_slots(prompt: str, prefix: str, transform) -> str:
+    _, user_part = prompt.split(SPLIT_DELIMITER, 1)
+    marker_pattern = re.compile(rf"\b{re.escape(prefix)}_(\d+):\s*")
+    matches = list(marker_pattern.finditer(user_part))
+    out_lines = []
+    for match_index, match in enumerate(matches):
+        slot_number = match.group(1)
+        text_start = match.end()
+        text_end = (
+            matches[match_index + 1].start()
+            if match_index + 1 < len(matches)
+            else len(user_part)
+        )
+        text = user_part[text_start:text_end].strip()
+        out_lines.append(f"{prefix}_{slot_number}: {transform(text)}")
+    return "\n".join(out_lines)
+
+
 @pytest.mark.asyncio
 async def test_translate_comments_in_code_blocks_python_comments():
     """Translate only # comments inside a fenced python code block."""
@@ -71,15 +89,10 @@ async def test_translate_comments_in_code_blocks_mermaid_block():
 
     async def fake_run_prompt(prompt, index, total):
         # Mermaid-specific translation
-        if "Mermaid diagram code" in prompt:
-            _, code_block = prompt.split(SPLIT_DELIMITER, 1)
-            translated = (
-                code_block.replace("Start", "[es]Start[/es]")
-                .replace("Decision", "[es]Decision[/es]")
-                .replace("Do it", "[es]Do it[/es]")
-                .replace("Stop", "[es]Stop[/es]")
+        if "MERMAID_SLOT_n" in prompt:
+            return _translate_numbered_prompt_slots(
+                prompt, "MERMAID_SLOT", lambda text: f"[es]{text}[/es]"
             )
-            return translated
         return prompt
 
     result_map = await translate_comments_in_code_blocks(
@@ -118,9 +131,10 @@ async def test_translate_comments_in_code_blocks_mermaid_restores_fence_newlines
     }
 
     async def fake_run_prompt(prompt, index, total):
-        if "Mermaid diagram code" in prompt:
-            _, code_block = prompt.split(SPLIT_DELIMITER, 1)
-            return code_block.replace("Knowledge", "知識").replace("\n```\n", "```")
+        if "MERMAID_SLOT_n" in prompt:
+            return _translate_numbered_prompt_slots(
+                prompt, "MERMAID_SLOT", lambda text: text.replace("Knowledge", "知識")
+            )
         return prompt
 
     result_map = await translate_comments_in_code_blocks(
@@ -135,6 +149,46 @@ async def test_translate_comments_in_code_blocks_mermaid_restores_fence_newlines
 
     assert "end\n```\n" in translated_block
     assert "end```" not in translated_block
+
+
+@pytest.mark.asyncio
+async def test_translate_comments_in_code_blocks_mermaid_collapsed_slot_response():
+    """Collapsed Mermaid slot responses must not collapse the diagram block."""
+
+    original_block = (
+        "```mermaid\n"
+        "sequenceDiagram\n"
+        "    participant WebApp as Web App<br/>(ContentSafetyController)\n"
+        "    WebApp->>MCP: Send text for moderation\n"
+        "    MCP-->>WebApp: Return decision\n"
+        "```\n"
+    )
+    placeholder_map = {"@@CODE_BLOCK_0@@": original_block}
+
+    async def fake_run_prompt(prompt, index, total):
+        if "MERMAID_SLOT_n" in prompt:
+            translated = _translate_numbered_prompt_slots(
+                prompt, "MERMAID_SLOT", lambda text: f"[ko]{text}[/ko]"
+            )
+            return " ".join(translated.splitlines())
+        return prompt
+
+    result_map = await translate_comments_in_code_blocks(
+        placeholder_map,
+        language_code="ko",
+        language_name="Korean",
+        is_rtl=False,
+        run_prompt=fake_run_prompt,
+    )
+
+    translated_block = result_map["@@CODE_BLOCK_0@@"]
+
+    assert translated_block.count("\n") == original_block.count("\n")
+    assert "sequenceDiagram\n" in translated_block
+    assert "```mermaid\n" in translated_block
+    assert "```\n" in translated_block
+    assert "[ko]Send text for moderation[/ko]" in translated_block
+    assert "[ko]Return decision[/ko]" in translated_block
 
 
 @pytest.mark.asyncio

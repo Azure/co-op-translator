@@ -50,6 +50,8 @@ def generate_prompt_template(
             f"Translate the following text to {language_name} ({language_code}). "
             "STRICT RULE: Do NOT add, remove, or modify any markdown characters. "
             "Do NOT introduce HTML tags. Translate ONLY text content. "
+            "If tokens such as @@COOP_CHUNK_START:...@@, @@COOP_CHUNK_END:...@@, "
+            "@@LINE_0001@@, @@CODE_BLOCK_x@@, or @@INLINE_CODE_x@@ appear, keep them exactly. "
             "Return ONLY the translation."
         )
 
@@ -79,6 +81,7 @@ STRICT RULES (NO EXCEPTIONS):
      * Markdown syntax
      * Variable names, function names, class names
      * Placeholders like @@INLINE_CODE_x@@ and @@CODE_BLOCK_x@@
+     * Control markers like @@COOP_CHUNK_START:...@@, @@COOP_CHUNK_END:...@@, and @@LINE_0001@@
      * Tags such as [!NOTE], [!TIP], [!WARNING], [!IMPORTANT], [!CAUTION]
 
 3. HTML HANDLING RULES
@@ -103,6 +106,12 @@ STRICT RULES (NO EXCEPTIONS):
    - Do NOT remove blank lines.
    - Do NOT merge or split paragraphs.
    - Preserve whitespace, indentation, and list structure exactly.
+
+6. CONTROL MARKERS
+   - Markers matching @@COOP_CHUNK_START:...@@ and @@COOP_CHUNK_END:...@@ are required envelope markers.
+   - Markers matching @@LINE_0001@@ are required line anchors.
+   - Keep every marker exactly as written, exactly once, in the same order.
+   - Keep the translated content for each original line attached to its matching @@LINE_0001@@ marker.
 """
 
     # Direction rule (minimal + unambiguous)

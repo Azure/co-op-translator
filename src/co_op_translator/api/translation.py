@@ -37,6 +37,7 @@ from co_op_translator.utils.common.file_utils import (
     update_readme_languages_table,
     update_readme_other_courses,
 )
+from co_op_translator.utils.common.console import configure_safe_console_output
 from co_op_translator.utils.common.logging_utils import setup_logging
 from co_op_translator.utils.common.metadata_utils import (
     calculate_string_hash,
@@ -281,6 +282,7 @@ def run_translation(
     Set ``readme_only`` to translate only the root README while keeping
     document links pointed at the source tree.
     """
+    configure_safe_console_output()
 
     def _split_lang_placeholder(path: str) -> tuple[str, str | None]:
         placeholder = "<lang>"

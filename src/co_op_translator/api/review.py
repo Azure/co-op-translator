@@ -9,6 +9,7 @@ import click
 from co_op_translator.review.models import ReviewSummary
 from co_op_translator.review.runner import ReviewConfig, ReviewRunner
 from co_op_translator.review.targets import build_review_targets
+from co_op_translator.utils.common.console import configure_safe_console_output
 from co_op_translator.utils.common.lang_utils import normalize_language_codes
 from co_op_translator.utils.common.logging_utils import setup_logging
 
@@ -77,6 +78,8 @@ def run_review(
     ``update``, ``yes``, ``add_disclaimer``, ``repo_url``, ``glossaries``, and
     ``dry_run``.
     """
+    configure_safe_console_output()
+
     del update, yes, add_disclaimer, image_dir, repo_url, glossaries, dry_run
 
     root_path = Path(root_dir).resolve()

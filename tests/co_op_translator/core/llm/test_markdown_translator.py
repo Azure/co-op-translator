@@ -96,6 +96,36 @@ def real_markdown_translator(tmp_path):
     return ConcreteMarkdownTranslator(root_dir=tmp_path)
 
 
+def _translate_marked_prompt_body(prompt: str, replacements: dict[str, str]) -> str:
+    """Return the marked user body with requested text replacements applied."""
+    _, body = prompt.split(SPLIT_DELIMITER, 1)
+    for source, target in replacements.items():
+        body = body.replace(source, target)
+    return body
+
+
+def _translate_numbered_prompt_slots(
+    prompt: str,
+    prefix: str,
+    transform,
+) -> str:
+    _, user_part = prompt.split(SPLIT_DELIMITER, 1)
+    marker_pattern = re.compile(rf"\b{re.escape(prefix)}_(\d+):\s*")
+    matches = list(marker_pattern.finditer(user_part))
+    out_lines = []
+    for match_index, match in enumerate(matches):
+        slot_number = match.group(1)
+        text_start = match.end()
+        text_end = (
+            matches[match_index + 1].start()
+            if match_index + 1 < len(matches)
+            else len(user_part)
+        )
+        text = user_part[text_start:text_end].strip()
+        out_lines.append(f"{prefix}_{slot_number}: {transform(text)}")
+    return "\n".join(out_lines)
+
+
 @pytest.mark.asyncio
 async def test_generate_disclaimer_uses_packaged_language_template(
     real_markdown_translator,
@@ -210,10 +240,9 @@ async def test_translate_markdown_partial_mock(real_markdown_translator, tmp_pat
                 out_lines.append(f"{prefix}: [es]{text}[/es]")
             return "\n".join(out_lines)
         if "Sample Markdown" in prompt:
-            # Keep any code block placeholders in the translation
-            placeholder_match = re.search(r"@@CODE_BLOCK_\d+@@", prompt)
-            code_placeholder = placeholder_match.group(0) if placeholder_match else ""
-            return f"# Ejemplo de Markdown\n\n{code_placeholder}"
+            return _translate_marked_prompt_body(
+                prompt, {"# Sample Markdown": "# Ejemplo de Markdown"}
+            )
         if "Disclaimer" in prompt.lower():
             return "Aviso Legal: Este es un documento traducido."
         return prompt  # Return the original prompt for any other content
@@ -301,9 +330,9 @@ async def test_translate_markdown_translates_code_comments(
                 out_lines.append(f"{prefix}: [es]{text}[/es]")
             return "\n".join(out_lines)
         if "Sample Markdown" in prompt:
-            placeholder_match = re.search(r"@@CODE_BLOCK_\d+@@", prompt)
-            code_placeholder = placeholder_match.group(0) if placeholder_match else ""
-            return f"# Ejemplo de Markdown\n\n{code_placeholder}"
+            return _translate_marked_prompt_body(
+                prompt, {"# Sample Markdown": "# Ejemplo de Markdown"}
+            )
         if "Disclaimer" in prompt.lower():
             return "Aviso Legal: Este es un documento traducido."
         return prompt
@@ -339,21 +368,14 @@ async def test_translate_markdown_translates_mermaid_block(
 
     async def fake_prompt(prompt, index, total):
         # Mermaid-specific translation
-        if "Mermaid diagram code" in prompt:
-            _, code_block = prompt.split(SPLIT_DELIMITER, 1)
-            # Simulate translation by wrapping labels in [es]...[/es]
-            # We keep the overall Mermaid syntax intact.
-            translated = (
-                code_block.replace("Start", "[es]Start[/es]")
-                .replace("Decision", "[es]Decision[/es]")
-                .replace("Do it", "[es]Do it[/es]")
-                .replace("Stop", "[es]Stop[/es]")
+        if "MERMAID_SLOT_n" in prompt:
+            return _translate_numbered_prompt_slots(
+                prompt, "MERMAID_SLOT", lambda text: f"[es]{text}[/es]"
             )
-            return translated
         if "Sample Markdown" in prompt:
-            placeholder_match = re.search(r"@@CODE_BLOCK_\d+@@", prompt)
-            code_placeholder = placeholder_match.group(0) if placeholder_match else ""
-            return f"# Ejemplo de Markdown\n\n{code_placeholder}"
+            return _translate_marked_prompt_body(
+                prompt, {"# Sample Markdown": "# Ejemplo de Markdown"}
+            )
         if "Disclaimer" in prompt.lower():
             return "Aviso Legal: Este es un documento traducido."
         return prompt
@@ -388,13 +410,17 @@ async def test_translate_markdown_keeps_mermaid_closing_fence_separate_from_text
     test_file.write_text(TEST_MD_WITH_MERMAID_AND_PARAGRAPH)
 
     async def fake_prompt(prompt, index, total):
-        if "Mermaid diagram code" in prompt:
-            _, code_block = prompt.split(SPLIT_DELIMITER, 1)
-            return code_block.replace("Knowledge", "知識").replace("\n```\n", "```")
+        if "MERMAID_SLOT_n" in prompt:
+            return _translate_numbered_prompt_slots(
+                prompt, "MERMAID_SLOT", lambda text: text.replace("Knowledge", "知識")
+            )
         if "Sample Markdown" in prompt:
-            _, body = prompt.split(SPLIT_DELIMITER, 1)
-            return body.replace("# Sample Markdown", "# サンプル Markdown").replace(
-                "Universal connector text.", "ユニバーサルコネクターにより"
+            return _translate_marked_prompt_body(
+                prompt,
+                {
+                    "# Sample Markdown": "# サンプル Markdown",
+                    "Universal connector text.": "ユニバーサルコネクターにより",
+                },
             )
         if "Disclaimer" in prompt.lower():
             return "Aviso Legal: Este es un documento traducido."
@@ -480,16 +506,14 @@ async def test_translate_markdown_keeps_internal_links_inside_code_blocks_unchan
             return "Aviso Legal: Este es un documento traducido."
 
         if "# Sample" in prompt:
-            placeholder_match = re.search(r"@@CODE_BLOCK_\d+@@", prompt)
-            code_placeholder = placeholder_match.group(0) if placeholder_match else ""
-            return """# 샘플
-
-- [섹션 1](#section-one)
-
-## 섹션 1
-
-{code_placeholder}
-""".format(code_placeholder=code_placeholder)
+            return _translate_marked_prompt_body(
+                prompt,
+                {
+                    "# Sample": "# 샘플",
+                    "- [Section One](#section-one)": "- [섹션 1](#section-one)",
+                    "## Section One": "## 섹션 1",
+                },
+            )
 
         return prompt
 
@@ -509,6 +533,64 @@ async def test_translate_markdown_keeps_internal_links_inside_code_blocks_unchan
 
 
 @pytest.mark.asyncio
+async def test_translate_markdown_rebuilds_lines_from_collapsed_anchor_output(
+    real_markdown_translator,
+):
+    """Line anchors allow recovery when a provider merges markdown lines."""
+
+    document = "# Title\n\nFirst paragraph.  \nSecond paragraph.\n"
+
+    async def fake_prompt(prompt, index, total):
+        if "# Title" in prompt:
+            body = _translate_marked_prompt_body(
+                prompt,
+                {
+                    "# Title": "# Titulo",
+                    "First paragraph.": "Primer parrafo.",
+                    "Second paragraph.": "Segundo parrafo.",
+                },
+            )
+            return " ".join(body.splitlines())
+        return prompt
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        result = await real_markdown_translator.translate_markdown(document, "es")
+
+    assert result == "# Titulo\n\nPrimer parrafo.  \nSegundo parrafo.\n"
+    assert "@@COOP_CHUNK_START" not in result
+    assert "@@LINE_" not in result
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_missing_chunk_end_marker_is_incomplete(
+    real_markdown_translator,
+):
+    """Missing envelope markers should be treated as incomplete responses."""
+
+    calls = 0
+
+    async def fake_prompt(prompt, index, total):
+        nonlocal calls
+        calls += 1
+        _, body = prompt.split(SPLIT_DELIMITER, 1)
+        return re.sub(r"@@COOP_CHUNK_END:[^@]+@@", "", body)
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+
+        with pytest.raises(TranslationIncompleteError):
+            await real_markdown_translator.translate_markdown("# Title\n", "es")
+
+    assert calls == 2
+
+
+@pytest.mark.asyncio
 async def test_translate_markdown_retries_incomplete_chunk_once(
     real_markdown_translator,
     tmp_path,
@@ -523,7 +605,10 @@ async def test_translate_markdown_retries_incomplete_chunk_once(
             calls += 1
             if calls == 1:
                 raise TranslationIncompleteError("length")
-            return "# Reintentar\n\nTexto estable.\n"
+            return _translate_marked_prompt_body(
+                prompt,
+                {"# Retry me": "# Reintentar", "Stable text.": "Texto estable."},
+            )
         return prompt
 
     with patch.object(
@@ -567,13 +652,18 @@ async def test_translate_markdown_splits_incomplete_chunk_after_retry(
 
     async def fake_prompt(prompt, index, total):
         nonlocal original_failures
-        if "First part.\n\nSecond part." in prompt:
+        if "First part." in prompt and "Second part." in prompt:
             original_failures += 1
             raise TranslationIncompleteError("length")
         if "First part." in prompt:
-            return "# Dividido\n\nPrimera parte.\n"
+            return _translate_marked_prompt_body(
+                prompt,
+                {"# Needs split": "# Dividido", "First part.": "Primera parte."},
+            )
         if "Second part." in prompt:
-            return "Segunda parte.\n"
+            return _translate_marked_prompt_body(
+                prompt, {"Second part.": "Segunda parte."}
+            )
         return prompt
 
     with patch.object(
@@ -654,5 +744,5 @@ async def test_translate_markdown_full_integration(real_markdown_translator, tmp
         'print("Hello, world!")' in result
     ), "Even in a full integration scenario, the code block should remain."
     assert (
-        "[Default Translation]" in result
-    ), "Expected the default translation text in the output."
+        "@@LINE_" not in result
+    ), "Expected chunk line anchors to be stripped from the output."

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import asyncio
+from dataclasses import dataclass
 import logging
 import re
 from importlib import resources
@@ -34,6 +35,18 @@ from co_op_translator.utils.common.metadata_utils import (
 logger = logging.getLogger(__name__)
 
 
+@dataclass(frozen=True)
+class ChunkAnchors:
+    """Control markers used to validate and rebuild one translated chunk."""
+
+    text: str
+    start_marker: str
+    end_marker: str
+    line_markers: list[str]
+    line_endings: list[str]
+    blank_lines: list[bool]
+
+
 class TranslationIncompleteError(RuntimeError):
     """Raised when a provider response does not complete the requested chunk."""
 
@@ -52,6 +65,7 @@ class MarkdownTranslator(ABC):
     DEFAULT_CHUNK_MAX_TOKENS = 2600
     RECOVERY_CHUNK_MAX_TOKENS = (1300, 650)
     CHUNK_RETRY_ATTEMPTS = 1
+    LINE_MARKER_RE = re.compile(r"@@LINE_(\d{4})@@")
     _disclaimer_templates_cache: dict[str, str] | None = None
 
     def __init__(
@@ -338,11 +352,17 @@ class MarkdownTranslator(ABC):
         index: int,
         total: int,
     ) -> str:
-        prompt = generate_prompt_template(language_code, language_name, chunk, is_rtl)
+        anchored_chunk = self._add_chunk_anchors(chunk, chunk_label)
+        prompt = generate_prompt_template(
+            language_code, language_name, anchored_chunk.text, is_rtl
+        )
         try:
-            return await asyncio.wait_for(
+            translated = await asyncio.wait_for(
                 self._run_prompt(prompt, index, total),
                 timeout=self.TRANSLATION_TIMEOUT_SECONDS,
+            )
+            return self._strip_chunk_anchors(
+                translated, anchored_chunk, md_file_path, chunk_label
             )
         except asyncio.TimeoutError as exc:
             logger.warning(
@@ -364,6 +384,107 @@ class MarkdownTranslator(ABC):
             raise RuntimeError(
                 f"Markdown translation failed for chunk {chunk_label} of '{md_file_path.name}': {e}"
             ) from e
+
+    def _add_chunk_anchors(self, chunk: str, chunk_label: str) -> ChunkAnchors:
+        """Wrap a markdown chunk with completion and per-line anchor markers."""
+        safe_label = self._safe_chunk_label(chunk_label)
+        start_marker = f"@@COOP_CHUNK_START:{safe_label}@@"
+        end_marker = f"@@COOP_CHUNK_END:{safe_label}@@"
+
+        line_markers: list[str] = []
+        line_endings: list[str] = []
+        blank_lines: list[bool] = []
+        anchored_parts = [start_marker, "\n"]
+
+        for line_index, source_line in enumerate(chunk.splitlines(keepends=True), 1):
+            line_content, line_ending = self._split_line_ending(source_line)
+            line_marker = f"@@LINE_{line_index:04d}@@"
+            line_markers.append(line_marker)
+            line_endings.append(line_ending)
+            blank_lines.append(line_content == "")
+
+            separator = " " if line_content else ""
+            anchored_parts.append(f"{line_marker}{separator}{line_content}")
+            anchored_parts.append(line_ending or "\n")
+
+        anchored_parts.append(end_marker)
+        return ChunkAnchors(
+            text="".join(anchored_parts),
+            start_marker=start_marker,
+            end_marker=end_marker,
+            line_markers=line_markers,
+            line_endings=line_endings,
+            blank_lines=blank_lines,
+        )
+
+    def _strip_chunk_anchors(
+        self,
+        translated: str,
+        anchors: ChunkAnchors,
+        md_file_path: Path,
+        chunk_label: str,
+    ) -> str:
+        """Validate completion/line anchors and remove them from a translation."""
+        start_pos = translated.find(anchors.start_marker)
+        end_pos = translated.find(anchors.end_marker)
+        if start_pos == -1 or end_pos == -1 or end_pos < start_pos:
+            raise TranslationIncompleteError(
+                f"Markdown translation for chunk {chunk_label} of '{md_file_path.name}' "
+                "did not preserve required chunk envelope markers."
+            )
+
+        body = translated[start_pos + len(anchors.start_marker) : end_pos]
+        marker_matches = list(self.LINE_MARKER_RE.finditer(body))
+        actual_markers = [match.group(0) for match in marker_matches]
+        if actual_markers != anchors.line_markers:
+            raise TranslationIncompleteError(
+                f"Markdown translation for chunk {chunk_label} of '{md_file_path.name}' "
+                "did not preserve required line anchor markers in order."
+            )
+
+        rebuilt_lines: list[str] = []
+        for line_index, match in enumerate(marker_matches):
+            segment_start = match.end()
+            segment_end = (
+                marker_matches[line_index + 1].start()
+                if line_index + 1 < len(marker_matches)
+                else len(body)
+            )
+            translated_line = body[segment_start:segment_end]
+            if anchors.blank_lines[line_index]:
+                rebuilt_lines.append(anchors.line_endings[line_index])
+                continue
+
+            cleaned_line = self._clean_anchored_line_segment(translated_line)
+            rebuilt_lines.append(cleaned_line + anchors.line_endings[line_index])
+
+        return "".join(rebuilt_lines)
+
+    @staticmethod
+    def _safe_chunk_label(chunk_label: str) -> str:
+        safe_label = re.sub(r"[^A-Za-z0-9_.-]", "_", chunk_label).strip("._-")
+        return safe_label or "chunk"
+
+    @staticmethod
+    def _split_line_ending(line: str) -> tuple[str, str]:
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    @staticmethod
+    def _clean_anchored_line_segment(segment: str) -> str:
+        had_line_break = "\n" in segment or "\r" in segment
+        cleaned = segment.strip("\r\n")
+        cleaned = re.sub(r"[ \t]*(?:\r\n|\r|\n)[ \t]*", " ", cleaned)
+        if cleaned.startswith(" "):
+            cleaned = cleaned[1:]
+        if not had_line_break and cleaned.endswith(" "):
+            cleaned = cleaned[:-1]
+        return cleaned
 
     def _split_failed_chunk(self, chunk: str, split_depth: int) -> list[str]:
         if split_depth >= len(self.RECOVERY_CHUNK_MAX_TOKENS):

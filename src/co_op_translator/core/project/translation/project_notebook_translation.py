@@ -193,7 +193,7 @@ class ProjectNotebookTranslationMixin:
 
         if tasks:
             results = await self.process_api_requests_sequential(
-                tasks, "📓 Translating notebook files"
+                tasks, "Translating notebook files"
             )
             modified_count = sum(1 for r in results if r)
             errors = [

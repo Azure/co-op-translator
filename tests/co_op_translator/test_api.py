@@ -144,6 +144,7 @@ async def test_run_translation_with_groups(tmp_path):
 
 @pytest.mark.asyncio
 async def test_run_translation_dry_run_groups_shows_single_aggregated_estimate(
+    monkeypatch,
     tmp_path,
 ):
     root1 = tmp_path / "content1"
@@ -205,8 +206,33 @@ async def test_run_translation_dry_run_groups_shows_single_aggregated_estimate(
         ]
     )
 
-    echo_mock = MagicMock()
-    api.click.echo = echo_mock
+    class RecordingReporter:
+        rich_enabled = False
+
+        def __init__(self):
+            self.estimates = []
+            self.messages = []
+
+        def header(self, **kwargs):
+            self.messages.append(("header", kwargs))
+
+        def info(self, message):
+            self.messages.append(("info", message))
+
+        def success(self, message):
+            self.messages.append(("success", message))
+
+        def warning(self, message):
+            self.messages.append(("warning", message))
+
+        def print(self, message, **kwargs):
+            self.messages.append(("print", message, kwargs))
+
+        def estimate_summary(self, **kwargs):
+            self.estimates.append(kwargs)
+
+    reporter = RecordingReporter()
+    monkeypatch.setattr(api, "get_progress_reporter", MagicMock(return_value=reporter))
 
     groups = [
         (str(root1), str(out1)),
@@ -220,22 +246,19 @@ async def test_run_translation_dry_run_groups_shows_single_aggregated_estimate(
         dry_run=True,
     )
 
-    estimate_lines = [
-        call.args[0]
-        for call in echo_mock.call_args_list
-        if call.args
-        and "Estimated translation volume before translation" in call.args[0]
+    assert len(reporter.estimates) == 1
+    estimate = reporter.estimates[0]
+    assert estimate["title"] == "Estimated Translation Volume"
+    assert estimate["total_tokens"] == 130
+    assert estimate["total_words"] == 80
+    assert estimate["rows"] == [
+        ("Translation: markdown", 130),
+        ("Retranslation: outdated markdowns", 0),
     ]
-    assert len(estimate_lines) == 1
-    grouped_progress_lines = [
-        call.args[0]
-        for call in echo_mock.call_args_list
-        if call.args and "Translating all groups" in call.args[0]
-    ]
-    assert grouped_progress_lines == []
+    assert estimate["fallback"].isascii()
     assert (
-        estimate_lines[0]
-        == "📊 Estimated translation volume before translation: 130 tokens (80 words) "
+        estimate["fallback"]
+        == "Estimated translation volume before translation: 130 tokens (80 words) "
         "(breakdown: translation: markdown: 130 | retranslation: outdated markdowns: 0)"
     )
 

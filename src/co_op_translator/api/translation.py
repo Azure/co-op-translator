@@ -1,11 +1,8 @@
 import logging
-import os
-from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Mapping
 
-import click
 from PIL import Image
 
 from co_op_translator.config.base_config import Config
@@ -43,6 +40,7 @@ from co_op_translator.utils.common.metadata_utils import (
     calculate_string_hash,
     normalize_language_codes_in_lang_metadata,
 )
+from co_op_translator.utils.common.progress import get_progress_reporter
 from co_op_translator.utils.common.token_estimation import estimate_translation_tokens
 from co_op_translator.utils.common.word_estimation import estimate_translation_words
 from co_op_translator.utils.markdown.path_rewriter import (
@@ -283,6 +281,7 @@ def run_translation(
     document links pointed at the source tree.
     """
     configure_safe_console_output()
+    reporter = get_progress_reporter()
 
     def _split_lang_placeholder(path: str) -> tuple[str, str | None]:
         placeholder = "<lang>"
@@ -313,6 +312,7 @@ def run_translation(
         repo_url: str | None,
         readme_only: bool,
         dry_run: bool,
+        output_prepared: bool = False,
     ) -> None:
         Config.check_configuration()
 
@@ -335,40 +335,47 @@ def run_translation(
                     "See the .env.template file for required variables."
                 )
 
-        click.echo(f"🚀 Translation mode: {', '.join(translation_types)}")
-
         root_path = Path(root_dir).resolve()
         if not root_path.exists():
             raise ValueError(f"Root directory does not exist: {root_dir}")
         if not root_path.is_dir():
             raise ValueError(f"Root path is not a directory: {root_dir}")
 
-        log_file_path = setup_logging(
-            root_path, debug=debug, save_logs=save_logs, command_name="translate"
-        )
-        if debug:
-            logging.debug("Debug mode enabled.")
-        if save_logs and log_file_path is not None:
-            click.echo(f"📄 Logs will be saved to: {log_file_path}")
+        if not output_prepared:
+            log_file_path = setup_logging(
+                root_path, debug=debug, save_logs=save_logs, command_name="translate"
+            )
+            if debug:
+                logging.debug("Debug mode enabled.")
+            reporter.header(
+                command="run_translation",
+                root_dir=root_path,
+                languages=language_codes,
+                modes=translation_types,
+            )
+            if not reporter.rich_enabled:
+                reporter.info(f"Translation mode: {', '.join(translation_types)}")
+            if save_logs and log_file_path is not None:
+                reporter.info(f"Logs will be saved to: {log_file_path}")
 
         LLMConfig.validate_connectivity()
         logger.info("LLM health check passed.")
-        click.echo("✅ LLM health check passed.")
+        reporter.success("LLM health check passed.")
 
         if "images" in translation_types:
             VisionConfig.validate_connectivity()
             logger.info("Vision health check passed.")
-            click.echo("✅ Vision health check passed.")
+            reporter.success("Vision health check passed.")
 
         all_languages_selected = language_codes == "all"
         if all_languages_selected:
-            click.echo(
-                "Warning: Translating all languages at once can take a significant amount of time, "
-                "especially for large projects."
+            reporter.warning(
+                "Translating all languages at once can take a significant "
+                "amount of time, especially for large projects."
             )
             if yes:
                 logger.info("Auto-confirming 'all' languages in non-interactive mode.")
-                click.echo("Auto-confirming translation for all languages...")
+                reporter.info("Auto-confirming translation for all languages...")
 
         request = build_translation_request(
             language_codes=language_codes,
@@ -384,14 +391,14 @@ def run_translation(
 
         if update:
             if request.mode == TranslationMode.README:
-                click.echo(
-                    f"Warning: Update mode will delete existing translated README files for '{language_codes}' "
-                    f"and re-translate them."
+                reporter.warning(
+                    "Update mode will delete existing translated README files "
+                    f"for '{language_codes}' and re-translate them."
                 )
             else:
-                click.echo(
-                    f"Warning: Update mode will delete all existing translations for '{language_codes}' "
-                    f"and re-translate them."
+                reporter.warning(
+                    "Update mode will delete all existing translations for "
+                    f"'{language_codes}' and re-translate them."
                 )
 
         try:
@@ -427,9 +434,9 @@ def run_translation(
                 if relevant:
                     plan = LanguageFolderMigrator.format_plan(relevant)
                     logger.info("Language folder migration plan:\n%s", plan)
-                    click.echo(plan)
+                    reporter.print(plan, markup=False)
                     if dry_run:
-                        click.echo("Dry run: no changes will be made.")
+                        reporter.info("Dry run: no changes will be made.")
                     else:
                         renamed, msgs = migrator.execute(relevant, dry_run=False)
                         logger.info("Auto-migrated %d language folder(s).", renamed)
@@ -472,24 +479,25 @@ def run_translation(
             readme_path = root_path / "README.md"
             try:
                 if update_readme_languages_table(readme_path, repo_url=repo_url):
-                    click.echo("✅ Updated README languages table from template.")
+                    reporter.success("Updated README languages table from template.")
                 else:
-                    click.echo(
-                        "ℹ️ README languages table not updated (markers missing or template unavailable)."
+                    reporter.info(
+                        "README languages table not updated "
+                        "(markers missing or template unavailable)."
                     )
             except Exception as e:  # pragma: no cover
                 logger.warning(f"Failed to update README languages table: {e}")
 
             try:
                 if update_readme_other_courses(readme_path):
-                    click.echo(
-                        "✅ Updated README 'Other courses' section from template."
+                    reporter.success(
+                        "Updated README 'Other courses' section from template."
                     )
             except Exception as e:  # pragma: no cover
                 logger.warning(f"Failed to update README 'Other courses': {e}")
 
         if dry_run:
-            click.echo("🧪 Dry run complete: no changes made.")
+            reporter.success("Dry run complete: no changes made.")
             return
 
         if request.mode == TranslationMode.README:
@@ -574,10 +582,25 @@ def run_translation(
                 f"retranslation: {'; '.join(retranslation_parts)}"
             )
         breakdown = " | ".join(breakdown_sections) if breakdown_sections else "none"
-        click.echo(
-            "📊 Estimated translation volume before translation: "
-            f"{est.get('total', 0):,} tokens ({est.get('words', 0):,} words) "
-            f"(breakdown: {breakdown})"
+        estimate_rows: list[tuple[str, int]] = []
+        for part in translation_parts:
+            label, value = part.rsplit(": ", 1)
+            estimate_rows.append((f"Translation: {label}", int(value.replace(",", ""))))
+        for part in retranslation_parts:
+            label, value = part.rsplit(": ", 1)
+            estimate_rows.append(
+                (f"Retranslation: {label}", int(value.replace(",", "")))
+            )
+        reporter.estimate_summary(
+            title="Estimated Translation Volume",
+            total_tokens=est.get("total", 0),
+            total_words=est.get("words", 0),
+            rows=estimate_rows,
+            fallback=(
+                "Estimated translation volume before translation: "
+                f"{est.get('total', 0):,} tokens ({est.get('words', 0):,} words) "
+                f"(breakdown: {breakdown})"
+            ),
         )
 
     def _compute_estimate_for_group(
@@ -679,22 +702,6 @@ def run_translation(
             "words": int(words_est.get("total", 0) or 0),
         }
 
-    @contextmanager
-    def _tqdm_disabled(disabled: bool):
-        if not disabled:
-            yield
-            return
-
-        previous = os.environ.get("TQDM_DISABLE")
-        os.environ["TQDM_DISABLE"] = "1"
-        try:
-            yield
-        finally:
-            if previous is None:
-                os.environ.pop("TQDM_DISABLE", None)
-            else:
-                os.environ["TQDM_DISABLE"] = previous
-
     with glossary_terms_scope(glossaries):
         aggregate_template = {
             "markdown": 0,
@@ -734,6 +741,34 @@ def run_translation(
         else:
             execution_targets.append((root_dir, translations_dir, None))
 
+        output_prepared = False
+        if len(execution_targets) == 1:
+            per_root, _, _ = execution_targets[0]
+            root_path = Path(per_root).resolve()
+            if not root_path.exists():
+                raise ValueError(f"Root directory does not exist: {per_root}")
+            if not root_path.is_dir():
+                raise ValueError(f"Root path is not a directory: {per_root}")
+
+            log_file_path = setup_logging(
+                root_path, debug=debug, save_logs=save_logs, command_name="translate"
+            )
+            if debug:
+                logging.debug("Debug mode enabled.")
+            reporter.header(
+                command="run_translation",
+                root_dir=root_path,
+                languages=language_codes,
+                modes=translation_types_for_summary,
+            )
+            if not reporter.rich_enabled:
+                reporter.info(
+                    f"Translation mode: {', '.join(translation_types_for_summary)}"
+                )
+            if save_logs and log_file_path is not None:
+                reporter.info(f"Logs will be saved to: {log_file_path}")
+            output_prepared = True
+
         aggregated_estimate = dict(aggregate_template)
         for per_root, per_translations_dir, per_lang_subdir in execution_targets:
             group_estimate = _compute_estimate_for_group(
@@ -754,28 +789,26 @@ def run_translation(
 
         _echo_estimate_summary(aggregated_estimate, translation_types_for_summary)
 
-        multi_group_mode = len(execution_targets) > 1
-
         for per_root, per_translations_dir, per_lang_subdir in execution_targets:
-            with _tqdm_disabled(multi_group_mode):
-                _run_single_group(
-                    language_codes=language_codes,
-                    root_dir=per_root,
-                    update=update,
-                    images=images,
-                    markdown=markdown,
-                    notebook=notebook,
-                    debug=debug,
-                    save_logs=save_logs,
-                    yes=yes,
-                    add_disclaimer=add_disclaimer,
-                    translations_dir=per_translations_dir,
-                    image_dir=image_dir,
-                    lang_subdir=per_lang_subdir,
-                    repo_url=repo_url,
-                    readme_only=readme_only,
-                    dry_run=dry_run,
-                )
+            _run_single_group(
+                language_codes=language_codes,
+                root_dir=per_root,
+                update=update,
+                images=images,
+                markdown=markdown,
+                notebook=notebook,
+                debug=debug,
+                save_logs=save_logs,
+                yes=yes,
+                add_disclaimer=add_disclaimer,
+                translations_dir=per_translations_dir,
+                image_dir=image_dir,
+                lang_subdir=per_lang_subdir,
+                repo_url=repo_url,
+                readme_only=readme_only,
+                dry_run=dry_run,
+                output_prepared=output_prepared,
+            )
 
 
 def translate_project(*args, **kwargs) -> None:

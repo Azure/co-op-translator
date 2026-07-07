@@ -12,9 +12,9 @@ import click
 import os
 import re
 from urllib.parse import urlparse
-from tqdm import tqdm
 
 from co_op_translator.config.base_config import Config
+from co_op_translator.utils.common.progress import get_progress_reporter
 from co_op_translator.utils.markdown.notebook_links import (
     migrate_notebook_links,
     update_notebook_links,
@@ -92,6 +92,7 @@ def migrate_links_command(
     Reprocess only translated markdown files that contain .ipynb links and
     update links to point to translated notebooks when available.
     """
+    reporter = get_progress_reporter()
     try:
         # Validate root directory and config
         Config.check_configuration()
@@ -105,13 +106,19 @@ def migrate_links_command(
         )
         if debug:
             logging.debug("Debug mode enabled.")
+        reporter.header(
+            command="migrate-links",
+            root_dir=root_path,
+            languages=language_codes,
+            modes=["links"],
+        )
         if save_logs and log_file_path is not None:
-            click.echo(f"📄 Logs will be saved to: {log_file_path}")
+            reporter.info(f"Logs will be saved to: {log_file_path}")
 
         translations_dir = root_path / "translations"
 
         if not translations_dir.exists():
-            click.echo(f"No translations directory found at: {translations_dir}")
+            reporter.info(f"No translations directory found at: {translations_dir}")
             return
 
         # Canonicalize legacy alias-based language segments in links across translated content
@@ -121,18 +128,19 @@ def migrate_links_command(
                 image_dir=(root_path / image_dir),
             )
             if md_fix or nb_fix:
-                click.echo(
-                    f"✅ Canonicalized alias language segments in links: markdown={md_fix}, notebooks={nb_fix}"
+                reporter.success(
+                    "Canonicalized alias language segments in links: "
+                    f"markdown={md_fix}, notebooks={nb_fix}"
                 )
         except Exception as e:
             logger.debug(f"Canonicalization step skipped: {e}")
 
         # Warning and confirmation when processing all languages
         if isinstance(language_codes, str) and language_codes.lower() == "all":
-            click.echo(
-                "Warning: Processing 'all' languages can take significant time on large projects."
+            reporter.warning(
+                "Processing 'all' languages can take significant time on large projects."
             )
-            click.echo(
+            reporter.info(
                 "For efficiency, contributors usually handle individual languages separately."
             )
             if not yes:
@@ -141,12 +149,12 @@ def migrate_links_command(
                     type=str,
                 )
                 if confirmation_all.lower() != "yes":
-                    click.echo("Operation for 'all' languages cancelled.")
+                    reporter.info("Operation for 'all' languages cancelled.")
                     return
                 else:
-                    click.echo("Proceeding with operation for all languages...")
+                    reporter.info("Proceeding with operation for all languages...")
             else:
-                click.echo("Auto-confirming operation for all languages...")
+                reporter.info("Auto-confirming operation for all languages...")
 
         # Parse language codes list (support "all")
         if isinstance(language_codes, str) and language_codes.lower() == "all":
@@ -180,8 +188,10 @@ def migrate_links_command(
             md_files: list[Path] = []
             for ext in SUPPORTED_MARKDOWN_EXTENSIONS:
                 md_files.extend(lang_dir.rglob(f"*{ext}"))
-            for md_translated in tqdm(
-                md_files, desc=f"{lang_dir.name} md", unit="file"
+            for md_translated in reporter.iter(
+                md_files,
+                description=f"Scanning {lang_dir.name} markdown links",
+                unit="file",
             ):
                 total_scanned += 1
                 try:
@@ -339,7 +349,7 @@ def migrate_links_command(
                 if updated != content:
                     total_changed += 1
                     if dry_run:
-                        click.echo(f"[DRY-RUN] Would update: {md_translated}")
+                        reporter.info(f"[DRY-RUN] Would update: {md_translated}")
                     else:
                         try:
                             md_translated.write_text(updated, encoding="utf-8")
@@ -349,16 +359,33 @@ def migrate_links_command(
 
         # Summary (concise by default; detailed when --debug)
         if debug:
-            click.echo(
-                (
+            reporter.key_value_summary(
+                title="Link Migration Summary",
+                rows=[
+                    ("Scanned", str(total_scanned)),
+                    ("Candidates", str(total_matched)),
+                    ("Updatable", str(total_candidates_updatable)),
+                    ("Already current", str(total_candidates_already)),
+                    ("Missing target", str(total_candidates_missing)),
+                    ("Changed", str(total_changed)),
+                ],
+                fallback_lines=[
                     f"Scanned: {total_scanned}, Candidates: {total_matched} "
                     f"(updatable: {total_candidates_updatable}, already: {total_candidates_already}, missing: {total_candidates_missing}), "
                     f"Changed: {total_changed}"
-                )
+                ],
             )
         else:
-            click.echo(
-                f"Scanned: {total_scanned}, Candidates: {total_matched}, Changed: {total_changed}"
+            reporter.key_value_summary(
+                title="Link Migration Summary",
+                rows=[
+                    ("Scanned", str(total_scanned)),
+                    ("Candidates", str(total_matched)),
+                    ("Changed", str(total_changed)),
+                ],
+                fallback_lines=[
+                    f"Scanned: {total_scanned}, Candidates: {total_matched}, Changed: {total_changed}"
+                ],
             )
 
     except Exception as e:

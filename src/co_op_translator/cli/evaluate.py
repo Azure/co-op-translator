@@ -11,6 +11,7 @@ from co_op_translator.core.project.project_evaluator import ProjectEvaluator
 from co_op_translator.config.base_config import Config
 from co_op_translator.utils.common.logging_utils import setup_logging
 from co_op_translator.utils.common.lang_utils import normalize_language_code
+from co_op_translator.utils.common.progress import get_progress_reporter
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +74,7 @@ def evaluate_command(
     3. Evaluate French translations in a specific directory:
        evaluate -l "fr" -r "./my_project"
     """
+    reporter = get_progress_reporter()
 
     try:
         # Check that the required environment variables are set
@@ -91,34 +93,41 @@ def evaluate_command(
         if debug:
             logging.debug("Debug mode enabled.")
         if save_logs and log_file_path is not None:
-            click.echo(f"📄 Logs will be saved to: {log_file_path}")
+            reporter.info(f"Logs will be saved to: {log_file_path}")
 
         # Normalize to canonical BCP 47 (accept alias input like tw/cn/br)
         canonical_code = normalize_language_code(language_code)
-        click.echo(f"Evaluating {canonical_code} translations in {root_path}...")
 
         # Create evaluator
         # Determine evaluation mode (fast, deep or default mode)
         if fast and deep:
-            click.echo(
-                "Warning: Both --fast and --deep flags specified. Using default mode (both rule-based and LLM)."
+            reporter.warning(
+                "Both --fast and --deep flags specified. Using default mode "
+                "(both rule-based and LLM)."
             )
             use_rule = True
             use_llm = True
+            mode_label = "default"
         elif fast:
-            click.echo("Using FAST mode: Rule-based evaluation only (no LLM)")
             use_rule = True
             use_llm = False
+            mode_label = "fast"
         elif deep:
-            click.echo(
-                "Using DEEP mode: LLM-based evaluation only (more thorough but slower)"
-            )
             use_rule = False
             use_llm = True
+            mode_label = "deep"
         else:
-            click.echo("Using DEFAULT mode: Both rule-based and LLM evaluation")
             use_rule = True
             use_llm = True
+            mode_label = "default"
+
+        reporter.header(
+            command="evaluate",
+            root_dir=root_path,
+            languages=canonical_code,
+            modes=[mode_label],
+        )
+        reporter.info(f"Evaluating {canonical_code} translations in {root_path}...")
 
         evaluator = ProjectEvaluator(
             root_dir=root_path,
@@ -134,24 +143,19 @@ def evaluate_command(
             evaluator.evaluate_project(canonical_code)
         )
 
-        # Display results with color highlighting
-        click.echo(f"\n{click.style('Evaluation Complete', fg='green', bold=True)}\n")
-        click.echo(f"Total files evaluated: {click.style(str(total_files), fg='blue')}")
-
-        # Color-code the issue count based on severity
-        issue_color = "red" if issue_files > 0 else "green"
-        click.echo(
-            f"Files with potential issues: {click.style(str(issue_files), fg=issue_color, bold=issue_files > 0)}"
-        )
-
-        # Color-code the confidence score
-        conf_color = (
-            "green"
-            if avg_confidence >= 0.9
-            else "yellow" if avg_confidence >= 0.8 else "red"
-        )
-        click.echo(
-            f"Average confidence score: {click.style(f'{avg_confidence:.2f}', fg=conf_color)}"
+        reporter.key_value_summary(
+            title="Evaluation Complete",
+            rows=[
+                ("Total files evaluated", str(total_files)),
+                ("Files with potential issues", str(issue_files)),
+                ("Average confidence score", f"{avg_confidence:.2f}"),
+            ],
+            fallback_lines=[
+                "Evaluation Complete",
+                f"Total files evaluated: {total_files}",
+                f"Files with potential issues: {issue_files}",
+                f"Average confidence score: {avg_confidence:.2f}",
+            ],
         )
 
         # Get low confidence translations
@@ -160,8 +164,9 @@ def evaluate_command(
         )
 
         if low_confidence:
-            click.echo(
-                f"\n{click.style('Files with potential issues', fg='yellow', bold=True)} (confidence below {min_confidence}):"
+            reporter.print(
+                "\n[bold yellow]Files with potential issues[/bold yellow] "
+                f"(confidence below {min_confidence}):"
             )
 
             # Sort by confidence score (lowest first)
@@ -212,42 +217,34 @@ def evaluate_command(
                         # Only check issues field
                         issues = metadata["evaluation"].get("issues", [])
 
-                    # Display file with confidence score
-                    conf_color = (
-                        "green"
-                        if confidence >= 0.9
-                        else "yellow" if confidence >= 0.8 else "red"
-                    )
-                    click.echo(f"\n- {click.style(display_path, bold=True)}")
-                    click.echo(
-                        f"  Score: {click.style(f'{confidence:.2f}', fg=conf_color)}"
-                    )
+                    reporter.print(f"\n- {display_path}", markup=False)
+                    reporter.print(f"  Score: {confidence:.2f}")
 
                     # Show issues as reference information if available
                     if issues:
-                        click.echo("  Issues found:")
+                        reporter.print("  Issues found:")
                         for issue in issues:
-                            click.echo(f"    - {issue}")
+                            reporter.print(f"    - {issue}", markup=False)
                     else:
-                        click.echo(
+                        reporter.print(
                             "  No specific issues identified, but confidence score is low"
                         )
                 except Exception as e:
                     logger.error(f"Error reading issues from {file_path}: {e}")
 
-            click.echo("")  # Add empty line for better readability
+            reporter.print("")  # Add empty line for better readability
         elif issue_files > 0:
-            click.echo(
-                f"\n{click.style('Note:', fg='yellow')} Files with issues were found during evaluation, but none fall below the confidence threshold of {min_confidence}."
+            reporter.warning(
+                "Files with issues were found during evaluation, but none fall "
+                f"below the confidence threshold of {min_confidence}."
             )
-            click.echo(
-                f"Consider running with a higher threshold: {click.style(f'evaluate -l {canonical_code} --min-confidence 0.9', bold=True)}"
+            reporter.info(
+                "Consider running with a higher threshold: "
+                f"evaluate -l {canonical_code} --min-confidence 0.9"
             )
 
         else:
-            click.echo(
-                f"\n{click.style('✓ All translations look good!', fg='green', bold=True)}"
-            )
+            reporter.success("All translations look good.")
 
         logger.info(f"Evaluation completed for language: {canonical_code}")
 

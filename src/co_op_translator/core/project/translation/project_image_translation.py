@@ -170,8 +170,12 @@ class ProjectImageTranslationMixin:
                 task_info.append((str(image_file_path), language_code))
 
         if tasks:
+            task_desc = (
+                "Translating images (fast mode)" if fast_mode else "Translating images"
+            )
             results = await self.process_api_requests_parallel(
-                tasks, f"{'🏎️  (fast mode)' if fast_mode else '🖼️ '} Translating images"
+                tasks,
+                task_desc,
             )
             modified_count = sum(
                 1

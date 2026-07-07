@@ -572,7 +572,7 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 
 - Content translation APIs keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content needs project-relative links adjusted for a target location.
 - Project orchestration APIs add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
-- `run_translation` prints progress and estimate summaries through Click, matching the CLI user experience.
+- `run_translation` prints progress and estimate summaries through the same Rich-backed reporter used by the CLI. Non-interactive output falls back to plain text.
 - `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
 - `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
 - When image translation is selected, missing Vision configuration raises an error before translation starts.

@@ -4,9 +4,8 @@ import logging
 from pathlib import Path
 from typing import List
 
-from tqdm import tqdm
-
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
+from co_op_translator.utils.common.progress import get_progress_reporter
 from co_op_translator.utils.common.metadata_utils import (
     extract_content_without_metadata,
     extract_metadata_from_content,
@@ -64,10 +63,14 @@ class TranslationMaintenanceMixin:
             if original_file.suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS
         ]
 
+        reporter = get_progress_reporter()
+
         # Notebooks
         if notebook_items:
-            with tqdm(
-                total=len(notebook_items), desc="📓 Retranslating outdated notebooks"
+            with reporter.task(
+                "Retranslating outdated notebooks",
+                total=len(notebook_items),
+                unit="file",
             ) as progress_bar:
                 for original_file, language_code in notebook_items:
                     await self.translate_notebook(original_file, language_code)
@@ -76,8 +79,10 @@ class TranslationMaintenanceMixin:
 
         # Markdown files
         if markdown_items:
-            with tqdm(
-                total=len(markdown_items), desc="📝 Retranslating outdated markdowns"
+            with reporter.task(
+                "Retranslating outdated markdown files",
+                total=len(markdown_items),
+                unit="file",
             ) as progress_bar:
                 for original_file, language_code in markdown_items:
                     await self.translate_markdown(original_file, language_code)
@@ -96,8 +101,12 @@ class TranslationMaintenanceMixin:
         if not outdated_images:
             return
 
-        with tqdm(
-            total=len(outdated_images), desc="🖼️  Retranslating outdated images"
+        reporter = get_progress_reporter()
+
+        with reporter.task(
+            "Retranslating outdated images",
+            total=len(outdated_images),
+            unit="file",
         ) as progress_bar:
             for original_file, translated_file, language_code in outdated_images:
                 # Delete the outdated translated file and remove from central metadata

@@ -3,9 +3,8 @@ from __future__ import annotations
 import asyncio
 import logging
 
-from tqdm import tqdm
-
 from co_op_translator.utils.common.task_utils import worker
+from co_op_translator.utils.common.progress import get_progress_reporter
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +38,10 @@ class TranslationTaskExecutorMixin:
         for _ in range(worker_count):
             task_queue.put_nowait(None)
 
+        reporter = get_progress_reporter()
+
         # Setup progress tracking UI
-        with tqdm(total=len(tasks), desc=task_desc) as progress_bar:
+        with reporter.task(task_desc, total=len(tasks), unit="request") as progress_bar:
             # Launch parallel worker tasks for processing
             workers = [
                 asyncio.create_task(worker(task_queue, progress_bar))
@@ -75,13 +76,17 @@ class TranslationTaskExecutorMixin:
 
         total_tasks = len(tasks)
 
+        reporter = get_progress_reporter()
+
         results = []
-        with tqdm(total=total_tasks, desc=task_desc) as progress_bar:
+        with reporter.task(
+            task_desc, total=total_tasks, unit="request"
+        ) as progress_bar:
             for i, task in enumerate(tasks):
                 # Show current file name in progress bar if available
                 if file_names and i < len(file_names):
                     file_name = file_names[i]
-                    progress_bar.set_description(f"🔄 Translating: {file_name}")
+                    progress_bar.set_detail(f"Current: {file_name}")
 
                 # Execute task and get result
                 result = await task()  # Execute each task sequentially

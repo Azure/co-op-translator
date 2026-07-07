@@ -12,6 +12,12 @@ The `translate`, `evaluate`, `migrate-links`, and `co-op-review` commands dispat
 
 If you are deciding between CLI, Python API, and MCP, start with [Choose Your Workflow](workflows.md).
 
+## Console Output
+
+Interactive terminals use Rich formatting for the command header, progress, and summaries. CI and non-interactive output automatically fall back to plain text.
+
+Set `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` to force plain output, or `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` to force Rich output. Set `CO_OP_TRANSLATOR_NO_PROGRESS=1` to keep summaries while suppressing live progress bars.
+
 ## First-Time CLI Flow
 
 Start here if you are using Co-op Translator from a terminal:

@@ -1,6 +1,7 @@
 import asyncio
-from tqdm.asyncio import tqdm_asyncio
 import logging
+
+from co_op_translator.utils.common.progress import get_progress_reporter
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ async def worker(task_queue: asyncio.Queue, progress_bar=None):
 
     Args:
         task_queue (asyncio.Queue): The queue holding tasks to be processed.
-        progress_bar (tqdm.asyncio.tqdm_asyncio, optional): The progress bar to update after each task.
+        progress_bar (ProgressTask, optional): The progress task to update after each task.
     """
     while True:
         task = await task_queue.get()
@@ -64,8 +65,10 @@ async def queue_tasks(
     for _ in range(max_concurrent_tasks):
         await task_queue.put(None)
 
-    # 3) Create a progress bar with total == number of real tasks
-    with tqdm_asyncio.tqdm_asyncio(total=len(tasks), desc=task_desc) as progress_bar:
+    reporter = get_progress_reporter()
+
+    # 3) Create a progress task with total == number of real tasks
+    with reporter.task(task_desc, total=len(tasks), unit="task") as progress_bar:
         # Start workers
         workers = [
             asyncio.create_task(worker(task_queue, progress_bar))

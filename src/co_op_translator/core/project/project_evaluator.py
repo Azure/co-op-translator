@@ -5,10 +5,10 @@ This module provides functionality for evaluating translations across a project.
 import logging
 from pathlib import Path
 from typing import List, Tuple
-from tqdm import tqdm
 
 from co_op_translator.core.llm.markdown_evaluator import MarkdownEvaluator
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
+from co_op_translator.utils.common.progress import get_progress_reporter
 from co_op_translator.utils.common.metadata_utils import (
     extract_metadata_from_content,
     read_text_metadata_for_source,
@@ -85,6 +85,14 @@ class ProjectEvaluator:
         total_files = len(translation_pairs)
         files_with_issues = 0
         total_confidence = 0.0
+        reporter = get_progress_reporter()
+
+        def display_translation_path(trans_file: Path) -> str:
+            try:
+                rel_path = trans_file.relative_to(self.translations_dir / language_code)
+                return str(rel_path)
+            except ValueError:
+                return trans_file.name
 
         # Determine evaluation mode based on flags
         if self.use_rule and self.use_llm:
@@ -92,226 +100,163 @@ class ProjectEvaluator:
             # First Step: Rule-based evaluation
             evaluation_results = {}
 
-            # Create progress bar for rule-based evaluation
-            rule_progress_bar = tqdm(
-                total=total_files,
-                desc=f"Rule-based evaluation for {language_code}",
-                unit="files",
-                ncols=100,
-                bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
-            )
-
             # Precompute language directory for centralized metadata
             lang_dir = self.translations_dir / language_code
 
             # Perform rule-based evaluation for all files
-            for orig_file, trans_file in translation_pairs:
-                try:
-                    # Read original and translated content
-                    with open(orig_file, "r", encoding="utf-8") as f:
-                        original_content = f.read()
-
-                    with open(trans_file, "r", encoding="utf-8") as f:
-                        translated_content = f.read()
-
-                    # Prefer centralized metadata; fall back to inline
-                    metadata = read_text_metadata_for_source(lang_dir, orig_file)
-                    if not metadata:
-                        metadata = extract_metadata_from_content(translated_content)
-
-                    # Store file info for later LLM evaluation
-                    file_key = str(trans_file)
-                    evaluation_results[file_key] = {
-                        "orig_file": orig_file,
-                        "trans_file": trans_file,
-                        "metadata": metadata,
-                        "original_content": original_content,
-                        "translated_content": translated_content,
-                    }
-
-                    # Update progress bar with current file name
+            with reporter.task(
+                f"Rule-based evaluation for {language_code}",
+                total=total_files,
+                unit="file",
+            ) as rule_progress_bar:
+                for orig_file, trans_file in translation_pairs:
                     try:
-                        rel_path = trans_file.relative_to(
-                            self.translations_dir / language_code
+                        # Read original and translated content
+                        with open(orig_file, "r", encoding="utf-8") as f:
+                            original_content = f.read()
+
+                        with open(trans_file, "r", encoding="utf-8") as f:
+                            translated_content = f.read()
+
+                        # Prefer centralized metadata; fall back to inline
+                        metadata = read_text_metadata_for_source(lang_dir, orig_file)
+                        if not metadata:
+                            metadata = extract_metadata_from_content(translated_content)
+
+                        # Store file info for later LLM evaluation
+                        file_key = str(trans_file)
+                        evaluation_results[file_key] = {
+                            "orig_file": orig_file,
+                            "trans_file": trans_file,
+                            "metadata": metadata,
+                            "original_content": original_content,
+                            "translated_content": translated_content,
+                        }
+
+                        rule_progress_bar.set_detail(
+                            f"Current: {display_translation_path(trans_file)}"
                         )
-                        display_name = str(rel_path)
-                    except ValueError:
-                        display_name = trans_file.name
 
-                    rule_progress_bar.set_description_str(
-                        f"Rule-based evaluation for {language_code}: {display_name}"
-                    )
+                    except Exception as e:
+                        logger.error(f"Error processing {trans_file}: {e}")
 
-                except Exception as e:
-                    logger.error(f"Error processing {trans_file}: {e}")
-
-                rule_progress_bar.update(1)
-
-            # Close the rule-based progress bar
-            rule_progress_bar.close()
+                    rule_progress_bar.update(1)
 
             # Second Step: LLM-based evaluation
-            # Create progress bar for LLM-based evaluation
-            llm_progress_bar = tqdm(
+            with reporter.task(
+                f"LLM-based evaluation for {language_code}",
                 total=len(evaluation_results),
-                desc=f"LLM-based evaluation for {language_code}",
-                unit="files",
-                ncols=100,
-                bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
-            )
+                unit="file",
+            ) as llm_progress_bar:
+                for file_data in evaluation_results.values():
+                    trans_file = file_data["trans_file"]
+                    orig_file = file_data["orig_file"]
 
-            # Perform LLM-based evaluation for all files
-            for file_key, file_data in evaluation_results.items():
-                trans_file = file_data["trans_file"]
-                orig_file = file_data["orig_file"]
-
-                logger.info(f"Evaluating with LLM: {trans_file}")
-                (
-                    evaluation_result,
-                    success,
-                ) = await self.markdown_evaluator.evaluate_markdown(
-                    orig_file, trans_file, language_code
-                )
-
-                if success and evaluation_result:
-                    confidence = evaluation_result.get("confidence_score", 0.0)
-                    issues = evaluation_result.get("issues", [])
-
-                    total_confidence += confidence
-
-                    # Count file as problematic if confidence is below threshold
-                    if confidence < 0.8:
-                        files_with_issues += 1
-                        logger.info(
-                            f"Low confidence in {trans_file.name}: {confidence}"
-                        )
-
-                    # Log issues regardless of confidence score
-                    if issues:
-                        logger.info(f"Issues found in {trans_file.name}: {issues}")
-
-                # Update progress bar with current file name
-                try:
-                    rel_path = trans_file.relative_to(
-                        self.translations_dir / language_code
+                    logger.info(f"Evaluating with LLM: {trans_file}")
+                    (
+                        evaluation_result,
+                        success,
+                    ) = await self.markdown_evaluator.evaluate_markdown(
+                        orig_file, trans_file, language_code
                     )
-                    display_name = str(rel_path)
-                except ValueError:
-                    display_name = trans_file.name
 
-                llm_progress_bar.set_description_str(
-                    f"LLM-based evaluation for {language_code}: {display_name}"
-                )
-                llm_progress_bar.update(1)
+                    if success and evaluation_result:
+                        confidence = evaluation_result.get("confidence_score", 0.0)
+                        issues = evaluation_result.get("issues", [])
 
-            # Close the LLM-based progress bar
-            llm_progress_bar.close()
+                        total_confidence += confidence
+
+                        # Count file as problematic if confidence is below threshold
+                        if confidence < 0.8:
+                            files_with_issues += 1
+                            logger.info(
+                                f"Low confidence in {trans_file.name}: {confidence}"
+                            )
+
+                        # Log issues regardless of confidence score
+                        if issues:
+                            logger.info(f"Issues found in {trans_file.name}: {issues}")
+
+                    llm_progress_bar.set_detail(
+                        f"Current: {display_translation_path(trans_file)}"
+                    )
+                    llm_progress_bar.update(1)
 
         elif self.use_rule:
             # RULE-ONLY MODE: Only rule-based evaluation
-            # Create progress bar for rule-based evaluation
-            progress_bar = tqdm(
+            with reporter.task(
+                f"Evaluating {language_code} translations [Rule only]",
                 total=total_files,
-                desc=f"Evaluating {language_code} translations [Rule only]",
-                unit="files",
-                ncols=100,
-                bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
-            )
-
-            for orig_file, trans_file in translation_pairs:
-                logger.info(f"Evaluating: {trans_file}")
-                (
-                    evaluation_result,
-                    success,
-                ) = await self.markdown_evaluator.evaluate_markdown(
-                    orig_file, trans_file, language_code
-                )
-
-                if success and evaluation_result:
-                    confidence = evaluation_result.get("confidence_score", 0.0)
-                    issues = evaluation_result.get("issues", [])
-
-                    total_confidence += confidence
-
-                    # Count file as problematic if confidence is below threshold
-                    if confidence < 0.8:
-                        files_with_issues += 1
-                        logger.info(
-                            f"Low confidence in {trans_file.name}: {confidence}"
-                        )
-
-                    # Log issues regardless of confidence score
-                    if issues:
-                        logger.info(f"Issues found in {trans_file.name}: {issues}")
-
-                # Update progress bar with current file name
-                try:
-                    rel_path = trans_file.relative_to(
-                        self.translations_dir / language_code
+                unit="file",
+            ) as progress_bar:
+                for orig_file, trans_file in translation_pairs:
+                    logger.info(f"Evaluating: {trans_file}")
+                    (
+                        evaluation_result,
+                        success,
+                    ) = await self.markdown_evaluator.evaluate_markdown(
+                        orig_file, trans_file, language_code
                     )
-                    display_name = str(rel_path)
-                except ValueError:
-                    display_name = trans_file.name
 
-                progress_bar.set_description_str(
-                    f"Evaluating {language_code}: {display_name} [Rule only]"
-                )
-                progress_bar.update(1)
+                    if success and evaluation_result:
+                        confidence = evaluation_result.get("confidence_score", 0.0)
+                        issues = evaluation_result.get("issues", [])
 
-            progress_bar.close()
+                        total_confidence += confidence
+
+                        # Count file as problematic if confidence is below threshold
+                        if confidence < 0.8:
+                            files_with_issues += 1
+                            logger.info(
+                                f"Low confidence in {trans_file.name}: {confidence}"
+                            )
+
+                        # Log issues regardless of confidence score
+                        if issues:
+                            logger.info(f"Issues found in {trans_file.name}: {issues}")
+
+                    progress_bar.set_detail(
+                        f"Current: {display_translation_path(trans_file)}"
+                    )
+                    progress_bar.update(1)
 
         elif self.use_llm:
             # LLM-ONLY MODE: Only LLM evaluation
-            # Create progress bar for LLM evaluation
-            progress_bar = tqdm(
+            with reporter.task(
+                f"Evaluating {language_code} translations [LLM only]",
                 total=total_files,
-                desc=f"Evaluating {language_code} translations [LLM only]",
-                unit="files",
-                ncols=100,
-                bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
-            )
-
-            for orig_file, trans_file in translation_pairs:
-                logger.info(f"Evaluating: {trans_file}")
-                (
-                    evaluation_result,
-                    success,
-                ) = await self.markdown_evaluator.evaluate_markdown(
-                    orig_file, trans_file, language_code
-                )
-
-                if success and evaluation_result:
-                    confidence = evaluation_result.get("confidence_score", 0.0)
-                    issues = evaluation_result.get("issues", [])
-
-                    total_confidence += confidence
-
-                    # Count file as problematic if confidence is below threshold
-                    if confidence < 0.8:
-                        files_with_issues += 1
-                        logger.info(
-                            f"Low confidence in {trans_file.name}: {confidence}"
-                        )
-
-                    # Log issues regardless of confidence score
-                    if issues:
-                        logger.info(f"Issues found in {trans_file.name}: {issues}")
-
-                # Update progress bar with current file name
-                try:
-                    rel_path = trans_file.relative_to(
-                        self.translations_dir / language_code
+                unit="file",
+            ) as progress_bar:
+                for orig_file, trans_file in translation_pairs:
+                    logger.info(f"Evaluating: {trans_file}")
+                    (
+                        evaluation_result,
+                        success,
+                    ) = await self.markdown_evaluator.evaluate_markdown(
+                        orig_file, trans_file, language_code
                     )
-                    display_name = str(rel_path)
-                except ValueError:
-                    display_name = trans_file.name
 
-                progress_bar.set_description_str(
-                    f"Evaluating {language_code}: {display_name} [LLM only]"
-                )
-                progress_bar.update(1)
+                    if success and evaluation_result:
+                        confidence = evaluation_result.get("confidence_score", 0.0)
+                        issues = evaluation_result.get("issues", [])
 
-            progress_bar.close()
+                        total_confidence += confidence
+
+                        # Count file as problematic if confidence is below threshold
+                        if confidence < 0.8:
+                            files_with_issues += 1
+                            logger.info(
+                                f"Low confidence in {trans_file.name}: {confidence}"
+                            )
+
+                        # Log issues regardless of confidence score
+                        if issues:
+                            logger.info(f"Issues found in {trans_file.name}: {issues}")
+
+                    progress_bar.set_detail(
+                        f"Current: {display_translation_path(trans_file)}"
+                    )
+                    progress_bar.update(1)
 
         # Calculate average confidence score
         avg_confidence = total_confidence / total_files if total_files > 0 else 0.0

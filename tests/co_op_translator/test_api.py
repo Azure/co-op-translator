@@ -144,6 +144,7 @@ async def test_run_translation_with_groups(tmp_path):
 
 @pytest.mark.asyncio
 async def test_run_translation_dry_run_groups_shows_single_aggregated_estimate(
+    monkeypatch,
     tmp_path,
 ):
     root1 = tmp_path / "content1"
@@ -205,8 +206,33 @@ async def test_run_translation_dry_run_groups_shows_single_aggregated_estimate(
         ]
     )
 
-    echo_mock = MagicMock()
-    api.click.echo = echo_mock
+    class RecordingReporter:
+        rich_enabled = False
+
+        def __init__(self):
+            self.estimates = []
+            self.messages = []
+
+        def header(self, **kwargs):
+            self.messages.append(("header", kwargs))
+
+        def info(self, message):
+            self.messages.append(("info", message))
+
+        def success(self, message):
+            self.messages.append(("success", message))
+
+        def warning(self, message):
+            self.messages.append(("warning", message))
+
+        def print(self, message, **kwargs):
+            self.messages.append(("print", message, kwargs))
+
+        def estimate_summary(self, **kwargs):
+            self.estimates.append(kwargs)
+
+    reporter = RecordingReporter()
+    monkeypatch.setattr(api, "get_progress_reporter", MagicMock(return_value=reporter))
 
     groups = [
         (str(root1), str(out1)),
@@ -220,24 +246,84 @@ async def test_run_translation_dry_run_groups_shows_single_aggregated_estimate(
         dry_run=True,
     )
 
-    estimate_lines = [
-        call.args[0]
-        for call in echo_mock.call_args_list
-        if call.args
-        and "Estimated translation volume before translation" in call.args[0]
+    assert len(reporter.estimates) == 1
+    estimate = reporter.estimates[0]
+    assert estimate["title"] == "Estimated Translation Volume"
+    assert estimate["total_tokens"] == 130
+    assert estimate["total_words"] == 80
+    assert estimate["rows"] == [
+        ("Translation: markdown", 130),
+        ("Retranslation: outdated markdowns", 0),
     ]
-    assert len(estimate_lines) == 1
-    grouped_progress_lines = [
-        call.args[0]
-        for call in echo_mock.call_args_list
-        if call.args and "Translating all groups" in call.args[0]
-    ]
-    assert grouped_progress_lines == []
+    assert estimate["fallback"].isascii()
     assert (
-        estimate_lines[0]
-        == "📊 Estimated translation volume before translation: 130 tokens (80 words) "
+        estimate["fallback"]
+        == "Estimated translation volume before translation: 130 tokens (80 words) "
         "(breakdown: translation: markdown: 130 | retranslation: outdated markdowns: 0)"
     )
+
+
+def test_run_translation_progress_callback_receives_structured_events(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr(api.Config, "check_configuration", MagicMock(return_value=None))
+    monkeypatch.setattr(
+        api.LLMConfig, "validate_connectivity", MagicMock(return_value=None)
+    )
+    monkeypatch.setattr(api, "setup_logging", MagicMock(return_value=None))
+
+    translator = MagicMock()
+    monkeypatch.setattr(api, "ProjectTranslator", MagicMock(return_value=translator))
+    monkeypatch.setattr(
+        api,
+        "estimate_translation_tokens",
+        MagicMock(
+            return_value={
+                "markdown": 10,
+                "notebook": 0,
+                "images": 0,
+                "outdated_markdown": 0,
+                "outdated_notebook": 0,
+                "outdated_images": 0,
+                "outdated": 0,
+                "total": 10,
+            }
+        ),
+    )
+    monkeypatch.setattr(
+        api,
+        "estimate_translation_words",
+        MagicMock(
+            return_value={
+                "markdown": 5,
+                "notebook": 0,
+                "images": 0,
+                "outdated": 0,
+                "total": 5,
+            }
+        ),
+    )
+
+    events = []
+
+    api.run_translation(
+        language_codes="ko",
+        root_dir=str(tmp_path),
+        markdown=True,
+        dry_run=True,
+        progress_callback=events.append,
+    )
+
+    payloads = [event.to_dict() for event in events]
+    event_types = [payload["type"] for payload in payloads]
+
+    assert event_types[0] == "run_started"
+    assert "estimate_ready" in event_types
+    assert event_types[-1] == "run_completed"
+    assert payloads[0]["schema"] == "co-op.translation.event.v1"
+    assert payloads[0]["command"] == "run_translation"
+    assert payloads[0]["languages"] == ["ko"]
+    assert payloads[event_types.index("estimate_ready")]["total_tokens"] == 10
 
 
 @pytest.mark.asyncio

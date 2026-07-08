@@ -4,6 +4,7 @@ import argparse
 import base64
 import io
 import json
+import threading
 from contextlib import redirect_stderr, redirect_stdout
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
@@ -45,6 +46,20 @@ def _capture_call(
     except Exception as exc:  # pragma: no cover - exercised by integration paths
         return None, stdout.getvalue(), stderr.getvalue(), exc
     return result, stdout.getvalue(), stderr.getvalue(), None
+
+
+def _capture_call_in_thread(
+    callback: Callable[[], T],
+) -> tuple[T | None, str, str, Exception | None]:
+    captured: dict[str, tuple[T | None, str, str, Exception | None]] = {}
+
+    def _runner() -> None:
+        captured["result"] = _capture_call(callback)
+
+    thread = threading.Thread(target=_runner, daemon=True)
+    thread.start()
+    thread.join()
+    return captured["result"]
 
 
 def _coerce_groups(
@@ -141,6 +156,7 @@ def _translation_result(
     stdout: str,
     stderr: str,
     error: Exception | None,
+    events: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     return {
         "ok": error is None,
@@ -148,6 +164,7 @@ def _translation_result(
         "stdout": stdout,
         "stderr": stderr,
         "error": str(error) if error else None,
+        "events": events or [],
     }
 
 
@@ -323,6 +340,7 @@ def run_translation(
     readme_only: bool = False,
     dry_run: bool = True,
     confirm_write: bool = False,
+    json_events_path: str | None = None,
 ) -> dict[str, Any]:
     """Run repository translation through the public API.
 
@@ -335,6 +353,8 @@ def run_translation(
         raise ValueError(
             "Set confirm_write=true to run project translation with dry_run=false."
         )
+
+    events = []
 
     def _run() -> None:
         co_op_api.run_translation(
@@ -356,14 +376,17 @@ def run_translation(
             glossaries=glossaries,
             readme_only=readme_only,
             dry_run=dry_run,
+            progress_callback=events.append,
+            json_events_path=json_events_path,
         )
 
-    _, stdout, stderr, error = _capture_call(_run)
+    _, stdout, stderr, error = _capture_call_in_thread(_run)
     return _translation_result(
         dry_run=dry_run,
         stdout=stdout,
         stderr=stderr,
         error=error,
+        events=[event.to_dict() for event in events],
     )
 
 
@@ -387,6 +410,7 @@ def translate_project(
     readme_only: bool = False,
     dry_run: bool = True,
     confirm_write: bool = False,
+    json_events_path: str | None = None,
 ) -> dict[str, Any]:
     """Compatibility alias for run_translation."""
 
@@ -410,6 +434,7 @@ def translate_project(
         readme_only=readme_only,
         dry_run=dry_run,
         confirm_write=confirm_write,
+        json_events_path=json_events_path,
     )
 
 

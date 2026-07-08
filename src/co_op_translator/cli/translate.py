@@ -20,6 +20,11 @@ from co_op_translator.utils.common.file_utils import (
 from co_op_translator.utils.common.metadata_utils import (
     normalize_language_codes_in_lang_metadata,
 )
+from co_op_translator.utils.common.events import (
+    emit_translation_event,
+    translation_event_context,
+)
+from co_op_translator.utils.common.progress import get_progress_reporter
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 from co_op_translator.core.project.translation.request import (
     TranslationMode,
@@ -63,6 +68,12 @@ logger = logging.getLogger(__name__)
     "-s",
     is_flag=True,
     help="Save logs to the logs/ directory under --root-dir (always at DEBUG level).",
+)
+@click.option(
+    "--json-events",
+    type=click.Path(dir_okay=False, path_type=Path),
+    default=None,
+    help="Write machine-readable translation events as NDJSON to this file.",
 )
 @click.option(
     "--fix",
@@ -126,6 +137,7 @@ def translate_command(
     readme_only,
     debug,
     save_logs,
+    json_events,
     fix,
     fast,
     yes,
@@ -174,6 +186,9 @@ def translate_command(
     Debug mode example:
     - translate -l "ko" -d: Enable debug logging.
     """
+    reporter = get_progress_reporter()
+    event_scope = translation_event_context(json_events_path=json_events)
+    event_scope.__enter__()
 
     try:
         # Check that the required environment variables are set
@@ -198,10 +213,6 @@ def translate_command(
                     "See the .env.template file for required variables."
                 )
 
-        # Log selected translation mode
-        mode_msg = f"🚀 Translation mode: {', '.join(translation_types)}"
-        click.echo(mode_msg)
-
         # Validate root directory early and set up logging
         root_path = Path(root_dir).resolve()
         if not root_path.exists():
@@ -214,30 +225,40 @@ def translate_command(
         )
         if debug:
             logging.debug("Debug mode enabled.")
+        reporter.header(
+            command="translate",
+            root_dir=root_path,
+            languages=language_codes,
+            modes=translation_types,
+        )
+        if not reporter.rich_enabled:
+            reporter.info(f"Translation mode: {', '.join(translation_types)}")
         if save_logs and log_file_path is not None:
-            click.echo(f"📄 Logs will be saved to: {log_file_path}")
+            reporter.info(f"Logs will be saved to: {log_file_path}")
 
         # (Preview moved after language normalization)
 
         # Now run the LLM health check; raises on failure
         LLMConfig.validate_connectivity()
         logger.info("LLM health check passed.")
-        click.echo("✅ LLM health check passed.")
+        reporter.success("LLM health check passed.")
 
         # If images are selected, validate Vision connectivity as well
         if "images" in translation_types:
             # Vision health check; raises on failure
             VisionConfig.validate_connectivity()
             logger.info("Vision health check passed.")
-            click.echo("✅ Vision health check passed.")
+            reporter.success("Vision health check passed.")
 
         # Normalize language codes and handle 'all'
         all_languages_selected = language_codes == "all"
         if all_languages_selected:
-            click.echo(
-                "Warning: Translating all languages at once can take a significant amount of time, especially when dealing with large markdown-based open-source projects that have many documents."
+            reporter.warning(
+                "Translating all languages at once can take a significant amount "
+                "of time, especially when dealing with large markdown-based "
+                "open-source projects that have many documents."
             )
-            click.echo(
+            reporter.info(
                 "For better efficiency, it's recommended that contributors handle individual languages and upload their translations separately."
             )
             # Option to proceed or not
@@ -248,12 +269,12 @@ def translate_command(
                 )
 
                 if confirmation_all.lower() != "yes":
-                    click.echo("Translation for 'all' languages cancelled.")
+                    reporter.info("Translation for 'all' languages cancelled.")
                     return
                 else:
-                    click.echo("Proceeding with translation for all languages...")
+                    reporter.info("Proceeding with translation for all languages...")
             else:
-                click.echo("Auto-confirming translation for all languages...")
+                reporter.info("Auto-confirming translation for all languages...")
 
         request = build_translation_request(
             language_codes=language_codes,
@@ -279,10 +300,15 @@ def translate_command(
                 # Filter only entries relevant to selected canonical languages
                 relevant = [e for e in alias_entries if e.canonical in lang_list]
                 if relevant:
-                    click.echo("\nMigration plan (selected languages):")
-                    click.echo(LanguageFolderMigrator.format_plan(relevant))
+                    reporter.print(
+                        "\n[bold cyan]Migration plan[/bold cyan] (selected languages):"
+                    )
+                    reporter.print(
+                        LanguageFolderMigrator.format_plan(relevant),
+                        markup=False,
+                    )
                     if dry_run:
-                        click.echo("Dry-run: no changes will be made.")
+                        reporter.info("Dry run: no changes will be made.")
                     else:
                         do_migrate = migrate_language_folders or yes
                         if not do_migrate:
@@ -296,14 +322,16 @@ def translate_command(
 
                         if do_migrate:
                             renamed, msgs = migrator.execute(relevant, dry_run=False)
-                            click.echo(f"Auto-migrate: renamed {renamed} folder(s).")
+                            reporter.success(
+                                f"Auto-migrate renamed {renamed} folder(s)."
+                            )
                             for m in msgs:
-                                click.echo(f"- {m}")
+                                reporter.print(f"- {m}", markup=False)
                         else:
-                            click.echo("Proceeding without migration.")
+                            reporter.info("Proceeding without migration.")
             else:
                 if migrate_language_folders and dry_run:
-                    click.echo("No non-standard language folders detected.")
+                    reporter.info("No non-standard language folders detected.")
         except Exception as e:
             logger.warning(f"Language folder migration step skipped: {e}")
 
@@ -327,20 +355,23 @@ def translate_command(
 
         # Show deprecation warning when fast image mode is enabled
         if fast and "images" in translation_types:
-            click.echo(
-                "⚠️ Image fast mode is deprecated and may be removed in a future release. "
-                "Consider running without --fast for the recommended behavior."
+            reporter.warning(
+                "Image fast mode is deprecated and may be removed in a future "
+                "release. Consider running without --fast for the recommended "
+                "behavior."
             )
 
         # Show warning and prompt if update is selected
         if update:
             if request.mode == TranslationMode.README:
-                click.echo(
-                    f"Warning: The update command will delete existing translated README files for '{language_codes}' and re-translate them."
+                reporter.warning(
+                    "The update command will delete existing translated README "
+                    f"files for '{language_codes}' and re-translate them."
                 )
             else:
-                click.echo(
-                    f"Warning: The update command will delete all existing translations for '{language_codes}' and re-translate everything."
+                reporter.warning(
+                    "The update command will delete all existing translations "
+                    f"for '{language_codes}' and re-translate everything."
                 )
             if not yes:
                 confirmation_update = click.prompt(
@@ -348,12 +379,12 @@ def translate_command(
                 )
 
                 if confirmation_update.lower() != "yes":
-                    click.echo("Update cancelled by user.")
+                    reporter.info("Update cancelled by user.")
                     return
                 else:
-                    click.echo("Proceeding with update...")
+                    reporter.info("Proceeding with update...")
             else:
-                click.echo("Auto-confirming update operation...")
+                reporter.info("Auto-confirming update operation...")
 
         if request.mode == TranslationMode.README:
             translator = ReadmeTranslator(
@@ -416,41 +447,65 @@ def translate_command(
                     f"retranslation: {'; '.join(retranslation_parts)}"
                 )
             breakdown = " | ".join(breakdown_sections) if breakdown_sections else "none"
-            click.echo(
-                f"📊 Estimated tokens before translation: {est.get('total', 0):,} (breakdown: {breakdown})"
+            estimate_rows: list[tuple[str, int]] = []
+            for part in translation_parts:
+                label, value = part.rsplit(": ", 1)
+                estimate_rows.append(
+                    (f"Translation: {label}", int(value.replace(",", "")))
+                )
+            for part in retranslation_parts:
+                label, value = part.rsplit(": ", 1)
+                estimate_rows.append(
+                    (f"Retranslation: {label}", int(value.replace(",", "")))
+                )
+            reporter.estimate_summary(
+                title="Estimated Translation Volume",
+                total_tokens=est.get("total", 0),
+                total_words=None,
+                rows=estimate_rows,
+                fallback=(
+                    "Estimated tokens before translation: "
+                    f"{est.get('total', 0):,} (breakdown: {breakdown})"
+                ),
             )
         except Exception as e:
             logger.debug(f"Failed to compute estimated tokens: {e}")
 
         # If dry-run, stop after estimation without making any changes
         if dry_run:
-            click.echo("🧪 Dry run complete: no changes made.")
+            reporter.success("Dry run complete: no changes made.")
+            emit_translation_event("run_completed", metadata={"dry_run": True})
             return
 
         # Update README shared sections BEFORE translation
         readme_path = root_path / "README.md"
         try:
             if update_readme_languages_table(readme_path, repo_url=repo_url):
-                click.echo("✅ Updated README languages table from template.")
+                reporter.success("Updated README languages table from template.")
             else:
-                click.echo(
-                    "ℹ️ README languages table not updated (markers missing or template unavailable)."
+                reporter.info(
+                    "README languages table not updated "
+                    "(markers missing or template unavailable)."
                 )
         except Exception as e:
             logger.warning(f"Failed to update README languages table: {e}")
 
         try:
             if update_readme_other_courses(readme_path):
-                click.echo("✅ Updated README 'Other courses' section from template.")
+                reporter.success(
+                    "Updated README 'Other courses' section from template."
+                )
         except Exception as e:
             logger.warning(f"Failed to update README 'Other courses': {e}")
 
         if fix:
-            click.echo(f"Fixing translations with confidence below {min_confidence}...")
+            reporter.info(
+                f"Fixing translations with confidence below {min_confidence}..."
+            )
 
             # Fix is only applicable to markdown files, not images
             if images and not markdown:
-                click.echo("Note: --fix only applies to markdown files, not images.")
+                reporter.info("Note: --fix only applies to markdown files, not images.")
 
             # Handle language codes
             if language_codes.lower() == "all":
@@ -492,12 +547,10 @@ def translate_command(
                 except Exception as e:
                     logger.error(f"Error processing {lang_code}: {str(e)}")
 
-            click.echo(f"\n{click.style('Summary:', fg='blue', bold=True)}")
-            click.echo(
-                f"Total files retranslated: {click.style(str(total_retranslated), fg='green')}"
-            )
+            reporter.print("\n[bold cyan]Summary[/bold cyan]")
+            reporter.success(f"Total files retranslated: {total_retranslated}")
             if total_errors > 0:
-                click.echo(f"Total errors: {click.style(str(total_errors), fg='red')}")
+                reporter.error(f"Total errors: {total_errors}")
 
             logger.info(
                 f"Project translation completed for languages: {language_codes}"
@@ -517,7 +570,12 @@ def translate_command(
                 f"Project translation completed for languages: {language_codes}"
             )
 
+        emit_translation_event("run_completed", metadata={"dry_run": dry_run})
+
     except Exception as e:
         if debug:
             logger.exception("An error occurred during translation")
+        emit_translation_event("run_failed", message=str(e), level="error")
         raise click.ClickException(str(e))
+    finally:
+        event_scope.__exit__(None, None, None)

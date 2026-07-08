@@ -272,7 +272,10 @@ class ProjectMarkdownTranslationMixin:
 
         if tasks:
             results = await self.process_api_requests_sequential(
-                tasks, "🛠️  Translating markdown files"
+                tasks,
+                "Translating markdown files",
+                file_info=task_info,
+                stage_key="translating_markdown_files",
             )
             modified_count = sum(1 for r in results if r)
             errors = [

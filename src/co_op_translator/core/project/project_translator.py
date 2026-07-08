@@ -128,7 +128,7 @@ class ProjectTranslator:
                     "Image translation requested but Azure AI Service not configured"
                 ) from e
         else:
-            logger.info(
+            logger.debug(
                 f"Image translation disabled for project '{self.root_dir.name}': Only {', '.join(self.translation_types)} files will be processed."
             )
             self.image_translator = None
@@ -357,7 +357,7 @@ class ProjectTranslator:
             async def translate_task(file=orig_file, conf=confidence):
                 try:
                     # Log current file being translated
-                    logger.info(f"🔄 Now translating: {file} (confidence: {conf:.2f})")
+                    logger.info(f"Now translating: {file} (confidence: {conf:.2f})")
 
                     # Use the translation manager to retranslate the file
                     result = await self.translation_manager.translate_markdown(
@@ -389,7 +389,7 @@ class ProjectTranslator:
             # Use the translation manager's method for processing API requests with file names
             results = await self.translation_manager.process_api_requests_sequential(
                 tasks,
-                f"🔄 Retranslating low confidence files (<{min_confidence})",
+                f"Retranslating low confidence files (<{min_confidence})",
                 file_names,
             )
 

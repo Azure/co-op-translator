@@ -48,6 +48,7 @@ pyyaml~=6.0.2
 pyzmq~=26.0.3
 requests>=2.32.3,<2.35.0
 requests-oauthlib~=2.0.0
+rich>=13.9.4,<16.0.0
 semantic_kernel>=1.39.4,<2.0.0
 mcp>=1.27,<2
 six~=1.16.0

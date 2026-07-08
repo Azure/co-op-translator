@@ -198,6 +198,30 @@ run_translation(
 )
 ```
 
+Record structured progress events for an integration:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Store payload in your job-event table or stream it to your UI.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Events use the versioned schema `co-op.translation.event.v1`. Integrations should
+depend on stable fields such as `type` and `stage_key`, not on human-facing
+console text or `stage_label`.
+
 Translate multiple content roots in one call:
 
 ```python
@@ -572,7 +596,7 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 
 - Content translation APIs keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content needs project-relative links adjusted for a target location.
 - Project orchestration APIs add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
-- `run_translation` prints progress and estimate summaries through Click, matching the CLI user experience.
+- `run_translation` prints progress and estimate summaries through the same Rich-backed reporter used by the CLI. Non-interactive output falls back to plain text.
 - `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
 - `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
 - When image translation is selected, missing Vision configuration raises an error before translation starts.

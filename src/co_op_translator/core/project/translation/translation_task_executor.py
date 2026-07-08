@@ -3,9 +3,8 @@ from __future__ import annotations
 import asyncio
 import logging
 
-from tqdm import tqdm
-
 from co_op_translator.utils.common.task_utils import worker
+from co_op_translator.utils.common.progress import get_progress_reporter
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +38,10 @@ class TranslationTaskExecutorMixin:
         for _ in range(worker_count):
             task_queue.put_nowait(None)
 
+        reporter = get_progress_reporter()
+
         # Setup progress tracking UI
-        with tqdm(total=len(tasks), desc=task_desc) as progress_bar:
+        with reporter.task(task_desc, total=len(tasks), unit="request") as progress_bar:
             # Launch parallel worker tasks for processing
             workers = [
                 asyncio.create_task(worker(task_queue, progress_bar))
@@ -56,7 +57,12 @@ class TranslationTaskExecutorMixin:
         return results
 
     async def process_api_requests_sequential(
-        self, tasks, task_desc, file_names=None
+        self,
+        tasks,
+        task_desc,
+        file_names=None,
+        file_info=None,
+        stage_key: str | None = None,
     ) -> list:
         """Execute API requests one at a time in sequence.
 
@@ -75,13 +81,22 @@ class TranslationTaskExecutorMixin:
 
         total_tasks = len(tasks)
 
+        reporter = get_progress_reporter()
+
         results = []
-        with tqdm(total=total_tasks, desc=task_desc) as progress_bar:
+        with reporter.task(
+            task_desc, total=total_tasks, unit="request", stage_key=stage_key
+        ) as progress_bar:
             for i, task in enumerate(tasks):
                 # Show current file name in progress bar if available
+                current_path = None
+                current_language = None
+                if file_info and i < len(file_info):
+                    current_path, current_language = file_info[i]
+                    progress_bar.file_started(current_path, current_language)
                 if file_names and i < len(file_names):
                     file_name = file_names[i]
-                    progress_bar.set_description(f"🔄 Translating: {file_name}")
+                    progress_bar.set_detail(f"Current: {file_name}")
 
                 # Execute task and get result
                 result = await task()  # Execute each task sequentially
@@ -89,6 +104,15 @@ class TranslationTaskExecutorMixin:
 
                 # Update progress bar
                 progress_bar.update(1)
+                if current_path is not None:
+                    if result:
+                        progress_bar.file_completed(current_path, current_language)
+                    else:
+                        progress_bar.file_failed(
+                            current_path,
+                            current_language,
+                            message=f"Failed to process {current_path}",
+                        )
 
                 # Reset description after completion if needed
                 if i + 1 < total_tasks:

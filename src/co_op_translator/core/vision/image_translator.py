@@ -7,7 +7,6 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-from tqdm import tqdm
 
 
 import arabic_reshaper
@@ -29,6 +28,7 @@ from co_op_translator.utils.vision.image_utils import (
 )
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from co_op_translator.core.llm.text_translator import TextTranslator
+from co_op_translator.utils.common.progress import get_progress_reporter
 
 logger = logging.getLogger(__name__)
 
@@ -194,8 +194,11 @@ class ImageTranslator(ABC):
 
             iterator = zip(grouped_boxes, grouped_translations)
             if verbose:
-                iterator = tqdm(
-                    iterator, total=len(grouped_boxes), desc="Processing groups (fast)"
+                iterator = get_progress_reporter().iter(
+                    iterator,
+                    total=len(grouped_boxes),
+                    description="Rendering image text groups (fast)",
+                    unit="group",
                 )
 
             start_time = time.time()
@@ -343,8 +346,11 @@ class ImageTranslator(ABC):
 
             iterator = zip(grouped_boxes, grouped_translations)
             if verbose:
-                iterator = tqdm(
-                    iterator, total=len(grouped_boxes), desc="Processing paragraphs"
+                iterator = get_progress_reporter().iter(
+                    iterator,
+                    total=len(grouped_boxes),
+                    description="Rendering image text groups",
+                    unit="group",
                 )
 
             start_time = time.time()

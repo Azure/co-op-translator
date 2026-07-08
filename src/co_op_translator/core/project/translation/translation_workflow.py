@@ -3,11 +3,10 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from tqdm import tqdm
-
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.core.project.directory_manager import DirectoryManager
+from co_op_translator.utils.common.progress import get_progress_reporter
 from co_op_translator.utils.common.file_utils import (
     canonicalize_image_links_in_translations,
     filter_files,
@@ -49,6 +48,7 @@ class TranslationWorkflowMixin:
             Tuple containing (total_modified_files, error_messages_list)
         """
         logger.info("Starting project translation...")
+        reporter = get_progress_reporter()
         total_modified = 0
         all_errors = []
 
@@ -121,7 +121,9 @@ class TranslationWorkflowMixin:
 
             # Clean up files no longer needed in target directories
             logger.info("Removing orphaned files...")
-            with tqdm(total=1, desc="🧹 Cleaning orphaned files") as cleanup_progress:
+            with reporter.task(
+                "Cleaning orphaned files", total=1, unit="step"
+            ) as cleanup_progress:
                 # Markdown/Notebook cleanup scoped to selected languages
                 removed_md_nb = self.directory_manager.cleanup_orphaned_translations(
                     markdown="markdown" in self.translation_types,
@@ -154,7 +156,9 @@ class TranslationWorkflowMixin:
 
             # Create and update directory structure to match source
             logger.info("Synchronizing directory structure...")
-            with tqdm(total=1, desc="📁 Synchronizing directories") as sync_progress:
+            with reporter.task(
+                "Synchronizing directories", total=1, unit="step"
+            ) as sync_progress:
                 created, removed, _ = self.directory_manager.sync_directory_structure(
                     markdown="markdown" in self.translation_types,
                     images="images" in self.translation_types,
@@ -179,7 +183,9 @@ class TranslationWorkflowMixin:
                 except Exception as e:
                     logger.warning(f"Legacy text metadata migration skipped: {e}")
 
-                with tqdm(total=1, desc="🔍 Checking translations") as check_progress:
+                with reporter.task(
+                    "Checking translations", total=1, unit="step"
+                ) as check_progress:
                     outdated_files = self.get_outdated_translations()
                     check_progress.set_postfix_str(
                         "None"
@@ -216,7 +222,9 @@ class TranslationWorkflowMixin:
                     if lang_dir.exists():
                         cleanup_orphan_image_metadata(lang_dir)
 
-                with tqdm(total=1, desc="🔍 Checking images") as check_progress:
+                with reporter.task(
+                    "Checking images", total=1, unit="step"
+                ) as check_progress:
                     outdated_images = self.get_outdated_images()
                     check_progress.set_postfix_str(
                         "None"
@@ -281,7 +289,9 @@ class TranslationWorkflowMixin:
                     self.excluded_dirs,
                     image_dir=self.image_dir,
                 )
-                with tqdm(total=1, desc="🧹 Final image cleanup") as cleanup_progress:
+                with reporter.task(
+                    "Final image cleanup", total=1, unit="step"
+                ) as cleanup_progress:
                     removed_after = dm_all.cleanup_orphaned_translations(
                         markdown=False,
                         images=True,
@@ -358,10 +368,11 @@ class TranslationWorkflowMixin:
             return
 
         logger.info("Checking translated files for errors...")
+        reporter = get_progress_reporter()
 
         # Identify files needing translation due to missing or format issues
-        with tqdm(
-            total=total_files, desc="Checking files", unit="file"
+        with reporter.task(
+            "Checking translated files", total=total_files, unit="file"
         ) as progress_bar:
             for md_file_path, language_code in all_markdown_files:
                 md_file_path = Path(md_file_path).resolve()
@@ -400,8 +411,10 @@ class TranslationWorkflowMixin:
             logger.info(f"Starting translation for {len(files_to_translate)} files...")
 
             # Create a progress bar for translations
-            with tqdm(
-                total=len(files_to_translate), desc="Translating files", unit="file"
+            with reporter.task(
+                "Retranslating files",
+                total=len(files_to_translate),
+                unit="file",
             ) as translation_progress_bar:
                 for md_file_path, language_code in files_to_translate:
                     logger.info(f"Translating {md_file_path} to {language_code}...")

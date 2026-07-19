@@ -2157,28 +2157,28 @@ traitlets = "*"
 
 [[package]]
 name = "mcp"
-version = "1.27.0"
+version = "1.28.1"
 description = "Model Context Protocol SDK"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "mcp-1.27.0-py3-none-any.whl", hash = "sha256:5ce1fa81614958e267b21fb2aa34e0aea8e2c6ede60d52aba45fd47246b4d741"},
-    {file = "mcp-1.27.0.tar.gz", hash = "sha256:d3dc35a7eec0d458c1da4976a48f982097ddaab87e278c5511d5a4a56e852b83"},
+    {file = "mcp-1.28.1-py3-none-any.whl", hash = "sha256:2726bca5e7193f61c5dde8b12500a6de2d9acf6d1a1c0be9e8c2e706437991df"},
+    {file = "mcp-1.28.1.tar.gz", hash = "sha256:d51e36a5f5644faea4f85ea649bfffa6bc6c26770d42798ad6a3de3d2ba69683"},
 ]
 
 [package.dependencies]
 anyio = ">=4.5"
-httpx = ">=0.27.1"
+httpx = ">=0.27.1,<1.0.0"
 httpx-sse = ">=0.4"
 jsonschema = ">=4.20.0"
-pydantic = ">=2.11.0,<3.0.0"
+pydantic = {version = ">=2.11.0,<3.0.0", markers = "python_version < \"3.14\""}
 pydantic-settings = ">=2.5.2"
 pyjwt = {version = ">=2.10.1", extras = ["crypto"]}
 python-multipart = ">=0.0.9"
-pywin32 = {version = ">=310", markers = "sys_platform == \"win32\""}
+pywin32 = {version = ">=310", markers = "sys_platform == \"win32\" and python_version < \"3.14\""}
 sse-starlette = ">=1.6.1"
-starlette = ">=0.27"
+starlette = {version = ">=0.27", markers = "python_version < \"3.14\""}
 typing-extensions = ">=4.9.0"
 typing-inspection = ">=0.4.1"
 uvicorn = {version = ">=0.31.1", markers = "sys_platform != \"emscripten\""}

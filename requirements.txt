@@ -2,7 +2,7 @@
 annotated-types~=0.7.0
 anyio>=4.4,<4.15
 appnope~=0.1.4
-asttokens~=2.4.1
+asttokens>=2.4.1,<3.1.0
 azure-ai-vision-imageanalysis~=1.0.0b2
 azure-cognitiveservices-vision-computervision~=0.9.0
 azure-common~=1.1.28

@@ -176,7 +176,7 @@ class MarkdownTranslator(ABC):
             is_rtl,
             md_file_path,
         )
-        translated_content = "\n".join(results)
+        translated_content = "".join(results)
 
         # Step 4: Normalize emphasis markers for CJK scripts to improve renderer compatibility
         translated_content = normalize_cjk_emphasis_markers(
@@ -339,7 +339,7 @@ class MarkdownTranslator(ABC):
                 )
             )
 
-        return "\n".join(sub_results)
+        return "".join(sub_results)
 
     async def _translate_chunk_once(
         self,

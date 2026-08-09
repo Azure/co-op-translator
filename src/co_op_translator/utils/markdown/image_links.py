@@ -4,7 +4,7 @@ import logging
 import os
 import re
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import ParseResult, urlparse
 
 from co_op_translator.config.constants import SUPPORTED_IMAGE_EXTENSIONS
 from co_op_translator.utils.common.file_utils import (
@@ -14,6 +14,14 @@ from co_op_translator.utils.common.file_utils import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _append_url_suffix(path: str, parsed_url: ParseResult) -> str:
+    if parsed_url.query:
+        path += f"?{parsed_url.query}"
+    if parsed_url.fragment:
+        path += f"#{parsed_url.fragment}"
+    return path
 
 
 def get_translated_markdown_dir(
@@ -172,6 +180,8 @@ def update_image_links(
                         updated_link = path
                         logger.warning(f"Falling back to original path: {updated_link}")
 
+                updated_link = _append_url_suffix(updated_link, parsed_url)
+
                 old_image_markup = f"![{alt_text}]({link})"
                 new_image_markup = f"![{alt_text}]({updated_link})"
                 markdown_string = markdown_string.replace(
@@ -233,6 +243,8 @@ def update_image_links(
         except Exception as e:
             logger.error(f"Error processing HTML <img> path {src}: {e}")
             updated_src = src
+        else:
+            updated_src = _append_url_suffix(updated_src, parsed_url)
 
         # Replace only the src value inside this tag while preserving other attributes
         full_tag = match.group(0)

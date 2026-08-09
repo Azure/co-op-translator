@@ -306,6 +306,36 @@ async def test_translate_markdown_skips_project_path_rewrite(
 
 
 @pytest.mark.asyncio
+async def test_translate_markdown_restores_original_link_destinations(
+    real_markdown_translator,
+):
+    document = (
+        "# Links\n\n[Lesson](https://example.com/course?WT.mc_id=tracking-value)\n"
+    )
+
+    async def fake_prompt(prompt, index, total):
+        _, body = prompt.split(SPLIT_DELIMITER, 1)
+        assert "https://example.com/course" not in body
+        return (
+            body.replace("# Links", "# リンク")
+            .replace("[Lesson]", "[レッスン]")
+            .replace("WT.mc_id", "WT_mc_id")
+        )
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+        result = await real_markdown_translator.translate_markdown(document, "ja")
+
+    assert "# リンク" in result
+    assert "[レッスン]" in result
+    assert "https://example.com/course?WT.mc_id=tracking-value" in result
+    assert "WT_mc_id" not in result
+    assert "@@LINK_DESTINATION_" not in result
+
+
+@pytest.mark.asyncio
 async def test_translate_markdown_translates_code_comments(
     real_markdown_translator, tmp_path
 ):

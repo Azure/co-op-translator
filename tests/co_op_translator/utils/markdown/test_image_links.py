@@ -27,6 +27,33 @@ def test_update_image_links(temp_dir, sample_markdown):
     assert "test.png" not in result  # Original image links should be updated
 
 
+def test_update_image_links_preserves_query_and_fragment(tmp_path):
+    image_path = tmp_path / "images" / "hero.png"
+    image_path.parent.mkdir()
+    image_path.touch()
+    source_path = tmp_path / "README.md"
+    target_path = tmp_path / "translations" / "ja" / "README.md"
+    markdown = (
+        "![Hero](./images/hero.png?WT.mc_id=tracking-value#preview)\n"
+        '<img src="./images/hero.png?WT.mc_id=tracking-value#preview">\n'
+    )
+
+    result = update_image_links(
+        markdown,
+        source_path,
+        "ja",
+        tmp_path / "translations",
+        tmp_path / "translated_images",
+        tmp_path,
+        use_translated_images=False,
+        target_path=target_path,
+    )
+
+    expected = "../../images/hero.png?WT.mc_id=tracking-value#preview"
+    assert f"![Hero]({expected})" in result
+    assert f'<img src="{expected}">' in result
+
+
 @pytest.fixture
 def complex_dir_structure(tmp_path):
     """Create a more complex directory structure for testing nested paths."""

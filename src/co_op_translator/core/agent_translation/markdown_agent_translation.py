@@ -15,7 +15,9 @@ from co_op_translator.utils.markdown import (
     normalize_internal_anchor_links,
     process_markdown,
     replace_code_blocks,
+    replace_markdown_link_destinations,
     restore_code_blocks,
+    restore_markdown_link_destinations,
 )
 from co_op_translator.utils.markdown.frontmatter import get_frontmatter_parser
 from co_op_translator.utils.markdown.notebook_cells import (
@@ -97,6 +99,9 @@ def start_markdown_agent_translation(
             )
 
     document_with_placeholders, placeholder_map = replace_code_blocks(body)
+    document_with_placeholders, link_destination_map = (
+        replace_markdown_link_destinations(document_with_placeholders)
+    )
     body_chunks = process_markdown(document_with_placeholders)
 
     chunks: list[dict[str, Any]] = []
@@ -142,6 +147,7 @@ def start_markdown_agent_translation(
         "state": {
             "original_document": document,
             "placeholder_map": placeholder_map,
+            "link_destination_map": link_destination_map,
             "has_frontmatter": frontmatter is not None,
             "preserve_fields": preserve_fields,
             "translate_fields": translate_fields,
@@ -230,6 +236,10 @@ def finish_markdown_agent_translation(
     )
     translated_content = normalize_internal_anchor_links(
         str(state.get("original_document", "")), translated_content
+    )
+    translated_content = restore_markdown_link_destinations(
+        translated_content,
+        dict(state.get("link_destination_map", {})),
     )
     translated_content = restore_code_blocks(
         translated_content,

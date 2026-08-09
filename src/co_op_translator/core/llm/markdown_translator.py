@@ -14,7 +14,9 @@ from co_op_translator.utils.markdown import (
     generate_prompt_template,
     _read_language_prompt_template,
     replace_code_blocks,
+    replace_markdown_link_destinations,
     restore_code_blocks,
+    restore_markdown_link_destinations,
     normalize_cjk_emphasis_markers,
     normalize_internal_anchor_links,
     SPLIT_DELIMITER,
@@ -162,6 +164,10 @@ class MarkdownTranslator(ABC):
             self._run_prompt,
         )
 
+        document_with_placeholders, link_destination_map = (
+            replace_markdown_link_destinations(document_with_placeholders)
+        )
+
         # Step 2: Split the document into chunks
         document_chunks = process_markdown(
             document_with_placeholders, max_tokens=self.DEFAULT_CHUNK_MAX_TOKENS
@@ -189,7 +195,10 @@ class MarkdownTranslator(ABC):
             document, translated_content
         )
 
-        # Step 4.75: Restore the code blocks and inline code from placeholders
+        # Step 4.75: Restore protected link destinations and code blocks.
+        translated_content = restore_markdown_link_destinations(
+            translated_content, link_destination_map
+        )
         translated_content = restore_code_blocks(translated_content, placeholder_map)
 
         # Step 5: Translate frontmatter fields if any

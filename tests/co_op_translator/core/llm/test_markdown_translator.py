@@ -566,6 +566,44 @@ async def test_translate_markdown_rebuilds_lines_from_collapsed_anchor_output(
 
 
 @pytest.mark.asyncio
+async def test_translate_markdown_preserves_table_across_chunk_boundary(
+    real_markdown_translator,
+    monkeypatch,
+):
+    """Joining translated chunks must not add a blank line inside a table."""
+
+    document = (
+        "| # | Lesson |\n"
+        "| --- | --- |\n"
+        "| 03 | Responsible AI |\n"
+        "| 04 | Prompt engineering |\n"
+    )
+    chunks = [
+        "| # | Lesson |\n| --- | --- |\n| 03 | Responsible AI |\n",
+        "| 04 | Prompt engineering |\n",
+    ]
+    assert "".join(chunks) == document
+
+    monkeypatch.setattr(
+        "co_op_translator.core.llm.markdown_translator.process_markdown",
+        lambda content, max_tokens=2600, encoding="o200k_base": chunks,
+    )
+
+    async def echo_prompt_body(prompt, index, total):
+        _, body = prompt.split(SPLIT_DELIMITER, 1)
+        return body
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = echo_prompt_body
+        result = await real_markdown_translator.translate_markdown(document, "ja")
+
+    assert result == document
+    assert "Responsible AI |\n\n| 04" not in result
+
+
+@pytest.mark.asyncio
 async def test_translate_markdown_missing_chunk_end_marker_is_incomplete(
     real_markdown_translator,
 ):
@@ -643,7 +681,9 @@ async def test_translate_markdown_splits_incomplete_chunk_after_retry(
         split_max_tokens.append(max_tokens)
         if max_tokens == 2600:
             return [content]
-        return ["# Needs split\n\nFirst part.\n", "Second part.\n"]
+        chunks = ["# Needs split\n\nFirst part.\n\n", "Second part.\n"]
+        assert "".join(chunks) == content
+        return chunks
 
     monkeypatch.setattr(
         "co_op_translator.core.llm.markdown_translator.process_markdown",
@@ -677,9 +717,7 @@ async def test_translate_markdown_splits_incomplete_chunk_after_retry(
             source_path=test_file,
         )
 
-    assert "# Dividido" in result
-    assert "Primera parte." in result
-    assert "Segunda parte." in result
+    assert result == "# Dividido\n\nPrimera parte.\n\nSegunda parte.\n"
     assert original_failures == 2
     assert split_max_tokens == [2600, 1300]
 

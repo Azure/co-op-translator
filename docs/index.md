@@ -6,7 +6,7 @@
     Translator from the CLI, Python API, or MCP server to translate and review
     project content as the source changes.
   </p>
-  <a class="home-link" href="workflows/">Choose your workflow -></a>
+  <a class="home-link" href="workflows.md">Choose your workflow -></a>
 </section>
 
 ## Read the docs in your language

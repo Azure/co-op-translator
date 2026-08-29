@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -104,6 +105,32 @@ async def test_readme_translator_saves_metadata_and_skips_current_readme(tmp_pat
     assert len(markdown_translator.calls) == 1
     assert metadata["README.md"]["source_file"] == "README.md"
     assert metadata["README.md"]["language_code"] == "ko"
+
+
+@pytest.mark.asyncio
+async def test_deferred_readme_translator_initializes_only_when_needed(tmp_path):
+    _write_readme_project(tmp_path)
+    markdown_translator = FakeMarkdownTranslator()
+
+    with patch(
+        "co_op_translator.core.project.readme_translator.MarkdownTranslator.create",
+        return_value=markdown_translator,
+    ) as create_markdown:
+        translator = ReadmeTranslator(
+            "ko",
+            root_dir=tmp_path,
+            add_disclaimer=False,
+            initialize_translator=False,
+        )
+        assert translator.estimate_tokens() > 0
+        create_markdown.assert_not_called()
+
+        first = await translator.translate_async()
+        second = await translator.translate_async()
+
+    assert first[0].skipped is False
+    assert second[0].skipped is True
+    create_markdown.assert_called_once_with()
 
 
 @pytest.mark.asyncio

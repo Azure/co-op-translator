@@ -523,7 +523,7 @@ The `policy` argument may be a dictionary with these fields:
 | `markdown` | `bool` | `False` | Include Markdown translation. |
 | `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
 | `debug` | `bool` | `False` | Enable debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
+| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. Ignored during a dry run. |
 | `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
 | `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
 | `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
@@ -532,7 +532,7 @@ The `policy` argument may be a dictionary with these fields:
 | `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
 | `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
 | `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
+| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without provider credentials or file writes. |
 
 ## Review Parameters
 
@@ -597,7 +597,7 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 - Content translation APIs keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content needs project-relative links adjusted for a target location.
 - Project orchestration APIs add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
 - `run_translation` prints progress and estimate summaries through the same Rich-backed reporter used by the CLI. Non-interactive output falls back to plain text.
-- `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
+- `dry_run=True` computes estimates using virtual README updates without provider credentials or connectivity checks. It does not write README, translation, log, or NDJSON event files; callbacks still receive events in memory.
 - `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
 - When image translation is selected, missing Vision configuration raises an error before translation starts.
 - Existing alias-based language folders are detected and can be migrated to canonical language folder names as part of the run.

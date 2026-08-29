@@ -1,4 +1,6 @@
 from pathlib import Path
+from unittest.mock import MagicMock, patch
+
 from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.utils.common.file_utils import filter_files
 
@@ -15,12 +17,23 @@ def test_dynamic_exclusion_of_root_language_dirs(tmp_path: Path):
     (root / "cn" / "b.md").write_text("y", encoding="utf-8")
     (root / "docs" / "c.md").write_text("z", encoding="utf-8")
 
-    # Initialize translator (this will compute dynamic exclusions)
-    pt = ProjectTranslator(
-        language_codes="ko",
-        root_dir=str(root),
-        translation_types=["markdown"],
-    )
+    # Initialize the project without requiring an external LLM provider. The
+    # translator factories are unrelated to the directory exclusion behavior.
+    with (
+        patch(
+            "co_op_translator.core.project.project_translator.text_translator.TextTranslator.create",
+            return_value=MagicMock(),
+        ),
+        patch(
+            "co_op_translator.core.project.project_translator.markdown_translator.MarkdownTranslator.create",
+            return_value=MagicMock(),
+        ),
+    ):
+        pt = ProjectTranslator(
+            language_codes="ko",
+            root_dir=str(root),
+            translation_types=["markdown"],
+        )
 
     files = filter_files(root, pt.excluded_dirs, extension=".md")
     paths = {str(p.relative_to(root)).replace("\\", "/") for p in files}

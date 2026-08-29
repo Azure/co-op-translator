@@ -57,6 +57,7 @@ class ReadmeTranslator:
         add_disclaimer: bool = True,
         lang_subdir: str | Path | None = None,
         markdown_translator=None,
+        initialize_translator: bool = True,
     ):
         raw_language_codes = (
             language_codes.split()
@@ -75,7 +76,9 @@ class ReadmeTranslator:
         self.image_dir = self._resolve_under_root(image_dir, "translated_images")
         self.add_disclaimer = add_disclaimer
         self.lang_subdir = Path(lang_subdir) if lang_subdir else None
-        self.markdown_translator = markdown_translator or MarkdownTranslator.create()
+        self.markdown_translator = markdown_translator
+        if self.markdown_translator is None and initialize_translator:
+            self.markdown_translator = MarkdownTranslator.create()
         self.source_path = (self.root_dir / "README.md").resolve()
 
     def _resolve_under_root(
@@ -90,6 +93,10 @@ class ReadmeTranslator:
         if candidate.is_absolute():
             return candidate.resolve()
         return (self.root_dir / candidate).resolve()
+
+    def _initialize_markdown_translator(self) -> None:
+        if self.markdown_translator is None:
+            self.markdown_translator = MarkdownTranslator.create()
 
     def _get_language_root(self, language_code: str) -> Path:
         lang_dir = self.translations_dir / language_code
@@ -273,6 +280,8 @@ class ReadmeTranslator:
                 translated_path=translated_path,
                 skipped=True,
             )
+
+        self._initialize_markdown_translator()
 
         document = read_input_file(self.source_path)
         translated_path.parent.mkdir(parents=True, exist_ok=True)

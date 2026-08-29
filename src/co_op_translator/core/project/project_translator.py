@@ -44,6 +44,7 @@ class ProjectTranslator:
         translations_dir=None,
         image_dir=None,
         lang_subdir=None,
+        initialize_translators: bool = True,
     ):
         """Initialize project translation environment.
 
@@ -53,6 +54,8 @@ class ProjectTranslator:
             language_codes: Space-separated list of target language codes
             root_dir: Root directory of the project to translate
             translation_types: List of file types to translate (e.g., ["markdown", "images", "notebook"])
+            initialize_translators: Whether to initialize external provider-backed
+                translators. Disable this for local discovery and token estimation.
         """
         # Normalize to canonical BCP 47 (accept alias input like tw/cn/br)
         self.language_codes = normalize_language_codes(language_codes.split())
@@ -110,46 +113,12 @@ class ProjectTranslator:
                     excluded_dirs.add(str(sub))
         self.excluded_dirs = list(excluded_dirs)
 
-        # Initialize text translator
-        self.text_translator = text_translator.TextTranslator.create()
-
-        # Initialize image translator if images are enabled
-        if "images" in self.translation_types:
-            try:
-                self.image_translator = image_translator.ImageTranslator.create(
-                    default_output_dir=self.image_dir, root_dir=self.root_dir
-                )
-            except ValueError as e:
-                logger.error(
-                    f"Azure AI Service not configured for project '{self.root_dir.name}' but image translation was requested. "
-                    f"Please configure AZURE_AI_SERVICE_API_KEY in your .env file."
-                )
-                raise ValueError(
-                    "Image translation requested but Azure AI Service not configured"
-                ) from e
-        else:
-            logger.debug(
-                f"Image translation disabled for project '{self.root_dir.name}': Only {', '.join(self.translation_types)} files will be processed."
-            )
-            self.image_translator = None
-
-        self.markdown_translator = markdown_translator.MarkdownTranslator.create(
-            self.root_dir,
-            translations_dir=self.translations_dir,
-            image_dir=self.image_dir,
-            lang_subdir=self.lang_subdir,
-        )
-
-        # Initialize notebook translator if notebooks are enabled
-        if "notebook" in self.translation_types:
-            self.notebook_translator = JupyterNotebookTranslator.create(
-                self.root_dir,
-                translations_dir=self.translations_dir,
-                image_dir=self.image_dir,
-                lang_subdir=self.lang_subdir,
-            )
-        else:
-            self.notebook_translator = None
+        self.text_translator = None
+        self.image_translator = None
+        self.markdown_translator = None
+        self.notebook_translator = None
+        if initialize_translators:
+            self._initialize_translators()
 
         # Initialize directory and translation managers
         self.directory_manager = DirectoryManager(
@@ -176,6 +145,66 @@ class ProjectTranslator:
             lang_subdir=self.lang_subdir,
         )
 
+    def _initialize_translators(self) -> None:
+        """Initialize provider-backed translators and attach them to the manager."""
+        expected_images = "images" in self.translation_types
+        expected_notebooks = "notebook" in self.translation_types
+        if (
+            self.text_translator is not None
+            and self.markdown_translator is not None
+            and (not expected_images or self.image_translator is not None)
+            and (not expected_notebooks or self.notebook_translator is not None)
+        ):
+            return
+
+        # Build the provider-backed object graph before assigning it. If any
+        # factory fails, a later retry starts from a clean state.
+        new_text_translator = text_translator.TextTranslator.create()
+        new_image_translator = None
+
+        if expected_images:
+            try:
+                new_image_translator = image_translator.ImageTranslator.create(
+                    default_output_dir=self.image_dir, root_dir=self.root_dir
+                )
+            except ValueError as e:
+                logger.error(
+                    f"Azure AI Service not configured for project '{self.root_dir.name}' but image translation was requested. "
+                    f"Please configure AZURE_AI_SERVICE_API_KEY in your .env file."
+                )
+                raise ValueError(
+                    "Image translation requested but Azure AI Service not configured"
+                ) from e
+        else:
+            logger.debug(
+                f"Image translation disabled for project '{self.root_dir.name}': Only {', '.join(self.translation_types)} files will be processed."
+            )
+
+        new_markdown_translator = markdown_translator.MarkdownTranslator.create(
+            self.root_dir,
+            translations_dir=self.translations_dir,
+            image_dir=self.image_dir,
+            lang_subdir=self.lang_subdir,
+        )
+
+        new_notebook_translator = None
+        if expected_notebooks:
+            new_notebook_translator = JupyterNotebookTranslator.create(
+                self.root_dir,
+                translations_dir=self.translations_dir,
+                image_dir=self.image_dir,
+                lang_subdir=self.lang_subdir,
+            )
+
+        self.text_translator = new_text_translator
+        self.image_translator = new_image_translator
+        self.markdown_translator = new_markdown_translator
+        self.notebook_translator = new_notebook_translator
+        if hasattr(self, "translation_manager"):
+            self.translation_manager.markdown_translator = self.markdown_translator
+            self.translation_manager.image_translator = self.image_translator
+            self.translation_manager.notebook_translator = self.notebook_translator
+
     def translate_project(
         self,
         update=False,
@@ -190,6 +219,7 @@ class ProjectTranslator:
             update: Whether to update existing translations
             fast_mode: Whether to use faster translation method
         """
+        self._initialize_translators()
         asyncio.run(
             self.translation_manager.translate_project_async(
                 update=update,
@@ -209,6 +239,8 @@ class ProjectTranslator:
         Returns:
             Tuple containing (total_translated_count, combined_errors_list)
         """
+        self._initialize_translators()
+
         # Check outdated files first (markdown + notebooks supported in manager)
         modified_count, errors = await self.translation_manager.check_outdated_files()
         logger.info(f"Found {modified_count} outdated files")
@@ -264,6 +296,8 @@ class ProjectTranslator:
         Returns:
             Tuple containing (number_of_retranslated_files, error_messages_list)
         """
+        self._initialize_translators()
+
         # Import the evaluator here to avoid circular imports
         from co_op_translator.core.project.project_evaluator import ProjectEvaluator
 

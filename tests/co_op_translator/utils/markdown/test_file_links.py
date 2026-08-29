@@ -50,6 +50,23 @@ def test_update_untranslated_file_links_skips_internal_anchor_links(temp_dir):
     assert "../.." not in result
 
 
+def test_update_untranslated_file_links_preserves_query_and_fragment(temp_dir):
+    md_file_path = temp_dir / "docs" / "guide.md"
+    md_file_path.parent.mkdir()
+    md_file_path.touch()
+    translations_dir = temp_dir / "translations"
+
+    result = update_untranslated_file_links(
+        "[PDF](../assets/file.pdf?WT.mc_id=value#page=2)",
+        md_file_path,
+        "ko",
+        translations_dir,
+        temp_dir,
+    )
+
+    assert result == "[PDF](../../../assets/file.pdf?WT.mc_id=value#page=2)"
+
+
 @pytest.mark.parametrize(
     "link",
     ["", ".", "./", "?tab=readme", ".#section-one", "./#section-one", "/#section-one"],

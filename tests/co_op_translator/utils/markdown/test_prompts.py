@@ -11,6 +11,7 @@ def test_generate_prompt_template():
     assert "ko" in prompt
     assert "Korean" in prompt
     assert document_chunk in prompt
+    assert "@@LINK_DESTINATION_x@@" in prompt
 
 
 def test_generate_prompt_template_includes_japanese_language_template():

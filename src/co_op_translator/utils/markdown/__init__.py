@@ -16,6 +16,10 @@ from co_op_translator.utils.markdown.image_links import (
     update_image_links,
 )
 from co_op_translator.utils.markdown.links import update_links
+from co_op_translator.utils.markdown.link_placeholders import (
+    replace_markdown_link_destinations,
+    restore_markdown_link_destinations,
+)
 from co_op_translator.utils.markdown.notebook_links import (
     migrate_notebook_links,
     update_notebook_links,
@@ -58,7 +62,9 @@ __all__ = [
     "process_markdown",
     "process_markdown_with_many_links",
     "replace_code_blocks",
+    "replace_markdown_link_destinations",
     "restore_code_blocks",
+    "restore_markdown_link_destinations",
     "split_markdown_content",
     "update_image_links",
     "update_links",

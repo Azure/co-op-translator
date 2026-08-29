@@ -56,6 +56,72 @@ print("Hello")
     assert result["warnings"] == []
 
 
+def test_markdown_agent_translation_restores_original_link_destinations():
+    document = (
+        "# Hello\n\n[Course](https://example.com/course?WT.mc_id=tracking-value)\n"
+    )
+
+    job = start_markdown_agent_translation(document, "ko")
+    body_chunks = [chunk for chunk in job["chunks"] if chunk["kind"] == "body"]
+
+    assert body_chunks
+    assert "@@LINK_DESTINATION_" in body_chunks[0]["source"]
+    assert "WT.mc_id" not in body_chunks[0]["source"]
+
+    translated_chunks = {
+        chunk["id"]: _translate_chunk_source(chunk["source"]).replace(
+            "WT.mc_id", "WT_mc_id"
+        )
+        for chunk in job["chunks"]
+    }
+    result = finish_markdown_agent_translation(job, translated_chunks)
+
+    assert "# 안녕하세요" in result["content"]
+    assert "https://example.com/course?WT.mc_id=tracking-value" in result["content"]
+    assert "WT_mc_id" not in result["content"]
+    assert "@@LINK_DESTINATION_" not in result["content"]
+
+
+def test_markdown_agent_translation_protects_frontmatter_link_destinations():
+    document = (
+        "---\n"
+        "title: Guide\n"
+        'description: "Read [Docs](https://example.com/?WT.mc_id=frontmatter)"\n'
+        "---\n"
+        "# Hello\n"
+    )
+
+    job = start_markdown_agent_translation(document, "ko")
+    frontmatter_chunk = next(
+        chunk for chunk in job["chunks"] if chunk["kind"] == "frontmatter"
+    )
+    assert "@@LINK_DESTINATION_" in frontmatter_chunk["source"]
+    assert "https://example.com" not in frontmatter_chunk["source"]
+
+    translated_chunks = {
+        chunk["id"]: _translate_chunk_source(chunk["source"]).replace(
+            "WT.mc_id", "WT_mc_id"
+        )
+        for chunk in job["chunks"]
+    }
+    result = finish_markdown_agent_translation(job, translated_chunks)
+
+    assert "https://example.com/?WT.mc_id=frontmatter" in result["content"]
+    assert "WT_mc_id" not in result["content"]
+    assert "@@LINK_DESTINATION_" not in result["content"]
+
+
+def test_markdown_agent_translation_rejects_missing_link_placeholder():
+    job = start_markdown_agent_translation("[Docs](https://example.com)", "ko")
+    translated_chunks = {
+        chunk["id"]: chunk["source"].replace("@@LINK_DESTINATION_0@@", "")
+        for chunk in job["chunks"]
+    }
+
+    with pytest.raises(ValueError, match="exactly once"):
+        finish_markdown_agent_translation(job, translated_chunks)
+
+
 def test_markdown_agent_translation_requires_all_chunks():
     job = start_markdown_agent_translation("# Hello\n\nWelcome.", "ko")
 

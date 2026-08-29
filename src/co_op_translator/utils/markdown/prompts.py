@@ -51,7 +51,8 @@ def generate_prompt_template(
             "STRICT RULE: Do NOT add, remove, or modify any markdown characters. "
             "Do NOT introduce HTML tags. Translate ONLY text content. "
             "If tokens such as @@COOP_CHUNK_START:...@@, @@COOP_CHUNK_END:...@@, "
-            "@@LINE_0001@@, @@CODE_BLOCK_x@@, or @@INLINE_CODE_x@@ appear, keep them exactly. "
+            "@@LINE_0001@@, @@CODE_BLOCK_x@@, @@INLINE_CODE_x@@, or "
+            "@@LINK_DESTINATION_x@@ appear, keep them exactly. "
             "Return ONLY the translation."
         )
 
@@ -80,7 +81,7 @@ STRICT RULES (NO EXCEPTIONS):
      * URLs or file paths
      * Markdown syntax
      * Variable names, function names, class names
-     * Placeholders like @@INLINE_CODE_x@@ and @@CODE_BLOCK_x@@
+     * Placeholders like @@INLINE_CODE_x@@, @@CODE_BLOCK_x@@, and @@LINK_DESTINATION_x@@
      * Control markers like @@COOP_CHUNK_START:...@@, @@COOP_CHUNK_END:...@@, and @@LINE_0001@@
      * Tags such as [!NOTE], [!TIP], [!WARNING], [!IMPORTANT], [!CAUTION]
 

@@ -90,6 +90,7 @@ def start_markdown_agent_translation(
     preserve_fields: dict[str, Any] = {}
     translate_fields: dict[str, Any] = {}
     frontmatter_section = ""
+    frontmatter_link_destination_map: dict[str, str] = {}
 
     if frontmatter:
         preserve_fields, translate_fields = parser.split_fields(frontmatter)
@@ -97,6 +98,10 @@ def start_markdown_agent_translation(
             frontmatter_section = parser.extract_translatable_fields_as_markdown(
                 translate_fields
             )
+            (
+                frontmatter_section,
+                frontmatter_link_destination_map,
+            ) = replace_markdown_link_destinations(frontmatter_section)
 
     document_with_placeholders, placeholder_map = replace_code_blocks(body)
     document_with_placeholders, link_destination_map = (
@@ -148,6 +153,7 @@ def start_markdown_agent_translation(
             "original_document": document,
             "placeholder_map": placeholder_map,
             "link_destination_map": link_destination_map,
+            "frontmatter_link_destination_map": frontmatter_link_destination_map,
             "has_frontmatter": frontmatter is not None,
             "preserve_fields": preserve_fields,
             "translate_fields": translate_fields,
@@ -252,6 +258,10 @@ def finish_markdown_agent_translation(
         translate_fields = dict(state.get("translate_fields", {}))
         translated_frontmatter_fields = dict(translate_fields)
         if frontmatter_result and translate_fields:
+            frontmatter_result = restore_markdown_link_destinations(
+                frontmatter_result,
+                dict(state.get("frontmatter_link_destination_map", {})),
+            )
             translated_frontmatter_fields.update(
                 parser.parse_translated_fields_from_markdown(
                     frontmatter_result,

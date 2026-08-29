@@ -22,6 +22,7 @@ from co_op_translator.utils.markdown.image_links import (
     build_translated_image_link,
     get_translated_markdown_dir,
 )
+from co_op_translator.utils.markdown.url_paths import replace_url_path
 
 logger = logging.getLogger(__name__)
 
@@ -520,6 +521,7 @@ def adjust_frontmatter_links(
                             translated_images_dir,
                             root_dir,
                         )
+                        adjusted[field] = replace_url_path(parsed_url, adjusted[field])
                         logger.debug(
                             f"Adjusted root-relative image path in '{field}': {value} -> {adjusted[field]}"
                         )
@@ -546,6 +548,7 @@ def adjust_frontmatter_links(
                             translated_images_dir,
                             root_dir,
                         )
+                        adjusted[field] = replace_url_path(parsed_url, adjusted[field])
                         logger.debug(
                             f"Adjusted relative image path in '{field}': {value} -> {adjusted[field]}"
                         )
@@ -554,6 +557,7 @@ def adjust_frontmatter_links(
                         adjusted[field] = os.path.relpath(
                             original_linked_file_path, translated_md_dir
                         ).replace(os.path.sep, "/")
+                        adjusted[field] = replace_url_path(parsed_url, adjusted[field])
                         logger.debug(
                             f"Image not found, using relative path to original in '{field}': {adjusted[field]}"
                         )
@@ -562,6 +566,7 @@ def adjust_frontmatter_links(
                     adjusted[field] = os.path.relpath(
                         original_linked_file_path, translated_md_dir
                     ).replace(os.path.sep, "/")
+                    adjusted[field] = replace_url_path(parsed_url, adjusted[field])
                     logger.debug(
                         f"Adjusted relative path to original in '{field}': {value} -> {adjusted[field]}"
                     )

@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import logging
 import os
-import re
 from pathlib import Path
-from urllib.parse import ParseResult, urlparse
+from urllib.parse import urlparse
 
 from co_op_translator.config.constants import SUPPORTED_IMAGE_EXTENSIONS
 from co_op_translator.utils.common.file_utils import (
@@ -12,16 +11,12 @@ from co_op_translator.utils.common.file_utils import (
     get_actual_image_path,
     get_filename_and_extension,
 )
+from co_op_translator.utils.markdown.link_placeholders import (
+    markdown_image_destination_spans,
+)
+from co_op_translator.utils.markdown.url_paths import replace_url_path
 
 logger = logging.getLogger(__name__)
-
-
-def _append_url_suffix(path: str, parsed_url: ParseResult) -> str:
-    if parsed_url.query:
-        path += f"?{parsed_url.query}"
-    if parsed_url.fragment:
-        path += f"#{parsed_url.fragment}"
-    return path
 
 
 def get_translated_markdown_dir(
@@ -105,15 +100,14 @@ def update_image_links(
     Returns:
         str: Updated markdown content with modified image links
     """
-    image_pattern = r"!\[(.*?)\]\((.*?)\)"
-    image_matches = re.findall(image_pattern, markdown_string)
-
     if use_translated_images:
         logger.info("Using translated image links")
     else:
         logger.info("Using original image links")
 
-    for alt_text, link in image_matches:
+    replacements: list[tuple[int, int, str]] = []
+    for start, end in markdown_image_destination_spans(markdown_string):
+        link = markdown_string[start:end]
         parsed_url = urlparse(link)
         if (
             parsed_url.scheme in ("mailto", "http", "https")
@@ -180,12 +174,8 @@ def update_image_links(
                         updated_link = path
                         logger.warning(f"Falling back to original path: {updated_link}")
 
-                updated_link = _append_url_suffix(updated_link, parsed_url)
-
-                old_image_markup = f"![{alt_text}]({link})"
-                new_image_markup = f"![{alt_text}]({updated_link})"
-                markdown_string = markdown_string.replace(
-                    old_image_markup, new_image_markup
+                replacements.append(
+                    (start, end, replace_url_path(parsed_url, updated_link))
                 )
 
             except Exception as e:
@@ -193,65 +183,7 @@ def update_image_links(
                 logger.info(f"Skipping image {link}")
                 continue
 
-    # Also update HTML <img> tags inside markdown
-    html_img_pattern = re.compile(
-        r"<img\s+[^>]*src=([\"\'])(.*?)\1[^>]*>", re.IGNORECASE
-    )
-
-    def _replace_img_src(match: re.Match) -> str:
-        src = match.group(2)
-        parsed_url = urlparse(src)
-        if (
-            parsed_url.scheme in ("mailto", "http", "https")
-            or "@" in src
-            or src.endswith((".com", ".org", ".net"))
-        ):
-            return match.group(0)
-
-        path = parsed_url.path
-        _, file_ext = get_filename_and_extension(path)
-        if file_ext not in SUPPORTED_IMAGE_EXTENSIONS:
-            return match.group(0)
-
-        try:
-            translated_md_dir = get_translated_markdown_dir(
-                md_file_path,
-                language_code,
-                translations_dir,
-                root_dir,
-                target_path=target_path,
-            )
-
-            if not use_translated_images:
-                # Link to original image when using original images
-                if path.startswith("/"):
-                    updated_src = path
-                else:
-                    original_linked_file_path = (md_file_path.parent / path).resolve()
-                    updated_src = os.path.relpath(
-                        original_linked_file_path, translated_md_dir
-                    ).replace(os.path.sep, "/")
-            else:
-                updated_src = build_translated_image_link(
-                    path,
-                    md_file_path,
-                    language_code,
-                    translated_md_dir,
-                    translated_images_dir,
-                    root_dir,
-                )
-        except Exception as e:
-            logger.error(f"Error processing HTML <img> path {src}: {e}")
-            updated_src = src
-        else:
-            updated_src = _append_url_suffix(updated_src, parsed_url)
-
-        # Replace only the src value inside this tag while preserving other attributes
-        full_tag = match.group(0)
-        rel_start = match.start(2) - match.start(0)
-        rel_end = match.end(2) - match.start(0)
-        return full_tag[:rel_start] + updated_src + full_tag[rel_end:]
-
-    markdown_string = html_img_pattern.sub(_replace_img_src, markdown_string)
+    for start, end, updated_link in reversed(replacements):
+        markdown_string = markdown_string[:start] + updated_link + markdown_string[end:]
 
     return markdown_string

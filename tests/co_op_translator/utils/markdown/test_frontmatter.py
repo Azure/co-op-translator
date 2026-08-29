@@ -581,3 +581,25 @@ class TestAdjustFrontmatterLinks:
 
         # All fields should remain unchanged (no path fields)
         assert adjusted == frontmatter
+
+    def test_adjust_paths_preserves_query_and_fragment(self, tmp_path):
+        root_dir = tmp_path / "project"
+        docs_dir = root_dir / "docs"
+        images_dir = root_dir / "images"
+        docs_dir.mkdir(parents=True)
+        images_dir.mkdir()
+        (images_dir / "hero.png").touch()
+        md_file = docs_dir / "guide.md"
+        md_file.touch()
+
+        adjusted = adjust_frontmatter_links(
+            {"image": "../images/hero.png?WT.mc_id=value#preview"},
+            md_file,
+            "ko",
+            root_dir,
+            root_dir / "translations",
+            root_dir / "translated_images",
+            translation_types=["markdown"],
+        )
+
+        assert adjusted["image"] == ("../../../images/hero.png?WT.mc_id=value#preview")

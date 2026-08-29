@@ -12,6 +12,7 @@ from co_op_translator.config.constants import (
     SUPPORTED_NOTEBOOK_EXTENSIONS,
 )
 from co_op_translator.utils.common.file_utils import get_filename_and_extension
+from co_op_translator.utils.markdown.url_paths import replace_url_path
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +103,7 @@ def update_untranslated_file_links(
             updated_link = os.path.relpath(
                 original_linked_file_path, translated_md_dir
             ).replace(os.path.sep, "/")
+            updated_link = replace_url_path(parsed_url, updated_link)
 
             old_file_markup = f"[{alt_text}]({link})"
             new_file_markup = f"[{alt_text}]({updated_link})"

@@ -54,6 +54,28 @@ def test_update_image_links_preserves_query_and_fragment(tmp_path):
     assert f'<img src="{expected}">' in result
 
 
+def test_update_image_links_preserves_angle_bracket_destination(tmp_path):
+    image_path = tmp_path / "images" / "hero image.png"
+    image_path.parent.mkdir()
+    image_path.touch()
+    source_path = tmp_path / "README.md"
+    target_path = tmp_path / "translations" / "ja" / "README.md"
+    markdown = "![Hero](<./images/hero image.png?WT.mc_id=value#preview>)"
+
+    result = update_image_links(
+        markdown,
+        source_path,
+        "ja",
+        tmp_path / "translations",
+        tmp_path / "translated_images",
+        tmp_path,
+        use_translated_images=False,
+        target_path=target_path,
+    )
+
+    assert result == ("![Hero](<../../images/hero image.png?WT.mc_id=value#preview>)")
+
+
 @pytest.fixture
 def complex_dir_structure(tmp_path):
     """Create a more complex directory structure for testing nested paths."""

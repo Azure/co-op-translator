@@ -127,6 +127,7 @@ class MarkdownTranslator(ABC):
         preserve_fields = {}
         translate_fields = {}
         frontmatter_section = ""
+        frontmatter_link_destination_map: dict[str, str] = {}
 
         if frontmatter:
             # Split frontmatter into preserve and translate fields
@@ -141,6 +142,10 @@ class MarkdownTranslator(ABC):
                 frontmatter_section = parser.extract_translatable_fields_as_markdown(
                     translate_fields
                 )
+                (
+                    frontmatter_section,
+                    frontmatter_link_destination_map,
+                ) = replace_markdown_link_destinations(frontmatter_section)
                 logger.debug(
                     f"Translatable frontmatter fields for '{md_file_path.name}': "
                     f"{list(translate_fields.keys())}"
@@ -212,6 +217,9 @@ class MarkdownTranslator(ABC):
                 translated_fm_markdown = await asyncio.wait_for(
                     self._run_prompt(frontmatter_prompt, "frontmatter", 1),
                     timeout=self.TRANSLATION_TIMEOUT_SECONDS,
+                )
+                translated_fm_markdown = restore_markdown_link_destinations(
+                    translated_fm_markdown, frontmatter_link_destination_map
                 )
                 # Parse translated fields back from markdown
                 translated_frontmatter_fields = (

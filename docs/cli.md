@@ -22,7 +22,7 @@ Use `translate --json-events progress.ndjson` when another system needs
 machine-readable progress. The CLI continues to render human-facing output, while
 the NDJSON file receives versioned `co-op.translation.event.v1` events with
 stable fields such as `type`, `stage_key`, `completed`, `total`, and
-`current_path`. Dry runs do not create this file; use the console estimate instead.
+`current_path`.
 
 ## First-Time CLI Flow
 
@@ -107,16 +107,16 @@ translate -l "ko ja" -md --json-events progress.ndjson
 | `-md`, `--markdown` | No | Translate only Markdown files. |
 | `-nb`, `--notebook` | No | Translate only Jupyter notebook files. |
 | `-d`, `--debug` | No | Enable debug logging in the console. |
-| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. Ignored during `--dry-run`. |
-| `--json-events` | No | Write machine-readable translation progress events as NDJSON. Ignored during `--dry-run`. |
-| `-x`, `--fix` | No | Retranslate low-confidence Markdown files based on previous evaluation results. Cannot be combined with `--dry-run`. |
+| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
+| `--json-events` | No | Write machine-readable translation progress events as NDJSON. |
+| `-x`, `--fix` | No | Retranslate low-confidence Markdown files based on previous evaluation results. |
 | `-c`, `--min-confidence` | No | Confidence threshold for `--fix`. Defaults to `0.7`. |
 | `--add-disclaimer`, `--no-disclaimer` | No | Add or suppress machine translation disclaimers. Defaults to enabled in the CLI. |
 | `-f`, `--fast` | No | Deprecated fast image mode. |
 | `-y`, `--yes` | No | Auto-confirm prompts, useful in CI. |
 | `--repo-url` | No | Repository URL used in the README languages table sparse-checkout advisory. |
 | `--migrate-language-folders` | No | Rename legacy alias folders, such as `cn` or `tw`, to canonical BCP 47 folders. |
-| `--dry-run` | No | Estimate translation work and preview language folder migration without provider credentials or file writes. |
+| `--dry-run` | No | Preview language folder migration and translation estimates without writing files. |
 
 If no type flag is provided, `translate` processes Markdown, notebooks, and images. Image translation requires Azure AI Vision configuration.
 

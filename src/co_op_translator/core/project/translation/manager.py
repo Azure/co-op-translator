@@ -52,7 +52,7 @@ class TranslationManager(
         excluded_dirs: list[str],
         supported_image_extensions: list[str],
         supported_notebook_extensions: list[str],
-        markdown_translator: MarkdownTranslator,
+        markdown_translator: MarkdownTranslator | None,
         image_translator=None,
         notebook_translator=None,
         translation_types: list[str] = None,

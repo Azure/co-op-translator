@@ -347,6 +347,7 @@ def run_translation(
     Non-dry-run calls can write, update, or delete many files. Set
     confirm_write=true when dry_run=false. Set readme_only=true to translate
     only the root README while leaving linked documents in the source tree.
+    Dry runs use local discovery and estimation without provider credentials.
     """
 
     if not dry_run and not confirm_write:

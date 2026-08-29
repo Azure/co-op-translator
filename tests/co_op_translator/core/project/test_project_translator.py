@@ -3,6 +3,60 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from co_op_translator.core.project.project_translator import ProjectTranslator
 
 
+def test_deferred_translators_initialize_atomically_and_attach_to_manager(tmp_path):
+    translator = ProjectTranslator(
+        "ko",
+        root_dir=tmp_path,
+        translation_types=["markdown", "images", "notebook"],
+        initialize_translators=False,
+    )
+    text_instance = MagicMock()
+    image_instance = MagicMock()
+    markdown_instance = MagicMock()
+    notebook_instance = MagicMock()
+
+    with (
+        patch(
+            "co_op_translator.core.project.project_translator.text_translator.TextTranslator.create",
+            return_value=text_instance,
+        ) as create_text,
+        patch(
+            "co_op_translator.core.project.project_translator.image_translator.ImageTranslator.create",
+            return_value=image_instance,
+        ) as create_image,
+        patch(
+            "co_op_translator.core.project.project_translator.markdown_translator.MarkdownTranslator.create",
+            return_value=markdown_instance,
+        ) as create_markdown,
+        patch(
+            "co_op_translator.core.project.project_translator.JupyterNotebookTranslator.create",
+            side_effect=[RuntimeError("temporary failure"), notebook_instance],
+        ) as create_notebook,
+    ):
+        with pytest.raises(RuntimeError, match="temporary failure"):
+            translator._initialize_translators()
+
+        assert translator.text_translator is None
+        assert translator.image_translator is None
+        assert translator.markdown_translator is None
+        assert translator.notebook_translator is None
+
+        translator._initialize_translators()
+        translator._initialize_translators()
+
+    assert translator.text_translator is text_instance
+    assert translator.image_translator is image_instance
+    assert translator.markdown_translator is markdown_instance
+    assert translator.notebook_translator is notebook_instance
+    assert translator.translation_manager.markdown_translator is markdown_instance
+    assert translator.translation_manager.image_translator is image_instance
+    assert translator.translation_manager.notebook_translator is notebook_instance
+    assert create_text.call_count == 2
+    assert create_image.call_count == 2
+    assert create_markdown.call_count == 2
+    assert create_notebook.call_count == 2
+
+
 @pytest.fixture
 def temp_project_dir(tmp_path):
     """Create a temporary project directory structure."""

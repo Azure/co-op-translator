@@ -319,8 +319,6 @@ def _run_translation_impl(
         dry_run: bool,
         output_prepared: bool = False,
     ) -> None:
-        Config.check_configuration()
-
         translation_types = list(
             resolve_translation_types(
                 markdown=markdown,
@@ -330,7 +328,10 @@ def _run_translation_impl(
             )
         )
 
-        if "images" in translation_types:
+        if not dry_run:
+            Config.check_configuration()
+
+        if not dry_run and "images" in translation_types:
             cv_available = VisionConfig.check_configuration()
             if not cv_available:
                 raise RuntimeError(
@@ -348,7 +349,10 @@ def _run_translation_impl(
 
         if not output_prepared:
             log_file_path = setup_logging(
-                root_path, debug=debug, save_logs=save_logs, command_name="translate"
+                root_path,
+                debug=debug,
+                save_logs=save_logs and not dry_run,
+                command_name="translate",
             )
             if debug:
                 logging.debug("Debug mode enabled.")
@@ -363,11 +367,12 @@ def _run_translation_impl(
             if save_logs and log_file_path is not None:
                 reporter.info(f"Logs will be saved to: {log_file_path}")
 
-        LLMConfig.validate_connectivity()
-        logger.info("LLM health check passed.")
-        reporter.success("LLM health check passed.")
+        if not dry_run:
+            LLMConfig.validate_connectivity()
+            logger.info("LLM health check passed.")
+            reporter.success("LLM health check passed.")
 
-        if "images" in translation_types:
+        if not dry_run and "images" in translation_types:
             VisionConfig.validate_connectivity()
             logger.info("Vision health check passed.")
             reporter.success("Vision health check passed.")
@@ -378,7 +383,9 @@ def _run_translation_impl(
                 "Translating all languages at once can take a significant "
                 "amount of time, especially for large projects."
             )
-            if yes:
+            if dry_run:
+                reporter.info("Dry run: estimating all languages without confirmation.")
+            elif yes:
                 logger.info("Auto-confirming 'all' languages in non-interactive mode.")
                 reporter.info("Auto-confirming translation for all languages...")
 
@@ -647,6 +654,7 @@ def _run_translation_impl(
                 image_dir=image_dir,
                 add_disclaimer=add_disclaimer,
                 lang_subdir=lang_subdir,
+                initialize_translator=False,
             )
             readme_path = request.root_path / "README.md"
             source_text = virtual_file_contents.get(readme_path.resolve())
@@ -683,6 +691,7 @@ def _run_translation_impl(
             translations_dir=translations_dir,
             image_dir=image_dir,
             lang_subdir=lang_subdir,
+            initialize_translators=False,
         )
         est = estimate_translation_tokens(
             translator.translation_manager,
@@ -756,7 +765,10 @@ def _run_translation_impl(
                 raise ValueError(f"Root path is not a directory: {per_root}")
 
             log_file_path = setup_logging(
-                root_path, debug=debug, save_logs=save_logs, command_name="translate"
+                root_path,
+                debug=debug,
+                save_logs=save_logs and not dry_run,
+                command_name="translate",
             )
             if debug:
                 logging.debug("Debug mode enabled.")
@@ -841,12 +853,15 @@ def run_translation(
     """Programmatic translation entrypoint mirroring the translate CLI options.
 
     ``progress_callback`` receives versioned ``TranslationEvent`` objects for
-    integration code. ``json_events_path`` writes the same events as NDJSON.
+    integration code. ``json_events_path`` writes the same events as NDJSON except
+    during a dry run, when file output is disabled.
+    A dry run performs local discovery and estimation without provider credentials,
+    connectivity checks, or translation output writes.
     """
 
     with translation_event_context(
         callback=progress_callback,
-        json_events_path=json_events_path,
+        json_events_path=json_events_path if not dry_run else None,
     ):
         try:
             result = _run_translation_impl(

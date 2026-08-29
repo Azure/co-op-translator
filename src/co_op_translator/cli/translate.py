@@ -67,13 +67,19 @@ logger = logging.getLogger(__name__)
     "--save-logs",
     "-s",
     is_flag=True,
-    help="Save logs to the logs/ directory under --root-dir (always at DEBUG level).",
+    help=(
+        "Save logs to the logs/ directory under --root-dir (always at DEBUG "
+        "level; ignored during --dry-run)."
+    ),
 )
 @click.option(
     "--json-events",
     type=click.Path(dir_okay=False, path_type=Path),
     default=None,
-    help="Write machine-readable translation events as NDJSON to this file.",
+    help=(
+        "Write machine-readable translation events as NDJSON to this file "
+        "(ignored during --dry-run)."
+    ),
 )
 @click.option(
     "--fix",
@@ -125,7 +131,10 @@ logger = logging.getLogger(__name__)
 @click.option(
     "--dry-run",
     is_flag=True,
-    help="Preview migration plan without making changes (use with --migrate-language-folders).",
+    help=(
+        "Estimate translation work and preview language-folder migrations without "
+        "requiring provider credentials or writing files."
+    ),
 )
 def translate_command(
     language_codes,
@@ -187,12 +196,17 @@ def translate_command(
     - translate -l "ko" -d: Enable debug logging.
     """
     reporter = get_progress_reporter()
-    event_scope = translation_event_context(json_events_path=json_events)
+    event_scope = translation_event_context(
+        json_events_path=json_events if not dry_run else None
+    )
     event_scope.__enter__()
 
     try:
-        # Check that the required environment variables are set
-        Config.check_configuration()
+        if dry_run and fix:
+            raise click.UsageError(
+                "--fix cannot be combined with --dry-run because low-confidence "
+                "retranslation is not included in the dry-run estimate."
+            )
 
         translation_types = list(
             resolve_translation_types(
@@ -203,8 +217,11 @@ def translate_command(
             )
         )
 
+        if not dry_run:
+            Config.check_configuration()
+
         # Check Azure AI Service availability if images are included
-        if "images" in translation_types:
+        if not dry_run and "images" in translation_types:
             cv_available = VisionConfig.check_configuration()
             if not cv_available:
                 raise click.ClickException(
@@ -221,7 +238,10 @@ def translate_command(
             raise click.ClickException(f"Root path is not a directory: {root_dir}")
 
         log_file_path = setup_logging(
-            root_path, debug=debug, save_logs=save_logs, command_name="translate"
+            root_path,
+            debug=debug,
+            save_logs=save_logs and not dry_run,
+            command_name="translate",
         )
         if debug:
             logging.debug("Debug mode enabled.")
@@ -239,12 +259,13 @@ def translate_command(
         # (Preview moved after language normalization)
 
         # Now run the LLM health check; raises on failure
-        LLMConfig.validate_connectivity()
-        logger.info("LLM health check passed.")
-        reporter.success("LLM health check passed.")
+        if not dry_run:
+            LLMConfig.validate_connectivity()
+            logger.info("LLM health check passed.")
+            reporter.success("LLM health check passed.")
 
         # If images are selected, validate Vision connectivity as well
-        if "images" in translation_types:
+        if not dry_run and "images" in translation_types:
             # Vision health check; raises on failure
             VisionConfig.validate_connectivity()
             logger.info("Vision health check passed.")
@@ -262,7 +283,9 @@ def translate_command(
                 "For better efficiency, it's recommended that contributors handle individual languages and upload their translations separately."
             )
             # Option to proceed or not
-            if not yes:
+            if dry_run:
+                reporter.info("Dry run: estimating all languages without confirmation.")
+            elif not yes:
                 confirmation_all = click.prompt(
                     "Do you still want to proceed with translating all languages? Type 'yes' to continue",
                     type=str,
@@ -335,23 +358,24 @@ def translate_command(
         except Exception as e:
             logger.warning(f"Language folder migration step skipped: {e}")
 
-        # Ensure per-language metadata files store canonical language_code values
-        try:
-            for lang in lang_list:
-                # translations/<lang>/.co-op-translator.json
-                normalize_language_codes_in_lang_metadata(
-                    root_path / "translations" / lang, lang
-                )
-                # translated_images/<lang>/.co-op-translator.json
-                normalize_language_codes_in_lang_metadata(
-                    root_path / "translated_images" / lang, lang
-                )
-                # translated_images_fast/<lang>/.co-op-translator.json (best-effort)
-                normalize_language_codes_in_lang_metadata(
-                    root_path / "translated_images_fast" / lang, lang
-                )
-        except Exception as e:
-            logger.debug(f"Metadata normalization skipped: {e}")
+        # Ensure per-language metadata files store canonical language_code values.
+        if not dry_run:
+            try:
+                for lang in lang_list:
+                    # translations/<lang>/.co-op-translator.json
+                    normalize_language_codes_in_lang_metadata(
+                        root_path / "translations" / lang, lang
+                    )
+                    # translated_images/<lang>/.co-op-translator.json
+                    normalize_language_codes_in_lang_metadata(
+                        root_path / "translated_images" / lang, lang
+                    )
+                    # translated_images_fast/<lang>/.co-op-translator.json (best-effort)
+                    normalize_language_codes_in_lang_metadata(
+                        root_path / "translated_images_fast" / lang, lang
+                    )
+            except Exception as e:
+                logger.debug(f"Metadata normalization skipped: {e}")
 
         # Show deprecation warning when fast image mode is enabled
         if fast and "images" in translation_types:
@@ -373,7 +397,11 @@ def translate_command(
                     "The update command will delete all existing translations "
                     f"for '{language_codes}' and re-translate everything."
                 )
-            if not yes:
+            if dry_run:
+                reporter.info(
+                    "Dry run: estimating update impact without deleting files."
+                )
+            elif not yes:
                 confirmation_update = click.prompt(
                     "Do you want to continue? Type 'yes' to proceed", type=str
                 )
@@ -391,6 +419,7 @@ def translate_command(
                 language_codes,
                 root_dir,
                 add_disclaimer=add_disclaimer,
+                initialize_translator=not dry_run,
             )
         else:
             translator = ProjectTranslator(
@@ -398,6 +427,7 @@ def translate_command(
                 root_dir,
                 translation_types=translation_types,
                 add_disclaimer=add_disclaimer,
+                initialize_translators=not dry_run,
             )
 
         # Estimate tokens before running translation and print a concise summary
@@ -469,6 +499,8 @@ def translate_command(
                 ),
             )
         except Exception as e:
+            if dry_run:
+                raise RuntimeError(f"Failed to estimate translation work: {e}") from e
             logger.debug(f"Failed to compute estimated tokens: {e}")
 
         # If dry-run, stop after estimation without making any changes

@@ -13,6 +13,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  requirements:
+    name: Requirements / Python 3.12
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install requirements
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+
+      - name: Check installed dependencies
+        run: python -m pip check
+
+      - name: Check dependency manifests
+        run: python -m pytest tests/test_dependency_manifests.py
+
   test:
     name: Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest

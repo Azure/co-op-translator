@@ -48,6 +48,16 @@ The tool auto-detects providers in this order:
 
 If neither provider is configured, `translate`, `evaluate`, `migrate-links`, and `run_translation` fail during configuration checks. `co-op-review` and `run_review` are deterministic maintenance checks and do not require provider credentials.
 
+## Model client backend
+
+Semantic Kernel remains the default model client for Markdown, notebook, and LLM evaluation prompts. To exercise the experimental Microsoft Agent Framework adapter with the same Azure OpenAI or OpenAI provider configuration, set:
+
+```bash
+CO_OP_TRANSLATOR_MODEL_CLIENT="agent-framework"
+```
+
+Supported values are `semantic-kernel` and `agent-framework`. Invalid values fail during provider-backed translator initialization instead of silently falling back. Image-text translation continues to use the OpenAI SDK structured-output path while the framework-neutral structured-response contract is developed.
+
 ## Azure OpenAI
 
 Use Azure OpenAI when your model is deployed in Azure AI Foundry or Azure OpenAI Service.

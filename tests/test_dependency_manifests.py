@@ -88,3 +88,22 @@ def test_ai_sdk_exports_are_on_current_compatible_generations():
 
     assert Version("2.25") <= _pinned_version(requirements["openai"]) < Version("3")
     assert _pinned_version(requirements["semantic-kernel"]) >= Version("1.44.1")
+    assert _pinned_version(requirements["agent-framework-core"]) >= Version("1.16.0")
+    assert _pinned_version(requirements["agent-framework-openai"]) >= Version("1.14.1")
+
+
+def test_optional_agent_framework_provider_exports_are_development_only():
+    runtime = _requirements(REPO_ROOT / "requirements.txt")
+    development = _requirements(REPO_ROOT / "requirements-dev.txt")
+
+    assert "agent-framework-anthropic" not in runtime
+    assert "agent-framework-ollama" not in runtime
+    assert "agent-framework-anthropic" in development
+    assert "agent-framework-ollama" in development
+
+
+def test_runtime_export_preserves_required_extras():
+    requirements = _requirements(REPO_ROOT / "requirements.txt")
+
+    assert requirements["az-ai-healthcheck"].extras == {"vision"}
+    assert requirements["pyjwt"].extras == {"crypto"}

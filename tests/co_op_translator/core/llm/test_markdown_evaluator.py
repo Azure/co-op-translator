@@ -4,7 +4,7 @@ This module contains tests for the OpenAIMarkdownEvaluator class and related eva
 """
 
 import pytest
-from unittest.mock import patch
+from unittest.mock import AsyncMock
 
 from co_op_translator.core.llm.providers.openai.markdown_evaluator import (
     OpenAIMarkdownEvaluator,
@@ -46,14 +46,12 @@ class ConcreteMarkdownEvaluator(OpenAIMarkdownEvaluator):
 @pytest.fixture
 def markdown_evaluator(tmp_path):
     """Create a concrete instance of OpenAIMarkdownEvaluator for testing."""
-    with patch(
-        "co_op_translator.core.llm.providers.openai.markdown_evaluator.OpenAIConfig"
-    ) as mock_config:
-        mock_config.get_chat_model_id.return_value = "gpt-4"
-        mock_config.get_org_id.return_value = "test-org"
-        mock_config.get_api_key.return_value = "test-api-key"
-
-        return ConcreteMarkdownEvaluator(root_dir=tmp_path, use_llm=True, use_rule=True)
+    return ConcreteMarkdownEvaluator(
+        root_dir=tmp_path,
+        use_llm=True,
+        use_rule=True,
+        model_client=AsyncMock(),
+    )
 
 
 class TestGenerateEvaluationPrompt:
@@ -150,7 +148,7 @@ class TestOpenAIMarkdownEvaluator:
     """Test suite for the OpenAIMarkdownEvaluator class."""
 
     @pytest.mark.asyncio
-    async def test_initialization_sets_up_kernel_correctly(self, markdown_evaluator):
+    async def test_initialization_sets_up_model_client(self, markdown_evaluator):
         """Verify the evaluator is properly initialized."""
         # Act - Evaluator is initialized in the fixture
 

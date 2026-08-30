@@ -15,7 +15,7 @@ Co‑op Translator is a Python command‑line tool and GitHub Actions workflow t
 
 - Python 3.11–3.14, Poetry for packaging
 - CLI: `click`
-- LLM/AI SDKs: Azure OpenAI, OpenAI
+- LLM/AI SDKs: Azure OpenAI, OpenAI, Semantic Kernel, Microsoft Agent Framework
 - Vision: Azure AI Service (Computer Vision)
 - HTTP and data: `httpx`, `pydantic`
 - Imaging: `pillow`, `opencv-python`, `matplotlib`

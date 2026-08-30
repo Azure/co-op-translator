@@ -4,7 +4,7 @@ Keep multilingual GitHub documentation current as your source evolves.
 
 Co-op Translator detects changed source content, updates stale translations, and preserves the links and structure of Markdown, Jupyter notebooks, and images.
 
-![Python 3.10–3.12](https://img.shields.io/badge/python-3.10--3.12-blue)
+![Python 3.11–3.14](https://img.shields.io/badge/python-3.11--3.14-blue)
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![Container: GHCR](https://img.shields.io/badge/Container-GHCR-2496ED?logo=docker&logoColor=fff)](https://github.com/azure/co-op-translator/pkgs/container/co-op-translator)
 [![License: MIT](https://img.shields.io/github/license/azure/co-op-translator?color=4BA3FF)](https://github.com/azure/co-op-translator/blob/main/LICENSE)

@@ -137,7 +137,7 @@ The Black configuration is specified in our `pyproject.toml`:
 ```toml
 [tool.black]
 line-length = 88
-target-version = ['py310']
+target-version = ['py311']
 include = '\.pyi?$'
 ```
 

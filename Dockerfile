@@ -1,6 +1,6 @@
 # Multi-stage build for Co‑op Translator
 # Builder stage: build wheel using Poetry
-FROM python:3.12-slim AS builder
+FROM python:3.13-slim AS builder
 
 ENV PIP_NO_CACHE_DIR=1 \
     PYTHONUNBUFFERED=1
@@ -17,7 +17,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
-RUN pip install --no-cache-dir poetry==1.8.3
+RUN pip install --no-cache-dir poetry==2.4.2 poetry-plugin-export==1.10.0
 
 # Copy only dependency files first for better caching
 COPY pyproject.toml poetry.lock* ./
@@ -38,7 +38,7 @@ RUN poetry build --no-interaction --format wheel
 
 
 # Runtime stage: minimal image with just runtime libs and the package wheel
-FROM python:3.12-slim AS runtime
+FROM python:3.13-slim AS runtime
 
 ENV PIP_NO_CACHE_DIR=1 \
     PYTHONUNBUFFERED=1 \
@@ -67,5 +67,4 @@ CMD ["--help"]
 # Example runs (documentation only):
 # docker run --rm -it --env-file .env -v ${PWD}:/work IMAGE_TAG translate -l "fr es" -md
 # docker run --rm -it --env-file .env -v ${PWD}:/work --entrypoint migrate-links IMAGE_TAG -l "all" -y
-
 

@@ -3,12 +3,9 @@ from pathlib import Path
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 from packaging.version import Version
+import yaml
 
-try:
-    import tomllib
-except ImportError:  # pragma: no cover - Python 3.10
-    import tomli as tomllib
-
+import tomllib
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -36,6 +33,16 @@ def _requirements(path: Path) -> dict[str, Requirement]:
     return parsed
 
 
+def _pinned_version(requirement: Requirement) -> Version:
+    pins = [
+        Version(specifier.version)
+        for specifier in requirement.specifier
+        if specifier.operator == "=="
+    ]
+    assert len(pins) == 1, f"Expected one exact pin for {requirement.name}"
+    return pins[0]
+
+
 def test_direct_dependencies_are_present_in_requirements_files():
     runtime_names, development_names = _poetry_dependency_names()
     runtime_requirements = _requirements(REPO_ROOT / "requirements.txt")
@@ -47,10 +54,25 @@ def test_direct_dependencies_are_present_in_requirements_files():
     )
 
 
-def test_numpy_range_supports_python_312_compatible_release():
+def test_supported_python_range_matches_ci_matrix():
+    config = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    workflow = yaml.safe_load(
+        (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    )
+
+    assert config["tool"]["poetry"]["dependencies"]["python"] == ">=3.11,<3.15"
+    assert workflow["jobs"]["test"]["strategy"]["matrix"]["python-version"] == [
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14",
+    ]
+
+
+def test_export_uses_modern_numpy_release():
     numpy_requirement = _requirements(REPO_ROOT / "requirements.txt")["numpy"]
 
-    assert Version("1.26.0") in numpy_requirement.specifier
+    assert _pinned_version(numpy_requirement) >= Version("2.0")
 
 
 def test_typing_extensions_range_supports_semantic_kernel():
@@ -58,4 +80,11 @@ def test_typing_extensions_range_supports_semantic_kernel():
         "typing-extensions"
     ]
 
-    assert Version("4.13.0") in typing_requirement.specifier
+    assert _pinned_version(typing_requirement) >= Version("4.15.0")
+
+
+def test_ai_sdk_exports_are_on_current_compatible_generations():
+    requirements = _requirements(REPO_ROOT / "requirements.txt")
+
+    assert Version("2.25") <= _pinned_version(requirements["openai"]) < Version("3")
+    assert _pinned_version(requirements["semantic-kernel"]) >= Version("1.44.1")

@@ -13,7 +13,7 @@ Co‑op Translator is a Python command‑line tool and GitHub Actions workflow t
 
 ### Key technologies and frameworks
 
-- Python 3.10–3.12, Poetry for packaging
+- Python 3.11–3.14, Poetry for packaging
 - CLI: `click`
 - LLM/AI SDKs: Azure OpenAI, OpenAI
 - Vision: Azure AI Service (Computer Vision)
@@ -25,7 +25,7 @@ Co‑op Translator is a Python command‑line tool and GitHub Actions workflow t
 
 ### Prerequisites
 
-- Python 3.10–3.12
+- Python 3.11–3.14
 - Azure subscription (optional, for Azure AI services)
 - Internet access for LLM/Vision APIs (e.g., Azure OpenAI/OpenAI, Azure AI Vision)
 

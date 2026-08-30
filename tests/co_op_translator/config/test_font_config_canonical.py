@@ -19,22 +19,21 @@ pt-BR:
 
 def test_font_config_resolves_canonical_to_alias_keys():
     # Mock YAML with alias keys only
-    with (
-        patch("importlib.resources.path") as mock_path_yaml,
-        patch("builtins.open", mock_open(read_data=sample_yaml)),
-    ):
-        mock_path_yaml.return_value = Path("fake/fonts/font_language_mappings.yml")
+    with patch("co_op_translator.config.font_config.resources.files") as mock_files:
+        mappings_resource = mock_files.return_value.joinpath.return_value
+        mappings_resource.open = mock_open(read_data=sample_yaml)
         fc = FontConfig()
 
     # get_font_path should resolve alias input 'tw' to canonical 'zh-TW'
-    with patch(
-        "importlib.resources.path",
-        return_value=Path("fake_fonts/NotoSansCJK-Medium.ttc"),
-    ) as mock_path_font:
+    with patch("co_op_translator.config.font_config.resources.files") as mock_files:
+        mock_files.return_value.joinpath.return_value = Path(
+            "fake_fonts/NotoSansCJK-Medium.ttc"
+        )
         path = fc.get_font_path("tw")
         assert Path(path).name == "NotoSansCJK-Medium.ttc"
-        mock_path_font.assert_called_once_with(
-            "co_op_translator.fonts", "NotoSansCJK-Medium.ttc"
+        mock_files.assert_called_once_with("co_op_translator.fonts")
+        mock_files.return_value.joinpath.assert_called_once_with(
+            "NotoSansCJK-Medium.ttc"
         )
 
     # get_language_name should resolve alias input 'br' to canonical 'pt-BR'
@@ -46,11 +45,9 @@ def test_font_config_resolves_canonical_to_alias_keys():
 
 
 def test_font_config_invalid_language_errors():
-    with (
-        patch("importlib.resources.path") as mock_path_yaml,
-        patch("builtins.open", mock_open(read_data=sample_yaml)),
-    ):
-        mock_path_yaml.return_value = Path("fake/fonts/font_language_mappings.yml")
+    with patch("co_op_translator.config.font_config.resources.files") as mock_files:
+        mappings_resource = mock_files.return_value.joinpath.return_value
+        mappings_resource.open = mock_open(read_data=sample_yaml)
         fc = FontConfig()
 
     with pytest.raises(ValueError) as excinfo:

@@ -1,4 +1,5 @@
-import importlib.resources
+from importlib import resources
+
 import yaml
 from co_op_translator.utils.common.lang_utils import (
     normalize_language_code,
@@ -10,11 +11,11 @@ class FontConfig:
         """
         Initialize the FontConfig class by loading the font mappings from a YAML file.
         """
-        with importlib.resources.path(
-            "co_op_translator.fonts", "font_language_mappings.yml"
-        ) as mappings_path:
-            with open(mappings_path, "r", encoding="utf-8") as file:
-                self.font_mappings = yaml.safe_load(file)
+        mappings_resource = resources.files("co_op_translator.fonts").joinpath(
+            "font_language_mappings.yml"
+        )
+        with mappings_resource.open("r", encoding="utf-8") as file:
+            self.font_mappings = yaml.safe_load(file)
 
     def _resolve_mapping_key(self, language_code: str) -> str:
         """
@@ -54,8 +55,8 @@ class FontConfig:
                 f"Font for language code '{language_code}' is not supported or not found."
             )
 
-        with importlib.resources.path("co_op_translator.fonts", font_name) as font_path:
-            return str(font_path)
+        font_resource = resources.files("co_op_translator.fonts").joinpath(font_name)
+        return str(font_resource)
 
     def get_language_name(self, language_code):
         """

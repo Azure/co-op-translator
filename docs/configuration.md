@@ -8,7 +8,7 @@ For Azure resource setup, see [Azure AI Setup](azure-ai-setup.md).
 
 ## Local runtime setup
 
-Use a virtual environment before running the CLI locally. Co-op Translator supports Python 3.10 through 3.12.
+Use a virtual environment before running the CLI locally. Co-op Translator supports Python 3.11 through 3.14.
 
 For normal CLI usage, install the published package inside a virtual environment:
 

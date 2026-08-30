@@ -58,9 +58,10 @@ def load_languages_table_template() -> str:
     try:
         from importlib import resources
 
-        with resources.open_text(
-            "co_op_translator.templates", "languages_table.md", encoding="utf-8"
-        ) as f:
+        template_resource = resources.files("co_op_translator.templates").joinpath(
+            "languages_table.md"
+        )
+        with template_resource.open("r", encoding="utf-8") as f:
             return f.read()
     except Exception:
         return ""
@@ -71,9 +72,10 @@ def load_other_courses_template() -> str:
     try:
         from importlib import resources
 
-        with resources.open_text(
-            "co_op_translator.templates", "other_courses.md", encoding="utf-8"
-        ) as f:
+        template_resource = resources.files("co_op_translator.templates").joinpath(
+            "other_courses.md"
+        )
+        with template_resource.open("r", encoding="utf-8") as f:
             return f.read()
     except Exception:
         return ""

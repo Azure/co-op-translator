@@ -11,6 +11,8 @@ from co_op_translator.utils.common.file_utils import (
     get_filename_and_extension,
     get_unique_id,
     handle_empty_document,
+    load_languages_table_template,
+    load_other_courses_template,
     map_original_to_translated,
     migrate_images_to_webp,
     migrate_translated_image_filenames,
@@ -58,6 +60,11 @@ def test_write_output_file(temp_dir):
 
     content = output_file.read_text(encoding="utf-8")
     assert content.strip() == "\n".join(results)
+
+
+def test_readme_templates_load_from_package_resources():
+    assert file_utils.LANG_TABLE_START in load_languages_table_template()
+    assert file_utils.OTHER_COURSES_START in load_other_courses_template()
 
 
 def test_handle_empty_document(empty_file, temp_dir):

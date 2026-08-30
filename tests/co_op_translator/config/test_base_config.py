@@ -104,3 +104,11 @@ def test_config_with_partial_openai():
             "Incomplete OpenAI configuration. The 'OPENAI_API_KEY' must be set."
             in str(excinfo.value)
         )
+
+
+def test_get_language_codes_reads_packaged_font_mappings():
+    language_codes = Config.get_language_codes()
+
+    assert "en" in language_codes
+    assert "zh-TW" in language_codes
+    assert len(language_codes) == len(set(language_codes))

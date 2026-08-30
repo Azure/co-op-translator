@@ -2,6 +2,8 @@ from co_op_translator.utils.common.lang_utils import (
     normalize_language_code,
     normalize_language_codes,
     ALIAS_TO_BCP47,
+    get_supported_language_codes,
+    is_supported_language,
 )
 
 
@@ -34,3 +36,12 @@ def test_alias_table_contains_expected():
     # minimal sanity of important aliases
     for k in ["tw", "cn", "br", "jp", "kr", "zh"]:
         assert k in ALIAS_TO_BCP47
+
+
+def test_supported_languages_read_packaged_font_mappings():
+    supported_languages = get_supported_language_codes()
+
+    assert "en" in supported_languages
+    assert "zh-TW" in supported_languages
+    assert is_supported_language("tw") is True
+    assert is_supported_language("xx") is False

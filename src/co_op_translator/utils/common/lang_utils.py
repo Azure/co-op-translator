@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import importlib.resources
 import logging
 import re
+from importlib import resources
 from typing import Iterable, List
 
 import yaml
@@ -88,16 +88,16 @@ def get_supported_language_codes() -> List[str]:
     Note: This list reflects our packaging and is used when "all" is selected.
     """
     try:
-        with importlib.resources.path(
-            "co_op_translator.fonts", "font_language_mappings.yml"
-        ) as mappings_path:
-            with open(mappings_path, "r", encoding="utf-8") as file:
-                font_mappings = yaml.safe_load(file) or {}
-                return [
-                    lang_code
-                    for lang_code, meta in font_mappings.items()
-                    if isinstance(meta, dict)
-                ]
+        mappings_resource = resources.files("co_op_translator.fonts").joinpath(
+            "font_language_mappings.yml"
+        )
+        with mappings_resource.open("r", encoding="utf-8") as file:
+            font_mappings = yaml.safe_load(file) or {}
+            return [
+                lang_code
+                for lang_code, meta in font_mappings.items()
+                if isinstance(meta, dict)
+            ]
     except Exception as e:
         logger.warning(f"Failed to load font mappings: {e}")
         return []

@@ -26,87 +26,44 @@ co-op-review = "co_op_translator.__main__:main"
 co-op-translator-mcp = "co_op_translator.mcp.server:main"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
-annotated-types = "^0.7.0"
-anyio = "^4.4.0"
-appnope = "^0.1.4"
-asttokens = ">=2.4.1,<4.0.0"
-azure-ai-vision-imageanalysis = "^1.0.0b2"
-azure-cognitiveservices-vision-computervision = "^0.9.0"
-azure-common = "^1.1.28"
-azure-core = "^1.38.0"
-certifi = "^2024.7.4"
-charset-normalizer = "^3.3.2"
-click = "^8.1.7"
-comm = "^0.2.2"
-contourpy = "^1.2.1"
-cycler = "^0.12.1"
-decorator = "^5.1.1"
-distro = "^1.9.0"
-executing = "^2.0.1"
-fonttools = "^4.53.0"
-h11 = "^0.16.0"
-httpcore = "^1.0.5"
-httpx = "^0.27.0"
-idna = "^3.7"
-isodate = "^0.6.1"
-jedi = "^0.19.1"
-kiwisolver = "^1.4.5"
-matplotlib = "^3.9.0"
-matplotlib-inline = "^0.1.7"
-msrest = "^0.7.1"
-numpy = "^1.25.2"
-oauthlib = "^3.2.2"
-openai = ">=1.108.2,<2.0.0"
-opencv-python = "^4.10.0.82"
-packaging = "^24.1"
-parso = "^0.8.4"
-pexpect = "^4.9.0"
-pillow = ">=12.2.0,<13.0"
-platformdirs = "^4.2.2"
-prompt_toolkit = "^3.0.47"
-psutil = ">=5.9.8,<8.0.0"
-ptyprocess = "^0.7.0"
-pure-eval = "^0.2.2"
-pydantic = ">=2.11.0,<3.0.0"
-pyparsing = "^3.1.2"
-python-dateutil = "^2.9.0.post0"
-python-dotenv = "^1.0.1"
-pyyaml = "^6.0.2"
-pyzmq = "^26.0.3"
-requests = "^2.32.3"
-requests-oauthlib = "^2.0.0"
-rich = ">=13.9.4,<16.0.0"
-semantic_kernel = "^1.39.4"
-six = "^1.16.0"
-sniffio = "^1.3.1"
-stack-data = "^0.6.3"
-tiktoken = "^0.7.0"
-tornado = "^6.4.1"
-tqdm = "^4.66.4"
-traitlets = "^5.14.3"
-typing_extensions = "^4.12.2"
-urllib3 = "^2.2.1"
-wcwidth = ">=0.2.13,<0.9.0"
-arabic-reshaper = "^3.0.0"
-python-bidi = "^0.6.6"
-az-ai-healthcheck = { version = "^0.1.7", extras = ["vision"] }
+python = ">=3.11,<3.15"
 ai-healthcheck = "^0.1.2"
-markdown-it-py = ">=3,<5"
-mcp = ">=1.27,<2"
+arabic-reshaper = "^3.0.1"
+azure-ai-vision-imageanalysis = "^1.0.0"
+azure-core = "^1.41.0"
+click = "^8.5.0"
+markdown-it-py = "^4.2.0"
+matplotlib = ">=3.10,<4"
+# Semantic Kernel 1.x requires the MCP 1.x API.
+mcp = ">=1.28.1,<2"
+# NumPy 2.5 requires Python 3.12; keep the newest compatible line on Python 3.11.
+numpy = [
+    { version = ">=2.4,<2.5", python = "3.11" },
+    { version = ">=2.5,<3", python = ">=3.12,<3.15" },
+]
+# Microsoft Agent Framework's OpenAI provider currently requires OpenAI 2.x.
+openai = ">=2.25,<3"
+opencv-python = ">=5.0,<6"
+pillow = "^12.3.0"
+# Semantic Kernel 1.44 supports Pydantic releases below 2.14.
+pydantic = ">=2.13,<2.14"
+python-bidi = "^0.6.11"
+python-dotenv = "^1.2.3"
+pyyaml = "^6.0.3"
+rich = ">=15,<16"
+semantic-kernel = "^1.44.1"
+tiktoken = "^0.14.0"
+az-ai-healthcheck = { version = "^0.1.7", extras = ["vision"] }
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.2"
-ipykernel = "^6.29.4"
-ipython = "^8.25.0"
-jupyter_client = "^8.6.2"
-jupyter_core = "^5.8.1"
-nest-asyncio = "^1.6.0"
-debugpy = "^1.8.1"
-stack-data = "^0.6.3"
-Pygments = "^2.18.0"
-freezegun = "^1.5.1"
-pytest-asyncio = "^0.26.0"
+black = "^26.5.1"
+coverage = "^7.16.0"
+freezegun = "^1.5.5"
+mypy = "^2.3.1"
+packaging = "^26.3"
+pytest = "^9.1.1"
+pytest-asyncio = "^1.4.0"
+ruff = "^0.16.5"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -140,6 +97,9 @@ directory = "coverage"
 exclude = []
 line-length = 120
 
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
 [tool.mypy]
 plugins = ["pydantic.mypy"]
 follow_imports = "skip"
@@ -149,7 +109,7 @@ ignore_missing_imports = true
 
 [tool.black]
 line-length = 88
-target-version = ['py310']
+target-version = ['py311']
 include = '\.pyi?$'
 
 [build-system]

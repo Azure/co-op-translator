@@ -1,11 +1,9 @@
 from pathlib import Path
-from semantic_kernel import Kernel
-from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
-from semantic_kernel.connectors.ai.chat_completion_client_base import (
-    ChatCompletionClientBase,
-)
-from semantic_kernel.contents.chat_history import ChatHistory
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
+from co_op_translator.core.llm.model_clients import (
+    TranslationModelClient,
+    create_translation_model_client,
+)
 from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.config.llm_config.openai import OpenAIConfig
@@ -26,6 +24,7 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
         translations_dir: Path | None = None,
         image_dir: Path | None = None,
         lang_subdir: Path | None = None,
+        model_client: TranslationModelClient | None = None,
     ):
         """Initialize translator with OpenAI configuration.
 
@@ -38,35 +37,18 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
             image_dir=image_dir,
             lang_subdir=lang_subdir,
         )
-        self.kernel = self._initialize_kernel()
-        active = OpenAIConfig.get_active_env_set()
+        self._model_client_injected = model_client is not None
+        self.model_client = model_client or self._initialize_model_client()
+        active = (
+            None if self._model_client_injected else OpenAIConfig.get_active_env_set()
+        )
         self._env_set_index = active.index if active is not None else None
 
-    def _initialize_kernel(self):
-        """Create and configure Semantic Kernel with OpenAI service.
-
-        Returns:
-            Configured Semantic Kernel instance
-        """
-        kernel = Kernel()
-        service_id = LLMProvider.OPENAI.value
-
-        kernel.add_service(
-            OpenAIChatCompletion(
-                service_id=service_id,
-                ai_model_id=OpenAIConfig.get_chat_model_id(),
-                org_id=OpenAIConfig.get_org_id(),
-                api_key=OpenAIConfig.get_api_key(),
-            )
-        )
-        return kernel
+    def _initialize_model_client(self) -> TranslationModelClient:
+        """Create the configured framework adapter for OpenAI."""
+        return create_translation_model_client(LLMProvider.OPENAI)
 
     async def _run_prompt_once(self, prompt: str, index: int, total: int) -> str:
-        # Configure model parameters for translation quality
-        req_settings = self.kernel.get_prompt_execution_settings_from_service_id(
-            LLMProvider.OPENAI.value
-        )
-
         # Use different logging format for system vs. content prompts
         if index == "disclaimer" or isinstance(index, str):
             logger.info(f"Running system prompt: {index}")
@@ -84,25 +66,9 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
             )
         system_text, user_text = parts[0].strip(), parts[1]
 
-        chat = ChatHistory()
-        chat.add_system_message(system_text)
-        chat.add_user_message(user_text)
-
-        # Retrieve the proper service and request completion
-        service: ChatCompletionClientBase = self.kernel.get_service(
-            LLMProvider.OPENAI.value
-        )
-        result_contents = await service.get_chat_message_contents(
-            chat_history=chat, settings=req_settings
-        )
-        if not result_contents:
-            self._raise_for_finish_reason("length", index, total)
-
-        result_content = result_contents[0]
-        self._raise_for_finish_reason(
-            getattr(result_content, "finish_reason", None), index, total
-        )
-        result = str(result_content.content) if result_content.content else ""
+        response = await self.model_client.complete(system_text, user_text)
+        self._raise_for_finish_reason(response.finish_reason, index, total)
+        result = response.content
         end_time = time.time()
         logger.info(
             f"Prompt {index}/{total} completed in {end_time - start_time} seconds"
@@ -122,7 +88,7 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
         Returns:
             Translated text content or empty string on error
         """
-        env_sets = OpenAIConfig.get_env_sets()
+        env_sets = [] if self._model_client_injected else OpenAIConfig.get_env_sets()
         if not env_sets:
             try:
                 return await self._run_prompt_once(prompt, index, total)
@@ -135,7 +101,7 @@ class OpenAIMarkdownTranslator(MarkdownTranslator):
 
         def _on_env_set_change(env_set):
             if self._env_set_index != env_set.index:
-                self.kernel = self._initialize_kernel()
+                self.model_client = self._initialize_model_client()
                 self._env_set_index = env_set.index
 
         try:

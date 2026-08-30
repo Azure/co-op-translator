@@ -1,10 +1,10 @@
 from pathlib import Path
-from semantic_kernel import Kernel
-from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
-from semantic_kernel.prompt_template.prompt_template_config import PromptTemplateConfig
 from co_op_translator.core.llm.markdown_evaluator import MarkdownEvaluator
+from co_op_translator.core.llm.model_clients import (
+    TranslationModelClient,
+    create_translation_model_client,
+)
 from co_op_translator.config.llm_config.provider import LLMProvider
-from co_op_translator.config.llm_config.openai import OpenAIConfig
 import logging
 import time
 import asyncio
@@ -16,7 +16,11 @@ class OpenAIMarkdownEvaluator(MarkdownEvaluator):
     """OpenAI implementation for markdown evaluation."""
 
     def __init__(
-        self, root_dir: Path = None, use_llm: bool = True, use_rule: bool = True
+        self,
+        root_dir: Path | None = None,
+        use_llm: bool = True,
+        use_rule: bool = True,
+        model_client: TranslationModelClient | None = None,
     ):
         """Initialize evaluator with OpenAI-specific configuration.
 
@@ -26,26 +30,9 @@ class OpenAIMarkdownEvaluator(MarkdownEvaluator):
             use_rule: Whether to use rule-based evaluation
         """
         super().__init__(root_dir, use_llm, use_rule)
-        self.kernel = self._initialize_kernel()
-
-    def _initialize_kernel(self):
-        """Create and configure Semantic Kernel with OpenAI service.
-
-        Returns:
-            Configured Semantic Kernel instance
-        """
-        kernel = Kernel()
-        service_id = LLMProvider.OPENAI.value
-
-        kernel.add_service(
-            OpenAIChatCompletion(
-                service_id=service_id,
-                ai_model_id=OpenAIConfig.get_chat_model_id(),
-                org_id=OpenAIConfig.get_org_id(),
-                api_key=OpenAIConfig.get_api_key(),
-            )
+        self.model_client = model_client or create_translation_model_client(
+            LLMProvider.OPENAI
         )
-        return kernel
 
     async def _run_prompt(self, prompt: str, index: int, total: int) -> str:
         """
@@ -60,11 +47,6 @@ class OpenAIMarkdownEvaluator(MarkdownEvaluator):
             Evaluation result as text or empty string on error
         """
         try:
-            # Configure model parameters for translation quality
-            req_settings = self.kernel.get_prompt_execution_settings_from_service_id(
-                LLMProvider.OPENAI.value
-            )
-
             # Use different logging format for system vs. content prompts
             if index == "disclaimer" or isinstance(index, str):
                 logger.info(f"Running system prompt: {index}")
@@ -73,28 +55,14 @@ class OpenAIMarkdownEvaluator(MarkdownEvaluator):
 
             start_time = time.time()
 
-            prompt_template_config = PromptTemplateConfig(
-                template=prompt,
-                name="evaluate",
-                description="Evaluate a text translation quality",
-                template_format="semantic-kernel",
-                execution_settings=req_settings,
-            )
-
-            function = self.kernel.add_function(
-                function_name="evaluate_function",
-                plugin_name="evaluate_plugin",
-                prompt_template_config=prompt_template_config,
-            )
-
-            result = await self.kernel.invoke(function)
+            response = await self.model_client.complete("", prompt)
             end_time = time.time()
             logger.info(
                 f"Prompt {index}/{total} completed in {end_time - start_time} seconds"
             )
 
             await asyncio.sleep(1)
-            return str(result)
+            return response.content
         except Exception as e:
             logger.error(f"Error in prompt {index}/{total} - {prompt}: {e}")
             return ""

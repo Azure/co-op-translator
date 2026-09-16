@@ -37,7 +37,6 @@ azure-ai-vision-imageanalysis = "^1.0.0"
 azure-core = "^1.41.0"
 click = "^8.5.0"
 markdown-it-py = "^4.2.0"
-matplotlib = ">=3.10,<4"
 # Semantic Kernel 1.x requires the MCP 1.x API.
 mcp = ">=1.28.1,<2"
 # NumPy 2.5 requires Python 3.12; keep the newest compatible line on Python 3.11.

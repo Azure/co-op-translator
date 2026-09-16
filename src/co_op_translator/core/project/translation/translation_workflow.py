@@ -423,6 +423,7 @@ class TranslationWorkflowMixin:
                     await self.translate_markdown(
                         file_path=md_file_path,
                         language_code=language_code,
+                        incremental=False,
                     )
 
                     # Update the progress bar for translation process

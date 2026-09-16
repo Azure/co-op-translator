@@ -21,6 +21,7 @@ from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
 from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.core.project.readme_translator import ReadmeTranslator
+from co_op_translator.core.project.translation.memory import TranslationStateProvider
 from co_op_translator.core.project.translation.request import (
     TranslationMode,
     build_translation_request,
@@ -279,6 +280,7 @@ def _run_translation_impl(
     glossaries: Iterable[str] | None = None,
     readme_only: bool = False,
     dry_run: bool = False,
+    translation_state_provider=None,
 ) -> None:
     """Implementation for the programmatic translation entrypoint.
 
@@ -318,6 +320,7 @@ def _run_translation_impl(
         readme_only: bool,
         dry_run: bool,
         output_prepared: bool = False,
+        translation_state_provider=None,
     ) -> None:
         translation_types = list(
             resolve_translation_types(
@@ -525,14 +528,20 @@ def _run_translation_impl(
             logger.info(f"README translation completed for languages: {language_codes}")
             return
 
+        translator_kwargs = {
+            "translation_types": translation_types,
+            "add_disclaimer": add_disclaimer,
+            "translations_dir": translations_dir,
+            "image_dir": image_dir,
+            "lang_subdir": lang_subdir,
+        }
+        if translation_state_provider is not None:
+            translator_kwargs["translation_state_provider"] = translation_state_provider
+
         translator = ProjectTranslator(
             language_codes,
             root_dir,
-            translation_types=translation_types,
-            add_disclaimer=add_disclaimer,
-            translations_dir=translations_dir,
-            image_dir=image_dir,
-            lang_subdir=lang_subdir,
+            **translator_kwargs,
         )
 
         translator.translate_project(
@@ -825,6 +834,7 @@ def _run_translation_impl(
                 readme_only=readme_only,
                 dry_run=dry_run,
                 output_prepared=output_prepared,
+                translation_state_provider=translation_state_provider,
             )
 
 
@@ -849,6 +859,7 @@ def run_translation(
     dry_run: bool = False,
     progress_callback: TranslationEventCallback | None = None,
     json_events_path: str | Path | None = None,
+    translation_state_provider: TranslationStateProvider | None = None,
 ) -> None:
     """Programmatic translation entrypoint mirroring the translate CLI options.
 
@@ -857,6 +868,9 @@ def run_translation(
     during a dry run, when file output is disabled.
     A dry run performs local discovery and estimation without provider credentials,
     connectivity checks, or translation output writes.
+    ``translation_state_provider`` lets hosted integrations supply accepted
+    source/target baselines and receive generated candidates. When omitted,
+    Markdown translation keeps the existing full-file behavior.
     """
 
     with translation_event_context(
@@ -883,6 +897,7 @@ def run_translation(
                 glossaries=glossaries,
                 readme_only=readme_only,
                 dry_run=dry_run,
+                translation_state_provider=translation_state_provider,
             )
         except Exception as exc:
             emit_translation_event("run_failed", message=str(exc), level="error")

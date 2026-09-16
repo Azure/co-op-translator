@@ -22,6 +22,7 @@ from co_op_translator.utils.common.lang_utils import (
 
 from co_op_translator.core.project.directory_manager import DirectoryManager
 from co_op_translator.core.project.translation import TranslationManager
+from co_op_translator.core.project.translation.memory import TranslationStateProvider
 from co_op_translator.utils.common.file_utils import read_input_file
 from co_op_translator.utils.common.token_estimation import count_tokens
 
@@ -45,6 +46,7 @@ class ProjectTranslator:
         image_dir=None,
         lang_subdir=None,
         initialize_translators: bool = True,
+        translation_state_provider: TranslationStateProvider | None = None,
     ):
         """Initialize project translation environment.
 
@@ -143,6 +145,7 @@ class ProjectTranslator:
             self.translation_types,
             add_disclaimer=add_disclaimer,
             lang_subdir=self.lang_subdir,
+            translation_state_provider=translation_state_provider,
         )
 
     def _initialize_translators(self) -> None:
@@ -397,7 +400,7 @@ class ProjectTranslator:
 
                     # Use the translation manager to retranslate the file
                     result = await self.translation_manager.translate_markdown(
-                        file, language_code
+                        file, language_code, incremental=False
                     )
                     if result:
                         logger.debug(

@@ -18,6 +18,11 @@ from co_op_translator.api.translation import (
 )
 from co_op_translator.api.review import run_review
 from co_op_translator.utils.common.events import TranslationEvent
+from co_op_translator.core.project.translation.memory import (
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
+)
 
 __all__ = [
     "MarkdownTranslationOptions",
@@ -36,4 +41,7 @@ __all__ = [
     "translate_notebook_content",
     "translate_project",
     "TranslationEvent",
+    "TranslationBaseline",
+    "TranslationStateProvider",
+    "TranslationUpdate",
 ]

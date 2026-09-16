@@ -7,13 +7,16 @@ import logging
 import click
 from pathlib import Path
 
-from co_op_translator.core.project.project_evaluator import ProjectEvaluator
 from co_op_translator.config.base_config import Config
 from co_op_translator.utils.common.logging_utils import setup_logging
 from co_op_translator.utils.common.lang_utils import normalize_language_code
 from co_op_translator.utils.common.progress import get_progress_reporter
 
 logger = logging.getLogger(__name__)
+
+# Keep this dependency injectable while deferring its expensive import until
+# Click invokes the command callback.
+ProjectEvaluator = None
 
 
 @click.command(name="evaluate")
@@ -74,6 +77,11 @@ def evaluate_command(
     3. Evaluate French translations in a specific directory:
        evaluate -l "fr" -r "./my_project"
     """
+    from co_op_translator.core.project.project_evaluator import (
+        ProjectEvaluator as DefaultProjectEvaluator,
+    )
+
+    project_evaluator_class = ProjectEvaluator or DefaultProjectEvaluator
     reporter = get_progress_reporter()
 
     try:
@@ -129,7 +137,7 @@ def evaluate_command(
         )
         reporter.info(f"Evaluating {canonical_code} translations in {root_path}...")
 
-        evaluator = ProjectEvaluator(
+        evaluator = project_evaluator_class(
             root_dir=root_path,
             translations_dir=root_path / "translations",
             language_codes=[canonical_code],

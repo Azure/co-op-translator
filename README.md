@@ -222,7 +222,9 @@ Co-op Translator supports 50+ language and locale codes. Expand this section to 
 
 ## Contributing
 
-Contributions and suggestions are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup, coding conventions, and pull request guidance.
+Know a language and noticed a translation problem? [Make your first contribution without coding](./CONTRIBUTING.md#your-first-contribution-no-coding-required) by sharing an example or reviewing a suggested correction.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup, coding conventions, and pull request guidance.
 
 [![co-op-translator contributors](https://contrib.rocks/image?repo=Azure/co-op-translator)](https://github.com/Azure/co-op-translator/graphs/contributors)
 

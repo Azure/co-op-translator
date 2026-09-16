@@ -1,5 +1,24 @@
 # Contributing to Co-op Translator
 
+## Your first contribution: no coding required
+
+Know a language and noticed a translation problem? You can help without installing Python, configuring an API, or writing a prompt.
+
+Open a [translation feedback report](https://github.com/Azure/co-op-translator/issues/new?template=translation_feedback.yml) and share:
+
+1. Which language are you reviewing?
+2. Where did you find the problem? Include a document link and section.
+3. What do the original text and current translation say?
+4. What would you change, and why? If you are unsure, describe what is confusing instead.
+
+You can also review someone else's suggestion: explain whether it preserves the meaning, provide context, and mention regional or terminology differences. A small example is enough to start. Use public excerpts and do not include credentials or private documents.
+
+For a wording correction specific to a course, use that course's contribution process. For recurring translation behavior, broken structure, or a reusable language rule, report it here and link any related course issue rather than copying the entire discussion. If you are unsure, say so; maintainers can help determine the scope.
+
+See [Contributing language improvements](docs/language-contributions.md) for the existing Japanese rule example and a Korean review exercise. Reporting and reviewing examples are valuable contributions even if you do not submit a code change. Maintainers should acknowledge reporters and reviewers when describing resulting fixes.
+
+## Pull request agreement
+
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.

@@ -14,19 +14,19 @@ A report does not automatically change prompts or regenerate course translations
 
 ## Existing example: Japanese Markdown links
 
-The [Japanese instruction file](../src/co_op_translator/templates/language/ja.md) tells the model to translate link text while preserving Markdown syntax and the link destination. For example, a link written as `[text](URL)` must not become `「text」（URL）`.
+The [Japanese instruction file](https://github.com/Azure/co-op-translator/blob/main/src/co_op_translator/templates/language/ja.md) tells the model to translate link text while preserving Markdown syntax and the link destination. For example, a link written as `[text](URL)` must not become `「text」（URL）`.
 
 This is a focused example of a language rule backed by an illustration of correct and incorrect output. It is not evidence that prompt instructions alone guarantee correct Markdown.
 
-The [Markdown prompt builder](../src/co_op_translator/utils/markdown/prompts.py) loads `templates/language/<language_code>.md` using a lowercased, trimmed language code. If no file exists, it uses the common instructions. This describes the Markdown prompt path; do not assume every image or other translation path uses the same instructions.
+The [Markdown prompt builder](https://github.com/Azure/co-op-translator/blob/main/src/co_op_translator/utils/markdown/prompts.py) loads `templates/language/<language_code>.md` using a lowercased, trimmed language code. If no file exists, it uses the common instructions. This describes the Markdown prompt path; do not assume every image or other translation path uses the same instructions.
 
-The [prompt tests](../tests/co_op_translator/utils/markdown/test_prompts.py) check that the Japanese instructions are included. That verifies prompt assembly, not translation quality.
+The [prompt tests](https://github.com/Azure/co-op-translator/blob/main/tests/co_op_translator/utils/markdown/test_prompts.py) check that the Japanese instructions are included. That verifies prompt assembly, not translation quality.
 
 ## What belongs in a language rule?
 
 Propose a narrow, repeatable correction with a source example, expected behavior, and a counterexample where the rule must not apply. Preserve meaning, placeholders, code, URLs, and document structure. Avoid turning one person's style preference or one course's terminology into a universal rule.
 
-The current [glossary implementation](../src/co_op_translator/glossary.py) protects terms from translation. It is not a source-to-target terminology dictionary. Discuss new terminology behavior before promising it to contributors.
+The current [glossary implementation](https://github.com/Azure/co-op-translator/blob/main/src/co_op_translator/glossary.py) protects terms from translation. It is not a source-to-target terminology dictionary. Discuss new terminology behavior before promising it to contributors.
 
 ## Community example: a Japanese product-name report
 

@@ -26,7 +26,7 @@ No language model configuration found.
 
 Fix:
 
-- Configure Azure OpenAI or OpenAI.
+- Configure Azure OpenAI, OpenAI, or Anthropic.
 - Verify the variables are in the environment where the command runs.
 - For local usage, put them in `.env` at the project root.
 

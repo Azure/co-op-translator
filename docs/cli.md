@@ -285,7 +285,7 @@ migrate-links -l "ko" --no-fallback-to-original
 
 ## Environment
 
-All commands require one configured LLM provider:
+When a command requires provider credentials, configure one of these provider sets. `translate --dry-run` and `co-op-review` do not require provider credentials:
 
 ```bash
 # Azure OpenAI
@@ -298,6 +298,10 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Or OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Or Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
 Image translation additionally requires Azure AI Vision:

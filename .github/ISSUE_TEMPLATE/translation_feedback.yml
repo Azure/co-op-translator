@@ -1,0 +1,58 @@
+name: Translation feedback (no coding required)
+description: Share a translation example or suggest a reusable language improvement.
+title: "[Translation feedback]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        No installation, API key, or code is needed. Small public examples are welcome.
+        For a wording correction specific to a course, use that course's contribution process.
+        Report recurring tool behavior or reusable improvements here; link existing reports.
+        If you are unsure where the problem belongs, describe it here and we can help triage.
+  - type: input
+    id: language
+    attributes:
+      label: Language and locale
+      placeholder: Korean (ko), Japanese (ja), Portuguese (pt-BR)
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Where did you find the problem?
+      description: Link the public document and section, or provide a small self-contained example. Link any existing issue or PR.
+    validations:
+      required: true
+  - type: textarea
+    id: original
+    attributes:
+      label: Original text
+      description: Include enough surrounding text to understand the meaning. Preserve links and placeholders.
+    validations:
+      required: true
+  - type: textarea
+    id: translation
+    attributes:
+      label: Current translation
+      description: Paste the relevant translated excerpt. Do not include private content or credentials.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested correction and reason
+      description: Explain what should change and why. If you cannot suggest a correction, describe what is confusing.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional examples or context (optional)
+      description: Does this happen elsewhere? Include regional preferences, counterexamples, or translator version and model if known. No rerun is required.
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's [Code of Conduct](https://github.com/Azure/co-op-translator/blob/main/CODE_OF_CONDUCT.md).
+          required: true

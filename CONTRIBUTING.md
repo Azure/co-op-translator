@@ -15,7 +15,7 @@ You can also review someone else's suggestion: explain whether it preserves the 
 
 For a wording correction specific to a course, use that course's contribution process. For recurring translation behavior, broken structure, or a reusable language rule, report it here and link any related course issue rather than copying the entire discussion. If you are unsure, say so; maintainers can help determine the scope.
 
-See [Contributing language improvements](docs/language-contributions.md) for the existing Japanese rule example and a Korean review exercise. Reporting and reviewing examples are valuable contributions even if you do not submit a code change. Maintainers should acknowledge reporters and reviewers when describing resulting fixes.
+See [Contributing language improvements](docs/language-contributions.md) for a Japanese community report and the existing language-rule example. Reporting and reviewing examples are valuable contributions even if you do not submit a code change. Maintainers should acknowledge reporters and reviewers when describing resulting fixes.
 
 ## Pull request agreement
 

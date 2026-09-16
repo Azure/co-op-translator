@@ -29,7 +29,10 @@ def _split_language_options(values: tuple[str, ...]) -> list[str]:
 )
 @click.option(
     "--changed-from",
-    help="Git ref to diff against. When provided, only changed source files are reviewed.",
+    help=(
+        "Git ref to diff against. Reviews committed, staged, unstaged, and "
+        "untracked source files."
+    ),
 )
 @click.option(
     "--readme-only",

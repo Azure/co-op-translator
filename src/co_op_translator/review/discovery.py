@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -66,20 +67,35 @@ def discover_changed_source_files(
     excluded_dirs: set[str],
     source_extensions: set[str] | None = None,
 ) -> list[Path]:
-    result = subprocess.run(
-        ["git", "diff", "--name-only", "--diff-filter=ACMR", f"{changed_from}...HEAD"],
-        cwd=git_root,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        return discover_source_files(source_root, excluded_dirs, source_extensions)
+    git_path_commands = [
+        [
+            "diff",
+            "--name-only",
+            "--diff-filter=ACMR",
+            "-z",
+            f"{changed_from}...HEAD",
+        ],
+        ["diff", "--name-only", "--diff-filter=ACMR", "-z", "HEAD"],
+        ["ls-files", "--others", "--exclude-standard", "-z"],
+    ]
+
+    changed_paths: set[Path] = set()
+    for command in git_path_commands:
+        result = subprocess.run(
+            ["git", *command],
+            cwd=git_root,
+            check=False,
+            capture_output=True,
+        )
+        if result.returncode != 0:
+            return discover_source_files(source_root, excluded_dirs, source_extensions)
+        changed_paths.update(
+            Path(os.fsdecode(value)) for value in result.stdout.split(b"\0") if value
+        )
 
     files: list[Path] = []
-    for line in result.stdout.splitlines():
-        relative_path = Path(line.strip())
-        if not line.strip() or not is_source_file(relative_path, source_extensions):
+    for relative_path in changed_paths:
+        if not is_source_file(relative_path, source_extensions):
             continue
         if is_excluded(relative_path, excluded_dirs):
             continue

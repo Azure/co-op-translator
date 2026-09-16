@@ -52,11 +52,12 @@ jobs:
         id: co_op_review
         run: |
           git fetch origin "${{ github.base_ref }}" --depth=1
+          summary_path="$RUNNER_TEMP/co-op-review-summary.md"
           set +e
-          poetry run co-op-review --changed-from "origin/${{ github.base_ref }}" --format github > co-op-review-summary.md
+          poetry run co-op-review --changed-from "origin/${{ github.base_ref }}" --format github > "$summary_path"
           status=$?
-          cat co-op-review-summary.md
-          cat co-op-review-summary.md >> "$GITHUB_STEP_SUMMARY"
+          cat "$summary_path"
+          cat "$summary_path" >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
 
       - name: Comment on co-op review failure
@@ -65,8 +66,10 @@ jobs:
         with:
           script: |
             const fs = require("fs");
+            const path = require("path");
             const marker = "<!-- co-op-review-failure -->";
-            const summary = fs.readFileSync("co-op-review-summary.md", "utf8");
+            const summaryPath = path.join(process.env.RUNNER_TEMP, "co-op-review-summary.md");
+            const summary = fs.readFileSync(summaryPath, "utf8");
             const body = [
               marker,
               summary,

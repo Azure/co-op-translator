@@ -28,23 +28,15 @@ Propose a narrow, repeatable correction with a source example, expected behavior
 
 The current [glossary implementation](../src/co_op_translator/glossary.py) protects terms from translation. It is not a source-to-target terminology dictionary. Discuss new terminology behavior before promising it to contributors.
 
-## First Korean review exercise: particles around placeholders
+## Community example: a Japanese product-name report
 
-[Report #243](https://github.com/Azure/co-op-translator/issues/243), submitted by @braintrue, provides this example:
+In [report #527](https://github.com/Azure/co-op-translator/issues/527), @hyoshioka0128 identified a Japanese translation that changed the product name `Co-op Translator` to `Co-op 翻訳`. The report included a link to the affected document and a screenshot, making the problem easy to locate.
 
-| Item | Reported text |
-| --- | --- |
-| Source | `Excluding {days}` |
-| Current translation | `{days} 제외하고` |
-| Suggested correction | `{days}를 제외하고` |
+The contributor also linked a [related course PR](https://github.com/microsoft/AZD-for-beginners/pull/109). In the issue discussion, the maintainer acknowledged the report and proposed investigating why the name changed, including terminology protection, glossary behavior, and the translation path.
 
-This is a contributor's proposed correction, not a measured before/after result from the current version. The report does not establish a recurring failure across models or provide enough surrounding context to choose a universal particle rule. No Korean prompt change is introduced with this guide.
+This shows how a small report can support investigation beyond an individual wording correction. It is not a verified before/after result or evidence that the Japanese Markdown-link instructions above fixed this product-name issue.
 
-Three small contributions can help evaluate it:
-
-- **Add context:** provide the source file and surrounding sentence, and explain what `{days}` represents. Completion means a reviewer can understand how the text is used without guessing.
-- **Review alternatives:** explain when the proposed correction is appropriate and supply at least one contrasting example. Keep placeholder spelling intact; do not apply a blanket rule that appends `를` to every placeholder.
-- **Review a comparison:** after a maintainer supplies baseline and candidate outputs, check meaning, particles, placeholder preservation, and unaffected examples. Record disagreements as well as improvements.
+You can contribute the same way: share the original text, current translation, suggested correction, and why it matters. Add a document link or screenshot when useful. You do not need to diagnose the cause or write a prompt before reporting it.
 
 ## Validation before adopting a rule
 

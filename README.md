@@ -54,6 +54,8 @@ Technical learning content covering Model Context Protocol concepts, examples, a
 - [LangChain4j for Beginners](https://github.com/microsoft/LangChain4j-for-Beginners)
 - [AZD for Beginners](https://github.com/microsoft/AZD-for-beginners)
 - [Edge AI for Beginners](https://github.com/microsoft/edgeai-for-beginners)
+- [Building AI Agents from Zero to Production](https://github.com/microsoft/Building-AI-Agents-From-Zero-To-Production)
+- [MCP Server and PostgreSQL Sample - Retail Sales Analysis](https://github.com/microsoft/MCP-Server-and-PostgreSQL-Sample-Retail)
 - [Generative AI for Beginners using .NET](https://github.com/microsoft/Generative-AI-for-beginners-dotnet)
 - [Generative AI for Beginners using Java](https://github.com/microsoft/generative-ai-for-beginners-java)
 - [ML for Beginners](https://aka.ms/ml-beginners)

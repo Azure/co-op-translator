@@ -1,0 +1,135 @@
+# Copy to .github/workflows/translate-readme.yml in the repository to translate.
+# Requires a Co-op Translator ref containing action.yml and co-op-review --readme-only.
+# Before release, replace Azure/co-op-translator@main with your fork@branch.
+name: Translate README
+
+on:
+  workflow_dispatch:
+    inputs:
+      language:
+        description: Target language
+        type: choice
+        options:
+          - ko
+          - ja
+          - es
+          - fr
+          - de
+        default: ko
+      preview:
+        description: Preview only (no API calls or pull request)
+        type: boolean
+        default: true
+
+concurrency:
+  group: translate-readme-${{ inputs.language }}
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      LANGUAGE: ${{ inputs.language }}
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Preview README translation
+        id: preview
+        uses: Azure/co-op-translator@main
+        with:
+          language-codes: ${{ inputs.language }}
+          readme-only: "true"
+          dry-run: "true"
+
+      - name: Translate README
+        id: translate
+        if: ${{ !inputs.preview }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_CHAT_MODEL_ID: ${{ secrets.OPENAI_CHAT_MODEL_ID }}
+          OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
+          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_MODEL_NAME: ${{ secrets.AZURE_OPENAI_MODEL_NAME }}
+          AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+        run: translate -l "$LANGUAGE" --readme-only --yes
+
+      - name: Review README translation
+        id: review
+        # Also report missing/stale output when translation fails.
+        if: ${{ !cancelled() && !inputs.preview && steps.preview.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -o pipefail
+          co-op-review -l "$LANGUAGE" --readme-only --format github | tee "$RUNNER_TEMP/readme-review.md"
+
+      - name: Summarize results
+        if: ${{ always() }}
+        shell: bash
+        env:
+          PREVIEW_ONLY: ${{ inputs.preview }}
+          PREVIEW_STATUS: ${{ steps.preview.outcome }}
+          TRANSLATE_STATUS: ${{ steps.translate.outcome }}
+          REVIEW_STATUS: ${{ steps.review.outcome }}
+        run: |
+          {
+            echo '# README translation'
+            echo
+            printf 'Source: `README.md` → `translations/%s/README.md`\n\n' "$LANGUAGE"
+            printf 'Preview: **%s**; translation: **%s**; review: **%s**.\n\n' \
+              "$PREVIEW_STATUS" "$TRANSLATE_STATUS" "$REVIEW_STATUS"
+            if [ "$PREVIEW_ONLY" = "true" ]; then
+              echo 'Preview only. See the preview step for the token estimate.'
+              echo 'To translate, configure one text provider and rerun with Preview only unchecked.'
+            else
+              echo '## Changed files'
+              echo
+              files=$(git ls-files --modified --others --exclude-standard -- \
+                "translations/$LANGUAGE/README.md" "translations/$LANGUAGE/.co-op-translator.json")
+              if [ -n "$files" ]; then
+                while IFS= read -r file; do printf -- '- `%s`\n' "$file"; done <<< "$files"
+              else
+                echo 'No translation changes. No new pull request is needed.'
+              fi
+              echo
+              if [ -f "$RUNNER_TEMP/readme-review.md" ]; then
+                cat "$RUNNER_TEMP/readme-review.md"
+              fi
+              echo
+              if [ "$TRANSLATE_STATUS" != "success" ] || [ "$REVIEW_STATUS" != "success" ]; then
+                echo 'Translation or review failed. No pull request will be created; inspect the failed step logs.'
+              fi
+              echo 'Checks cover structure, source freshness, and local links. Review wording before merging.'
+            fi
+          } > "$RUNNER_TEMP/readme-pr.md"
+          cat "$RUNNER_TEMP/readme-pr.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create translation pull request
+        id: pr
+        if: ${{ !inputs.preview && steps.translate.outcome == 'success' && steps.review.outcome == 'success' }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: co-op-translator/readme-${{ inputs.language }}
+          base: ${{ github.event.repository.default_branch }}
+          title: "Docs: Translate README to ${{ inputs.language }}"
+          commit-message: "Docs: Translate README to ${{ inputs.language }}"
+          body-path: ${{ runner.temp }}/readme-pr.md
+          add-paths: |
+            translations/${{ inputs.language }}/README.md
+            translations/${{ inputs.language }}/.co-op-translator.json
+
+      - name: Show pull request
+        if: ${{ steps.pr.outputs.pull-request-url != '' }}
+        env:
+          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+        run: printf '\n[Review translation pull request](%s)\n' "$PR_URL" >> "$GITHUB_STEP_SUMMARY"

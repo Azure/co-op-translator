@@ -217,6 +217,16 @@ def translate_command(
             )
         )
 
+        # Validate root directory and README before checking provider credentials
+        root_path = Path(root_dir).resolve()
+        if not root_path.exists():
+            raise click.ClickException(f"Root directory does not exist: {root_dir}")
+        if not root_path.is_dir():
+            raise click.ClickException(f"Root path is not a directory: {root_dir}")
+
+        if readme_only and not (root_path / "README.md").is_file():
+            raise click.ClickException(f"README.md not found under {root_path}")
+
         if not dry_run:
             Config.check_configuration()
 
@@ -229,13 +239,6 @@ def translate_command(
                     "Please add AZURE_AI_SERVICE_API_KEY to your environment variables or use --markdown and/or --notebook flags to exclude images.\n"
                     "See the .env.template file for required variables."
                 )
-
-        # Validate root directory early and set up logging
-        root_path = Path(root_dir).resolve()
-        if not root_path.exists():
-            raise click.ClickException(f"Root directory does not exist: {root_dir}")
-        if not root_path.is_dir():
-            raise click.ClickException(f"Root path is not a directory: {root_dir}")
 
         log_file_path = setup_logging(
             root_path,
@@ -509,26 +512,28 @@ def translate_command(
             emit_translation_event("run_completed", metadata={"dry_run": True})
             return
 
-        # Update README shared sections BEFORE translation
-        readme_path = root_path / "README.md"
-        try:
-            if update_readme_languages_table(readme_path, repo_url=repo_url):
-                reporter.success("Updated README languages table from template.")
-            else:
-                reporter.info(
-                    "README languages table not updated "
-                    "(markers missing or template unavailable)."
-                )
-        except Exception as e:
-            logger.warning(f"Failed to update README languages table: {e}")
+        # Translate README sources as-is so freshness metadata matches committed content.
+        if request.mode != TranslationMode.README:
+            # Update README shared sections BEFORE translation
+            readme_path = root_path / "README.md"
+            try:
+                if update_readme_languages_table(readme_path, repo_url=repo_url):
+                    reporter.success("Updated README languages table from template.")
+                else:
+                    reporter.info(
+                        "README languages table not updated "
+                        "(markers missing or template unavailable)."
+                    )
+            except Exception as e:
+                logger.warning(f"Failed to update README languages table: {e}")
 
-        try:
-            if update_readme_other_courses(readme_path):
-                reporter.success(
-                    "Updated README 'Other courses' section from template."
-                )
-        except Exception as e:
-            logger.warning(f"Failed to update README 'Other courses': {e}")
+            try:
+                if update_readme_other_courses(readme_path):
+                    reporter.success(
+                        "Updated README 'Other courses' section from template."
+                    )
+            except Exception as e:
+                logger.warning(f"Failed to update README 'Other courses': {e}")
 
         if fix:
             reporter.info(

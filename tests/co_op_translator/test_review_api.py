@@ -91,3 +91,21 @@ def test_run_review_supports_multiple_root_dirs(tmp_path):
         Path("content1") / "one.md",
         Path("content2") / "two.md",
     ]
+
+
+def test_readme_review_supports_custom_output_and_multiple_roots(tmp_path):
+    groups = []
+    for name in ("course", "guide"):
+        source_root = tmp_path / name
+        source = _write_source(source_root, "README.md")
+        _write_source(source_root, "other.md")
+        output_root = tmp_path / "i18n" / name
+        _write_translation(source_root, output_root, source, "ko")
+        groups.append((str(source_root), str(output_root)))
+
+    summary = run_review(
+        root_dir=str(tmp_path), language_codes="ko", groups=groups, readme_only=True
+    )
+
+    assert summary.error_count == 0
+    assert summary.source_files == [Path("course/README.md"), Path("guide/README.md")]

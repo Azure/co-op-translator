@@ -25,6 +25,7 @@ class ReviewConfig:
     excluded_dirs: set[str] = field(default_factory=lambda: set(DEFAULT_EXCLUDED_DIRS))
     targets: list[ReviewTarget] | None = None
     source_extensions: set[str] | None = None
+    readme_only: bool = False
 
 
 class ReviewRunner:
@@ -45,6 +46,9 @@ class ReviewRunner:
         issues = []
         source_files: list[Path] = []
         for target in targets:
+            readme_path = target.source_root / "README.md"
+            if self.config.readme_only and not readme_path.is_file():
+                raise ValueError(f"README.md not found under {target.source_root}")
             if self.config.changed_from:
                 target_source_files = discover_changed_source_files(
                     root_dir,
@@ -53,6 +57,12 @@ class ReviewRunner:
                     self.config.excluded_dirs,
                     self.config.source_extensions,
                 )
+                if self.config.readme_only:
+                    target_source_files = [
+                        path for path in target_source_files if path == readme_path
+                    ]
+            elif self.config.readme_only:
+                target_source_files = [readme_path]
             else:
                 target_source_files = discover_source_files(
                     target.source_root,

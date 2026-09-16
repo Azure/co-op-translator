@@ -2,7 +2,21 @@
 
 Use GitHub Actions when you want a repository to translate changed documentation automatically and open a pull request with the generated outputs.
 
-Most repositories should use the standard `GITHUB_TOKEN` setup. Use the GitHub App setup only when your organization restricts the default token permissions or requires app-based authentication.
+Start with the standard `GITHUB_TOKEN` setup, including for organization repositories where policy allows it. See [GitHub App Setup](#github-app-setup) when your organization requires an App identity or you need automatic downstream workflow runs.
+
+## Your first README translation PR
+
+Start with one root `README.md` and one target language. This workflow translates Markdown only, so Azure AI Vision is not required.
+
+1. Copy [translate-readme.yml](assets/workflows/translate-readme.yml) to `.github/workflows/translate-readme.yml` in the repository you want to translate, and commit it to that repository's default branch. The template uses the root Action in `Azure/co-op-translator@main`, which installs the CLI from the same source ref. Pin a reviewed commit for reproducible runs. When testing this feature before it is merged, use the fork and branch containing both the Action and `co-op-review --readme-only`.
+2. Open **Actions > Translate README > Run workflow**, choose a language, and leave **Preview only** checked. Review the token estimate in the preview step. Preview does not call model providers, write translations, or create a PR.
+3. Add the secrets for one [text provider](#prerequisites), and enable **Allow GitHub Actions to create and approve pull requests** under **Settings > Actions > General**. The template requests `contents: write` and `pull-requests: write` for its job; you do not need to change the default permissions for every workflow. If organization policy blocks these permissions or this setting, ask an administrator about an approved [GitHub App](#github-app-setup).
+4. Run the workflow again with **Preview only** unchecked. It previews, translates, runs `co-op-review --readme-only`, and creates or updates a translation PR only after translation and review succeed. The workflow summary links to the PR.
+5. Review the wording and file changes in the PR, then merge when ready. The workflow does not merge automatically.
+
+The PR contains only `translations/<language>/README.md` and its language metadata file. The source README stays unchanged, and links to other documents continue to point at the source documents. The PR body lists changed files and structural review results. If translation or review fails, inspect the workflow summary and failed step logs; no PR is created. If there are no changes, no new PR is needed.
+
+**Organization and CI note:** A GitHub App is optional, not a requirement of organization ownership. With `GITHUB_TOKEN`, pull-request workflows for opening, updating, or reopening a PR require a user with write access to select **Approve workflows to run**. Push workflows are not triggered by this token. For unattended downstream CI, see [GitHub App Setup](#github-app-setup) and GitHub's [workflow triggering rules](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow).
 
 ## Prerequisites
 
@@ -118,11 +132,11 @@ Change `translate -l "es fr de" -y` to the target languages and content flags yo
 
 ## GitHub App Setup
 
-Use this setup when `GITHUB_TOKEN` cannot create commits or pull requests in your organization.
+Use an approved GitHub App when your organization requires an App identity, or when the generated PR needs to trigger downstream CI without the `GITHUB_TOKEN` approval step. An App does not bypass organization policy; administrators still control its installation and permissions.
 
 ### Step 1: Create or Install a GitHub App
 
-Create a GitHub App with read/write access to **Contents** and **Pull requests**, or install the organization-provided app if your organization already maintains one.
+Use an existing organization-provided App when available, or create one with read/write access to **Contents** and **Pull requests**. Install it on the target repository with any required organization approval.
 
 Record:
 
@@ -136,29 +150,23 @@ Store them as repository secrets:
 
 ### Step 2: Generate an App Token
 
-Use the same workflow as the standard setup, but add an app-token step before the pull request step:
+Add this step immediately before the existing pull request step. For the README template, use the same success condition so previews and failed translations do not request an App token:
 
 ```yaml
       - name: Authenticate GitHub App
         id: generate_token
-        uses: tibdex/github-app-token@v1
+        if: ${{ !inputs.preview && steps.translate.outcome == 'success' && steps.review.outcome == 'success' }}
+        uses: actions/create-github-app-token@v2
         with:
-          app_id: ${{ secrets.GH_APP_ID }}
-          private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-
-      - name: Create Pull Request with translations
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ steps.generate_token.outputs.token }}
-          commit-message: "Update translations via Co-op Translator"
-          title: "Update translations via Co-op Translator"
-          branch: update-translations
-          base: main
-          delete-branch: true
-          add-paths: |
-            translations/
-            translated_images/
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 ```
+
+Then change only the existing pull request step's `token` input to `${{ steps.generate_token.outputs.token }}`. Keep its success condition, branch, PR body, and `add-paths` unchanged. The token is scoped to the current repository by default. When adapting the standard setup instead of the README template, omit the `if` above because that workflow has no preview or review step IDs.
+
+See the official [create-github-app-token Action](https://github.com/actions/create-github-app-token/tree/v2) for installation and token permissions.
 
 ## Runner Limits
 

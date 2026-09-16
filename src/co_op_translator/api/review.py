@@ -69,6 +69,7 @@ def run_review(
     changed_from: str | None = None,
     output_format: str = "text",
     fail_on_warnings: bool = False,
+    readme_only: bool = False,
 ) -> ReviewSummary:
     """Programmatic deterministic review entrypoint.
 
@@ -77,6 +78,7 @@ def run_review(
     branching. Review ignores mutating translation-only options such as
     ``update``, ``yes``, ``add_disclaimer``, ``repo_url``, ``glossaries``, and
     ``dry_run``.
+    Set ``readme_only=True`` to review only README.md under each source root.
     """
     configure_safe_console_output()
 
@@ -114,6 +116,7 @@ def run_review(
             changed_from=changed_from,
             targets=targets,
             source_extensions=_source_extensions_for_review_types(review_types),
+            readme_only=readme_only,
         )
     ).run()
 

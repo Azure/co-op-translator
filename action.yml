@@ -1,0 +1,139 @@
+name: "Co-op Translator"
+description: "Preview or translate Markdown, notebooks, and image text in documentation repositories."
+author: "Azure"
+
+branding:
+  icon: "globe"
+  color: "blue"
+
+inputs:
+  language-codes:
+    description: 'Space-separated language codes, such as "ko ja fr", or "all".'
+    required: true
+  root-dir:
+    description: "Repository root or subdirectory to translate."
+    required: false
+    default: "."
+  markdown:
+    description: "Translate Markdown files."
+    required: false
+    default: "false"
+  notebook:
+    description: "Translate Jupyter notebook files."
+    required: false
+    default: "false"
+  images:
+    description: "Translate image text. Requires Azure AI Vision credentials."
+    required: false
+    default: "false"
+  readme-only:
+    description: "Translate only the root README.md and keep links pointed at source documents."
+    required: false
+    default: "false"
+  update:
+    description: "Delete and recreate existing translations for selected languages."
+    required: false
+    default: "false"
+  dry-run:
+    description: "Preview translation volume and migration behavior without writing files."
+    required: false
+    default: "true"
+  yes:
+    description: "Automatically confirm prompts."
+    required: false
+    default: "true"
+  add-disclaimer:
+    description: "Add machine translation disclaimer sections."
+    required: false
+    default: "true"
+  repo-url:
+    description: "Repository URL used in the README languages table advisory."
+    required: false
+    default: ""
+  extra-args:
+    description: "Additional raw arguments passed to the translate CLI."
+    required: false
+    default: ""
+  python-version:
+    description: "Python version used to run Co-op Translator."
+    required: false
+    default: "3.12"
+  package-version:
+    description: 'Package source to install: "source", "latest", or an exact PyPI version.'
+    required: false
+    default: "source"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install Co-op Translator
+      shell: bash
+      env:
+        PACKAGE_VERSION: ${{ inputs.package-version }}
+      run: |
+        python -m pip install --upgrade pip
+        if [ "$PACKAGE_VERSION" = "source" ]; then
+          python -m pip install "$GITHUB_ACTION_PATH"
+        elif [ "$PACKAGE_VERSION" = "latest" ]; then
+          python -m pip install --upgrade co-op-translator
+        else
+          python -m pip install "co-op-translator==$PACKAGE_VERSION"
+        fi
+
+    - name: Run Co-op Translator
+      shell: bash
+      env:
+        PYTHONIOENCODING: utf-8
+        INPUT_LANGUAGE_CODES: ${{ inputs.language-codes }}
+        INPUT_ROOT_DIR: ${{ inputs.root-dir }}
+        INPUT_MARKDOWN: ${{ inputs.markdown }}
+        INPUT_NOTEBOOK: ${{ inputs.notebook }}
+        INPUT_IMAGES: ${{ inputs.images }}
+        INPUT_README_ONLY: ${{ inputs.readme-only }}
+        INPUT_UPDATE: ${{ inputs.update }}
+        INPUT_DRY_RUN: ${{ inputs.dry-run }}
+        INPUT_YES: ${{ inputs.yes }}
+        INPUT_ADD_DISCLAIMER: ${{ inputs.add-disclaimer }}
+        INPUT_REPO_URL: ${{ inputs.repo-url }}
+        INPUT_EXTRA_ARGS: ${{ inputs.extra-args }}
+      run: |
+        cmd=(translate -l "$INPUT_LANGUAGE_CODES" -r "$INPUT_ROOT_DIR")
+
+        if [ "$INPUT_MARKDOWN" = "true" ]; then
+          cmd+=("-md")
+        fi
+        if [ "$INPUT_NOTEBOOK" = "true" ]; then
+          cmd+=("-nb")
+        fi
+        if [ "$INPUT_IMAGES" = "true" ]; then
+          cmd+=("-img")
+        fi
+        if [ "$INPUT_README_ONLY" = "true" ]; then
+          cmd+=("--readme-only")
+        fi
+        if [ "$INPUT_UPDATE" = "true" ]; then
+          cmd+=("--update")
+        fi
+        if [ "$INPUT_DRY_RUN" = "true" ]; then
+          cmd+=("--dry-run")
+        fi
+        if [ "$INPUT_YES" = "true" ]; then
+          cmd+=("--yes")
+        fi
+        if [ "$INPUT_ADD_DISCLAIMER" = "false" ]; then
+          cmd+=("--no-disclaimer")
+        fi
+        if [ -n "$INPUT_REPO_URL" ]; then
+          cmd+=("--repo-url" "$INPUT_REPO_URL")
+        fi
+        if [ -n "$INPUT_EXTRA_ARGS" ]; then
+          read -r -a extra_args <<< "$INPUT_EXTRA_ARGS"
+          cmd+=("${extra_args[@]}")
+        fi
+
+        "${cmd[@]}"

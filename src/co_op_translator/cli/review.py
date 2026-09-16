@@ -32,6 +32,11 @@ def _split_language_options(values: tuple[str, ...]) -> list[str]:
     help="Git ref to diff against. When provided, only changed source files are reviewed.",
 )
 @click.option(
+    "--readme-only",
+    is_flag=True,
+    help="Review only the root README.md translation.",
+)
+@click.option(
     "--format",
     "output_format",
     type=click.Choice(["text", "github"]),
@@ -44,6 +49,7 @@ def review_command(
     language_code: tuple[str, ...],
     changed_from: str | None,
     output_format: str,
+    readme_only: bool,
 ) -> None:
     """Run deterministic translation review checks without API credentials."""
     root_path = Path(root_dir).resolve()
@@ -60,6 +66,7 @@ def review_command(
             notebook=True,
             changed_from=changed_from,
             output_format=output_format,
+            readme_only=readme_only,
         )
-    except RuntimeError as exc:
+    except (RuntimeError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc

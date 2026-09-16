@@ -190,6 +190,18 @@ Review a specific project root:
 co-op-review -l "fr" -r ./my-course
 ```
 
+Review just the README after a README-only translation:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` ignores other documents and nested READMEs. It fails if the root
+`README.md` is missing. Combined with `--changed-from`, it reviews the README only
+when that source file changed. README-only translation leaves the source README
+unchanged, including any shared-section markers.
+
 Review only source files changed against a base ref:
 
 ```bash
@@ -209,6 +221,7 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 | `-l`, `--language-code` | No | Language code to review. Can be passed multiple times or as a space-separated value. Defaults to all discovered translation languages. |
 | `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
 | `--changed-from` | No | Git ref used to limit review to changed source files. |
+| `--readme-only` | No | Review only the root `README.md` translation. |
 | `--format` | No | Output format: `text` or `github`. Defaults to `text`. |
 
 `co-op-review` currently checks for missing translated files, missing or stale translation metadata, Markdown frontmatter and code fence integrity, invalid translated notebook JSON, and missing local Markdown or image link targets. Missing links are warnings by default; structural and freshness problems fail the command.

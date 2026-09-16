@@ -283,6 +283,17 @@ run_review(
 )
 ```
 
+After a README-only translation, use the same scope for review:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` reviews only `README.md` under each configured source root,
+including custom `groups` and output directories. Other documents and nested
+READMEs are excluded. A missing source README raises `ValueError`; failed
+translation checks raise `RuntimeError`.
+
 Review only files changed against a base ref and print GitHub-flavored output:
 
 ```python
@@ -549,6 +560,7 @@ The `policy` argument may be a dictionary with these fields:
 | `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
 | `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
 | `changed_from` | `str \| None` | `None` | Git ref used to limit review to changed source files. |
+| `readme_only` | `bool` | `False` | Review only `README.md` under each source root. A missing source README raises `ValueError`. |
 | `output_format` | `str` | `"text"` | Review output format. Supported values are `"text"` and `"github"`. |
 | `fail_on_warnings` | `bool` | `False` | Treat warnings as failures in addition to errors. |
 | `debug` | `bool` | `False` | Enable debug logging. |

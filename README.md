@@ -106,6 +106,7 @@ Co-op Translator manages translations as **versioned software artifacts**, not a
 This design lets repository owners:
 
 - Detect outdated translations without retranslating unchanged files
+- Let hosted integrations preserve accepted human edits in unchanged Markdown blocks through an optional translation state provider
 - Apply the same maintenance model to Markdown, images, and notebooks
 - Review translation completeness and repository structure in CI
 - Scale translation maintenance across large, fast-moving repositories

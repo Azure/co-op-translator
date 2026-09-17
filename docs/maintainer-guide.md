@@ -17,6 +17,9 @@ from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -27,6 +30,10 @@ from co_op_translator.api import (
     translate_project,
 )
 ```
+
+`TranslationStateProvider` is the persistence boundary for hosted integrations.
+It must keep generated candidates separate from accepted baselines so an
+unmerged translation cannot become the source of truth.
 
 When adding new public APIs, update:
 

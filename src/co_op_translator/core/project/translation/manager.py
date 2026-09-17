@@ -29,6 +29,7 @@ from co_op_translator.core.project.translation.translation_task_executor import 
 from co_op_translator.core.project.translation.translation_workflow import (
     TranslationWorkflowMixin,
 )
+from co_op_translator.core.project.translation.memory import TranslationStateProvider
 
 
 class TranslationManager(
@@ -58,6 +59,7 @@ class TranslationManager(
         translation_types: list[str] = None,
         add_disclaimer: bool = True,
         lang_subdir: Path | None = None,
+        translation_state_provider: TranslationStateProvider | None = None,
     ):
         """Initialize translation manager with required components and settings.
 
@@ -93,6 +95,7 @@ class TranslationManager(
         self.translation_types = translation_types
         self.add_disclaimer = add_disclaimer
         self.lang_subdir = Path(lang_subdir) if lang_subdir else None
+        self.translation_state_provider = translation_state_provider
         self.directory_manager = DirectoryManager(
             root_dir,
             translations_dir,

@@ -178,6 +178,15 @@ def test_translate_project(project_translator):
     )
 
 
+def test_translate_project_raises_when_file_translation_fails(project_translator):
+    project_translator.translation_manager.translate_project_async = AsyncMock(
+        return_value=(0, ["Failed to translate markdown file: guide.md (lang: ko)"])
+    )
+
+    with pytest.raises(RuntimeError, match="Translation failed for 1 file"):
+        project_translator.translate_project()
+
+
 @pytest.mark.asyncio
 async def test_markdown_only_mode(temp_project_dir):
     """Test ProjectTranslator in markdown-only mode."""

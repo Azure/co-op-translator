@@ -9,6 +9,10 @@ from co_op_translator.core.llm.markdown_translator import (
     TranslationContentFilterError,
     TranslationIncompleteError,
 )
+from co_op_translator.core.project.translation.incremental_markdown import (
+    build_incremental_markdown,
+)
+from co_op_translator.core.project.translation.memory import TranslationUpdate
 from co_op_translator.utils.common.file_utils import (
     filter_files,
     handle_empty_document,
@@ -109,7 +113,155 @@ class ProjectMarkdownTranslationMixin:
             )
         )
 
-    async def translate_markdown(self, file_path: Path, language_code: str) -> str:
+    async def _translate_markdown_full(
+        self,
+        document: str,
+        file_path: Path,
+        translated_path: Path,
+        language_code: str,
+    ) -> str:
+        translated_content = await self.markdown_translator.translate_markdown(
+            document,
+            language_code,
+            source_path=file_path,
+        )
+        translated_content = self._rewrite_markdown_paths_for_target(
+            translated_content,
+            file_path,
+            translated_path,
+            language_code,
+        )
+        if not translated_content:
+            raise RuntimeError(
+                f"Markdown translation returned empty content for {file_path}"
+            )
+
+        if not compare_line_breaks(document, translated_content):
+            return translated_content
+
+        logger.warning("Translation failed for %s. Retrying...", file_path)
+        translated_content = await self.markdown_translator.translate_markdown(
+            document,
+            language_code,
+            source_path=file_path,
+        )
+        translated_content = self._rewrite_markdown_paths_for_target(
+            translated_content,
+            file_path,
+            translated_path,
+            language_code,
+        )
+        if not translated_content:
+            raise RuntimeError(
+                f"Markdown translation retry returned empty content for {file_path}"
+            )
+        if compare_line_breaks(document, translated_content):
+            raise RuntimeError(
+                f"Markdown translation retry produced incomplete content for {file_path}"
+            )
+        return translated_content
+
+    async def _try_incremental_markdown(
+        self,
+        document: str,
+        file_path: Path,
+        translated_path: Path,
+        language_code: str,
+    ) -> TranslationUpdate | None:
+        provider = getattr(self, "translation_state_provider", None)
+        if provider is None or not translated_path.exists():
+            return None
+
+        try:
+            baseline = provider.load_baseline(
+                source_path=file_path,
+                translation_path=translated_path,
+                language_code=language_code,
+            )
+        except Exception as error:
+            logger.warning(
+                "Translation baseline lookup failed for %s: %s. Using full translation.",
+                file_path,
+                error,
+            )
+            return TranslationUpdate(
+                content="", mode="full", fallback_reason="baseline_lookup_failed"
+            )
+
+        if baseline is None:
+            return TranslationUpdate(
+                content="", mode="full", fallback_reason="baseline_unavailable"
+            )
+
+        current_target = translated_path.read_text(encoding="utf-8")
+
+        async def translate_block(block: str) -> str:
+            result = await self.markdown_translator.translate_markdown(
+                block,
+                language_code,
+                source_path=file_path,
+            )
+            return self._rewrite_markdown_paths_for_target(
+                result,
+                file_path,
+                translated_path,
+                language_code,
+            )
+
+        try:
+            return await build_incremental_markdown(
+                baseline=baseline,
+                current_source=document,
+                current_target=current_target,
+                translate_block=translate_block,
+            )
+        except Exception as error:
+            logger.warning(
+                "Incremental translation failed for %s: %s. Using full translation.",
+                file_path,
+                error,
+            )
+            return TranslationUpdate(
+                content="", mode="full", fallback_reason="incremental_error"
+            )
+
+    def _record_translation_candidate(
+        self,
+        *,
+        file_path: Path,
+        translated_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        provider = getattr(self, "translation_state_provider", None)
+        record_candidate = getattr(provider, "record_candidate", None)
+        if not callable(record_candidate):
+            return
+        try:
+            record_candidate(
+                source_path=file_path,
+                translation_path=translated_path,
+                language_code=language_code,
+                source_text=source_text,
+                target_text=target_text,
+                update=update,
+            )
+        except Exception as error:
+            logger.warning(
+                "Failed to record translation candidate for %s: %s",
+                file_path,
+                error,
+            )
+
+    async def translate_markdown(
+        self,
+        file_path: Path,
+        language_code: str,
+        *,
+        incremental: bool = True,
+    ) -> str:
         """Translate a markdown file to the specified language."""
 
         file_path = Path(file_path).resolve()
@@ -122,53 +274,47 @@ class ProjectMarkdownTranslationMixin:
                 handle_empty_document(file_path, translated_path)
                 return str(translated_path)
 
-            translated_content = await self.markdown_translator.translate_markdown(
-                document,
-                language_code,
-                source_path=file_path,
-            )
-            translated_content = self._rewrite_markdown_paths_for_target(
-                translated_content,
-                file_path,
-                translated_path,
-                language_code,
-            )
-            if not translated_content:
-                logger.error(
-                    f"Translation failed for {file_path}: Empty translation result"
-                )
-                raise RuntimeError(
-                    f"Markdown translation returned empty content for {file_path}"
-                )
-
-            if compare_line_breaks(document, translated_content):
-                logger.warning(f"Translation failed for {file_path}. Retrying...")
-                translated_content = await self.markdown_translator.translate_markdown(
+            update = (
+                await self._try_incremental_markdown(
                     document,
-                    language_code,
-                    source_path=file_path,
-                )
-                translated_content = self._rewrite_markdown_paths_for_target(
-                    translated_content,
                     file_path,
                     translated_path,
                     language_code,
                 )
-                if not translated_content:
-                    logger.error(
-                        f"Retry translation failed for {file_path}: Empty translation result"
-                    )
-                    raise RuntimeError(
-                        f"Markdown translation retry returned empty content for {file_path}"
-                    )
-                if compare_line_breaks(document, translated_content):
-                    logger.error(
-                        "Retry translation failed for %s: line break counts still differ too much",
+                if incremental
+                else None
+            )
+
+            if update is not None and update.mode == "incremental":
+                translated_content = update.content
+                logger.info(
+                    "Incrementally translated %s: preserved=%d translated=%d added=%d deleted=%d",
+                    file_path,
+                    update.preserved_units,
+                    update.translated_units,
+                    update.added_units,
+                    update.deleted_units,
+                )
+            else:
+                if update is not None:
+                    logger.info(
+                        "Falling back to full translation for %s: %s",
                         file_path,
+                        update.fallback_reason,
                     )
-                    raise RuntimeError(
-                        f"Markdown translation retry produced incomplete content for {file_path}"
-                    )
+                translated_content = await self._translate_markdown_full(
+                    document,
+                    file_path,
+                    translated_path,
+                    language_code,
+                )
+                update = TranslationUpdate(
+                    content=translated_content,
+                    mode="full",
+                    fallback_reason=(
+                        update.fallback_reason if update is not None else None
+                    ),
+                )
 
             translated_content = await self._append_markdown_disclaimer(
                 translated_content, language_code
@@ -185,6 +331,14 @@ class ProjectMarkdownTranslationMixin:
                     file_path,
                     language_code,
                     root_dir=self.root_dir,
+                )
+                self._record_translation_candidate(
+                    file_path=file_path,
+                    translated_path=translated_path,
+                    language_code=language_code,
+                    source_text=document,
+                    target_text=translated_content,
+                    update=update,
                 )
                 return str(translated_path)
             except Exception as e:
@@ -265,7 +419,7 @@ class ProjectMarkdownTranslationMixin:
                 )
                 tasks.append(
                     lambda md_file_path=md_file_path, language_code=language_code: self.translate_markdown(
-                        md_file_path, language_code
+                        md_file_path, language_code, incremental=not update
                     )
                 )
                 task_info.append((str(md_file_path), language_code))

@@ -48,6 +48,36 @@ async def test_run_translation_calls_project_translator(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_run_translation_forwards_translation_state_provider(tmp_path):
+    api.Config.check_configuration = MagicMock(return_value=None)
+    api.LLMConfig.validate_connectivity = MagicMock(return_value=None)
+    api.setup_logging = MagicMock(return_value=None)
+
+    project_translator_instance = MagicMock()
+    project_translator_class = MagicMock(return_value=project_translator_instance)
+    api.ProjectTranslator = project_translator_class
+    provider = MagicMock()
+
+    api.run_translation(
+        language_codes="ko",
+        root_dir=str(tmp_path),
+        markdown=True,
+        translation_state_provider=provider,
+    )
+
+    project_translator_class.assert_any_call(
+        "ko",
+        str(tmp_path),
+        translation_types=["markdown"],
+        add_disclaimer=False,
+        translations_dir=None,
+        image_dir=None,
+        lang_subdir=None,
+        translation_state_provider=provider,
+    )
+
+
+@pytest.mark.asyncio
 async def test_run_translation_with_disclaimer_flag(tmp_path):
     root_dir = tmp_path
 

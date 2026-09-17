@@ -265,6 +265,95 @@ run_translation(
 
 If none of `markdown`, `notebook`, or `images` are set, the API translates all supported types: Markdown, notebooks, and images.
 
+### Preserve accepted human edits with a translation state provider
+
+By default, Co-op Translator keeps its existing file-level behavior: when a
+Markdown source is stale, the entire translated file is regenerated. Hosted
+integrations can optionally pass a `TranslationStateProvider` to preserve human
+edits in source blocks that have not changed.
+
+The provider supplies the last accepted source/target pair and records each new
+candidate. Acceptance remains the integration's responsibility—for example,
+after a translation pull request is merged:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+For Markdown files with a valid accepted baseline, Co-op Translator aligns
+top-level Markdown blocks. Unchanged source blocks reuse the current translated
+blocks, including edits made by people; changed or added source blocks are sent
+for translation; deleted source blocks are removed. If alignment is ambiguous,
+the target structure changed, a block translation is invalid, or no baseline is
+available, Co-op Translator safely falls back to the existing full-file
+translation path.
+
+This API stores document translation state, not a cross-document phrase or
+segment translation memory. It currently applies to Markdown project
+translation. Notebook and image behavior is unchanged. Passing `update=True`
+still requests full regeneration.
+
+If one or more files cannot be translated, `run_translation` raises a
+`RuntimeError` after the project workflow finishes instead of reporting a
+successful run with missing output. Integrations should treat this as a failed
+job and retain the previous accepted translation state.
+
 ## Review Translated Output
 
 `run_review` runs deterministic translation checks without LLM or Vision credentials.
@@ -413,6 +502,9 @@ from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -451,6 +543,12 @@ from co_op_translator.api import (
 ::: co_op_translator.api.NotebookTranslationOptions
 
 ::: co_op_translator.api.ImageTranslationOptions
+
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
 
 ::: co_op_translator.api.run_translation
 
@@ -544,6 +642,7 @@ The `policy` argument may be a dictionary with these fields:
 | `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
 | `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
 | `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Optional accepted-baseline and candidate persistence adapter for incremental Markdown updates. Omitting it preserves existing full-file behavior. |
 
 ## Review Parameters
 

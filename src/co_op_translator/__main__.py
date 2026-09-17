@@ -1,16 +1,12 @@
 """
 Main entry point for the Co-op Translator CLI.
-This module provides command dispatching for both 'translate' and 'evaluate' commands.
+This module dispatches each installed CLI entry point to its command implementation.
 """
 
 import sys
 import logging
 from pathlib import Path
 
-from co_op_translator.cli.translate import translate_command
-from co_op_translator.cli.evaluate import evaluate_command
-from co_op_translator.cli.migrate_links import migrate_links_command
-from co_op_translator.cli.review import review_command
 from co_op_translator.utils.common.console import configure_safe_console_output
 
 logger = logging.getLogger(__name__)
@@ -25,12 +21,20 @@ def main():
 
     script_name = Path(sys.argv[0]).stem
     if script_name == "evaluate":
+        from co_op_translator.cli.evaluate import evaluate_command
+
         evaluate_command()
     elif script_name == "migrate-links":
+        from co_op_translator.cli.migrate_links import migrate_links_command
+
         migrate_links_command()
     elif script_name == "co-op-review":
+        from co_op_translator.cli.review import review_command
+
         review_command()
     else:
+        from co_op_translator.cli.translate import translate_command
+
         translate_command()
 
 

@@ -4,8 +4,6 @@ from pathlib import Path
 
 import click
 
-from co_op_translator.api.review import run_review
-
 
 def _split_language_options(values: tuple[str, ...]) -> list[str]:
     languages: list[str] = []
@@ -55,6 +53,8 @@ def review_command(
     readme_only: bool,
 ) -> None:
     """Run deterministic translation review checks without API credentials."""
+    from co_op_translator.api.review import run_review
+
     root_path = Path(root_dir).resolve()
     if not root_path.exists():
         raise click.ClickException(f"Root directory does not exist: {root_dir}")

@@ -7,8 +7,6 @@ import logging
 import click
 from pathlib import Path
 
-from co_op_translator.core.project.project_translator import ProjectTranslator
-from co_op_translator.core.project.readme_translator import ReadmeTranslator
 from co_op_translator.config.base_config import Config
 from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.config.llm_config.config import LLMConfig
@@ -25,14 +23,13 @@ from co_op_translator.utils.common.events import (
     translation_event_context,
 )
 from co_op_translator.utils.common.progress import get_progress_reporter
-from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
-from co_op_translator.core.project.translation.request import (
-    TranslationMode,
-    build_translation_request,
-    resolve_translation_types,
-)
 
 logger = logging.getLogger(__name__)
+
+# Keep these dependencies injectable for callers and tests while deferring their
+# expensive imports until Click invokes the command callback.
+ProjectTranslator = None
+ReadmeTranslator = None
 
 
 @click.command(name="translate")
@@ -195,6 +192,21 @@ def translate_command(
     Debug mode example:
     - translate -l "ko" -d: Enable debug logging.
     """
+    from co_op_translator.core.project.language_migrator import LanguageFolderMigrator
+    from co_op_translator.core.project.project_translator import (
+        ProjectTranslator as DefaultProjectTranslator,
+    )
+    from co_op_translator.core.project.readme_translator import (
+        ReadmeTranslator as DefaultReadmeTranslator,
+    )
+    from co_op_translator.core.project.translation.request import (
+        TranslationMode,
+        build_translation_request,
+        resolve_translation_types,
+    )
+
+    project_translator_class = ProjectTranslator or DefaultProjectTranslator
+    readme_translator_class = ReadmeTranslator or DefaultReadmeTranslator
     reporter = get_progress_reporter()
     event_scope = translation_event_context(
         json_events_path=json_events if not dry_run else None
@@ -418,14 +430,14 @@ def translate_command(
                 reporter.info("Auto-confirming update operation...")
 
         if request.mode == TranslationMode.README:
-            translator = ReadmeTranslator(
+            translator = readme_translator_class(
                 language_codes,
                 root_dir,
                 add_disclaimer=add_disclaimer,
                 initialize_translator=not dry_run,
             )
         else:
-            translator = ProjectTranslator(
+            translator = project_translator_class(
                 language_codes,
                 root_dir,
                 translation_types=translation_types,

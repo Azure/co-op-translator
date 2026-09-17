@@ -120,7 +120,7 @@ For Markdown and notebooks, MCP can work in two modes:
 | Mode | Use when | Main tools |
 | --- | --- | --- |
 | Agent-assisted | The MCP host agent should translate chunks with its own model, without Co-op Translator LLM provider credentials. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Provider-backed | Co-op Translator should call Azure OpenAI or OpenAI directly. | `translate_markdown_content`, `translate_notebook_content` |
+| Provider-backed | Co-op Translator should call Azure OpenAI, OpenAI, or Anthropic directly. | `translate_markdown_content`, `translate_notebook_content` |
 
 MCP provider-backed Markdown tool call shape:
 

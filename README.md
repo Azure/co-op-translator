@@ -77,7 +77,7 @@ pip install co-op-translator
 translate -l "ko" -md --dry-run
 ```
 
-Configure [Azure OpenAI or OpenAI credentials](./docs/configuration.md), then run the translation and deterministic review:
+Configure [Azure OpenAI, OpenAI, or Anthropic credentials](./docs/configuration.md), then run the translation and deterministic review:
 
 ```bash
 translate -l "ko" -md
@@ -121,7 +121,7 @@ This design lets repository owners:
 - Relative-link rewriting for translated repository layouts
 - Credential-free, write-free dry runs across the CLI, Python API, and MCP
 - Deterministic review of translation freshness, structure, and local links
-- Azure OpenAI and OpenAI support for provider-backed translation
+- Azure OpenAI, OpenAI, and Anthropic Claude support for provider-backed translation
 - Azure AI Vision support for image text extraction
 - Host-agent translation of Markdown and notebook chunks through MCP
 

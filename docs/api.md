@@ -590,7 +590,7 @@ translated = await translate_markdown_content(
 
 ## Agent-Assisted Translation APIs
 
-Agent-assisted APIs do not call Azure OpenAI or OpenAI from Co-op Translator. They prepare Markdown or notebook chunks for a host agent to translate, then reconstruct the final content from translated chunks.
+Agent-assisted APIs do not call the configured LLM provider from Co-op Translator. They prepare Markdown or notebook chunks for a host agent to translate, then reconstruct the final content from translated chunks.
 
 | Function | Purpose |
 | --- | --- |
@@ -671,7 +671,7 @@ If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown
 
 Provider-backed translation APIs require provider configuration before translating:
 
-- Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
+- Markdown and notebook translation require an LLM provider. Configure Azure OpenAI, OpenAI, or Anthropic.
 - Image translation requires Azure AI Vision in addition to the LLM provider.
 - `run_translation` runs lightweight connectivity checks before project translation begins.
 - Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
@@ -694,6 +694,15 @@ OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
+Required Anthropic variables:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` is optional. Anthropic uses the Agent Framework model client automatically.
+
 Required Azure AI Vision variables for image translation:
 
 ```bash
@@ -701,7 +710,7 @@ AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` is deterministic and does not require LLM or Azure AI Vision configuration.
 
 ## Behavior Notes
 
@@ -751,5 +760,5 @@ The following classes are useful for maintainers, but are not exported as the pa
 | `ReviewTarget` | `co_op_translator.review.targets` | Describes a source root and the translation output directory reviewed for that root. |
 | `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Detects legacy alias language folders and prepares canonical BCP 47 folder migration plans. |
 | `Config` | `co_op_translator.config.base_config` | Loads `.env` files and checks whether required LLM and optional Vision providers are configured. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Auto-detects Azure OpenAI or OpenAI, validates required environment variables, and runs provider connectivity checks. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Auto-detects Azure OpenAI, OpenAI, or Anthropic, validates required environment variables, and runs provider connectivity checks. |
 | `VisionConfig` | `co_op_translator.config.vision_config.config` | Detects Azure AI Vision configuration and runs connectivity checks for image translation. |

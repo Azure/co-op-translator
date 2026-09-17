@@ -45,18 +45,19 @@ The tool auto-detects providers in this order:
 
 1. Azure OpenAI
 2. OpenAI
+3. Anthropic
 
-If neither provider is configured, `translate`, `evaluate`, `migrate-links`, and `run_translation` fail during configuration checks. `co-op-review` and `run_review` are deterministic maintenance checks and do not require provider credentials.
+If no provider is configured, `translate`, `evaluate`, `migrate-links`, and `run_translation` fail during configuration checks. `co-op-review` and `run_review` are deterministic maintenance checks and do not require provider credentials.
 
 ## Model client backend
 
-Semantic Kernel remains the default model client for Markdown, notebook, and LLM evaluation prompts. To exercise the experimental Microsoft Agent Framework adapter with the same Azure OpenAI or OpenAI provider configuration, set:
+Azure OpenAI and OpenAI use Semantic Kernel by default. Anthropic uses the [Microsoft Agent Framework Anthropic integration](https://github.com/microsoft/agent-framework/tree/main/python/packages/anthropic) automatically. To select Agent Framework explicitly, set:
 
 ```bash
 CO_OP_TRANSLATOR_MODEL_CLIENT="agent-framework"
 ```
 
-Supported values are `semantic-kernel` and `agent-framework`. Invalid values fail during provider-backed translator initialization instead of silently falling back. Image-text translation continues to use the OpenAI SDK structured-output path while the framework-neutral structured-response contract is developed.
+Supported values are `semantic-kernel` and `agent-framework`. Anthropic requires `agent-framework`; explicitly selecting `semantic-kernel` with Anthropic fails with a configuration error. Invalid values fail during provider-backed translator initialization instead of silently falling back.
 
 ## Azure OpenAI
 
@@ -85,9 +86,21 @@ OPENAI_BASE_URL="..."        # optional
 
 `OPENAI_CHAT_MODEL_ID` is required because the translator needs an explicit chat model for API calls.
 
+## Anthropic Claude
+
+Use Anthropic when calling the Claude API directly. Create an [Anthropic API key](https://platform.claude.com/docs/en/get-started) and choose a supported [Claude model ID](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions).
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+ANTHROPIC_BASE_URL="..."      # optional; omit for the Anthropic API
+```
+
+`ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` are required. You do not need to set `CO_OP_TRANSLATOR_MODEL_CLIENT`; Anthropic selects Agent Framework automatically.
+
 ## Azure AI Vision
 
-Image translation requires Azure AI Vision so the tool can extract text from images before translating it.
+Image translation requires Azure AI Vision so the tool can extract text from images before the configured language model translates it. Anthropic can translate the extracted text just like Azure OpenAI or OpenAI.
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -115,6 +128,8 @@ AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 ```
 
 Each set must be complete. The health check selects a working set before translation proceeds.
+
+OpenAI and Anthropic support the same suffix convention. Keep every variable in a credential set on the same suffix, including optional values such as `OPENAI_BASE_URL_1` or `ANTHROPIC_BASE_URL_1`.
 
 ## Command requirements
 

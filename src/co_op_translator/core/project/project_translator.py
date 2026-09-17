@@ -225,12 +225,24 @@ class ProjectTranslator:
             fast_mode: Whether to use faster translation method
         """
         self._initialize_translators()
-        asyncio.run(
+        result = asyncio.run(
             self.translation_manager.translate_project_async(
                 update=update,
                 fast_mode=fast_mode,
             )
         )
+        if result is None:
+            return None
+
+        modified_count, errors = result
+        if errors:
+            preview = "; ".join(str(error) for error in errors[:3])
+            if len(errors) > 3:
+                preview += f"; and {len(errors) - 3} more"
+            raise RuntimeError(
+                f"Translation failed for {len(errors)} file(s): {preview}"
+            )
+        return modified_count, errors
 
     async def check_and_retry_translations(self):
         """Check for outdated translations and translate missing content.

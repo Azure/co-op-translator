@@ -349,6 +349,11 @@ segment translation memory. It currently applies to Markdown project
 translation. Notebook and image behavior is unchanged. Passing `update=True`
 still requests full regeneration.
 
+If one or more files cannot be translated, `run_translation` raises a
+`RuntimeError` after the project workflow finishes instead of reporting a
+successful run with missing output. Integrations should treat this as a failed
+job and retain the previous accepted translation state.
+
 ## Review Translated Output
 
 `run_review` runs deterministic translation checks without LLM or Vision credentials.

@@ -9,7 +9,6 @@ import json
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageStat
-import matplotlib.pyplot as plt
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.utils.common.file_utils import get_filename_and_extension
 from co_op_translator.config.constants import (
@@ -18,6 +17,86 @@ from co_op_translator.config.constants import (
 )
 
 logger = logging.getLogger(__name__)
+
+_COMPARISON_TITLE_HEIGHT = 32
+_COMPARISON_PADDING = 8
+
+
+def _prepare_image_for_display(image):
+    """Flatten an image onto white while preserving its visible transparency."""
+    foreground = image.convert("RGBA")
+    background = Image.new("RGBA", foreground.size, "white")
+    return Image.alpha_composite(background, foreground).convert("RGB")
+
+
+def _create_image_comparison(
+    left_image,
+    right_image,
+    left_title,
+    right_title,
+):
+    """Create a labeled side-by-side image for debugging displays."""
+    left = _prepare_image_for_display(left_image)
+    right = _prepare_image_for_display(right_image)
+    font = ImageFont.load_default()
+    left_title_box = font.getbbox(left_title)
+    right_title_box = font.getbbox(right_title)
+    left_title_width = left_title_box[2] - left_title_box[0]
+    right_title_width = right_title_box[2] - right_title_box[0]
+    left_panel_width = max(left.width, left_title_width + 2 * _COMPARISON_PADDING)
+    right_panel_width = max(right.width, right_title_width + 2 * _COMPARISON_PADDING)
+    comparison = Image.new(
+        "RGB",
+        (
+            left_panel_width + right_panel_width,
+            max(left.height, right.height) + _COMPARISON_TITLE_HEIGHT,
+        ),
+        "white",
+    )
+    comparison.paste(
+        left,
+        ((left_panel_width - left.width) // 2, _COMPARISON_TITLE_HEIGHT),
+    )
+    comparison.paste(
+        right,
+        (
+            left_panel_width + (right_panel_width - right.width) // 2,
+            _COMPARISON_TITLE_HEIGHT,
+        ),
+    )
+
+    draw = ImageDraw.Draw(comparison)
+    draw.text(
+        ((left_panel_width - left_title_width) // 2, _COMPARISON_PADDING),
+        left_title,
+        fill="black",
+        font=font,
+    )
+    draw.text(
+        (
+            left_panel_width + (right_panel_width - right_title_width) // 2,
+            _COMPARISON_PADDING,
+        ),
+        right_title,
+        fill="black",
+        font=font,
+    )
+    return comparison
+
+
+def _show_image_comparison(
+    left_image,
+    right_image,
+    left_title,
+    right_title,
+):
+    comparison = _create_image_comparison(
+        left_image,
+        right_image,
+        left_title,
+        right_title,
+    )
+    comparison.show(title="Image comparison")
 
 
 def save_optimized_image(image, output_path):
@@ -439,20 +518,13 @@ def plot_bounding_boxes(
     save_optimized_image(image, output_path)
 
     if display:
-        # Display the image
-        plt.figure(figsize=(20, 10))
-        plt.subplot(1, 2, 1)
-        plt.imshow(np.array(image))
-        plt.title("Image with Bounding Boxes")
-        plt.axis("off")
-
-        original_image = Image.open(image_path)
-        plt.subplot(1, 2, 2)
-        plt.imshow(np.array(original_image))
-        plt.title("Original Image")
-        plt.axis("off")
-
-        plt.show()
+        with Image.open(image_path) as original_image:
+            _show_image_comparison(
+                image,
+                original_image,
+                "Image with Bounding Boxes",
+                "Original Image",
+            )
 
 
 def display_image(image_path, annotated_image_path):
@@ -463,23 +535,16 @@ def display_image(image_path, annotated_image_path):
         image_path (str): Path to the original image file.
         annotated_image (PIL.Image.Image): The image annotated with translated text.
     """
-    plt.figure(figsize=(20, 10))
-
-    # Display the annotated image
-    annotated_image = Image.open(annotated_image_path)
-    plt.subplot(1, 2, 1)
-    plt.imshow(annotated_image)
-    plt.title("Annotated Image with Translated Text")
-    plt.axis("off")
-
-    # Display the original image
-    original_image = Image.open(image_path)
-    plt.subplot(1, 2, 2)
-    plt.imshow(original_image)
-    plt.title("Original Image")
-    plt.axis("off")
-
-    plt.show()
+    with (
+        Image.open(annotated_image_path) as annotated_image,
+        Image.open(image_path) as original_image,
+    ):
+        _show_image_comparison(
+            annotated_image,
+            original_image,
+            "Annotated Image with Translated Text",
+            "Original Image",
+        )
 
 
 def retrieve_bounding_boxes_by_image_path(image_path):

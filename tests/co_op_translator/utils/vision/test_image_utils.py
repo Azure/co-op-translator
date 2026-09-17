@@ -1,13 +1,22 @@
+import os
+from pathlib import Path
+import subprocess
+import sys
+
 import pytest
 from unittest.mock import patch, MagicMock
 from PIL import Image
 from co_op_translator.utils.vision.image_utils import (
+    _create_image_comparison,
+    display_image,
     get_average_color,
     get_text_color,
     draw_text_on_image,
     create_filled_polygon_mask,
     get_image_mode,
 )
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 
 
 @pytest.fixture
@@ -113,3 +122,78 @@ def test_get_image_mode():
 
     with pytest.raises(ValueError):
         get_image_mode("test.bmp")
+
+
+@patch("PIL.ImageShow.show")
+def test_display_image_uses_the_pillow_viewer(mock_show, tmp_path):
+    original_path = tmp_path / "original.png"
+    annotated_path = tmp_path / "annotated.png"
+    Image.new("RGB", (20, 10), "blue").save(original_path)
+    Image.new("RGB", (10, 20), "red").save(annotated_path)
+
+    display_image(original_path, annotated_path)
+
+    mock_show.assert_called_once()
+    comparison = mock_show.call_args.args[0]
+    assert comparison.width > 30
+    assert comparison.height == 52
+    assert mock_show.call_args.args[1] == "Image comparison"
+
+
+@pytest.mark.parametrize("mode", ["RGBA", "P"])
+def test_image_comparison_flattens_transparency_onto_white(mode):
+    if mode == "RGBA":
+        transparent = Image.new("RGBA", (200, 1), (255, 0, 0, 0))
+    else:
+        transparent = Image.new("P", (200, 1), 0)
+        transparent.putpalette([255, 0, 0] + [0, 0, 0] * 255)
+        transparent.info["transparency"] = 0
+
+    comparison = _create_image_comparison(
+        transparent,
+        Image.new("RGB", (200, 1), "black"),
+        "Transparent",
+        "Opaque",
+    )
+
+    assert comparison.getpixel((0, 32)) == (255, 255, 255)
+
+
+def test_image_comparison_reserves_space_for_both_titles():
+    comparison = _create_image_comparison(
+        Image.new("RGB", (1, 1), "red"),
+        Image.new("RGB", (1, 1), "blue"),
+        "Annotated Image with Translated Text",
+        "Original Image",
+    )
+
+    assert comparison.width > 200
+
+
+def test_image_utils_does_not_require_matplotlib():
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = str(REPOSITORY_ROOT / "src")
+    probe = """
+import builtins
+
+original_import = builtins.__import__
+
+def reject_matplotlib(name, *args, **kwargs):
+    if name == "matplotlib" or name.startswith("matplotlib."):
+        raise ModuleNotFoundError("matplotlib is intentionally unavailable")
+    return original_import(name, *args, **kwargs)
+
+builtins.__import__ = reject_matplotlib
+import co_op_translator.utils.vision.image_utils
+"""
+
+    result = subprocess.run(
+        [sys.executable, "-c", probe],
+        cwd=REPOSITORY_ROOT,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr

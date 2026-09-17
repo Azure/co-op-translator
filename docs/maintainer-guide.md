@@ -128,7 +128,7 @@ The deterministic review flow is:
 6. Print either text output or GitHub-flavored Markdown.
 7. Exit with a failure when review errors are found.
 
-The review flow does not require API keys and should remain suitable for pull request CI. The pull request workflow writes a check summary on every run and only posts a PR comment when `co-op-review` fails.
+The review flow does not require API keys and remains available for local checks or opt-in consumer CI. This repository does not run `co-op-review` automatically on every pull request.
 
 ## Documentation site
 

@@ -1,5 +1,5 @@
 site_name: Co-op Translator
-site_description: API and CLI documentation for Co-op Translator.
+site_description: Keep repository translations current with Azure OpenAI, OpenAI, or Anthropic. Translate and review Markdown and notebooks; use Azure AI Vision for image text.
 site_url: https://azure.github.io/co-op-translator/
 repo_url: https://github.com/Azure/co-op-translator
 repo_name: Azure/co-op-translator
@@ -248,6 +248,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Your first translation: first-translation.md
   - Choose Your Workflow: workflows.md
   - Configuration: configuration.md
   - Azure AI Setup: azure-ai-setup.md

@@ -1,0 +1,49 @@
+{
+  "date": "2026-09-19",
+  "package": "co-op-translator",
+  "version": "0.21.0",
+  "provider": "Azure OpenAI",
+  "model": "gpt-5-mini",
+  "source_commit": "d8367b692fdcc05cbb77948fb6c74b724e02d4f1",
+  "method": "Click CliRunner invokes unmodified commands from the built v0.21.0 wheel with existing Python dependencies. Real provider calls.",
+  "cost": null,
+  "unchanged_guide_bytes": true,
+  "unchanged_rerun_hashes": true,
+  "results": [
+    {
+      "step": "preview",
+      "exit": 0,
+      "seconds": 2.92
+    },
+    {
+      "step": "first",
+      "exit": 0,
+      "seconds": 27.36
+    },
+    {
+      "step": "review-before",
+      "exit": 0,
+      "seconds": 0.06
+    },
+    {
+      "step": "review-stale",
+      "exit": 1,
+      "seconds": 0.0
+    },
+    {
+      "step": "update",
+      "exit": 0,
+      "seconds": 22.17
+    },
+    {
+      "step": "review-after",
+      "exit": 0,
+      "seconds": 0.02
+    },
+    {
+      "step": "unchanged",
+      "exit": 0,
+      "seconds": 3.91
+    }
+  ]
+}

@@ -2,12 +2,25 @@
   <p class="home-eyebrow">Getting started</p>
   <h1>Co-op Translator Documentation</h1>
   <p class="home-lede">
-    Configure an LLM provider, choose your target languages, and use Co-op
-    Translator from the CLI, Python API, or MCP server to translate and review
-    project content as the source changes.
+    Keep your repository's translations up to date. Translate Markdown and
+    notebooks with Azure OpenAI, OpenAI, or Anthropic, then review freshness,
+    structure, and local links. Azure is optional for text translation.
   </p>
-  <a class="home-link" href="workflows.md">Choose your workflow -></a>
+  <a class="home-link" href="first-translation/">Try a small translation example -></a>
 </section>
+
+Image text translation additionally requires Azure AI Vision.
+Already know your setup? [Choose your workflow](workflows.md).
+
+See Co-op Translator in use in **AI Agents for Beginners**: the same README section in English and Korean.
+
+| English | Korean |
+| --- | --- |
+| [![English README: Getting Started](assets/demo/ai-agents-english.jpg)](https://github.com/microsoft/ai-agents-for-beginners/blob/main/README.md#-getting-started) | [![Korean README: Getting Started](assets/demo/ai-agents-korean.jpg)](https://github.com/microsoft/ai-agents-for-beginners/blob/main/translations/ko/README.md#-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0) |
+
+[English source](https://github.com/microsoft/ai-agents-for-beginners/blob/main/README.md#-getting-started) · [Korean translation](https://github.com/microsoft/ai-agents-for-beginners/blob/main/translations/ko/README.md#-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0)
+
+[Try a small translation project](first-translation.md): source files, actual outputs, and a translation diff you can inspect.
 
 ## Read the docs in your language
 
@@ -83,28 +96,28 @@
 These `docs/` pages are the canonical Co-op Translator documentation. Older setup guides have been consolidated here so CLI, API, MCP, CI, and troubleshooting guidance stay in one place.
 
 <div class="quickstart-grid">
-  <a class="quickstart-card" href="configuration.md">
+  <a class="quickstart-card" href="configuration/">
     <span class="quickstart-step">Step 1</span>
     <strong>Configure your project</strong>
     <span>Set up providers, credentials, target languages, and output directories.</span>
     <em>Read the guide -></em>
   </a>
 
-  <a class="quickstart-card" href="cli.md">
+  <a class="quickstart-card" href="cli/">
     <span class="quickstart-step">Step 2</span>
     <strong>Translate with CLI</strong>
     <span>Run translation, evaluation, review, and link migration commands.</span>
     <em>Read the guide -></em>
   </a>
 
-  <a class="quickstart-card" href="api.md">
+  <a class="quickstart-card" href="api/">
     <span class="quickstart-step">Step 3</span>
     <strong>Automate with the Python API</strong>
     <span>Use Co-op Translator from scripts and automation workflows.</span>
     <em>Read the guide -></em>
   </a>
 
-  <a class="quickstart-card" href="mcp.md">
+  <a class="quickstart-card" href="mcp/">
     <span class="quickstart-step">Step 4</span>
     <strong>Connect with the MCP Server</strong>
     <span>Expose Co-op Translator tools to agents, editors, and MCP-compatible clients.</span>

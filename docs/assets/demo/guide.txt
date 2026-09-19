@@ -1,0 +1,3 @@
+# Usage guide
+
+Create one note for each hike. Include the date and trail name.

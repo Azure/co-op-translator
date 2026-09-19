@@ -1,0 +1,9 @@
+Co-op review complete
+Source files reviewed: 2
+Languages reviewed: ko
+Errors: 1
+Warnings: 0
+
+Issues:
+- ERROR freshness [ko]: README.md - Translation metadata is stale.
+Error: co-op-review found 1 error(s) and 0 warning(s).

@@ -4,6 +4,8 @@ Keep multilingual GitHub documentation current as your source evolves.
 
 Co-op Translator detects changed source content, updates stale translations, and preserves the links and structure of Markdown, Jupyter notebooks, and images.
 
+Translate Markdown and notebooks with **Azure OpenAI, OpenAI, or Anthropic**. Azure is optional for text translation; translating text inside images additionally requires Azure AI Vision.
+
 ![Python 3.11–3.14](https://img.shields.io/badge/python-3.11--3.14-blue)
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
 [![Container: GHCR](https://img.shields.io/badge/Container-GHCR-2496ED?logo=docker&logoColor=fff)](https://github.com/azure/co-op-translator/pkgs/container/co-op-translator)
@@ -11,6 +13,20 @@ Co-op Translator detects changed source content, updates stale translations, and
 [![Monthly downloads](https://static.pepy.tech/badge/co-op-translator/month)](https://pepy.tech/project/co-op-translator)
 
 **[Get started](#get-started)** · **[See real repositories](#see-co-op-translator-in-real-repositories)** · **[Read the documentation](https://azure.github.io/co-op-translator/)**
+
+## See the result, then try it
+
+[![Replay of an actual translation run: translate, edit, detect stale output, update, and review](./docs/assets/demo/preview.png)](./docs/first-translation.md)
+
+**[Watch the 40-second replay](./docs/assets/demo/demo.gif)** · **[Read the results and try it](./docs/first-translation.md)**
+
+Edited replay of a real Azure OpenAI run, not a real-time recording or a speed benchmark. Text translation also supports OpenAI and Anthropic.
+
+Browse [the English README](https://github.com/microsoft/generative-ai-for-beginners/blob/main/README.md) and [the Korean translation](https://github.com/microsoft/generative-ai-for-beginners/blob/main/translations/ko/README.md) in Generative AI for Beginners. These are maintained repository documents, not a benchmark of a particular model or release.
+
+**[Try the small translation example](./docs/first-translation.md)**: preview two Markdown files without credentials, translate them, edit the source, and inspect the translation diff and review results.
+
+The default CLI updates changed files and skips current ones. It does not promise to translate only the edited sentence.
 
 > Translating one file is easy. Keeping an entire documentation repository translated, linked, and up to date is the hard part.
 

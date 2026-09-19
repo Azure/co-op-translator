@@ -12,9 +12,17 @@
 Image text translation additionally requires Azure AI Vision.
 Already know your setup? [Choose your workflow](workflows.md).
 
-[![Translation example: actual Korean output](assets/demo/preview.png)](first-translation.md)
+See Co-op Translator in use in **AI Agents for Beginners**: the same README section in English and Korean.
 
-[See the recorded results and try the example](first-translation.md). Includes a 40-second edited replay, source files, and the actual translation diff.
+| English | Korean |
+| --- | --- |
+| [![English README: Getting Started](assets/demo/ai-agents-english.jpg)](https://github.com/microsoft/ai-agents-for-beginners/blob/main/README.md#-getting-started) | [![Korean README: Getting Started](assets/demo/ai-agents-korean.jpg)](https://github.com/microsoft/ai-agents-for-beginners/blob/main/translations/ko/README.md#-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0) |
+
+[English source](https://github.com/microsoft/ai-agents-for-beginners/blob/main/README.md#-getting-started) · [Korean translation](https://github.com/microsoft/ai-agents-for-beginners/blob/main/translations/ko/README.md#-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0)
+
+Screenshots captured from GitHub on September 19, 2026. These show existing repository documents; they are separate from the reproducible example below.
+
+[Try a small translation project](first-translation.md): source files, actual outputs, and a translation diff you can inspect.
 
 ## Read the docs in your language
 

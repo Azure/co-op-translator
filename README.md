@@ -16,13 +16,15 @@ Translate Markdown and notebooks with **Azure OpenAI, OpenAI, or Anthropic**. Az
 
 ## See the result, then try it
 
-[![Replay of an actual translation run: translate, edit, detect stale output, update, and review](./docs/assets/demo/preview.png)](./docs/first-translation.md)
+See Co-op Translator in use in **AI Agents for Beginners**: the same README section in English and Korean.
 
-**[Watch the 40-second replay](./docs/assets/demo/demo.gif)** · **[Read the results and try it](./docs/first-translation.md)**
+| English | Korean |
+| --- | --- |
+| [![English README: Getting Started](./docs/assets/demo/ai-agents-english.jpg)](https://github.com/microsoft/ai-agents-for-beginners/blob/main/README.md#-getting-started) | [![Korean README: Getting Started](./docs/assets/demo/ai-agents-korean.jpg)](https://github.com/microsoft/ai-agents-for-beginners/blob/main/translations/ko/README.md#-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0) |
 
-Edited replay of a real Azure OpenAI run, not a real-time recording or a speed benchmark. Text translation also supports OpenAI and Anthropic.
+[English source](https://github.com/microsoft/ai-agents-for-beginners/blob/main/README.md#-getting-started) · [Korean translation](https://github.com/microsoft/ai-agents-for-beginners/blob/main/translations/ko/README.md#-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0)
 
-Browse [the English README](https://github.com/microsoft/generative-ai-for-beginners/blob/main/README.md) and [the Korean translation](https://github.com/microsoft/generative-ai-for-beginners/blob/main/translations/ko/README.md) in Generative AI for Beginners. These are maintained repository documents, not a benchmark of a particular model or release.
+Screenshots captured from GitHub on September 19, 2026. These show existing repository documents; they are separate from the reproducible example below.
 
 **[Try the small translation example](./docs/first-translation.md)**: preview two Markdown files without credentials, translate them, edit the source, and inspect the translation diff and review results.
 

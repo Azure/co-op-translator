@@ -2,10 +2,6 @@
 
 Start with two short Markdown files and one target language. You will see where translations are written, what happens when the source changes, and how to check the result.
 
-![Actual translation output from the example](assets/demo/preview.png)
-
-[Watch the 40-second edited replay](assets/demo/demo.gif). This replays captured results from a real run; it is not a live terminal recording. The complete text results below are available without animation.
-
 ## Recorded results
 
 The example was run on September 19, 2026 with Co-op Translator 0.21.0 and Azure OpenAI (`gpt-5-mini`). The unmodified CLI commands were invoked through Click's `CliRunner` using the built wheel and existing Python dependencies.
@@ -23,13 +19,9 @@ The example was run on September 19, 2026 with Co-op Translator 0.21.0 and Azure
 
 These are individual run measurements, not performance guarantees. Setup time is excluded; provider billing was not measured. An unchanged run can still perform a provider health check.
 
-Inspect the [initial translation](assets/demo/before.txt), [updated translation](assets/demo/after.txt), [complete translation diff](assets/demo/update.diff), [stale review](assets/demo/review-stale.txt), [final review](assets/demo/review-after.txt), and [run details](assets/demo/results.json). Full-file translation may change other wording, as the captured diff shows. The demo omits the generated disclaimer from the image for space; both text artifacts retain it.
+Inspect the [initial translation](assets/demo/before.txt), [updated translation](assets/demo/after.txt), [complete translation diff](assets/demo/update.diff), [stale review](assets/demo/review-stale.txt), [final review](assets/demo/review-after.txt), and [run details](assets/demo/results.json). Full-file translation may change other wording, as the captured diff shows. Both text artifacts retain the generated disclaimer.
 
-Human review still matters: the captured update uses `[사용 가이드](guide.md)을`; the Korean particle should be `[사용 가이드](guide.md)를`. The recording keeps this output intact rather than presenting an edited translation as model output. The structural review passes despite this wording issue.
-
-The [rendering script](assets/demo/render.py) creates the static preview and GIF from these files. With Pillow installed, run it with `--font` pointing to a Korean-capable TrueType font. It does not call a model or simulate new results.
-
-For an existing public example, compare the [English README](https://github.com/microsoft/generative-ai-for-beginners/blob/main/README.md) and [Korean README](https://github.com/microsoft/generative-ai-for-beginners/blob/main/translations/ko/README.md) in Generative AI for Beginners. These documents demonstrate repository usage, not a measured output from this tutorial.
+Human review still matters: the captured update uses `[사용 가이드](guide.md)을`; the Korean particle should be `[사용 가이드](guide.md)를`. The text artifacts keep this output intact rather than presenting an edited translation as model output. The structural review passes despite this wording issue.
 
 ## 1. Prepare a small folder
 
@@ -130,5 +122,3 @@ With current translations and unchanged configuration, the translator skips the 
 - [Translate only a README and open a pull request](github-actions.md#your-first-readme-translation-pr).
 - [Choose CLI, Python API, or MCP](workflows.md).
 - [Report a translation problem without coding](https://github.com/Azure/co-op-translator/issues/new?template=translation_feedback.yml).
-
-When sharing a recording, include the package version, provider/model, and run date. Keep installation and credential setup separate from edited playback time. Show actual output and disclose cuts or accelerated playback; report cost only when measured from provider usage.

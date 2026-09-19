@@ -111,9 +111,7 @@ Want a translation pull request first? Follow [Your first README translation PR]
 3. **Preserve structure:** protect code and URL destinations, then rewrite relative paths for the translated repository tree.
 4. **Track and review:** save language-scoped metadata so later runs can skip unchanged files and report missing, stale, or structurally incomplete translations.
 
-Translated content remains in the repository, where it can be reviewed, versioned, and updated with the source:
-
-![Example of translated content organization](./imgs/translation-ex.png)
+Translated content remains in the repository, where it can be reviewed, versioned, and updated with the source.
 
 ## Translation state is managed like a software artifact
 

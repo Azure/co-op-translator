@@ -24,8 +24,6 @@ See Co-op Translator in use in **AI Agents for Beginners**: the same README sect
 
 [English source](https://github.com/microsoft/ai-agents-for-beginners/blob/main/README.md#-getting-started) · [Korean translation](https://github.com/microsoft/ai-agents-for-beginners/blob/main/translations/ko/README.md#-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0)
 
-Screenshots captured from GitHub on September 19, 2026. These show existing repository documents; they are separate from the reproducible example below.
-
 **[Try the small translation example](./docs/first-translation.md)**: preview two Markdown files without credentials, translate them, edit the source, and inspect the translation diff and review results.
 
 The default CLI updates changed files and skips current ones. It does not promise to translate only the edited sentence.

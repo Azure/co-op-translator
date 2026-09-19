@@ -26,9 +26,7 @@ See Co-op Translator in use in **AI Agents for Beginners**: the same README sect
 
 **[Try the small translation example](./docs/first-translation.md)**: preview two Markdown files without credentials, translate them, edit the source, and inspect the translation diff and review results.
 
-The default CLI updates changed files and skips current ones. It does not promise to translate only the edited sentence.
-
-> Translating one file is easy. Keeping an entire documentation repository translated, linked, and up to date is the hard part.
+The CLI updates changed files and skips unchanged translations.
 
 ## Why Co-op Translator?
 
@@ -46,23 +44,11 @@ Translation is not finished when a model returns text. Repository-scale document
 
 Co-op Translator has been used in Microsoft open-source learning repositories that combine lessons, code samples, links, notebooks, and supporting assets.
 
-### [AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners)
-
-A lesson-based repository with code samples and supporting documentation organized into language-specific versions.
-
-**[View repository](https://github.com/microsoft/ai-agents-for-beginners)** · **[Browse translations](https://github.com/microsoft/ai-agents-for-beginners/tree/main/translations)**
-
-### [Generative AI for Beginners](https://github.com/microsoft/generative-ai-for-beginners)
-
-A large curriculum containing lessons, code, images, and links across a multilingual documentation tree.
-
-**[View repository](https://github.com/microsoft/generative-ai-for-beginners)** · **[Browse translations](https://github.com/microsoft/generative-ai-for-beginners/tree/main/translations)**
-
-### [MCP for Beginners](https://github.com/microsoft/mcp-for-beginners)
-
-Technical learning content covering Model Context Protocol concepts, examples, and language-scoped documentation.
-
-**[View repository](https://github.com/microsoft/mcp-for-beginners)** · **[Browse translations](https://github.com/microsoft/mcp-for-beginners/tree/main/translations)**
+| Repository | Translations |
+| --- | --- |
+| [AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners) | [Browse translations](https://github.com/microsoft/ai-agents-for-beginners/tree/main/translations) |
+| [Generative AI for Beginners](https://github.com/microsoft/generative-ai-for-beginners) | [Browse translations](https://github.com/microsoft/generative-ai-for-beginners/tree/main/translations) |
+| [MCP for Beginners](https://github.com/microsoft/mcp-for-beginners) | [Browse translations](https://github.com/microsoft/mcp-for-beginners/tree/main/translations) |
 
 <details>
 <summary>Explore more multilingual Microsoft learning repositories</summary>
@@ -113,31 +99,7 @@ Want a translation pull request first? Follow [Your first README translation PR]
 
 Translated content remains in the repository, where it can be reviewed, versioned, and updated with the source.
 
-## Translation state is managed like a software artifact
-
-Co-op Translator manages translations as **versioned software artifacts**, not as disconnected static files. Language-scoped metadata records the source state for translated Markdown, images, and notebooks.
-
-This design lets repository owners:
-
-- Detect outdated translations without retranslating unchanged files
-- Let hosted integrations preserve accepted human edits in unchanged Markdown blocks through an optional translation state provider
-- Apply the same maintenance model to Markdown, images, and notebooks
-- Review translation completeness and repository structure in CI
-- Scale translation maintenance across large, fast-moving repositories
-
-[Read how translation state is managed](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755)
-
-## Core capabilities
-
-- Incremental translation based on source changes and language-scoped metadata
-- Markdown chunking, recovery, structural validation, and URL protection
-- Translation of Markdown, Jupyter notebooks, and text embedded in images
-- Relative-link rewriting for translated repository layouts
-- Credential-free, write-free dry runs across the CLI, Python API, and MCP
-- Deterministic review of translation freshness, structure, and local links
-- Azure OpenAI, OpenAI, and Anthropic Claude support for provider-backed translation
-- Azure AI Vision support for image text extraction
-- Host-agent translation of Markdown and notebook chunks through MCP
+Language-scoped metadata tracks translation freshness; read more about [managing translations as versioned software artifacts](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/rethinking-documentation-translation-treating-translations-as-versioned-software/4491755).
 
 ## Choose your interface
 
@@ -145,7 +107,7 @@ This design lets repository owners:
 | --- | --- | --- |
 | CLI | Local repository work and scripts | [CLI reference](./docs/cli.md) |
 | Python API | Applications and custom automation | [Python API](./docs/api.md) |
-| MCP server | Agent and editor workflows | [MCP server](./docs/mcp.md) |
+| MCP server | Agent and editor workflows, including host-agent translation of Markdown and notebook chunks | [MCP server](./docs/mcp.md) |
 | GitHub Actions | Repository translation in CI | [GitHub Actions](./docs/github-actions.md) |
 | Container | Isolated or repeatable CLI runs | [Quick run](#container) |
 

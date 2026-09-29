@@ -8,7 +8,8 @@ authors = [
 ]
 maintainers = [
     "Minseok Song <minseok.song@mssong.com>",
-    "timothychungd <timothychungd@gmail.com>"
+    "timothychungd <timothychungd@gmail.com>",
+    "Hiroshi Yoshioka <40815708+hyoshioka0128@users.noreply.github.com>"
 ]
 repository = "https://github.com/Azure/co-op-translator"
 license = "MIT"

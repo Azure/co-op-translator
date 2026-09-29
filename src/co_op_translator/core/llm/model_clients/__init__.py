@@ -4,6 +4,7 @@ from co_op_translator.core.llm.model_clients.agent_framework import (
 from co_op_translator.core.llm.model_clients.factory import (
     MODEL_CLIENT_ENV_VAR,
     ModelClientBackend,
+    SemanticKernelDeprecationWarning,
     create_translation_model_client,
     get_model_client_backend,
 )
@@ -21,6 +22,7 @@ __all__ = [
     "MODEL_CLIENT_ENV_VAR",
     "ModelClientBackend",
     "ModelResponse",
+    "SemanticKernelDeprecationWarning",
     "SemanticKernelModelClient",
     "StructuredTranslationModelClient",
     "TranslationModelClient",

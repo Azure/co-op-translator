@@ -701,7 +701,7 @@ ANTHROPIC_API_KEY="..."
 ANTHROPIC_MODEL="claude-..."
 ```
 
-`ANTHROPIC_BASE_URL` and `ANTHROPIC_MAX_TOKENS` are optional. Anthropic uses the Agent Framework model client automatically.
+`ANTHROPIC_BASE_URL` and `ANTHROPIC_MAX_TOKENS` are optional. Microsoft Agent Framework is the default model client for all providers starting with Co-op Translator 0.22.0. Semantic Kernel can still be selected temporarily with `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, but doing so emits a deprecation warning; see [configuration](configuration.md#model-client-backend) for the staged removal plan.
 
 Required Azure AI Vision variables for image translation:
 

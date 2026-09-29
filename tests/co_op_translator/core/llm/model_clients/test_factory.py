@@ -7,16 +7,17 @@ from co_op_translator.core.llm.model_clients import (
     MODEL_CLIENT_ENV_VAR,
     AgentFrameworkModelClient,
     ModelClientBackend,
+    SemanticKernelDeprecationWarning,
     SemanticKernelModelClient,
     create_translation_model_client,
     get_model_client_backend,
 )
 
 
-def test_model_client_backend_defaults_to_semantic_kernel(monkeypatch):
+def test_model_client_backend_defaults_to_agent_framework(monkeypatch):
     monkeypatch.delenv(MODEL_CLIENT_ENV_VAR, raising=False)
 
-    assert get_model_client_backend() == ModelClientBackend.SEMANTIC_KERNEL
+    assert get_model_client_backend() == ModelClientBackend.AGENT_FRAMEWORK
 
 
 def test_model_client_backend_accepts_agent_framework_alias(monkeypatch):
@@ -36,15 +37,21 @@ def test_model_client_backend_rejects_unknown_value(monkeypatch):
 def test_factory_creates_semantic_kernel_adapters(provider, monkeypatch):
     monkeypatch.setenv(MODEL_CLIENT_ENV_VAR, "semantic-kernel")
     config_values = _patch_provider_config(provider)
-    with config_values:
+    with (
+        config_values,
+        pytest.warns(
+            SemanticKernelDeprecationWarning,
+            match="deprecated.*0.22.0.*optional dependency.*0.23.0.*removal.*0.24.0",
+        ),
+    ):
         client = create_translation_model_client(provider)
 
     assert isinstance(client, SemanticKernelModelClient)
 
 
 @pytest.mark.parametrize("provider", list(LLMProvider))
-def test_factory_creates_agent_framework_adapters(provider, monkeypatch):
-    monkeypatch.setenv(MODEL_CLIENT_ENV_VAR, "agent-framework")
+def test_factory_defaults_to_agent_framework_adapters(provider, monkeypatch):
+    monkeypatch.delenv(MODEL_CLIENT_ENV_VAR, raising=False)
     config_values = _patch_provider_config(provider)
     with config_values:
         client = create_translation_model_client(provider)
@@ -52,16 +59,11 @@ def test_factory_creates_agent_framework_adapters(provider, monkeypatch):
     assert isinstance(client, AgentFrameworkModelClient)
 
 
-def test_anthropic_defaults_to_agent_framework(monkeypatch):
-    monkeypatch.delenv(MODEL_CLIENT_ENV_VAR, raising=False)
-    with _patch_provider_config(LLMProvider.ANTHROPIC):
-        client = create_translation_model_client(LLMProvider.ANTHROPIC)
-
-    assert isinstance(client, AgentFrameworkModelClient)
-
-
 def test_anthropic_rejects_semantic_kernel_backend():
-    with pytest.raises(ValueError, match="Agent Framework"):
+    with (
+        pytest.warns(SemanticKernelDeprecationWarning),
+        pytest.raises(ValueError, match="Agent Framework"),
+    ):
         create_translation_model_client(
             LLMProvider.ANTHROPIC,
             backend=ModelClientBackend.SEMANTIC_KERNEL,

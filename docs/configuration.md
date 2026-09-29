@@ -47,17 +47,19 @@ The tool auto-detects providers in this order:
 2. OpenAI
 3. Anthropic
 
-If no provider is configured, `translate`, `evaluate`, `migrate-links`, and `run_translation` fail during configuration checks. `co-op-review` and `run_review` are deterministic maintenance checks and do not require provider credentials.
+If no provider is configured, `translate`, `evaluate`, and `run_translation` fail during configuration checks. `migrate-links`, `co-op-review`, and `run_review` are deterministic maintenance operations and do not require provider credentials.
 
 ## Model client backend
 
-Azure OpenAI and OpenAI use Semantic Kernel by default. Anthropic uses the [Microsoft Agent Framework Anthropic integration](https://github.com/microsoft/agent-framework/tree/main/python/packages/anthropic) automatically. To select Agent Framework explicitly, set:
+Starting with Co-op Translator 0.22.0, Azure OpenAI, OpenAI, and Anthropic use Microsoft Agent Framework by default. No backend setting is required for normal use.
+
+Semantic Kernel remains available temporarily for compatibility. To select it explicitly, set:
 
 ```bash
-CO_OP_TRANSLATOR_MODEL_CLIENT="agent-framework"
+CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"
 ```
 
-Supported values are `semantic-kernel` and `agent-framework`. Anthropic requires `agent-framework`; explicitly selecting `semantic-kernel` with Anthropic fails with a configuration error. Invalid values fail during provider-backed translator initialization instead of silently falling back.
+Using Semantic Kernel emits a deprecation warning. The package is planned to move Semantic Kernel to an optional dependency in 0.23.0 and remove the integration in 0.24.0, subject to compatibility results and user feedback. Anthropic requires `agent-framework`; explicitly selecting `semantic-kernel` with Anthropic fails with a configuration error. Invalid values fail during provider-backed translator initialization instead of silently falling back. Follow the rollout and report blockers in [GitHub issue #543](https://github.com/Azure/co-op-translator/issues/543).
 
 ## Azure OpenAI
 
@@ -97,7 +99,7 @@ ANTHROPIC_BASE_URL="..."      # optional; omit for the Anthropic API
 ANTHROPIC_MAX_TOKENS="8192"   # optional; output token limit per request
 ```
 
-`ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` are required. You do not need to set `CO_OP_TRANSLATOR_MODEL_CLIENT`; Anthropic selects Agent Framework automatically.
+`ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` are required. You do not need to set `CO_OP_TRANSLATOR_MODEL_CLIENT`; Agent Framework is the default backend.
 
 `ANTHROPIC_MAX_TOKENS` defaults to `8192`, which leaves room for token-dense scripts such as Meitei Mayek. Lower it if your model or Anthropic-compatible endpoint caps output below that.
 
@@ -143,7 +145,7 @@ OpenAI and Anthropic support the same suffix convention. Keep every variable in 
 | `translate -img` | Yes | Yes | Translates images only. |
 | `translate` with no type flags | Yes | Yes | Default mode includes Markdown, notebooks, and images. |
 | `evaluate` | Yes | No | Uses LLM evaluation unless `--fast` is selected. |
-| `migrate-links` | Yes | No | Performs link migration, but still runs shared configuration checks. |
+| `migrate-links` | No | No | Performs local link migration without provider calls. |
 | `co-op-review` | No | No | Runs deterministic translation structure, freshness, Markdown, notebook, and local link checks. |
 | `run_translation(markdown=True)` | Yes | No | Programmatic Markdown translation. |
 | `run_translation(images=True)` | Yes | Yes | Programmatic image translation. |

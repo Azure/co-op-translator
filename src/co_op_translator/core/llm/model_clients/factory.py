@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 import os
+import warnings
 
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
 from co_op_translator.config.llm_config.anthropic import AnthropicConfig
@@ -12,6 +13,10 @@ from co_op_translator.core.llm.model_clients.protocol import TranslationModelCli
 MODEL_CLIENT_ENV_VAR = "CO_OP_TRANSLATOR_MODEL_CLIENT"
 
 
+class SemanticKernelDeprecationWarning(FutureWarning):
+    """Warn that the Semantic Kernel model client is being phased out."""
+
+
 class ModelClientBackend(str, Enum):
     SEMANTIC_KERNEL = "semantic-kernel"
     AGENT_FRAMEWORK = "agent-framework"
@@ -19,7 +24,7 @@ class ModelClientBackend(str, Enum):
 
 def get_model_client_backend() -> ModelClientBackend:
     value = os.getenv(
-        MODEL_CLIENT_ENV_VAR, ModelClientBackend.SEMANTIC_KERNEL.value
+        MODEL_CLIENT_ENV_VAR, ModelClientBackend.AGENT_FRAMEWORK.value
     ).strip()
     normalized = value.lower().replace("_", "-")
     try:
@@ -37,19 +42,19 @@ def create_translation_model_client(
     *,
     backend: ModelClientBackend | None = None,
 ) -> TranslationModelClient:
-    selected_backend = backend or _default_backend_for_provider(provider)
+    selected_backend = backend or get_model_client_backend()
     if selected_backend == ModelClientBackend.SEMANTIC_KERNEL:
+        warnings.warn(
+            "The Semantic Kernel model client is deprecated in Co-op Translator "
+            "0.22.0. It will become an optional dependency in 0.23.0 and is "
+            "planned for removal in 0.24.0. Unset "
+            f"{MODEL_CLIENT_ENV_VAR} or set it to "
+            f"'{ModelClientBackend.AGENT_FRAMEWORK.value}'.",
+            SemanticKernelDeprecationWarning,
+            stacklevel=2,
+        )
         return _create_semantic_kernel_client(provider)
     return _create_agent_framework_client(provider)
-
-
-def _default_backend_for_provider(provider: LLMProvider) -> ModelClientBackend:
-    configured_backend = os.getenv(MODEL_CLIENT_ENV_VAR)
-    if configured_backend is not None:
-        return get_model_client_backend()
-    if provider == LLMProvider.ANTHROPIC:
-        return ModelClientBackend.AGENT_FRAMEWORK
-    return ModelClientBackend.SEMANTIC_KERNEL
 
 
 def _create_semantic_kernel_client(

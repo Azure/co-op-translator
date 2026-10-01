@@ -61,6 +61,7 @@ If you want to add a new language, update the language and font mappings under `
 | ml | Malayalam | NotoSans-Medium.ttf | No | No |
 | kn | Kannada | NotoSans-Medium.ttf | No | No |
 | km | Khmer | NotoSansKhmer-Medium.ttf | No | No |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | No | No |
 
 ## Add a Language
 

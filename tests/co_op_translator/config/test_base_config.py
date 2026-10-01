@@ -153,3 +153,21 @@ def test_get_language_codes_reads_packaged_font_mappings():
     assert "en" in language_codes
     assert "zh-TW" in language_codes
     assert len(language_codes) == len(set(language_codes))
+
+
+def test_anthropic_max_tokens_defaults_and_env_override(anthropic_env_vars):
+    from co_op_translator.config.llm_config.anthropic import AnthropicConfig
+
+    with patch.dict(os.environ, anthropic_env_vars, clear=True):
+        assert AnthropicConfig.get_max_tokens() == AnthropicConfig.DEFAULT_MAX_TOKENS
+
+    with patch.dict(
+        os.environ, {**anthropic_env_vars, "ANTHROPIC_MAX_TOKENS": "16384"}, clear=True
+    ):
+        assert AnthropicConfig.get_max_tokens() == 16384
+
+    with patch.dict(
+        os.environ, {**anthropic_env_vars, "ANTHROPIC_MAX_TOKENS": "lots"}, clear=True
+    ):
+        with pytest.raises(ValueError, match="ANTHROPIC_MAX_TOKENS"):
+            AnthropicConfig.get_max_tokens()

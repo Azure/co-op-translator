@@ -107,3 +107,15 @@ def test_get_font_path_reads_packaged_font():
     font_path = Path(FontConfig().get_font_path("en"))
 
     assert font_path.is_file()
+
+
+def test_manipuri_meitei_mayek_mapping_and_packaged_font():
+    """Manipuri (mni) should map to the packaged Meetei Mayek font and be LTR."""
+    font_config = FontConfig()
+
+    assert font_config.get_language_name("mni") == "Manipuri (Meitei Mayek)"
+    assert font_config.is_rtl("mni") is False
+
+    font_path = Path(font_config.get_font_path("mni"))
+    assert font_path.name == "NotoSansMeeteiMayek-Medium.ttf"
+    assert font_path.is_file()

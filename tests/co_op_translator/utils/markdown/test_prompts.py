@@ -39,3 +39,14 @@ def test_generate_prompt_template_includes_glossary_when_configured():
         assert "Co-op Translator" in prompt
     finally:
         set_glossary_terms([])
+
+
+def test_generate_prompt_template_includes_manipuri_meitei_mayek_template():
+    """Manipuri prompt should require Unicode Meitei Mayek output, not Bengali script."""
+    prompt = generate_prompt_template(
+        "mni", "Manipuri (Meitei Mayek)", "Test content", False
+    )
+
+    assert "Unicode Meitei Mayek" in prompt
+    assert "NEVER write Manipuri in Bengali script" in prompt
+    assert "STRUCTURE IS MORE IMPORTANT THAN STYLE." in prompt

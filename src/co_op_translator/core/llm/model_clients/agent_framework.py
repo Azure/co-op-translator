@@ -13,8 +13,19 @@ StructuredResponseT = TypeVar("StructuredResponseT", bound=BaseModel)
 class AgentFrameworkModelClient:
     """Adapt a Microsoft Agent Framework chat client to the translation boundary."""
 
-    def __init__(self, client: BaseChatClient[Any]) -> None:
+    def __init__(
+        self,
+        client: BaseChatClient[Any],
+        *,
+        max_output_tokens: int | None = None,
+    ) -> None:
         self._client = client
+        self._max_output_tokens = max_output_tokens
+
+    def _apply_output_limit(self, options: dict[str, Any]) -> None:
+        """Set an explicit completion budget for providers that default too low."""
+        if self._max_output_tokens is not None:
+            options["max_tokens"] = self._max_output_tokens
 
     async def complete(
         self,
@@ -31,6 +42,7 @@ class AgentFrameworkModelClient:
         options: dict[str, Any] = {}
         if temperature is not None:
             options["temperature"] = temperature
+        self._apply_output_limit(options)
 
         pending_response = self._client.get_response(
             messages,
@@ -64,6 +76,7 @@ class AgentFrameworkModelClient:
         options: dict[str, Any] = {"response_format": response_format}
         if temperature is not None:
             options["temperature"] = temperature
+        self._apply_output_limit(options)
 
         pending_response = self._client.get_response(messages, options=options)
         response = await cast(

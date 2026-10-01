@@ -169,4 +169,7 @@ kn:
 km:
   name: "Khmer"
   font: "NotoSansKhmer-Medium.ttf"
+mni:
+  name: "Manipuri (Meitei Mayek)"
+  font: "NotoSansMeeteiMayek-Medium.ttf"
   

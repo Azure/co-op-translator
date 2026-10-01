@@ -11,6 +11,9 @@ from co_op_translator.core.llm.model_clients import (
     create_translation_model_client,
     get_model_client_backend,
 )
+from co_op_translator.core.llm.model_clients.factory import (
+    ANTHROPIC_MAX_OUTPUT_TOKENS,
+)
 
 
 def test_model_client_backend_defaults_to_semantic_kernel(monkeypatch):
@@ -153,10 +156,6 @@ def _patch_provider_config(provider):
 def test_agent_framework_anthropic_client_sets_output_token_limit():
     with (
         _patch_provider_config(LLMProvider.ANTHROPIC),
-        patch(
-            "co_op_translator.core.llm.model_clients.factory.AnthropicConfig.get_max_tokens",
-            return_value=4321,
-        ),
         patch("agent_framework_anthropic.AnthropicClient"),
     ):
         client = create_translation_model_client(
@@ -165,4 +164,4 @@ def test_agent_framework_anthropic_client_sets_output_token_limit():
         )
 
     assert isinstance(client, AgentFrameworkModelClient)
-    assert client._max_output_tokens == 4321
+    assert client._max_output_tokens == ANTHROPIC_MAX_OUTPUT_TOKENS

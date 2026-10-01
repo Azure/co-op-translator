@@ -11,6 +11,11 @@ from co_op_translator.core.llm.model_clients.protocol import TranslationModelCli
 
 MODEL_CLIENT_ENV_VAR = "CO_OP_TRANSLATOR_MODEL_CLIENT"
 
+# Agent Framework's Anthropic client defaults max_tokens to 1024, which truncates
+# translations into token-dense scripts (Meitei Mayek uses ~6-8x the tokens of the
+# English source). 8192 is accepted by every currently supported Claude model.
+ANTHROPIC_MAX_OUTPUT_TOKENS = 8192
+
 
 class ModelClientBackend(str, Enum):
     SEMANTIC_KERNEL = "semantic-kernel"
@@ -130,7 +135,7 @@ def _create_agent_framework_client(
             base_url=AnthropicConfig.get_base_url(),
         )
         return AgentFrameworkModelClient(
-            client, max_output_tokens=AnthropicConfig.get_max_tokens()
+            client, max_output_tokens=ANTHROPIC_MAX_OUTPUT_TOKENS
         )
     else:
         raise ValueError(f"Unsupported LLM provider: {provider}")

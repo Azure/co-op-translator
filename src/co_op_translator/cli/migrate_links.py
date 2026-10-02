@@ -94,9 +94,7 @@ def migrate_links_command(
     """
     reporter = get_progress_reporter()
     try:
-        # Validate root directory and config
-        Config.check_configuration()
-
+        # Link migration is entirely local and does not require provider credentials.
         root_path = Path(root_dir).resolve()
         if not root_path.exists() or not root_path.is_dir():
             raise click.ClickException(f"Invalid root directory: {root_dir}")

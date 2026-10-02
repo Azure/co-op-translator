@@ -121,3 +121,13 @@ async def test_semantic_kernel_adapter_reports_empty_response_as_length():
 
     assert response.content == ""
     assert response.finish_reason == "length"
+
+
+@pytest.mark.asyncio
+async def test_agent_framework_adapter_applies_output_token_limit():
+    client = FakeAgentFrameworkClient()
+    adapter = AgentFrameworkModelClient(client, max_output_tokens=8192)  # type: ignore[arg-type]
+
+    await adapter.complete("system rules", "source content", temperature=0.2)
+
+    assert client.options == {"temperature": 0.2, "max_tokens": 8192}

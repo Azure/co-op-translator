@@ -94,9 +94,12 @@ Use Anthropic when calling the Claude API directly. Create an [Anthropic API key
 ANTHROPIC_API_KEY="..."
 ANTHROPIC_MODEL="claude-..."
 ANTHROPIC_BASE_URL="..."      # optional; omit for the Anthropic API
+ANTHROPIC_MAX_TOKENS="8192"   # optional; output token limit per request
 ```
 
 `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` are required. You do not need to set `CO_OP_TRANSLATOR_MODEL_CLIENT`; Anthropic selects Agent Framework automatically.
+
+`ANTHROPIC_MAX_TOKENS` defaults to `8192`, which leaves room for token-dense scripts such as Meitei Mayek. Lower it if your model or Anthropic-compatible endpoint caps output below that.
 
 ## Azure AI Vision
 

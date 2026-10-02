@@ -147,4 +147,19 @@ def _patch_provider_config(provider):
         get_model=lambda: "claude-test",
         get_api_key=lambda: "test-key",
         get_base_url=lambda: "https://api.anthropic.test",
+        get_max_tokens=lambda: 4321,
     )
+
+
+def test_agent_framework_anthropic_client_sets_output_token_limit():
+    with (
+        _patch_provider_config(LLMProvider.ANTHROPIC),
+        patch("agent_framework_anthropic.AnthropicClient"),
+    ):
+        client = create_translation_model_client(
+            LLMProvider.ANTHROPIC,
+            backend=ModelClientBackend.AGENT_FRAMEWORK,
+        )
+
+    assert isinstance(client, AgentFrameworkModelClient)
+    assert client._max_output_tokens == 4321

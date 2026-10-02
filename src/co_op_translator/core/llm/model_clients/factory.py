@@ -129,6 +129,9 @@ def _create_agent_framework_client(
             api_key=AnthropicConfig.get_api_key(),
             base_url=AnthropicConfig.get_base_url(),
         )
+        return AgentFrameworkModelClient(
+            client, max_output_tokens=AnthropicConfig.get_max_tokens()
+        )
     else:
         raise ValueError(f"Unsupported LLM provider: {provider}")
 

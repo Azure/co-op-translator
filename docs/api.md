@@ -701,7 +701,7 @@ ANTHROPIC_API_KEY="..."
 ANTHROPIC_MODEL="claude-..."
 ```
 
-`ANTHROPIC_BASE_URL` is optional. Anthropic uses the Agent Framework model client automatically.
+`ANTHROPIC_BASE_URL` and `ANTHROPIC_MAX_TOKENS` are optional. Anthropic uses the Agent Framework model client automatically.
 
 Required Azure AI Vision variables for image translation:
 

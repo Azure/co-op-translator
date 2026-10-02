@@ -21,16 +21,19 @@ logger = logging.getLogger(__name__)
 class TranslationMaintenanceMixin:
     async def retranslate_outdated_files(
         self, outdated_files: List[tuple[Path, Path]]
-    ) -> None:
+    ) -> int:
         """Translate files identified as outdated or requiring updates.
 
         Extracts language codes from translation file paths and re-processes files.
 
         Args:
             outdated_files: List of (original_file, translation_file) tuples to retranslate
+
+        Returns:
+            Number of files successfully retranslated.
         """
         if not outdated_files:
-            return
+            return 0
 
         files_to_translate = []
         for original_file, translation_file in outdated_files:
@@ -64,6 +67,7 @@ class TranslationMaintenanceMixin:
         ]
 
         reporter = get_progress_reporter()
+        modified_count = 0
 
         # Notebooks
         if notebook_items:
@@ -79,6 +83,7 @@ class TranslationMaintenanceMixin:
                     progress_bar.update(1)
                     progress_bar.set_postfix_str(f"Current: {original_file.name}")
                     if result:
+                        modified_count += 1
                         progress_bar.file_completed(original_file, language_code)
                     else:
                         progress_bar.file_failed(original_file, language_code)
@@ -97,9 +102,12 @@ class TranslationMaintenanceMixin:
                     progress_bar.update(1)
                     progress_bar.set_postfix_str(f"Current: {original_file.name}")
                     if result:
+                        modified_count += 1
                         progress_bar.file_completed(original_file, language_code)
                     else:
                         progress_bar.file_failed(original_file, language_code)
+
+        return modified_count
 
     async def retranslate_outdated_images(
         self, outdated_images: List[tuple[Path, Path, str]], fast_mode: bool = False

@@ -212,7 +212,10 @@ class TranslationWorkflowMixin:
                         logger.debug(
                             f"Failed to estimate tokens for outdated files: {e}"
                         )
-                    await self.retranslate_outdated_files(outdated_files)
+                    outdated_modified = await self.retranslate_outdated_files(
+                        outdated_files
+                    )
+                    total_modified += outdated_modified
 
             # Find outdated images needing retranslation
             if "images" in self.translation_types:

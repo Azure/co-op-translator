@@ -581,15 +581,43 @@ async def test_retranslate_outdated_files_routes_markdown_and_notebooks(
     translation_manager.translate_notebook = AsyncMock(return_value="notebook_result")
     translation_manager.translate_markdown = AsyncMock(return_value="markdown_result")
 
-    await translation_manager.retranslate_outdated_files(outdated_files)
+    modified_count = await translation_manager.retranslate_outdated_files(
+        outdated_files
+    )
 
+    assert modified_count == 2
     translation_manager.translate_notebook.assert_called_once_with(notebook_file, "ko")
     translation_manager.translate_markdown.assert_called_once_with(md_file, "ko")
 
 
 @pytest.mark.asyncio
-async def test_translate_project_async_runs_public_workflow_for_outdated_files(
+async def test_retranslate_outdated_files_counts_only_successful_translations(
     translation_manager, temp_project_dir
+):
+    successful_file = temp_project_dir / "successful.md"
+    failed_file = temp_project_dir / "failed.md"
+    outdated_files = [
+        (
+            successful_file,
+            temp_project_dir / "translations" / "ko" / "successful.md",
+        ),
+        (failed_file, temp_project_dir / "translations" / "ko" / "failed.md"),
+    ]
+    translation_manager.language_codes = ["ko"]
+    translation_manager.translate_markdown = AsyncMock(
+        side_effect=["translated.md", ""]
+    )
+
+    modified_count = await translation_manager.retranslate_outdated_files(
+        outdated_files
+    )
+
+    assert modified_count == 1
+
+
+@pytest.mark.asyncio
+async def test_translate_project_async_runs_public_workflow_for_outdated_files(
+    translation_manager, temp_project_dir, caplog
 ):
     test_md = temp_project_dir / "docs" / "test.md"
     translation_manager.language_codes = ["ko"]
@@ -598,7 +626,7 @@ async def test_translate_project_async_runs_public_workflow_for_outdated_files(
             (test_md, temp_project_dir / "translations" / "ko" / "docs" / "test.md")
         ]
     )
-    translation_manager.retranslate_outdated_files = AsyncMock()
+    translation_manager.retranslate_outdated_files = AsyncMock(return_value=1)
     translation_manager.translate_all_markdown_files = AsyncMock(return_value=(0, []))
     translation_manager.translation_types = ["markdown"]
     translation_manager.directory_manager = MagicMock()
@@ -611,8 +639,15 @@ async def test_translate_project_async_runs_public_workflow_for_outdated_files(
     translation_manager.directory_manager.migrate_markdown_image_links.return_value = 0
     translation_manager.directory_manager.migrate_notebook_image_links.return_value = 0
 
-    await translation_manager.translate_project_async()
+    caplog.set_level(
+        "INFO",
+        logger="co_op_translator.core.project.translation.translation_workflow",
+    )
+    modified_count, errors = await translation_manager.translate_project_async()
 
+    assert modified_count == 1
+    assert errors == []
+    assert "Translation completed. Modified 1 files." in caplog.messages
     translation_manager.directory_manager.cleanup_orphaned_translations.assert_called_once()
     translation_manager.directory_manager.sync_directory_structure.assert_called_once()
     translation_manager.get_outdated_translations.assert_called_once()

@@ -3,13 +3,109 @@ from unittest.mock import AsyncMock
 
 import pytest
 from agent_framework import ChatResponse, Message
+from agent_framework.openai import OpenAIChatCompletionClient
 from anthropic import AsyncAnthropic
 from agent_framework_anthropic import AnthropicClient
 from agent_framework_ollama import OllamaChatClient
 from httpx import AsyncClient, MockTransport, Request, Response
+from openai import AsyncOpenAI
 
 from co_op_translator.core.llm.model_clients import AgentFrameworkModelClient
 from co_op_translator.utils.llm.text_utils import TranslationResponse
+
+
+def _openai_response(content, *, finish_reason="stop"):
+    return Response(
+        200,
+        json={
+            "id": "chatcmpl_test",
+            "object": "chat.completion",
+            "created": 0,
+            "model": "gpt-test",
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {
+                        "role": "assistant",
+                        "content": content,
+                        "refusal": None,
+                        "annotations": [],
+                    },
+                    "finish_reason": finish_reason,
+                    "logprobs": None,
+                }
+            ],
+            "usage": {
+                "prompt_tokens": 1,
+                "completion_tokens": 1,
+                "total_tokens": 2,
+            },
+        },
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("finish_reason", ["stop", "length"])
+async def test_agent_framework_adapter_completes_through_openai_connector(
+    finish_reason,
+):
+    def respond(request: Request) -> Response:
+        assert request.url.path == "/v1/chat/completions"
+        payload = json.loads(request.content)
+        assert payload["model"] == "gpt-test"
+        assert payload["messages"] == [
+            {"role": "system", "content": "system"},
+            {"role": "user", "content": "source"},
+        ]
+        return _openai_response("translated", finish_reason=finish_reason)
+
+    http_client = AsyncClient(transport=MockTransport(respond))
+    openai_client = AsyncOpenAI(api_key="test-key", http_client=http_client)
+    client = OpenAIChatCompletionClient(
+        async_client=openai_client,
+        model="gpt-test",
+    )
+
+    try:
+        response = await AgentFrameworkModelClient(client).complete(
+            "system",
+            "source",
+        )
+    finally:
+        await openai_client.close()
+
+    assert response.content == "translated"
+    assert response.finish_reason == finish_reason
+
+
+@pytest.mark.asyncio
+async def test_openai_connector_supports_structured_translation_output():
+    def respond(request: Request) -> Response:
+        payload = json.loads(request.content)
+        assert payload["response_format"]["type"] == "json_schema"
+        assert (
+            "translations"
+            in payload["response_format"]["json_schema"]["schema"]["properties"]
+        )
+        return _openai_response('{"translations":["번역"]}')
+
+    http_client = AsyncClient(transport=MockTransport(respond))
+    openai_client = AsyncOpenAI(api_key="test-key", http_client=http_client)
+    client = OpenAIChatCompletionClient(
+        async_client=openai_client,
+        model="gpt-test",
+    )
+
+    try:
+        response = await AgentFrameworkModelClient(client).complete_structured(
+            "system",
+            "source",
+            TranslationResponse,
+        )
+    finally:
+        await openai_client.close()
+
+    assert response == TranslationResponse(translations=["번역"])
 
 
 @pytest.mark.asyncio

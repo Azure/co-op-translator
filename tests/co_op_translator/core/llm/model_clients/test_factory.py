@@ -103,8 +103,8 @@ def test_agent_framework_openai_client_preserves_custom_base_url():
     client_constructor.assert_called_once_with(
         model="gpt-4o-mini",
         api_key="test-key",
-        org_id=None,
-        base_url="https://api.openai.com/v1",
+        org_id="org-test",
+        base_url="https://gateway.example/v1",
     )
 
 
@@ -138,9 +138,9 @@ def _patch_provider_config(provider):
         return patch.multiple(
             "co_op_translator.core.llm.model_clients.factory.OpenAIConfig",
             get_chat_model_id=lambda: "gpt-4o-mini",
-            get_org_id=lambda: None,
+            get_org_id=lambda: "org-test",
             get_api_key=lambda: "test-key",
-            get_base_url=lambda: "https://api.openai.com/v1",
+            get_base_url=lambda: "https://gateway.example/v1",
         )
     return patch.multiple(
         "co_op_translator.core.llm.model_clients.factory.AnthropicConfig",

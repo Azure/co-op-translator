@@ -14,7 +14,14 @@ class AnthropicConfig:
         "ANTHROPIC_API_KEY",
         "ANTHROPIC_MODEL",
     )
-    _OPTIONAL = ("ANTHROPIC_BASE_URL",)
+    _OPTIONAL = ("ANTHROPIC_BASE_URL", "ANTHROPIC_MAX_TOKENS")
+
+    # Agent Framework's Anthropic client defaults max_tokens to 1024, which
+    # truncates translations into token-dense scripts (Meitei Mayek uses ~6-8x
+    # the tokens of the English source). 8192 is accepted by every currently
+    # supported Claude model; ANTHROPIC_MAX_TOKENS overrides it for models or
+    # compatible endpoints with a different output cap.
+    DEFAULT_MAX_TOKENS = 8192
 
     @staticmethod
     def get_env_sets():
@@ -55,3 +62,20 @@ class AnthropicConfig:
         if env_set is None:
             return None
         return env_set.values.get("ANTHROPIC_BASE_URL")
+
+    @staticmethod
+    def get_max_tokens() -> int:
+        """Retrieve the output token limit for Claude translation requests."""
+        env_set = AnthropicConfig.get_active_env_set()
+        raw_value = env_set.values.get("ANTHROPIC_MAX_TOKENS") if env_set else None
+        if raw_value is None or not str(raw_value).strip():
+            return AnthropicConfig.DEFAULT_MAX_TOKENS
+        try:
+            max_tokens = int(str(raw_value).strip())
+        except ValueError as exc:
+            raise ValueError(
+                "ANTHROPIC_MAX_TOKENS must be a positive integer."
+            ) from exc
+        if max_tokens <= 0:
+            raise ValueError("ANTHROPIC_MAX_TOKENS must be a positive integer.")
+        return max_tokens

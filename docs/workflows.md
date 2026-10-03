@@ -12,7 +12,8 @@ Use this page when you are deciding where to start.
 | --- | --- | --- |
 | Translate or review a repository from a terminal | CLI | [CLI Reference](cli.md) |
 | Add translation to a Python script, service, notebook, or CI job | Python API | [Python API](api.md) |
-| Let an agent, editor, or MCP-compatible client translate content for you | MCP Server | [MCP Server](mcp.md) |
+| Let an AI agent translate or synchronize repository documentation | Agent skill | [AI agent workflow](agents.md) |
+| Let an editor or MCP-compatible client call translation tools | MCP Server | [MCP Server](mcp.md) |
 | Translate one Markdown document, notebook, or image that your app already loaded | Python API or MCP Server | [Python API](api.md) or [MCP Server](mcp.md) |
 | Translate an entire repository with standard output folders and metadata | CLI or `run_translation` | [CLI Reference](cli.md) or [Python API](api.md) |
 

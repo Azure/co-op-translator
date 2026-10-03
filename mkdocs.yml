@@ -253,6 +253,7 @@ nav:
   - Home: index.md
   - Your first translation: first-translation.md
   - Choose Your Workflow: workflows.md
+  - AI Agent Workflow: agents.md
   - Configuration: configuration.md
   - Azure AI Setup: azure-ai-setup.md
   - CLI Reference: cli.md
@@ -264,3 +265,4 @@ nav:
   - Troubleshooting: troubleshooting.md
   - Microsoft Beginners: microsoft-beginners.md
   - Maintainer Guide: maintainer-guide.md
+  - Agent Plugin Maintenance: agent-plugin-maintenance.md

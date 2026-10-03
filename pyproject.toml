@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "co_op_translator"
 version = "0.22.0"
-description = "Easily automate the translation of your documentation into multiple languages to reach a global audience."
+description = "Translate and synchronize repository documentation with AI agents, Python, or CI."
 authors = [
     "Minseok Song <minseok.song@mssong.com>",
     "timothychungd <timothychungd@gmail.com>"
@@ -14,7 +14,7 @@ maintainers = [
 repository = "https://github.com/Azure/co-op-translator"
 license = "MIT"
 readme = "README.md"
-keywords = ["translator", "translation", "azure", "openai", "anthropic", "claude"]
+keywords = ["translation", "documentation", "localization", "markdown", "jupyter", "ai-agent", "mcp"]
 packages = [{ include = "co_op_translator", from = "src" }]
 include = ["src/co_op_translator/fonts/*", "src/co_op_translator/templates/**/*"]
 documentation = "https://azure.github.io/co-op-translator/"

@@ -4,6 +4,8 @@ Keep multilingual GitHub documentation current as your source evolves.
 
 Co-op Translator detects changed source content, updates stale translations, and preserves the links and structure of Markdown, Jupyter notebooks, and images.
 
+**Using an AI agent?** Install the [Co-op Translator skill](./docs/agents.md) to translate repository documentation, sync changed files, and review the results. Use it when multiple languages, linked documents, or recurring updates need a repeatable workflow.
+
 Translate Markdown and notebooks with **Azure OpenAI, OpenAI, or Anthropic**. Azure is optional for text translation; translating text inside images additionally requires Azure AI Vision.
 
 ![Python 3.11–3.14](https://img.shields.io/badge/python-3.11--3.14-blue)

@@ -80,6 +80,11 @@ class TranslationEvent:
     stage_label: str | None = None
     language: str | None = None
     current_path: str | None = None
+    file: str | None = None
+    block: str | int | None = None
+    attempt: int | None = None
+    translated: int | None = None
+    failed: int | None = None
     completed: int | None = None
     total: int | None = None
     progress: int | None = None
@@ -105,6 +110,11 @@ class TranslationEvent:
             "stage_label": self.stage_label,
             "language": self.language,
             "current_path": self.current_path,
+            "file": self.file,
+            "block": self.block,
+            "attempt": self.attempt,
+            "translated": self.translated,
+            "failed": self.failed,
             "completed": self.completed,
             "total": self.total,
             "progress": self.progress,

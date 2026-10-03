@@ -34,6 +34,7 @@ class JupyterNotebookTranslator:
         translations_dir: Path | None = None,
         image_dir: Path | None = None,
         lang_subdir: Path | None = None,
+        context: str | None = None,
     ):
         """Initialize the notebook translator.
 
@@ -44,7 +45,8 @@ class JupyterNotebookTranslator:
         self.translations_dir = translations_dir
         self.image_dir = image_dir
         self.lang_subdir = Path(lang_subdir) if lang_subdir else None
-        self.markdown_translator = MarkdownTranslator.create()
+        self.context = context
+        self.markdown_translator = MarkdownTranslator.create(context=context)
 
     def _load_notebook(self, notebook: str | dict[str, Any]) -> dict[str, Any]:
         if isinstance(notebook, dict):
@@ -116,6 +118,7 @@ class JupyterNotebookTranslator:
         translations_dir: Path | None = None,
         image_dir: Path | None = None,
         lang_subdir: Path | None = None,
+        context: str | None = None,
     ) -> "JupyterNotebookTranslator":
         """Create a Jupyter Notebook translator instance.
 
@@ -132,4 +135,5 @@ class JupyterNotebookTranslator:
             translations_dir=translations_dir,
             image_dir=image_dir,
             lang_subdir=lang_subdir,
+            context=context,
         )

@@ -6,6 +6,7 @@ from co_op_translator.utils.common.files.cleanup import (
     reset_translation_directories,
 )
 from co_op_translator.utils.common.files.discovery import filter_files
+from co_op_translator.utils.common.files.project_paths import ProjectPathConfig
 from co_op_translator.utils.common.files.image_migration import (
     migrate_images_to_webp,
     migrate_translated_image_filenames,
@@ -50,6 +51,7 @@ __all__ = [
     "delete_translated_images_by_language_code",
     "delete_translated_markdown_files_by_language_code",
     "filter_files",
+    "ProjectPathConfig",
     "generate_translated_filename",
     "get_actual_image_path",
     "get_filename_and_extension",

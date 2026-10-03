@@ -26,6 +26,8 @@ from co_op_translator.core.project.translation.memory import TranslationStatePro
 from co_op_translator.utils.common.file_utils import read_input_file
 from co_op_translator.utils.common.token_estimation import count_tokens
 from co_op_translator.utils.common.task_utils import validate_concurrency
+from co_op_translator.utils.common.files.project_paths import ProjectPathConfig
+from co_op_translator.utils.common.exit_codes import PartialTranslationError
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +51,9 @@ class ProjectTranslator:
         initialize_translators: bool = True,
         translation_state_provider: TranslationStateProvider | None = None,
         concurrency: int = 1,
+        include_patterns=None,
+        exclude_patterns=None,
+        context: str | None = None,
     ):
         """Initialize project translation environment.
 
@@ -65,17 +70,16 @@ class ProjectTranslator:
         validate_concurrency(concurrency)
         # Normalize to canonical BCP 47 (accept alias input like tw/cn/br)
         self.language_codes = normalize_language_codes(language_codes.split())
-        self.root_dir = Path(root_dir).resolve()
+        self.path_config = ProjectPathConfig.resolve(
+            source=root_dir,
+            output=translations_dir,
+            include=include_patterns,
+            exclude=exclude_patterns,
+        )
+        self.root_dir = self.path_config.source_root
         self.lang_subdir = Path(lang_subdir) if lang_subdir else None
         # Resolve translations_dir relative to root_dir when a relative path is provided.
-        if translations_dir is not None:
-            t_dir = Path(translations_dir)
-            if t_dir.is_absolute():
-                self.translations_dir = t_dir.resolve()
-            else:
-                self.translations_dir = (self.root_dir / t_dir).resolve()
-        else:
-            self.translations_dir = self.root_dir / "translations"
+        self.translations_dir = self.path_config.output_root
 
         # Resolve image_dir relative to root_dir when a relative path is provided.
         if image_dir is not None:
@@ -91,9 +95,11 @@ class ProjectTranslator:
         if translation_types is None:
             translation_types = ["markdown", "notebook", "images"]
         self.translation_types = translation_types
+        self.context = context
 
         # Build effective excluded dirs, always excluding the configured translation/image trees
         excluded_dirs = set(EXCLUDED_DIRS)
+        excluded_dirs.update(self.path_config.discovery_exclusions())
         for dir_path in (self.translations_dir, self.image_dir):
             try:
                 rel = dir_path.relative_to(self.root_dir)
@@ -151,6 +157,8 @@ class ProjectTranslator:
             lang_subdir=self.lang_subdir,
             translation_state_provider=translation_state_provider,
             concurrency=concurrency,
+            include_patterns=self.path_config.include_patterns,
+            exclude_patterns=self.path_config.exclude_patterns,
         )
 
     def _initialize_translators(self) -> None:
@@ -195,6 +203,7 @@ class ProjectTranslator:
             translations_dir=self.translations_dir,
             image_dir=self.image_dir,
             lang_subdir=self.lang_subdir,
+            context=self.context,
         )
 
         new_notebook_translator = None
@@ -204,6 +213,7 @@ class ProjectTranslator:
                 translations_dir=self.translations_dir,
                 image_dir=self.image_dir,
                 lang_subdir=self.lang_subdir,
+                context=self.context,
             )
 
         self.text_translator = new_text_translator
@@ -219,7 +229,7 @@ class ProjectTranslator:
         self,
         update=False,
         fast_mode=False,
-    ):
+    ) -> tuple[int, list[str]] | None:
         """Start the project translation process synchronously.
 
         Serves as a public entry point that delegates to the async translation manager.
@@ -241,12 +251,7 @@ class ProjectTranslator:
 
         modified_count, errors = result
         if errors:
-            preview = "; ".join(str(error) for error in errors[:3])
-            if len(errors) > 3:
-                preview += f"; and {len(errors) - 3} more"
-            raise RuntimeError(
-                f"Translation failed for {len(errors)} file(s): {preview}"
-            )
+            raise PartialTranslationError(modified_count, errors)
         return modified_count, errors
 
     async def check_and_retry_translations(self):

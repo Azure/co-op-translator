@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from co_op_translator.review.checks.completeness import check_translation_completeness
 from co_op_translator.review.checks.freshness import check_translation_freshness
 from co_op_translator.review.checks.links import check_local_links
 from co_op_translator.review.checks.markdown_integrity import check_markdown_integrity
@@ -15,6 +16,7 @@ from co_op_translator.review.discovery import (
 )
 from co_op_translator.review.models import ReviewSummary
 from co_op_translator.review.targets import ReviewTarget, build_review_targets
+from co_op_translator.utils.common.files.project_paths import ProjectPathConfig
 
 
 @dataclass(frozen=True)
@@ -26,6 +28,8 @@ class ReviewConfig:
     targets: list[ReviewTarget] | None = None
     source_extensions: set[str] | None = None
     readme_only: bool = False
+    include_patterns: tuple[str, ...] = ()
+    exclude_patterns: tuple[str, ...] = ()
 
 
 class ReviewRunner:
@@ -46,6 +50,14 @@ class ReviewRunner:
         issues = []
         source_files: list[Path] = []
         for target in targets:
+            path_config = ProjectPathConfig.resolve(
+                source=target.source_root,
+                output=target.translations_dir,
+                include=self.config.include_patterns,
+                exclude=self.config.exclude_patterns,
+            )
+            target_exclusions = set(self.config.excluded_dirs)
+            target_exclusions.update(path_config.discovery_exclusions())
             readme_path = target.source_root / "README.md"
             if self.config.readme_only and not readme_path.is_file():
                 raise ValueError(f"README.md not found under {target.source_root}")
@@ -54,8 +66,10 @@ class ReviewRunner:
                     root_dir,
                     target.source_root,
                     self.config.changed_from,
-                    self.config.excluded_dirs,
+                    target_exclusions,
                     self.config.source_extensions,
+                    path_config.include_patterns,
+                    path_config.exclude_patterns,
                 )
                 if self.config.readme_only:
                     target_source_files = [
@@ -66,8 +80,10 @@ class ReviewRunner:
             else:
                 target_source_files = discover_source_files(
                     target.source_root,
-                    self.config.excluded_dirs,
+                    target_exclusions,
                     self.config.source_extensions,
+                    path_config.include_patterns,
+                    path_config.exclude_patterns,
                 )
             source_files.extend(target_source_files)
 
@@ -82,6 +98,9 @@ class ReviewRunner:
             )
             issues.extend(
                 check_markdown_integrity(target, target_source_files, languages)
+            )
+            issues.extend(
+                check_translation_completeness(target, target_source_files, languages)
             )
             issues.extend(check_local_links(target, target_source_files, languages))
 

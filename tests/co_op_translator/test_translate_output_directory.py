@@ -12,6 +12,7 @@ from co_op_translator.utils.common.metadata_utils import (
     read_text_metadata_for_source,
     save_text_metadata_for_source,
 )
+from co_op_translator.utils.common.exit_codes import PartialTranslationError
 
 
 @pytest.fixture
@@ -178,3 +179,102 @@ def test_output_file_is_rejected_before_provider_checks(cli, tmp_path):
     assert "--translations-dir" in result.output
     assert "Not a directory" in result.output
     cli.Config.check_configuration.assert_not_called()
+
+
+def test_translate_non_interactive_never_prompts(cli, monkeypatch, tmp_path):
+    (tmp_path / "README.md").write_text("# Hello\n", encoding="utf-8")
+    monkeypatch.setattr(
+        cli.click,
+        "prompt",
+        lambda *args, **kwargs: pytest.fail("non-interactive mode prompted"),
+    )
+    monkeypatch.setattr(cli.Config, "get_language_codes", Mock(return_value=["ko"]))
+
+    result = CliRunner().invoke(
+        cli.translate_command,
+        [
+            "-r",
+            str(tmp_path),
+            "-l",
+            "all",
+            "-md",
+            "--update",
+            "--dry-run",
+            "--non-interactive",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+
+
+def test_translate_configuration_error_uses_exit_code_3(cli, tmp_path):
+    result = CliRunner().invoke(
+        cli.translate_command,
+        ["-r", str(tmp_path / "missing"), "-l", "ko", "-md"],
+    )
+
+    assert result.exit_code == 3
+
+
+@pytest.mark.parametrize(
+    ("failure", "expected_code", "expected_event"),
+    [
+        (
+            PartialTranslationError(2, ["guide.md failed"], failed=1),
+            2,
+            "run_completed",
+        ),
+        (RuntimeError("provider request failed"), 4, "run_failed"),
+    ],
+)
+def test_translate_execution_errors_use_stable_exit_codes_and_events(
+    cli, monkeypatch, tmp_path, failure, expected_code, expected_event
+):
+    (tmp_path / "README.md").write_text("# Hello\n", encoding="utf-8")
+    events_path = tmp_path / "events.ndjson"
+
+    class FailingProjectTranslator:
+        def __init__(self, *args, **kwargs):
+            self.translation_manager = Mock()
+            self.translation_manager.estimate_tokens.return_value = {
+                "markdown": 1,
+                "notebook": 0,
+                "images": 0,
+                "outdated_markdown": 0,
+                "outdated_notebook": 0,
+                "outdated_images": 0,
+                "total": 1,
+            }
+
+        def translate_project(self, **kwargs):
+            raise failure
+
+    monkeypatch.setattr(cli, "ProjectTranslator", FailingProjectTranslator)
+    monkeypatch.setattr(
+        cli, "estimate_translation_words", Mock(return_value={"total": 1})
+    )
+
+    result = CliRunner().invoke(
+        cli.translate_command,
+        [
+            "-r",
+            str(tmp_path),
+            "-l",
+            "ko",
+            "-md",
+            "-y",
+            "--json-events",
+            str(events_path),
+        ],
+    )
+
+    assert result.exit_code == expected_code, result.output
+    events = [
+        json.loads(line)
+        for line in events_path.read_text(encoding="utf-8").splitlines()
+    ]
+    assert events[-1]["type"] == expected_event
+    if expected_event == "run_completed":
+        assert events[-1]["translated"] == 2
+        assert events[-1]["failed"] == 1
+        assert events[-1]["metadata"]["partial"] is True

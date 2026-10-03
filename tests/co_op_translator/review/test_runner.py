@@ -136,8 +136,17 @@ def test_readme_review_fails_for_incomplete_output(tmp_path, problem):
         review_command, ["-r", str(tmp_path), "-l", "ko", "--readme-only"]
     )
 
-    assert result.exit_code == 1
+    assert result.exit_code == (3 if problem == "missing-source" else 1)
     assert "README.md" in result.output
+
+
+def test_review_configuration_error_uses_exit_code_3(tmp_path):
+    result = CliRunner().invoke(
+        review_command,
+        ["-r", str(tmp_path / "missing"), "-l", "ko"],
+    )
+
+    assert result.exit_code == 3
 
 
 def test_readme_review_intersects_changed_sources(tmp_path, monkeypatch):

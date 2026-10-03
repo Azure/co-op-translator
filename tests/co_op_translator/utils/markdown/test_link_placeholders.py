@@ -1,6 +1,7 @@
 import pytest
 
 from co_op_translator.utils.markdown.link_placeholders import (
+    markdown_link_destinations,
     replace_markdown_link_destinations,
     restore_markdown_link_destinations,
 )
@@ -20,22 +21,26 @@ def test_link_destination_placeholders_round_trip_markdown_exactly():
     assert "images/architecture diagram.png" not in protected
     assert "../guides/setup_(advanced).md" not in protected
     assert '"Course details"' in protected
-    assert "[Overview](#overview)" in protected
+    assert "#overview" not in protected
     assert list(placeholder_map.values()) == [
         "https://example.com/course?WT.mc_id=test",
         "images/architecture diagram.png",
         "../guides/setup_(advanced).md",
+        "#overview",
     ]
     assert restore_markdown_link_destinations(protected, placeholder_map) == document
 
 
-def test_link_destination_placeholders_ignore_escaped_link_syntax():
+def test_link_destination_placeholders_ignore_escaped_link_syntax_but_protect_url():
     document = r"\[not a link](https://example.com/leave-visible)"
 
     protected, placeholder_map = replace_markdown_link_destinations(document)
 
-    assert protected == document
-    assert placeholder_map == {}
+    assert protected == r"\[not a link](@@LINK_DESTINATION_0@@)"
+    assert placeholder_map == {
+        "@@LINK_DESTINATION_0@@": "https://example.com/leave-visible"
+    }
+    assert restore_markdown_link_destinations(protected, placeholder_map) == document
 
 
 def test_link_destination_placeholders_preserve_nested_image_links():
@@ -88,18 +93,59 @@ def test_link_destination_placeholders_protect_autolinks_and_html_attributes():
     assert restore_markdown_link_destinations(protected, placeholder_map) == document
 
 
-def test_link_destination_placeholders_leave_anchors_and_bare_urls_visible():
+def test_html_attributes_are_protected_while_visible_prose_remains_translatable():
     document = (
-        "[Section](#section)\n"
-        "[Reference][section]\n\n"
-        "[section]: #section\n"
-        "Bare: https://example.com/docs?WT.mc_id=bare\n"
+        "<p>Install <strong>the tool</strong> from "
+        '<a href="https://example.com/guide">the guide</a>.</p>'
     )
 
     protected, placeholder_map = replace_markdown_link_destinations(document)
 
-    assert protected == document
-    assert placeholder_map == {}
+    assert protected == (
+        "<p>Install <strong>the tool</strong> from "
+        '<a href="@@LINK_DESTINATION_0@@">the guide</a>.</p>'
+    )
+    assert placeholder_map == {"@@LINK_DESTINATION_0@@": "https://example.com/guide"}
+    assert restore_markdown_link_destinations(protected, placeholder_map) == document
+
+
+def test_link_destination_placeholders_protect_anchors_and_bare_urls():
+    document = (
+        "[Section](#section)\n"
+        "[Reference][section]\n\n"
+        "[section]: #section\n"
+        "Bare: https://example.com/docs?WT.mc_id=bare.\n"
+    )
+
+    protected, placeholder_map = replace_markdown_link_destinations(document)
+
+    assert protected == (
+        "[Section](@@LINK_DESTINATION_0@@)\n"
+        "[Reference][section]\n\n"
+        "[section]: @@LINK_DESTINATION_1@@\n"
+        "Bare: @@LINK_DESTINATION_2@@.\n"
+    )
+    assert list(placeholder_map.values()) == [
+        "#section",
+        "#section",
+        "https://example.com/docs?WT.mc_id=bare",
+    ]
+    assert restore_markdown_link_destinations(protected, placeholder_map) == document
+
+
+def test_bare_url_placeholders_keep_balanced_parentheses_and_ignore_code():
+    document = (
+        "See https://example.com/reference_(v2)).\n"
+        "`https://example.com/inline`\n"
+        "```text\nhttps://example.com/fenced\n```\n"
+    )
+
+    protected, placeholder_map = replace_markdown_link_destinations(document)
+
+    assert list(placeholder_map.values()) == ["https://example.com/reference_(v2)"]
+    assert "`https://example.com/inline`" in protected
+    assert "https://example.com/fenced" in protected
+    assert restore_markdown_link_destinations(protected, placeholder_map) == document
 
 
 @pytest.mark.parametrize(
@@ -117,3 +163,18 @@ def test_restore_link_destinations_rejects_changed_missing_or_duplicate_placehol
 
     with pytest.raises(ValueError, match="exactly once"):
         restore_markdown_link_destinations(translated, placeholder_map)
+
+
+def test_link_parser_ignores_markdown_like_syntax_inside_code():
+    document = """Real [guide](guide.md) and `inline [fake](inline.md)`.
+
+```shell
+echo '[fake](fenced.md)'
+```
+
+    [fake](indented.md)
+"""
+
+    assert [item.destination for item in markdown_link_destinations(document)] == [
+        "guide.md"
+    ]

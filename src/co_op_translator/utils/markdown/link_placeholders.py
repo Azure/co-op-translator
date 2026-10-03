@@ -12,11 +12,15 @@ from markdown_it.rules_inline.link import link as parse_link
 from markdown_it.rules_inline.state_inline import StateInline
 from markdown_it.token import Token
 
+from co_op_translator.utils.markdown.spans import mask_markdown_code
+
 _DESTINATION_SPANS_ENV_KEY = "co_op_translator_link_destination_spans"
 _HTML_ATTRIBUTE_RE = re.compile(
     r"(?ix)\b(?P<name>href|src)\s*=\s*"
     r'(?:"(?P<double>[^"]*)"|\'(?P<single>[^\']*)\'|(?P<bare>[^\s\"\'=<>`]+))'
 )
+_BARE_URL_PREFIXES = ("http://", "https://")
+_TRAILING_URL_PUNCTUATION = ".,;:!?"
 
 
 @dataclass(frozen=True, order=True)
@@ -28,7 +32,7 @@ class _DestinationSpan:
 
 def _record_span(state: StateInline, start: int, end: int, kind: str) -> None:
     destination = state.src[start:end]
-    if destination and not destination.startswith("#"):
+    if destination:
         state.env.setdefault(_DESTINATION_SPANS_ENV_KEY, []).append(
             _DestinationSpan(start, end, kind)
         )
@@ -72,7 +76,7 @@ def _destination_span_from_markdown_it(
         end -= 1
 
     destination = state.src[start:end]
-    if not destination or destination.startswith("#"):
+    if not destination:
         return None
     return start, end
 
@@ -140,8 +144,63 @@ def _capture_html_destinations(state: StateInline, silent: bool) -> bool:
     return matched
 
 
+def _trim_bare_url_end(source: str, start: int, end: int) -> int:
+    """Exclude prose punctuation while retaining balanced URL delimiters."""
+
+    while end > start and source[end - 1] in _TRAILING_URL_PUNCTUATION:
+        end -= 1
+
+    delimiter_pairs = {")": "(", "]": "[", "}": "{"}
+    while end > start and source[end - 1] in delimiter_pairs:
+        closing = source[end - 1]
+        opening = delimiter_pairs[closing]
+        candidate = source[start:end]
+        if candidate.count(closing) <= candidate.count(opening):
+            break
+        end -= 1
+
+    return end
+
+
+def _capture_bare_url_destination(state: StateInline, silent: bool) -> bool:
+    """Tokenize an HTTP(S) URL that appears as plain Markdown text."""
+
+    start = state.pos
+    source = state.src
+    lowered = source[start:].lower()
+    prefix = next(
+        (
+            candidate
+            for candidate in _BARE_URL_PREFIXES
+            if lowered.startswith(candidate)
+        ),
+        None,
+    )
+    if prefix is None:
+        return False
+
+    result = state.md.helpers.parseLinkDestination(source, start, state.posMax)
+    if not result.ok:
+        return False
+
+    end = _trim_bare_url_end(source, start, result.pos)
+    if end <= start + len(prefix):
+        return False
+
+    if not silent:
+        _record_span(state, start, end, "bare_url")
+        state.pending += source[start:end]
+    state.pos = end
+    return True
+
+
 def _build_destination_parser() -> MarkdownIt:
     parser = MarkdownIt("commonmark")
+    parser.inline.ruler.before(
+        "text", "bare_url_destination", _capture_bare_url_destination
+    )
+    parser.inline.add_terminator_char("h")
+    parser.inline.add_terminator_char("H")
     parser.inline.ruler.at("link", _capture_link_destination)
     parser.inline.ruler.at("image", _capture_image_destination)
     parser.inline.ruler.at("autolink", _capture_autolink_destination)
@@ -180,7 +239,7 @@ def _reference_destination_spans(document: str) -> list[_DestinationSpan]:
             continue
 
         expected_url = str(token.meta.get("url", ""))
-        if not expected_url or expected_url.startswith("#"):
+        if not expected_url:
             continue
 
         region_start = offsets[token.map[0]]
@@ -222,10 +281,13 @@ def _reference_destination_spans(document: str) -> list[_DestinationSpan]:
 
 
 def _link_destination_spans(document: str) -> list[_DestinationSpan]:
+    parse_document = mask_markdown_code(document)
     env: dict[str, list[_DestinationSpan]] = {_DESTINATION_SPANS_ENV_KEY: []}
     tokens: list[Token] = []
-    _DESTINATION_PARSER.inline.parse(document, _DESTINATION_PARSER, env, tokens)
-    spans = env[_DESTINATION_SPANS_ENV_KEY] + _reference_destination_spans(document)
+    _DESTINATION_PARSER.inline.parse(parse_document, _DESTINATION_PARSER, env, tokens)
+    spans = env[_DESTINATION_SPANS_ENV_KEY] + _reference_destination_spans(
+        parse_document
+    )
     unique_spans = {(span.start, span.end): span for span in spans}
     return sorted(unique_spans.values())
 
@@ -240,8 +302,44 @@ def markdown_image_destination_spans(document: str) -> list[tuple[int, int]]:
     ]
 
 
+@dataclass(frozen=True)
+class MarkdownLinkDestination:
+    start: int
+    end: int
+    destination: str
+    kind: str
+
+
+def markdown_link_destinations(document: str) -> list[MarkdownLinkDestination]:
+    """Return parsed link destinations outside Markdown code spans."""
+
+    return [
+        MarkdownLinkDestination(
+            start=span.start,
+            end=span.end,
+            destination=document[span.start : span.end],
+            kind=span.kind,
+        )
+        for span in _link_destination_spans(document)
+    ]
+
+
+def rewrite_markdown_link_destinations(document: str, rewriter) -> str:
+    """Rewrite parsed destinations without touching labels, prose, or code."""
+
+    replacements: list[tuple[int, int, str]] = []
+    for link in markdown_link_destinations(document):
+        replacement = rewriter(link)
+        if replacement is not None and replacement != link.destination:
+            replacements.append((link.start, link.end, replacement))
+
+    for start, end, replacement in reversed(replacements):
+        document = document[:start] + replacement + document[end:]
+    return document
+
+
 def replace_markdown_link_destinations(document: str) -> tuple[str, dict[str, str]]:
-    """Replace non-anchor inline Markdown link destinations with placeholders."""
+    """Replace parsed Markdown destinations and URLs with placeholders."""
 
     placeholder_map: dict[str, str] = {}
     replacements: list[tuple[int, int, str]] = []

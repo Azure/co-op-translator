@@ -69,15 +69,27 @@ translate -l "zh-CN" -nb
 Write documentation translations to `docs/i18n/<lang>/`:
 
 ```bash
-translate -r docs --translations-dir i18n -l "ko ja" -md
+translate --source docs --output docs/i18n -l "ko ja" -md
 ```
 
-`--translations-dir` accepts an absolute path or a path relative to `--root-dir`.
-For example, `docs/guide.md` becomes `docs/i18n/ko/guide.md` with the command above.
-The same option applies to notebooks, `--readme-only`, freshness checks,
-language-folder migration, and `--dry-run`. Image output stays under
-`<root-dir>/translated_images/`. Without this option, text output defaults to
-`<root-dir>/translations/`.
+`--source` is an alias for `--root-dir`, and `--output` is an alias for
+`--translations-dir`. An output path already under the source, such as
+`--source docs --output docs/i18n`, is resolved correctly and automatically
+excluded from source discovery. The same path model is used by translation,
+review, and link migration. Image output stays under
+`<source>/translated_images/`. Without `--output`, text output defaults to
+`<source>/translations/`.
+
+Limit discovery and supply project terminology from a UTF-8 context file:
+
+```bash
+translate --source docs --output docs/i18n -l "ko" -md \
+  --include "guides/**/*.md" --exclude "archive/**" \
+  --context-file translation-context.md --non-interactive
+```
+
+Context is inserted after Co-op Translator's mandatory Markdown protection
+rules, so it cannot disable preservation of code or link destinations.
 
 Translate Markdown and images:
 
@@ -109,6 +121,16 @@ Write structured progress events:
 translate -l "ko ja" -md --json-events progress.ndjson
 ```
 
+Create a plan before a large run:
+
+```bash
+translate --source docs --output docs/i18n -l "ko ja" -md \
+  --include "**/*.md" --dry-run --plan-json plan.json
+```
+
+During `--dry-run`, `--plan-json` is the only requested output file that is
+written. Provider credentials are not required.
+
 ### Text concurrency
 
 Use `--concurrency` to process multiple text file/language pairs at once:
@@ -133,8 +155,11 @@ translation workers.
 | Option | Required | Description |
 | --- | --- | --- |
 | `-l`, `--language-codes` | Yes | Space-separated language codes, such as `"es fr de"`, or `"all"`. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `--translations-dir` | No | Markdown and notebook output directory. Absolute, or relative to `--root-dir`; defaults to `translations`. |
+| `-r`, `--root-dir`, `--source` | No | Source root. Defaults to the current directory. |
+| `--translations-dir`, `--output` | No | Markdown and notebook output directory. Relative paths resolve under the source unless they already include the source prefix; defaults to `translations`. |
+| `--include` | No | Include source paths matching this glob. Repeat for multiple patterns. |
+| `--exclude` | No | Exclude source paths matching this glob. Repeat for multiple patterns. |
+| `--context-file` | No | UTF-8 terminology and style instructions applied after mandatory syntax-preservation rules. |
 | `--concurrency` | No | Maximum simultaneous text file/language translations. Positive integer; defaults to `1`. |
 | `-u`, `--update` | No | Delete existing translations for selected languages and recreate them. |
 | `-img`, `--images` | No | Translate only image files. |
@@ -143,11 +168,12 @@ translation workers.
 | `-d`, `--debug` | No | Enable debug logging in the console. |
 | `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
 | `--json-events` | No | Write machine-readable translation progress events as NDJSON. |
+| `--plan-json` | No | Write a versioned JSON translation plan. This remains enabled during `--dry-run`. |
 | `-x`, `--fix` | No | Retranslate low-confidence Markdown files based on previous evaluation results. |
 | `-c`, `--min-confidence` | No | Confidence threshold for `--fix`. Defaults to `0.7`. |
 | `--add-disclaimer`, `--no-disclaimer` | No | Add or suppress machine translation disclaimers. Defaults to enabled in the CLI. |
 | `-f`, `--fast` | No | Deprecated fast image mode. |
-| `-y`, `--yes` | No | Auto-confirm prompts, useful in CI. |
+| `-y`, `--yes`, `--non-interactive` | No | Auto-confirm prompts, useful in CI and agent runs. |
 | `--repo-url` | No | Repository URL used in the README languages table sparse-checkout advisory. |
 | `--migrate-language-folders` | No | Rename legacy alias folders, such as `cn` or `tw`, to canonical BCP 47 folders. |
 | `--dry-run` | No | Preview language folder migration and translation estimates without writing files. |
@@ -248,17 +274,32 @@ Print GitHub-flavored Markdown output for CI summaries:
 co-op-review -l "ko ja" --changed-from origin/main --format github
 ```
 
+Emit a versioned verification report as JSON:
+
+```bash
+co-op-review --source docs --output docs/i18n -l "ko" --format json
+```
+
 ### Options
 
 | Option | Required | Description |
 | --- | --- | --- |
 | `-l`, `--language-code` | No | Language code to review. Can be passed multiple times or as a space-separated value. Defaults to all discovered translation languages. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
+| `-r`, `--root-dir`, `--source` | No | Source root. Defaults to the current directory. |
+| `--translations-dir`, `--output` | No | Translation output directory. Defaults to `translations` under the source. |
+| `--include` | No | Include source paths matching this glob. Repeat for multiple patterns. |
+| `--exclude` | No | Exclude source paths matching this glob. Repeat for multiple patterns. |
 | `--changed-from` | No | Git ref used to limit review to changed source files. |
 | `--readme-only` | No | Review only the root `README.md` translation. |
-| `--format` | No | Output format: `text` or `github`. Defaults to `text`. |
+| `--format` | No | Output format: `text`, `github`, or `json`. Defaults to `text`. |
 
-`co-op-review` currently checks for missing translated files, missing or stale translation metadata, Markdown frontmatter and code fence integrity, invalid translated notebook JSON, and missing local Markdown or image link targets. Missing links are warnings by default; structural and freshness problems fail the command.
+`co-op-review` checks missing or stale translations, Markdown and notebook
+structure, protected code literals, local links, missing or duplicated prose
+blocks, and suspicious unchanged English prose. Completeness and untranslated
+prose checks are deterministic heuristics; they identify suspicious output but
+do not prove linguistic quality. Missing links and suspicious prose are warnings
+by default; structural, freshness, missing-block, and protected-literal problems
+fail the command.
 
 ## co-op-translator-mcp
 
@@ -309,13 +350,60 @@ migrate-links -l "ko" --no-fallback-to-original
 | Option | Required | Description |
 | --- | --- | --- |
 | `-l`, `--language-codes` | Yes | Space-separated language codes, or `"all"`. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
+| `-r`, `--root-dir`, `--source` | No | Source root. Defaults to the current directory. |
+| `--translations-dir`, `--output` | No | Translation output directory. Defaults to `translations` under the source. |
+| `--include` | No | Include source paths matching this glob. Repeat for multiple patterns. |
+| `--exclude` | No | Exclude source paths matching this glob. Repeat for multiple patterns. |
 | `--image-dir` | No | Translated image directory relative to the root. Defaults to `translated_images`. |
 | `--dry-run` | No | Show files that would change without writing updates. |
 | `--fallback-to-original`, `--no-fallback-to-original` | No | Use original notebook links when translated notebooks are missing. Enabled by default. |
 | `-d`, `--debug` | No | Enable debug logging. |
 | `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-y`, `--yes` | No | Auto-confirm prompts when processing all languages. |
+| `-y`, `--yes`, `--non-interactive` | No | Auto-confirm prompts when processing all languages. |
+
+## Machine-readable schemas
+
+All schema names are versioned. Additive fields may be introduced within a
+version; consumers should ignore fields they do not recognize.
+
+- `co-op.translation.plan.v1` contains `source`, `output`, `include`,
+  `exclude`, `languages`, `new_files`, `outdated_files`, `current_files`,
+  `estimated_words`, `estimated_tokens`, and `api_required`. Each file item
+  has `file` and `language`. Multi-root API plans wrap individual plans in
+  `plans`.
+- `co-op.translation.event.v1` is one JSON object per NDJSON line. Every event
+  has `schema`, `type`, `run_id`, and `timestamp`. Depending on `type`, it
+  may include `file`, `language`, `block`, `attempt`, stage progress, token
+  and word estimates, or final `translated` and `failed` counts. Events never
+  include credentials, provider secrets, prompts, or translated document
+  contents.
+- `co-op.translation.verification.v1` contains the resolved root, source files,
+  languages, status, issue counts, verification booleans, and issue records.
+  Verification booleans cover source freshness, Markdown structure,
+  completeness heuristics, protected literals, and links.
+
+## Exit codes
+
+Automation-facing commands use these process exit codes:
+
+| Code | Meaning |
+| ---: | --- |
+| `0` | Success. |
+| `1` | Validation findings, including a failed verification report. |
+| `2` | Partial translation failure after other files completed. |
+| `3` | Invalid configuration, paths, or missing required provider setup. |
+| `4` | Fatal execution failure. |
+
+Successful unchanged files are skipped using their source hashes, so an
+interrupted run resumes at file granularity. Failed files are retried on the
+next run. Persisted block-level resume state is not currently available.
+
+Markdown translation protects fenced, indented, and inline code before model
+calls. It also protects HTTP(S) URLs, GitHub fragment destinations, Markdown
+link and image destinations, and `href`/`src` HTML attributes. Human-readable
+labels and prose remain available for translation. Keep environment variable
+names, commands, paths, product names, and programming identifiers in code spans
+or add explicit preservation rules with `--context-file`.
 
 ## Environment
 

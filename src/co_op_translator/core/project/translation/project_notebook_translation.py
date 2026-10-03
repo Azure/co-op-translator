@@ -5,7 +5,6 @@ import logging
 from pathlib import Path
 
 from co_op_translator.utils.common.file_utils import (
-    filter_files,
     handle_empty_document,
     read_input_file,
 )
@@ -154,7 +153,7 @@ class ProjectNotebookTranslationMixin:
 
         notebook_files = []
         for ext in self.supported_notebook_extensions:
-            notebook_files.extend(filter_files(self.root_dir, self.excluded_dirs, ext))
+            notebook_files.extend(self._filter_source_files(ext))
 
         tasks = []
         task_info = []

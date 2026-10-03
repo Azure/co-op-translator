@@ -4,6 +4,8 @@ from co_op_translator.utils.markdown.processing import (
     process_markdown,
     process_markdown_with_many_links,
     split_markdown_content,
+    replace_code_blocks,
+    restore_code_blocks,
 )
 
 
@@ -26,6 +28,17 @@ def test_process_markdown_with_many_links():
     assert isinstance(chunks, list)
     assert len(chunks) > 1
     assert all(count_links_in_markdown(chunk) <= max_links for chunk in chunks)
+
+
+def test_replace_code_blocks_ignores_escaped_backticks():
+    document = r"Translate \`this prose\` but preserve `pip install package`."
+
+    protected, placeholders = replace_code_blocks(document)
+
+    assert r"\`this prose\`" in protected
+    assert "`pip install package`" not in protected
+    assert list(placeholders.values()) == ["`pip install package`"]
+    assert restore_code_blocks(protected, placeholders) == document
 
 
 def test_group_lines_preserving_list_items_splits_sibling_items():
@@ -211,3 +224,26 @@ def test_split_markdown_content_keeps_list_item_with_code_placeholder():
 
     assert len(chunks) >= 1
     assert any("- Step 1" in chunk and "@@CODE_BLOCK_0@@" in chunk for chunk in chunks)
+
+
+def test_code_placeholders_preserve_fenced_indented_and_inline_code_exactly():
+    document = """Run `../scripts/setup.sh --mode=fast`.
+
+```bash
+echo '[Guide](../guide.md)'
+```
+
+    export API_ENDPOINT=https://example.com/v1
+
+| Step | Command |
+| --- | --- |
+| One | `python -m package.tool` |
+"""
+
+    protected, placeholders = replace_code_blocks(document)
+
+    assert "../scripts/setup.sh" not in protected
+    assert "[Guide](../guide.md)" not in protected
+    assert "API_ENDPOINT=https://example.com/v1" not in protected
+    assert "python -m package.tool" not in protected
+    assert restore_code_blocks(protected, placeholders) == document

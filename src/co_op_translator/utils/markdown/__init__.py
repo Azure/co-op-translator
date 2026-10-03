@@ -17,9 +17,12 @@ from co_op_translator.utils.markdown.image_links import (
 )
 from co_op_translator.utils.markdown.links import update_links
 from co_op_translator.utils.markdown.link_placeholders import (
+    markdown_link_destinations,
     replace_markdown_link_destinations,
+    rewrite_markdown_link_destinations,
     restore_markdown_link_destinations,
 )
+from co_op_translator.utils.markdown.spans import markdown_code_spans
 from co_op_translator.utils.markdown.notebook_links import (
     migrate_notebook_links,
     update_notebook_links,
@@ -57,12 +60,15 @@ __all__ = [
     "get_tokenizer",
     "get_translated_markdown_dir",
     "migrate_notebook_links",
+    "markdown_code_spans",
+    "markdown_link_destinations",
     "normalize_cjk_emphasis_markers",
     "normalize_internal_anchor_links",
     "process_markdown",
     "process_markdown_with_many_links",
     "replace_code_blocks",
     "replace_markdown_link_destinations",
+    "rewrite_markdown_link_destinations",
     "restore_code_blocks",
     "restore_markdown_link_destinations",
     "split_markdown_content",

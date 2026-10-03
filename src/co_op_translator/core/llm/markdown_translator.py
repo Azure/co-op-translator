@@ -17,18 +17,15 @@ from co_op_translator.utils.markdown import (
     restore_code_blocks,
     restore_markdown_link_destinations,
     normalize_cjk_emphasis_markers,
-    normalize_internal_anchor_links,
     SPLIT_DELIMITER,
 )
 from co_op_translator.utils.markdown.frontmatter import (
     get_frontmatter_parser,
 )
-from co_op_translator.utils.llm.code_comment_translator import (
-    translate_comments_in_code_blocks,
-)
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.utils.common.lang_utils import normalize_language_code
+from co_op_translator.utils.common.events import emit_translation_event
 from co_op_translator.utils.common.metadata_utils import (
     calculate_file_hash,
 )
@@ -75,6 +72,7 @@ class MarkdownTranslator(ABC):
         translations_dir: Path | None = None,
         image_dir: Path | None = None,
         lang_subdir: Path | None = None,
+        context: str | None = None,
     ):
         """Initialize translator with project configuration.
 
@@ -85,6 +83,7 @@ class MarkdownTranslator(ABC):
         self.translations_dir = translations_dir
         self.image_dir = image_dir
         self.lang_subdir = Path(lang_subdir) if lang_subdir else None
+        self.context = context
         self.font_config = FontConfig()
 
     def calculate_file_hash(self, file_path: Path) -> str:
@@ -106,11 +105,11 @@ class MarkdownTranslator(ABC):
     ) -> str:
         """Translate markdown content without rewriting project-relative paths.
 
-        The same chunking, placeholder restoration, code-comment translation,
-        frontmatter translation, CJK emphasis normalization, and anchor
-        normalization used by project translation are preserved here. Only
-        project path rewriting is skipped so callers can use this for standalone
-        long documents or compose it with a separate path-rewrite pass.
+        The same chunking, literal protection, placeholder restoration,
+        frontmatter translation, and CJK emphasis normalization used by project
+        translation are preserved here. Only project path rewriting is skipped so
+        callers can use this for standalone long documents or compose it with a
+        separate path-rewrite pass.
         """
 
         md_file_path = Path(source_path) if source_path else Path("content.md")
@@ -159,15 +158,6 @@ class MarkdownTranslator(ABC):
             placeholder_map,
         ) = replace_code_blocks(document_to_translate)
 
-        # Step 1.5: Translate only the comments inside fenced code blocks
-        placeholder_map = await translate_comments_in_code_blocks(
-            placeholder_map,
-            language_code,
-            language_name,
-            is_rtl,
-            self._run_prompt,
-        )
-
         document_with_placeholders, link_destination_map = (
             replace_markdown_link_destinations(document_with_placeholders)
         )
@@ -193,13 +183,7 @@ class MarkdownTranslator(ABC):
             translated_content, language_code=language_code
         )
 
-        # Step 4.5: Normalize internal anchor links against translated headings.
-        # Run this before restoring code placeholders so code examples are never rewritten.
-        translated_content = normalize_internal_anchor_links(
-            document, translated_content
-        )
-
-        # Step 4.75: Restore protected link destinations and code blocks.
+        # Step 4.5: Restore protected link destinations and code blocks.
         translated_content = restore_markdown_link_destinations(
             translated_content, link_destination_map
         )
@@ -210,7 +194,11 @@ class MarkdownTranslator(ABC):
         if frontmatter_section:
             # Translate the frontmatter section
             frontmatter_prompt = generate_prompt_template(
-                language_code, language_name, frontmatter_section, is_rtl
+                language_code,
+                language_name,
+                frontmatter_section,
+                is_rtl,
+                context=self.context,
             )
             try:
                 translated_fm_markdown = await asyncio.wait_for(
@@ -317,6 +305,13 @@ class MarkdownTranslator(ABC):
             except TranslationIncompleteError as e:
                 last_error = e
                 if attempt < self.CHUNK_RETRY_ATTEMPTS:
+                    emit_translation_event(
+                        "block_retry",
+                        file=str(md_file_path),
+                        language=language_code,
+                        block=chunk_label,
+                        attempt=attempt + 2,
+                    )
                     logger.warning(
                         "Incomplete translation for chunk %s of file '%s'; retrying same chunk.",
                         chunk_label,
@@ -337,6 +332,13 @@ class MarkdownTranslator(ABC):
             chunk_label,
             md_file_path.name,
             len(subchunks),
+        )
+        emit_translation_event(
+            "block_retry",
+            file=str(md_file_path),
+            language=language_code,
+            block=chunk_label,
+            attempt=self.CHUNK_RETRY_ATTEMPTS + 2,
         )
 
         sub_results = []
@@ -370,7 +372,11 @@ class MarkdownTranslator(ABC):
     ) -> str:
         anchored_chunk = self._add_chunk_anchors(chunk, chunk_label)
         prompt = generate_prompt_template(
-            language_code, language_name, anchored_chunk.text, is_rtl
+            language_code,
+            language_name,
+            anchored_chunk.text,
+            is_rtl,
+            context=self.context,
         )
         try:
             translated = await asyncio.wait_for(
@@ -717,6 +723,7 @@ class MarkdownTranslator(ABC):
         translations_dir: Path | None = None,
         image_dir: Path | None = None,
         lang_subdir: Path | None = None,
+        context: str | None = None,
     ) -> "MarkdownTranslator":
         """Create appropriate markdown translator based on configured provider.
 
@@ -749,4 +756,5 @@ class MarkdownTranslator(ABC):
             translations_dir=translations_dir,
             image_dir=image_dir,
             lang_subdir=lang_subdir,
+            context=context,
         )

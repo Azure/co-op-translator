@@ -4,6 +4,8 @@ import os
 import subprocess
 from pathlib import Path
 
+from co_op_translator.utils.common.files.discovery import filter_files
+
 SOURCE_EXTENSIONS = {".md", ".mdx", ".ipynb"}
 DEFAULT_EXCLUDED_DIRS = {
     ".git",
@@ -47,17 +49,22 @@ def discover_languages(translations_dir: Path) -> list[str]:
 
 
 def discover_source_files(
-    root_dir: Path, excluded_dirs: set[str], source_extensions: set[str] | None = None
+    root_dir: Path,
+    excluded_dirs: set[str],
+    source_extensions: set[str] | None = None,
+    include_patterns: tuple[str, ...] = (),
+    exclude_patterns: tuple[str, ...] = (),
 ) -> list[Path]:
-    files: list[Path] = []
-    for path in root_dir.rglob("*"):
-        if not path.is_file() or not is_source_file(path, source_extensions):
-            continue
-        relative_path = path.relative_to(root_dir)
-        if is_excluded(relative_path, excluded_dirs):
-            continue
-        files.append(path)
-    return sorted(files)
+    return sorted(
+        path
+        for path in filter_files(
+            root_dir,
+            excluded_dirs,
+            include_patterns=include_patterns,
+            exclude_patterns=exclude_patterns,
+        )
+        if is_source_file(path, source_extensions)
+    )
 
 
 def discover_changed_source_files(
@@ -66,6 +73,8 @@ def discover_changed_source_files(
     changed_from: str,
     excluded_dirs: set[str],
     source_extensions: set[str] | None = None,
+    include_patterns: tuple[str, ...] = (),
+    exclude_patterns: tuple[str, ...] = (),
 ) -> list[Path]:
     git_path_commands = [
         [
@@ -88,11 +97,25 @@ def discover_changed_source_files(
             capture_output=True,
         )
         if result.returncode != 0:
-            return discover_source_files(source_root, excluded_dirs, source_extensions)
+            return discover_source_files(
+                source_root,
+                excluded_dirs,
+                source_extensions,
+                include_patterns,
+                exclude_patterns,
+            )
         changed_paths.update(
             Path(os.fsdecode(value)) for value in result.stdout.split(b"\0") if value
         )
 
+    candidates = set(
+        filter_files(
+            source_root,
+            excluded_dirs,
+            include_patterns=include_patterns,
+            exclude_patterns=exclude_patterns,
+        )
+    )
     files: list[Path] = []
     for relative_path in changed_paths:
         if not is_source_file(relative_path, source_extensions):
@@ -101,5 +124,9 @@ def discover_changed_source_files(
             continue
         full_path = (git_root / relative_path).resolve()
         if full_path.is_file() and _is_relative_to(full_path, source_root):
-            files.append(full_path)
+            source_relative = full_path.relative_to(source_root)
+            if full_path in candidates and is_source_file(
+                source_relative, source_extensions
+            ):
+                files.append(full_path)
     return sorted(files)

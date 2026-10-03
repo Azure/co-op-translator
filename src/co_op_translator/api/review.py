@@ -70,6 +70,10 @@ def run_review(
     output_format: str = "text",
     fail_on_warnings: bool = False,
     readme_only: bool = False,
+    source: str | Path | None = None,
+    output: str | Path | None = None,
+    include: Iterable[str] | None = None,
+    exclude: Iterable[str] | None = None,
 ) -> ReviewSummary:
     """Programmatic deterministic review entrypoint.
 
@@ -83,6 +87,11 @@ def run_review(
     configure_safe_console_output()
 
     del update, yes, add_disclaimer, image_dir, repo_url, glossaries, dry_run
+
+    if source is not None:
+        root_dir = str(source)
+    if output is not None:
+        translations_dir = str(output)
 
     root_path = Path(root_dir).resolve()
     if not root_path.exists():
@@ -117,11 +126,15 @@ def run_review(
             targets=targets,
             source_extensions=_source_extensions_for_review_types(review_types),
             readme_only=readme_only,
+            include_patterns=tuple(include or ()),
+            exclude_patterns=tuple(exclude or ()),
         )
     ).run()
 
     if output_format == "github":
         click.echo(summary.to_github_markdown())
+    elif output_format == "json":
+        click.echo(summary.to_json())
     elif output_format == "text":
         click.echo(summary.to_text())
     else:

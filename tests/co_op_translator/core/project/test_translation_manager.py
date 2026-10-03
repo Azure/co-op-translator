@@ -355,7 +355,7 @@ async def test_translate_markdown_does_not_save_incomplete_retry(
 
 
 @pytest.mark.asyncio
-async def test_translate_all_markdown_skips_unchanged_previous_failure(
+async def test_translate_all_markdown_retries_unchanged_previous_failure(
     translation_manager, temp_project_dir
 ):
     source_file = temp_project_dir / "docs" / "test.md"
@@ -373,9 +373,12 @@ async def test_translate_all_markdown_skips_unchanged_previous_failure(
 
     modified_count, errors = await translation_manager.translate_all_markdown_files()
 
-    assert modified_count == 0
+    assert modified_count == 1
     assert errors == []
-    assert markdown_translator.calls == []
+    assert markdown_translator.calls
+    assert (lang_dir / "docs" / "test.md").exists()
+    metadata = json.loads((lang_dir / ".co-op-translator.json").read_text())
+    assert TEXT_TRANSLATION_FAILURES_KEY not in metadata
 
 
 @pytest.mark.asyncio

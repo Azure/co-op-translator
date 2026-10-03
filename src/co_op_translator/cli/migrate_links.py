@@ -10,7 +10,6 @@ import logging
 from pathlib import Path
 import click
 import os
-import re
 from urllib.parse import urlparse
 
 from co_op_translator.config.base_config import Config
@@ -29,6 +28,14 @@ from co_op_translator.config.constants import (
     SUPPORTED_NOTEBOOK_EXTENSIONS,
 )
 from co_op_translator.utils.common.lang_utils import normalize_language_codes
+from co_op_translator.utils.common.files.discovery import filter_files
+from co_op_translator.utils.common.files.project_paths import ProjectPathConfig
+from co_op_translator.utils.common.exit_codes import (
+    CliExitError,
+    EXIT_CONFIGURATION,
+    EXIT_FATAL,
+)
+from co_op_translator.utils.markdown.link_placeholders import markdown_link_destinations
 
 logger = logging.getLogger(__name__)
 
@@ -42,9 +49,29 @@ logger = logging.getLogger(__name__)
 )
 @click.option(
     "--root-dir",
+    "--source",
+    "root_dir",
     "-r",
     default=".",
     help="Root directory of the project (default is current directory).",
+)
+@click.option(
+    "--translations-dir",
+    "--output",
+    default=None,
+    help="Translation output directory (default: translations under the source).",
+)
+@click.option(
+    "--include",
+    "include_patterns",
+    multiple=True,
+    help="Include source paths matching this glob. Repeat for multiple patterns.",
+)
+@click.option(
+    "--exclude",
+    "exclude_patterns",
+    multiple=True,
+    help="Exclude source paths matching this glob. Repeat for multiple patterns.",
 )
 @click.option(
     "--image-dir",
@@ -74,6 +101,8 @@ logger = logging.getLogger(__name__)
 )
 @click.option(
     "--yes",
+    "--non-interactive",
+    "yes",
     "-y",
     is_flag=True,
     help="Automatically confirm prompts (useful when using -l 'all').",
@@ -81,6 +110,9 @@ logger = logging.getLogger(__name__)
 def migrate_links_command(
     language_codes,
     root_dir,
+    translations_dir,
+    include_patterns,
+    exclude_patterns,
     image_dir,
     dry_run,
     fallback_to_original,
@@ -95,9 +127,16 @@ def migrate_links_command(
     reporter = get_progress_reporter()
     try:
         # Link migration is entirely local and does not require provider credentials.
-        root_path = Path(root_dir).resolve()
-        if not root_path.exists() or not root_path.is_dir():
-            raise click.ClickException(f"Invalid root directory: {root_dir}")
+        try:
+            path_config = ProjectPathConfig.resolve(
+                source=root_dir,
+                output=translations_dir,
+                include=include_patterns,
+                exclude=exclude_patterns,
+            )
+        except ValueError as exc:
+            raise CliExitError(str(exc), EXIT_CONFIGURATION) from exc
+        root_path = path_config.source_root
 
         log_file_path = setup_logging(
             root_path, debug=debug, save_logs=save_logs, command_name="migrate-links"
@@ -113,11 +152,25 @@ def migrate_links_command(
         if save_logs and log_file_path is not None:
             reporter.info(f"Logs will be saved to: {log_file_path}")
 
-        translations_dir = root_path / "translations"
+        translations_dir = path_config.output_root
 
         if not translations_dir.exists():
             reporter.info(f"No translations directory found at: {translations_dir}")
             return
+
+        allowed_markdown: set[Path] = set()
+        discovery_exclusions = path_config.discovery_exclusions()
+        for ext in SUPPORTED_MARKDOWN_EXTENSIONS:
+            allowed_markdown.update(
+                path.relative_to(root_path)
+                for path in filter_files(
+                    root_path,
+                    discovery_exclusions,
+                    ext,
+                    include_patterns=path_config.include_patterns,
+                    exclude_patterns=path_config.exclude_patterns,
+                )
+            )
 
         # Canonicalize legacy alias-based language segments in links across translated content
         try:
@@ -211,12 +264,18 @@ def migrate_links_command(
                     )
                     continue
 
+                if relative not in allowed_markdown:
+                    continue
+
                 original_md_path = (root_path / relative).resolve()
 
                 # Analyze .ipynb links within root for this file
                 actionable_links = []
 
-                for alt_text, link in re.findall(r"\[(.*?)\]\((.*?)\)", content):
+                for link_info in markdown_link_destinations(content):
+                    if link_info.kind not in {"link", "reference"}:
+                        continue
+                    link = link_info.destination
                     # Normalize possible angle-bracketed URL and strip markdown title
                     raw = link.strip()
                     if raw.startswith("<") and ">" in raw:
@@ -267,11 +326,10 @@ def migrate_links_command(
                         original_abs=linked_abs,
                         language_code=lang_dir.name,
                         root_dir=root_path,
+                        translations_dir=translations_dir,
                     )
 
-                    actionable_links.append(
-                        (alt_text, link, linked_abs, candidate_translated)
-                    )
+                    actionable_links.append((link, linked_abs, candidate_translated))
 
                 if not actionable_links:
                     logger.debug(f"No actionable .ipynb links in {md_translated}")
@@ -291,7 +349,6 @@ def migrate_links_command(
                 all_missing = True
 
                 for (
-                    alt_text,
                     link,
                     linked_abs,
                     candidate_translated,
@@ -307,12 +364,11 @@ def migrate_links_command(
                     expected_link = os.path.relpath(
                         candidate_translated, translated_md_dir
                     ).replace(os.path.sep, "/")
-                    if parsed := urlparse(link):
-                        # preserve existing query/fragment when comparing
-                        if parsed.query:
-                            expected_link += f"?{parsed.query}"
-                        if parsed.fragment:
-                            expected_link += f"#{parsed.fragment}"
+                    parsed_link = urlparse(link)
+                    if parsed_link.query:
+                        expected_link += f"?{parsed_link.query}"
+                    if parsed_link.fragment:
+                        expected_link += f"#{parsed_link.fragment}"
 
                     if link != expected_link:
                         needs_update = True
@@ -342,6 +398,7 @@ def migrate_links_command(
                         md_file_path=original_md_path,
                         language_code=lang_dir.name,
                         root_dir=root_path,
+                        translations_dir=translations_dir,
                     )
 
                 if updated != content:
@@ -386,10 +443,12 @@ def migrate_links_command(
                 ],
             )
 
+    except click.ClickException:
+        raise
     except Exception as e:
         if debug:
             logger.exception("Error during migrate-links")
-        raise click.ClickException(str(e))
+        raise CliExitError(str(e), EXIT_FATAL) from e
 
 
 if __name__ == "__main__":

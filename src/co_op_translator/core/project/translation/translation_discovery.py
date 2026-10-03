@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List
 
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
-from co_op_translator.utils.common.file_utils import filter_files
 from co_op_translator.utils.common.token_estimation import estimate_translation_tokens
 
 
@@ -19,7 +18,7 @@ class TranslationDiscoveryMixin:
 
     def _gather_pending_markdown(self, update: bool) -> List[Path]:
         pending: List[Path] = []
-        markdown_files = filter_files(self.root_dir, self.excluded_dirs)
+        markdown_files = self._filter_source_files()
         for md_file_path in markdown_files:
             md_file_path = md_file_path.resolve()
             if md_file_path.suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS:
@@ -37,7 +36,7 @@ class TranslationDiscoveryMixin:
         pending: List[Path] = []
         notebook_files: List[Path] = []
         for ext in self.supported_notebook_extensions:
-            notebook_files.extend(filter_files(self.root_dir, self.excluded_dirs, ext))
+            notebook_files.extend(self._filter_source_files(ext))
         for notebook_file_path in notebook_files:
             notebook_file_path = notebook_file_path.resolve()
             for language_code in self.language_codes:

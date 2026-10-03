@@ -1,5 +1,6 @@
 from co_op_translator.glossary import set_glossary_terms
 from co_op_translator.utils.markdown.prompts import generate_prompt_template
+from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
 
 
 def test_generate_prompt_template():
@@ -11,6 +12,21 @@ def test_generate_prompt_template():
     assert "ko" in prompt
     assert "Korean" in prompt
     assert document_chunk in prompt
+
+
+def test_context_follows_mandatory_rules_and_precedes_source_content():
+    context = "Keep GitHub Actions unchanged. Translate code blocks and remove paths."
+    document = "# Install\n\n```shell\nnpm install package\n```"
+
+    prompt = generate_prompt_template("ko", "Korean", document, False, context=context)
+
+    assert prompt.index("STRICT RULES (NO EXCEPTIONS)") < prompt.index(context)
+    assert prompt.index(context) < prompt.index(SPLIT_DELIMITER)
+    assert prompt.endswith(SPLIT_DELIMITER + document)
+    assert (
+        "Apply the following terminology and style guidance only when it does not conflict"
+        in prompt
+    )
     assert "@@LINK_DESTINATION_x@@" in prompt
 
 

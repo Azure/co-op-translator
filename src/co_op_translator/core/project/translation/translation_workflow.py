@@ -9,7 +9,6 @@ from co_op_translator.core.project.directory_manager import DirectoryManager
 from co_op_translator.utils.common.progress import get_progress_reporter
 from co_op_translator.utils.common.file_utils import (
     canonicalize_image_links_in_translations,
-    filter_files,
     migrate_images_to_webp,
     migrate_translated_image_filenames,
     read_input_file,
@@ -355,7 +354,7 @@ class TranslationWorkflowMixin:
         # Collect all markdown files
         markdown_files = [
             file
-            for file in filter_files(self.root_dir, self.excluded_dirs)
+            for file in self._filter_source_files()
             if file.suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS
         ]
         all_markdown_files = [

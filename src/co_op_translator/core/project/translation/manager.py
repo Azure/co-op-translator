@@ -62,6 +62,8 @@ class TranslationManager(
         lang_subdir: Path | None = None,
         translation_state_provider: TranslationStateProvider | None = None,
         concurrency: int = 1,
+        include_patterns: tuple[str, ...] = (),
+        exclude_patterns: tuple[str, ...] = (),
     ):
         """Initialize translation manager with required components and settings.
 
@@ -88,6 +90,8 @@ class TranslationManager(
         self.image_dir = image_dir
         self.language_codes = language_codes
         self.excluded_dirs = excluded_dirs
+        self.include_patterns = include_patterns
+        self.exclude_patterns = exclude_patterns
         self.supported_image_extensions = supported_image_extensions
         self.supported_notebook_extensions = supported_notebook_extensions
         self.markdown_translator = markdown_translator
@@ -107,6 +111,17 @@ class TranslationManager(
             language_codes,
             excluded_dirs,
             image_dir=image_dir,
+        )
+
+    def _filter_source_files(self, extension: str | None = None) -> list[Path]:
+        from co_op_translator.utils.common.file_utils import filter_files
+
+        return filter_files(
+            self.root_dir,
+            self.excluded_dirs,
+            extension,
+            include_patterns=self.include_patterns,
+            exclude_patterns=self.exclude_patterns,
         )
 
     def _get_language_root(self, language_code: str) -> Path:

@@ -98,6 +98,46 @@ def test_cli_dry_run_does_not_require_credentials_or_write_files(
     assert _project_snapshot(sample_project) == before
 
 
+def test_cli_dry_run_writes_only_explicit_plan_file(
+    sample_project: Path,
+    credential_free_env: dict[str, str],
+):
+    before = _project_snapshot(sample_project)
+    plan_path = sample_project / "artifacts" / "plan.json"
+
+    result = _run_python(
+        [
+            "-m",
+            "co_op_translator",
+            "-l",
+            "ko",
+            "--source",
+            str(sample_project / "docs"),
+            "--output",
+            str(sample_project / "docs" / "i18n"),
+            "--include",
+            "guide.md",
+            "--dry-run",
+            "--plan-json",
+            str(plan_path),
+        ],
+        env=credential_free_env,
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(plan_path.read_text(encoding="utf-8"))
+    assert payload["schema"] == "co-op.translation.plan.v1"
+    assert payload["source"] == (sample_project / "docs").as_posix()
+    assert payload["output"] == (sample_project / "docs" / "i18n").as_posix()
+    assert payload["include"] == ["guide.md"]
+    assert payload["new_files"] == [{"file": "guide.md", "language": "ko"}]
+    assert not (sample_project / "docs" / "i18n").exists()
+    assert _project_snapshot(sample_project) == {
+        **before,
+        "artifacts/plan.json": plan_path.read_bytes(),
+    }
+
+
 def test_api_dry_run_does_not_require_credentials_or_write_files(
     sample_project: Path,
     credential_free_env: dict[str, str],
@@ -119,6 +159,37 @@ def test_api_dry_run_does_not_require_credentials_or_write_files(
     _assert_no_dry_run_outputs(sample_project)
     assert not events_path.exists()
     assert _project_snapshot(sample_project) == before
+
+
+def test_api_multi_root_dry_run_writes_plan_envelope(
+    tmp_path: Path,
+    credential_free_env: dict[str, str],
+):
+    roots = [tmp_path / "one", tmp_path / "two"]
+    for index, root in enumerate(roots, start=1):
+        root.mkdir()
+        (root / f"guide-{index}.md").write_text(f"# Guide {index}\n", encoding="utf-8")
+    plan_path = tmp_path / "multi-plan.json"
+    script = (
+        "from co_op_translator.api import run_translation; "
+        f"run_translation(language_codes='ko', root_dirs={[str(root) for root in roots]!r}, "
+        "markdown=True, dry_run=True, "
+        f"plan_json_path={str(plan_path)!r})"
+    )
+
+    result = _run_python(["-c", script], env=credential_free_env)
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(plan_path.read_text(encoding="utf-8"))
+    assert payload["schema"] == "co-op.translation.plan.v1"
+    assert len(payload["plans"]) == 2
+    assert [plan["source"] for plan in payload["plans"]] == [
+        root.as_posix() for root in roots
+    ]
+    assert [plan["new_files"][0]["file"] for plan in payload["plans"]] == [
+        "guide-1.md",
+        "guide-2.md",
+    ]
 
 
 def test_cli_dry_run_rejects_unestimated_fix_mode(

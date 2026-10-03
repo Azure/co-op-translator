@@ -23,6 +23,20 @@ from co_op_translator.utils.common.events import (
     translation_event_context,
 )
 from co_op_translator.utils.common.progress import get_progress_reporter
+from co_op_translator.utils.common.context import resolve_translation_context
+from co_op_translator.utils.common.exit_codes import (
+    CliExitError,
+    EXIT_CONFIGURATION,
+    EXIT_FATAL,
+    EXIT_PARTIAL_FAILURE,
+    PartialTranslationError,
+)
+from co_op_translator.utils.common.files.project_paths import ProjectPathConfig
+from co_op_translator.utils.common.planning import (
+    build_translation_plan,
+    write_translation_plan,
+)
+from co_op_translator.utils.common.word_estimation import estimate_translation_words
 
 logger = logging.getLogger(__name__)
 
@@ -41,18 +55,40 @@ ReadmeTranslator = None
 )
 @click.option(
     "--root-dir",
+    "--source",
+    "root_dir",
     "-r",
     default=".",
     help="Root directory of the project (default is current directory).",
 )
 @click.option(
     "--translations-dir",
+    "--output",
+    "translations_dir",
     type=click.Path(path_type=Path),
     default=None,
     help=(
         "Output directory for Markdown and notebook translations. Relative paths "
         "are resolved under --root-dir (default: translations)."
     ),
+)
+@click.option(
+    "--include",
+    "include_patterns",
+    multiple=True,
+    help="Include source paths matching this glob. Repeat for multiple patterns.",
+)
+@click.option(
+    "--exclude",
+    "exclude_patterns",
+    multiple=True,
+    help="Exclude source paths matching this glob. Repeat for multiple patterns.",
+)
+@click.option(
+    "--context-file",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    help="UTF-8 file containing terminology and style guidance for translation.",
 )
 @click.option(
     "--concurrency",
@@ -95,6 +131,15 @@ ReadmeTranslator = None
     ),
 )
 @click.option(
+    "--plan-json",
+    type=click.Path(dir_okay=False, path_type=Path),
+    default=None,
+    help=(
+        "Write a versioned translation plan as JSON. This is the only file "
+        "written during --dry-run."
+    ),
+)
+@click.option(
     "--fix",
     "-x",
     is_flag=True,
@@ -124,6 +169,8 @@ ReadmeTranslator = None
 )
 @click.option(
     "--yes",
+    "--non-interactive",
+    "yes",
     "-y",
     is_flag=True,
     help="Automatically confirm all prompts (useful for CI/CD pipelines).",
@@ -153,6 +200,9 @@ def translate_command(
     language_codes,
     root_dir,
     translations_dir,
+    include_patterns,
+    exclude_patterns,
+    context_file,
     update,
     images,
     markdown,
@@ -161,6 +211,7 @@ def translate_command(
     debug,
     save_logs,
     json_events,
+    plan_json,
     fix,
     fast,
     yes,
@@ -248,36 +299,46 @@ def translate_command(
         )
 
         # Validate root directory and README before checking provider credentials
-        root_path = Path(root_dir).resolve()
-        if not root_path.exists():
-            raise click.ClickException(f"Root directory does not exist: {root_dir}")
-        if not root_path.is_dir():
-            raise click.ClickException(f"Root path is not a directory: {root_dir}")
-
-        translations_path = (
-            root_path / translations_dir
-            if translations_dir is not None
-            else root_path / "translations"
-        ).resolve()
-        if translations_path.exists() and not translations_path.is_dir():
-            raise click.ClickException(
-                f"Not a directory for --translations-dir: {translations_path}"
+        try:
+            path_config = ProjectPathConfig.resolve(
+                source=root_dir,
+                output=translations_dir,
+                include=include_patterns,
+                exclude=exclude_patterns,
             )
+            translation_context = resolve_translation_context(context_file=context_file)
+        except ValueError as exc:
+            message = str(exc)
+            if message.startswith("Output path is not a directory:"):
+                message = message.replace(
+                    "Output path is not a directory:",
+                    "Not a directory for --translations-dir/--output:",
+                    1,
+                )
+            raise CliExitError(message, EXIT_CONFIGURATION) from exc
+        root_path = path_config.source_root
+        translations_path = path_config.output_root
 
         if readme_only and not (root_path / "README.md").is_file():
-            raise click.ClickException(f"README.md not found under {root_path}")
+            raise CliExitError(
+                f"README.md not found under {root_path}", EXIT_CONFIGURATION
+            )
 
         if not dry_run:
-            Config.check_configuration()
+            try:
+                Config.check_configuration()
+            except Exception as exc:
+                raise CliExitError(str(exc), EXIT_CONFIGURATION) from exc
 
         # Check Azure AI Service availability if images are included
         if not dry_run and "images" in translation_types:
             cv_available = VisionConfig.check_configuration()
             if not cv_available:
-                raise click.ClickException(
+                raise CliExitError(
                     "Image translation is enabled but Azure AI Service is not configured.\n"
                     "Please add AZURE_AI_SERVICE_API_KEY to your environment variables or use --markdown and/or --notebook flags to exclude images.\n"
-                    "See the .env.template file for required variables."
+                    "See the .env.template file for required variables.",
+                    EXIT_CONFIGURATION,
                 )
 
         log_file_path = setup_logging(
@@ -303,7 +364,10 @@ def translate_command(
 
         # Now run the LLM health check; raises on failure
         if not dry_run:
-            LLMConfig.validate_connectivity()
+            try:
+                LLMConfig.validate_connectivity()
+            except Exception as exc:
+                raise CliExitError(str(exc), EXIT_CONFIGURATION) from exc
             logger.info("LLM health check passed.")
             reporter.success("LLM health check passed.")
 
@@ -467,6 +531,7 @@ def translate_command(
                 add_disclaimer=add_disclaimer,
                 initialize_translator=not dry_run,
                 concurrency=concurrency,
+                context=translation_context,
             )
         else:
             translator = project_translator_class(
@@ -477,12 +542,16 @@ def translate_command(
                 add_disclaimer=add_disclaimer,
                 initialize_translators=not dry_run,
                 concurrency=concurrency,
+                include_patterns=path_config.include_patterns,
+                exclude_patterns=path_config.exclude_patterns,
+                context=translation_context,
             )
 
         # Estimate tokens before running translation and print a concise summary
         try:
             if request.mode == TranslationMode.README:
                 total_tokens = translator.estimate_tokens(update=update)
+                total_words = translator.estimate_words(update=update)
                 est = {
                     "markdown": total_tokens,
                     "notebook": 0,
@@ -491,9 +560,14 @@ def translate_command(
                     "outdated_notebook": 0,
                     "outdated_images": 0,
                     "total": total_tokens,
+                    "words": total_words,
                 }
             else:
                 est = translator.translation_manager.estimate_tokens(update=update)
+                word_estimate = estimate_translation_words(
+                    translator.translation_manager, update=update
+                )
+                est["words"] = word_estimate.get("total", 0)
             translation_parts = []
             if "markdown" in translation_types:
                 translation_parts.append(f"markdown: {est.get('markdown', 0):,}")
@@ -540,13 +614,24 @@ def translate_command(
             reporter.estimate_summary(
                 title="Estimated Translation Volume",
                 total_tokens=est.get("total", 0),
-                total_words=None,
+                total_words=est.get("words", 0),
                 rows=estimate_rows,
                 fallback=(
                     "Estimated tokens before translation: "
                     f"{est.get('total', 0):,} (breakdown: {breakdown})"
                 ),
             )
+            if plan_json is not None:
+                plan = build_translation_plan(
+                    paths=path_config,
+                    languages=lang_list,
+                    translation_types=translation_types,
+                    estimates=est,
+                    update=update,
+                    readme_only=request.mode == TranslationMode.README,
+                )
+                write_translation_plan(plan_json, plan)
+                reporter.info(f"Translation plan written to: {plan_json}")
         except Exception as e:
             if dry_run:
                 raise RuntimeError(f"Failed to estimate translation work: {e}") from e
@@ -555,7 +640,12 @@ def translate_command(
         # If dry-run, stop after estimation without making any changes
         if dry_run:
             reporter.success("Dry run complete: no changes made.")
-            emit_translation_event("run_completed", metadata={"dry_run": True})
+            emit_translation_event(
+                "run_completed",
+                translated=0,
+                failed=0,
+                metadata={"dry_run": True},
+            )
             return
 
         # Translate README sources as-is so freshness metadata matches committed content.
@@ -634,6 +724,11 @@ def translate_command(
             reporter.success(f"Total files retranslated: {total_retranslated}")
             if total_errors > 0:
                 reporter.error(f"Total errors: {total_errors}")
+                raise PartialTranslationError(
+                    total_retranslated,
+                    [f"{total_errors} low-confidence retranslation error(s)"],
+                    failed=total_errors,
+                )
 
             logger.info(
                 f"Project translation completed for languages: {language_codes}"
@@ -641,24 +736,55 @@ def translate_command(
 
         else:
             if request.mode == TranslationMode.README:
-                translator.translate(update=update)
+                results = translator.translate(update=update)
+                translated_count = (
+                    sum(not result.skipped for result in results)
+                    if isinstance(results, list)
+                    else 0
+                )
+                failed_count = 0
             else:
                 # Call translate_project with determined settings
-                translator.translate_project(
+                result = translator.translate_project(
                     update=update,
                     fast_mode=fast,
                 )
+                if isinstance(result, tuple) and len(result) == 2:
+                    translated_count, errors = result
+                    failed_count = len(errors)
+                else:
+                    translated_count = 0
+                    failed_count = 0
 
             logger.info(
                 f"Project translation completed for languages: {language_codes}"
             )
 
-        emit_translation_event("run_completed", metadata={"dry_run": dry_run})
+        if fix:
+            translated_count = total_retranslated
+            failed_count = total_errors
+        emit_translation_event(
+            "run_completed",
+            translated=translated_count,
+            failed=failed_count,
+            metadata={"dry_run": dry_run},
+        )
 
+    except PartialTranslationError as e:
+        emit_translation_event(
+            "run_completed",
+            translated=e.translated,
+            failed=e.failed,
+            metadata={"dry_run": dry_run, "partial": True},
+        )
+        raise CliExitError(str(e), EXIT_PARTIAL_FAILURE) from e
+    except click.ClickException as e:
+        emit_translation_event("run_failed", message=str(e), level="error")
+        raise
     except Exception as e:
         if debug:
             logger.exception("An error occurred during translation")
         emit_translation_event("run_failed", message=str(e), level="error")
-        raise click.ClickException(str(e))
+        raise CliExitError(str(e), EXIT_FATAL) from e
     finally:
         event_scope.__exit__(None, None, None)

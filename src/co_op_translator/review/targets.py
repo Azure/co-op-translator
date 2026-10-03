@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
+from co_op_translator.utils.common.files.project_paths import ProjectPathConfig
+
 
 @dataclass(frozen=True)
 class ReviewTarget:
@@ -45,13 +47,7 @@ def split_lang_placeholder(path: str) -> tuple[str, str | None]:
 
 
 def resolve_output_root(source_root: Path, output_root: str | None) -> Path:
-    if output_root is None:
-        return source_root / "translations"
-
-    output_path = Path(output_root)
-    if output_path.is_absolute():
-        return output_path.resolve()
-    return (source_root / output_path).resolve()
+    return ProjectPathConfig.resolve(source=source_root, output=output_root).output_root
 
 
 def build_review_targets(

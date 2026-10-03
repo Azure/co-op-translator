@@ -64,6 +64,7 @@ class ReadmeTranslator:
         markdown_translator=None,
         initialize_translator: bool = True,
         concurrency: int = 1,
+        context: str | None = None,
     ):
         validate_concurrency(concurrency)
         self.concurrency = concurrency
@@ -84,9 +85,10 @@ class ReadmeTranslator:
         self.image_dir = self._resolve_under_root(image_dir, "translated_images")
         self.add_disclaimer = add_disclaimer
         self.lang_subdir = Path(lang_subdir) if lang_subdir else None
+        self.context = context
         self.markdown_translator = markdown_translator
         if self.markdown_translator is None and initialize_translator:
-            self.markdown_translator = MarkdownTranslator.create()
+            self.markdown_translator = self._create_markdown_translator()
         self.source_path = (self.root_dir / "README.md").resolve()
 
     def _resolve_under_root(
@@ -104,7 +106,12 @@ class ReadmeTranslator:
 
     def _initialize_markdown_translator(self) -> None:
         if self.markdown_translator is None:
-            self.markdown_translator = MarkdownTranslator.create()
+            self.markdown_translator = self._create_markdown_translator()
+
+    def _create_markdown_translator(self):
+        if self.context is None:
+            return MarkdownTranslator.create()
+        return MarkdownTranslator.create(context=self.context)
 
     def _get_language_root(self, language_code: str) -> Path:
         lang_dir = self.translations_dir / language_code

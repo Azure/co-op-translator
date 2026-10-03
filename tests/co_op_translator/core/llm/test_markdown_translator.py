@@ -369,29 +369,15 @@ async def test_translate_markdown_protects_frontmatter_link_destinations(
 
 
 @pytest.mark.asyncio
-async def test_translate_markdown_translates_code_comments(
+async def test_translate_markdown_preserves_code_comments(
     real_markdown_translator, tmp_path
 ):
-    """Ensure that comments inside fenced code blocks are translated
-    while preserving the original code lines.
-    """
+    """Ensure fenced code, including comments, is preserved byte-for-byte."""
     # Create test file
     test_file = tmp_path / "example_comments.md"
     test_file.write_text(TEST_MD_WITH_COMMENTS)
 
     async def fake_prompt(prompt, index, total):
-        if "Each line is in the form 'COMMENT_n: <text>'." in prompt:
-            # Comment-only translation request for code blocks
-            _, user_part = prompt.split(SPLIT_DELIMITER, 1)
-            lines = [ln.strip() for ln in user_part.splitlines() if ln.strip()]
-            out_lines = []
-            for line in lines:
-                m = re.match(r"^(COMMENT_\d+):\s*(.*)$", line)
-                if not m:
-                    continue
-                prefix, text = m.groups()
-                out_lines.append(f"{prefix}: [es]{text}[/es]")
-            return "\n".join(out_lines)
         if "Sample Markdown" in prompt:
             return _translate_marked_prompt_body(
                 prompt, {"# Sample Markdown": "# Ejemplo de Markdown"}
@@ -414,27 +400,19 @@ async def test_translate_markdown_translates_code_comments(
     # Code line must remain intact
     assert 'print("Hello, world!")' in result
 
-    # Comments should be translated according to our fake_prompt
-    assert "# [es]First comment[/es]" in result
-    assert "# [es]Second comment[/es]" in result
+    assert "# First comment" in result
+    assert "# Second comment" in result
 
 
 @pytest.mark.asyncio
-async def test_translate_markdown_translates_mermaid_block(
+async def test_translate_markdown_preserves_mermaid_block(
     real_markdown_translator, tmp_path
 ):
-    """Ensure that Mermaid fenced code blocks are translated as diagrams,
-    preserving syntax while translating human-readable labels.
-    """
+    """Ensure Mermaid fenced code blocks are preserved byte-for-byte."""
     test_file = tmp_path / "example_mermaid.md"
     test_file.write_text(TEST_MD_WITH_MERMAID)
 
     async def fake_prompt(prompt, index, total):
-        # Mermaid-specific translation
-        if "MERMAID_SLOT_n" in prompt:
-            return _translate_numbered_prompt_slots(
-                prompt, "MERMAID_SLOT", lambda text: f"[es]{text}[/es]"
-            )
         if "Sample Markdown" in prompt:
             return _translate_marked_prompt_body(
                 prompt, {"# Sample Markdown": "# Ejemplo de Markdown"}
@@ -457,11 +435,9 @@ async def test_translate_markdown_translates_mermaid_block(
     # Mermaid syntax must still be present
     assert "graph TD;" in result
 
-    # Labels should be translated according to our fake_prompt
-    assert "[es]Start[/es]" in result
-    assert "[es]Decision[/es]" in result
-    assert "[es]Do it[/es]" in result
-    assert "[es]Stop[/es]" in result
+    assert "A[Start] --> B{Decision};" in result
+    assert "B -->|Yes| C[Do it];" in result
+    assert "B -->|No| D[Stop];" in result
 
 
 @pytest.mark.asyncio
@@ -573,7 +549,9 @@ async def test_translate_markdown_keeps_internal_links_inside_code_blocks_unchan
                 prompt,
                 {
                     "# Sample": "# 샘플",
-                    "- [Section One](#section-one)": "- [섹션 1](#section-one)",
+                    "- [Section One](@@LINK_DESTINATION_0@@)": (
+                        "- [섹션 1](@@LINK_DESTINATION_0@@)"
+                    ),
                     "## Section One": "## 섹션 1",
                 },
             )
@@ -591,7 +569,7 @@ async def test_translate_markdown_keeps_internal_links_inside_code_blocks_unchan
             source_path=test_file,
         )
 
-    assert "- [섹션 1](#섹션-1)" in result
+    assert "- [섹션 1](#section-one)" in result
     assert "```md\n[Example](#section-one)\n```" in result
 
 

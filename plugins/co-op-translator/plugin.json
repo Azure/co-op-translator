@@ -1,0 +1,42 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "co-op-translator",
+  "version": "0.1.0",
+  "description": "Translate repository documentation with an AI agent. Keep Markdown and notebook translations in sync, preserve structure, and review the results.",
+  "author": {
+    "name": "Co-op Translator contributors"
+  },
+  "homepage": "https://azure.github.io/co-op-translator/",
+  "repository": "https://github.com/Azure/co-op-translator",
+  "license": "MIT",
+  "keywords": ["translation", "documentation", "markdown", "jupyter", "localization", "ai-agent"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Co-op Translator",
+        "shortDescription": "Translate and sync repo docs",
+        "longDescription": "Use Co-op Translator when an AI agent needs to translate repository documentation into several languages or refresh translations after source changes. Preview the work, translate Markdown and notebooks, and check freshness, structure, and links. The skill uses a local Python installation or an already configured MCP server. Repository batches require a configured model provider. For individual Markdown files and notebooks, the host agent can translate prepared chunks without a separate Co-op Translator API key. Image translation additionally requires Azure AI Vision. This plugin requires an agent with local file and command access. It does not include a hosted service or MCP server.",
+        "developerName": "Co-op Translator contributors",
+        "category": "Productivity",
+        "capabilities": ["Read", "Write"],
+        "websiteURL": "https://azure.github.io/co-op-translator/",
+        "supportURL": "https://github.com/Azure/co-op-translator/issues",
+        "composerIcon": "./assets/icon.svg",
+        "logo": "./assets/icon.svg",
+        "defaultPrompt": [
+          "Translate this repository's documentation into Korean and Japanese, then review the results.",
+          "Sync existing translations with the changed source files and show the remaining issues."
+        ]
+      },
+      "publication": {
+        "release_notes": "First skill package for repository translation, incremental synchronization, and deterministic review.",
+        "translations": {
+          "ko-KR": {
+            "subtitle": "저장소 문서 번역과 동기화",
+            "description": "문서를 여러 언어로 번역하고, 원문이 바뀌면 번역본을 갱신합니다. 먼저 작업량을 확인하고 번역 후 구조와 링크를 검사합니다. 로컬 Python 환경이 필요합니다. 저장소 전체 번역에는 모델 공급자 설정이 필요하며, 개별 Markdown과 노트북은 에이전트의 모델로 번역할 수 있습니다."
+          }
+        }
+      }
+    }
+  }
+}

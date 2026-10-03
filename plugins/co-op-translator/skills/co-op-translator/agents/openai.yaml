@@ -1,0 +1,6 @@
+interface:
+  display_name: "Co-op Translator"
+  short_description: "Translate, sync, and review repository documentation"
+  default_prompt: "Use $co-op-translator to translate this repository's documentation and review the results."
+policy:
+  allow_implicit_invocation: true

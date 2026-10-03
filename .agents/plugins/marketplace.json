@@ -1,0 +1,20 @@
+{
+  "name": "co-op-translator",
+  "interface": {
+    "displayName": "Co-op Translator"
+  },
+  "plugins": [
+    {
+      "name": "co-op-translator",
+      "source": {
+        "source": "local",
+        "path": "./plugins/co-op-translator"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

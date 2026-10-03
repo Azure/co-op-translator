@@ -12,6 +12,9 @@
 Image text translation additionally requires Azure AI Vision.
 Already know your setup? [Choose your workflow](workflows.md).
 
+Working with an AI agent? [Install the Co-op Translator skill](agents.md) for
+repository translation, synchronization, and review.
+
 See Co-op Translator in use in **AI Agents for Beginners**: the same README section in English and Korean.
 
 | English | Korean |

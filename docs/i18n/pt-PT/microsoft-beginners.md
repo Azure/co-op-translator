@@ -4,7 +4,7 @@ Esta página destina-se aos mantenedores dos repositórios Microsoft "For Beginn
 
 A maioria dos utilizadores do Co-op Translator não precisa desta página.
 
-## Auto-Sync the Other Courses Section
+## Sincronizar automaticamente a secção Outros Cursos
 
 Adicione estes marcadores à volta da secção "Other Courses" no seu README:
 
@@ -16,7 +16,7 @@ Adicione estes marcadores à volta da secção "Other Courses" no seu README:
 
 Cada vez que o Co-op Translator é executado através da CLI ou do GitHub Actions, substitui o conteúdo entre os marcadores pelo modelo empacotado.
 
-## Update the Shared Template
+## Atualizar o modelo partilhado
 
 A origem do modelo encontra-se em:
 
@@ -30,7 +30,7 @@ Para atualizar o conteúdo partilhado:
 2. Abra um pull request para o Co-op Translator.
 3. Depois de a alteração ser lançada, execute o Co-op Translator no repositório de destino.
 
-## Sparse Checkout Advisory
+## Aviso sobre checkout esparso
 
 Repositórios grandes de cursos podem tornar-se dispendiosos de clonar quando incluem muitas saídas traduzidas. Pode incluir este aviso nas secções de idioma geradas:
 

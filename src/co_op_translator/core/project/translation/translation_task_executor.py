@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from functools import partial
 
-from co_op_translator.utils.common.task_utils import worker
+from co_op_translator.utils.common.task_utils import run_tasks_concurrently, worker
 from co_op_translator.utils.common.progress import get_progress_reporter
 
 logger = logging.getLogger(__name__)
@@ -75,19 +76,51 @@ class TranslationTaskExecutorMixin:
         Returns:
             List of results from completed tasks
         """
-        if not tasks:  # No tasks to process
-            logger.warning("No tasks available for processing.")
+        return await self._process_text_requests(
+            tasks, task_desc, file_names, file_info, stage_key, concurrency=1
+        )
+
+    async def process_text_requests(
+        self,
+        tasks,
+        task_desc,
+        file_names=None,
+        file_info=None,
+        stage_key: str | None = None,
+        *,
+        unit: str = "request",
+    ) -> list:
+        """Execute text translations with the configured concurrency limit."""
+        return await self._process_text_requests(
+            tasks,
+            task_desc,
+            file_names,
+            file_info,
+            stage_key,
+            concurrency=self.concurrency,
+            unit=unit,
+        )
+
+    async def _process_text_requests(
+        self,
+        tasks,
+        task_desc,
+        file_names,
+        file_info,
+        stage_key,
+        *,
+        concurrency: int,
+        unit: str = "request",
+    ) -> list:
+        if not tasks:
             return []
 
-        total_tasks = len(tasks)
-
         reporter = get_progress_reporter()
-
-        results = []
         with reporter.task(
-            task_desc, total=total_tasks, unit="request", stage_key=stage_key
+            task_desc, total=len(tasks), unit=unit, stage_key=stage_key
         ) as progress_bar:
-            for i, task in enumerate(tasks):
+
+            async def process_task(i, task):
                 # Show current file name in progress bar if available
                 current_path = None
                 current_language = None
@@ -99,10 +132,20 @@ class TranslationTaskExecutorMixin:
                     progress_bar.set_detail(f"Current: {file_name}")
 
                 # Execute task and get result
-                result = await task()  # Execute each task sequentially
-                results.append(result)
+                try:
+                    result = await task()
+                except Exception as exc:
+                    if current_path is not None:
+                        progress_bar.file_failed(
+                            current_path, current_language, message=str(exc)
+                        )
+                    raise
 
                 # Update progress bar
+                # Other workers may have changed the displayed file while awaiting.
+                if current_path is not None:
+                    progress_bar.language = current_language
+                    progress_bar.set_detail(f"Current: {current_path}")
                 progress_bar.update(1)
                 if current_path is not None:
                     if result:
@@ -115,7 +158,10 @@ class TranslationTaskExecutorMixin:
                         )
 
                 # Reset description after completion if needed
-                if i + 1 < total_tasks:
-                    progress_bar.set_description(task_desc)
+                progress_bar.set_description(task_desc)
+                return result
 
-        return results
+            return await run_tasks_concurrently(
+                [partial(process_task, i, task) for i, task in enumerate(tasks)],
+                concurrency,
+            )

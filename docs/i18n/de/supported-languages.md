@@ -1,8 +1,8 @@
 # Unterstützte Sprachen
 
-Co-op Translator unterstützt die folgenden Sprachcodes für Text-, Notebook- und Bildübersetzungen.
+Der Co-op Translator unterstützt die folgenden Sprachcodes für Text-, Notebook- und Bildübersetzungen.
 
-Wenn Sie eine neue Sprache hinzufügen möchten, aktualisieren Sie die Sprach- und Schriftzuordnungen unter `src/co_op_translator/fonts/` und testen Sie die Sprache, bevor Sie einen Pull Request eröffnen.
+Wenn Sie eine neue Sprache hinzufügen möchten, aktualisieren Sie die Sprach- und Schriftzuordnungen unter `src/co_op_translator/fonts/` und testen Sie die Sprache, bevor Sie einen Pull Request öffnen.
 
 | Sprachcode | Sprachname | Schriftart | RTL-Unterstützung | Bekannte Probleme |
 | --- | --- | --- | --- | --- |
@@ -14,10 +14,10 @@ Wenn Sie eine neue Sprache hinzufügen möchten, aktualisieren Sie die Sprach- u
 | ar | Arabisch | NotoSansArabic-Medium.ttf | Ja | Nein |
 | fa | Persisch (Farsi) | NotoSansArabic-Medium.ttf | Ja | Nein |
 | ur | Urdu | NotoSansArabic-Medium.ttf | Ja | Nein |
-| zh-CN | Chinesisch (vereinfacht) | NotoSansCJK-Medium.ttc | Nein | Nein |
-| zh-MO | Chinesisch (traditionell, Macau) | NotoSansCJK-Medium.ttc | Nein | Nein |
-| zh-HK | Chinesisch (traditionell, Hongkong) | NotoSansCJK-Medium.ttc | Nein | Nein |
-| zh-TW | Chinesisch (traditionell, Taiwan) | NotoSansCJK-Medium.ttc | Nein | Nein |
+| zh-CN | Chinesisch (Vereinfacht) | NotoSansCJK-Medium.ttc | Nein | Nein |
+| zh-MO | Chinesisch (Traditionell, Macau) | NotoSansCJK-Medium.ttc | Nein | Nein |
+| zh-HK | Chinesisch (Traditionell, Hongkong) | NotoSansCJK-Medium.ttc | Nein | Nein |
+| zh-TW | Chinesisch (Traditionell, Taiwan) | NotoSansCJK-Medium.ttc | Nein | Nein |
 | ja | Japanisch | NotoSansCJK-Medium.ttc | Nein | Nein |
 | ko | Koreanisch | NotoSansCJK-Medium.ttc | Nein | Nein |
 | hi | Hindi | NotoSansDevanagari-Medium.ttf | Nein | Nein |
@@ -49,7 +49,7 @@ Wenn Sie eine neue Sprache hinzufügen möchten, aktualisieren Sie die Sprach- u
 | sk | Slowakisch | NotoSans-Medium.ttf | Nein | Nein |
 | ro | Rumänisch | NotoSans-Medium.ttf | Nein | Nein |
 | bg | Bulgarisch | NotoSans-Medium.ttf | Nein | Nein |
-| sr | Serbisch (kyrillisch) | NotoSans-Medium.ttf | Nein | Nein |
+| sr | Serbisch (Kyrillisch) | NotoSans-Medium.ttf | Nein | Nein |
 | hr | Kroatisch | NotoSans-Medium.ttf | Nein | Nein |
 | sl | Slowenisch | NotoSans-Medium.ttf | Nein | Nein |
 | uk | Ukrainisch | NotoSans-Medium.ttf | Nein | Nein |
@@ -61,12 +61,13 @@ Wenn Sie eine neue Sprache hinzufügen möchten, aktualisieren Sie die Sprach- u
 | ml | Malayalam | NotoSans-Medium.ttf | Nein | Nein |
 | kn | Kannada | NotoSans-Medium.ttf | Nein | Nein |
 | km | Khmer | NotoSansKhmer-Medium.ttf | Nein | Nein |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Nein | Nein |
 
-## Sprache hinzufügen
+## Eine Sprache hinzufügen
 
 Um Unterstützung für eine neue Sprache hinzuzufügen:
 
-1. Fügen Sie den Sprachcode und den Anzeigenamen zu den Sprach-Utilities hinzu.
-2. Fügen Sie eine Schriftart hinzu oder ordnen Sie sie in `src/co_op_translator/fonts/font_language_mappings.yml` zu.
-3. Testen Sie die Ausgabe von Markdown- und Bildübersetzungen.
-4. Öffnen Sie einen Pull Request mit der Zuordnung und den Validierungsnotizen.
+1. Fügen Sie den Sprachcode und den Anzeigenamen zu den Sprachwerkzeugen hinzu.
+2. Fügen Sie eine Schriftart hinzu oder ordnen Sie eine Schriftart in `src/co_op_translator/fonts/font_language_mappings.yml` zu.
+3. Testen Sie die Markdown- und Bildübersetzungsausgabe.
+4. Öffnen Sie einen Pull Request mit der Zuordnung und Validierungsnotizen.

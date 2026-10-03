@@ -1,10 +1,10 @@
 # ภาษาที่รองรับ
 
-Co-op Translator รองรับรหัสภาษาต่อไปนี้สำหรับผลลัพธ์การแปลข้อความ โน้ตบุ๊ก และรูปภาพ
+Co-op Translator รองรับรหัสภาษาเหล่านี้สำหรับผลลัพธ์การแปลข้อความ สมุดบันทึก และรูปภาพ.
 
-หากคุณต้องการเพิ่มภาษาใหม่ ให้ปรับปรุงการแมปภาษาและฟอนต์ภายใต้ `src/co_op_translator/fonts/` และทดสอบภาษาก่อนเปิด pull request
+หากคุณต้องการเพิ่มภาษาใหม่ ให้ปรับปรุงการแมปภาษาและแบบอักษรภายใต้ `src/co_op_translator/fonts/` และทดสอบภาษานั้นก่อนเปิด pull request.
 
-| Language Code | Language Name | Font | RTL Support | Known Issues |
+| รหัสภาษา | ชื่อภาษา | แบบอักษร | รองรับ RTL | ปัญหาที่ทราบ |
 | --- | --- | --- | --- | --- |
 | en | อังกฤษ | NotoSans-Medium.ttf | ไม่ | ไม่มี |
 | fr | ฝรั่งเศส | NotoSans-Medium.ttf | ไม่ | ไม่มี |
@@ -24,7 +24,7 @@ Co-op Translator รองรับรหัสภาษาต่อไปนี
 | bn | เบงกาลี | NotoSansBengali-Medium.ttf | ไม่ | ไม่มี |
 | mr | มราฐี | NotoSansDevanagari-Medium.ttf | ไม่ | ไม่มี |
 | ne | เนปาลี | NotoSansDevanagari-Medium.ttf | ไม่ | ไม่มี |
-| pa | ปัญจาบ (กุรมุขี) | NotoSansGurmukhi-Medium.ttf | ไม่ | ไม่มี |
+| pa | ปัญจาบ (กุรมุกชี) | NotoSansGurmukhi-Medium.ttf | ไม่ | ไม่มี |
 | pt-PT | โปรตุเกส (โปรตุเกส) | NotoSans-Medium.ttf | ไม่ | ไม่มี |
 | pt-BR | โปรตุเกส (บราซิล) | NotoSans-Medium.ttf | ไม่ | ไม่มี |
 | it | อิตาลี | NotoSans-Medium.ttf | ไม่ | ไม่มี |
@@ -49,7 +49,7 @@ Co-op Translator รองรับรหัสภาษาต่อไปนี
 | sk | สโลวัก | NotoSans-Medium.ttf | ไม่ | ไม่มี |
 | ro | โรมาเนีย | NotoSans-Medium.ttf | ไม่ | ไม่มี |
 | bg | บัลแกเรีย | NotoSans-Medium.ttf | ไม่ | ไม่มี |
-| sr | เซอร์เบีย (คิริลลิก) | NotoSans-Medium.ttf | ไม่ | ไม่มี |
+| sr | เซอร์เบีย (คีริลลิก) | NotoSans-Medium.ttf | ไม่ | ไม่มี |
 | hr | โครเอเชีย | NotoSans-Medium.ttf | ไม่ | ไม่มี |
 | sl | สโลวีเนีย | NotoSans-Medium.ttf | ไม่ | ไม่มี |
 | uk | ยูเครน | NotoSans-Medium.ttf | ไม่ | ไม่มี |
@@ -61,12 +61,13 @@ Co-op Translator รองรับรหัสภาษาต่อไปนี
 | ml | มาลายาลัม | NotoSans-Medium.ttf | ไม่ | ไม่มี |
 | kn | กันนาดา | NotoSans-Medium.ttf | ไม่ | ไม่มี |
 | km | เขมร | NotoSansKhmer-Medium.ttf | ไม่ | ไม่มี |
+| mni | มณีปุระ (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | ไม่ | ไม่มี |
 
 ## เพิ่มภาษา
 
-เพื่อเพิ่มการรองรับสำหรับภาษาใหม่:
+ในการเพิ่มการรองรับสำหรับภาษาใหม่:
 
-1. เพิ่มรหัสภาษาและชื่อที่จะแสดงลงในยูทิลิตี้ภาษา
-2. เพิ่มหรือจับคู่ฟอนต์ใน `src/co_op_translator/fonts/font_language_mappings.yml`
-3. ทดสอบผลลัพธ์การแปล Markdown และรูปภาพ
-4. เปิด pull request พร้อมการแมปและหมายเหตุการตรวจสอบ
+1. เพิ่มรหัสภาษาและชื่อแสดงลงในยูทิลิตี้ภาษา.
+2. เพิ่มหรือแมปแบบอักษรใน `src/co_op_translator/fonts/font_language_mappings.yml`.
+3. ทดสอบผลลัพธ์การแปล Markdown และรูปภาพ.
+4. เปิด pull request พร้อมการแมปและบันทึกการยืนยัน.

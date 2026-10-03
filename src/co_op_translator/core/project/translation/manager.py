@@ -30,6 +30,7 @@ from co_op_translator.core.project.translation.translation_workflow import (
     TranslationWorkflowMixin,
 )
 from co_op_translator.core.project.translation.memory import TranslationStateProvider
+from co_op_translator.utils.common.task_utils import validate_concurrency
 
 
 class TranslationManager(
@@ -60,6 +61,7 @@ class TranslationManager(
         add_disclaimer: bool = True,
         lang_subdir: Path | None = None,
         translation_state_provider: TranslationStateProvider | None = None,
+        concurrency: int = 1,
     ):
         """Initialize translation manager with required components and settings.
 
@@ -77,7 +79,10 @@ class TranslationManager(
             image_translator: Translator instance for image files
             notebook_translator: Translator instance for notebook files
             translation_types: List of file types to translate (e.g., ["markdown", "images", "notebook"])
+            concurrency: Maximum simultaneous text file/language translations.
         """
+        validate_concurrency(concurrency)
+        self.concurrency = concurrency
         self.root_dir = root_dir
         self.translations_dir = translations_dir
         self.image_dir = image_dir

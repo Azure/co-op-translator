@@ -1,13 +1,13 @@
 # Trikčių šalinimas
 
-Naudokite šį puslapį, kai vertimo paleidimas netikėtai pavyksta, nepavyksta konfigūracijos metu arba sukuria išvestį, kurią reikia peržiūrėti.
+Naudokite šį puslapį, jei vertimo vykdymas netikėtai pavyksta, nepavyksta konfigūracijos metu arba sukuria rezultatą, kurį reikia peržiūrėti.
 
-## Pradėkite čia
+## Pradžia
 
-1. Pirmiausia paleiskite susitelktą komandą, pavyzdžiui `translate -l "ko" -md`.
-2. Pridėkite `-d` konsolės derinimo žurnalui.
+1. Pirmiausia paleiskite konkrečią komandą, pvz., `translate -l "ko" -md`.
+2. Pridėkite `-d` konsolės derinimo žurnalams.
 3. Pridėkite `-s`, kad išsaugotumėte derinimo žurnalus kataloge `<root-dir>/logs/`.
-4. Paleiskite `co-op-review` po vertimo, kad patikrintumėte šviežumą, struktūrą ir vietines nuorodas.
+4. Po vertimo paleiskite `co-op-review`, kad patikrintumėte šviežumą, struktūrą ir vietinius saitus.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -26,8 +26,8 @@ No language model configuration found.
 
 Sprendimas:
 
-- Konfigūruokite Azure OpenAI arba OpenAI.
-- Patikrinkite, ar kintamieji yra aplinkoje, kur paleidžiama komanda.
+- Konfigūruokite Azure OpenAI, OpenAI arba Anthropic.
+- Patikrinkite, ar kintamieji yra aplinkoje, iš kurios vykdoma komanda.
 - Vietiniam naudojimui įdėkite juos į `.env` projekto šaknyje.
 
 Žr. [Konfigūracija](configuration.md).
@@ -44,27 +44,27 @@ Sprendimas:
 
 - Pridėkite `AZURE_AI_SERVICE_API_KEY`.
 - Pridėkite `AZURE_AI_SERVICE_ENDPOINT`.
-- Arba vykdykite tik tekstui skirtą komandą, pvz., `translate -l "ko" -md`.
+- Arba paleiskite tik teksto komandą, pvz., `translate -l "ko" -md`.
 
-### Neteisingas raktas arba galinio taško adresas
+### Neteisingas raktas arba galinis taškas
 
-Simptomai gali apimti `401`, užmaskuotas leidimų klaidas arba prieigos prie galinio taško klaidas.
+Simptomai gali būti `401`, užmaskuotos leidimų klaidos arba galinio taško prieigos klaidos.
 
 Sprendimas:
 
-- Patvirtinkite, kad raktas priklauso tam pačiam Azure ištekliui kaip ir galinis taškas.
-- Patvirtinkite, kad išteklius palaiko Vision naudojant `-img`.
-- Patvirtinkite, kad Azure OpenAI diegimo pavadinimas ir API versija atitinka jūsų diegimą.
+- Patikrinkite, ar raktas priklauso tam pačiam Azure ištekliui kaip ir galinis taškas.
+- Patikrinkite, ar išteklius palaiko Vision, kai naudojamas `-img`.
+- Patikrinkite, ar Azure OpenAI diegimo pavadinimas ir API versija atitinka jūsų diegimą.
 - Paleiskite su derinimo žurnalais: `translate -l "ko" -md -d -s`.
 
-## Nei vienas failas nebuvo išverstas
+## Nėra išverstų failų
 
 Dažnos priežastys:
 
-- Pasirinktos vėliavėlės neatitinka jūsų failų.
-- Jau yra esami išversti failai.
-- Šaltinio failai yra išimtų katalogų viduje.
-- Komanda paleista ne iš projekto šaknies.
+- Pasirinkti parametrai neatitinka jūsų failų.
+- Išverstų failų jau yra.
+- Šaltinio failai yra pašalintuose kataloguose.
+- Komanda paleista iš neteisingos projekto šaknies.
 
 Patikrinimai:
 
@@ -74,18 +74,18 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-Naudokite `--root-dir`, kai komanda paleidžiama ne iš projekto šaknies.
+Naudokite `--root-dir`, kai komanda vykdoma ne iš projekto šaknies.
 
 ## Netikėtas nuorodų elgesys
 
 Nuorodų perrašymas priklauso nuo pasirinktų turinio tipų:
 
-- `-nb` įtraukta: užrašomos nuorodos į užrašytus (notebook) failus gali nukreipti į išverstus užrašus.
-- `-nb` neįtraukta: užrašų nuorodos gali likti nukreiptos į šaltinio užrašus.
-- `-img` įtraukta: paveikslėlių nuorodos gali nukreipti į išverstus paveikslėlius.
-- `-img` neįtraukta: paveikslėlių nuorodos gali likti nukreiptos į šaltinio paveikslėlius.
+- `-nb` įtraukta: užrašų (notebook) nuorodos gali rodyti į išverstus užrašus.
+- `-nb` neįtraukta: užrašų nuorodos gali likti nukreiptos į originalius užrašus.
+- `-img` įtraukta: vaizdų nuorodos gali rodyti į išverstus vaizdus.
+- `-img` neįtraukta: vaizdų nuorodos gali likti nukreiptos į originalius vaizdus.
 
-Paleiskite pilną turinio vertimą, kai visos vidinės nuorodos turėtų teikti pirmenybę išverstoms išvestims:
+Vykdykite pilną turinio vertimą, kai visos vidinės nuorodos turėtų pirmenybę teikti išverstiems rezultatams:
 
 ```bash
 translate -l "ko" -md -nb -img
@@ -99,32 +99,32 @@ co-op-review -l "ko"
 
 ## Markdown atvaizdavimo problemos
 
-Jei išverstasis Markdown atvaizduojamas neteisingai:
+Jei išverstas Markdown atvaizduojamas neteisingai:
 
-- Patikrinkite, ar frontmatter prasideda ir baigiasi `---`.
-- Patikrinkite, ar kodo blokų ribojimo žymų skaičius sutampa tarp šaltinio ir išverstų failų.
-- Paleiskite `co-op-review`, kad aptiktumėte bendras struktūros problemas.
-- Išversti tą konkretų failą iš naujo, jei išvestis buvo sugadinta.
+- Patikrinkite, ar frontmatter prasideda ir baigiasi su `---`.
+- Patikrinkite, ar kodo skyriklių skaičius sutampa tarp šaltinio ir išverstų failų.
+- Paleiskite `co-op-review`, kad aptiktumėte dažnas struktūros problemas.
+- Išverskite konkretų failą iš naujo, jei rezultatas buvo sugadintas.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action paleistas, bet nebuvo sukurtas Pull Request
+## GitHub veiksmas paleistas, bet nebuvo sukurtas Pull Request
 
-Jei `peter-evans/create-pull-request` praneša, kad šaka nėra priekyje lyginant su baze, darbo eiga nerado failų, kuriuos būtų galima įsipareigoti.
+Jei `peter-evans/create-pull-request` praneša, kad šaka nėra pažengusi prieš pagrindinę, darbo eiga nerado failų, kuriuos būtų galima įsipareigoti.
 
 Tikėtinos priežastys:
 
-- Vertimo paleidimas nepagamino pakeitimų.
-- `.gitignore` ignoruoja `translations/`, `translated_images/` arba išverstus užrašus.
+- Vertimo vykdymas nepagamino jokių pakeitimų.
+- `.gitignore` išskiria `translations/`, `translated_images/` arba išverstus užrašus.
 - `add-paths` neatitinka sugeneruotų išvesties katalogų.
-- Vertimo žingsnis baigėsi anksti.
+- Vertimo žingsnis baigėsi anksčiau nei planuota.
 
 Sprendimai:
 
-1. Patvirtinkite, kad sugeneruoti failai yra `translations/` arba `translated_images/`.
-2. Patvirtinkite, kad `.gitignore` neignoruoti sugeneruotų išvestų.
+1. Patvirtinkite, kad sugeneruoti failai egzistuoja `translations/` arba `translated_images/`.
+2. Patikrinkite, kad `.gitignore` neignoruotų sugeneruotų išvestinių failų.
 3. Naudokite atitinkančius `add-paths`:
 
    ```yaml
@@ -134,13 +134,13 @@ Sprendimai:
        translated_images/
    ```
 
-4. Laikinai pridėkite derinimo vėliavėles prie translate komandos:
+4. Laikinai pridėkite derinimo parinktis prie translate komandos:
 
    ```bash
    translate -l "ko" -md -d -s
    ```
 
-5. Patvirtinkite, kad darbo eigos leidimai apima:
+5. Patikrinkite, ar darbo eigos leidimai apima:
 
    ```yaml
    permissions:
@@ -150,9 +150,9 @@ Sprendimai:
 
 ## Vertimo kokybė
 
-Mašinų vertimai gali reikalauti žmogaus peržiūros. Naudokite `evaluate` tik tada, kai norite eksperimentinio kokybės vertinimo ir mažos pasitikėjimo taisymo darbo eigos.
+Mašininiai vertimai gali reikalauti žmogaus peržiūros. Naudokite `evaluate` tik tada, kai norite eksperimentinio kokybės vertinimo ir mažos pasitikėjimo taisymo darbo eigos.
 
-!!! warning "Experimental"
-    `evaluate` gali naudoti taisyklių pagrindu ir LLM pagrindu veikiančius patikrinimus, o jo vertinimo modelis ir metaduomenų elgsena gali keistis. Laikykite jį už reikalaujamų CI vartų, nebent jūsų darbo eiga yra pasiruošusi pokyčiams.
+!!! warning "Eksperimentinė"
+    `evaluate` gali naudoti taisyklėmis ir LLM pagrįstus tikrinimus, o jo vertinimo modelis bei metaduomenų elgsena gali keistis. Neįtraukite jo į privalomus CI vartus, nebent jūsų darbo eiga yra pasirengusi pokyčiams.
 
-Vietoj to, deterministiniams CI patikrinimams naudokite `co-op-review`.
+Deterministiniams CI patikrinimams vietoj to naudokite `co-op-review`.

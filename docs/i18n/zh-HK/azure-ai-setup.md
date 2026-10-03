@@ -56,7 +56,7 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Co-op Translator also supports optional fallback credential sets. Duplicate a complete provider set with suffixes such as `_1` or `_2`; all variables in a fallback set must share the same suffix.
+Co-op Translator 亦支援可選的備援憑證集。請複製完整的供應者設定集並加入後綴（例如 `_1` 或 `_2`）；備援組內的所有變數必須共用相同的後綴。
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."

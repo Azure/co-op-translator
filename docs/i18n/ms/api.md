@@ -1,45 +1,45 @@
 # API Python
 
-API Python awam yang stabil dieksport dari `co_op_translator.api`. Kebanyakan integrasi menggunakan salah satu aliran kerja ini:
+API awam Python yang stabil dieksport daripada `co_op_translator.api`. Kebanyakan integrasi menggunakan salah satu aliran kerja ini:
 
 | Senario | Gunakan ini apabila | API Utama |
 | --- | --- | --- |
-| Terjemah fail atau dokumen individu | Aplikasi anda membaca kandungan sumber, memanggil Co-op Translator untuk penterjemahan, dan memutuskan di mana menyimpan hasilnya. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Sediakan kandungan untuk terjemahan oleh agen hos | Hos MCP atau model aplikasi anda akan menterjemah pecahan, manakala Co-op Translator mengendalikan pemecahan dan pembinaan semula. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Terjemah keseluruhan repositori | Anda mahu API Python berkelakuan seperti CLI dan mengendalikan penemuan, laluan output, metadata, pembersihan, dan penulisan. | `run_translation` |
+| Translate individual files or documents | Aplikasi anda membaca kandungan sumber, memanggil Co-op Translator untuk terjemahan, dan memutuskan di mana menyimpan hasilnya. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Sediakan kandungan untuk penterjemahan hos ejen | Hos MCP anda atau model aplikasi akan menterjemah pecahan, manakala Co-op Translator mengendalikan pemecahan dan pembinaan semula. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Translate an entire repository | Anda mahu API Python berfungsi seperti CLI dan mengendalikan penemuan, laluan output, metadata, pembersihan, dan penulisan. | `run_translation` |
 
-Kebanyakan modul peringkat rendah di bawah `core`, `config`, `review`, dan `utils` adalah perincian pelaksanaan yang digunakan oleh titik masuk API ini.
+Kebanyakan modul aras rendah di bawah `core`, `config`, `review`, dan `utils` adalah butiran pelaksanaan yang digunakan oleh titik kemasukan API ini.
 
-Pelanggan MCP menggunakan API awam yang sama melalui [Pelayan MCP](mcp.md). Gunakan halaman ini apabila memanggil Python secara langsung, dan panduan MCP apabila mendedahkan Co-op Translator kepada agen atau penyunting. Jika anda sedang memutuskan antara CLI, API Python, dan MCP, mulakan dengan [Pilih Aliran Kerja Anda](workflows.md).
+Klien MCP menggunakan API awam yang sama melalui [Pelayan MCP](mcp.md). Gunakan halaman ini apabila memanggil Python secara langsung, dan panduan MCP apabila mendedahkan Co-op Translator kepada ejen atau penyunting. Jika anda sedang memilih antara CLI, API Python, dan MCP, mulakan dengan [Pilih Aliran Kerja Anda](workflows.md).
 
 ## Aliran API Kali Pertama
 
-Mula di sini jika anda memanggil Co-op Translator dari kod Python:
+Mulakan di sini jika anda memanggil Co-op Translator dari kod Python:
 
-1. Konfigurasikan pembekal LLM seperti yang diterangkan dalam [Configuration](configuration.md), melainkan anda hanya menyediakan pecahan Markdown atau buku nota untuk terjemahan agen hos.
+1. Konfigurasikan pembekal LLM seperti yang diterangkan dalam [Konfigurasi](configuration.md), melainkan anda hanya menyediakan potongan Markdown atau notebook untuk terjemahan hos-ejen.
 2. Tentukan sama ada aplikasi anda memiliki I/O fail.
 3. Gunakan API kandungan apabila aplikasi anda membaca dan menulis fail individu.
-4. Gunakan `run_translation` apabila Co-op Translator harus memproses repositori seperti CLI.
+4. Gunakan `run_translation` apabila Co-op Translator sepatutnya memproses repositori seperti CLI.
 5. Gunakan `run_review` selepas terjemahan jika anda memerlukan pemeriksaan deterministik dalam automasi.
 
 | Matlamat | API untuk mula dengan |
 | --- | --- |
-| Terjemah satu rentetan atau fail Markdown | `translate_markdown_content` |
-| Terjemah satu payload buku nota | `translate_notebook_content` |
-| Terjemah satu imej | `translate_image_content` |
-| Benarkan agen hos menterjemah pecahan Markdown atau buku nota | `start_markdown_agent_translation` atau `start_notebook_agent_translation` |
-| Tulis semula pautan yang diterjemah selepas memilih laluan output | `rewrite_markdown_paths` atau `rewrite_notebook_paths` |
-| Terjemah keseluruhan repositori | `run_translation` |
-| Semak output terjemahan | `run_review` |
+| Terjemahkan satu rentetan atau fail Markdown | `translate_markdown_content` |
+| Translate one notebook payload | `translate_notebook_content` |
+| Translate one image | `translate_image_content` |
+| Biarkan hos ejen menterjemah pecahan Markdown atau buku nota | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
+| Tulis semula pautan yang telah diterjemah selepas memilih laluan keluaran | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
+| Translate a full repository | `run_translation` |
+| Review translated output | `run_review` |
 
 ## Senario 1: Terjemah Fail atau Dokumen Individu
 
-Gunakan aliran kerja ini apabila anda sudah mempunyai fail, buffer penyunting, payload buku nota, permintaan MCP, atau input saluran tersuai. Kod anda memiliki I/O fail:
+Gunakan aliran kerja ini apabila anda sudah mempunyai fail, buffer editor, muatan notebook, permintaan MCP, atau input saluran tersuai. Kod anda mengendalikan I/O fail:
 
 1. Baca kandungan sumber.
 2. Panggil API terjemahan kandungan.
-3. Pilihan: panggil API penulisan semula laluan jika kandungan yang diterjemah akan ditulis ke dalam folder terjemahan projek.
-4. Simpan atau kembalikan hasil dari aplikasi anda.
+3. Secara pilihan panggil API penulisan semula laluan jika kandungan yang diterjemah akan ditulis ke dalam folder terjemahan projek.
+4. Simpan atau pulangkan hasil daripada aplikasi anda.
 
 API terjemahan kandungan tidak menjalankan penemuan projek, tidak menulis metadata, tidak menambah penafian, dan tidak menulis semula pautan secara automatik.
 
@@ -85,7 +85,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Jika Markdown yang diterjemah tidak akan berada dalam susun atur projek Co-op Translator, langkau `rewrite_markdown_paths` dan simpan rentetan yang diterjemah terus.
+Jika Markdown yang diterjemah tidak akan berada dalam susun atur projek Co-op Translator, langkau `rewrite_markdown_paths` dan simpan rentetan yang diterjemah secara terus.
 
 ### Fail Notebook
 
@@ -129,7 +129,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` menterjemah sel Markdown dan mengekalkan sel bukan-Markdown. Penulisan semula laluan hanya dikenakan kepada sel Markdown.
+`translate_notebook_content` menterjemah sel Markdown dan mengekalkan sel bukan-Markdown. Penulisan semula laluan hanya digunakan pada sel Markdown.
 
 ### Fail Imej
 
@@ -154,15 +154,15 @@ target_path.parent.mkdir(parents=True, exist_ok=True)
 translated_image.save(target_path)
 ```
 
-`translate_image_content` membaca imej sumber dan mengembalikan `PIL.Image.Image` yang telah dirender. Ia tidak menulis metadata imej yang diterjemah.
+`translate_image_content` membaca imej sumber dan mengembalikan `PIL.Image.Image` yang dirender. Ia tidak menulis metadata imej yang diterjemah.
 
-## Senario 2: Terjemah Seluruh Repositori
+## Senario 2: Terjemah Keseluruhan Repositori
 
-Gunakan aliran kerja ini apabila anda mahu API Python berkelakuan seperti CLI `translate`. `run_translation` mengesan fail yang disokong, menterjemah jenis kandungan yang dipilih, menulis semula laluan, menulis fail output, mengemas kini metadata, dan melaksanakan tugas penyelenggaraan terjemahan seperti pembersihan.
+Gunakan aliran kerja ini apabila anda mahu API Python berfungsi seperti CLI `translate`. `run_translation` menemui fail yang disokong, menterjemah jenis kandungan yang dipilih, menulis semula laluan, menulis fail output, mengemaskini metadata, dan menjalankan tugas penyelenggaraan terjemahan seperti pembersihan.
 
-`run_translation` adalah titik masuk orkestrasi projek yang disyorkan. `translate_project` dieksport sebagai alias keserasian dengan kelakuan yang sama.
+`run_translation` adalah titik kemasukan pengurusan projek yang disyorkan. `translate_project` dieksport sebagai alias keserasian dengan tingkah laku yang sama.
 
-Terjemah fail Markdown dalam repositori semasa ke dalam Korea dan Jepun:
+Terjemah fail Markdown dalam repositori semasa ke dalam bahasa Korea dan Jepun:
 
 ```python
 from co_op_translator.api import run_translation
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-Terjemah hanya buku nota dari akar projek tertentu:
+Terjemah hanya notebook dari akar projek tertentu:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,6 +198,30 @@ run_translation(
 )
 ```
 
+Rakaman acara kemajuan berstruktur untuk satu integrasi:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Simpan muatan dalam jadual acara kerja anda atau alirkannya ke antara muka pengguna anda.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Acara menggunakan skema berversi `co-op.translation.event.v1`. Integrasi harus
+bergantung pada medan stabil seperti `type` dan `stage_key`, bukan pada teks yang ditujukan kepada manusia
+konsol atau `stage_label`.
+
 Terjemah berbilang akar kandungan dalam satu panggilan:
 
 ```python
@@ -210,7 +234,7 @@ run_translation(
 )
 ```
 
-Tulis terjemahan ke dalam kumpulan output yang eksplisit:
+Tulis terjemahan ke dalam kumpulan output yang jelas:
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-Gunakan pemegang tempat per-bahasa apabila setiap bahasa harus mengandungi subdirektori bertingkat:
+Gunakan tempat letak per-bahasa apabila setiap bahasa harus mengandungi subdirektori bersarang:
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-Jika tiada `markdown`, `notebook`, atau `images` disetkan, API akan menterjemah semua jenis yang disokong: Markdown, buku nota, dan imej.
+Jika tiada `markdown`, `notebook`, atau `images` disetkan, API akan menterjemah semua jenis yang disokong: Markdown, notebook, dan imej.
 
-## Semak Output Terjemahan
+### Mengekalkan suntingan manusia yang diterima dengan pembekal keadaan terjemahan
+
+Secara lalai, Co-op Translator mengekalkan tingkah laku aras-fail sedia ada: apabila sebuah
+sumber Markdown menjadi lapuk, keseluruhan fail yang diterjemah dihasilkan semula. Integrasi yang dihoskan
+boleh secara pilihan menghantar `TranslationStateProvider` untuk mengekalkan suntingan manusia
+dalam blok sumber yang tidak berubah.
+
+Penyedia menyediakan pasangan sumber/sasaran yang diterima terakhir dan merekod setiap calon baru
+calon. Penerimaan kekal tanggungjawab integrasi—contohnya,
+selepas permintaan tarik terjemahan digabungkan:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+Untuk fail Markdown dengan garis asas penerimaan yang sah, Co-op Translator menyelaraskan
+blok Markdown peringkat atas. Blok sumber yang tidak berubah menggunakan semula blok diterjemah semasa
+tersebut, termasuk suntingan yang dibuat oleh manusia; blok sumber yang diubah atau ditambah dihantar
+untuk terjemahan; blok sumber yang dipadam dikeluarkan. Jika penjajaran tidak jelas,
+struktur sasaran berubah, terjemahan blok tidak sah, atau tiada garis asas
+yang tersedia, Co-op Translator dengan selamat kembali kepada laluan terjemahan keseluruhan-fail sedia ada
+laluan terjemahan.
+
+API ini menyimpan keadaan terjemahan dokumen, bukan memori terjemahan frasa atau
+segmen merentasi dokumen. Ia kini terpakai kepada terjemahan projek Markdown
+. Tingkah laku notebook dan imej tidak berubah. Menghantar `update=True`
+masih meminta penjanaan semula penuh.
+
+Jika satu atau lebih fail tidak dapat diterjemahkan, `run_translation` membangkitkan sebuah
+`RuntimeError` selepas aliran kerja projek selesai dan bukannya melaporkan sebuah
+larian berjaya dengan output yang hilang. Integrasi harus menganggap ini sebagai kerja yang gagal
+dan mengekalkan keadaan terjemahan yang diterima sebelum ini.
+
+## Semak Output yang Diterjemah
 
 `run_review` menjalankan pemeriksaan terjemahan deterministik tanpa kelayakan LLM atau Vision.
 
 !!! note "Beta"
-    `run_review` is a beta deterministic review API. It does not call model providers or write files, but checks and issue schemas may evolve.
+    `run_review` adalah API semakan deterministik beta. Ia tidak memanggil penyedia model atau menulis fail, tetapi skema pemeriksaan dan isu mungkin berubah.
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-Semak hanya fail yang diubah berbanding ref asas dan cetak output gaya GitHub:
+Selepas terjemahan hanya README, gunakan skop yang sama untuk semakan:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` hanya menyemak `README.md` di bawah setiap root sumber yang dikonfigurasi,
+termasuk `groups` tersuai dan direktori keluaran. Dokumen lain dan README bersarang
+README dikecualikan. Ketiadaan README sumber akan menaikkan `ValueError`; pemeriksaan yang gagal
+pemeriksaan terjemahan akan menaikkan `RuntimeError`.
+
+Semak hanya fail yang diubah berbanding ref asas dan cetak output bergaya GitHub:
 
 ```python
 from co_op_translator.api import run_review
@@ -276,7 +400,7 @@ run_review(
 
 ## Contoh API Salin-Tampal
 
-Terjemah kandungan Markdown tanpa penulisan fail:
+Terjemahkan kandungan Markdown tanpa menulis fail:
 
 ```python
 import asyncio
@@ -295,7 +419,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Terjemah dan tulis semula pautan Markdown:
+Terjemahkan dan tulis semula pautan Markdown:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -327,7 +451,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Terjemah repositori dari Python:
+Terjemahkan repositori dari Python:
 
 ```python
 from co_op_translator.api import run_translation
@@ -340,7 +464,7 @@ run_translation(
 )
 ```
 
-Terjemah berbilang akar:
+Terjemahkan berbilang root:
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-Kekalkan istilah glosari:
+Mengekalkan istilah glosari:
 
 ```python
 from co_op_translator.api import run_translation
@@ -378,6 +502,9 @@ from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## API Penterjemahan Kandungan
+## API Terjemahan Kandungan
 
-API penterjemahan kandungan bertujuan untuk integrasi yang sudah mempunyai kandungan dalam memori, seperti peluasan penyunting, alat MCP, pemproses buku nota, atau saluran tersuai.
+API terjemahan kandungan bertujuan untuk integrasi yang sudah mempunyai kandungan dalam memori, seperti sambungan penyunting, alat MCP, pemproses notebook, atau saluran tersuai.
 
 | Fungsi | Input | Output | I/O Fail | Nota |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | Tidak | Async. Menterjemah kandungan Markdown sahaja. Ia tidak menulis semula pautan, menulis metadata, atau menambah penafian. |
-| `translate_notebook_content` | Notebook JSON `str` atau `dict` | Notebook JSON `str` | Tidak | Async. Menterjemah sel Markdown dan mengekalkan sel bukan-Markdown. Ia tidak menulis semula pautan, menulis metadata, atau menambah penafian. |
-| `translate_image_content` | Laluan imej | `PIL.Image.Image` | Membaca imej sumber sahaja | Synchronous. Mengekstrak dan menterjemah teks imej, kemudian mengembalikan imej yang telah dirender. Ia tidak menyimpan metadata imej yang diterjemah. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | Tidak | Tak segerak. Menterjemah kandungan Markdown sahaja. Ia tidak menulis semula pautan, menulis metadata, atau menambah penafian. |
+| `translate_notebook_content` | Notebook JSON `str` atau `dict` | Notebook JSON `str` | Tidak | Tak segerak. Menterjemah sel Markdown dan mengekalkan sel bukan-Markdown. Ia tidak menulis semula pautan, menulis metadata, atau menambah penafian. |
+| `translate_image_content` | Laluan imej | `PIL.Image.Image` | Membaca imej sumber sahaja | Segerak. Mengekstrak dan menterjemah teks imej, kemudian mengembalikan imej terhasil. Ia tidak menyimpan metadata imej yang diterjemah. |
 
-`translate_markdown_content` dan `translate_notebook_content` menerima pilihan `source_path` pilihan melalui opsyen mereka. Laluan itu dihantar sebagai konteks kepada penterjemah; pemanggil kekal bertanggungjawab untuk sebarang penulisan semula laluan khusus projek selepas terjemahan.
+`translate_markdown_content` dan `translate_notebook_content` menerima `source_path` pilihan melalui opsyen mereka. Laluan itu dihantar sebagai konteks kepada penterjemah; pemanggil kekal bertanggungjawab untuk sebarang penulisan semula laluan khusus projek selepas terjemahan.
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-Pilihan yang sama boleh disampaikan sebagai kamus:
+Opsyen yang sama boleh dihantar sebagai kamus:
 
 ```python
 translated = await translate_markdown_content(
@@ -455,92 +588,94 @@ translated = await translate_markdown_content(
 )
 ```
 
-## API Terjemahan dengan Bantuan Agen
+## API Terjemahan dengan Bantuan Ejen
 
-API dengan bantuan agen tidak memanggil Azure OpenAI atau OpenAI dari Co-op Translator. Mereka menyediakan pecahan Markdown atau buku nota untuk diterjemah oleh agen hos, kemudian membina semula kandungan akhir dari pecahan yang telah diterjemah.
+API yang dibantu ejen tidak memanggil penyedia LLM yang dikonfigurasi dari Co-op Translator. Mereka menyediakan bahagian Markdown atau notebook untuk ejen hos menterjemah, kemudian menyusun semula kandungan akhir daripada bahagian yang diterjemah.
 
 | Fungsi | Tujuan |
 | --- | --- |
-| `start_markdown_agent_translation` | Pulangkan kerja Markdown yang berdiri sendiri dengan pecahan, prompt, dan keadaan pembinaan semula. |
-| `finish_markdown_agent_translation` | Bina semula Markdown dari kerja dan pecahan yang telah diterjemah oleh agen hos. |
-| `start_notebook_agent_translation` | Pulangkan kerja buku nota dengan pecahan sel-Markdown untuk terjemahan agen hos. |
-| `finish_notebook_agent_translation` | Bina semula JSON buku nota sambil mengekalkan sel kod, output, dan metadata. |
+| `start_markdown_agent_translation` | Mengembalikan kerja Markdown berdikari dengan bahagian, arahan (prompts), dan keadaan penyusunan semula. |
+| `finish_markdown_agent_translation` | Menyusun semula Markdown daripada kerja dan bahagian yang diterjemah oleh ejen hos. |
+| `start_notebook_agent_translation` | Mengembalikan kerja notebook dengan bahagian sel Markdown untuk terjemahan ejen hos. |
+| `finish_notebook_agent_translation` | Menyusun semula JSON notebook sambil mengekalkan sel kod, output, dan metadata. |
 
-Aliran kerja ini terutamanya ditujukan untuk hos MCP. Jika anda memerlukan terjemahan repositori pengeluaran dengan Co-op Translator mengurus panggilan pembekal, gunakan `translate_markdown_content`, `translate_notebook_content`, atau `run_translation`.
+Aliran kerja ini terutamanya bertujuan untuk hos MCP. Jika anda memerlukan terjemahan repositori produksi dengan Co-op Translator mengurus panggilan penyedia, gunakan `translate_markdown_content`, `translate_notebook_content`, atau `run_translation`.
 
 ## API Penulisan Semula Laluan
 
-API penulisan semula laluan tidak melakukan sebarang terjemahan. Mereka mengemas kini pautan dan laluan frontmatter selepas pemanggil mengetahui laluan sumber, laluan sasaran yang diterjemah, dan susun atur projek.
+API penulisan semula laluan tidak melakukan terjemahan. Ia mengemas kini pautan dan laluan frontmatter selepas pemanggil mengetahui laluan sumber, laluan sasaran yang diterjemah, dan susun atur projek.
 
 | Fungsi | Skop | Nota |
 | --- | --- | --- |
 | `rewrite_markdown_paths` | Badan Markdown dan frontmatter | Menulis semula pautan Markdown dan medan laluan frontmatter yang disokong untuk sasaran yang diterjemah. |
-| `rewrite_notebook_paths` | Sel Markdown dalam JSON buku nota | Memohon penulisan semula laluan Markdown kepada setiap sel Markdown dan membiarkan sel bukan-Markdown tidak berubah. |
+| `rewrite_notebook_paths` | Sel Markdown dalam JSON notebook | Menerapkan penulisan semula laluan Markdown kepada setiap sel Markdown dan membiarkan sel bukan-Markdown tidak berubah. |
 
-Argumen `policy` mungkin merupakan sebuah kamus dengan medan-medan berikut:
+Argumen `policy` mungkin sebuah kamus dengan medan-medan ini:
 
 | Medan | Diperlukan | Tujuan |
 | --- | --- | --- |
 | `language_code` | Ya | Kod bahasa sasaran, seperti `"ko"` atau `"pt-BR"`. |
-| `root_dir` | Tidak | Akar projek sumber. Lalai kepada `"."`. |
+| `root_dir` | Tidak | Root projek sumber. Lalai kepada `"."`. |
 | `translations_dir` | Tidak | Direktori output terjemahan teks. Lalai kepada `translations` di bawah `root_dir`. |
 | `translated_images_dir` | Tidak | Direktori output imej yang diterjemah. Lalai kepada `translated_images` di bawah `root_dir`. |
-| `translation_types` | Tidak | Jenis terjemahan yang diaktifkan. Lalai kepada Markdown, buku nota, dan imej. |
+| `translation_types` | Tidak | Jenis terjemahan yang diaktifkan. Lalai kepada Markdown, notebook, dan imej. |
 | `lang_subdir` | Tidak | Subdirektori pilihan di bawah setiap folder bahasa. |
 
 ## Parameter Terjemahan Projek
 
-| Parameter | Type | Default | Tujuan |
+| Parameter | Jenis | Lalai | Tujuan |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Kod bahasa sasaran berasingan oleh ruang, seperti `"ko ja fr"`, atau `"all"`. Kod alias dinormalisasi kepada nilai BCP 47 kanonik. |
-| `root_dir` | `str` | `"."` | Akar projek untuk satu sasaran terjemahan. Diabaikan apabila `root_dirs` atau `groups` dibekalkan. |
-| `update` | `bool` | `False` | Padam dan buat semula terjemahan sedia ada untuk bahasa yang dipilih. |
+| `language_codes` | `str` | Diperlukan | Kod bahasa sasaran yang dipisahkan oleh ruang, seperti `"ko ja fr"`, atau `"all"`. Kod alias dinormalisasikan kepada nilai BCP 47 kanonik. |
+| `root_dir` | `str` | `"."` | Root projek untuk satu sasaran terjemahan. Diabaikan apabila `root_dirs` atau `groups` dibekalkan. |
+| `update` | `bool` | `False` | Padam dan cipta semula terjemahan sedia ada untuk bahasa terpilih. |
 | `images` | `bool` | `False` | Sertakan terjemahan imej. Memerlukan konfigurasi Azure AI Vision. |
 | `markdown` | `bool` | `False` | Sertakan terjemahan Markdown. |
-| `notebook` | `bool` | `False` | Sertakan terjemahan buku nota Jupyter. |
-| `debug` | `bool` | `False` | Aktifkan log debug. |
-| `save_logs` | `bool` | `False` | Simpan fail log PERINGKAT DEBUG di bawah direktori root `logs/`. |
-| `yes` | `bool` | `True` | Auto-pengesahan arahan untuk penggunaan programatik dan CI. |
-| `add_disclaimer` | `bool` | `False` | Tambah penafian terjemahan mesin kepada Markdown dan buku nota yang diterjemah. |
-| `translations_dir` | `str \| None` | `None` | Direktori output terjemahan teks tersuai. Laluan relatif diselesaikan terhadap setiap akar. |
-| `image_dir` | `str \| None` | `None` | Direktori output imej yang diterjemah tersuai. Laluan relatif diselesaikan terhadap setiap akar. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Berbilang akar yang berkongsi tetapan output yang sama. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Pasangan `(root_dir, translations_dir)` eksplisit. Mengatasi `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | URL repositori yang digunakan apabila merender panduan jadual bahasa README. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Istilah glosari untuk dikekalkan semasa terjemahan. Duplikasi dan istilah kosong dinormalisasi. |
-| `dry_run` | `bool` | `False` | Anggarkan jumlah terjemahan dan pratonton perlakuan migrasi tanpa menulis fail. |
+| `notebook` | `bool` | `False` | Sertakan terjemahan Jupyter notebook. |
+| `debug` | `bool` | `False` | Dayakan log debug. |
+| `save_logs` | `bool` | `False` | Simpan fail log pada tahap DEBUG di bawah direktori root `logs/`. |
+| `yes` | `bool` | `True` | Sahkan arahan secara automatik untuk penggunaan berprogram dan CI. |
+| `add_disclaimer` | `bool` | `False` | Tambahkan penafian terjemahan mesin ke Markdown dan notebook yang diterjemahkan. |
+| `translations_dir` | `str \| None` | `None` | Direktori keluaran terjemahan teks tersuai. Laluan relatif diselesaikan berbanding setiap root. |
+| `image_dir` | `str \| None` | `None` | Direktori keluaran imej terjemahan tersuai. Laluan relatif diselesaikan berbanding setiap root. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Beberapa root yang berkongsi tetapan keluaran yang sama. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Pasangan tersurat `(root_dir, translations_dir)`. Mempunyai keutamaan berbanding `root_dirs`. |
+| `repo_url` | `str \| None` | `None` | URL repositori yang digunakan ketika menghasilkan panduan jadual bahasa README. |
+| `glossaries` | `Iterable[str] \| None` | `None` | Istilah glosari untuk dipelihara semasa terjemahan. Duplikasi dan istilah kosong dinormalisasikan. |
+| `dry_run` | `bool` | `False` | Anggarkan volum terjemahan dan pratonton tingkah laku migrasi tanpa menulis fail. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Adapter penyimpanan pilihan untuk accepted-baseline dan calon bagi kemas kini Markdown beransur. Mengabaikannya mengekalkan tingkah laku fail-penuh sedia ada. |
 
 ## Parameter Semakan
 
-`run_review` dengan sengaja mencerminkan tanda tangan `run_translation` di mana boleh supaya automasi boleh bertukar antara aliran kerja terjemahan dan semakan dengan percabangan yang minimum.
+`run_review` secara sengaja mencerminkan tandatangan `run_translation` di mana mungkin supaya automasi dapat bertukar antara aliran kerja terjemahan dan semakan dengan percabangan minimum.
 
-| Parameter | Type | Default | Tujuan |
+| Parameter | Jenis | Lalai | Tujuan |
 | --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Folder bahasa sasaran untuk disemak. Rentetan berasingan dengan ruang dan iterable diterima. `"all"` menyemak setiap bahasa terjemahan yang ditemui. |
-| `root_dir` | `str` | `"."` | Akar projek untuk satu sasaran semakan. Diabaikan apabila `root_dirs` atau `groups` dibekalkan. |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | Folder bahasa sasaran untuk disemak. Rentetan berpisah-ruang dan iterable diterima. `"all"` menyemak setiap bahasa terjemahan yang ditemui. |
+| `root_dir` | `str` | `"."` | Root projek untuk satu sasaran semakan. Diabaikan apabila `root_dirs` atau `groups` diberikan. |
 | `markdown` | `bool` | `False` | Sertakan fail sumber Markdown dan MDX. |
-| `notebook` | `bool` | `False` | Sertakan fail sumber buku nota Jupyter. |
-| `images` | `bool` | `False` | Ditempatkan untuk keseragaman dengan pilihan terjemahan. Rujukan pautan kepada imej diperiksa dari Markdown. |
-| `translations_dir` | `str \| None` | `None` | Direktori output terjemahan teks tersuai. Laluan relatif diselesaikan terhadap setiap root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Berbilang root yang berkongsi tetapan output yang sama. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Pasangan eksplisit `(root_dir, translations_dir)`. Mengambil keutamaan berbanding `root_dirs`. |
+| `notebook` | `bool` | `False` | Sertakan fail sumber Jupyter notebook. |
+| `images` | `bool` | `False` | Dikhaskan untuk keseimbangan dengan pilihan terjemahan. Rujukan pautan ke imej disemak dari Markdown. |
+| `translations_dir` | `str \| None` | `None` | Direktori keluaran terjemahan teks tersuai. Laluan relatif diselesaikan berbanding setiap root. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Beberapa root yang berkongsi tetapan keluaran yang sama. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Pasangan tersurat `(root_dir, translations_dir)`. Mempunyai keutamaan berbanding `root_dirs`. |
 | `changed_from` | `str \| None` | `None` | Rujukan Git yang digunakan untuk mengehadkan semakan kepada fail sumber yang diubah. |
-| `output_format` | `str` | `"text"` | Format output semakan. Nilai yang disokong ialah `"text"` dan `"github"`. |
-| `fail_on_warnings` | `bool` | `False` | Layan amaran sebagai kegagalan selain ralat. |
+| `readme_only` | `bool` | `False` | Semak hanya `README.md` di bawah setiap root sumber. Ketiadaan README sumber akan menaikkan `ValueError`. |
+| `output_format` | `str` | `"text"` | Format keluaran semakan. Nilai yang disokong adalah `"text"` dan `"github"`. |
+| `fail_on_warnings` | `bool` | `False` | Anggap amaran sebagai kegagalan sebagai tambahan kepada ralat. |
 | `debug` | `bool` | `False` | Dayakan log debug. |
 | `save_logs` | `bool` | `False` | Simpan fail log peringkat DEBUG di bawah direktori root `logs/`. |
 
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+Jika tiada antara `markdown`, `notebook`, atau `images` ditetapkan, API menyemak Markdown, notebook, dan rujukan pautan imej di mana berkenaan. Semakan tidak memanggil penyedia LLM dan tidak memerlukan kunci API.
 
 ## Keperluan Konfigurasi
 
-Provider-backed translation APIs require provider configuration before translating:
+API terjemahan berasaskan pembekal memerlukan konfigurasi pembekal sebelum menterjemah:
 
-- Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
-- Image translation requires Azure AI Vision in addition to the LLM provider.
-- `run_translation` runs lightweight connectivity checks before project translation begins.
-- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` are deterministic and do not require provider credentials.
+- Terjemahan Markdown dan notebook memerlukan penyedia LLM. Konfigurasikan Azure OpenAI, OpenAI, atau Anthropic.
+- Terjemahan imej memerlukan Azure AI Vision selain penyedia LLM.
+- `run_translation` menjalankan pemeriksaan sambungan ringan sebelum terjemahan projek bermula.
+- API `start_*_agent_translation` dan `finish_*_agent_translation` yang dibantu ejen tidak memanggil pembekal LLM Co-op Translator. Aplikasi hos atau ejen MCP menterjemahkan bahagian yang disediakan.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths`, dan `run_review` adalah deterministik dan tidak memerlukan kredensial pembekal.
 
 Required Azure OpenAI variables:
 
@@ -559,32 +694,41 @@ OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+Required Anthropic variables:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` dan `ANTHROPIC_MAX_TOKENS` adalah pilihan. Microsoft Agent Framework adalah klien model lalai untuk semua pembekal bermula dengan Co-op Translator 0.22.0. Semantic Kernel masih boleh dipilih sementara dengan `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, tetapi melakukan demikian akan mengeluarkan amaran penyahgunaan; lihat [configuration](configuration.md#model-client-backend) untuk pelan penghapusan bertahap.
+
+Pembolehubah Azure AI Vision yang diperlukan untuk terjemahan imej:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` adalah deterministik dan tidak memerlukan konfigurasi LLM atau Azure AI Vision.
 
 ## Nota Tingkah Laku
 
-- Content translation APIs keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content needs project-relative links adjusted for a target location.
-- Project orchestration APIs add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
-- `run_translation` prints progress and estimate summaries through Click, matching the CLI user experience.
-- `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
-- `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
-- When image translation is selected, missing Vision configuration raises an error before translation starts.
-- Existing alias-based language folders are detected and can be migrated to canonical language folder names as part of the run.
-- `run_review` fails on missing translated files, missing or stale translation metadata, malformed Markdown frontmatter/code fences, and invalid translated notebook JSON.
-- `run_review` reports missing local Markdown and image link targets as warnings by default.
+- API terjemahan kandungan memisahkan terjemahan daripada penulisan semula laluan projek. Panggil `rewrite_markdown_paths` atau `rewrite_notebook_paths` secara eksplisit apabila kandungan yang diterjemah memerlukan pautan relatif kepada projek diselaraskan untuk lokasi sasaran.
+- API orkestrasi projek menambah tingkah laku projek sekitar terjemahan kandungan, termasuk penemuan fail, penulisan, penulisan semula laluan, metadata, pembersihan, dan penafian pilihan.
+- `run_translation` mencetak ringkasan kemajuan dan anggaran melalui pelapor berasaskan Rich yang sama yang digunakan oleh CLI. Keluaran bukan interaktif kembali kepada teks biasa.
+- `dry_run=True` mengira anggaran menggunakan kemas kini README maya, tetapi tidak menulis README atau fail terjemahan.
+- `groups` diproses secara berurutan. Satu anggaran agregat dicetak sebelum kerja bermula.
+- Apabila terjemahan imej dipilih, ketiadaan konfigurasi Vision akan menaikkan ralat sebelum terjemahan bermula.
+- Folder bahasa berasaskan alias sedia ada dikesan dan boleh dipindahkan kepada nama folder bahasa kanonik sebagai sebahagian daripada larian.
+- `run_review` gagal pada fail terjemahan yang hilang, metadata terjemahan yang hilang atau lapuk, frontmatter/fence kod Markdown yang cacat, dan JSON notebook terjemahan yang tidak sah.
+- `run_review` melaporkan sasaran pautan Markdown dan imej tempatan yang hilang sebagai amaran secara lalai.
 
-## Jalur Panggilan Dalaman
+## Laluan Panggilan Dalaman
 
-The API delegates to the same core implementation used by the CLI:
+API ini mendelegasikan kepada pelaksanaan teras yang sama yang digunakan oleh CLI:
 
-Translation:
+Terjemahan:
 
 1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.
 2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.
@@ -592,29 +736,29 @@ Translation:
 4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
 5. `co_op_translator.core.project.ProjectTranslator`.
 6. `co_op_translator.core.project.TranslationManager`.
-7. Focused project translation mixins for Markdown, notebooks, and images.
-8. Markdown, notebook, text, and image translators under `co_op_translator.core`.
+7. Mixin terjemahan projek fokus untuk Markdown, notebook, dan imej.
+8. Penterjemah Markdown, notebook, teks, dan imej di bawah `co_op_translator.core`.
 
-Review:
+Semakan:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. Deterministic checks under `co_op_translator.review.checks`
+4. Semakan deterministik di bawah `co_op_translator.review.checks`
 
-The following classes are useful for maintainers, but are not exported as the package-level stable API.
+Kelas berikut berguna untuk penyelenggara, tetapi tidak dieksport sebagai API stabil peringkat pakej.
 
 | Kelas | Modul | Tanggungjawab |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Makoordinasikan terjemahan peringkat projek, pengurusan direktori, penormalan metadata per-bahasa, dan delegasi kepada penterjemah Markdown, notebook, dan imej. |
-| `TranslationManager` | `co_op_translator.core.project.translation` | Melaksanakan kerja pemprosesan fail async untuk Markdown, notebook, imej, pengesanan lapuk, dan kemas kini metadata terjemahan. |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Mengorkestrakan pembacaan fail Markdown, terjemahan kandungan, penulisan semula laluan, metadata, penafian, dan penulisan. |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Mengorkestrakan pembacaan fail notebook, terjemahan sel Markdown, penulisan semula laluan, metadata, penafian, dan penulisan. |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Mengorkestrakan penemuan imej sumber, terjemahan imej, laluan output, metadata, dan penulisan. |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Makoordinasikan terjemahan peringkat projek, pengurusan direktori, normalisasi metadata setiap bahasa, dan pendelegasian kepada penterjemah Markdown, notebook, dan imej. |
+| `TranslationManager` | `co_op_translator.core.project.translation` | Melaksanakan kerja pemprosesan fail tak segerak untuk Markdown, notebook, imej, pengesanan lapuk, dan kemas kini metadata terjemahan. |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Mengorkestrakan bacaan fail Markdown, terjemahan kandungan, penulisan semula laluan, metadata, penafian, dan penulisan. |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Mengorkestrakan bacaan fail notebook, terjemahan sel Markdown, penulisan semula laluan, metadata, penafian, dan penulisan. |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Mengorkestrakan penemuan imej sumber, terjemahan imej, laluan keluaran, metadata, dan penulisan. |
 | `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Menemukan pasangan Markdown yang diterjemah, menilai kualiti terjemahan, dan membaca metadata keyakinan untuk aliran kerja pembaikan berkeyakinan rendah. |
-| `ReviewRunner` | `co_op_translator.review.runner` | Menyelaras pemeriksaan semakan deterministik merentas fail sumber, bahasa sasaran, dan root terjemahan yang dikonfigurasi. |
-| `ReviewTarget` | `co_op_translator.review.targets` | Menerangkan root sumber dan direktori output terjemahan yang disemak untuk root tersebut. |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Mengesan folder bahasa alias warisan dan menyediakan pelan migrasi folder kanonik BCP 47. |
-| `Config` | `co_op_translator.config.base_config` | Memuat fail `.env` dan memeriksa sama ada pembekal LLM yang diperlukan dan Vision pilihan telah dikonfigurasi. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Mengesan secara automatik Azure OpenAI atau OpenAI, mengesahkan pembolehubah persekitaran yang diperlukan, dan menjalankan pemeriksaan kesambungan pembekal. |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | Mengesan konfigurasi Azure AI Vision dan menjalankan pemeriksaan kesambungan untuk terjemahan imej. |
+| `ReviewRunner` | `co_op_translator.review.runner` | Mengoordinasikan semakan deterministik merentasi fail sumber, bahasa sasaran, dan root terjemahan yang dikonfigurasi. |
+| `ReviewTarget` | `co_op_translator.review.targets` | Menerangkan sebuah root sumber dan direktori keluaran terjemahan yang disemak untuk root tersebut. |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Mengesan folder bahasa alias warisan dan menyediakan pelan migrasi folder BCP 47 kanonik. |
+| `Config` | `co_op_translator.config.base_config` | Memuat fail `.env` dan memeriksa sama ada penyedia LLM yang diperlukan dan Vision pilihan dikonfigurasikan. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Mengesan secara automatik Azure OpenAI, OpenAI, atau Anthropic, mengesahkan pembolehubah persekitaran yang diperlukan, dan menjalankan pemeriksaan sambungan penyedia. |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | Mengesan konfigurasi Azure AI Vision dan menjalankan pemeriksaan sambungan untuk terjemahan imej. |

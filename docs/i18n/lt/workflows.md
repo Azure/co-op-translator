@@ -1,44 +1,48 @@
 # Pasirinkite savo darbo eigą
 
-Co-op Translator galima naudoti trimis būdais: CLI, Python API ir MCP serveriu. Visi jie turi tas pačias vertimo galimybes, tačiau kiekvienas tinka kitokiai darbo eigai.
+Co-op Translator galima naudoti trimis būdais: CLI, Python API ir MCP serveriu. Jie dalijasi tomis pačiomis vertimo galimybėmis, tačiau kiekvienas tinkamas kitokiam darbo eigai.
 
 Naudokite šį puslapį, kai nusprendžiate, nuo ko pradėti.
 
+**Jei redaguojate vertimus rankiniu būdu:** numatytosios CLI ir Actions darbo eigos iš naujo išverčia pakeistus šaltinio failus pilnai, todėl jūsų suformuluotas turinys tuose failuose gali būti perrašytas. Peržiūrėkite diff prieš priimdami atnaujinimą. Norėdami išsaugoti Markdown blokų lygmens priimtų pataisų struktūrą, naudokite pasirinktinį [Python API vertimo būsenos teikėją](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
+
 ## Greitas sprendimas
 
-| Jei norite... | Naudoti | Pradėkite čia |
+| Jei norite... | Naudokite | Pradėkite čia |
 | --- | --- | --- |
-| Išversti arba peržiūrėti saugyklą iš terminalo | CLI | [CLI nuoroda](cli.md) |
-| Pridėti vertimą į Python skriptą, paslaugą, užrašų knygą arba CI užduotį | Python API | [Python API](api.md) |
-| Leisti agentui, redaktoriui arba su MCP suderinamam klientui išversti turinį už jus | MCP Server | [MCP serveris](mcp.md) |
-| Išversti vieną Markdown dokumentą, užrašų knygą arba paveikslėlį, kurį jūsų programa jau įkėlė | Python API arba MCP Server | [Python API](api.md) arba [MCP serveris](mcp.md) |
-| Išversti visą saugyklą su standartiniais išvesties aplankais ir metaduomenimis | CLI arba `run_translation` | [CLI nuoroda](cli.md) arba [Python API](api.md) |
+| Išversti arba peržiūrėti repozitoriją iš terminalo | CLI | [CLI Reference](cli.md) |
+| Pridėti vertimą į Python scenarijų, paslaugą, užrašų knygutę arba CI užduotį | Python API | [Python API](api.md) |
+| Leisti agentui, redaktoriui arba MCP suderinamam klientui versti turinį už jus | MCP Server | [MCP Server](mcp.md) |
+| Išversti vieną Markdown dokumentą, užrašų knygutę arba paveikslėlį, kuriuos jūsų programa jau užkėlė | Python API or MCP Server | [Python API](api.md) or [MCP Server](mcp.md) |
+| Išversti visą repozitoriją su standartiniais išvesties katalogais ir metaduomenimis | CLI or `run_translation` | [CLI Reference](cli.md) or [Python API](api.md) |
 
 ## Naudokite CLI, kai
 
-Rinkitės CLI, kai žmogus arba CI užduotis atlieka saugyklos vertimą iš terminalo.
+Rinkitės CLI, kai žmogus arba CI užduotis valdo repozitorijos vertimą iš komandinės eilutės.
 
-CLI yra tiesiausias kelias, kai norite, kad Co-op Translator aptiktų projekto failus, sukurtų išverstus rezultatus, išsaugotų projekto išdėstymą, atnaujintų metaduomenis ir paleistų peržiūros komandas.
+CLI yra tiesiausias kelias, kai norite, kad Co-op Translator atrastų projekto failus, sukurtų išverstą išvestį, išsaugotų projekto struktūrą, atnaujintų metaduomenis ir paleistų peržiūros komandas.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
+Šis pavyzdys verčia Markdown ir užrašų knygutes. Pridėkite `-img` tik po to, kai sukonfigūruosite [Azure AI Vision](configuration.md#azure-ai-vision). Jei pirmą kartą verčiate tik Markdown, vadovaukitės [Jūsų pirmasis vertimas](first-translation.md).
+
 Tinka:
 
-- Verčiate saugyklą naudodami terminalą.
-- Norite pakartojamos komandos CI arba leidimo darbo eigoms.
-- Norite įdiegto projekto aptikimo, išvesties kelių, metaduomenų, švarinimo ir peržiūros.
-- Teikiate pirmenybę komandiniam sąsajai, o ne Python kodui rašyti.
+- Verčiate repozitoriją iš savo terminalo.
+- Norite pakartojamo comando CI ar išleidimo darbo eigoms.
+- Norite įmontuoto projekto aptikimo, išvesties kelių, metaduomenų, išvalymo ir peržiūros.
+- Teikiate pirmenybę komandinei sąsajai už Python kodo rašymą.
 
 ## Naudokite Python API, kai
 
 Rinkitės Python API, kai jūsų kodas turi valdyti darbo eigą.
 
-API yra naudinga programoms, automatizavimo skriptams, užrašų knygoms, paslaugoms ir pasirinktinėms eilėms. Ji leidžia kviesti žemo lygio turinio vertimo API atskiroms byloms arba paleisti tą patį saugyklos lygio orkestravimą, kurį naudoja CLI.
+API yra naudinga programoms, automatizavimo scenarijams, užrašų knygutėms, paslaugoms ir pasirinktiniams srautams. Ji leidžia kviesti žemo lygio turinio vertimo API atskiriems failams arba vykdyti tą pačią repozitorijos lygmens orkestraciją, kurią naudoja CLI.
 
 Išverskite vieną Markdown dokumentą ir nuspręskite, kur jį išsaugoti:
 
@@ -72,57 +76,50 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Paleiskite saugyklos vertimą iš Python:
+Vykdykite repozitorijos vertimą iš Python:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
 Tinka:
 
-- Jūsų programa jau skaito failus, buferius, užrašų knygas arba vaizdo baitus.
-- Jums reikia pasirinktinės validacijos, saugojimo, žurnavimo, pakartojimų arba patvirtinimo srautų.
-- Norite išversti vieną dokumentą, užrašų knygą arba vaizdą neapdorodami visos saugyklos.
-- Norite saugyklos vertimo, bet per Python automatizavimą, o ne per shell komandą.
+- Jūsų programa jau skaito failus, buferius, užrašų knygutes arba paveikslėlių baitus.
+- Reikia pasirinktinių validacijų, saugojimo, žurnalaudavimo, bandymų pakartojimo ar patvirtinimo srautų.
+- Norite išversti vieną dokumentą, užrašų knygutę arba paveikslėlį be visos repozitorijos apdorojimo.
+- Norite repozitorijos vertimo, bet iš Python automatizacijos vietoje komandinės eilutės komandos.
 
 ## Naudokite MCP serverį, kai
 
-Rinkitės MCP serverį, kai agentas, redaktorius arba su MCP suderinamas klientas turėtų kviesti Co-op Translator įrankius.
+Rinkitės MCP serverį, kai agentas, redaktorius arba MCP suderinamas klientas turėtų kviesti Co-op Translator įrankius.
 
-Įprastame vietiniame nustatyme vartotojas rankiniu būdu nelaiko serverio veikiančio. MCP klientas paleidžia `co-op-translator-mcp` per `stdio`, kai jam reikalingi įrankiai.
+Įprastame vietiniame nustatyme vartotojas rankiniu būdu nepaleidžia serverio. MCP klientas paleidžia `co-op-translator-mcp` per `stdio`, kai jam reikia įrankių.
 
-Pavyzdiniai vartotojo užklausos, kurias galėtų tvarkyti agentas:
+Pavyzdiniai vartotojo prašymai, kuriuos agentas galėtų apdoroti:
 
-- "Išverskite šį Markdown failą į korėjiečių kalbą ir užtikrinkite, kad nuorodos būtų teisingos."
-- "Išverskite šį Markdown failą į korėjiečių kalbą naudodami agento asistuojamą MCP darbo eigą, savo modeliui taikant išverstoms dalims."
-- "Išverskite šią užrašų knygą į korėjiečių kalbą, išsaugokite kodo langelius ir naudokite Co-op Translator MCP užrašų knygos atkūrimui."
-- "Išverskite šio paveikslėlio tekstą į japonų kalbą ir išsaugokite rezultatą."
-- "Atlikite bandomąjį saugyklos vertimą į ispanų kalbą ir pasakykite, kas pasikeistų."
-- "Peržiūrėkite, ar korėjiečių vertimo rezultatai yra atnaujinti."
+- "Išverskite šį Markdown failą į korėjiečių kalbą ir palikite nuorodas taisyklingas."
+- "Išverskite šį Markdown failą į korėjiečių kalbą naudodami agento padedamą MCP darbo eigą ir savo modelį verčiamoms dalims."
+- "Išverskite šį užrašų knygutę į korėjiečių kalbą, išsaugokite kodo langelius ir naudokite Co-op Translator MCP, kad atstatytumėte užrašų knygutę."
+- "Išverskite teksto turinį šioje nuotraukoje į japonų kalbą ir išsaugokite rezultatą."
+- "Atlikite sausąjį (dry-run) repozitorijos vertimą į ispanų kalbą ir pasakykite, kas pasikeistų."
+- "Peržiūrėkite, ar korėjiečių vertimas yra atnaujintas."
 
-Markdown ir užrašų knygoms MCP gali veikti dviem režimais:
+Markdown ir užrašų knygutėms MCP gali veikti dviem režimais:
 
-| Režimas | Naudokite kai | Pagrindiniai įrankiai |
+| Režimas | Kada naudoti | Pagrindiniai įrankiai |
 | --- | --- | --- |
-| Agentui padedant | MCP šeimininko agentas turėtų versti gabalus naudodamas savo modelį, be Co-op Translator LLM teikėjo kredencialų. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Teikėjo palaikomas | Co-op Translator turėtų kviesti Azure OpenAI arba OpenAI tiesiogiai. | `translate_markdown_content`, `translate_notebook_content` |
+| Su agento pagalba | Kai MCP šeimininko agentas turi išversti dalis naudodamas savo modelį, be Co-op Translator LLM teikėjo kredencialų. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Teikėjo palaikomas | Co-op Translator turėtų kviesti Azure OpenAI, OpenAI, arba Anthropic tiesiogiai. | `translate_markdown_content`, `translate_notebook_content` |
 
-MCP teikėjo palaikomas Markdown įrankio iškvietimo forma:
+MCP teikėjo palaikomas Markdown įrankio kvietimo forma:
 
 ```json
 {
@@ -137,7 +134,7 @@ MCP teikėjo palaikomas Markdown įrankio iškvietimo forma:
 }
 ```
 
-MCP vaizdo įrankio iškvietimo forma:
+MCP paveikslėlių įrankio kvietimo forma:
 
 ```json
 {
@@ -150,7 +147,7 @@ MCP vaizdo įrankio iškvietimo forma:
 }
 ```
 
-Per MCP saugyklos vertimas pagal numatytuosius nustatymus vykdomas bandomuoju režimu:
+Per MCP repozitorijos vertimas pagal numatytuosius nustatymus yra sausasis režimas (dry-run):
 
 ```json
 {
@@ -167,14 +164,14 @@ Per MCP saugyklos vertimas pagal numatytuosius nustatymus vykdomas bandomuoju re
 
 Tinka:
 
-- Norite natūralių kalbų vertimo darbo eigų agento ar redaktoriaus viduje.
-- Norite Markdown arba užrašų knygos vertimo, kai šeimininko agento modelis išverčia paruoštus gabalus.
-- Norite, kad agentas išverstų pasirinktą turinį, o ne visą saugyklą.
-- Norite patvirtinimo žingsnio prieš rašant į visą saugyklą.
-- Norite vienos sąsajos, kuri suteikia prieigą prie Markdown, užrašų knygos, vaizdų, peržiūros ir kelių perrašymo įrankių.
+- Norite natūralios kalbos vertimo darbo eigos agente ar redaktoriuje.
+- Norite Markdown arba užrašų knygutės vertimo, kai šeimininko agento modelis verčia paruoštas dalis.
+- Norite, kad agentas išverstų pasirinktinį turinį, o ne visą repozitoriją.
+- Norite patvirtinimo žingsnio prieš rašymą visoje repozitorijoje.
+- Norite vienos sąsajos, kuri atvertų Markdown, užrašų knygutės, paveikslėlių, peržiūros ir kelių perrašymo įrankius.
 
 ## Kaip jie dera tarpusavyje
 
-CLI yra geriausias numatytasis pasirinkimas žmonėms, verčiantiems saugyklas. Python API geriausia, kai jūsų kodas valdo darbo eigą. MCP serveris geriausias, kai agentas arba redaktorius valdo darbo eigą.
+CLI yra geriausias numatytasis pasirinkimas žmonėms verčiantiems repozitorijas. Python API geriausiai tinka, kai jūsų kodas valdo darbo eigą. MCP serveris geriausias, kai darbo eigą valdo agentas arba redaktorius.
 
-Visos trys galimybės naudoja tą patį viešą Co-op Translator API, todėl galite pradėti nuo CLI, vėliau automatizuoti su Python ir, prireikus, suteikti tas pačias galimybes MCP klientams agentų valdomoms darbo eigoms.
+Visos trys galimybės naudoja tą pačią viešą Co-op Translator API, todėl galite pradėti nuo CLI, vėliau automatizuoti su Python ir pristatyti tas pačias galimybes MCP klientams, kai prireiks agentų valdomų darbo eigų.

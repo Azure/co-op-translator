@@ -1,47 +1,47 @@
 # API ya Python
 
-API ya umma ya Python imethibitishwa inatolewa kutoka `co_op_translator.api`. Mwingiliano nyingi hutumia moja ya mitiririko ifuatayo:
+API ya umma thabiti ya Python imetolewa kutoka `co_op_translator.api`. Mwingiliano wengi hutumia mojawapo ya mtiririko huu:
 
-| Scenario | Use this when | Main APIs |
+| Senario | Tumia hili wakati | API Kuu |
 | --- | --- | --- |
-| Translate individual files or documents | Your application reads source content, calls Co-op Translator for translation, and decides where to save the result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | Your MCP host or application model will translate chunks, while Co-op Translator handles chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | You want the Python API to behave like the CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
+| Tafsiri faili au nyaraka binafsi | Programu yako inasoma maudhui ya chanzo, inaita Co-op Translator kwa ajili ya tafsiri, na inaamua wapi kuhifadhi matokeo. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Tayarisha maudhui kwa tafsiri ya wakala mwenyeji | Mwenyeji wako wa MCP au modeli ya programu itatafsiri vipande, wakati Co-op Translator inashughulikia kugawa vipande na ujenzi upya. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Tafsiri hazina yote | Unataka API ya Python iwe kama CLI na kushughulikia ugunduzi, njia za pato, metadata, usafi, na uandishi. | `run_translation` |
 
-Moduli nyingi za ngazi ya chini chini ya `core`, `config`, `review`, na `utils` ni maelezo ya utekelezaji yanayotumika na hizi sehemu za kuingia za API.
+Moduli nyingi za ngazi ya chini chini ya `core`, `config`, `review`, na `utils` ni maelezo ya utekelezaji yanayotumiwa na pointi hizi za kuingia za API.
 
-Wateja wa MCP wanatumia API ya umma kupitia [MCP Server](mcp.md). Tumia ukurasa huu unapochukua Python moja kwa moja, na mwongozo wa MCP unapofungua Co-op Translator kwa wakala au mhariri. Ikiwa unaamua kati ya CLI, API ya Python, na MCP, anza na [Choose Your Workflow](workflows.md).
+Wateja wa MCP hutumia API ya umma sawa kupitia [MCP Server](mcp.md). Tumia ukurasa huu unapoita Python moja kwa moja, na mwongozo wa MCP unapokuwa unamtambulisha Co-op Translator kwa wakala au mhariri. Ikiwa unaamua kati ya CLI, API ya Python, na MCP, anza na [Chagua Mtiririko Wako](workflows.md).
 
 ## Mtiririko wa API kwa Mara ya Kwanza
 
 Anza hapa ikiwa unaita Co-op Translator kutoka kwa msimbo wa Python:
 
-1. Sanidi mtoa LLM kama ilivyoelezwa katika [Configuration](configuration.md), isipokuwa unapangilia tu vipande vya Markdown au notibuki kwa tafsiri ya mwenyeji-wakala.
-2. Amua ikiwa programu yako inamiliki I/O ya faili.
+1. Sanidi mtoa huduma wa LLM kama ilivyoelezwa katika [Configuration](configuration.md), isipokuwa tu unapokuwa unatayarisha vipande vya Markdown au daftari kwa tafsiri ya wakala mwenyeji.
+2. Amua kama programu yako itasimamia I/O ya faili.
 3. Tumia API za maudhui wakati programu yako inasoma na kuandika faili binafsi.
-4. Tumia `run_translation` wakati Co-op Translator inapaswa kuchakata hifadhi kama CLI.
-5. Tumia `run_review` baada ya tafsiri ikiwa unahitaji ukaguzi wa deterministic katika automatisering.
+4. Tumia `run_translation` wakati Co-op Translator inapaswa kushughulikia hazina kama CLI.
+5. Tumia `run_review` baada ya tafsiri ikiwa unahitaji ukaguzi thabiti kwa otomatiki.
 
-| Goal | API to start with |
+| Lengo | API ya kuanzia nayo |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
-| Translate one notebook payload | `translate_notebook_content` |
-| Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
-| Translate a full repository | `run_translation` |
-| Review translated output | `run_review` |
+| Tafsiri kamba au faili moja ya Markdown | `translate_markdown_content` |
+| Tafsiri maudhui ya daftari moja | `translate_notebook_content` |
+| Tafsiri picha moja | `translate_image_content` |
+| Wawezeshe wakala mwenyeji kutafsiri vipande vya Markdown au daftari | `start_markdown_agent_translation` au `start_notebook_agent_translation` |
+| Andika upya viungo vilivyotafsiriwa baada ya kuchagua njia ya pato | `rewrite_markdown_paths` au `rewrite_notebook_paths` |
+| Tafsiri hazina yote | `run_translation` |
+| Kagua matokeo yaliyotafsiriwa | `run_review` |
 
 ## Senario 1: Tafsiri Faili au Nyaraka Binafsi
 
-Tumia mtiririko huu wakati tayari una faili, buffer ya mhariri, payload ya notibuki, ombi la MCP, au pembejeo ya pipeline maalum. Msimbo wako unamiliki I/O ya faili:
+Tumia mtiririko huu wakati tayari una faili, buffer ya mhariri, maudhui ya daftari, ombi la MCP, au pembejeo za pipeline maalum. Msimbo wako unasimamia I/O ya faili:
 
 1. Soma maudhui ya chanzo.
 2. Ita API ya tafsiri ya maudhui.
-3. Hiari: ita API ya kuandika upya njia ikiwa maudhui yaliyotafsiriwa yataandikwa kwenye folda ya tafsiri ya mradi.
+3. Hiari: ita API ya uandishi upya wa njia ikiwa maudhui yaliyotafsiriwa yataandikwa ndani ya folda ya tafsiri ya mradi.
 4. Hifadhi au rudisha matokeo kutoka kwa programu yako.
 
-API za tafsiri za maudhui hazifanyi ugunduzi wa mradi, hazandika metadata, haziongezi maandishi ya onyo, na hazibadilishi viungo kiotomatiki.
+API za tafsiri za maudhui hazifanyi ugunduzi wa mradi, hazandiki metadata, haziongezi taarifa za kutengwa, na hazibadilisha viungo kiotomatiki.
 
 ### Faili la Markdown
 
@@ -85,9 +85,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Ikiwa Markdown iliyotafsiriwa haitakuwa ndani ya mpangilio wa mradi wa Co-op Translator, skip `rewrite_markdown_paths` na hifadhi kamba iliyotafsiriwa moja kwa moja.
+Ikiwa Markdown iliyotafsiriwa haitakuwa ndani ya muundo wa mradi wa Co-op Translator, ruka `rewrite_markdown_paths` na hifadhi kamba iliyotafsiriwa moja kwa moja.
 
-### Faili la Notebook
+### Faili la Daftari
 
 ```python
 import asyncio
@@ -129,7 +129,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` hutafsiri seli za Markdown na huhifadhi seli zisizo za Markdown. Kuandika upya njia kunatumika kwa seli za Markdown pekee.
+`translate_notebook_content` inatafsiri seli za Markdown na inahifadhi seli zisizo za Markdown. Uandishi upya wa njia unatekelezwa kwa seli za Markdown pekee.
 
 ### Faili la Picha
 
@@ -154,15 +154,15 @@ target_path.parent.mkdir(parents=True, exist_ok=True)
 translated_image.save(target_path)
 ```
 
-`translate_image_content` husoma picha ya chanzo na kurudisha `PIL.Image.Image` iliyochorwa. Haidai kuandika metadata ya picha iliyotafsiriwa.
+`translate_image_content` inasoma picha ya chanzo na inarudisha `PIL.Image.Image` iliyotengenezwa. Haandiki metadata ya picha iliyotafsiriwa.
 
-## Senario 2: Tafsiri Hifadhi Nzima ya Mradi
+## Senario 2: Tafsiri Hazina Yote
 
-Tumia mtiririko huu wakati unataka API ya Python ifanye kazi kama CLI ya `translate`. `run_translation` hugundua faili zinazotambuliwa, hutafsiri aina za maudhui zilizochaguliwa, huandika upya njia, huandika faili za matokeo, huweka metadata, na hufanya kazi za matengenezo ya tafsiri kama kusafisha.
+Tumia mtiririko huu unapotaka API ya Python ifanye kazi kama CLI `translate`. `run_translation` hugundua faili zinazoungwa mkono, inatafsiri aina zilizochaguliwa za maudhui, inaandika upya njia, inaandika faili za pato, inaupdate metadata, na inafanya kazi za matengenezo ya tafsiri kama usafi.
 
-`run_translation` ni nukta inayopendekezwa ya kuandaa miradi. `translate_project` hutolewa kama jina la urudufu lenye tabia ile ile.
+`run_translation` ni njia iliyopendekezwa ya kuanzisha uratibu wa mradi. `translate_project` imetolewa kama jina la urafiki lenye tabia ile ile.
 
-Tafsiri faili za Markdown katika hifadhi ya sasa kuwa Kikorea na Kijapani:
+Tafsiri faili za Markdown katika hazina iliyopo kuwa Kikorea na Kijapani:
 
 ```python
 from co_op_translator.api import run_translation
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-Tafsiri notibuki pekee kutoka mzizi maalum wa mradi:
+Tafsiri vitabu vya daftari pekee kutoka mzizi maalum wa mradi:
 
 ```python
 from co_op_translator.api import run_translation
@@ -185,7 +185,7 @@ run_translation(
 )
 ```
 
-Angalia kiasi cha tafsiri bila kuandika faili:
+Angalia kiwango cha tafsiri bila kuandika faili:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-Tafsiri mizizi mingi ya maudhui kwa wito mmoja:
+Weka kumbukumbu za matukio ya maendeleo yaliyo muundo kwa ajili ya muingiliano:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Hifadhi yaliyomo (payload) katika jedwali lako la matukio za kazi au uyatume kwa mtiririko kwenye kiolesura chako cha mtumiaji.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Matukio yanatumia skema yenye toleo `co-op.translation.event.v1`. Mwingiliano yanapaswa
+kutegemea nyanja thabiti kama `type` na `stage_key`, si kwenye maandishi yanayoonekana kwa watu
+kwenye konsole au `stage_label`.
+
+Tafsiri mzizi nyingi za maudhui kwa wito mmoja:
 
 ```python
 from co_op_translator.api import run_translation
@@ -210,7 +234,7 @@ run_translation(
 )
 ```
 
-Andika tafsiri ndani ya makundi maalum ya matokeo:
+Weka tafsiri katika makundi ya pato yaliyoelezeka:
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-Tumia nafasi ya kujaza kwa kila lugha wakati kila lugha inapaswa kuwa na saraka ndogo iliyojengwa ndani:
+Tumia kibadilishi cha kila lugha wakati kila lugha inapaswa kuwa na saraka ndogo ndani:
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-Ikiwa hakuna `markdown`, `notebook`, au `images` iliyowekwa, API itatafsiri aina zote zinazotambulika: Markdown, notibuki, na picha.
+Ikiwa hakuna kati ya `markdown`, `notebook`, au `images` zimewekwa, API inatafsiri aina zote zinazoungwa mkono: Markdown, daftari, na picha.
 
-## Kagua Matokeo ya Tafsiri
+### Hifadhi mabadiliko yaliyoruhusiwa na binadamu kwa kutumia mtoa hali ya tafsiri
 
-`run_review` hufanya ukaguzi wa tafsiri wa deterministic bila sifa za LLM au Vision.
+Kwa chaguo-msingi, Co-op Translator huendelea na tabia yake ya sasa kwa ngazi ya faili: wakati
+chanzo cha Markdown kinapokuwa kimepitwa na wakati, faili yote iliyotafsiriwa inatengenezwa upya. Ushirikiano unaoendeshwa na mwenyeji
+unaweza kwa hiari kupitisha `TranslationStateProvider` ili kuhifadhi mabadiliko ya wanadamu
+katika vibloku vya chanzo ambavyo havijabadilika.
+
+Mtoa huduma hutoa jozi ya mwisho ya chanzo/lengo iliyokubaliwa na kurekodi kila
+mgombea. Kukubaliwa kunabaki kuwa jukumu la muingiliano—kwa mfano,
+baada ya ombi la kuvuta (pull request) la tafsiri kuchanganywa:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+Kwa faili za Markdown zenye msingi uliokubaliwa halali, Co-op Translator huoanisha
+vibloku vya juu vya Markdown. Vibloku vya chanzo ambavyo havijabadilika vinatumia tena vibloku vilivyotafsiriwa vya sasa,
+vikiwemo marekebisho yaliyofanywa na watu; vibloku vya chanzo vilivyobadilika au vilivyongezwa vinatumwa
+kwa tafsiri; vibloku vya chanzo vilivyofutwa vimoondolewa. Ikiwa ulinganifu hauko wazi,
+muundo wa lengo umebadilika, tafsiri ya kibao ni batili, au hakuna msingi
+upatikane, Co-op Translator kwa usalama hurudi kwenye
+njia ya sasa ya tafsiri ya faili nzima.
+
+API hii inahifadhi hali ya tafsiri ya hati, si kumbukumbu ya sentensi au
+'translation memory' ya segmenti. Hivi sasa inatumika kwa mradi wa Markdown
+tafsiri. Tabia za daftari na picha hazijabadilika. Kupitisha `update=True`
+bado huita utafsiri kwa njia ya uzalishaji kamili.
+
+Ikiwa faili moja au zaidi haiwezi kutafsiriwa, `run_translation` inaleta
+`RuntimeError` baada ya mtiririko wa mradi kumalizika badala ya kuripoti
+kazi iliyofanikiwa lakini pamoja na pato lilikosekana. Mwingiliano yanapaswa kuitendea kama kazi iliyoshindwa
+na kuhifadhi hali ya tafsiri iliyokubaliwa ya awali.
+
+## Kagua Matokeo Yaliyotafsiriwa
+
+`run_review` inafanya ukaguzi thabiti wa tafsiri bila vigezo vya LLM au Vision.
 
 !!! note "Beta"
-    `run_review` ni API ya ukaguzi wa deterministic inayoko katika beta. Haipigi watoa modeli au kuandika faili, lakini ukaguzi na mifumo ya masuala yanaweza kubadilika.
+    `run_review` ni API ya tathmini ya beta yenye utabiri. Haiitumi watoa modeli wala kuandika faili, lakini ukaguzi na skimu za masuala yanaweza kubadilika.
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-Kagua faili zilizobadilika tu dhidi ya ref ya msingi na chapeza matokeo yenye ladha ya GitHub:
+Baada ya tafsiri ya README pekee, tumia wigo huo huo kwa ajili ya ukaguzi:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` inakagua tu `README.md` chini ya kila mzizi wa chanzo uliowekwa,
+ikijumuisha `groups` maalum na saraka za pato. Nyaraka nyingine na README zilizomo ndani
+zimetengwa. Kukosa README ya chanzo kunachochea `ValueError`; ukaguzi wa tafsiri ulioshindikana
+unaleta `RuntimeError`.
+
+Kagua faili zilizo badilika tu dhidi ya rejea msingi na chapisha pato lenye mtindo wa GitHub:
 
 ```python
 from co_op_translator.api import run_review
@@ -274,7 +398,7 @@ run_review(
 )
 ```
 
-## Mifano ya API za Nakili-na-Kubandika
+## Mifano ya API za Nakili na Bandika
 
 Tafsiri maudhui ya Markdown bila kuandika faili:
 
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -327,7 +451,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Tafsiri hifadhi kutoka Python:
+Tafsiri hazina kutoka Python:
 
 ```python
 from co_op_translator.api import run_translation
@@ -340,7 +464,7 @@ run_translation(
 )
 ```
 
-Tafsiri mizizi mingi:
+Tafsiri mzizi nyingi:
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-Hifadhi maneno ya leksikari:
+Hifadhi maneno ya orodha ya istilahi:
 
 ```python
 from co_op_translator.api import run_translation
@@ -371,13 +495,16 @@ run_translation(
 )
 ```
 
-## Sehemu za Kuingia za Umma
+## Pointi za Umma za Kuingia
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,6 +544,12 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
@@ -425,15 +558,15 @@ from co_op_translator.api import (
 
 ## API za Tafsiri za Maudhui
 
-API za tafsiri za maudhui zimetengenezwa kwa mwingiliano ambao tayari wana maudhui kwa kumbukumbu, kama ugani wa mhariri, zana ya MCP, processor ya notibuki, au pipeline maalum.
+API za tafsiri za maudhui zinalengwa kwa muingiliano ambao tayari wana maudhui ndani ya kumbukumbu, kama vile kipanuzi cha mhariri, zana ya MCP, processor ya daftari, au pipeline maalum.
 
-| Function | Input | Output | File I/O | Notes |
+| Kazi | Ingizo | Matokeo | I/O ya Faili | Maelezo |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Asinkroni. Hutafsiri maudhui ya Markdown pekee. Haiandiki upya viungo, haiandiki metadata, wala haiiongezi disclaimer. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Asinkroni. Hutafsiri seli za Markdown na huhifadhi seli zisizo za Markdown. Haiandiki upya viungo, haiandiki metadata, wala haiiongezi disclaimer. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Sinkroni. Hutokana na kutoa na kutafsiri maandishi ya picha, kisha inarudisha picha iliyopakwa. Haihifadhi metadata ya picha iliyotafsiriwa. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | Hapana | Asinkroni. Inatafsiri maudhui ya Markdown tu. Haiandiki viungo upya, haiandiki metadata, wala haiongezi taarifa za kutengwa. |
+| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | Hapana | Asinkroni. Inatafsiri seli za Markdown na inahifadhi seli zisizo za Markdown. Haiandiki viungo upya, haiandiki metadata, wala haiongezi taarifa za kutengwa. |
+| `translate_image_content` | Image path | `PIL.Image.Image` | Inasoma picha ya chanzo tu | Sinkroni. Inatoa na kutafsiri maandishi ya picha, kisha inarudisha picha iliyochorwa. Haihifadhi metadata ya picha iliyotafsiriwa. |
 
-`translate_markdown_content` na `translate_notebook_content` zinakubali `source_path` chaguo katika chaguzi zao. Njia inapitishwa kama muktadha kwa mtafsiri; wito wanabaki kuwajibika kwa uandishi maalum wa mradi baada ya tafsiri.
+`translate_markdown_content` na `translate_notebook_content` zinakubali chaguo la `source_path` kupitia chaguzi zao. Njia hiyo hupitishwa kama muktadha kwa mtafsiri; wito wanabaki kuwajibika kwa uandishi upya wa njia maalum za mradi baada ya tafsiri.
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-Chaguzi zile zile zinaweza kupitishwa kama kamusi:
+Chaguzi zile zile zinaweza kupitishwa kama kamusi (dictionary):
 
 ```python
 translated = await translate_markdown_content(
@@ -455,94 +588,96 @@ translated = await translate_markdown_content(
 )
 ```
 
-## API za Tafsiri Zinazosaidiwa na Wakala
+## API za Tafsiri Zilizosaidiwa na Wakala
 
-API zinazosaidiwa na wakala hazipigi Azure OpenAI au OpenAI kutoka Co-op Translator. Zinaunda vipande vya Markdown au notibuki kwa wakala mwenyeji kutafsiri, kisha kujenga tena maudhui ya mwisho kutoka kwa vipande vilivyotafsiriwa.
+API zilizosaidiwa na wakala hazifanyi wito kwa mtoa huduma wa LLM uliowekwa kutoka Co-op Translator. Zinatangaza vipande vya Markdown au daftari kwa wakala mwenyeji kutafsiri, kisha hujenga tena maudhui ya mwisho kutoka kwa vipande vilivyotafsiriwa.
 
-| Function | Purpose |
+| Kazi | Kusudi |
 | --- | --- |
-| `start_markdown_agent_translation` | Return a self-contained Markdown job with chunks, prompts, and reconstruction state. |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from a job and host-agent translated chunks. |
-| `start_notebook_agent_translation` | Return a notebook job with Markdown-cell chunks for host-agent translation. |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON while preserving code cells, outputs, and metadata. |
+| `start_markdown_agent_translation` | Rudisha kazi ya Markdown yenye kujitegemea na vipande, mipangilio ya maelekezo, na hali ya ujenzi upya. |
+| `finish_markdown_agent_translation` | Jenga tena Markdown kutoka kwa kazi na vipande vilivyotafsiriwa na wakala mwenyeji. |
+| `start_notebook_agent_translation` | Rudisha kazi ya daftari yenye vipande vya seli za Markdown kwa tafsiri ya wakala mwenyeji. |
+| `finish_notebook_agent_translation` | Jenga tena JSON ya daftari huku ukihifadhi seli za msimbo, matokeo, na metadata. |
 
-Mtiririko huu kwa kawaida umetumika kwa mwenyeji wa MCP. Ikiwa unahitaji tafsiri ya hifadhi kwa uzalishaji na Co-op Translator ikisimamia wito wa mtoa huduma, tumia `translate_markdown_content`, `translate_notebook_content`, au `run_translation`.
+Mtiririko huu umeundwa hasa kwa wenyeji wa MCP. Ikiwa unahitaji tafsiri ya hazina kwa uzalishaji ambapo Co-op Translator inasimamia wito kwa watoa huduma, tumia `translate_markdown_content`, `translate_notebook_content`, au `run_translation`.
 
-## API za Kuandika Upya Njia
+## API za Uandishi Upya wa Njia
 
-API za kuandika upya njia hazitekelezi tafsiri. Zinaboresha viungo na njia za frontmatter baada ya wito kujua njia ya chanzo, njia ya lengo iliyotafsiriwa, na mpangilio wa mradi.
+API za uandishi upya wa njia hazitekelezi tafsiri. Zinaboresha viungo na njia za frontmatter baada ya wito kujua njia ya chanzo, njia ya lengo iliyotafsiriwa, na mpangilio wa mradi.
 
-| Function | Scope | Notes |
+| Kazi | Wigo | Maelezo |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | Rewrites Markdown links and supported frontmatter path fields for a translated target. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Applies Markdown path rewriting to each Markdown cell and leaves non-Markdown cells unchanged. |
+| `rewrite_markdown_paths` | Mwili wa Markdown na frontmatter | Inaandika upya viungo vya Markdown na mashamba ya frontmatter yanayounga mkono njia kwa lengo lililotafsiriwa. |
+| `rewrite_notebook_paths` | Seli za Markdown katika JSON ya daftari | Inatekeleza uandishi upya wa njia za Markdown kwa kila seli ya Markdown na inaacha seli zisizo za Markdown bila kubadilika. |
 
-Hoja `policy` inaweza kuwa kamusi yenye mashamba haya:
+Argumeni ya `policy` inaweza kuwa kamusi yenye mashamba haya:
 
-| Field | Required | Purpose |
+| Sehemu | Inahitajika | Kusudi |
 | --- | --- | --- |
-| `language_code` | Yes | Target language code, such as `"ko"` or `"pt-BR"`. |
-| `root_dir` | No | Source project root. Defaults to `"."`. |
-| `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
-| `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
-| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
-| `lang_subdir` | No | Optional subdirectory under each language folder. |
+| `language_code` | Ndiyo | Msimbo wa lugha ya lengo, kama `"ko"` au `"pt-BR"`. |
+| `root_dir` | Hapana | Mzizi wa mradi wa chanzo. Default ni `"."`. |
+| `translations_dir` | Hapana | Saraka ya pato ya tafsiri za maandishi. Default ni `translations` chini ya `root_dir`. |
+| `translated_images_dir` | Hapana | Saraka ya pato ya picha zilizotafsiriwa. Default ni `translated_images` chini ya `root_dir`. |
+| `translation_types` | Hapana | Aina za tafsiri zilizowezeshwa. Default ni Markdown, daftari, na picha. |
+| `lang_subdir` | Hapana | Saraka ndogo ya hiari chini ya kila folda ya lugha. |
 
 ## Vigezo vya Tafsiri ya Mradi
 
-| Parameter | Type | Default | Purpose |
+| Vigezo | Aina | Chaguo-msingi | Kusudi |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Space-separated target language codes, such as `"ko ja fr"`, or `"all"`. Alias codes are normalized to canonical BCP 47 values. |
-| `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` are supplied. |
-| `update` | `bool` | `False` | Delete and recreate existing translations for the selected languages. |
-| `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
-| `markdown` | `bool` | `False` | Include Markdown translation. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
-| `debug` | `bool` | `False` | Enable debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
-| `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
-| `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
-| `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
-| `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
+| `language_codes` | `str` | Inahitajika | Misimbo ya lugha za lengo zilizotenganishwa kwa nafasi, kama `"ko ja fr"`, au `"all"`. Msimbo mbadala unalinganishwa na thamani za kimsingi za BCP 47. |
+| `root_dir` | `str` | `"."` | Mzizi wa mradi kwa lengo moja la tafsiri. Haizingatiwi wakati `root_dirs` au `groups` zimetolewa. |
+| `update` | `bool` | `False` | Futa na tengeneza upya tafsiri zilizopo kwa lugha zilizochaguliwa. |
+| `images` | `bool` | `False` | Jumuisha tafsiri ya picha. Inahitaji usanidi wa Azure AI Vision. |
+| `markdown` | `bool` | `False` | Jumuisha tafsiri ya Markdown. |
+| `notebook` | `bool` | `False` | Jumuisha tafsiri ya daftari la Jupyter. |
+| `debug` | `bool` | `False` | Washa uandishi wa kumbukumbu wa utatuzi (debug). |
+| `save_logs` | `bool` | `False` | Hifadhi faili za kumbukumbu za ngazi ya DEBUG chini ya saraka ya mzizi `logs/`. |
+| `yes` | `bool` | `True` | Thibitisha moja kwa moja viito kwa matumizi ya programu na CI. |
+| `add_disclaimer` | `bool` | `False` | Ongeza viambatanisho vya tafsiri ya mashine kwenye Markdown na daftari zilizotafsiriwa. |
+| `translations_dir` | `str \| None` | `None` | Saraka maalum ya pato la tafsiri ya maandishi. Njia za jamaa zinatatuliwa kwa kila mzizi. |
+| `image_dir` | `str \| None` | `None` | Saraka maalum ya pato la picha zilizotafsiriwa. Njia za jamaa zinatatuliwa kwa kila mzizi. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Mizizi mingi inayoshiriki mipangilio ileile ya pato. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Pande zilizo wazi `(root_dir, translations_dir)`. Zinapata kipaumbele juu ya `root_dirs`. |
+| `repo_url` | `str \| None` | `None` | URL ya hazina inayotumika wakati wa kuonyesha mwongozo wa jedwali la lugha kwenye README. |
+| `glossaries` | `Iterable[str] \| None` | `None` | Maneno ya orodha ya istilahi ya kuhifadhi wakati wa tafsiri. Nakala na maneno tupu zinapangwa kuwa sawa. |
+| `dry_run` | `bool` | `False` | Kadiria kiasi cha tafsiri na hakiki tabia ya uhamishaji bila kuandika faili. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Kiambatisho cha hiari cha kuhifadhi msingi uliokubaliwa na wagombea kwa masasisho ya hatua kwa hatua ya Markdown. Kukosa kwake kunahifadhi tabia ya sasa ya faili kamili. |
 
 ## Vigezo vya Ukaguzi
 
-`run_review` kwa makusudi inalingana na saini ya `run_translation` pale inapowezekana ili automatisering iweze kubadilisha kati ya mitiririko ya tafsiri na ukaguzi kwa kupungua kwa mageuzi.
+`run_review` kwa makusudi inaiga saini ya `run_translation` inapowezekana ili otomatiki iweze kubadilisha kati ya taratibu za tafsiri na ukaguzi kwa mabadiliko madogo.
 
-| Parameter | Type | Default | Purpose |
+| Kigezo | Aina | Chaguo-msingi | Kusudi |
 | --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders to review. Space-separated strings and iterables are accepted. `"all"` reviews every discovered translation language. |
-| `root_dir` | `str` | `"."` | Project root for a single review target. Ignored when `root_dirs` or `groups` are supplied. |
-| `markdown` | `bool` | `False` | Include Markdown and MDX source files. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
-| `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images are checked from Markdown. |
-| `translations_dir` | `str \| None` | `None` | Saraka ya pato ya tafsiri ya maandishi kwa desturi. Njia za relative hutatuliwa kwa kila mzizi. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Mizizi mingi inayoshiriki mipangilio sawa ya pato. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Jozi wazi za `(root_dir, translations_dir)`. Inachukua kipaumbele kuliko `root_dirs`. |
-| `changed_from` | `str \| None` | `None` | Git ref inayotumika kupunguza uhakiki kwa faili za chanzo zilizobadilika. |
-| `output_format` | `str` | `"text"` | Aina ya pato la uhakiki. Thamani zinazotumika ni `"text"` na `"github"`. |
-| `fail_on_warnings` | `bool` | `False` | Chukulia maonyo kama kushindwa pamoja na makosa. |
-| `debug` | `bool` | `False` | Washa ufuatiliaji/ulezaji wa debug. |
-| `save_logs` | `bool` | `False` | Hifadhi faili za log za ngazi ya DEBUG chini ya saraka ya mzizi `logs/`. |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | Folda za lugha lengwa za kukagua. Sehemu zilizoachwa kwa nafasi na orodha zinakubaliwa. `"all"` inakagua kila lugha ya tafsiri iliyogunduliwa. |
+| `root_dir` | `str` | `"."` | Mzizi wa mradi kwa lengo moja la ukaguzi. Hupuuzwa wakati `root_dirs` au `groups` zitatolewa. |
+| `markdown` | `bool` | `False` | Jumuisha faili za chanzo za Markdown na MDX. |
+| `notebook` | `bool` | `False` | Jumuisha faili za chanzo za daftari za Jupyter. |
+| `images` | `bool` | `False` | Imehifadhiwa ili kufanana na chaguzi za tafsiri. Marejeleo ya viunga vya picha yanakaguliwa kutoka Markdown. |
+| `translations_dir` | `str \| None` | `None` | Saraka maalum ya pato la tafsiri ya maandishi. Njia za jamaa zinatatuliwa kwa kila mzizi. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Mizizi mingi inayoshiriki mipangilio ileile ya pato. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Pande zilizo wazi `(root_dir, translations_dir)`. Zinapata kipaumbele juu ya `root_dirs`. |
+| `changed_from` | `str \| None` | `None` | Rejeo la Git linalotumika kuzuia ukaguzi kwa faili za chanzo zilizobadilishwa. |
+| `readme_only` | `bool` | `False` | Kagua tu `README.md` chini ya kila mzizi wa chanzo. Kukosa README wa chanzo kunaleta `ValueError`. |
+| `output_format` | `str` | `"text"` | Muundo wa pato la ukaguzi. Maadili yanayounga mkono ni `"text"` na `"github"`. |
+| `fail_on_warnings` | `bool` | `False` | Chukulia onyo kama kushindwa pamoja na makosa. |
+| `debug` | `bool` | `False` | Washa uandishi wa kumbukumbu za debug. |
+| `save_logs` | `bool` | `False` | Hifadhi faili za kumbukumbu za kiwango cha DEBUG chini ya saraka ya mzizi `logs/`. |
 
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+Iwapo hakuna kati ya `markdown`, `notebook`, au `images` zilizowekwa, API inakagua Markdown, daftari, na marejeleo ya viunga vya picha pale inapotumika. Ukaguzi hauitami mtoa huduma wa LLM na hauhitaji vitambulisho vya API.
 
 ## Mahitaji ya Usanidi
 
-Provider-backed translation APIs require provider configuration before translating:
+API za tafsiri zinazotegemea mtoa huduma zinahitaji usanidi wa mtoa huduma kabla ya kutafsiri:
 
-- Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
-- Image translation requires Azure AI Vision in addition to the LLM provider.
-- `run_translation` runs lightweight connectivity checks before project translation begins.
-- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` are deterministic and do not require provider credentials.
+- Tafsiri ya Markdown na daftari inahitaji mtoa huduma wa LLM. Sanidi Azure OpenAI, OpenAI, au Anthropic.
+- Tafsiri ya picha inahitaji Azure AI Vision pamoja na mtoa huduma wa LLM.
+- `run_translation` inafanya ukaguzi mdogo wa muunganisho kabla ya kuanza tafsiri ya mradi.
+- API zinazosaidiwa na wakala `start_*_agent_translation` na `finish_*_agent_translation` hazipigi simu kwa watoa LLM wa Co-op Translator. Programu mwenyeji au wakala wa MCP ndiye anatafsiri vipande vilivyotayarishwa.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths`, na `run_review` ni zisizobadilika na hazihitaji nyaraka za uthibitisho za mtoa huduma.
 
-Required Azure OpenAI variables:
+Mazingira yanayohitajika kwa Azure OpenAI:
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -552,69 +687,78 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Required OpenAI variables:
+Mazingira yanayohitajika kwa OpenAI:
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+Mazingira yanayohitajika kwa Anthropic:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` na `ANTHROPIC_MAX_TOKENS` ni za hiari. Microsoft Agent Framework ndio mteja wa modeli chaguo-msingi kwa watoa huduma wote kuanzia Co-op Translator 0.22.0. Semantic Kernel bado inaweza kuchaguliwa kwa muda kwa kutumia `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, lakini kufanya hivyo hutoa onyo la kutotumika tena; ona [usanidi](configuration.md#model-client-backend) kwa mpango wa kuondoa kwa hatua.
+
+Mazingira yanayohitajika ya Azure AI Vision kwa tafsiri ya picha:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` ni zisizobadilika na haihitaji usanidi wa LLM au Azure AI Vision.
 
 ## Vidokezo vya Tabia
 
-- Content translation APIs keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content needs project-relative links adjusted for a target location.
-- Project orchestration APIs add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
-- `run_translation` prints progress and estimate summaries through Click, matching the CLI user experience.
-- `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
-- `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
-- When image translation is selected, missing Vision configuration raises an error before translation starts.
-- Existing alias-based language folders are detected and can be migrated to canonical language folder names as part of the run.
-- `run_review` fails on missing translated files, missing or stale translation metadata, malformed Markdown frontmatter/code fences, and invalid translated notebook JSON.
-- `run_review` reports missing local Markdown and image link targets as warnings by default.
+- API za tafsiri ya yaliyomo zinahifadhi tafsiri tofauti na kuandika upya njia za mradi. Piga simu `rewrite_markdown_paths` au `rewrite_notebook_paths` waziwazi wakati yaliyotafsiriwa yanahitaji marekebisho ya viungo vinavyohusiana na mradi kwa eneo lengwa.
+- API za upangaji wa mradi huongeza tabia za mradi kuzunguka tafsiri ya yaliyomo, ikijumuisha ugunduzi wa faili, uandishi, kuandika upya njia, metadata, usafishaji, na viambatanisho vya hiari.
+- `run_translation` inachapisha muendelezo na muhtasari wa makadirio kupitia mtoaji taarifa mmoja unaotegemea Rich unaotumika na CLI. Pato lisilo na mwingiliano linarudi kwenye maandishi ya kawaida.
+- `dry_run=True` inahesabu makadirio kwa kutumia masasisho ya README ya kidigitali, lakini haiandiki README wala faili za tafsiri.
+- `groups` zinaandaliwa kwa mfululizo. Makadirio ya jumla yanachapishwa kabla ya kazi kuanza.
+- Wakati tafsiri ya picha imechaguliwa, kukosekana kwa usanidi wa Vision husababisha kosa kabla ya kuanza tafsiri.
+- Saraka za lugha zilizopo zinazotegemea majina ya kibadilifu (alias) zinatambuliwa na zinaweza kuhamishwa kwenda majina ya saraka ya lugha ya kikanoni kama sehemu ya utekelezaji.
+- `run_review` inashindwa kwa faili za tafsiri zilizokosekana, metadata ya tafsiri iliyokosekana au iliyokauka, frontmatter/funga za msimbo za Markdown zisizo sahihi, na JSON ya daftari iliyotafsiriwa isiyo halali.
+- `run_review` huripoti malengo ya Markdown ya ndani na viungo vya picha vilivyokosekana kama onyo kwa chaguo-msingi.
 
-## Njia ya Mwito ya Ndani
+## Njia ya Kuitwa Ndani
 
-The API delegates to the same core implementation used by the CLI:
+API inamkabidhi utekelezaji uleule wa msingi unaotumika na CLI:
 
 Tafsiri:
 
-1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.
-2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.
-3. `co_op_translator.api.translation.run_translation` for full project orchestration.
+1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` kwa tafsiri inayofanyika ndani ya kumbukumbu.
+2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` kwa uchakataji wa wazi wa njia baada ya tafsiri.
+3. `co_op_translator.api.translation.run_translation` kwa upangaji kamili wa mradi.
 4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
 5. `co_op_translator.core.project.ProjectTranslator`.
 6. `co_op_translator.core.project.TranslationManager`.
-7. Focused project translation mixins for Markdown, notebooks, and images.
-8. Markdown, notebook, text, and image translators under `co_op_translator.core`.
+7. Mchanganyiko maalum wa tafsiri ya mradi kwa Markdown, daftari, na picha.
+8. Watafsiri wa Markdown, daftari, maandishi, na picha chini ya `co_op_translator.core`.
 
-Uhakiki:
+Ukaguzi:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
 4. Deterministic checks under `co_op_translator.review.checks`
 
-The following classes are useful for maintainers, but are not exported as the package-level stable API.
+Madarasa yafuatayo ni muhimu kwa watunzaji, lakini hayatoiwi kama API thabiti ya ngazi ya kifurushi.
 
-| Class | Module | Responsibility |
+| Darasa | Moduli | Majukumu |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Inaendesha tafsiri ya ngazi ya mradi, usimamizi wa saraka, urekebishaji wa metadata kwa kila lugha, na kupitisha kazi kwa watafsiri wa Markdown, daftari, na picha. |
-| `TranslationManager` | `co_op_translator.core.project.translation` | Hufanya kazi za usindikaji faili zisizo za sinkrono kwa Markdown, daftari, picha, kugundua zilizo za zamani, na masasisho ya metadata ya tafsiri. |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Inaoratibu kusoma faili za Markdown, tafsiri ya maudhui, kurekebisha njia, metadata, matangazo ya hiari, na uandishi. |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Inaoratibu kusoma faili za daftari, tafsiri ya seli za Markdown, kurekebisha njia, metadata, matangazo ya hiari, na uandishi. |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Inaoratibu ugunduzi wa picha za chanzo, tafsiri ya picha, njia za pato, metadata, na uandishi. |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Inatafuta jozi za Markdown zilizotafsiriwa, hupima ubora wa tafsiri, na husoma metadata ya uaminifu kwa workflows za ukarabati wa uaminifu mdogo. |
-| `ReviewRunner` | `co_op_translator.review.runner` | Inaweka uratibu wa ukaguzi wa deterministiki kwa faili za chanzo, lugha lengwa, na mizizi ya tafsiri iliyosanidiwa. |
-| `ReviewTarget` | `co_op_translator.review.targets` | Inaelezea mzizi wa chanzo na saraka ya pato ya tafsiri inayokaguliwa kwa mzizi huo. |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Inagundua saraka za lugha za alias za zamani na kuandaa mipango ya uhamishaji wa saraka za lugha za BCP 47 za kawaida. |
-| `Config` | `co_op_translator.config.base_config` | Inapakia faili za `.env` na kukagua ikiwa wasambazaji waliotakiwa wa LLM na wanaoweza kuchaguliwa wa Vision wamewekwa. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Inagundua moja kwa moja Azure OpenAI au OpenAI, inathibitisha vigezo muhimu vya mazingira, na inaendesha ukaguzi wa unganisho wa msambazaji. |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | Inagundua usanidi wa Azure AI Vision na inaendesha ukaguzi wa unganisho kwa tafsiri za picha. |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Inaongoza tafsiri ya ngazi ya mradi, usimamizi wa saraka, ulinganifu wa metadata kwa kila lugha, na kugawa kazi kwa watafsiri wa Markdown, daftari, na picha. |
+| `TranslationManager` | `co_op_translator.core.project.translation` | Inatekeleza kazi za usindikaji wa faili kwa njia ya async kwa Markdown, daftari, picha, ugundaji wa yaliyokauka, na masasisho ya metadata ya tafsiri. |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Inaongoza kusomwa kwa faili za Markdown, tafsiri ya yaliyomo, kuandika upya njia, metadata, viambatanisho, na kuandika faili. |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Inaongoza kusomwa kwa faili za daftari, tafsiri ya seli za Markdown, kuandika upya njia, metadata, viambatanisho, na kuandika faili. |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Inaongoza ugundaji wa picha za chanzo, tafsiri ya picha, njia za pato, metadata, na kuandika faili. |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Inatafuta jozi za Markdown zilizotafsiriwa, inathibitisha ubora wa tafsiri, na inasoma metadata ya kujiamini kwa taratibu za ukarabati za matokeo yenye uaminifu mdogo. |
+| `ReviewRunner` | `co_op_translator.review.runner` | Inaratibu ukaguzi unaotegemewa kwa faili za chanzo, lugha lengwa, na mizizi ya tafsiri iliyosanidiwa. |
+| `ReviewTarget` | `co_op_translator.review.targets` | Inaeleza mzizi wa chanzo na saraka ya pato la tafsiri inayokaguliwa kwa mzizi huo. |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Inatambua saraka za lugha za jadi zilizo na majina ya kibadilifu na kuandaa mipango ya uhamishaji kwenda majina ya saraka ya lugha ya BCP 47 ya kikanoni. |
+| `Config` | `co_op_translator.config.base_config` | Inapakia faili za `.env` na inakagua kama watoa LLM waliotakiwa na wale wa Vision wa hiari wamesanidiwa. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Inatambua kwa kiotomatiki Azure OpenAI, OpenAI, au Anthropic, inathibitisha vigezo vinavyohitajika vya mazingira, na inafanya ukaguzi wa muunganisho wa mtoa huduma. |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | Inagundua usanidi wa Azure AI Vision na inafanya ukaguzi wa muunganisho kwa tafsiri ya picha. |

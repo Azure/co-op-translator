@@ -1,49 +1,49 @@
 # Python API
 
-The stable public Python API is exported from `co_op_translator.api`. Most integrations use one of these workflows:
+တည်ငြိမ်သော အများသုံး Python API ကို `co_op_translator.api` မှ ထုတ်ပေးထားသည်။ ပေါင်းစည်းမှုများအများစုသည် အောက်ပါ လုပ်ငန်းစဉ်များထဲမှ တစ်ခုကို အသုံးပြုသည်။
 
 | Scenario | Use this when | Main APIs |
 | --- | --- | --- |
-| Translate individual files or documents | Your application reads source content, calls Co-op Translator for translation, and decides where to save the result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | Your MCP host or application model will translate chunks, while Co-op Translator handles chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | You want the Python API to behave like the CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
+| တစ်ဖိုင်ချင်း သို့မဟုတ် စာရွက်စာတမ်းများ ဘာသာပြန်ခြင်း | သင့်အက်ပ်လိကေးရှင်းသည် မူလအကြောင်းအရာကို ဖတ်ပြီး၊ Co-op Translator ကို ဘာသာပြန်ရန် ခေါ်ဆိုကာ ရလဒ်ကို သိမ်းမည့်နေရာကို ဆုံးဖြတ်သည်။ | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| host-agent အတွက် ဘာသာပြန်ရန် အကြောင်းအရာ ပြင်ဆင်ခြင်း | သင့် MCP host သို့မဟုတ် application model မှ chunk များကို ဘာသာပြန်ပြီး၊ Co-op Translator သည် chunk ခွဲခြားခြင်းနှင့် ပြန်လည်တည်ဆောက်ခြင်းကို ကိုင်တွယ်ပေးသည်။ | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Repository တစ်ခုလုံး ဘာသာပြန်ခြင်း | Python API ကို CLI ကဲ့သို့ လုပ်ဆောင်စေပြီး ရှာဖွေမှု၊ အထွက်လမ်းကြောင်းများ၊ မက်တာဒေတာ၊ ရှင်းလင်းခြင်း နှင့် ဖိုင်ရေးသိမ်းခြင်းများကို ကိုင်တွယ်စေလိုသည်။ | `run_translation` |
 
-Most lower-level modules under `core`, `config`, `review`, and `utils` are implementation details used by these API entry points.
+`core`, `config`, `review`, and `utils` အောက်ရှိ အနိမ့်အဆင့် modules အများစုသည် ဤ API ဝင်ပေါက်များတွင် အသုံးပြုသည့် အကောင်အထည်ဖော် အသေးစိတ်များဖြစ်ပါသည်။
 
-MCP clients use the same public API through the [MCP Server](mcp.md). Use this page when calling Python directly, and the MCP guide when exposing Co-op Translator to an agent or editor. If you are deciding between CLI, Python API, and MCP, start with [Choose Your Workflow](workflows.md).
+MCP client များသည် [MCP Server](mcp.md) မှတဆင့် တူညီသော ပြည်သူ့ API ကို အသုံးပြုကြသည်။ Python ကို တိုက်ရိုက် ခေါ်သုံးသောအခါ ဤစာမျက်နှာကို အသုံးပြုပါ၊ Co-op Translator ကို agent သို့မဟုတ် editor တွင် ဖော်ပြချင်သည်များအတွက် MCP လမ်းညွှန်ကို အသုံးပြုပါ။ CLI, Python API နှင့် MCP အကြား ရွေးချယ်ရန် ဆုံးဖြတ်နေပါက [သင့်လုပ်ငန်းစဉ်ကို ရွေးချယ်ပါ](workflows.md) မှ စတင်ပါ။
 
-## First-Time API Flow
+## ပထမဆုံး API လည်ပတ်မှု
 
-Start here if you are calling Co-op Translator from Python code:
+Python ကုဒ်မှ Co-op Translator ကို ခေါ်ဆိုမည့်အခါ ဤနေရာမှ စတင်ပါ။
 
-1. Configure an LLM provider as described in [Configuration](configuration.md), unless you are only preparing Markdown or notebook chunks for host-agent translation.
-2. Decide whether your application owns file I/O.
-3. Use content APIs when your application reads and writes individual files.
-4. Use `run_translation` when Co-op Translator should process a repository like the CLI.
-5. Use `run_review` after translation if you need deterministic checks in automation.
+1. [Configuration](configuration.md) တွင် ဖော်ပြထားသည့်အတိုင်း LLM provider ကို သတ်မှတ်ပါ၊ သင်သည် host-agent ဘာသာပြန်ရေးအတွက် Markdown သို့မဟုတ် notebook chunks များကိုသာ ပြင်ဆင်နေပါက မလိုအပ်ပါ။
+2. သင်၏ အက်ပလီကေးရှင်းသည် ဖိုင် I/O ကို ပိုင်ဆိုင်မလား ဆုံးဖြတ်ပါ။
+3. သင့်အက်ပ်လိကေးရှင်းသည် ဖိုင် တစ်ဖိုင်ချင်းကို ဖတ်ခြင်းနှင့် ရေးသိမ်းခြင်းလုပ်ဆောင်သောအခါ content API များကို အသုံးပြုပါ။
+4. Co-op Translator က CLI ကဲ့သို့ repository တစ်ခုကို ပြုပြင်လည်ပတ်သင့်လျှင် `run_translation` ကို အသုံးပြုပါ။
+5. အော်တိုမေးရှင်းတွင် သတ်မှတ်နိုင်သည့် စစ်ဆေးမှုများ လိုအပ်ပါက ဘာသာပြန်ပြီးနောက် `run_review` ကို အသုံးပြုပါ။
 
 | Goal | API to start with |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
+| Markdown စာသားတစ်ခု သို့မဟုတ် ဖိုင် တစ်ခုကို ဘာသာပြန်ပါ | `translate_markdown_content` |
 | Translate one notebook payload | `translate_notebook_content` |
 | Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
+| host agent ကို Markdown သို့မဟုတ် notebook အပိုင်းများကို ဘာသာပြန်စေပါ | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
+| output path ကို ရွေးချယ်ပြီးနောက် ဘာသာပြန်ထားသော လင့်ခ်များကို ပြန်ရေးပါ | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
 | Translate a full repository | `run_translation` |
 | Review translated output | `run_review` |
 
-## Scenario 1: Translate Individual Files or Documents
+## အခြေအနေ 1: တစ်ဖိုင်ချင်း သို့မဟုတ် စာရွက်စာတမ်းများ ဘာသာပြန်ခြင်း
 
-Use this workflow when you already have a file, editor buffer, notebook payload, MCP request, or custom pipeline input. Your code owns file I/O:
+ဖိုင်၊ editor buffer၊ notebook payload၊ MCP request သို့မဟုတ် custom pipeline input တစ်ခုခုကို ရှိပြီးသားဖြစ်သောအခါ ဤ workflow ကို အသုံးပြုပါ။ သင့်ကုဒ်မှ ဖိုင် I/O ကို ကိုင်တွယ်ပါသည်။
 
 1. Read the source content.
 2. Call a content translation API.
-3. Optionally call a path rewriting API if the translated content will be written into a project translation folder.
-4. Save or return the result from your application.
+3. ဘာသာပြန်ထားသော အကြောင်းအရာကို project translation ဖိုလ်ဒါထဲသို့ ရေးသွင်းမည်ဆိုပါက လမ်းကြောင်းပြန်ရေး API ကို လိုအပ်သလို ခေါ်ပါ။
+4. သင်၏ အက်ပလီကေးရှင်းမှ ရရှိသော ရလဒ်ကို သိမ်းဆည်းပါ သို့မဟုတ် ပြန်ပေးပို့ပါ။
 
-The content translation APIs do not run project discovery, do not write metadata, do not append disclaimers, and do not rewrite links automatically.
+Content translation API များသည် project discovery ကို မပြုလုပ်ပါ၊ metadata မရေးပါ၊ disclaimers မထည့်ပါ၊ နှင့် links များကို အလိုအလျောက် ပြန်ရေးမလုပ်ပါ။
 
-### Markdown File
+### Markdown ဖိုင်
 
 ```python
 import asyncio
@@ -85,9 +85,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-If the translated Markdown will not live in a Co-op Translator project layout, skip `rewrite_markdown_paths` and save the translated string directly.
+ဘာသာပြန်ထားသော Markdown ကို Co-op Translator project အစီအစဉ်အလှည့်တန်းတွင် မတာဝန်ခံမရှိချင်ပါက `rewrite_markdown_paths` ကို ဖြတ်ပြီး ဘာသာပြန်ထားသော string ကို တိုက်ရိုက် သိမ်းဆည်းပါ။
 
-### Notebook File
+### Notebook ဖိုင်
 
 ```python
 import asyncio
@@ -129,9 +129,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` translates Markdown cells and preserves non-Markdown cells. Path rewriting is applied only to Markdown cells.
+`translate_notebook_content` သည် Markdown ဆဲလ်များကို ဘာသာပြန်ပေးပြီး non-Markdown ဆဲလ်များကို ထိန်းသိမ်းထားသည်။ လမ်းကြောင်း ပြန်ရေးခြင်းကို Markdown ဆဲလ်များတွင်ပင်သာ သက်ရောက်ပါသည်။
 
-### Image File
+### ပုံဖိုင်
 
 ```python
 from pathlib import Path
@@ -154,15 +154,15 @@ target_path.parent.mkdir(parents=True, exist_ok=True)
 translated_image.save(target_path)
 ```
 
-`translate_image_content` reads the source image and returns a rendered `PIL.Image.Image`. It does not write translated image metadata.
+`translate_image_content` သည် မူလ ရုပ်ပုံကို ဖတ်ပြီး ဖော်ပြထားသော `PIL.Image.Image` ကို ပြန်လည်ပေးသည်။ ဘာသာပြန်ထားသော ရုပ်ပုံ metadata ကို မရေးထည့်ပါ။
 
-## Scenario 2: Translate an Entire Repository
+## အခြေအနေ 2: Repository တစ်ခုလုံးကို ဘာသာပြန်ခြင်း
 
-Use this workflow when you want the Python API to behave like the `translate` CLI. `run_translation` discovers supported files, translates selected content types, rewrites paths, writes output files, updates metadata, and performs translation maintenance tasks such as cleanup.
+Python API ကို `translate` CLI ကဲ့သို့ အလုပ်လုပ်စေချင်ပါက ဤ workflow ကို အသုံးပြုပါ။ `run_translation` သည် supported files များကို ရှာဖွေ၍ ရွေးချယ်ထားသော content အမျိုးအစားများကို ဘာသာပြန်ပြီး လမ်းကြောင်းများကို ပြန်ရေး၊ output ဖိုင်များကို ရေးသား၊ metadata ကို အပ်ဒိတ်လုပ်၊ နှင့် cleanup စသည်တို့ကဲ့သို့သော ဘာသာပြန် ထိန်းသိမ်းမည့် လုပ်ငန်းများကို ဆောင်ရွက်ပါသည်။
 
-`run_translation` is the preferred project orchestration entry point. `translate_project` is exported as a compatibility alias with the same behavior.
+`run_translation` သည် project orchestration အတွက် ဦးစားပေးအသုံးပြုရန် အဝင်ပေါက်ဖြစ်သည်။ `translate_project` ကို ဆင်တူ အလုပ်ဆောင်နိုင်သော compatibility alias အဖြစ် ထုတ်ပေးထားသည်။
 
-Translate Markdown files in the current repository into Korean and Japanese:
+ယခု repository အတွင်းရှိ Markdown ဖိုင်များကို ကိုရီးယားနှင့် ဂျပန် ဘာသာသို့ ဘာသာပြန်ပါ:
 
 ```python
 from co_op_translator.api import run_translation
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-Translate only notebooks from a specific project root:
+တိကျသော project root အောက်မှ notebooks များကိုသာ ဘာသာပြန်ပါ။
 
 ```python
 from co_op_translator.api import run_translation
@@ -185,7 +185,7 @@ run_translation(
 )
 ```
 
-Preview translation volume without writing files:
+ဖိုင်များ မရေးဘဲ ဘာသာပြန်ပမာဏကို ကြိုတင် ကြည့်ရှုရန်:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-Translate multiple content roots in one call:
+ပေါင်းစည်းမှုအတွက် ဖွဲ့စည်းထားသော တိုးတက်မှု ဖြစ်ရပ်များကို မှတ်တမ်းတင်ရန်:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # payload ကို သင့် job-event ဇယားထဲသို့ သိမ်းဆည်းပါ သို့မဟုတ် သင့် UI သို့ တိုက်ရိုက်လွှင့်ပို့ပါ။
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Events use the versioned schema `co-op.translation.event.v1`. Integrations should
+depend on stable fields such as `type` and `stage_key`, not on human-facing
+console text or `stage_label`.
+
+တစ်ခေါက်ခေါ်ဆိုခြင်းဖြင့် အမျိုးမျိုးသော အကြောင်းအရာ ရင်းမြစ်များကို ဘာသာပြန်ပါ:
 
 ```python
 from co_op_translator.api import run_translation
@@ -210,7 +234,7 @@ run_translation(
 )
 ```
 
-Write translations into explicit output groups:
+ဘာသာပြန်ချက်များကို သတ်မှတ်ထားသော ထုတ်လွှတ်အုပ်စုများထဲသို့ ရေးထည့်ရန်:
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-Use a per-language placeholder when each language should contain a nested subdirectory:
+ဘာသာစကားတစ်ခုချင်းစီအတွက် nested subdirectory ပါရှိသင့်သော အခါ တိုင်းဘာသာအတွက် placeholder တစ်ခုကို အသုံးပြုပါ:
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-If none of `markdown`, `notebook`, or `images` are set, the API translates all supported types: Markdown, notebooks, and images.
+`markdown`, `notebook`, သို့မဟုတ် `images` တစ်ခုမျှ သတ်မှတ်ထားခြင်း မရှိပါက API သည် ပံ့ပိုးထားသည့် အမျိုးအစားအားလုံးကို ဘာသာပြန်ပါသည်: Markdown, notebooks, and images.
 
-## Review Translated Output
+### လက်ခံထားသော လူ့ပြင်ဆင်မှုများကို ဘာသာပြန် အခြေအနေ ပေးသူဖြင့် ထိန်းသိမ်းပါ
 
-`run_review` runs deterministic translation checks without LLM or Vision credentials.
+ပုံမှန်အနေဖြင့် Co-op Translator သည် ရှိပြီးသား ဖိုင်အဆင့် အပြုအမူကို ထိန်းသိမ်းထားသည်။ အခါတစ်ခုတွင်
+Markdown အရင်းအမြစ် သက်ဆီးနေသည်ဆိုလျှင်၊ ဘာသာပြန်ပြီးသား ဖိုင်အားလုံးကို ထပ်မံဖန်တီးသည်။ Hosted
+integrations များသည် ရွေးချယ်စွာ `TranslationStateProvider` ကို ပေးပို့၍ လူ့
+မပြောင်းလဲဘဲရှိသော မူရင်းဘလော့များအတွင်း လူ့ပြင်ဆင်ချက်များကို ထိန်းသိမ်းနိုင်သည်။
 
-!!! note "Beta"
-    `run_review` is a beta deterministic review API. It does not call model providers or write files, but checks and issue schemas may evolve.
+provider သည် နောက်ဆုံးလက်ခံထားသော မူရင်း/ပစ်မှတ် အစုံကို ထောက်ပံ့ပေးပြီး အသစ်
+လျှောက်လွှာ။ လက်ခံခြင်းသည် ပေါင်းစည်းမှု၏ တာဝန်ဖြစ်နေဆဲဖြစ်ပြီး—ဥပမာအားဖြင့်၊
+ဘာသာပြန်ရန် pull request ကို merge ပြီးနောက်:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+လက်ခံထားသော အခြေခံလိုင်း (baseline) မှန်ကန်သော Markdown ဖိုင်များအတွက်၊ Co-op Translator သည်
+ထိပ်တန်း Markdown ဘလော့များကို ကိုက်ညီစေသည်။ မူရင်း မပြောင်းလဲသော ဘလော့များသည် လက်ရှိ ဘာသာပြန်ထားသော
+ဘလော့များကို ပြန်လည်အသုံးပြုသည်၊ လူများက ပြုလုပ်ထားသော ပြင်ဆင်ချက်များပါဝင်သည်; ပြောင်းလဲသို့မဟုတ် ထပ်ဆောင်းထားသော မူရင်း ဘလော့များကို ပို့၍
+ဘာသာပြန်ရန်; ဖျက်ပြီးသော မူရင်း ဘလော့များကို ဖယ်ရှားပစ်သည်။ တန်းညှိခြင်း ရှုပ်ရှပ်ပါက、
+ပစ်မှတ် ဖွဲ့စည်းပုံ ပြောင်းလဲသွားခြင်း၊ ဘလော့ ဘာသာပြန်ချက် မမှန်ကန်ခြင်း သို့မဟုတ် baseline မရရှိနိုင်ခြင်း ဖြစ်ပါက
+ရရှိနိုင်ခြင်းမရှိပါက၊ Co-op Translator သည် လုံခြုံစိတ်ချစွာ ရှိပြီးသား ဖိုင်လုံးဝ
+ဘာသာပြန်ခြင်း လမ်းကြောင်းသို့ ပြန်လျှောက်မည်။
+
+ဤ API သည် စာရွက်စာတမ်း ဘာသာပြန် အခြေအနေကို သိမ်းဆည်းသည်၊ စာရွက်စာတမ်းများကြား စကားစု သို့မဟုတ်
+segment translation memory မဟုတ်ပါ။ ယခုအချိန်တွင် Markdown project ဘာသာပြန် လုပ်ငန်းတွင်သာ သက်ရောက်သည်။
+Notebook နှင့် ပုံဆိုင်ရာ အပြုအမူများ မပြောင်းလဲပါ။ Passing `update=True`
+ထပ်မံ ပြန်လည်ဖန်တီးရန် ဆက်လက်တောင်းဆိုပါသည်။
+
+တစ်ဖိုင် သို့မဟုတ် အများပိုင်း ဖိုင်များကို ဘာသာပြန်၍ မရနိုင်ပါက၊ `run_translation` သည်
+`RuntimeError` ကို project workflow ပြီးဆုံးချိန်တွင် ထုတ်ပေးမည်ဖြစ်ပြီး၊
+မရှိသည့် အထွက်(output)နဲ့ တကယ်အောင်မြင်သည်ဟု တင်ပြခြင်းကို မပြုဘဲ、
+ပေါင်းစည်းမှုများသည် ဤအမှုကို မအောင်မြင်သော အလုပ်တစ်ခုအဖြစ် သတ်မှတ်၍ ယခင် လက်ခံထားသော ဘာသာပြန် အခြေအနေကို ထိန်းသိမ်းသင့်သည်။
+
+## ဘာသာပြန်ပြီး အထွက်ကို ပြန်စစ်ပါ
+
+`run_review` သည် LLM သို့မဟုတ် Vision ခွင့်ပြုချက်များမလိုဘဲ သတ်မှတ်ထားသော ဘာသာပြန် စစ်ဆေးမှုများကို အလုပ်လုပ်စေသည်။
+
+!!! note "ဘီတာ"
+    `run_review` သည် ဘီတာ အဆင့်ရှိ သတ်မှတ်ထားသော ပြန်လည်စစ်ဆေးရေး API တစ်ခု ဖြစ်သည်။ ၎င်းသည် မော်ဒယ်ပံ့ပိုးသူများကို ခေါ်မည် မဟုတ်၍ ဖိုင်များကို မရေးသားပါ၊ သို့သော် စစ်ဆေးမှုများနှင့် ပြဿနာဖွဲ့စည်းပုံများတွင် ပြောင်းလဲမှုရှိနိုင်ပါသည်။
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-Review only files changed against a base ref and print GitHub-flavored output:
+README ဖိုင်သာ ဘာသာပြန်ပြီးနောက်၊ အဲဒီနယ်ပယ်ကို ဆန်းစစ်ရန် တူညီစွာ အသုံးပြုပါ။
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` reviews only `README.md` under each configured source root,
+including custom `groups` and output directories. Other documents and nested
+READMEs are excluded. A missing source README raises `ValueError`; failed
+translation checks raise `RuntimeError`.
+
+base ref နှင့် နှိုင်းယှဉ်၍ ပြောင်းလဲထားသော ဖိုင်များကိုသာ ပြန်လည်စစ်ဆေးပြီး GitHub-စတိုင်း အထွက်ကို ထုတ်ပါ။
 
 ```python
 from co_op_translator.api import run_review
@@ -274,9 +398,9 @@ run_review(
 )
 ```
 
-## Copy-Paste API Examples
+## ကူးထည့်နိုင်သော API ဥပမာများ
 
-Translate Markdown content without file writes:
+ဖိုင်များကို မရေးဘဲ Markdown အကြောင်းအရာများကို ဘာသာပြန်ရန်:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -371,13 +495,16 @@ run_translation(
 )
 ```
 
-## Public Entry Points
+## အများပြည်သူအသုံးပြုနိုင်သော ဝင်ပေါက်များ
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## Content Translation APIs
+## အကြောင်းအရာ ဘာသာပြန် API များ
 
-Content translation APIs are intended for integrations that already have content in memory, such as an editor extension, MCP tool, notebook processor, or custom pipeline.
+Content translation APIs များကို ပြင်ဆင်ကိရိယာချဲ့ထွင်မှု (editor extension), MCP tool, notebook processor, သို့မဟုတ် custom pipeline ကဲ့သို့ မီမိုရီထဲတွင် အကြောင်းအရာရှိပြီးသား ပေါင်းစည်းမှုများ အတွက် ရည်ရွယ်ထားပါသည်။
 
 | Function | Input | Output | File I/O | Notes |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Translates Markdown content only. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Translates Markdown cells and preserves non-Markdown cells. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Extracts and translates image text, then returns a rendered image. It does not save translated image metadata. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | မရှိပါ | အဆက်မပြတ် (Async). Markdown အကြောင်းအရာများကိုသာ ဘာသာပြန်သည်။ လင့်ခ်များကို ပြန်ရေးခြင်း၊ မီတာဒေတာရေးခြင်း သို့မဟုတ် အသိပေးချက်များ ထပ်ထည့်ခြင်း မရှိပါ။ |
+| `translate_notebook_content` | Notebook JSON `str` သို့မဟုတ် `dict` | Notebook JSON `str` | မရှိပါ | အဆက်မပြတ် (Async). Markdown cell များကို ဘာသာပြန်ပြီး Markdown မဟုတ်သော cell များကို ထိန်းသိမ်းထားသည်။ လင့်ခ်များ ပြန်ရေးခြင်း၊ မီတာဒေတာရေးခြင်း သို့မဟုတ် အသိပေးချက် ထပ်ထည့်ခြင်း မရှိပါ။ |
+| `translate_image_content` | ပုံလမ်းကြောင်း | `PIL.Image.Image` | မူရင်းပုံကိုသာ ဖတ်သည် | တပြိုင်နက် (Synchronous). ပုံမှ စာသားကို ထုတ်ယူ၍ ဘာသာပြန်ကာ ပြန်လည်ပုံဖော်ထားသော ပုံကို ထုတ်ပေးသည်။ ဘာသာပြန်ပြီးသော ပုံ၏ မီတာဒေတာကို သိမ်းဆည်းမှု မရှိပါ။ |
 
-`translate_markdown_content` and `translate_notebook_content` accept an optional `source_path` through their options. The path is passed as context to the translator; callers remain responsible for any project-specific path rewriting after translation.
+`translate_markdown_content` နှင့် `translate_notebook_content` သည် သူတို့၏ options မှတဆင့် ရွေးချယ်ထည့်နိုင်သည့် `source_path` ကို လက်ခံသည်။ လမ်းကြောင်းကို ဘာသာပြန်သူထံ context အဖြစ် ပေးပို့သည်; ခေါ်သုံးသူများသည် ဘာသာပြန်ပြီးနောက် စီမံကိန်းအထူး လမ်းကြောင်းပြန်ရေးခြင်းအတွက် တာဝန်ရှိနေပါသည်။
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-The same options can be passed as dictionaries:
+တူညီသော ရွေးချယ်စရာများကို dictionary များအဖြစ် ပေးပို့နိုင်သည်:
 
 ```python
 translated = await translate_markdown_content(
@@ -455,29 +588,29 @@ translated = await translate_markdown_content(
 )
 ```
 
-## Agent-Assisted Translation APIs
+## Agent အကူအညီဖြင့် ဘာသာပြန် API များ
 
-Agent-assisted APIs do not call Azure OpenAI or OpenAI from Co-op Translator. They prepare Markdown or notebook chunks for a host agent to translate, then reconstruct the final content from translated chunks.
+Agent-assisted API များသည် Co-op Translator မှ ပြင်ဆင်ထားသည့် LLM provider ကို ခေါ်သုံး မည်မဟုတ်ပါ။ ၎င်းတို့သည် host agent အတွက် ဘာသာပြန်ရန် Markdown သို့မဟုတ် notebook ခွဲအစိတ်အပိုင်းများကို ပြင်ဆင်ပြီး၊ ဘာသာပြန်ပြီးသော ချန့်များမှ နောက်ဆုံး အကြောင်းအရာကို ပြန်လည်တည်ဆောက် ပေးသည်။
 
 | Function | Purpose |
 | --- | --- |
-| `start_markdown_agent_translation` | Return a self-contained Markdown job with chunks, prompts, and reconstruction state. |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from a job and host-agent translated chunks. |
-| `start_notebook_agent_translation` | Return a notebook job with Markdown-cell chunks for host-agent translation. |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON while preserving code cells, outputs, and metadata. |
+| `start_markdown_agent_translation` | ကိုယ်ပိုင်ပြည့်စုံသော Markdown job တစ်ခုကို chunks၊ prompts နှင့် ပြန်လည်တည်ဆောက်မှု အခြေအနေတို့နှင့်အတူ ပြန်ပေးသည်။ |
+| `finish_markdown_agent_translation` | job နှင့် host-agent ဖြင့် ဘာသာပြန်ထားသော chunks များမှ Markdown ကို ပြန်လည်တည်ဆောက်သည်။ |
+| `start_notebook_agent_translation` | host-agent အတွက် ဘာသာပြန်ရန် Markdown-cell ချန့်များပါရှိသည့် notebook job တစ်ခုကို ပြန်ပေးသည်။ |
+| `finish_notebook_agent_translation` | code cells၊ outputs နှင့် metadata များကို ထိန်းသိမ်းထားပြီး notebook JSON ကို ပြန်လည်တည်ဆောက်သည်။ |
 
-This workflow is mainly intended for MCP hosts. If you need production repository translation with Co-op Translator managing provider calls, use `translate_markdown_content`, `translate_notebook_content`, or `run_translation`.
+ဤ workflow သည် အဓိကအားဖြင့် MCP hosts များအတွက် ရည်ရွယ်ထားသည်။ Co-op Translator မှ provider calls များကို စီမံပေးသော production repository ဘာသာပြန်မှု လိုအပ်ပါက `translate_markdown_content`, `translate_notebook_content`, သို့မဟုတ် `run_translation` ကို အသုံးပြုပါ။
 
-## Path Rewriting APIs
+## လမ်းကြောင်း ပြန်ရေးသားခြင်း API များ
 
-Path rewriting APIs perform no translation. They update links and frontmatter paths after callers know the source path, translated target path, and project layout.
+Path rewriting APIs မည်သည့် ဘာသာပြန်မှုကိုမျှ မလုပ်ဆောင်ပါ။ callers များ source path၊ translated target path နှင့် project layout ကို သိရှိပြီးနောက်တွင် ၎င်းတို့သည် links နှင့် frontmatter paths များကို အပ်ဒိတ် ပြုလုပ်ပေးသည်။
 
 | Function | Scope | Notes |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | Rewrites Markdown links and supported frontmatter path fields for a translated target. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Applies Markdown path rewriting to each Markdown cell and leaves non-Markdown cells unchanged. |
+| `rewrite_markdown_paths` | Markdown ကိုယ်ထည်နှင့် frontmatter | ဘာသာပြန်ထားသော target အတွက် Markdown links များနှင့် ထောက်ခံထားသော frontmatter path ကဏ္ဍများကို ပြန်ရေးသားပေးသည်။ |
+| `rewrite_notebook_paths` | notebook JSON တွင်ရှိသည့် Markdown ကွက်များ | Markdown ကွက် တစ်ခုချင်းစီတွင် Markdown path ပြန်ရေးခြင်းကို သက်ရောက်စေပြီး non-Markdown ကွက်များကို မပြောင်းလဲဘဲ ထားရှိသည်။ |
 
-The `policy` argument may be a dictionary with these fields:
+`policy` ဆိုသော argument သည် အောက်ပါ field များပါဝင်သည့် dictionary တစ်ခု ဖြစ်နိုင်သည်:
 
 | Field | Required | Purpose |
 | --- | --- | --- |
@@ -485,64 +618,66 @@ The `policy` argument may be a dictionary with these fields:
 | `root_dir` | No | Source project root. Defaults to `"."`. |
 | `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
 | `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
-| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
-| `lang_subdir` | No | Optional subdirectory under each language folder. |
+| `translation_types` | မဟုတ်ပါ | ဖွင့်ထားသော ဘာသာပြန် အမျိုးအစားများ။ ပုံမှန်အားဖြင့် Markdown, notebooks, နှင့် images များ ဖြစ်သည်။ |
+| `lang_subdir` | မဟုတ်ပါ | ဘာသာစကား ဖိုလ်ဒါတိုင်းအောက်ရှိ ရွေးချယ်နိုင်သော subdirectory တစ်ခု။ |
 
-## Project Translation Parameters
+## ပရောဂျက် ဘာသာပြန် ပါရာမီတာများ
 
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Space-separated target language codes, such as `"ko ja fr"`, or `"all"`. Alias codes are normalized to canonical BCP 47 values. |
-| `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` are supplied. |
-| `update` | `bool` | `False` | Delete and recreate existing translations for the selected languages. |
+| `language_codes` | `str` | လိုအပ်သည် | အကွာသတ်ထားသော ရည်ရွယ်ဘာသာစကားကုဒ်များ၊ ဥပမာ `"ko ja fr"` သို့မဟုတ် `"all"`။ Alias ကုဒ်များကို canonical BCP 47 တန်ဖိုးများအဖြစ် ပုံမှန်ပြုလုပ်သည်။ |
+| `root_dir` | `str` | `"."` | တစ်ခုတည်းသော ဘာသာပြန် ရည်ရွယ်ချက်အတွက် project root ဖြစ်သည်။ `root_dirs` သို့မဟုတ် `groups` များ ပေးထားလျှင် ဤသည်ကို မထည့်စဉ်းစားပါ။ |
+| `update` | `bool` | `False` | ရွေးချယ်ထားသော ဘာသာစကားများအတွက် ရှိပြီးသား ဘာသာပြန်ချက်များကို ဖျက်ပြီး ထပ်မံဖန်တီးသည်။ |
 | `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
 | `markdown` | `bool` | `False` | Include Markdown translation. |
 | `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
 | `debug` | `bool` | `False` | Enable debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
-| `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
-| `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
-| `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
-| `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
+| `save_logs` | `bool` | `False` | DEBUG အဆင့် လော့ဂ် ဖိုင်များကို root `logs/` ဖိုလ်ဒါအောက်တွင် သိမ်းဆည်းပါ။ |
+| `yes` | `bool` | `True` | ပ႐ိုဂရမ်ဆိုင်ရာနှင့် CI အသုံးပြုမှုများအတွက် တုံ့ပြန်ချက်များကို အလိုအလျောက် အတည်ပြုပါ။ |
+| `add_disclaimer` | `bool` | `False` | ဘာသာပြန်ထားသော Markdown နှင့် notebook များတွင် စက်ဘာသာပြန် သတိပေးချက်များကို ထည့်ပါ။ |
+| `translations_dir` | `str \| None` | `None` | စာသားဘာသာပြန်ထွက်ဖိုင်များအတွက် စိတ်ကြိုက် ဒိုင်ရက်ထရီ။ ဆက်စပ် လမ်းကြောင်းများကို တစ်ခုချင်း root အပေါ်မှ ဖြေရှင်းသည်။ |
+| `image_dir` | `str \| None` | `None` | ဘာသာပြန်ထားသော ပုံဖိုင်များအတွက် စိတ်ကြိုက် ထွက်ပေါက် ဒိုင်ရက်ထရီ။ ဆက်စပ် လမ်းကြောင်းများကို တစ်ခုချင်း root အပေါ်မှ ဖြေရှင်းသည်။ |
+| `root_dirs` | `Iterable[str] \| None` | `None` | ထွက်ဖိုင် ဆက်တင်များကို မျှဝေသော အမျိုးမျိုးသော root များ။ |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | ရှင်းလင်း ဖော်ပြထားသော `(root_dir, translations_dir)` စုံတွဲများ။ `root_dirs` ထက် ဦးစားပေးသတ်မှတ်ခြင်းဖြစ်သည်။ |
+| `repo_url` | `str \| None` | `None` | README ဘာသာစကားဇယား ညွှန်ကြားချက်များကို ပြသရာတွင် အသုံးပြုမည့် repository URL။ |
+| `glossaries` | `Iterable[str] \| None` | `None` | ဘာသာပြန်ချိန်တွင် ထိန်းသိမ်းရန် glossary ဆိုင်ရာ စကားလုံးများ။ ထပ်တူနှင့် ရှင်းလင်းမရှိသော စကားလုံးများကို စံသတ်မှတ်ပါသည်။ |
+| `dry_run` | `bool` | `False` | ဖိုင်များ မရေးဘဲ ဘာသာပြန်ပမာဏ ခန့်မှန်းပြီး ပြောင်းရွှေ့ အပြုအမူကို အကြို ကြည့်ရှုရန်။ |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | ရွေ့လျားသည့် Markdown အပ်ဒိတ်များအတွက် ရွေးချယ်နိုင်သည့် accepted-baseline နှင့် candidate persistence adapter။ မထည့်ပါက သာမန် ဖိုင်လုံးတစ်ခုလုံး လုပ်ဆောင်မှုကို ဆက်လက်ထိန်းသိမ်းမည်။ |
 
-## Review Parameters
+## ပြန်လည်သုံးသပ်ခြင်း ဆိုင်ရာ ပါရာမီတာများ
 
-`run_review` intentionally mirrors the `run_translation` signature where possible so automation can switch between translation and review workflows with minimal branching.
+`run_review` ကို ဖြစ်နိုင်သလောက် `run_translation` ၏ signature နှင့် သက်ဆိုင်အောင် ထားသည်။ ထို့ကြောင့် automation များသည် ဘာသာပြန်ခြင်းနှင့် ပြန်လည်သုံးသပ်ခြင်း လုပ်ငန်းစဉ်များကို အနည်းဆုံး branching ဖြင့် ပြောင်းလဲနိုင်သည်။
 
-| Parameter | Type | Default | Purpose |
+| ပါရာမီတာ | အမျိုးအစား | ပုံမှန်တန်ဖိုး | ရည်ရွယ်ချက် |
 | --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders to review. Space-separated strings and iterables are accepted. `"all"` reviews every discovered translation language. |
-| `root_dir` | `str` | `"."` | Project root for a single review target. Ignored when `root_dirs` or `groups` are supplied. |
-| `markdown` | `bool` | `False` | Include Markdown and MDX source files. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
-| `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images are checked from Markdown. |
-| `translations_dir` | `str \| None` | `None` | အထူးပြုပြင်ထားသော စာသား ဘာသာပြန် ထွက်မည့် ဖိုင်ထုတ်ရာ ဒါရိုက်ထရီ။ အချင်းချင်း ဆက်စပ် လမ်းကြောင်းများကို အသီးသီး root အပေါ်မှ ဖြေရှင်းသည်။ |
-| `root_dirs` | `Iterable[str] \| None` | `None` | ထွက်ပေါက် ဆက်တူ သတ်မှတ်ချက်များကို မျှဝေသော မျိုးစုံသော root များ။ |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | ရှင်းလင်း သတ်မှတ်ထားသော `(root_dir, translations_dir)` တွဲများ။ `root_dirs` ထက် ဦးစားပေးသည်။ |
-| `changed_from` | `str \| None` | `None` | ပြင်ဆင်ထားသော အရင်းအမြစ် ဖိုင်များကို သီးသန့် ပြန်လည်စစ်ဆေးရန် အသုံးပြုသော Git ref။ |
-| `output_format` | `str` | `"text"` | ပြန်လည်စစ်ဆေးမှု ထွက်ရှိပုံစံ။ ထောက်ပံ့ထားသည့် တန်ဖိုးများမှာ `"text"` နှင့် `"github"` ဖြစ်သည်။ |
-| `fail_on_warnings` | `bool` | `False` | သတိပေးချက်များကို အမှားများအပြင် မအောင်မြင်မှုများအဖြစ် သတ်မှတ် ပြုလုပ်ပါမည်။ |
-| `debug` | `bool` | `False` | debug အဆင့် မှတ်တမ်းတင်ခြင်းကို ဖွင့်ပါ။ |
-| `save_logs` | `bool` | `False` | DEBUG-အဆင့် log ဖိုင်များကို root `logs/` ဒါရိုက်ထရီအောက်သို့ သိမ်းဆည်းပါမည်။ |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | သုံးသပ်ရန် ရည်ညွှန်းထားသော ဘာသာစကား ဖိုလ်ဒါများ။ space-separated string များနှင့် iterable များကို လက်ခံသည်။ `"all"` သည် တွေ့ရှိသော ဘာသာပြန် ဘာသာစကားအားလုံးကို သုံးသပ်သည်။ |
+| `root_dir` | `str` | `"."` | တစ်ခုသော သုံးသပ်ရန် အလေးထားသည့် target အတွက် project root ဖြစ်သည်။ `root_dirs` သို့မဟုတ် `groups` ကို ဖြည့်သွင်းထားပါက မယူဆောင်ပါ။ |
+| `markdown` | `bool` | `False` | Markdown နှင့် MDX မူရင်းဖိုင်များကို ပါဝင်စေသည်။ |
+| `notebook` | `bool` | `False` | Jupyter notebook မူရင်းဖိုင်များကို ပါဝင်စေသည်။ |
+| `images` | `bool` | `False` | ဘာသာပြန်ရွေးချယ်မှုများနှင့် ကိုက်ညီမှုအတွက် ရှိထားသည်။ ပုံများဆိုင်ရာ link ကို Markdown မှ စစ်ဆေးသည်။ |
+| `translations_dir` | `str \| None` | `None` | စာသားဘာသာပြန်ထွက်ဖိုင်များအတွက် စိတ်ကြိုက် ဒိုင်ရက်ထရီ။ ဆက်စပ် လမ်းကြောင်းများကို တစ်ခုချင်း root အပေါ်မှ ဖြေရှင်းသည်။ |
+| `root_dirs` | `Iterable[str] \| None` | `None` | ထွက်ဖိုင် ဆက်တင်များကို မျှဝေသော အမျိုးမျိုးသော root များ။ |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | ရှင်းလင်း ဖော်ပြထားသော `(root_dir, translations_dir)` စုံတွဲများ။ `root_dirs` ထက် ဦးစားပေးသတ်မှတ်ခြင်းဖြစ်သည်။ |
+| `changed_from` | `str \| None` | `None` | ပြောင်းလဲထားသော မူရင်းဖိုင်များကိုသာ သုံးသပ်ရန် အကန့်အသတ်ထားရန် အသုံးပြုသော Git ref။ |
+| `readme_only` | `bool` | `False` | `README.md` သာ သုံးသပ်မည်။ အဓိက source README မရှိပါက `ValueError` ကို ထုတ်ပေးမည်။ |
+| `output_format` | `str` | `"text"` | သုံးသပ်မှု ထွက်ပေါက် ဖော်မတ်။ ထောက်ခံသည့် တန်ဖိုးများမှာ `"text"` နှင့် `"github"` ဖြစ်သည်။ |
+| `fail_on_warnings` | `bool` | `False` | သတိပေးချက်များကို အမှားများအနေဖြင့်သာမက မအောင်မြင်မှုအဖြစ်လည်း ယူဆမည်။ |
+| `debug` | `bool` | `False` | debug logging ကို ဖွင့်ပါ။ |
+| `save_logs` | `bool` | `False` | root `logs/` ဒိုင်ရက်ထရီအောက်တွင် DEBUG-level log ဖိုင်များကို သိမ်းဆည်းပါ။ |
 
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+`markdown`၊ `notebook` သို့မဟုတ် `images` တို့သည် မည်သို့မျှ သတ်မှတ်မထားပါက API သည် နယ်ပယ်သင့်သောနေရာများတွင် Markdown၊ notebook များနှင့် ပုံ link မှတ်တမ်းများကို သုံးသပ်သည်။ ပြန်လည်သုံးသပ်ခြင်းသည် LLM provider ကို ခေါ်ဆိုခြင်းမပြုသော်လည်း API key များ လိုအပ်မည် မဟုတ်ပါ။ |
 
-## ဖွဲ့စည်းမှု လိုအပ်ချက်များ
+## ဖွဲ့စည်းပုံ လိုအပ်ချက်များ
 
-Provider-backed ဘာသာပြန် API များသည် ဘာသာပြန်မှု မစတင်မီ provider သတ်မှတ်မှုကို လိုအပ်ပါသည်။
+Provider support ရှိသော ဘာသာပြန် API များသည် ဘာသာပြန်မလုပ်မီ provider ဖော်ပြချက်များကို လိုအပ်သည်။
 
-- Markdown နှင့် notebook ဘာသာပြန်မှုများသည် LLM provider တစ်ခုကို လိုအပ်သည်။ Azure OpenAI သို့မဟုတ် OpenAI တစ်ခုကို ဖွဲ့စည်းပါ။  
-- Image ဘာသာပြန်မှုအတွက် LLM provider အပြင် Azure AI Vision ကိုလည်း လိုအပ်သည်။  
-- `run_translation` သည် ပရိုဂျက် ဘာသာပြန်မှု စတင်မီ အလှည့်ကျ ချိတ်ဆက်နိုင်စွမ်း စစ်ဆေးမှုများကို ဆောင်ရွက်သည်။  
-- Agent-assisted `start_*_agent_translation` နှင့် `finish_*_agent_translation` API များသည် Co-op Translator LLM providers ကို ခေါ်မသုံးပါ။ Host application သို့မဟုတ် MCP agent က ပြင်ဆင်ထားသော ခလုတ်များကို ဘာသာပြန်ပေးပါသည်။  
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, နှင့် `run_review` များသည် သတ်မှတ်နိုင်သော အပြုအမူဖြင့် လုပ်ဆောင်ပြီး provider အထောက်အထားများ မလိုအပ်ပါ။
+- Markdown နှင့် notebook ဘာသာပြန်ခြင်းအတွက် LLM provider လိုအပ်သည်။ Azure OpenAI၊ OpenAI သို့မဟုတ် Anthropic ကို ဖော်ပြပါ။
+- ပုံဘာသာပြန်ရန် LLM provider အပြင် Azure AI Vision လည်း လိုအပ်သည်။
+- `run_translation` သည် project ဘာသာပြန်မှု စတင်မည့်အောက်တွင် အလွယ်တကူ ချိတ်ဆက်နိုင်မှု စစ်ဆေးမှုများကို လုပ်ဆောင်သည်။
+- Agent ဖြင့် ကူညီသည့် `start_*_agent_translation` နှင့် `finish_*_agent_translation` API များသည် Co-op Translator LLM provider များကို ခေါ်ယူသော မဟုတ်ပါ။ Host application သို့မဟုတ် MCP agent က ပြင်ဆင်ထားသော chunks များကို ဘာသာပြန်ပေးသည်။
+- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` သည် သတ်မှတ်ထားသည့် အမှုများဖြစ်ပြီး provider အတည်ပြုချက်များ မလိုအပ်ပါ။
 
-Required Azure OpenAI variables:
+လိုအပ်သော Azure OpenAI environment variables:
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -552,69 +687,78 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Required OpenAI variables:
+လိုအပ်သော OpenAI environment variables:
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+လိုအပ်သော Anthropic variables:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` နှင့် `ANTHROPIC_MAX_TOKENS` များသည် ရွေးချယ်စရာဖြစ်သည်။ Co-op Translator 0.22.0 မှစ၍ သတ်မှတ်ထားသော provider များအတွက် Microsoft Agent Framework သည် ပုံမှန် model client ဖြစ်သည်။ Semantic Kernel ကို ယာယီ သတ်မှတ်ရန် `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"` ကို အသုံးပြုနိုင်သော်လည်း၊ ထိုသုံးစွဲမှုသည် deprecation သတိပေးချက်ကို ထုတ်ပေးမည်။ ဖျက်ဆီးခြင်းကို အဆင့်လိုက် လုပ်ဆောင်ရန် အစီအစဉ်ကို ကြည့်ရန် [configuration](configuration.md#model-client-backend) ကို ကြည့်ပါ။ |
+
+ပုံဘာသာပြန်ခြင်းအတွက် လိုအပ်သော Azure AI Vision variables:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` သည် သတ်မှတ်နိုင်သော အပြုအမူဖြင့် ဖြစ်ပြီး Azure OpenAI, OpenAI, သို့မဟုတ် Azure AI Vision ဖွဲ့စည်းမှုများ မလိုအပ်ပါ။
+`run_review` သည် သတ်မှတ်ထားသည့် အလုပ်စဉ်ဖြစ်ပြီး LLM သို့ Azure AI Vision ဖော်ပြချက်များ မလိုအပ်ပါ။ |
 
-## အပြုအမူ မှတ်စုများ
+## အပြုအမူ ဆိုင်ရာ မှတ်ချက်များ
 
-- အကြောင်းအရာ ဘာသာပြန် API များသည် ဘာသာပြန်မှုကို project path ပြန်ရေးခြင်းနှင့် သီးခြားထားသည်။ ပြန်လည်ဘာသာပြန်ထားသော အကြောင်းအရာတွင် project-relative လင့်များကို ရည်ရွယ်ထားသော တည်နေရာအတွက် ချိန်ညှိရန်လိုပါက `rewrite_markdown_paths` သို့ `rewrite_notebook_paths` ကို တိုက်ရိုက်ခေါ်ပါ။  
-- Project orchestration API များသည် ဖိုင်ရှာဖွေခြင်း၊ ဖိုင်ရေးခြင်း၊ လမ်းကြောင်း ပြန်ရေးခြင်း၊ metadata၊ သန့်ရှင်းရေးနှင့် ရွေးချယ်နိုင်သော အသိပေးစာများ အပါအဝင် အကြောင်းအရာ ဘာသာပြန်ခြင်း ကို ညှိနှိုင်းပေးသည်။  
-- `run_translation` သည် Click မှတဆင့် တိုးတက်မှုနှင့် ခန့်မှန်းချက် အကျဉ်းချုပ်များကို ပုံနှိပ်ပေးပြီး CLI အသုံးပြုသူ အတွေ့အကြုံနှင့် ကိုက်ညီစေသည်။  
-- `dry_run=True` သည် virtual README အပ်ဒိတ်များကို အသုံးပြု၍ ခန့်မှန်းချက်များကို တွက်ချက်ပေးသော်လည်း README သို့မဟုတ် ဘာသာပြန်ဖိုင်များကို မရေးသားပါ။  
-- `groups` များကို တန်းလိုက် အဆင့်လိုက် ဆောင်ရွက်သည်။ အလုပ်စတင်မီ စုစုပေါင်း ခန့်မှန်းချက် တစ်ခုကို တစ်ကြိမ်ပေါ်ထွက်ပုံနှိပ်သည်။  
-- Image ဘာသာပြန်မှုကို ရွေးချယ်ထားပါက Vision ဖွဲ့စည်းမှု မရှိပါက ဘာသာပြန်မှု စတင်မီ error ဖြစ်ပေါ်စေပါသည်။  
-- ရှိပြီးသား alias-အခြေပြု ဘာသာစကား ဖိုလ်ဒါများကို တွေ့ရှိနိုင်ပြီး run လုပ်ငန်းစဉ်အတွင်း canonical ဘာသာစကား ဖိုလ်ဒါ နာမည်များသို့ ပြောင်းရွှေ့နိုင်ပါသည်။  
-- `run_review` သည် ဘာသာပြန်ဖိုင် မရှိခြင်း၊ ဘာသာပြန် metadata မရှိခြင်း သို့မဟုတ် ဟောင်းနေသော metadata, မမှန်ကန်သော Markdown frontmatter/code fences, နှင့် မှားယွင်းသော ဘာသာပြန် notebook JSON များ ပေါ်တွင် မအောင်မြင်ပါ။  
-- `run_review` သည် ဒေသတွင်း Markdown နှင့် image link ရည်မှန်းချက် မရှိခြင်းများကို ပုံမှန်အဖြစ် သတိပေးချက် အဖြစ် သတင်းပို့ပါသည်။
+- အကြောင်းအရာ ဘာသာပြန် API များသည် ဘာသာပြန်ခြင်းကို project လမ်းကြောင်း ပြန်ရေးခြင်းနှင့် သီးခြားထားသည်။ ဘာသာပြန်ထားသော အကြောင်းအရာများအတွက် project-relative link များကို ညှိလိုလျှင် `rewrite_markdown_paths` သို့မဟုတ် `rewrite_notebook_paths` ကို ထပ်မံ ခေါ်ပါ။ |
+- Project orchestration API များသည် ဖိုင် ရှာဖွေခြင်း၊ ဖိုင်ရေးသွင်းခြင်း၊ လမ်းကြောင်း ပြန်ရေးခြင်း၊ metadata၊ သန့်ရှင်းရေးနှင့် ရွေးချယ်စရာ ပေါ်လာနိုင်သည့် သတိပေးချက်များ အပါအဝင် အကြောင်းအရာ ဘာသာပြန်ခြင်းဆိုင်ရာ project အပြုအမူများကို ထည့်သွင်းသည်။ |
+- `run_translation` သည် CLI မှ အသုံးပြုသည့် Rich-backed reporter တူညီသည်ကို အသုံးပြုပြီး တိုးတက်မှုနှင့် ခန့်မှန်းချက် အကျဉ်းချုပ်များကို ပရင့်ထုတ်သည်။ အပြန်အလှန် မလိုအပ်သော output များတွင် plain text ကို အသုံးပြုမည်။ |
+- `dry_run=True` သည် virtual README အပ်ဒိတ်များကို အသုံးပြု၍ ခန့်မှန်းချက်များကို ကဏ္ဍခွဲသည်၊ သို့သော် README သို့မဟုတ် ဘာသာပြန်ဖိုင်များကို မရေးပါ။ |
+- `groups` များကို အဆက်တိုက် ဆောင်ရွက်သည်။ အလုပ်စတင်မီ တစ်ခုတည်းသော စုစုပေါင်း ခန့်မှန်းချက်တစ်ခုကို ပရင့်ထုတ်သည်။ |
+- ပုံဘာသာပြန်ရွေးချယ်ထားပါက Vision ဖော်ပြချက် မရှိခြင်းသည် ဘာသာပြန်ခြင်း စတင်မီ အမှားတစ်ခုကို ထုတ်ပေးမည်။ |
+- ရှိပြီးသား alias-အခြေပြု ဘာသာစကား ဖိုလ်ဒါများကို တွေ့ရှိနိုင်ပြီး run အတွင်း canonical language folder names များသို့ ပြောင်းရွှေ့နိုင်သည်။ |
+- `run_review` သည် ဘာသာပြန်ထားသော ဖိုင်များ မရှိခြင်း၊ ဘာသာပြန် metadata မရှိခြင်း သို့မဟုတ် ပျက်ကွက်နေခြင်း၊ Markdown frontmatter/code fence မမှန်ကန်ခြင်းနှင့် ဘာသာပြန်ထားသော notebook JSON မတရားခြင်းတို့တွင် မအောင်မြင်ပါ။ |
+- `run_review` သည် ဒေသဆိုင်ရာ Markdown နှင့် ပုံ link ဖြစ်ပေါ်မှု မရှိမှုများကို ပုံမှန်အားဖြင့် သတိပေးချက်များအဖြစ် အသိပေးသည်။ |
 
-## အတွင်းခေါ်ဆိုမှု လမ်းကြောင်း
+## အတွင်းခေါ်ယူမှု လမ်းကြောင်း
 
-API သည် CLI အတွက် အသုံးပြုသည့် အဓိက implementation တို့သို့delegate လုပ်သည်။
+API သည် CLI မှ အသုံးပြုသည့် အဓိက implementation ကို အသုံးပြု၍ လက်လှမ်းပေးသည်။
 
-Translation:
+ဘာသာပြန်မှု:
 
-1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.  
-2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.  
-3. `co_op_translator.api.translation.run_translation` for full project orchestration.  
-4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.  
-5. `co_op_translator.core.project.ProjectTranslator`.  
-6. `co_op_translator.core.project.TranslationManager`.  
-7. Focused project translation mixins for Markdown, notebooks, and images.  
-8. Markdown, notebook, text, and image translators under `co_op_translator.core`.
+1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` အတွက် in-memory ဘာသာပြန်သည်။ |
+2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` အတွက် လမ်းကြောင်း post-processing ဖော်ပြချက်။ |
+3. `co_op_translator.api.translation.run_translation` အတွက် project အပြည့်အစုံ စီမံခန့်ခွဲရေး။ |
+4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`. |
+5. `co_op_translator.core.project.ProjectTranslator`. |
+6. `co_op_translator.core.project.TranslationManager`. |
+7. Markdown, notebooks, နှင့် images အတွက် အထူး သတ်မှတ်ထားသော project translation mixins များ။ |
+8. `co_op_translator.core` အောက်ရှိ Markdown, notebook, text, နှင့် image translators။ |
 
-Review:
+ပြန်လည်သုံးသပ်ခြင်း:
 
-1. `co_op_translator.api.review.run_review`  
-2. `co_op_translator.review.targets.build_review_targets`  
-3. `co_op_translator.review.runner.ReviewRunner`  
-4. Deterministic checks under `co_op_translator.review.checks`
+1. `co_op_translator.api.review.run_review`
+2. `co_op_translator.review.targets.build_review_targets`
+3. `co_op_translator.review.runner.ReviewRunner`
+4. `co_op_translator.review.checks` အောက်ရှိ သတ်မှတ်ထားသည့် စစ်ဆေးချက်များ |
 
-The following classes are useful for maintainers, but are not exported as the package-level stable API.
+အောက်ပါ class များသည် မှုန့်ထိန်းသူများအတွက် အသုံးဝင်သော်လည်း package-level stable API အဖြစ် export မလုပ်ထားပါ။ |
 
-| အတန်း | မော်ဂျူး | တာဝန် |
+| အတန်း | မော်ဒျူး | တာဝန် |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | ပရိုဂျက်အဆင့် ဘာသာပြန်ခြင်း၊ ဒါရိုက်ထရီ စီမံခန့်ခွဲမှု၊ ဘာသာစကားအသီးသီးအတွက် metadata အရာကို ပုံမှန်ပြုစုပြီး Markdown၊ notebook နှင့် image translators များသို့ တာဝန်ပေးပို့်ခြင်းတို့ကို ညှိနှိုင်းသည်။ |
-| `TranslationManager` | `co_op_translator.core.project.translation` | Markdown၊ notebook များ၊ image များအတွက် async ဖိုင်လုပ်ငန်းကို ဆောင်ရွက်ခြင်း၊ stale ရှာဖွေရေးနှင့် ဘာသာပြန် metadata အပ်ဒိတ်များကို အလုပ်လုပ်ဆောင်သည်။ |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Markdown ဖိုင်ဖတ်ခြင်းများ၊ အကြောင်းအရာ ဘာသာပြန်ခြင်း၊ လမ်းကြောင်းပြန်ရေးခြင်း၊ metadata၊ အသိပေးစာများနှင့် ဖိုင်ရေးသားခြင်းတို့ကို ညှိနှိုင်းစီမံသည်။ |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | notebook ဖိုင်ဖတ်ခြင်းများ၊ Markdown-cell များ ဘာသာပြန်ခြင်း၊ လမ်းကြောင်းပြန်ရေးခြင်း၊ metadata၊ အသိပေးစာများနှင့် ဖိုင်ရေးသားခြင်းတို့ကို ညှိနှိုင်းစီမံသည်။ |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | မူလ image ရှာဖွေမှု, image ဘာသာပြန်ခြင်း, ထွက်လမ်းကြောင်းများ, metadata နှင့် ဖိုင်ရေးသားခြင်းတို့ကို ညှိနှိုင်းစီမံသည်။ |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | ဘာသာပြန်ပြီးသား Markdown တွဲများကို ရှာဖွေ၊ ဘာသာပြန်အရည်အသွေးကို အကဲဖြတ်၊ ယုံကြည်မှုနည်းသော ပြုပြင်ရေးလုပ်ငန်းစဉ်များအတွက် ယုံကြည်မှု metadata ကို ဖတ်ရှုသည်။ |
-| `ReviewRunner` | `co_op_translator.review.runner` | မူရင်းဖိုင်များ၊ ရည်ရွယ်ဘာသာစကားများနှင့် ဖွဲ့စည်းထားသည့် translation root များအနှံ့ သတ်မှတ်နိုင်သော review စစ်ဆေးမှုများကို ညှိနှိုင်းစီမံသည်။ |
-| `ReviewTarget` | `co_op_translator.review.targets` | အဆိုပါ root အတွက် စစ်ဆေးသည့် မူရင်း root နှင့် translation ထွက်ရှိမည့် ဒါရိုက်ထရီကို ဖော်ပြသည်။ |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | အဟောင်း alias အခြေပြု ဘာသာစကား ဖိုလ်ဒါများကို တွေ့ရှိကာ canonical BCP 47 ဖိုင်ဖိုလ်ဒါ ပြောင်းရွှေ့ရေး အစီအစဉ်များကို ပြင်ဆင်သည်။ |
-| `Config` | `co_op_translator.config.base_config` | `.env` ဖိုင်များကို โหลด၍ လိုအပ်သော LLM နှင့် ရွေးချယ်နိုင်သော Vision provider များ တပ်ဆင်ထားမှုကို စစ်ဆေးသည်။ |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Azure OpenAI သို့မဟုတ် OpenAI ကို အလိုအလျောက် တွေ့ရှိကာ လိုအပ်သော environment variable များကို အတည်ပြု၍ provider ချိတ်ဆက်နိုင်မှု စစ်ဆေးမှုများကို ပြေးဆောင်သည်။ |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | Azure AI Vision ဖွဲ့စည်းမှုကို တွေ့ရှိကာ image ဘာသာပြန်မှုအတွက် ချိတ်ဆက်နိုင်မှု စစ်ဆေးမှုများကို ပြေးဆောင်သည်။ |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | project အဆင့် ဘာသာပြန်ခြင်းကို ပူးပေါင်းညှိနှိုင်းသည်၊ ဒိုင်ရက်ထရီ စီမံခန့်ခွဲမှု၊ တစ်ဘာသာစကားလျှင် metadata ကို စံပြုထားသည့်ပုံစံသို့ ပြန်လည်တင်းကြပ်ခြင်း၊ နှင့် Markdown၊ notebook၊ နှင့် image translators သို့ တာဝန်ပေးပိုက်ခြင်းတို့ကို ဆောင်ရွက်သည်။ |
+| `TranslationManager` | `co_op_translator.core.project.translation` | Markdown၊ notebook များ၊ ပုံများ၊ stale တွေ့ရှိရေးနှင့် ဘာသာပြန် metadata အပ်ဒိတ်များအတွက် async ဖိုင် ကိုင်တွယ်မှု အလုပ်များကို ဆောင်ရွက်သည်။ |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Markdown ဖိုင် ဖတ်ယူခြင်း၊ အကြောင်းအရာ ဘာသာပြန်ခြင်း၊ လမ်းကြောင်း ပြန်ရေးခြင်း၊ metadata၊ သတိပေးချက်များနှင့် ဖိုင်ရေးသွင်းခြင်းတို့ကို စီမံခန့်ခွဲသည်။ |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | notebook ဖိုင်ဖတ်ယူခြင်း၊ Markdown-cell ဘာသာပြန်ခြင်း၊ လမ်းကြောင်း ပြန်ရေးခြင်း၊ metadata၊ သတိပေးချက်များနှင့် ဖိုင်ရေးသွင်းခြင်းတို့ကို စီမံခန့်ခွဲသည်။ |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | မူရင်းပုံများ ရှာဖွေခြင်း၊ ပုံဘာသာပြန်ခြင်း၊ ထွက်ဖိုင်လမ်းကြောင်းများ၊ metadata နှင့် ဖိုင်ရေးသွင်းခြင်းတို့ကို စီမံခန့်ခွဲသည်။ |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | ဘာသာပြန်ထားသော Markdown စုံတွဲများကို ရှာဖွေပြီး ဘာသာပြန်အရည်အသွေးကို တင်ပြသုံးသပ်ကာ ယုံကြည်မှုပမာဏနည်းသော ပြုပြင်မှု လုပ်ငန်းစဉ်များအတွက် confidence metadata ကို ဖတ်သည်။ |
+| `ReviewRunner` | `co_op_translator.review.runner` | မူရင်းဖိုင်များ၊ ပစ်မှတ်ဘာသာစကားများနှင့် ဖော်ပြထားသော translation root များအနှံ့ သတ်မှတ်ထားသော review စစ်ဆေးချက်များကို ညှိနှိုင်းလုပ်ဆောင်သည်။ |
+| `ReviewTarget` | `co_op_translator.review.targets` | source root တစ်ခုနှင့် အဆိုပါ root အတွက် သုံးသပ်လေ့လာသည့် translation ထုတ်ပေါက် ဒိုင်ရက်ထရီကို ဖော်ပြသည်။ |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | အဟောင်း alias ဘာသာစကား ဖိုလ်ဒါများကို တွေ့ရှိကာ canonical BCP 47 ဖိုလ်ဒါ ပြောင်းရွှေ့ရေး အစီအစဉ်များကို ပြင်ဆင်သည်။ |
+| `Config` | `co_op_translator.config.base_config` | `.env` ဖိုင်များကို ဖတ်ယူပြီး လိုအပ်သော LLM နှင့် ရွေးချယ်နိုင်သော Vision provider များ သတ်မှတ်ထားခဲ့မထား စစ်ဆေးသည်။ |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Azure OpenAI၊ OpenAI သို့မဟုတ် Anthropic ကို အလိုအလျောက် တွေ့ရှိပြီး လိုအပ်သော environment variable များအား အတည်ပြုပြီး provider ချိတ်ဆက်နိုင်မှု စစ်ဆေးချက်များကို ဆောင်ရွက်သည်။ |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | Azure AI Vision ဖော်ပြချက်ကို တွေ့ရှိကာ ပုံဘာသာပြန်မှု အတွက် ချိတ်ဆက်နိုင်မှု စစ်ဆေးချက်များကို လုပ်ဆောင်သည်။ |

@@ -1,46 +1,50 @@
-# သင်၏ အလုပ်စဉ်ကို ရွေးချယ်ပါ
+# သင့် အလုပ်စဉ်ကို ရွေးချယ်ပါ
 
-Co-op Translator ကို သုံးနိုင်သည့် နည်းလမ်းသုံးမျိုးရှိသည်။ CLI၊ Python API၊ နှင့် MCP server ဖြစ်သည်။ ၎င်းတိုင်းတွင် ဘာသာပြန်နိုင်စွမ်းများသည် တစ်ပုံတည်းသာဖြစ်သော်လည်း အချို့သည် မတူညီသော လုပ်ငန်းစဉ်များနှင့် သင့်လျော်သည်။
+Co-op Translator ကို CLI, Python API, နှင့် MCP server ဆိုသည့် နည်းလမ်းသုံးမျိုးဖြင့် အသုံးပြုနိုင်သည်။ ၎င်းတို့တွင် ဘာသာပြန်နိုင်စွမ်းတူညီပေမယ့် တစ်ခုချင်းစီသည် အလုပ်စဉ်ကွဲပြားချက်အလိုက် သင့်တော်သည်။
 
-စတင်ရမည့်နေရာကို ဆုံးဖြတ်ရာတွင် ဤစာမျက်နှာကို အသုံးပြုပါ။
+စတင်ရန် ဘယ်နေရာမှ စရမည်ဟု ဆုံးဖြတ်နေစဉ် ဤစာမျက်နှာကို အသုံးပြုပါ။
 
-## အမြန်ဆုံး ဆုံးဖြတ်ချက်
+**ဘာသာပြန်ချက်များကို ကိုယ့်လက်ဖြင့် တည်းဖြတ်ပါက:** ပုံမှန် CLI နှင့် Actions အလုပ်စဉ်များသည် ပြောင်းလဲထားသည့် မူလဖိုင်များအားလုံးကို ပြန်လည်ဘာသာပြန်ပေးသဖြင့် သင်၏ စကားလုံးများကို အစားထိုးခံရနိုင်သည်။ အပ်ဒိတ်တစ်ခုကို လက်ခံမီ diff ကို ပြန်လည်သုံးသပ်ပါ။ လက်ခံထားသော တည်းဖြတ်ချက်များကို Markdown block-level အနေနှင့် ထိန်းသိမ်းရန် ရွေးချယ်ဖြစ်နိုင်သည့် [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider) ကို အသုံးပြုပါ။
 
-| သင် ... လုပ်ချင်ပါက | အသုံးပြုရန် | ဒီနေရာကစပါ |
+## အမြန်ဆုံးဆုံးဖြတ်ချက်
+
+| သင်လိုချင်သည်မှာ... | သုံးရန် | ဒီမှာ စတင်ပါ |
 | --- | --- | --- |
-| တာမင်နယ်မှ ရှေ့ပိုင်း repository ကို ဘာသာပြန်ရန် သို့မဟုတ် ပြန်လည်ဆန်းစစ်ရန် | CLI | [CLI Reference](cli.md) |
-| Python script, service, notebook, သို့မဟုတ် CI job ထဲသို့ ဘာသာပြန်ခြင်း ထည့်သွင်းရန် | Python API | [Python API](api.md) |
-| Agent, editor, သို့မဟုတ် MCP-compatible client တစ်ခုက သင့်အစား အကြောင်းအရာ ဘာသာပြန်ပေးစေချင်ပါက | MCP Server | [MCP Server](mcp.md) |
-| သင့်အက်ප්လီကေးရှင်းသည် ယခုအချိန်တွင် လက်ခံထားသော Markdown မှတ်တမ်းတစ်ခု၊ notebook တစ်ခု၊ သို့မဟုတ် image တစ်ပုံကို ဘာသာပြန်လိုသည် | Python API သို့မဟုတ် MCP Server | [Python API](api.md) သို့မဟုတ် [MCP Server](mcp.md) |
-| စံအထွေထွေ output ဖိုလ္ဒါများနှင့် မက်တာဒေတာဖြင့် တစ်ခုလုံး repository ကို ဘာသာပြန်လိုသည် | CLI သို့မဟုတ် `run_translation` | [CLI Reference](cli.md) သို့မဟုတ် [Python API](api.md) |
+| Terminal မှ repository ကို ဘာသာပြန်ရန် သို့မဟုတ် စစ်ဆေးရန် | CLI | [CLI Reference](cli.md) |
+| Python script၊ service၊ notebook သို့မဟုတ် CI job ထဲသို့ ဘာသာပြန်ချက် ထည့်သွင်းရန် | Python API | [Python API](api.md) |
+| Agent၊ editor သို့မဟုတ် MCP-compatible client ကို သင်အတွက် အကြောင်းအရာကို ဘာသာပြန်ပေးစေလိုပါက | MCP Server | [MCP Server](mcp.md) |
+| သင့်အက်ပ်က အရင်က load လုပ်ထားသော Markdown စာရွက်တစ်ခု၊ notebook သို့မဟုတ် image တစ်ပုံကို ဘာသာပြန်လိုပါက | Python API သို့မဟုတ် MCP Server | [Python API](api.md) သို့မဟုတ် [MCP Server](mcp.md) |
+| စံနှုန်းအတိုင်း output ဖိုင်ဖိုဒါများနှင့် metadata ပါသည့် တစ်ခုလုံး repository ကို ဘာသာပြန်ရန် | CLI သို့မဟုတ် `run_translation` | [CLI Reference](cli.md) သို့မဟုတ် [Python API](api.md) |
 
-## CLI ကို ဘယ်အချိန် သုံးသင့်သည်
+## CLI ကို အောက်ပါအခါ အသုံးပြုပါ
 
-Terminal မှ repository ဘာသာပြန်ခြင်းကို လူတစ်ဦး သို့မဟုတ် CI job တစ်ခုက အကြောင်းအရာ ဦးဆောင်လျှင် CLI ကို ရွေးချယ်ပါ။
+လူတစ်ဦး သို့မဟုတ် CI job တစ်ခုက shell မှ repository ဘာသာပြန်မှုကို ဦးစီးနေသောအခါ CLI ကို ရွေးချယ်ပါ။
 
-Co-op Translator ကို project ဖိုင်များ ရှာဖွေခြင်း၊ ဘာသာပြန်ထားသော output များ ဖန်တီးခြင်း၊ project လုပ်ထုံးလုပ်နည်းကို ထိန်းသိမ်းခြင်း၊ မက်တာဒေတာ ပြင်ဆင်ခြင်းနှင့် သုံးသပ်ရေးကိရိယာများ ကို အကောင်အထည်ဖော်ပေးရန် CLI သည် တိုက်ရိုက်ဆုံး ချိတ်ဆက်မှုဖြစ်သည်။
+Co-op Translator ကို project ဖိုင်များ ရှာဖွေစေ၊ ဘာသာပြန်ထွက်များ ဖန်တီးစေ၊ project ဖွဲ့စည်းမှုပုံစံကို ထိန်းသိမ်းစေ၊ metadata ကို အပ်ဒိတ်လုပ်စေ၊ နှင့် review command များကို လည်ပတ်စေချင်သောအခါ CLI သည် အတိုက်ဆုံးလမ်းကြောင်း ဖြစ်သည်။
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
-သင့်တော်ချက်များ:
+ဤဥပမာတွင် Markdown နှင့် notebook များကို ဘာသာပြန်ပါသည်။ `-img` ကို [Azure AI Vision](configuration.md#azure-ai-vision) ဖြင့် ပြင်ဆင်ပြီးမှသာ ထည့်ပါ။ Markdown ပဲ အသုံးပြုသော ပထမဆုံး ဆောင်ရွက်မှုအတွက် [Your first translation](first-translation.md) ကို လိုက်နာပါ။
 
-- သင်သည် terminal မှ repository တစ်ခုကို ဘာသာပြန်နေသည်။
-- CI သို့မဟုတ် release workflow များအတွက် တစ်ဦးတည်းသော command ကို ထပ်မံ အသုံးပြုနိုင်ချင်သည်။
-- Built-in project discovery, output paths, metadata, cleanup, နှင့် review ကို လိုသည်။
-- Python ကုဒ်ရေးခြင်းထက် command အပြင်မှ အင်တာဖေ့စ်ကို ưu preferr လျှင်။
+သင့်တော်သော အခြေအနေများ:
 
-## Python API ကို ဘယ်အချိန် သုံးသင့်သည်
+- သင်သည် terminal မှ repository ကို ဘာသာပြန်နေပါသည်။
+- သင်သည် CI သို့မဟုတ် release အလုပ်စဉ်များအတွက် ထပ်တလဲလဲ အသုံးပြုနိုင်သော command လိုချင်သည်။
+- သင်သည် built-in project ရှာဖွေရေး၊ output လမ်းကြောင်းများ၊ metadata၊ သန့်ရှင်းရေးနှင့် review အစီအစဉ်များလိုချင်သည်။
+- Python ကိုဒ်ရေးရန်ထက် command အင်တာဖေ့စ်ကို ကြိုက်နှစ်သက်သည်။
 
-သင့်ကိုယ်ပိုင်ကုဒ်သည် workflow ကို ထိန်းချုပ်ရမည်ဆိုပါက Python API ကို ရွေးချယ်ပါ။
+## Python API ကို အောက်ပါအခါ အသုံးပြုပါ
 
-API သည် application များ၊ automation script များ၊ notebook များ၊ service များနှင့် custom pipeline များအတွက် အသုံးဝင်သည်။ ထိုသို့ API သည် တစ်ဖိုင်ချင်းစီအတွက် အကြောင်းအရာ ဘာသာပြန်ရန် အောက်လွှာ API များကို ခေါ်ယူရန် သို့မဟုတ် CLI မှ အသုံးပြုသည့် repository မျက်နှာပြင်-level အဖွဲ့ချုပ်ကို ကူးယူ အသုံးပြုနိုင်သည်။
+သင့်ရဲ့ ကိုယ်ပိုင် ကုဒ်က အလုပ်စဉ်ကို ထိန်းချုပ်သင့်လျှင် Python API ကို ရွေးချယ်ပါ။
 
-Markdown မှတ်တမ်းတစ်ခုကို ဘာသာပြန်၍ ဘယ်နေရာသိမ်းမည်ကို ဆုံးဖြတ်ပါ:
+API သည် အပလီကေးရှင်းများ၊ အော်တိုမေးရှင်း စကရစ်ပ်များ၊ notebooks၊ ဆာဗစ်များ နှင့် စိတ်ကြိုက် pipelines များအတွက် အသုံးဝင်သည်။ ၎င်းက သင့်အား တစ်ဖိုင်ချင်းစီအတွက် အောက်ပိုင်း content translation API များကို ခေါ်သုံးခွင့်ပြုကာ CLI အသုံးပြုသည့် အတူတူ repository-level orchestration ကိုလည်း ပြေးနိုင်စေသည်။
+
+Markdown စာရွက်တစ်ခုကို ဘာသာပြန်ၿပီး ဘယ်နေရာသိမ်းမည်ဆိုတာ ဆုံးဖြတ်ပါ။
 
 ```python
 import asyncio
@@ -72,57 +76,50 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Python မှ repository ဘာသာပြန်မှုကို ပြေးပါ:
+Python မှ repository ဘာသာပြန်မှုကို ဆောင်ရွက်ရန်:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
-သင့်တော်ချက်များ:
+သင့်တော်သော အခြေအနေများ:
 
-- သင့်အက်ပလီကေးရှင်းသည် ဖိုင်များ၊ buffer များ၊ notebook များ သို့မဟုတ် image bytes များကို ရှာဖွေပြီးသားဖြစ်သည်။
-- သင်သည် custom validation, storage, logging, retries, သို့မဟုတ် approval flow များ လိုအပ်သည်။
-- တစ်ခုသော စာရွက်စာတမ်း၊ notebook သို့မဟုတ် image ကို အခြား repository တစ်ခုလုံးကို အလုပ်လုပ်စေခြင်းမလုပ်ဘဲ ဘာသာပြန်လိုသည်။
-- Repository ဘာသာပြန်မှုကို လုပ်လိုသော သို့သော် shell command အစား Python automation ကနေ မောင်းနှင်လိုသည်။
+- သင့်အက်ပ်သည် ဖိုင်များ၊ buffer များ၊ notebook များ သို့မဟုတ် image bytes များကို ရှိပြီး ဖတ်ယူထားပြီးသားဖြစ်သည်။
+- သင်သည် စိတ်ကြိုက် အတည်ပြုခြင်း၊ သိမ်းဆည်းမှု၊ မှတ်တမ်းတင်မှု၊ ပြန်လည်ကြိုးစားမှုများ သို့မဟုတ် အတည်ပြု လုပ်ငန်းစဉ်များလိုအပ်သည်။
+- သင်သည် စာရွက်စာတမ်း တစ်ခု၊ notebook သို့မဟုတ် image တစ်ပုံကို repository တစ်ခုလုံးကို မလုပ်ဆောင်ဘဲ ဘာသာပြန်လိုသည်။
+- သင်သည် repository ဘာသာပြန်ခြင်းကို shell command မဟုတ်ဘဲ Python automation မှ တာဝန်ယူစေချင်သည်။
 
-## MCP Server ကို ဘယ်အချိန် သုံးသင့်သည်
+## MCP Server ကို အောက်ပါအခါ အသုံးပြုပါ
 
-Agent, editor, သို့မဟုတ် MCP-compatible client တစ်ခုက Co-op Translator ကိရိယာများကို ဖုန်းခေါ်လိုသည်ဆိုပါက MCP server ကို ရွေးချယ်ပါ။
+agent၊ editor သို့မဟုတ် MCP-compatible client တစ်ခုက Co-op Translator tools များကို ခေါ်သုံးသင့်သောအခါ MCP server ကို ရွေးချယ်ပါ။
 
-ပုံမှန် local ဖွဲ့စည်းမှုတွင်၊ အသုံးပြုသူသည် လက်ဖြင့် server ကို စောင့်ထားရန် မလိုအပ်ပါ။ MCP client သည် tools လိုအပ်သည့်အခါ `co-op-translator-mcp` ကို `stdio` ပေါ်တွင် စတင်မောင်းနှင်မည်။
+ပုံမှန် local setup တွင် အသုံးပြုသူသည် server ကို လက်ဖြင့် ထားစဉ်းဆံ့ရန် မလိုပါ။ MCP client သည် tools မလိုအပ်သည့်အခါ `stdio` အပေါ် `co-op-translator-mcp` ကို စတင်ခေါ်ပေးသည်။
 
-အသုံးပြုသူ တောင်းဆိုချက်များအနေဖြင့် agent က ကိုင်တွယ်နိုင်သော နမူနာများ -
+agent က ကိုင်တွယ်နိုင်သော ဥပမာ အသုံးပြုသူ တောင်းဆိုမှုများ:
 
-- "ဤ Markdown ဖိုင်ကို ကိုရီးယားဘာသာသို့ ဘာသာပြန်နှင့် links များကို မှန်ကန်စေပါ။"
-- "ဤ Markdown ဖိုင်ကို agent-assisted MCP workflow ဖြင့် ကိုရီးယားဘာသာသို့ ဘာသာပြန်ပါ၊ ဘာသာပြန်ထားသော chunks များအတွက် သင့်ရဲ့ မော်ဒယ်ကို အသုံးပြုပါ။"
-- "ဤ notebook ကို ကိုရီးယားဘာသာသို့ ဘာသာပြန်ပါ၊ code cells များကို ထိန်းသိမ်းပြီး Co-op Translator MCP ကို အသုံးပြုပြီး notebook ကို ပြန်တည်ဆောက်ပါ။"
-- "ဤ image ထဲရှိ စာသားကို ဂျပန်ဘာသာသို့ ဘာသာပြန်ပြီး ရလဒ်ကို သိမ်းဆည်းပါ။"
-- "Repository ဘာသာပြန်မှုကို Spanish သို့ dry-run ပြုလုပ်၍ ဘာတွေ ပြောင်းလဲမည်ကို ပြောပြပါ။"
-- "ကိုရီးယားဘာသာပြန် ထွက်ရှိမှုသည် up to date ဖြစ်မရှိ စစ်ဆေးပေးပါ။"
+- "ဤ Markdown ဖိုင်ကို ကိုရီးယားဘာသာသို့ ဘာသာပြန်ပြီး link များကို မှန်ကန်စေပါ။"
+- "ဤ Markdown ဖိုင်ကို agent-assisted MCP workflow ဖြင့် ကိုရီးယားဘာသာသို့ ဘာသာပြန်ပါ၊ ဘာသာပြန်ထားသော ပိုင်းများအတွက် သင့်ပိုင် မော်ဒယ်ကို အသုံးပြုကာ။"
+- "ဤ notebook ကို ကိုရီးယားဘာသာသို့ ဘာသာပြန်ပြီး code cells များကို ထိန်းသိမ်းပါ၊ Co-op Translator MCP ကို အသုံးပြု၍ notebook ကို ထပ်မံဖန်တီးပါ။"
+- "ဤပုံအတွင်းရှိ စာသားကို ဂျပန်ဘာသာသို့ ဘာသာပြန်ပြီး ရလဒ်ကို သိမ်းဆည်းပါ။"
+- "repository ဘာသာပြန်မှုကို စမ်းသပ် (dry-run) အဖြစ် စပိန်ဘာသာသို့ ပြန်လုပ်ပြီး ဘာတွေပြောင်းလဲမလဲ ပြောပြပါ။"
+- "ကိုရီးယားဘာသာပြန် ထွက်ချက်သည် နောက်ဆုံးပေါ်ဖြစ်/မဖြစ်ကို ပြန်လည်စစ်ဆေးပါ။"
 
-Markdown နှင့် notebook များအတွက် MCP သည် နှစ်မျိုးသော မုဒ်ဖြင့် လုပ်ဆောင်နိုင်သည် -
+Markdown နှင့် notebook များအတွက် MCP သည် mode နှစ်မျိုးဖြင့် အလုပ်လုပ်နိုင်သည်။
 
-| Mode | ဘယ်အချိန် အသုံးပြုရန် | Main tools |
+| Mode | ဘယ်အခါ အသုံးပြုမလဲ | အဓိကကိရိယာများ |
 | --- | --- | --- |
-| Agent-assisted | MCP host agent သည် Co-op Translator LLM provider credentials မရှိပဲ သူ့ရဲ့ ကိုယ်ပိုင်မော်ဒယ်ဖြင့် chunks များကို ဘာသာပြန်သင့်သည့်အခါ | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Provider-backed | Co-op Translator သည် Azure OpenAI သို့မဟုတ် OpenAI ကို တိုက်ရိုက် ခေါ်ယူသင့်သည် | `translate_markdown_content`, `translate_notebook_content` |
+| Agent-assisted | MCP host agent သည် Co-op Translator LLM provider credentials မလိုအပ်ဘဲ ၎င်း၏ မော်ဒယ်ဖြင့် ပိုင်းများကို ဘာသာပြန်ပေးရမည့်အခါ | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Provider-backed | Co-op Translator သည် Azure OpenAI, OpenAI, သို့မဟုတ် Anthropic ကို တိုက်ရိုက် ခေါ်သင့်သည်။ | `translate_markdown_content`, `translate_notebook_content` |
 
-MCP provider-backed Markdown tool call shape:
+MCP provider-backed Markdown tool ခေါ်ဆိုမှု အပုံစံ:
 
 ```json
 {
@@ -137,7 +134,7 @@ MCP provider-backed Markdown tool call shape:
 }
 ```
 
-MCP image tool call shape:
+MCP image tool ခေါ်ဆိုမှု အပုံစံ:
 
 ```json
 {
@@ -150,7 +147,7 @@ MCP image tool call shape:
 }
 ```
 
-Repository ဘာသာပြန်မှုသည် MCP မှတဆင့် မူလအားဖြင့် dry-run ဖြစ်သည်:
+MCP တွင် repository ဘာသာပြန်မှုကို အပေါ်မှတင်အားဖြင့် dry-run အဖြစ် ဆောင်ရွက်သည်။
 
 ```json
 {
@@ -165,16 +162,16 @@ Repository ဘာသာပြန်မှုသည် MCP မှတဆင့် 
 }
 ```
 
-သင့်တော်ချက်များ:
+သင့်တော်သော အခြေအနေများ:
 
-- Agent သို့ editor အတွင်းတွင် သဘာဝ-ဘာသာစကား ဘာသာပြန် workflow များ လိုချင်ပါက။
-- Host agent model သည် ပြင်ဆင်ထားသော chunks များကို ဘာသာပြန်ပေးသင့်သော Markdown သို့မဟုတ် notebook ဘာသာပြန်မှုများလိုချင်ပါက။
-- Agent ကို repository တစ်ခုလုံးမဟုတ်ပဲ ရွေးချယ်ထားသော အကြောင်းအရာကို ဘာသာပြန်စေလိုပါက။
-- Repository အားလုံးကို ရေးသားမှတ်သားမှုများမပြုခင် အတည်ပြုခြင်း အဆင့်လိုချင်ပါက။
-- Markdown, notebook, image, review နှင့် path-rewriting ကိရိယာများကို ဖော်ပြသည့် တစ်ခုတည်းသော အင်တာဖေ့စ် တစ်ခုလိုချင်ပါက။
+- သင်သည် agent သို့မဟုတ် editor အတွင်းတွင် သဘာဝဘာသာစကား အခြေပြု ဘာသာပြန် အလုပ်စဉ်များလိုချင်သည်။
+- သင်သည် host agent မော်ဒယ်က ပြင်ဆင်ထားသော ပိုင်းများကို ဘာသာပြန်ပေးသော Markdown သို့မဟုတ် notebook ဘာသာပြန်မှုလိုချင်သည်။
+- သင်သည် စုစုပေါင်း repository အစား ရွေးချယ်ထားသော အကြောင်းအရာများကို agent က ဘာသာပြန်စေချင်သည်။
+- သင်သည် repository အားလုံးကို ရေးသားမှုပြုလုပ်မီ အတည်ပြုခြင်း အဆင့်တစ်ခုလိုချင်သည်။
+- သင်သည် Markdown, notebook, image, review, နှင့် path-rewriting ကိရိယာများကို ထုတ်ဖော်ပြသနိုင်မည့် တစ်ခုတည်းသော အင်တာဖေ့စ်ကို လိုချင်သည်။
 
-## ၎င်းတို့သည် ဘယ်လို ကိုက်ညီသနည်း
+## ၎င်းတို့ ဘယ်လို ပေါင်းစည်းသလဲ
 
-CLI သည် လူများက repository များကို ဘာသာပြန်ရာတွင် ပုံမှန် အကောင်းဆုံး ရွေးချယ်မှုဖြစ်သည်။ Python API သည် သင်၏ကုဒ်သည် workflow ကို ကိုင်တွယ်သည့်အခါ အကောင်းဆုံးဖြစ်သည်။ MCP server သည် agent သို့ editor က workflow ကို ကိုင်တွယ်သည့်အခါ အကောင်းဆုံးဖြစ်သည်။
+Repository များကို လူများက ဘာသာပြန်ရာတွင် CLI သည် ပုံမှန်အတွက် အကောင်းဆုံး ဖြစ်သည်။ ကိုယ်ပိုင် ကုဒ်က workflow ကို ထိန်းချုပ်သောအခါ Python API သည် အကောင်းဆုံး ဖြစ်သည်။ agent သို့မဟုတ် editor က workflow ကို ထိန်းချုပ်သောအခါ MCP server သည် အကောင်းဆုံး ဖြစ်သည်။
 
-ทั้งသုံးမျိုးလည်း တူညီသော public Co-op Translator API ကို အသုံးပြုသည်။ ထို့ကြောင့် CLI ဖြင့် စတင်ပြီးနောက် Python ဖြင့် အလိုအလျောက်လုပ်ငန်းများကို ပြုလုပ်နိုင်ပြီး MCP clients များအတွက် agent-ကို အားပေးလိုသော workflow များကို ထုတ်ပေးနိုင်သည်။
+လမ်းကြောင်းသုံးခုလုံးသည် တူညီသော public Co-op Translator API ကို အသုံးပြုသောကြောင့် CLI ဖြင့် စတင်၍ နောက်ပိုင်း Python ဖြင့် အော်တိုမိတ်လုပ်ပြီး agent-driven workflows လိုအပ်လာသောအခါ MCP clients များအား အတူတူ စွမ်းရည်များကို ထုတ်ဖော်နိုင်သည်။

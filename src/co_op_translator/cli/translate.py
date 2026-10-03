@@ -46,6 +46,22 @@ ReadmeTranslator = None
     help="Root directory of the project (default is current directory).",
 )
 @click.option(
+    "--translations-dir",
+    type=click.Path(path_type=Path),
+    default=None,
+    help=(
+        "Output directory for Markdown and notebook translations. Relative paths "
+        "are resolved under --root-dir (default: translations)."
+    ),
+)
+@click.option(
+    "--concurrency",
+    type=click.IntRange(min=1),
+    default=1,
+    show_default=True,
+    help="Maximum simultaneous text file/language translations (Markdown, notebooks, and README-only).",
+)
+@click.option(
     "--update",
     "-u",
     is_flag=True,
@@ -136,6 +152,7 @@ ReadmeTranslator = None
 def translate_command(
     language_codes,
     root_dir,
+    translations_dir,
     update,
     images,
     markdown,
@@ -152,6 +169,7 @@ def translate_command(
     repo_url,
     migrate_language_folders,
     dry_run,
+    concurrency,
 ):
     """
     CLI for translating project files.
@@ -235,6 +253,16 @@ def translate_command(
             raise click.ClickException(f"Root directory does not exist: {root_dir}")
         if not root_path.is_dir():
             raise click.ClickException(f"Root path is not a directory: {root_dir}")
+
+        translations_path = (
+            root_path / translations_dir
+            if translations_dir is not None
+            else root_path / "translations"
+        ).resolve()
+        if translations_path.exists() and not translations_path.is_dir():
+            raise click.ClickException(
+                f"Not a directory for --translations-dir: {translations_path}"
+            )
 
         if readme_only and not (root_path / "README.md").is_file():
             raise click.ClickException(f"README.md not found under {root_path}")
@@ -332,7 +360,9 @@ def translate_command(
         # Detect and migrate alias-based language folders for the SELECTED languages
         # This runs before any translation work to avoid redundant re-translation.
         try:
-            migrator = LanguageFolderMigrator(root_path)
+            migrator = LanguageFolderMigrator(
+                root_path, translations_dir=translations_path
+            )
             alias_entries = migrator.detect_alias_folders()
             if alias_entries:
                 # Filter only entries relevant to selected canonical languages
@@ -377,9 +407,9 @@ def translate_command(
         if not dry_run:
             try:
                 for lang in lang_list:
-                    # translations/<lang>/.co-op-translator.json
+                    # <translations-dir>/<lang>/.co-op-translator.json
                     normalize_language_codes_in_lang_metadata(
-                        root_path / "translations" / lang, lang
+                        translations_path / lang, lang
                     )
                     # translated_images/<lang>/.co-op-translator.json
                     normalize_language_codes_in_lang_metadata(
@@ -433,16 +463,20 @@ def translate_command(
             translator = readme_translator_class(
                 language_codes,
                 root_dir,
+                translations_dir=translations_path,
                 add_disclaimer=add_disclaimer,
                 initialize_translator=not dry_run,
+                concurrency=concurrency,
             )
         else:
             translator = project_translator_class(
                 language_codes,
                 root_dir,
+                translations_dir=translations_path,
                 translation_types=translation_types,
                 add_disclaimer=add_disclaimer,
                 initialize_translators=not dry_run,
+                concurrency=concurrency,
             )
 
         # Estimate tokens before running translation and print a concise summary

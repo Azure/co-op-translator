@@ -1,13 +1,13 @@
-# Hibakeresés
+# Troubleshooting
 
-Használja ezt az oldalt, ha egy fordítási futás váratlanul sikeres, konfiguráció közben hibát jelez, vagy olyan kimenetet hoz, amely felülvizsgálatot igényel.
+Használja ezt az oldalt, ha egy fordítási futtatás váratlanul sikeres, konfiguráció közben hibát jelez, vagy olyan kimenetet eredményez, amely felülvizsgálatot igényel.
 
 ## Kezdje itt
 
-1. Futtasson először egy konkrét parancsot, például `translate -l "ko" -md`.
-2. Adja hozzá a `-d` kapcsolót a konzol hibakeresési naplókhoz.
-3. Adja hozzá a `-s` kapcsolót a hibakeresési naplók mentéséhez a `<root-dir>/logs/` alá.
-4. Futtassa a `co-op-review`-t a fordítás után, hogy ellenőrizze a frissességet, a struktúrát és a helyi hivatkozásokat.
+1. Először futtass egy célzott parancsot, például `translate -l "ko" -md`.
+2. Add `-d` for console debug logs.
+3. Add `-s` to save debug logs under `<root-dir>/logs/`.
+4. Futtassa a `co-op-review`-t a fordítás után, hogy ellenőrizze a frissességet, a szerkezetet és a helyi hivatkozásokat.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -16,57 +16,57 @@ co-op-review -l "ko"
 
 ## Konfigurációs hibák
 
-### Nyelvi modell szolgáltató hiányzik
+### Nincs nyelvi modell szolgáltató
 
-Hiba:
+Error:
 
 ```text
 No language model configuration found.
 ```
 
-Megoldás:
+Fix:
 
-- Konfigurálja az Azure OpenAI-t vagy az OpenAI-t.
-- Ellenőrizze, hogy a változók ott vannak-e a környezetben, ahol a parancs fut.
-- Helyi használat esetén helyezze őket a projekt gyökerében lévő `.env` fájlba.
+- Állítsa be az Azure OpenAI-t, az OpenAI-t vagy az Anthropic-ot.
+- Ellenőrizze, hogy a változók ott vannak-e a parancsot futtató környezetben.
+- Helyi használathoz helyezze őket a projekt gyökerében lévő `.env` fájlba.
 
-Lásd: [Konfiguráció](configuration.md).
+See [Configuration](configuration.md).
 
 ### Képfordítás Azure AI Vision nélkül
 
-Hiba:
+Error:
 
 ```text
 Image translation requested but Azure AI Service is not configured.
 ```
 
-Megoldás:
+Fix:
 
-- Adja hozzá az `AZURE_AI_SERVICE_API_KEY`-t.
-- Adja hozzá az `AZURE_AI_SERVICE_ENDPOINT`-t.
-- Vagy futtasson egy csak szöveget fordító parancsot, például `translate -l "ko" -md`.
+- Adjon hozzá `AZURE_AI_SERVICE_API_KEY`.
+- Adjon hozzá `AZURE_AI_SERVICE_ENDPOINT`.
+- Vagy futtasson csak szöveget feldolgozó parancsot, például `translate -l "ko" -md`.
 
 ### Érvénytelen kulcs vagy végpont
 
-A tünetek között szerepelhet `401`, elrejtett jogosultsági hibák vagy végponthoz való hozzáférési hibák.
+A tünetek között szerepelhetnek a `401`, eltitkolt jogosultsági hibák vagy végpont-hozzáférési hibák.
 
-Megoldás:
+Fix:
 
-- Győződjön meg arról, hogy a kulcs ugyanahhoz az Azure-erőforráshoz tartozik, mint a végpont.
-- Győződjön meg arról, hogy az erőforrás támogatja a Vision funkciót, ha a `-img` opciót használja.
+- Ellenőrizze, hogy a kulcs ugyanahhoz az Azure-erőforráshoz tartozik-e, mint a végpont.
+- Ellenőrizze, hogy az erőforrás támogatja-e a Visiont, ha `-img`-et használ.
 - Ellenőrizze, hogy az Azure OpenAI telepítés neve és az API verzió megegyezik-e a telepítésével.
-- Futtassa hibakeresési naplókkal: `translate -l "ko" -md -d -s`.
+- Futtassa debug naplókkal: `translate -l "ko" -md -d -s`.
 
 ## Egy fájl sem lett lefordítva
 
-Gyakori okok:
+Common causes:
 
 - A kiválasztott kapcsolók nem egyeznek a fájljaival.
 - Már léteznek lefordított fájlok.
-- A forrásfájlok kizárt könyvtárak alatt vannak.
-- A parancsot a projekt nem megfelelő gyökérkönyvtárából futtatják.
+- A forrásfájlok kizárt könyvtárak alatt találhatók.
+- A parancsot a rossz projektgyökérből futtatják.
 
-Ellenőrzések:
+Checks:
 
 ```bash
 translate -l "ko" -md --dry-run
@@ -74,24 +74,24 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-Használja a `--root-dir` opciót, ha a parancsot a projekt gyökérkönyvtárán kívül futtatja.
+Használd `--root-dir`-t, ha a parancsot a projekt gyökérkönyvtárán kívül futtatod.
 
-## Váratlan hivatkozás viselkedés
+## Váratlan link viselkedés
 
 A hivatkozások átírása a kiválasztott tartalomtípusoktól függ:
 
-- `-nb` szerepel: a jegyzetfüzet-hivatkozások a lefordított jegyzetfüzetekre mutathatnak.
-- `-nb` kizárva: a jegyzetfüzet-hivatkozások maradhatnak a forrás jegyzetfüzetekre mutatva.
-- `-img` szerepel: a képhivatkozások a lefordított képekre mutathatnak.
-- `-img` kizárva: a képhivatkozások maradhatnak a forrásképekre mutatva.
+- `-nb` bekapcsolva: a jegyzetfüzet-hivatkozások a lefordított jegyzetfüzetekre mutathatnak.
+- `-nb` kizárva: a jegyzetfüzet-hivatkozások továbbra is az eredeti jegyzetfüzetekre mutathatnak.
+- `-img` bekapcsolva: a képhivatkozások a lefordított képekre mutathatnak.
+- `-img` kizárva: a képhivatkozások továbbra is az eredeti képekre mutathatnak.
 
-Futtasson teljes tartalomfordítást, ha minden belső hivatkozásnak a lefordított kimeneteket kell előnyben részesítenie:
+Végezzen teljes tartalomfordítást, ha minden belső hivatkozás a lefordított változatokat részesíti előnyben:
 
 ```bash
 translate -l "ko" -md -nb -img
 ```
 
-Futtassa a hivatkozás-áttekintést a fordítás után:
+Run link review after translation:
 
 ```bash
 co-op-review -l "ko"
@@ -99,33 +99,33 @@ co-op-review -l "ko"
 
 ## Markdown megjelenítési problémák
 
-Ha a lefordított Markdown helytelenül jelenik meg:
+If translated Markdown renders incorrectly:
 
-- Ellenőrizze, hogy a frontmatter `---`-vel kezdődik és `---`-vel végződik.
-- Ellenőrizze, hogy a kódkeretek (code fence) száma megegyezik-e a forrás- és a lefordított fájlokban.
-- Futtassa a `co-op-review`-t a gyakori szerkezeti problémák észleléséhez.
-- Fordítsa újra a konkrét fájlt, ha a kimenet megsérült.
+- Ellenőrizze, hogy a frontmatter `---`-rel kezdődik és végződik.
+- Ellenőrizze, hogy a kódblokk határolók (``` ) száma megegyezik-e a forrás- és a lefordított fájlokban.
+- Futtassa a `co-op-review`-t a gyakori szerkezeti hibák felderítéséhez.
+- Fordítsa le újra a konkrét fájlt, ha a kimenet megsérült.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## A GitHub Action lefutott, de nem jött létre Pull Request
+## A GitHub Action lefutott, de nem lett létrehozva Pull Request
 
-Ha a `peter-evans/create-pull-request` azt jelzi, hogy az ág nincs előrébb az alapnál, a munkafolyamat nem talált commitolható fájlokat.
+Ha a `peter-evans/create-pull-request` azt jelzi, hogy az ág nincs előrébb a bázisnál, a munkafolyamat nem talált commitolandó fájlokat.
 
-Valószínű okok:
+Likely causes:
 
-- A fordítási futás nem eredményezett változásokat.
+- A fordítási futtatás nem eredményezett változtatásokat.
 - A `.gitignore` kizárja a `translations/`, `translated_images/` vagy a lefordított jegyzetfüzeteket.
-- `add-paths` nem egyezik a generált kimeneti könyvtárakkal.
+- Az `add-paths` nem egyezik meg a generált kimeneti könyvtárakkal.
 - A fordítási lépés korábban kilépett.
 
-Javítások:
+Fixes:
 
-1. Ellenőrizze, hogy a generált fájlok léteznek-e a `translations/` vagy a `translated_images/` könyvtárban.
-2. Ellenőrizze, hogy a `.gitignore` nem ignorálja a generált kimeneteket.
-3. Használjon egyező `add-paths` beállítást:
+1. Confirm generated files exist in `translations/` or `translated_images/`.
+2. Confirm `.gitignore` does not ignore generated outputs.
+3. Use matching `add-paths`:
 
    ```yaml
    with:
@@ -134,13 +134,13 @@ Javítások:
        translated_images/
    ```
 
-4. Ideiglenesen adjon hozzá hibakeresési kapcsolókat a translate parancshoz:
+4. Ideiglenesen adj hibakeresési kapcsolókat a translate parancshoz:
 
    ```bash
    translate -l "ko" -md -d -s
    ```
 
-5. Ellenőrizze, hogy a munkafolyamat jogosultságai tartalmazzák:
+5. Confirm workflow permissions include:
 
    ```yaml
    permissions:
@@ -148,11 +148,11 @@ Javítások:
      pull-requests: write
    ```
 
-## Fordítási minőség
+## Fordítás minősége
 
-A gépi fordítások emberi felülvizsgálatot igényelhetnek. Az `evaluate`-t csak akkor használja, ha kísérleti minőségértékelést és alacsony bizalmú javítási munkafolyamatokat szeretne.
+A gépi fordítások emberi ellenőrzést igényelhetnek. A `evaluate`-t csak akkor használja, ha kísérleti minőségértékelést és alacsony megbízhatóságú javítási munkafolyamatokat szeretne.
 
 !!! warning "Experimental"
-    Az `evaluate` szabályalapú és LLM-alapú ellenőrzéseket használhat, és a pontozási modellje és a metaadatok viselkedése változhat. Ne tegye kötelező CI-feladatok részeként, hacsak a munkafolyamata nincs felkészítve a változásokra.
+    `evaluate` szabályalapú és LLM-alapú ellenőrzéseket használhat, és a pontozási modellje és a metaadatkezelése változhat. Ne tegye kötelező CI-fázisok részévé, hacsak a munkafolyamata nincs felkészítve a változásokra.
 
-Determinikus CI-ellenőrzésekhez használja helyette a `co-op-review`-t.
+For deterministic CI checks, use `co-op-review` instead.

@@ -1,43 +1,45 @@
 # Konfiguracija
 
-Co-op Translator zahteva enega ponudnika jezikovnega modela. Za prevod slik je poleg tega potreben Azure AI Vision.
+Co-op Translator zahteva enega ponudnika jezikovnega modela. Prevajanje slik dodatno zahteva Azure AI Vision.
 
 Konfiguracija se bere iz okoljskih spremenljivk. Za lokalne projekte jih postavite v datoteko `.env` v korenu projekta.
 
-Za nastavitev Azure virov glejte [Azure AI Setup](azure-ai-setup.md).
+Za nastavitev Azure virov glejte [Nastavitev Azure AI](azure-ai-setup.md).
 
-## Lokalna nastavitev za zagon
+## Lokalna nastavitev zagona
 
-Uporabite virtualno okolje pred lokalnim zagonom CLI. Co-op Translator podpira Python 3.10 do 3.12.
+Pred lokalnim zagonom ukazne vrstice uporabite virtualno okolje. Co-op Translator podpira Python 3.11 do 3.14.
 
-Za normalno uporabo CLI namestite objavljen paket znotraj virtualnega okolja:
+Za običajno uporabo ukazne vrstice namestite objavljen paket znotraj virtualnega okolja:
 
-=== "Windows"
+### Windows (PowerShell)
 
-    ```powershell
-    python -m venv .venv
-    .venv\Scripts\activate
-    pip install co-op-translator
-    translate --help
-    ```
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install co-op-translator
+translate --help
+```
 
-=== "macOS / Linux"
+### macOS / Linux
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install co-op-translator
-    translate --help
-    ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install co-op-translator
+translate --help
+```
 
-Za razvoj repozitorija namesto tega namestite odvisnosti iz korena projekta:
+### Razvoj repozitorija
+
+Za razvoj repozitorija namestite odvisnosti iz korena projekta:
 
 ```bash
 poetry install
 poetry run translate --help
 ```
 
-Ko je CLI na voljo, konfigurirajte enega ponudnika jezikovnega modela v `.env`.
+Ko je ukazna vrstica na voljo, konfigurirajte enega ponudnika jezikovnega modela v `.env`.
 
 ## Izbira ponudnika
 
@@ -45,12 +47,25 @@ Orodje samodejno zazna ponudnike v tem vrstnem redu:
 
 1. Azure OpenAI
 2. OpenAI
+3. Anthropic
 
-Če nobeden od ponudnikov ni konfiguriran, `translate`, `evaluate`, `migrate-links` in `run_translation` ne uspejo med preverjanjem konfiguracije. `co-op-review` in `run_review` so deterministični vzdrževalni pregledi in ne zahtevajo poverilnic ponudnika.
+Prevajanje zahteva poverilnice ponudnika, razen za predoglede, kot je `translate -l "ko" -md --dry-run`. `migrate-links`, `co-op-review` in `run_review` so deterministične vzdrževalne operacije in ne zahtevajo poverilnic ponudnika.
+
+## Backend odjemalca modela
+
+Od različice Co-op Translator 0.22.0 dalje Azure OpenAI, OpenAI in Anthropic privzeto uporabljajo Microsoft Agent Framework. Za običajno uporabo ni potrebna nobena nastavitev backenda.
+
+Semantic Kernel ostaja začasno na voljo za združljivost. Če ga želite izbrati eksplicitno, nastavite:
+
+```bash
+CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"
+```
+
+Uporaba Semantic Kernel sproži opozorilo o zastaranju. Paket namerava premakniti Semantic Kernel v opcijsko odvisnost v 0.23.0 in odstraniti integracijo v 0.24.0, odvisno od rezultatov združljivosti in povratnih informacij uporabnikov. Anthropic zahteva `agent-framework`; eksplicitna izbira `semantic-kernel` z Anthropic povzroči napako pri konfiguraciji. Neveljavne vrednosti povzročijo napako med inicializacijo prevajalnika, ki temelji na ponudniku, namesto da bi tiho prešle na privzeto. Spremljajte uvajanje in poročajte o blokadah v [GitHub težavi #543](https://github.com/Azure/co-op-translator/issues/543).
 
 ## Azure OpenAI
 
-Uporabite Azure OpenAI, kadar je vaš model nameščen v Azure AI Foundry ali Azure OpenAI Service.
+Uporabite Azure OpenAI, ko je vaš model nameščen v Azure AI Foundry ali Azure OpenAI Service.
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -60,35 +75,50 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Preverjanje povezave uporablja endpoint, API ključ, različico API-ja in ime razmestitve, preden se prevajanje začne.
+Preverjanje povezljivosti uporablja končno točko, API ključ, različico API in ime namestitve pred začetkom prevajanja.
 
 ## OpenAI
 
-Uporabite OpenAI, kadar neposredno kličete OpenAI API.
+Uporabite OpenAI, ko neposredno kličete OpenAI API.
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
-OPENAI_ORG_ID="..."          # izbirno
-OPENAI_BASE_URL="..."        # izbirno
 ```
 
-`OPENAI_CHAT_MODEL_ID` je obvezen, ker prevajalnik za API klice potrebuje izrecen pogovorni model.
+`OPENAI_CHAT_MODEL_ID` je zahtevan, ker prevajalnik potrebuje eksplicitni klepetni model za API klice.
+
+Pustite `OPENAI_ORG_ID` in `OPENAI_BASE_URL` prazni za privzeto nastavitev. Dodajte ID organizacije samo, če ga vaš račun potrebuje, ali osnovni URL le, ko uporabljate prilagojeno končno točko. Ne kopirajte nadomestnih vrednosti za opcijske nastavitve.
+
+## Anthropic Claude
+
+Uporabite Anthropic, ko neposredno kličete Claude API. Ustvarite [Anthropic API ključ](https://platform.claude.com/docs/en/get-started) in izberite podprt [ID modela Claude](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions).
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_API_KEY` in `ANTHROPIC_MODEL` sta zahtevana. Ni vam treba nastaviti `CO_OP_TRANSLATOR_MODEL_CLIENT`; Agent Framework je privzeti backend.
+
+Pustite `ANTHROPIC_BASE_URL` nespremenjen za Anthropic API. Nastavite ga le, ko uporabljate prilagojeno končno točko.
+
+`ANTHROPIC_MAX_TOKENS` privzeto znaša `8192`, kar pusti prostor za jezikovne skripte z veliko tokeni, kot je Meitei Mayek. Znižajte ga, če vaš model ali Anthropic-kompatibilna končna točka omejuje izhod pod to vrednost.
 
 ## Azure AI Vision
 
-Prevod slik zahteva Azure AI Vision, da lahko orodje iz slik izvleče besedilo pred prevajanjem.
+Prevajanje slik zahteva Azure AI Vision, da lahko orodje izvleče besedilo iz slik pred tem, ko ga prevaja konfigurirani jezikovni model. Anthropic lahko prevede izvlečeno besedilo enako kot Azure OpenAI ali OpenAI.
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-Če je prevod slik izbran z `-img`, `images=True` ali ni filtra vrste vsebine, orodje preveri konfiguracijo Vision pred začetkom prevajanja.
+Če je prevajanje slik izbrano z `-img`, `images=True`, ali brez filtra vrste vsebine, orodje preveri konfiguracijo Vision pred začetkom prevajanja.
 
-## Več naborov poverilnic
+## Več nizov poverilnic
 
-Plast konfiguracije podpira več naborov poverilnic z dodajanjem enakega indeksa kot pripone spremenljivkam:
+Plast konfiguracije podpira več nizov poverilnic s priponami spremenljivk z istim indeksom:
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -104,35 +134,37 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_2="<deployment-2>"
 AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 ```
 
-Vsak nabor mora biti popoln. Preverjanje stanja izbere delujoči nabor, preden se prevajanje nadaljuje.
+Vsak niz mora biti popoln. Preverjanje stanja izbere delujoč niz pred nadaljevanjem prevajanja.
 
-## Zahteve ukazov
+OpenAI in Anthropic podpirata isto konvencijo pripon. Ohranjajte vsako spremenljivko v nizu poverilnic na isti priponi, vključno z opcijskimi vrednostmi, kot sta `OPENAI_BASE_URL_1` ali `ANTHROPIC_BASE_URL_1`.
 
-| Ukaz ali API | Zahteva LLM | Zahteva Vision | Opombe |
+## Zahteve za ukaze
+
+| Ukaz ali API | Potreben LLM | Potrebna Vision | Opombe |
 | --- | --- | --- | --- |
-| `translate -md` | Da | Ne | Prevaja samo Markdown. |
-| `translate -nb` | Da | Ne | Prevaja samo zvezke. |
-| `translate -img` | Da | Da | Prevaja samo slike. |
-| `translate` with no type flags | Da | Da | Privzeti način vključuje Markdown, zvezke in slike. |
-| `evaluate` | Da | Ne | Uporablja LLM ocenjevanje, razen če je izbran `--fast`. |
-| `migrate-links` | Da | Ne | Izvaja migracijo povezav, vendar še vedno zažene skupne preglede konfiguracije. |
-| `co-op-review` | Ne | Ne | Izvaja deterministične preglede strukture prevoda, svežine, Markdowna, zvezkov in lokalnih povezav. |
-| `run_translation(markdown=True)` | Da | Ne | Programski prevod Markdowna. |
-| `run_translation(images=True)` | Da | Da | Programski prevod slik. |
+| `translate -md` | Da | Ne | Prevede samo Markdown. |
+| `translate -nb` | Da | Ne | Prevede samo zvezke (notebooks). |
+| `translate -img` | Da | Da | Prevede samo slike. |
+| `translate` brez zastavic vrste | Da | Da | Privzeti način vključuje Markdown, zvezke (notebooks) in slike. |
+| `evaluate` | Da | Ne | Uporablja ocenjevanje z LLM, razen če je izbrana možnost `--fast`. |
+| `migrate-links` | Ne | Ne | Izvaja lokalno migracijo povezav brez klicev ponudnika. |
+| `co-op-review` | Ne | Ne | Izvede deterministične preglede strukture prevajanja, svežine, Markdowna, zvezkov in lokalnih povezav. |
+| `run_translation(markdown=True)` | Da | Ne | Programsko prevajanje Markdowna. |
+| `run_translation(images=True)` | Da | Da | Programsko prevajanje slik. |
 | `run_review(...)` | Ne | Ne | Programski deterministični pregled. |
 
 ## Izhodne mape
 
-Privzeta izhodna mapa za besedilne prevode:
+Privzeti izhod besedilnega prevajanja:
 
 ```text
 translations/<language-code>/<source-relative-path>
 ```
 
-Privzeta izhodna mapa za prevedene slike:
+Privzeti izhod prevedenih slik:
 
 ```text
 translated_images/<language-code>/<source-relative-path>
 ```
 
-Python API lahko ta imenika prepiše z `translations_dir` in `image_dir`.
+Python API lahko prepiše te mape z `translations_dir` in `image_dir`.

@@ -1,33 +1,33 @@
 # MCP-palvelin
 
-Co-op Translator sisältää Model Context Protocol -palvelimen agenteille, editoreille ja MCP-yhteensopiville asiakkaille.
+Co-op Translator sisältää Model Context Protocol -palvelimen agenteille, editorseille ja MCP-yhteensopiville asiakkaille.
 
-Oletusarvoisessa paikallisessa asennuksessa käyttäjien ei tarvitse pitää erillistä palvelinta käynnissä käsin. He konfiguroivat MCP-asiakkaansa, ja asiakas käynnistää `co-op-translator-mcp` automaattisesti `stdio`-yhteyden yli, kun se tarvitsee Co-op Translator -työkaluja.
+Oletuspaikallisessa asennuksessa käyttäjät eivät pidä erillistä palvelinta käynnissä käsin. He määrittävät MCP-asiakkaansa, ja asiakas käynnistää `co-op-translator-mcp` automaattisesti yli `stdio`n, kun se tarvitsee Co-op Translator -työkaluja.
 
 Jos valitset CLI:n, Python-API:n ja MCP:n välillä, aloita [Valitse työnkulku](workflows.md).
 
-Käytä MCP:tä, kun agentin tai editorin tulisi kutsua Co-op Translatoria suoraan:
+Käytä MCP:tä, kun agentin tai editorin pitäisi kutsua Co-op Translatoria suoraan:
 
-| User goal | MCP tools |
+| Käyttäjän tavoite | MCP-työkalut |
 | --- | --- |
-| Translate one Markdown document, notebook, or image | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
-| Translate Markdown or notebook content with the host agent model | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Rewrite translated Markdown or notebook links after choosing the output path | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Translate a full repository like the CLI | `run_translation`, `translate_project` |
-| Review translated output without LLM credentials | `run_review` |
-| Inspect capabilities and environment status | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
+| Käännä yksi Markdown-asiakirja, muistikirja tai kuva | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
+| Käännä Markdown- tai muistikirjasisältöä isäntäagentin mallilla | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Uudelleenkirjoita käännettyjen Markdown- tai muistikirjalinkkien polut valitun kohdepolun jälkeen | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Käännä koko repositorio kuten CLI | `run_translation`, `translate_project` |
+| Tarkista käännetty tulos ilman LLM-tunnuksia | `run_review` |
+| Tarkastele ominaisuuksia ja ympäristön tilaa | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-MCP-palvelin käärii saman julkisen Python-API:n, joka on dokumentoitu [Python API](api.md). Toimittajapohjaiset työkalut käyttävät samoja konfiguroituja tarjoajia kuin CLI ja Python-API. Agentin avustamat työkalut valmistelevat paloiksi jaetut osiot MCP-isäntäagentille käännettäväksi, ja käyttävät sitten Co-op Translatoria lopullisen Markdownin tai muistikirjan rekonstruointiin.
+MCP-palvelin käärii saman julkisen Python-API:n, joka on dokumentoitu [Python API](api.md). Tarjoajapohjaiset työkalut käyttävät samoja konfiguroituja tarjoajia kuin CLI ja Python-API. Agenttiavusteiset työkalut valmistelevat lohkot MCP-isäntäagentin käännettäviksi ja käyttävät sitten Co-op Translatoria lopullisen Markdownin tai muistikirjan rekonstruointiin.
 
-## Vaihe 1: Asenna ja määritä Co-op Translator
+## Vaihe 1: Asenna ja konfiguroi Co-op Translator
 
-Asenna Co-op Translator Python-ympäristöön, jota MCP-asiakkaasi käyttää:
+Asenna Co-op Translator Python-ympäristöön, jota MCP-asiakas käyttää:
 
 ```bash
 pip install co-op-translator
 ```
 
-Paikallista kehitystä varten tästä repositoriosta asenna paketti muokattavassa tilassa:
+Paikallista kehitystä varten tästä repositoriosta asenna paketti muokattavaan tilaan:
 
 ```bash
 pip install -e .
@@ -35,24 +35,33 @@ pip install -e .
 
 Valitse käännöstila, jota MCP-asiakkaasi käyttää:
 
-| Mode | Use this for | Credentials |
+| Tila | Käytä tähän | Tunnukset |
 | --- | --- | --- |
-| Provider-backed | Co-op Translator calls `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, or `run_translation`. | Markdown and notebook translation require Azure OpenAI or OpenAI. Image translation also requires Azure AI Vision. |
-| Agent-assisted | The MCP host agent translates chunks returned by `start_markdown_agent_translation` or `start_notebook_agent_translation`. | No Co-op Translator LLM provider credentials are required for Markdown or notebook chunks. Image translation is not covered by agent-assisted mode yet. |
+| Tarjoajapohjainen | Co-op Translator kutsuu `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` tai `run_translation`. | Käännös vaatii Azure OpenAI:n, OpenAI:n tai Anthropicin. Kuvien käännös vaatii myös Azure AI Visionin. |
+| Agenttiavusteinen | MCP-isäntäagentti kääntää lohkot, jotka palautetaan `start_markdown_agent_translation` tai `start_notebook_agent_translation`. | Co-op Translatorin LLM-tarjoajatunnuksia ei tarvita Markdown- tai muistikirjalohtkoille. Kuvien käännös ei ole vielä tuettu agenttiavusteisessa tilassa. |
 
-Jos aloitat Markdown- tai muistikirjakäännöksillä agentin, kuten Codexin tai Claude Coden, sisällä, aloita agentin avustamasta tilasta. Käytä toimittajapohjaista tilaa, kun haluat Co-op Translatorin itse kutsuvan konfiguroituja tarjoajia, kun käännät kuvia, tai kun ajat repotason käännöstä kuten CLI.
+Jos aloitat Markdown- tai muistikirjakäännöksillä agentin sisällä, kuten Codexilla tai Claude Codella, aloita agenttiavusteisella tilalla. Käytä tarjoajapohjaista tilaa, kun haluat Co-op Translatorin itse kutsuvan konfiguroidut tarjoajasi, kun käännät kuvia tai kun suoritat repositorion tason käännöstä kuten CLI.
 
-Konfiguroi tarjoajien tunnistetiedot vain toimittajapohjaisiin työnkulkuihin:
+Konfiguroi yksi tarjoaja tarjoajapohjaisia työnkulkuja varten:
 
 ```bash
+# Azure OpenAI
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+
+# Tai OpenAI
+OPENAI_API_KEY="..."
+OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Tai Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Toimittajapohjainen kuvakäännös tarvitsee lisäksi:
+Tarjoajapohjainen kuvien käännös tarvitsee lisäksi:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -60,9 +69,9 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
 !!! note
-    Agent-assisted mode currently covers Markdown and notebook Markdown cells. Image translation still uses the provider-backed image pipeline and requires Azure AI Vision for OCR and layout-aware rendering.
+    Agenttiavusteinen tila kattaa tällä hetkellä Markdownin ja muistikirjan Markdown-solut. Kuvien käännös käyttää edelleen tarjoajapohjaista kuva-putkea ja vaatii Azure AI Visionin OCR:ää ja asettelutietoista renderöintiä.
 
-## Vaihe 2: Määritä MCP-asiakkaasi
+## Vaihe 2: Konfiguroi MCP-asiakkaasi
 
 Normaalissa paikallisessa `stdio`-asetuksessa lisää Co-op Translator MCP-asiakkaasi konfiguraatioon. Asiakas käynnistää ja pysäyttää prosessin automaattisesti.
 
@@ -93,7 +102,7 @@ Lähdekoodin checkout -konfiguraatio Windowsissa:
 }
 ```
 
-Lähdekoodin checkout -konfiguraatio macOSissa tai Linuxissa:
+Lähdekoodin checkout -konfiguraatio macOS:lle tai Linuxille:
 
 ```json
 {
@@ -107,11 +116,11 @@ Lähdekoodin checkout -konfiguraatio macOSissa tai Linuxissa:
 }
 ```
 
-Muutettuasi MCP-asiakkaan konfiguraatiota, käynnistä tai lataa asiakas uudelleen, jotta se voi löytää uuden palvelimen.
+Muutettuasi MCP-asiakkaan konfiguraation, käynnistä tai lataa asiakas uudelleen, jotta se löytää uuden palvelimen.
 
 ## Vaihe 3: Varmista palvelin asiakkaassa
 
-Pyydä MCP-asiakasta listaamaan käytettävissä olevat työkalut, tai kutsu ensin jotain luku -aputoimintoa:
+Pyydä MCP-asiakasta listaamaan käytettävissä olevat työkalut tai kutsu ensin jotakin vain-lukuista apuohjelmaa:
 
 ```json
 {
@@ -120,45 +129,45 @@ Pyydä MCP-asiakasta listaamaan käytettävissä olevat työkalut, tai kutsu ens
 }
 ```
 
-Hyödyllisiä ensimmäisiä tarkistuksia:
+Hyödylliset ensitarkistukset:
 
-| Tool | What to check |
+| Työkalu | Tarkistettava asia |
 | --- | --- |
-| `get_api_overview` | Confirms the server is reachable and shows available workflows. |
-| `list_supported_languages` | Confirms packaged language data can be loaded. |
-| `get_configuration_status` | Confirms LLM and Vision provider availability without exposing secret values. |
+| `get_api_overview` | Varmistaa, että palvelimeen saadaan yhteys ja näyttää käytettävissä olevat työnkulut. |
+| `list_supported_languages` | Varmistaa, että pakatut kielitiedot voidaan ladata. |
+| `get_configuration_status` | Varmistaa LLM- ja Vision-tarjoajien saatavuuden ilman salassa pidettävien arvojen paljastamista. |
 
 ## Vaihe 4: Valitse työnkulku
 
-### Käännä yksittäisiä tiedostoja tai dokumentteja
+### Käännä yksittäisiä tiedostoja tai asiakirjoja
 
-Käytä toimittajapohjaisia sisältötyökaluja, kun MCP-asiakkaalla on jo dokumentin sisältö tai kuva polkuineen ja Co-op Translatorin tulisi kutsua konfiguroituja kääntäjäpalveluja.
+Käytä tarjoajapohjaisia sisältötyökaluja, kun MCP-asiakkaalla on jo asiakirjan sisältö tai kuvan polku ja Co-op Translatorin tulisi kutsua konfiguroituja kääntäjäpalveluita.
 
 Markdownille:
 
-1. Kutsu `translate_markdown_content` parametrien `document`, `language_code` ja tarvittaessa `source_path` kanssa.
+1. Kutsu `translate_markdown_content` käyttäen `document`, `language_code` ja valinnaisesti `source_path`.
 2. Jos käännetty tulos kirjoitetaan Co-op Translatorin tulostusasetteluun, kutsu `rewrite_markdown_paths`.
 3. Anna asiakkaan kirjoittaa tai palauttaa lopullinen `content`.
 
 Muistikirjoille:
 
-1. Kutsu `translate_notebook_content` muistikirjan JSONilla ja `language_code`-parametrilla.
-2. Kutsu `rewrite_notebook_paths`, jos käännettyjen muistikirjalinkkien polkuja täytyy säätää kohdepolkua varten.
-3. Kirjoita tai palauta lopullinen muistikirja-JSON.
+1. Kutsu `translate_notebook_content` muistikirjan JSON:lla ja `language_code`.
+2. Kutsu `rewrite_notebook_paths` jos käännettyjen muistikirjalinkkien polkuja täytyy säätää kohdepolulle.
+3. Kirjoita tai palauta lopullinen muistikirjan JSON.
 
 Kuville:
 
-1. Kutsu `translate_image_content` parametrien `image_path`, `language_code` ja valinnaisesti `root_dir` tai `fast_mode` kanssa.
+1. Kutsu `translate_image_content` käyttäen `image_path`, `language_code` ja valinnaisesti `root_dir` tai `fast_mode`.
 2. Lue palautettu `data_base64` ja `mime_type`.
 3. Jos `output_path` on annettu, käännetty kuva tallennetaan myös siihen polkuun.
 
-Sisältötyökalut eivät suorita projektin löytöä, metatietojen päivityksiä, vastuuvapauslausekkeita tai automaattista polun uudelleenkirjoitusta. Jos haluat isäntäagentin kääntävän Markdown- tai muistikirjajohtoiset palat ilman Co-op Translatorin LLM-tarjoajatunnuksia, käytä alla olevaa agentin avustamaa työnkulkua.
+Sisältötyökalut eivät suorita projektin etsintää, metatietojen päivityksiä, vastuuvapauslausekkeita tai automaattista polkujen uudelleenkirjoitusta. Jos haluat isäntäagentin kääntävän Markdown- tai muistikirjalohtkoja ilman Co-op Translatorin LLM-tarjoajan tunnuksia, käytä alla olevaa agenttiavusteista työnkulkua.
 
 ### Käännä isäntäagentin mallilla
 
-Käytä agentin avustamia työkaluja, kun haluat MCP-isäntäagentin, kuten koodausavustajan, tuottavan käännetyn tekstin sen sijaan, että konfiguroisit Azure OpenAI:n tai OpenAI:n Co-op Translatorille.
+Käytä agenttiavusteisia työkaluja, kun haluat MCP-isäntäagentin, kuten koodausavustajan, tuottavan käännetyn tekstin sen sijaan että konfiguroisit LLM-tarjoajan Co-op Translatorille.
 
-Chat-pohjaisessa MCP-asiakkaassa sinun ei yleensä tarvitse kirjoittaa työkalun JSONia itse. Pyydä agenttia käyttämään agentin avustamaa työnkulkua:
+Keskustelupohjaisessa MCP-asiakkaassa sinun ei yleensä tarvitse kirjoittaa työkalujen JSONia itse. Pyydä agenttia käyttämään agenttiavusteista työnkulkua:
 
 ```text
 Translate this Markdown file to Korean with Co-op Translator MCP.
@@ -174,29 +183,29 @@ Use start_notebook_agent_translation, translate the returned Markdown-cell chunk
 Preserve code cells, outputs, and notebook metadata.
 ```
 
-Jos MCP-asiakkaasi tukee palvelinkehotteita, käytä `agent_assisted_markdown_translation_prompt`-kehotetta, jotta asiakas lataa samat työnkulkuohjeet.
+Jos MCP-asiakkaasi tukee palvelinpohjaisia kehotteita, käytä `agent_assisted_markdown_translation_prompt` jotta asiakas lataa samat työnkulkuohjeet.
 
 Markdownille:
 
-1. Kutsu `start_markdown_agent_translation` parametrien `document`, `language_code` ja tarvittaessa `source_path` kanssa.
-2. Käännä jokainen palautettu pala isäntäagentissa seuraamalla palan `prompt`-ohjeita.
-3. Kutsu `finish_markdown_agent_translation` alkuperäisen `job`-objektin ja käännettyjen palojen kanssa käyttäen `chunk_id` ja `translated_text`.
+1. Kutsu `start_markdown_agent_translation` käyttäen `document`, `language_code` ja valinnaisesti `source_path`.
+2. Käännä jokainen palautettu lohko isäntäagentissa noudattaen lohkon `prompt`-kehotteita.
+3. Kutsu `finish_markdown_agent_translation` alkuperäisellä `job`-objektilla ja käännetyillä lohkoilla käyttäen `chunk_id` ja `translated_text`.
 4. Jos sisältö kirjoitetaan käännettyyn kohdepolkuun, kutsu `rewrite_markdown_paths`.
 
 Muistikirjoille:
 
-1. Kutsu `start_notebook_agent_translation` muistikirjan JSONilla ja `language_code`-parametrilla.
-2. Käännä jokainen palautettu pala isäntäagentissa.
-3. Kutsu `finish_notebook_agent_translation` alkuperäisen `job`-objektin ja käännettyjen palojen kanssa.
-4. Kutsu `rewrite_notebook_paths`, jos käännettyjen muistikirjalinkkien polkuja täytyy säätää kohdepolkua varten.
+1. Kutsu `start_notebook_agent_translation` muistikirjan JSONilla ja `language_code`.
+2. Käännä jokainen palautettu lohko isäntäagentissa.
+3. Kutsu `finish_notebook_agent_translation` alkuperäisellä `job`-objektilla ja käännetyillä lohkoilla.
+4. Kutsu `rewrite_notebook_paths` jos käännettyjen muistikirjalinkkien kohdepolkuja täytyy säätää.
 
-Agentin avustamat työkalut eivät kutsu Azure OpenAI:ta tai OpenAI:a Co-op Translatorista. Isäntäagentti vastaa palautettujen palojen kääntämisestä. Co-op Translator hoitaa Markdownin paloittelun, paikkamerkkien säilyttämisen, frontmatterin rekonstruoinnin, muistikirjasolujen korvaamisen ja jälkikäännöksen normalisoinnin.
+Agenttiavusteiset työkalut eivät kutsu Co-op Translatorin konfiguroitua LLM-tarjoajaa. Isäntäagentti vastaa palautettujen lohkojen kääntämisestä. Co-op Translator hoitaa Markdownin lohkomisen, paikkamerkkien säilyttämisen, frontmatterin rekonstruoinnin, muistikirjasolujen korvaamisen ja käännöksen jälkeisen normalisoinnin.
 
-### Käännä koko arkisto
+### Käännä koko repositorio
 
-Käytä `run_translation`, kun käyttäjä haluaa Co-op Translatorin toimivan kuten `translate`-CLI.
+Käytä `run_translation` kun käyttäjä haluaa, että Co-op Translator käyttäytyy kuten `translate`-CLI.
 
-Arkiston käännös oletusarvoisesti käyttää `dry_run=true`, jotta agentti voi tarkastella laajuutta ennen tiedostomuutoksia:
+Repositorion käännös on oletuksena `dry_run=true`, jotta agentti voi tarkistaa laajuuden ennen tiedostomuutoksia:
 
 ```json
 {
@@ -207,7 +216,13 @@ Arkiston käännös oletusarvoisesti käyttää `dry_run=true`, jotta agentti vo
 }
 ```
 
-Sallitaaksesi kirjoitukset, kutsujan on asetettava sekä `dry_run=false` että `confirm_write=true`:
+`run_translation`-tulos sisältää `events`-taulukon versionoiduilla
+`co-op.translation.event.v1` -edistymistapahtumilla. MCP-asiakkaiden tulisi käyttää kenttiä kuten
+`type`, `stage_key`, `completed`, `total` ja `current_path` sen sijaan, että
+jäsennettäisiin kaapattua konsolitekstiä. Anna `json_events_path` myös kirjoittaaksesi nämä tapahtumat
+NDJSON-tiedostoon.
+
+Sallittaessa kirjoitukset, kutsujan on asetettava sekä `dry_run=false` että `confirm_write=true`:
 
 ```json
 {
@@ -219,14 +234,14 @@ Sallitaaksesi kirjoitukset, kutsujan on asetettava sekä `dry_run=false` että `
 }
 ```
 
-`translate_project` on altistettu yhteensopivuusalias `run_translation`ille.
+`translate_project` on yhteensopivuusalias `run_translation`ille.
 
-### Tarkista käännetty tulos
+### Tarkista käännetty sisältö
 
-Käytä `run_review` deterministisille tarkistuksille, jotka eivät vaadi LLM- tai Vision-tunnuksia:
+Käytä `run_review`-toimintoa deterministisiin tarkistuksiin, jotka eivät vaadi LLM- tai Vision-tunnuksia:
 
 !!! note "Beta"
-    MCP exposes the beta `run_review` API. It is safe for read-only review workflows, but review checks and issue schemas may evolve.
+    MCP tarjoaa beta-vaiheen `run_review`-API:n. Se on turvallinen vain-luku -tarkistustyönkuluille, mutta tarkistukset ja issue-skeemat saattavat kehittyä.
 
 ```json
 {
@@ -237,70 +252,70 @@ Käytä `run_review` deterministisille tarkistuksille, jotka eivät vaadi LLM- t
 }
 ```
 
-Tulos sisältää kaapatun tekstitulosteen ja rakenteellisen tarkistusyhteenvedon, kun saatavilla.
+Tulos sisältää kaapatun tekstilähdön ja jäsennellyn tarkistusyhteenvedon, kun se on saatavilla.
 
 ## Manuaaliset palvelinajot
 
-Manuaaliset ajot ovat pääasiassa virheenkorjausta tai siirtoja varten, jotka toimivat kuin pitkäkestoiset palvelimet.
+Manuaaliset ajot ovat pääasiassa virheenkorjausta tai siirtoja varten, jotka käyttäytyvät kuin pitkäkestoiset palvelimet.
 
-Debuggaa oletusarvoinen stdio-palvelin:
+Vianmääritys oletus-stdio-palvelimelle:
 
 ```bash
 co-op-translator-mcp
 ```
 
-Aja lähdekoodin checkoutista:
+Suorita lähdekooditarkastuksesta:
 
 ```bash
 python -m co_op_translator.mcp.server
 ```
 
-Aja pitkäikäinen HTTP- tai SSE-palvelin:
+Suorita pitkäkestoinen HTTP- tai SSE-palvelin:
 
 ```bash
 co-op-translator-mcp --transport streamable-http
 co-op-translator-mcp --transport sse
 ```
 
-Paikallisia editori- ja agentti-integraatioita varten suosittelemme vaiheessa 2 kuvattua asiakashallittua `stdio`-konfiguraatiota.
+Paikallisissa editori- ja agenttaintegraatioissa suosittelemme asiakashallittua `stdio`-konfiguraatiota Vaiheessa 2.
 
 ## Työkalut
 
-| Tool | Purpose | Writes files |
+| Työkalu | Tarkoitus | Kirjoittaako tiedostoja |
 | --- | --- | --- |
-| `translate_markdown_content` | Translate a Markdown string. | No |
-| `translate_notebook_content` | Translate Markdown cells in notebook JSON. | No |
-| `translate_image_content` | Translate text in one image and return base64 image data. | Optional, only when `output_path` is provided |
-| `start_markdown_agent_translation` | Prepare Markdown chunks for the host agent to translate without Co-op Translator LLM credentials. | No |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from host-agent translated chunks. | No |
-| `start_notebook_agent_translation` | Prepare notebook Markdown-cell chunks for the host agent to translate. | No |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON from host-agent translated chunks. | No |
-| `rewrite_markdown_paths` | Rewrite Markdown body and frontmatter paths for a translated target. | No |
-| `rewrite_notebook_paths` | Rewrite paths inside notebook Markdown cells. | No |
-| `run_translation` | Run project-level translation like the CLI. | Yes when `dry_run=false` and `confirm_write=true` |
-| `translate_project` | Compatibility alias for `run_translation`. | Yes when `dry_run=false` and `confirm_write=true` |
-| `run_review` | Run deterministic review checks. | No |
-| `get_configuration_status` | Report configured LLM and Vision providers without exposing secrets. | No |
-| `list_supported_languages` | List supported target language codes. | No |
-| `get_api_overview` | Describe available MCP workflows and tools. | No |
+| `translate_markdown_content` | Käännä Markdown-merkkijono. | Ei |
+| `translate_notebook_content` | Käännä Markdown-solut muistikirjan JSONista. | Ei |
+| `translate_image_content` | Käännä tekstin yhdestä kuvasta ja palauta base64-kuvatiedot. | Valinnainen, vain kun `output_path` on annettu |
+| `start_markdown_agent_translation` | Valmistelee Markdown-lohkot isäntäagentin käännettäviksi ilman Co-op Translatorin LLM-tarjoajan tunnuksia. | Ei |
+| `finish_markdown_agent_translation` | Rekonstruoi Markdown isäntäagentin kääntämistä lohkoista. | Ei |
+| `start_notebook_agent_translation` | Valmistelee muistikirjan Markdown-solulohkot isäntäagentin käännettäviksi. | Ei |
+| `finish_notebook_agent_translation` | Rekonstruoi muistikirjan JSON isäntäagentin kääntämistä lohkoista. | Ei |
+| `rewrite_markdown_paths` | Uudelleenkirjoittaa Markdown-runkoa ja frontmatter-polkuja käännetylle kohteelle. | Ei |
+| `rewrite_notebook_paths` | Uudelleenkirjoittaa polkuja muistikirjan Markdown-soluissa. | Ei |
+| `run_translation` | Suorita projektitason käännös kuten CLI. | Kyllä kun `dry_run=false` ja `confirm_write=true` |
+| `translate_project` | Yhteensopivuusalias `run_translation`ille. | Kyllä kun `dry_run=false` ja `confirm_write=true` |
+| `run_review` | Suorita deterministisiä tarkistusvaiheita. | Ei |
+| `get_configuration_status` | Raportoi konfiguroidut LLM- ja Vision-tarjoajat paljastamatta salaisuuksia. | Ei |
+| `list_supported_languages` | Listaa tuetut kohdekielikoodit. | Ei |
+| `get_api_overview` | Kuvaa käytettävissä olevat MCP-työnkulut ja -työkalut. | Ei |
 
 ## Resurssit
 
-| Resource URI | Purpose |
+| Resurssi-URI | Tarkoitus |
 | --- | --- |
-| `co-op://api` | JSON overview of workflows and tools. |
-| `co-op://supported-languages` | JSON list of supported language codes. |
-| `co-op://configuration` | JSON provider availability summary without secrets. |
+| `co-op://api` | JSON-yleiskatsaus työnkuluista ja työkaluista. |
+| `co-op://supported-languages` | JSON-lista tuetuista kielikoodeista. |
+| `co-op://configuration` | JSON-tarjoajasaatavuusyhteenveto ilman salaisuuksia. |
 
-## Kehotukset
+## Kehotteet
 
-| Prompt | Purpose |
+| Kehote | Tarkoitus |
 | --- | --- |
-| `translate_markdown_document_prompt` | Guide an MCP client through content translation plus optional path rewriting. |
-| `agent_assisted_markdown_translation_prompt` | Guide an MCP client through host-agent Markdown translation without Co-op Translator LLM provider credentials. |
-| `translate_repository_prompt` | Guide an MCP client through dry-run-first repository translation. |
+| `translate_markdown_document_prompt` | Opastaa MCP-asiakasta sisällön käännössä sekä valinnaisessa polkujen uudelleenkirjoituksessa. |
+| `agent_assisted_markdown_translation_prompt` | Opastaa MCP-asiakkaan isäntäagentin Markdown-käännöksessä ilman Co-op Translatorin LLM-tarjoajan tunnuksia. |
+| `translate_repository_prompt` | Opastaa MCP-asiakasta repositorion käännössä, jossa ensin tehdään esikoeajo (dry-run). |
 
-## Kopioi-liitä esimerkit
+## Kopioi-liitä-esimerkit
 
 Käännä Markdown-sisältö:
 
@@ -321,7 +336,7 @@ Uudelleenkirjoita käännetyt Markdown-linkit:
 {
   "tool": "rewrite_markdown_paths",
   "arguments": {
-    "content": "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+    "content": "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
     "source_path": "docs/guide.md",
     "target_path": "translations/ko/docs/guide.md",
     "policy": {
@@ -348,7 +363,7 @@ Käännä Markdown isäntäagentin mallilla:
 }
 ```
 
-Kun isäntäagentti kääntää jokaisen palautetun palan, viimeistele työ kutsumalla `start_markdown_agent_translation`in palauttamalla täydellä `job`-objektilla:
+Kun isäntäagentti kääntää jokaisen palautetun lohkon, viimeistele työ käyttämällä täydellistä `job`-objektia, jonka `start_markdown_agent_translation` palautti:
 
 ```text
 tool: finish_markdown_agent_translation
@@ -359,7 +374,7 @@ arguments:
       translated_text: "# 안녕하세요\n\n시작하려면 `pip install`을 사용하세요."
 ```
 
-Esikatsele arkiston käännöstä:
+Esikatsele repositorion käännöstä:
 
 ```json
 {
@@ -375,19 +390,19 @@ Esikatsele arkiston käännöstä:
 
 ## Vianmääritys
 
-| Problem | What to try |
+| Ongelma | Mitä kokeilla |
 | --- | --- |
-| The MCP client cannot find `co-op-translator-mcp`. | Use the absolute Python executable path and `["-m", "co_op_translator.mcp.server"]` source checkout configuration. |
-| The server is listed but translation fails. | Call `get_configuration_status` and confirm an LLM provider is available. |
-| You want Markdown or notebook translation without Azure OpenAI/OpenAI keys. | Use `start_markdown_agent_translation` / `finish_markdown_agent_translation` or the notebook equivalents so the host agent translates the chunks. |
-| Image translation fails. | Confirm Azure AI Vision variables are set and call `get_configuration_status`. |
-| Repository translation does not write files. | Set `dry_run=false` and `confirm_write=true` only after explicit user approval. |
-| Changes to client config do not appear. | Restart or reload the MCP client. |
+| MCP-asiakas ei löydä `co-op-translator-mcp`. | Käytä absoluuttista Python-suoritettavan polkua ja `["-m", "co_op_translator.mcp.server"]` source checkout -konfiguraatiota. |
+| Palvelin on listattu mutta käännös epäonnistuu. | Kutsu `get_configuration_status` ja vahvista, että LLM-tarjoaja on saatavilla. |
+| Haluat Markdown- tai muistikirjakäännöksen ilman tarjoajatunnuksia. | Käytä `start_markdown_agent_translation` / `finish_markdown_agent_translation` tai muistikirjaekvivalenteja, jotta isäntäagentti kääntää lohkot. |
+| Kuvien käännös epäonnistuu. | Varmista, että Azure AI Vision -muuttujat on asetettu ja kutsu `get_configuration_status`. |
+| Repositorion käännös ei kirjoita tiedostoja. | Aseta `dry_run=false` ja `confirm_write=true` vain käyttäjän nimenomaisen hyväksynnän jälkeen. |
+| Muutokset asiakkaan konfiguraatioon eivät näy. | Käynnistä tai lataa MCP-asiakas uudelleen. |
 
 ## Turvallisuusmuistiinpanot
 
-- MCP-työkalukutsut ovat isäntäapplikaation mallin hallinnoimia, joten arkiston käännös on oletusarvoisesti dry-run.
-- Täydellinen arkiston käännös voi luoda, päivittää tai poistaa monia tiedostoja. Vaadi nimenomainen käyttäjän hyväksyntä ennen `confirm_write=true` asettamista.
-- Konfiguraation tilatyökalu ei koskaan palauta API-avaimia, päätepisteitä tai muita salaisia arvoja.
-- Kuvakäännös palauttaa base64-kuvatietoja. Suuret kuvat voivat tuottaa suuria työkaluvastauksia.
-- Agentin avustamat työkalut palauttavat lähdepalat ja kehotteet MCP-isännälle. Käytä niitä vain sisällön kanssa, jonka käyttäjä on valmis lähettämään kyseiselle isäntäagentin mallille.
+- MCP-työkalukutsut ovat isäntäohjelman mallin ohjaamia, joten repositorion käännös on oletuksena dry-run.
+- Koko repositorion käännös voi luoda, päivittää tai poistaa monia tiedostoja. Vaadi nimenomainen käyttäjän hyväksyntä ennen `confirm_write=true` asettamista.
+- Konfiguraation tilan työkalu ei koskaan palauta API-avaimia, päätepisteitä tai muita salaisia arvoja.
+- Kuvien käännös palauttaa base64-kuvatietoja. Suuret kuvat voivat tuottaa suuria työkaluvastauksia.
+- Agenttiavusteiset työkalut palauttavat lähdelohtkoja ja kehotteita MCP-isännälle. Käytä niitä vain sisällön kanssa, jonka käyttäjä on valmis lähettämään tuolle isäntäagentin mallille.

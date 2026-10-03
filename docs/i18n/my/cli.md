@@ -1,6 +1,6 @@
-# CLI အညွှန်း
+# CLI ကိုးကားချက်
 
-Co-op Translator သည် အောက်ပါ command-line entry point များကို တပ်ဆင်ပေးသည်။
+Co-op Translator သည် အောက်ပါ command-line entry points များကို ထည့်သွင်းသည်။
 
 - `translate`
 - `evaluate`
@@ -8,255 +8,287 @@ Co-op Translator သည် အောက်ပါ command-line entry point မျ
 - `co-op-review`
 - `co-op-translator-mcp`
 
-`translate`, `evaluate`, `migrate-links`, နှင့် `co-op-review` command များကို `co_op_translator.__main__` မှအားဖြင့် dispatch လုပ်ပြီး ခလုတ်အမည်အရ အကောင်အထည်ဖော်မှုကို ရွေးချယ်သည်။ MCP server သည် `co_op_translator.mcp.server` ကို တိုက်ရိုက် အသုံးပြုသည်။
+`translate`, `evaluate`, `migrate-links` နှင့် `co-op-review` အမိန့်များကို `co_op_translator.__main__` မှတဆင့် ပို့သွားပြီး၊ ၎င်းသည် ခေါ်လိုက်သော script အမည်အပေါ် မူတည်၍ command implementation ကို ရွေးချယ်ပေးသည်။ MCP ဆာဗာသည် တိုက်ရိုက် `co_op_translator.mcp.server` ကို အသုံးပြုသည်။
 
-CLI, Python API, နှင့် MCP တို့ကြား ရွေးချယ်ရန် ရှိပါက [Choose Your Workflow](workflows.md) ကို စတင် ဖတ်ရှုပါ။
+CLI, Python API, နှင့် MCP အကြား ရွေးချယ်ရန် ဆုံးဖြတ်နေပါက၊ [သင်၏ လုပ်ငန်းစဉ်ကို ရွေးချယ်ပါ](workflows.md) မှ စတင်ပါ။
 
-## First-Time CLI Flow
+## ကွန်ဆောလ် အထွက်
 
-Terminal မှ Co-op Translator ကို အသုံးပြုပြီးစတင်မည့်သူများအတွက် အစမှ စတင်ရန် ထိုနေရာမှ စတင်ပါ။
+Interactive terminals များတွင် command header, progress, နှင့် summaries များအတွက် Rich formatting ကို အသုံးပြုသည်။ CI နှင့် non-interactive အထွက်များသည် အလိုအလျောက် plain text သို့ ပြန်သွားပါသည်။
 
-1. [Configuration](configuration.md) တွင် ဖော်ပြထားသည့် အတိုင်း LLM provider ကို setup ပြုလုပ်ပါ။
-2. ဘာသားအမျိုးအစားကို ဘာသာပြန်လိုသည်ကို ရွေးချယ်ပါ။
-3. ပထမဦးဆုံး အာရုံစိုက်သော command တစ်ခုကို လုပ်ဆောင်ပါ၊ ဥပမာ Markdown-only ဘာသာပြန်ခြင်း။
-4. ကြီးမားသော repository ပြင်ဆင်မှုများမလုပ်မီ `--dry-run` ကို အသုံးပြု၍ ကြို-preview လုပ်ပါ။
-5. ဘာသာပြန်ပြီးနောက် structure နှင့် freshness ကို စစ်ဆေးရန် `co-op-review` ကို အသုံးပြုပါ။
+`CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` ကို သတ်မှတ်၍ plain output ကို အတင်းအကျပ် ပြပါ၊ သို့မဟုတ် `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` ကို သတ်မှတ်၍ Rich output ကို အတင်းအကျပ် ပြပါ။ Live progress bars များကို ပိတ်ထားပြီး summaries များကို ထိန်းသိမ်းရန် `CO_OP_TRANSLATOR_NO_PROGRESS=1` ကို သတ်မှတ်ပါ။
 
-| ရည်ရွယ်ချက် | စတင်ရန် အသုံးပြုမည့် အမိန့် |
+`translate --json-events progress.ndjson` ကို တခြားစနစ်တစ်ခုမှ လိုအပ်သောအခါ အသုံးပြုပါ
+စက်ဖြင့် ဖတ်နိုင်သည့် တိုးတက်မှု အချက်အလက်များအတွက်။ CLI သည် လူကို ဦးတည်သော output ကို ဆက်လက် ဖော်ပြနေပါသည်၊
+NDJSON ဖိုင်သည် ဗားရှင်းထည့်ထားသော `co-op.translation.event.v1` ဖြစ်ရပ်များကို လက်ခံရရှိပြီး
+`type`, `stage_key`, `completed`, `total` နှင့် တို့ကဲ့သို့သော တည်ငြိမ်သော ကော်လံများ ပါရှိပါသည်၊
+`current_path`။
+
+## ပထမဆုံး CLI လည်ပတ်မှု
+
+terminal မှ Co-op Translator ကို အသုံးပြုပါက ဒီနေရာမှ စတင်ပါ။
+
+1. LLM provider ကို [Configuration](configuration.md) တွင် ဖော်ပြထားသည့်အတိုင်း ဖွဲ့စည်းပါ။
+2. ဘာသာပြန်လိုသည့် အကြောင်းအရာ အမျိုးအစားကို ရွေးချယ်ပါ။
+3. Markdown-only ဘာသာပြန်ကဲ့သို့ အာရုံစိုက်ထားသော command ကို အရင် လည်ပတ်ပါ။
+4. repository ကို ကြီးမားစွာ ပြောင်းလဲမည့် မိတ္တူများမလုပ်မီ `--dry-run` ကို အသုံးပြုပါ။
+5. ဘာသာပြန်ပြီးနောက် ဖွဲ့စည်းမှုနှင့် လက်ရှိပြင်ဆင်မှုများကို စစ်ဆေးရန် `co-op-review` ကို အသုံးပြုပါ။
+
+| ရည်ရွယ်ချက် | စတင်ရန် command |
 | --- | --- |
-| Markdown စာရွက်စာတမ်းများ ဘာသာပြန်ခြင်း | `translate -l "ko" -md` |
-| Notebook များ ဘာသာပြန်ခြင်း | `translate -l "ko" -nb` |
-| ပုံစာသား ဘာသာပြန်ခြင်း | `translate -l "ko" -img` |
-| ဖိုင်များကို မရေးထည့်ဘဲ အလုပ်ကို ကြိုပြရန် | `translate -l "ko" -md --dry-run` |
-| ရှိပြီးသား ဘာသာပြန်များကို စိစစ်ရန် | `co-op-review -l "ko"` |
-| Notebook နှင့် Markdown link များကို အပ်ဒိတ်လုပ်ရန် | `migrate-links -l "ko" --dry-run` |
-| MCP client သို့ ကိရိယာများကို ဖော်ပြရန် | CLI commands များကို တိုက်ရိုက် မရိုက်ပေးဘဲ [MCP Server](mcp.md) ကို ဖော်ပြ၍ သတ်မှတ်ပါ။ |
+| Translate Markdown documents | `translate -l "ko" -md` |
+| Translate notebooks | `translate -l "ko" -nb` |
+| Translate image text | `translate -l "ko" -img` |
+| Preview work without writing files | `translate -l "ko" -md --dry-run` |
+| Review existing translations | `co-op-review -l "ko"` |
+| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
+| MCP client သို့ tools များကို ဖော်ပြပါ | CLI command များကို တိုက်ရိုက် အသုံးမပြုဘဲ [MCP Server](mcp.md) ကို ပြင်ဆင်ပါ။ |
 
 ## translate
 
-Markdown ဖိုင်များ၊ notebook များ၊ နှင့် ပုံစာသားများကို တစ်ခု သို့မဟုတ် အများသော target language များသို့ ဘာသာပြန်သည်။
+Markdown ဖိုင်များ၊ notebook များနှင့် ပုံထဲရှိ စာသားများကို တစ်ခု သို့မဟုတ် အများအပြား ရည်မှန်းဘာသာစကားများသို့ ဘာသာပြန်ပါ။
 
 ```bash
 translate -l "ko ja fr"
 ```
 
-### Common examples
+### သာမန် ဥပမာများ
 
-Markdown ပဲ ဘာသာပြန်ရန်:
+Translate only Markdown:
 
 ```bash
 translate -l "de" -md
 ```
 
-Notebook ပဲ ဘာသာပြန်ရန်:
+Translate only notebooks:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Markdown နှင့် ပုံများကို ဘာသာပြန်ရန်:
+Translate Markdown and images:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-ရှိပြီးသား ဘာသာပြန်များကို ဖျက်ပြီး ထပ်မံဖန်တီး၍ အပ်ဒိတ်လုပ်ရန်:
+လက်ရှိ ဘာသာပြန်များကို ဖျက်ပြီး ပြန်ဖန်တီးခြင်းဖြင့် အပ်ဒိတ်လုပ်ပါ။
 
 ```bash
 translate -l "ko" -u
 ```
 
-အင်တာ‌က်တက်မရှိဘဲ လည်ပတ်ရန်:
+Run without interactive prompts:
 
 ```bash
 translate -l "ko ja" -md -y
 ```
 
-လော့ဂ်များကို သိမ်းဆည်းရန်:
+Save logs:
 
 ```bash
 translate -l "ko" -s
 ```
 
-### Options
+Write structured progress events:
 
-| Option | Required | Description |
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
+### ရွေးချယ်စရာများ
+
+| Option | လိုအပ်ပါသလား | ဖော်ပြချက် |
 | --- | --- | --- |
-| `-l`, `--language-codes` | ဟုတ် | Space-separated language codes, such as `"es fr de"`, or `"all"`. |
-| `-r`, `--root-dir` | မဟုတ် | Project root. Defaults to the current directory. |
-| `-u`, `--update` | မဟုတ် | Delete existing translations for selected languages and recreate them. |
-| `-img`, `--images` | မဟုတ် | Translate only image files. |
-| `-md`, `--markdown` | မဟုတ် | Translate only Markdown files. |
-| `-nb`, `--notebook` | မဟုတ် | Translate only Jupyter notebook files. |
-| `-d`, `--debug` | မဟုတ် | Enable debug logging in the console. |
-| `-s`, `--save-logs` | မဟုတ် | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-x`, `--fix` | မဟုတ် | Retranslate low-confidence Markdown files based on previous evaluation results. |
-| `-c`, `--min-confidence` | မဟုတ် | Confidence threshold for `--fix`. Defaults to `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | မဟုတ် | Add or suppress machine translation disclaimers. Defaults to enabled in the CLI. |
-| `-f`, `--fast` | မဟုတ် | Deprecated fast image mode. |
-| `-y`, `--yes` | မဟုတ် | Auto-confirm prompts, useful in CI. |
-| `--repo-url` | မဟုတ် | Repository URL used in the README languages table sparse-checkout advisory. |
-| `--migrate-language-folders` | မဟုတ် | Rename legacy alias folders, such as `cn` or `tw`, to canonical BCP 47 folders. |
-| `--dry-run` | မဟုတ် | Preview language folder migration and translation estimates without writing files. |
+| `-l`, `--language-codes` | Yes | space ဖြင့် ခွဲထားသော language codes များ၊ ဥပမာ `"es fr de"`, သို့မဟုတ် `"all"`။ |
+| `-r`, `--root-dir` | No | Project root။ မပေးပါက လက်ရှိ directory ကို သတ်မှတ်သည်။ |
+| `-u`, `--update` | No | ရွေးချယ်ထားသည့် ဘာသာစကားများအတွက် လက်ရှိ ဘာသာပြန်ချက်များကို ဖျက်ပြီး ထပ်မံ ဖန်တီးပေးပါ။ |
+| `-img`, `--images` | No | ဓာတ်ပုံ/ပုံဖိုင်များကိုသာ ဘာသာပြန်မည်။ |
+| `-md`, `--markdown` | No | Markdown ဖိုင်များကိုသာ ဘာသာပြန်မည်။ |
+| `-nb`, `--notebook` | No | Jupyter notebook ဖိုင်များကိုသာ ဘာသာပြန်မည်။ |
+| `-d`, `--debug` | No | ကွန်ဆောလ်တွင် debug logging ကို ဖွင့်မည်။ |
+| `-s`, `--save-logs` | No | DEBUG-level logs များကို `<root-dir>/logs/` အောက်တွင် သိမ်းမည်။ |
+| `--json-events` | No | machine-readable translation progress events များကို NDJSON အဖြစ် ရေးသွင်းမည်။ |
+| `-x`, `--fix` | No | ယခင် အကဲဖြတ်ရလဒ်များအပေါ် မူတည်၍ ယုံကြည်မှုနည်းသော Markdown ဖိုင်များကို ထပ်မံ ဘာသာပြန်မည်။ |
+| `-c`, `--min-confidence` | No | `--fix` အတွက် ယုံကြည်မှု အနိမ့်ဆုံး သတ်မှတ်ချက်။ မပေးပါက `0.7` ဖြစ်သည်။ |
+| `--add-disclaimer`, `--no-disclaimer` | No | machine translation disclaimers များကို ထည့်သွင်းမည် သို့မဟုတ် ဖျောက်ပယ်မည်။ CLI တွင် မပေးပါက အလိုအလျောက် ဖွင့်ထားသည်။ |
+| `-f`, `--fast` | No | အသုံးမပြုတော့သော fast image mode။ |
+| `-y`, `--yes` | No | prompts များကို အလိုအလျောက် အတည်ပြုသည်၊ CI တွင် အသုံးဝင်သည်။ |
+| `--repo-url` | No | README languages table မှ sparse-checkout အကြံပေးချက်တွင် အသုံးပြုမည့် repository URL။ |
+| `--migrate-language-folders` | No | `cn` သို့မဟုတ် `tw` ကဲ့သို့ အရင် alias ဖိုလ်ဒါများကို canonical BCP 47 ဖိုလ်ဒါများသို့ အမည်ပြင်မည်။ |
+| `--dry-run` | No | ဖိုင်များကို မရေးဘဲ language folder migration နှင့် ဘာသာပြန် ခန့်မှန်းချက်များကို ကြိုကြည့်ပါ။ |
 
-If no type flag is provided, `translate` processes Markdown, notebooks, and images. Image translation requires Azure AI Vision configuration.
+type flag မပေးပါက `translate` သည် Markdown၊ notebooks နှင့် images များကို လုပ်ဆောင်ပါမည်။ ပုံများ ဘာသာပြန်ရန် Azure AI Vision configuration လိုအပ်သည်။
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+ဘာသာပြန်ထားသော Markdown ကို တစ်ဘာသာစကားအတွက် အရည်အသွေး အကဲဖြတ်ပါ။
 
 !!! warning "Experimental"
-    `evaluate` is experimental. It can use rule-based and LLM-based quality checks, writes evaluation results into translation metadata, and its scoring model and metadata behavior may change.
+    `evaluate` သည် လေ့လာမှု အဆင့်တွင် ရှိသည်။ ၎င်းသည် rule-based နှင့် LLM-based အရည်အသွေး စစ်ဆေးမှုများကို အသုံးပြုနိုင်ပြီး၊ အကဲဖြတ်ရလဒ်များကို ဘာသာပြန် metadata ထဲသို့ ရေးသွင်းသည်။ ၎င်း၏ scoring မော်ဒယ်နှင့် metadata အပြုအမူများသည် ပြောင်းလဲနိုင်သည်။
 
 ```bash
 evaluate -l "ko"
 ```
 
-### Common examples
+### သာမန် ဥပမာများ
 
-ပိုတိကျသော low-confidence သတ်မှတ်ချက် threshold ကို သတ်မှတ်ရန်:
+ယုံကြည်မှုနည်းသော အကန့်အသတ်ကို ပိုတင်းကြပ်စွာ အသုံးပြုပါ။
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-rule-based စစ်ဆေးချက်များပဲ အသုံးပြုရန်:
+Run rule-based checks only:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-LLM-based စစ်ဆေးချက်များပဲ အသုံးပြုရန်:
+Run LLM-based checks only:
 
 ```bash
 evaluate -l "ja" -D
 ```
 
-### Options
+### ရွေးချယ်စရာများ
 
-| Option | Required | Description |
+| Option | လိုအပ်ပါသလား | ဖော်ပြချက် |
 | --- | --- | --- |
-| `-l`, `--language-code` | ဟုတ် | Single language code to evaluate. Alias codes are normalized. |
-| `-r`, `--root-dir` | မဟုတ် | Project root. Defaults to the current directory. |
-| `-c`, `--min-confidence` | မဟုတ် | Threshold used when listing low-confidence translations. Defaults to `0.7`. |
-| `-d`, `--debug` | မဟုတ် | Enable debug logging. |
-| `-s`, `--save-logs` | မဟုတ် | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-f`, `--fast` | မဟုတ် | Rule-based evaluation only. |
-| `-D`, `--deep` | မဟုတ် | LLM-based evaluation only. |
+| `-l`, `--language-code` | Yes | အကဲဖြတ်ရန် တစ်ခုသော ဘာသာစကား code။ Alias codes များကို ပုံမှန်အတိုင်း ပြင်ဆင်သည်။ |
+| `-r`, `--root-dir` | No | Project root။ မပေးပါက လက်ရှိ directory ကို သတ်မှတ်သည်။ |
+| `-c`, `--min-confidence` | No | ယုံကြည်မှုနည်းသော ဘာသာပြန်ချက်များကို စာရင်းပြုစစ်ရာတွင် အသုံးပြုသည့် သတ်မှတ်ချက်။ မပေးပါက `0.7` ဖြစ်သည်။ |
+| `-d`, `--debug` | No | debug logging ကို ဖွင့်မည်။ |
+| `-s`, `--save-logs` | No | DEBUG-level logs များကို `<root-dir>/logs/` အောက်တွင် သိမ်းမည်။ |
+| `-f`, `--fast` | No | Rule-based အကဲဖြတ်မှုသာ လုပ်ဆောင်မည်။ |
+| `-D`, `--deep` | No | LLM-based အကဲဖြတ်မှုသာ လုပ်ဆောင်မည်။ |
 
-By default, `evaluate` uses both rule-based and LLM-based evaluation. Results are written into translation metadata and summarized in the console.
+ပုံမှန်အားဖြင့် `evaluate` သည် စည်းမျဉ်းအခြေပြု (rule-based) နှင့် LLM အခြေပြု (LLM-based) ဆန်းစစ်မှုနှစ်မျိုးစလုံးကို အသုံးပြုသည်။ ရလဒ်များကို ဘာသာပြန် metadata ထဲသို့ မှတ်တမ်းတင်ပြီး console တွင် အကျဉ်းချုပ် ပြသသည်။
 
 ## co-op-review
 
-Run deterministic translation maintenance checks without API credentials.
+API အတည်ပြုချက်များ မလိုဘဲ သတ်မှတ်နိုင်သော ဘာသာပြန် ထိန်းသိမ်းမှု စစ်ဆေးမှုများကို ပြုလုပ်ပါ။
 
 !!! note "Beta"
-    `co-op-review` is a beta deterministic review command. It does not call model providers or write files, but its checks and issue output schema may evolve.
+    `co-op-review` သည် beta deterministic review command ဖြစ်သည်။ ၎င်းသည် model providers များကို ခေါ်မည် မဟုတ်ဘဲ ဖိုင်များကို ရေးမည် မဟုတ်သည်၊ သို့သော် ၎င်း၏ စစ်ဆေးမှုများနှင့် issue output schema များသည် ပြောင်းလဲနိုင်ပါသည်။
 
 ```bash
 co-op-review -l "ko"
 ```
 
-### Common examples
+### သာမန် ဥပမာများ
 
-ယခု directory မှ Korean နှင့် Japanese ဘာသာပြန်များကို စိစစ်ရန်:
+လက်ရှိ ဖိုလ်ဒါမှ ကိုရီးယားနှင့် ဂျပန် ဘာသာပြန်များကို စစ်ဆေးပါ:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-သတ်မှတ်ထားသော project root ကို စိစစ်ရန်:
+Review a specific project root:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-base ref နှင့် နှိုင်းယှဉ်ပြီး ပြောင်းလဲထားသည့် source ဖိုင်များသာ စိစစ်ရန်:
+README သာ ဘာသာပြန်ပြီးနောက် README ကိုသာ စစ်ဆေးပါ:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` သည် အခြားစာရွက်စာတမ်းများနှင့် nested READMEs များကို မထည့်ပါ။ ၎င်းသည် root
+`README.md` မရှိပါက အလုပ်မလုပ်ပါ။ `--changed-from` နှင့် ပေါင်းသုံးလျှင်၊ ၎င်းသည် README ကိုသာ
+အဲဒီ source ဖိုင် ပြောင်းလဲခဲ့ပါက စစ်ဆေးပါသည်။ README-only translation သည် source README ကို
+မထိခိုက်စေပါ၊ shared-section markers များကိုပါ ထိန်းသိမ်းထားမည်။
+
+base ref နှင့် နှိုင်းယှဉ် ပြောင်းလဲထားသော source ဖိုင်များကိုသာ သုံးသပ်ပါ။
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-CI စာအကျဉ်းများအတွက် GitHub-flavored Markdown output ကို 출력ရန်:
+CI အနှစ်ချုပ်များအတွက် GitHub-flavored Markdown ထုတ်လွှင့်ပါ:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
 ```
 
-### Options
+### ရွေးချယ်စရာများ
 
-| Option | Required | Description |
+| Option | လိုအပ်ပါသလား | ဖော်ပြချက် |
 | --- | --- | --- |
-| `-l`, `--language-code` | မဟုတ် | Language code to review. Can be passed multiple times or as a space-separated value. Defaults to all discovered translation languages. |
-| `-r`, `--root-dir` | မဟုတ် | Project root. Defaults to the current directory. |
-| `--changed-from` | မဟုတ် | Git ref used to limit review to changed source files. |
-| `--format` | မဟုတ် | Output format: `text` or `github`. Defaults to `text`. |
+| `-l`, `--language-code` | No | စစ်ဆေးရန် ဘာသာစကား code။ အကြိမ်ပေါင်းများစွာ ပေးနိုင်သည် သို့မဟုတ် space-separated တန်ဖိုးအဖြစ် ပေးနိုင်သည်။ မပေးပါက ရှာဖွေတွေ့ရှိထားသည့် ဘာသာစကားအားလုံးကို စစ်ဆေးပါသည်။ |
+| `-r`, `--root-dir` | No | Project root။ မပေးပါက လက်ရှိ directory ကို သတ်မှတ်သည်။ |
+| `--changed-from` | No | ပြောင်းလဲထားသည့် source ဖိုင်များကိုသာ စစ်ဆေးရန် အသုံးပြုသည့် Git ref။ |
+| `--readme-only` | No | root `README.md` ဘာသာပြန်ကိုသာ စစ်ဆေးသည်။ |
+| `--format` | No | အထွက်ပုံစံ: `text` သို့မဟုတ် `github`။ မပေးပါက `text` ဖြစ်သည်။ |
 
-`co-op-review` သည် လက်ရှိတွင် missing translated files, missing or stale translation metadata, Markdown frontmatter နှင့် code fence တည်ငြိမ်မှု, မမှန်ကန်သော translated notebook JSON, နှင့် မရှိသေးသော local Markdown သို့မဟုတ် image link targets များကို စစ်ဆေးပါသည်။ Missing links များကို ပုံမှန်အားဖြင့် အကြောင်းကြားချက်များ (warnings) အဖြစ် ပြသသည်; structural နှင့် freshness ပတ်သက်သော ပြဿနာများသည် command ကို fail လုပ်စေပါသည်။
+`co-op-review` သည် လက်ရှိတွင် ပြန်လည်ဘာသာပြန်ထားသော ဖိုင်များမရှိခြင်း၊ ဘာသာပြန် metadata မရှိခြင်း သို့မဟုတ် အဟောင်းဖြစ်နေခြင်း၊ Markdown frontmatter နှင့် code fence အယူအဆ တိကျမှု၊ ဘာသာပြန်ထားသော notebook JSON မမှန်ကန်ခြင်းနှင့် ဒေသဆိုင်ရာ Markdown သို့မဟုတ် image link များ၏ ပစ်မှတ် မရှိခြင်းတို့ကို စစ်ဆေးပါသည်။ link မရှိခြင်းများသည် ပုံမှန်အားဖြင့် သတိပေးချက်များ ဖြစ်ကြပြီး ဖွဲ့စည်းမှုနှင့် လက်ရှိပြင်ဆင်မှုဆိုင်ရာ ပြဿနာများသည် command ကို မအောင်မြင်စေပါသည်။
 
 ## co-op-translator-mcp
 
-Agents, editors, နှင့် MCP-compatible clients များအတွက် Co-op Translator MCP server ကို ဖွင့်ပါ။
+Co-op Translator MCP ဆာဗာကို agents များ၊ editors များနှင့် MCP-ကိုက်ညီသည့် clients များအတွက် ပြေးပါ။
 
 ```bash
 co-op-translator-mcp
 ```
 
-Default transport သည် `stdio` ဖြစ်သည်။ client configuration, tools, resources, နှင့် safety မှတ်ချက်များအတွက် [MCP Server](mcp.md) ကို ကြည့်ပါ။
+ပုံမှန် သယ်ယူပို့ဆောင်မှုမှာ `stdio` ဖြစ်သည်။ client ဖော်မြူလာများ၊ ကိရိယာများ၊ အရင်းအမြစ်များနှင့် လုံခြုံရေး မှတ်ချက်များအတွက် [MCP Server](mcp.md) လမ်းညွှန်ကို ကြည့်ပါ။
 
-### Options
+### ရွေးချယ်စရာများ
 
-| Option | Required | Description |
+| Option | လိုအပ်ပါသလား | ဖော်ပြချက် |
 | --- | --- | --- |
-| `--transport` | မဟုတ် | MCP transport: `stdio`, `streamable-http`, or `sse`. Defaults to `stdio`. |
+| `--transport` | No | MCP transport: `stdio`, `streamable-http`, သို့မဟုတ် `sse`။ မပေးပါက `stdio` ဖြစ်သည်။ |
 
 ## migrate-links
 
-Translated Markdown ဖိုင်များကို ပြန်လည် επတွင်း ဆန်းစစ်ပြီး translated notebooks ရှိနှင့်မရှိ အခြေအနေတွင် notebook link များကို translated notebooks သို့ ညွှန်ပြになるよう update လုပ်သည်။
+ဘာသာပြန်ပြီးသော Markdown ဖိုင်များကို ပြန်လည်ပြုလုပ်ပြီး၊ notebook links များကို ရရှိနိုင်သလောက် ဘာသာပြန်ထားသော notebooks များကို ညွှန်ပြသရန် အပ်ဒိတ်လုပ်ပါ။
 
 ```bash
 migrate-links -l "ko ja"
 ```
 
-### Common examples
+### သာမန် ဥပမာများ
 
-link update များကို ကြိုပြရန်:
+Preview link updates:
 
 ```bash
 migrate-links -l "ko" --dry-run
 ```
 
-အတည်ပြုချက်မလိုပဲ supported languages များအားလုံးကို ပြုလုပ်ရန်:
+အတည်ပြုချက် မလိုဘဲ အထောက်ပံ့ထားသော ဘာသာစကားအားလုံးကို လုပ်ဆောင်ပါ:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-translated notebooks ရှိသည့်အခါမှသာ links ကို rewrite လုပ်ရန်:
+ဘာသာပြန်ထားသော notebooks ရှိသောအခါတွင်သာ လင့်ခ်များကို ပြန်ရေးပါ:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
 ```
 
-### Options
+### ရွေးချယ်စရာများ
 
-| Option | Required | Description |
+| Option | လိုအပ်ပါသလား | ဖော်ပြချက် |
 | --- | --- | --- |
-| `-l`, `--language-codes` | ဟုတ် | Space-separated language codes, or `"all"`. |
-| `-r`, `--root-dir` | မဟုတ် | Project root. Defaults to the current directory. |
-| `--image-dir` | မဟုတ် | Translated image directory relative to the root. Defaults to `translated_images`. |
-| `--dry-run` | မဟုတ် | Show files that would change without writing updates. |
-| `--fallback-to-original`, `--no-fallback-to-original` | မဟုတ် | Use original notebook links when translated notebooks are missing. Enabled by default. |
-| `-d`, `--debug` | မဟုတ် | Enable debug logging. |
-| `-s`, `--save-logs` | မဟုတ် | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-y`, `--yes` | မဟုတ် | Auto-confirm prompts when processing all languages. |
+| `-l`, `--language-codes` | Yes | space ဖြင့် ခွဲထားသော language codes များ သို့မဟုတ် `"all"`။ |
+| `-r`, `--root-dir` | No | Project root။ မပေးပါက လက်ရှိ directory ကို သတ်မှတ်သည်။ |
+| `--image-dir` | No | root နှင့် ဆက်စပ်သည့် translated image directory။ မပေးပါက `translated_images` ဖြစ်သည်။ |
+| `--dry-run` | No | ပြင်ဆင်ချက်များကို မရေးဘဲ ဘာများပြောင်းလဲမည့် ဖိုင်များကို ပြသပါ။ |
+| `--fallback-to-original`, `--no-fallback-to-original` | No | ဘာသာပြန်ထားသော notebooks မရှိပါက မူရင်း notebook links ကို အသုံးပြုမည်။ ပုံမှန်အားဖြင့် ဖွင့်ထားသည်။ |
+| `-d`, `--debug` | No | debug logging ကို ဖွင့်မည်။ |
+| `-s`, `--save-logs` | No | DEBUG-level logs များကို `<root-dir>/logs/` အောက်တွင် သိမ်းမည်။ |
+| `-y`, `--yes` | No | ဘာသာစကားအားလုံးကို process လုပ်သည့်အခါ အတည်ပြုချက်များကို အလိုအလျောက် ချက်ချင်း ချက်ယူမည်။ |
 
-## Environment
+## ပတ်ဝန်းကျင်
 
-All commands require one configured LLM provider:
+Command တစ်ခုတွင် provider credentials လိုအပ်ပါက ဤ provider sets များထဲမှ တစ်ခုကို ဖွဲ့စည်းပါ။ `translate --dry-run` နှင့် `co-op-review` များသည် provider credentials မလိုအပ်ပါ။
 
 ```bash
-# အေဇာ OpenAI
+# Azure OpenAI
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
@@ -266,16 +298,20 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # သို့မဟုတ် OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# သို့မဟုတ် Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Image translation additionally requires Azure AI Vision:
+ပုံများ ဘာသာပြန်ရန် အတူတကွ Azure AI Vision ကိုလည်း လိုအပ်ပါသည်:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## Output layout
+## ထွက် ပုံစံ
 
 Text translations are written under:
 
@@ -283,7 +319,7 @@ Text translations are written under:
 translations/<language-code>/<original-path>
 ```
 
-Translated image output is written under:
+ဘာသာပြန်ထားသော ပုံထွက်ကို အောက်တွင် သိမ်းထားသည်:
 
 ```text
 translated_images/<language-code>/<original-path>
@@ -296,52 +332,52 @@ translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## Copy-Paste CLI Examples
+## ကော်ပီ-ပိပ် CLI ဥပမာများ
 
-Markdown ကို သုံးဘာသာစကားသို့ ဘာသာပြန်ရန်:
+Translate Markdown into three languages:
 
 ```bash
 translate -l "ko ja fr" -md
 ```
 
-Notebook များပဲ ဘာသာပြန်ရန်:
+Translate notebooks only:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-ပုံများပဲ ဘာသာပြန်ရန်:
+Translate images only:
 
 ```bash
 translate -l "pt-BR" -img
 ```
 
-Markdown ဘာသာပြန်ကို ဖိုင်များမရေးထည့်ဘဲ ကြိုပြရန်:
+ဖိုင်များ မရေးဘဲ Markdown ဘာသာပြန်ချက်ကို ကြိုကြည့်ရန်:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-low-confidence Markdown ဘာသာပြန်များကို ပြန်ပြုပြင်ရန်:
+Repair low-confidence Markdown translations:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-CI နဲ့ ကိုက်ညီသော Markdown ဘာသာပြန်ကို အသုံးပြုရန်:
+Run CI-friendly Markdown translation:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-ဘာသာပြန်ပြီး output ကို စစ်ဆေးရန်:
+Review translated output:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-link migration ကို ကြိုပြရန်:
+Preview link migration:
 
 ```bash
 migrate-links -l "ko" --dry-run

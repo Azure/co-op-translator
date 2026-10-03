@@ -1,6 +1,6 @@
 # Αναφορά CLI
 
-Co-op Translator εγκαθιστά αυτές τις εντολές γραμμής εντολών:
+Το Co-op Translator εγκαθιστά αυτά τα σημεία εισόδου γραμμής εντολών:
 
 - `translate`
 - `evaluate`
@@ -8,125 +8,144 @@ Co-op Translator εγκαθιστά αυτές τις εντολές γραμμ�
 - `co-op-review`
 - `co-op-translator-mcp`
 
-Οι εντολές `translate`, `evaluate`, `migrate-links` και `co-op-review` προωθούνται μέσω `co_op_translator.__main__`, το οποίο επιλέγει την υλοποίηση της εντολής με βάση το όνομα του καλούμενου script. Ο MCP διακομιστής χρησιμοποιεί απευθείας το `co_op_translator.mcp.server`.
+Οι εντολές `translate`, `evaluate`, `migrate-links`, και `co-op-review` προωθούνται μέσω του `co_op_translator.__main__`, το οποίο επιλέγει την υλοποίηση της εντολής βάσει του ονόματος του εκτελούμενου script. Ο διακομιστής MCP χρησιμοποιεί απευθείας το `co_op_translator.mcp.server`.
 
-Εάν αποφασίζετε ανάμεσα σε CLI, Python API και MCP, ξεκινήστε με το [Επιλέξτε τη ροή εργασίας σας](workflows.md).
+Αν αποφασίζετε μεταξύ CLI, Python API και MCP, ξεκινήστε με [Επιλέξτε τη ροή εργασίας σας](workflows.md).
 
-## Διαδικασία Πρώτης Χρήσης CLI
+## Έξοδος κονσόλας
+
+Τα διαδραστικά τερματικά χρησιμοποιούν μορφοποίηση Rich για την κεφαλίδα εντολής, την πρόοδο και τις συνοπτικές πληροφορίες. Η έξοδος σε CI και μη-διαδραστικά περιβάλλοντα επιστρέφει αυτόματα σε απλό κείμενο.
+
+Ορίστε `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` για να επιβάλλετε απλή έξοδο, ή `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` για να επιβάλλετε έξοδο Rich. Ορίστε `CO_OP_TRANSLATOR_NO_PROGRESS=1` για να διατηρήσετε τις συνοψίσεις ενώ καταστέλλετε τις ζωντανές μπάρες προόδου.
+
+Χρησιμοποιήστε `translate --json-events progress.ndjson` όταν ένα άλλο σύστημα χρειάζεται
+μηχανικά αναγνώσιμη πρόοδο. Το CLI συνεχίζει να εμφανίζει έξοδο φιλική προς τον χρήστη, ενώ
+το αρχείο NDJSON λαμβάνει εκδοχικά γεγονότα `co-op.translation.event.v1` με
+σταθερά πεδία όπως `type`, `stage_key`, `completed`, `total`, και
+`current_path`.
+
+## Ροή CLI για Πρώτη Φορά
 
 Ξεκινήστε εδώ εάν χρησιμοποιείτε το Co-op Translator από ένα τερματικό:
 
-1. Διαμορφώστε έναν πάροχο LLM όπως περιγράφεται στο [Ρυθμίσεις](configuration.md).
+1. Διαμορφώστε έναν πάροχο LLM όπως περιγράφεται στο [Ρύθμιση](configuration.md).
 2. Επιλέξτε τον τύπο περιεχομένου που θέλετε να μεταφράσετε.
-3. Εκτελέστε πρώτα μια στοχευμένη εντολή, όπως μεταφράσεις μόνο για Markdown.
+3. Εκτελέστε πρώτα μια στοχευμένη εντολή, όπως μετάφραση μόνο Markdown.
 4. Χρησιμοποιήστε `--dry-run` πριν από μεγάλες αλλαγές στο αποθετήριο.
-5. Χρησιμοποιήστε `co-op-review` μετά τη μετάφραση για έλεγχο της δομής και της επικαιρότητας.
+5. Χρησιμοποιήστε `co-op-review` μετά τη μετάφραση για να ελέγξετε τη δομή και την επικαιρότητα.
 
-| Στόχος | Εντολή για να ξεκινήσετε με |
+| Στόχος | Εντολή για να ξεκινήσετε |
 | --- | --- |
 | Μετάφραση εγγράφων Markdown | `translate -l "ko" -md` |
-| Μετάφραση σημειωματάριων | `translate -l "ko" -nb` |
+| Μετάφραση σημειωματαρίων | `translate -l "ko" -nb` |
 | Μετάφραση κειμένου εικόνων | `translate -l "ko" -img` |
 | Προεπισκόπηση εργασίας χωρίς εγγραφή αρχείων | `translate -l "ko" -md --dry-run` |
-| Ανασκόπηση υπαρχουσών μεταφράσεων | `co-op-review -l "ko"` |
+| Επανεξέταση υπαρχουσών μεταφράσεων | `co-op-review -l "ko"` |
 | Ενημέρωση συνδέσμων σημειωματάριων και Markdown | `migrate-links -l "ko" --dry-run` |
-| Εκθέστε εργαλεία σε πελάτη MCP | Διαμορφώστε τον [Διακομιστή MCP](mcp.md) αντί να εκτελείτε εντολές CLI απευθείας. |
+| Εκθέστε εργαλεία σε έναν πελάτη MCP | Αντί να εκτελέσετε εντολές CLI απευθείας, διαμορφώστε τον [Διακομιστή MCP](mcp.md). |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+Μεταφράζει αρχεία Markdown, σημειωματάρια και κείμενο εικόνων σε μία ή περισσότερες γλώσσες-στόχους.
 
 ```bash
 translate -l "ko ja fr"
 ```
 
-### Συνήθη παραδείγματα
+### Συνηθισμένα παραδείγματα
 
-Translate only Markdown:
+Μετάφραση μόνο Markdown:
 
 ```bash
 translate -l "de" -md
 ```
 
-Translate only notebooks:
+Μετάφραση μόνο σημειωματάριων:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Translate Markdown and images:
+Μετάφραση Markdown και εικόνων:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-Update existing translations by deleting and recreating them:
+Ενημερώστε υπάρχουσες μεταφράσεις διαγράφοντάς τες και αναδημιουργώντας τες:
 
 ```bash
 translate -l "ko" -u
 ```
 
-Run without interactive prompts:
+Εκτέλεση χωρίς διαδραστικά μηνύματα:
 
 ```bash
 translate -l "ko ja" -md -y
 ```
 
-Save logs:
+Αποθήκευση καταγραφών:
 
 ```bash
 translate -l "ko" -s
 ```
 
+Γράψτε δομημένα γεγονότα προόδου:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
 ### Επιλογές
 
-| Επιλογή | Απαραίτητο | Περιγραφή |
+| Επιλογή | Απαιτείται | Περιγραφή |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Κώδικες γλωσσών διαχωρισμένοι με κενό, όπως `"es fr de"`, ή `"all"`. |
-| `-r`, `--root-dir` | No | Ρίζα έργου. Από προεπιλογή ο τρέχων κατάλογος. |
-| `-u`, `--update` | No | Διαγραφή υπάρχουσων μεταφράσεων για τις επιλεγμένες γλώσσες και δημιουργία τους ξανά. |
-| `-img`, `--images` | No | Μετάφραση μόνο αρχείων εικόνων. |
-| `-md`, `--markdown` | No | Μετάφραση μόνο αρχείων Markdown. |
-| `-nb`, `--notebook` | No | Μετάφραση μόνο αρχείων σημειωματάριων Jupyter. |
-| `-d`, `--debug` | No | Ενεργοποίηση καταγραφής εντοπισμού σφαλμάτων στην κονσόλα. |
-| `-s`, `--save-logs` | No | Αποθήκευση αρχείων καταγραφής επιπέδου DEBUG στο `<root-dir>/logs/`. |
-| `-x`, `--fix` | No | Επαναμετάφραση αρχείων Markdown με χαμηλή εμπιστοσύνη βάσει προηγούμενων αποτελεσμάτων αξιολόγησης. |
-| `-c`, `--min-confidence` | No | Όριο εμπιστοσύνης για το `--fix`. Προεπιλογή `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | No | Προσθέτει ή καταστέλλει δηλώσεις αποποίησης ευθυνών για μηχανική μετάφραση. Προεπιλογή: ενεργοποιημένο στο CLI. |
-| `-f`, `--fast` | No | Αποσυρμένη γρήγορη λειτουργία εικόνας. |
-| `-y`, `--yes` | No | Αυτόματη επιβεβαίωση προτροπών, χρήσιμο σε CI. |
-| `--repo-url` | No | Το URL του αποθετηρίου που χρησιμοποιείται στη συμβουλή sparse-checkout στον πίνακα γλωσσών του README. |
-| `--migrate-language-folders` | No | Μετονομασία παλαιών φακέλων ψευδωνύμων, όπως `cn` ή `tw`, σε κανονικούς φακέλους BCP 47. |
-| `--dry-run` | No | Προεπισκόπηση μετανάστευσης φακέλων γλωσσών και εκτιμήσεων μετάφρασης χωρίς εγγραφή αρχείων. |
+| `-l`, `--language-codes` | Ναι | Κωδικοί γλωσσών χωρισμένοι με κενό, όπως `"es fr de"`, ή `"all"`. |
+| `-r`, `--root-dir` | Όχι | Ρίζα έργου. Από προεπιλογή ο τρέχων κατάλογος. |
+| `-u`, `--update` | Όχι | Διαγράψτε υπάρχουσες μεταφράσεις για τις επιλεγμένες γλώσσες και αναδημιουργήστε τις. |
+| `-img`, `--images` | Όχι | Μετάφραση μόνο αρχείων εικόνας. |
+| `-md`, `--markdown` | Όχι | Μετάφραση μόνο αρχείων Markdown. |
+| `-nb`, `--notebook` | Όχι | Μετάφραση μόνο αρχείων Jupyter notebook. |
+| `-d`, `--debug` | Όχι | Ενεργοποιήστε την καταγραφή αποσφαλμάτωσης στην κονσόλα. |
+| `-s`, `--save-logs` | Όχι | Αποθήκευση αρχείων καταγραφής επιπέδου DEBUG κάτω από `<root-dir>/logs/`. |
+| `--json-events` | Όχι | Εγγραφή δομημένων γεγονότων προόδου μετάφρασης σε μορφή NDJSON. |
+| `-x`, `--fix` | Όχι | Επαναμετάφραση αρχείων Markdown χαμηλής εμπιστοσύνης βάσει προηγούμενων αποτελεσμάτων αξιολόγησης. |
+| `-c`, `--min-confidence` | Όχι | Κατώφλι εμπιστοσύνης για το `--fix`. Προεπιλογή `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | Όχι | Προσθέστε ή καταστείλετε σημειώσεις αποποίησης ευθύνης μηχανικής μετάφρασης. Ενεργοποιημένο από προεπιλογή στο CLI. |
+| `-f`, `--fast` | Όχι | Λειτουργία γρήγορης επεξεργασίας εικόνων που έχει αποσυρθεί. |
+| `-y`, `--yes` | Όχι | Αυτόματη επιβεβαίωση μηνυμάτων, χρήσιμο για CI. |
+| `--repo-url` | Όχι | Διεύθυνση URL αποθετηρίου που χρησιμοποιείται στην οδηγία sparse-checkout του πίνακα γλωσσών στο README. |
+| `--migrate-language-folders` | Όχι | Μετονομασία παλαιών φακέλων ψευδωνύμων, όπως `cn` ή `tw`, σε κανονικούς φακέλους BCP 47. |
+| `--dry-run` | Όχι | Προεπισκόπηση μετανάστευσης φακέλων γλωσσών και εκτιμήσεων μετάφρασης χωρίς εγγραφή αρχείων. |
 
-If no type flag is provided, `translate` processes Markdown, notebooks, and images. Image translation requires Azure AI Vision configuration.
+Αν δεν δοθεί σημαία τύπου, το `translate` επεξεργάζεται Markdown, σημειωματάρια και εικόνες. Η μετάφραση εικόνων απαιτεί ρυθμίσεις Azure AI Vision.
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+Αξιολογήστε την ποιότητα των μεταφρασμένων αρχείων Markdown για μία γλώσσα.
 
 !!! warning "Πειραματικό"
-    `evaluate` is experimental. It can use rule-based and LLM-based quality checks, writes evaluation results into translation metadata, and its scoring model and metadata behavior may change.
+    `evaluate` είναι πειραματικό. Μπορεί να χρησιμοποιεί ελέγχους ποιότητας βασισμένους σε κανόνες και σε LLM, γράφει αποτελέσματα αξιολόγησης στα metadata της μετάφρασης, και το μοντέλο βαθμολόγησης και η συμπεριφορά των μεταδεδομένων μπορεί να αλλάξουν.
 
 ```bash
 evaluate -l "ko"
 ```
 
-### Συνήθη παραδείγματα
+### Συνηθισμένα παραδείγματα
 
-Use a stricter low-confidence threshold:
+Χρησιμοποιήστε ένα αυστηρότερο όριο χαμηλής εμπιστοσύνης:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-Run rule-based checks only:
+Εκτέλεση μόνο ελέγχων βάσει κανόνων:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-Run LLM-based checks only:
+Εκτέλεση μόνο ελέγχων βάσει LLM:
 
 ```bash
 evaluate -l "ja" -D
@@ -134,50 +153,62 @@ evaluate -l "ja" -D
 
 ### Επιλογές
 
-| Επιλογή | Απαραίτητο | Περιγραφή |
+| Επιλογή | Απαιτείται | Περιγραφή |
 | --- | --- | --- |
-| `-l`, `--language-code` | Yes | Μοναδικός κωδικός γλώσσας προς αξιολόγηση. Οι κωδικοί ψευδωνύμων κανονικοποιούνται. |
-| `-r`, `--root-dir` | No | Ρίζα έργου. Από προεπιλογή ο τρέχων κατάλογος. |
-| `-c`, `--min-confidence` | No | Όριο που χρησιμοποιείται κατά τη λίστα μεταφράσεων με χαμηλή εμπιστοσύνη. Προεπιλογή `0.7`. |
-| `-d`, `--debug` | No | Ενεργοποίηση καταγραφής εντοπισμού σφαλμάτων. |
-| `-s`, `--save-logs` | No | Αποθήκευση αρχείων καταγραφής επιπέδου DEBUG στο `<root-dir>/logs/`. |
-| `-f`, `--fast` | No | Μόνο αξιολόγηση με κανόνες. |
-| `-D`, `--deep` | No | Μόνο αξιολόγηση με LLM. |
+| `-l`, `--language-code` | Ναι | Ενιαίος κωδικός γλώσσας προς αξιολόγηση. Οι ψευδώνυμοι κωδικοί κανονικοποιούνται. |
+| `-r`, `--root-dir` | Όχι | Ρίζα έργου. Από προεπιλογή ο τρέχων κατάλογος. |
+| `-c`, `--min-confidence` | Όχι | Κατώφλι που χρησιμοποιείται κατά την αναγραφή μεταφράσεων χαμηλής εμπιστοσύνης. Προεπιλογή `0.7`. |
+| `-d`, `--debug` | Όχι | Ενεργοποιήστε καταγραφή αποσφαλμάτωσης. |
+| `-s`, `--save-logs` | Όχι | Αποθήκευση αρχείων καταγραφής επιπέδου DEBUG κάτω από `<root-dir>/logs/`. |
+| `-f`, `--fast` | Όχι | Μόνο αξιολόγηση βάσει κανόνων. |
+| `-D`, `--deep` | Όχι | Μόνο αξιολόγηση βάσει LLM. |
 
-By default, `evaluate` uses both rule-based and LLM-based evaluation. Results are written into translation metadata and summarized in the console.
+Από προεπιλογή, το `evaluate` χρησιμοποιεί τόσο αξιολόγηση βάσει κανόνων όσο και βάσει LLM. Τα αποτελέσματα γράφονται στα μεταδεδομένα μετάφρασης και συνοψίζονται στην κονσόλα.
 
 ## co-op-review
 
-Run deterministic translation maintenance checks without API credentials.
+Εκτελέστε ντετερμινιστικούς ελέγχους συντήρησης μετάφρασης χωρίς διαπιστευτήρια API.
 
 !!! note "Beta"
-    `co-op-review` is a beta deterministic review command. It does not call model providers or write files, but its checks and issue output schema may evolve.
+    `co-op-review` είναι μια beta ντετερμινιστική εντολή ελέγχου. Δεν καλεί παρόχους μοντέλων ούτε γράφει αρχεία, αλλά οι έλεγχοι της και το σχήμα εξόδου ζητημάτων ενδέχεται να εξελιχθούν.
 
 ```bash
 co-op-review -l "ko"
 ```
 
-### Συνήθη παραδείγματα
+### Συνηθισμένα παραδείγματα
 
-Review Korean and Japanese translations from the current directory:
+Ελέγξτε τις μεταφράσεις στα Κορεατικά και Ιαπωνικά από τον τρέχοντα κατάλογο:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Review a specific project root:
+Επανεξέταση ενός συγκεκριμένου ριζικού καταλόγου έργου:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-Review only source files changed against a base ref:
+Επανεξέταση μόνο του README μετά από μετάφραση μόνο του README:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` αγνοεί άλλα έγγραφα και εμφωλευμένα README. Αποτυγχάνει αν το ριζικό
+`README.md` λείπει. Συνδυασμένο με το `--changed-from`, επανεξετάζει μόνο το README
+όταν αυτό το αρχείο πηγής άλλαξε. Η μετάφραση μόνο του README αφήνει το πηγαίο README
+αμετάβλητο, συμπεριλαμβανομένων τυχόν δεικτών κοινών τμημάτων.
+
+Επανεξέταση μόνο των αρχείων πηγής που άλλαξαν σε σχέση με ένα βασικό ref:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-Print GitHub-flavored Markdown output for CI summaries:
+Εκτύπωση εξόδου σε μορφή GitHub-flavored Markdown για συνοψίσεις CI:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -185,54 +216,55 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 ### Επιλογές
 
-| Επιλογή | Απαραίτητο | Περιγραφή |
+| Επιλογή | Απαιτείται | Περιγραφή |
 | --- | --- | --- |
-| `-l`, `--language-code` | No | Κωδικός γλώσσας προς ανασκόπηση. Μπορεί να περαστεί πολλές φορές ή ως τιμή διαχωρισμένη με κενά. Προεπιλογή: όλες οι εντοπισμένες γλώσσες μετάφρασης. |
-| `-r`, `--root-dir` | No | Ρίζα έργου. Από προεπιλογή ο τρέχων κατάλογος. |
-| `--changed-from` | No | Git ref που χρησιμοποιείται για τον περιορισμό της ανασκόπησης σε αλλάζοντα αρχεία πηγής. |
-| `--format` | No | Μορφή εξόδου: `text` ή `github`. Προεπιλογή `text`. |
+| `-l`, `--language-code` | Όχι | Κωδικός γλώσσας προς επανεξέταση. Μπορεί να δοθεί πολλαπλές φορές ή ως τιμή χωρισμένη με κενά. Από προεπιλογή όλες οι ανιχνευμένες γλώσσες μετάφρασης. |
+| `-r`, `--root-dir` | Όχι | Ρίζα έργου. Από προεπιλογή ο τρέχων κατάλογος. |
+| `--changed-from` | Όχι | Git ref που χρησιμοποιείται για να περιορίσει την επανεξέταση στα αρχεία πηγής που άλλαξαν. |
+| `--readme-only` | Όχι | Επανεξέταση μόνο της μετάφρασης του ριζικού `README.md`. |
+| `--format` | Όχι | Μορφή εξόδου: `text` ή `github`. Προεπιλογή `text`. |
 
-`co-op-review` currently checks for missing translated files, missing or stale translation metadata, Markdown frontmatter and code fence integrity, invalid translated notebook JSON, and missing local Markdown or image link targets. Missing links are warnings by default; structural and freshness problems fail the command.
+`co-op-review` ελέγχει επί του παρόντος για χαμένα μεταφρασμένα αρχεία, ελλείποντα ή παρωχημένα μεταδεδομένα μετάφρασης, ακεραιότητα frontmatter Markdown και φρακτών κώδικα, μη έγκυρο μεταφρασμένο JSON σημειωματάριων, και ελλείποντες τοπικούς στόχους συνδέσμων Markdown ή εικόνων. Οι ελλείποντες σύνδεσμοι είναι προειδοποιήσεις από προεπιλογή· προβλήματα δομής και επικαιρότητας αποτυγχάνουν την εντολή.
 
 ## co-op-translator-mcp
 
-Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+Εκτελέστε τον διακομιστή Co-op Translator MCP για agents, editors και πελάτες συμβατούς με MCP.
 
 ```bash
 co-op-translator-mcp
 ```
 
-The default transport is `stdio`. See the [Διακομιστής MCP](mcp.md) guide for client configuration, tools, resources, and safety notes.
+Ο προεπιλεγμένος μεταφορέας είναι `stdio`. Δείτε τον οδηγό [Διακομιστής MCP](mcp.md) για ρύθμιση πελατών, εργαλεία, πόρους και σημειώσεις ασφάλειας.
 
 ### Επιλογές
 
-| Επιλογή | Απαραίτητο | Περιγραφή |
+| Επιλογή | Απαιτείται | Περιγραφή |
 | --- | --- | --- |
-| `--transport` | No | MCP μεταφορικό μέσο: `stdio`, `streamable-http`, ή `sse`. Προεπιλογή `stdio`. |
+| `--transport` | Όχι | MCP μεταφορά: `stdio`, `streamable-http`, ή `sse`. Προεπιλογή `stdio`. |
 
 ## migrate-links
 
-Reprocess translated Markdown files and update notebook links so they point to translated notebooks when available.
+Επεξεργαστείτε ξανά μεταφρασμένα αρχεία Markdown και ενημερώστε τους συνδέσμους των σημειωματάριων ώστε να δείχνουν σε μεταφρασμένα σημειωματάρια όταν αυτά είναι διαθέσιμα.
 
 ```bash
 migrate-links -l "ko ja"
 ```
 
-### Συνήθη παραδείγματα
+### Συνηθισμένα παραδείγματα
 
-Preview link updates:
+Προεπισκόπηση ενημερώσεων συνδέσμων:
 
 ```bash
 migrate-links -l "ko" --dry-run
 ```
 
-Process all supported languages without confirmation:
+Επεξεργασία όλων των υποστηριζόμενων γλωσσών χωρίς επιβεβαίωση:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-Only rewrite links when translated notebooks exist:
+Επανεγγραφή συνδέσμων μόνο όταν υπάρχουν μεταφρασμένα σημειωματάρια:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
@@ -240,20 +272,20 @@ migrate-links -l "ko" --no-fallback-to-original
 
 ### Επιλογές
 
-| Επιλογή | Απαραίτητο | Περιγραφή |
+| Επιλογή | Απαιτείται | Περιγραφή |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Κώδικες γλωσσών διαχωρισμένοι με κενό, ή `"all"`. |
-| `-r`, `--root-dir` | No | Ρίζα έργου. Από προεπιλογή ο τρέχων κατάλογος. |
-| `--image-dir` | No | Κατάλογος μεταφρασμένων εικόνων σχετικός με τη ρίζα. Προεπιλογή `translated_images`. |
-| `--dry-run` | No | Εμφάνιση αρχείων που θα άλλαζαν χωρίς να γίνουν ενημερώσεις. |
-| `--fallback-to-original`, `--no-fallback-to-original` | No | Χρήση αρχικών συνδέσμων notebook όταν λείπουν μεταφρασμένα notebooks. Ενεργό από προεπιλογή. |
-| `-d`, `--debug` | No | Ενεργοποίηση καταγραφής εντοπισμού σφαλμάτων. |
-| `-s`, `--save-logs` | No | Αποθήκευση αρχείων καταγραφής επιπέδου DEBUG στο `<root-dir>/logs/`. |
-| `-y`, `--yes` | No | Αυτόματη επιβεβαίωση προτροπών κατά την επεξεργασία όλων των γλωσσών. |
+| `-l`, `--language-codes` | Ναι | Κωδικοί γλωσσών χωρισμένοι με κενό, ή `"all"`. |
+| `-r`, `--root-dir` | Όχι | Ρίζα έργου. Από προεπιλογή ο τρέχων κατάλογος. |
+| `--image-dir` | Όχι | Κατάλογος μεταφρασμένων εικόνων σχετικός με τη ρίζα. Προεπιλογή `translated_images`. |
+| `--dry-run` | Όχι | Δείξτε αρχεία που θα άλλαζαν χωρίς να γράψετε ενημερώσεις. |
+| `--fallback-to-original`, `--no-fallback-to-original` | Όχι | Χρησιμοποιήστε αρχικούς συνδέσμους σημειωματάριων όταν λείπουν μεταφρασμένα σημειωματάρια. Ενεργοποιημένο από προεπιλογή. |
+| `-d`, `--debug` | Όχι | Ενεργοποιήστε καταγραφή αποσφαλμάτωσης. |
+| `-s`, `--save-logs` | Όχι | Αποθήκευση αρχείων καταγραφής επιπέδου DEBUG κάτω από `<root-dir>/logs/`. |
+| `-y`, `--yes` | Όχι | Αυτόματη επιβεβαίωση μηνυμάτων όταν επεξεργάζεστε όλες τις γλώσσες. |
 
 ## Περιβάλλον
 
-All commands require one configured LLM provider:
+Όταν μια εντολή απαιτεί διαπιστευτήρια παρόχου, ρυθμίστε ένα από αυτά τα σετ παρόχων. Το `translate --dry-run` και το `co-op-review` δεν απαιτούν διαπιστευτήρια παρόχου:
 
 ```bash
 # Azure OpenAI
@@ -266,9 +298,13 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Ή OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Ή Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Image translation additionally requires Azure AI Vision:
+Η μετάφραση εικόνων επιπλέον απαιτεί Azure AI Vision:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -277,19 +313,19 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 
 ## Διάταξη εξόδου
 
-Text translations are written under:
+Οι μεταφράσεις κειμένου γράφονται κάτω από:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Translated image output is written under:
+Η έξοδος μεταφρασμένων εικόνων γράφεται κάτω από:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-For example, translating `README.md` and `docs/setup.md` into Korean produces:
+Για παράδειγμα, η μετάφραση των `README.md` και `docs/setup.md` στα Κορεατικά παράγει:
 
 ```text
 translations/ko/README.md
@@ -298,50 +334,50 @@ translations/ko/docs/setup.md
 
 ## Παραδείγματα CLI για Αντιγραφή-Επικόλληση
 
-Translate Markdown into three languages:
+Μεταφράστε Markdown σε τρεις γλώσσες:
 
 ```bash
 translate -l "ko ja fr" -md
 ```
 
-Translate notebooks only:
+Μετάφραση μόνο σημειωματάριων:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Translate images only:
+Μετάφραση μόνο εικόνων:
 
 ```bash
 translate -l "pt-BR" -img
 ```
 
-Preview Markdown translation without writing files:
+Προεπισκόπηση μετάφρασης Markdown χωρίς εγγραφή αρχείων:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-Repair low-confidence Markdown translations:
+Επιδιόρθωση μεταφράσεων Markdown χαμηλής εμπιστοσύνης:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-Run CI-friendly Markdown translation:
+Εκτέλεση μετάφρασης Markdown φιλικής για CI:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-Review translated output:
+Επανεξέταση μεταφρασμένης εξόδου:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Preview link migration:
+Προεπισκόπηση μετανάστευσης συνδέσμων:
 
 ```bash
 migrate-links -l "ko" --dry-run

@@ -1,8 +1,8 @@
-# Limbi acceptate
+# Limbile acceptate
 
-Co-op Translator acceptă următoarele coduri de limbă pentru ieșirile de traducere pentru text, notebook și imagini.
+Co-op Translator acceptă următoarele coduri de limbă pentru rezultatele traducerii pentru text, notebook și imagini.
 
-Dacă doriți să adăugați o limbă nouă, actualizați mapările limbii și ale fontului din `src/co_op_translator/fonts/` și testați limba înainte de a deschide un pull request.
+Dacă doriți să adăugați o limbă nouă, actualizați mapările limbilor și ale fonturilor din `src/co_op_translator/fonts/` și testați limba înainte de a deschide un pull request.
 
 | Cod limbă | Nume limbă | Font | Suport RTL | Probleme cunoscute |
 | --- | --- | --- | --- | --- |
@@ -15,13 +15,13 @@ Dacă doriți să adăugați o limbă nouă, actualizați mapările limbii și a
 | fa | Persană (Farsi) | NotoSansArabic-Medium.ttf | Da | Nu |
 | ur | Urdu | NotoSansArabic-Medium.ttf | Da | Nu |
 | zh-CN | Chineză (simplificată) | NotoSansCJK-Medium.ttc | Nu | Nu |
-| zh-MO | Chineză (Tradițională, Macao) | NotoSansCJK-Medium.ttc | Nu | Nu |
-| zh-HK | Chineză (Tradițională, Hong Kong) | NotoSansCJK-Medium.ttc | Nu | Nu |
-| zh-TW | Chineză (Tradițională, Taiwan) | NotoSansCJK-Medium.ttc | Nu | Nu |
+| zh-MO | Chineză (tradițională, Macau) | NotoSansCJK-Medium.ttc | Nu | Nu |
+| zh-HK | Chineză (tradițională, Hong Kong) | NotoSansCJK-Medium.ttc | Nu | Nu |
+| zh-TW | Chineză (tradițională, Taiwan) | NotoSansCJK-Medium.ttc | Nu | Nu |
 | ja | Japoneză | NotoSansCJK-Medium.ttc | Nu | Nu |
 | ko | Coreeană | NotoSansCJK-Medium.ttc | Nu | Nu |
 | hi | Hindi | NotoSansDevanagari-Medium.ttf | Nu | Nu |
-| bn | Bengaleză | NotoSansBengali-Medium.ttf | Nu | Nu |
+| bn | Bengală | NotoSansBengali-Medium.ttf | Nu | Nu |
 | mr | Marathi | NotoSansDevanagari-Medium.ttf | Nu | Nu |
 | ne | Nepaleză | NotoSansDevanagari-Medium.ttf | Nu | Nu |
 | pa | Punjabi (Gurmukhi) | NotoSansGurmukhi-Medium.ttf | Nu | Nu |
@@ -41,7 +41,7 @@ Dacă doriți să adăugați o limbă nouă, actualizați mapările limbii și a
 | he | Ebraică | NotoSansHebrew-Medium.ttf | Da | Nu |
 | vi | Vietnameză | NotoSans-Medium.ttf | Nu | Nu |
 | id | Indoneziană | NotoSans-Medium.ttf | Nu | Nu |
-| ms | Malaieză | NotoSans-Medium.ttf | Nu | Nu |
+| ms | Malaeză | NotoSans-Medium.ttf | Nu | Nu |
 | tl | Tagalog (Filipineză) | NotoSans-Medium.ttf | Nu | Nu |
 | sw | Swahili | NotoSans-Medium.ttf | Nu | Nu |
 | hu | Maghiară | NotoSans-Medium.ttf | Nu | Nu |
@@ -49,24 +49,25 @@ Dacă doriți să adăugați o limbă nouă, actualizați mapările limbii și a
 | sk | Slovacă | NotoSans-Medium.ttf | Nu | Nu |
 | ro | Română | NotoSans-Medium.ttf | Nu | Nu |
 | bg | Bulgară | NotoSans-Medium.ttf | Nu | Nu |
-| sr | Sârbă (Chirilic) | NotoSans-Medium.ttf | Nu | Nu |
+| sr | Sârbă (chirilică) | NotoSans-Medium.ttf | Nu | Nu |
 | hr | Croată | NotoSans-Medium.ttf | Nu | Nu |
 | sl | Slovenă | NotoSans-Medium.ttf | Nu | Nu |
 | uk | Ucraineană | NotoSans-Medium.ttf | Nu | Nu |
 | my | Birmană (Myanmar) | NotoSansMyanmar-Medium.ttf | Nu | Nu |
-| ta | Tamilă | NotoSansTamil-Medium.ttf | Nu | Nu |
+| ta | Tamil | NotoSansTamil-Medium.ttf | Nu | Nu |
 | et | Estonă | NotoSans-Medium.ttf | Nu | Nu |
 | pcm | Pidgin nigerian | NotoSans-Medium.ttf | Nu | Nu |
 | te | Telugu | NotoSans-Medium.ttf | Nu | Nu |
 | ml | Malayalam | NotoSans-Medium.ttf | Nu | Nu |
 | kn | Kannada | NotoSans-Medium.ttf | Nu | Nu |
 | km | Khmer | NotoSansKhmer-Medium.ttf | Nu | Nu |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Nu | Nu |
 
 ## Adăugați o limbă
 
 Pentru a adăuga suport pentru o limbă nouă:
 
-1. Adăugați codul limbii și denumirea afișată în utilitarele de limbă.
+1. Adăugați codul limbii și numele afișat în utilitarele pentru limbi.
 2. Adăugați sau mapați un font în `src/co_op_translator/fonts/font_language_mappings.yml`.
 3. Testați rezultatul traducerii pentru Markdown și imagini.
 4. Deschideți un pull request cu maparea și notele de validare.

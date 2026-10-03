@@ -2,48 +2,48 @@
 
 API-ul public stabil pentru Python este exportat din `co_op_translator.api`. Majoritatea integrărilor folosesc unul dintre aceste fluxuri de lucru:
 
-| Scenario | Use this when | Main APIs |
+| Scenariu | Când să folosești | API-uri principale |
 | --- | --- | --- |
-| Translate individual files or documents | Your application reads source content, calls Co-op Translator for translation, and decides where to save the result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | Your MCP host or application model will translate chunks, while Co-op Translator handles chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | You want the Python API to behave like the CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
+| Traduce fișiere sau documente individuale | Aplicația ta citește conținutul sursă, apelează Co-op Translator pentru traducere și decide unde să salveze rezultatul. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Pregătește conținut pentru traducerea de către agentul gazdă | Gazda MCP sau modelul aplicației tale va traduce fragmentele, în timp ce Co-op Translator se ocupă de fragmentare și reconstruire. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Traduce întregul repository | Vrei ca API-ul Python să se comporte ca CLI-ul și să gestioneze descoperirea, căile de ieșire, metadatele, curățarea și scrierile. | `run_translation` |
 
 Majoritatea modulelor de nivel inferior din `core`, `config`, `review` și `utils` sunt detalii de implementare folosite de aceste puncte de intrare ale API-ului.
 
-Clienții MCP folosesc același API public prin [MCP Server](mcp.md). Folosiți această pagină când apelați Python direct, iar ghidul MCP când expuneți Co-op Translator unui agent sau editor. Dacă decideți între CLI, API-ul Python și MCP, începeți cu [Choose Your Workflow](workflows.md).
+Clienții MCP folosesc același API public prin [MCP Server](mcp.md). Folosește această pagină când apelezi Python direct și ghidul MCP când expui Co-op Translator unui agent sau editor. Dacă decizi între CLI, API-ul Python și MCP, începe cu [Alege fluxul de lucru](workflows.md).
 
-## First-Time API Flow
+## Fluxul inițial al API-ului
 
-Porniți de aici dacă apelați Co-op Translator din cod Python:
+Începeți aici dacă apelați Co-op Translator din cod Python:
 
-1. Configurați un furnizor LLM așa cum este descris în [Configuration](configuration.md), cu excepția cazului în care doar pregătiți fragmente Markdown sau notebook pentru traducerea de către gazdă/agent.
-2. Decideți dacă aplicația dvs. deține operațiile de I/O pentru fișiere.
+1. Configurați un furnizor LLM așa cum este descris în [Configurare](configuration.md), cu excepția cazului în care pregătiți doar fragmente Markdown sau notebook pentru traducerea gazdă-agent.
+2. Decideți dacă aplicația dvs. gestionează I/O pentru fișiere.
 3. Folosiți API-urile de conținut când aplicația dvs. citește și scrie fișiere individuale.
-4. Folosiți `run_translation` când Co-op Translator ar trebui să proceseze un repository ca CLI-ul.
-5. Folosiți `run_review` după traducere dacă aveți nevoie de verificări deterministe în automatizare.
+4. Utilizați `run_translation` când Co-op Translator ar trebui să proceseze un repository la fel ca CLI-ul.
+5. Utilizați `run_review` după traducere dacă aveți nevoie de verificări deterministe în automatizare.
 
-| Goal | API to start with |
+| Obiectiv | API pentru început |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
-| Translate one notebook payload | `translate_notebook_content` |
-| Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
-| Translate a full repository | `run_translation` |
-| Review translated output | `run_review` |
+| Traduce un șir sau fișier Markdown | `translate_markdown_content` |
+| Traduce un payload de notebook | `translate_notebook_content` |
+| Traduce o imagine | `translate_image_content` |
+| Permite unui agent gazdă să traducă fragmente Markdown sau de notebook | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
+| Rescrie linkurile traduse după ce alegi o cale de ieșire | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
+| Traduce un repository complet | `run_translation` |
+| Revizuiește rezultatul tradus | `run_review` |
 
-## Scenario 1: Translate Individual Files or Documents
+## Scenariul 1: Traducerea fișierelor sau documentelor individuale
 
-Folosiți acest flux de lucru când aveți deja un fișier, un buffer din editor, un payload de notebook, o cerere MCP sau un input personalizat de pipeline. Codul dvs. deține I/O pentru fișiere:
+Utilizați acest flux de lucru când aveți deja un fișier, un buffer de editor, un payload de notebook, o cerere MCP sau un input pentru un pipeline personalizat. Codul dvs. deține operațiile de intrare/ieșire pe fișiere:
 
-1. Citiți conținutul sursă.
-2. Apelați un API de traducere a conținutului.
-3. Opțional apelați un API de rescriere a căilor dacă conținutul tradus va fi scris într-un folder de traduceri al proiectului.
+1. Read the source content.
+2. Call a content translation API.
+3. Apelați opțional un API de rescriere a căilor dacă conținutul tradus va fi scris într-un folder de traducere al proiectului.
 4. Salvați sau returnați rezultatul din aplicația dvs.
 
-API-urile de traducere a conținutului nu rulează descoperirea proiectului, nu scriu metadate, nu adaugă declinări și nu rescriu linkuri automat.
+API-urile de traducere a conținutului nu rulează descoperirea proiectului, nu scriu metadate, nu adaugă avertismente și nu rescriu link-urile automat.
 
-### Markdown File
+### Fișier Markdown
 
 ```python
 import asyncio
@@ -85,9 +85,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Dacă Markdown-ul tradus nu va exista într-un layout de proiect Co-op Translator, omiteți `rewrite_markdown_paths` și salvați șirul tradus direct.
+Dacă Markdown-ul tradus nu va face parte din structura de proiect Co-op Translator, săriți `rewrite_markdown_paths` și salvați direct șirul tradus.
 
-### Notebook File
+### Fișier Notebook
 
 ```python
 import asyncio
@@ -129,9 +129,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` traduce celulele Markdown și păstrează celulele non-Markdown. Rescrierea căilor se aplică doar celulelor Markdown.
+`translate_notebook_content` traduce celulele Markdown și păstrează celulele non-Markdown. Rescrierea căilor se aplică numai celulelor Markdown.
 
-### Image File
+### Fișier Imagine
 
 ```python
 from pathlib import Path
@@ -154,15 +154,15 @@ target_path.parent.mkdir(parents=True, exist_ok=True)
 translated_image.save(target_path)
 ```
 
-`translate_image_content` citește imaginea sursă și returnează o `PIL.Image.Image` redată. Nu scrie metadate pentru imaginea tradusă.
+`translate_image_content` citește imaginea sursă și returnează un `PIL.Image.Image` redat. Nu scrie metadatele imaginii traduse.
 
-## Scenario 2: Translate an Entire Repository
+## Scenariul 2: Traduceți întregul depozit
 
-Folosiți acest flux de lucru când doriți ca API-ul Python să se comporte ca CLI-ul `translate`. `run_translation` descoperă fișiere suportate, traduce tipurile de conținut selectate, rescrie căi, scrie fișierele de ieșire, actualizează metadatele și execută sarcini de întreținere a traducerilor, cum ar fi curățarea.
+Utilizați acest flux de lucru când doriți ca API-ul Python să se comporte ca CLI-ul `translate`. `run_translation` detectează fișierele acceptate, traduce tipurile de conținut selectate, rescrie căile, scrie fișierele de ieșire, actualizează metadatele și efectuează sarcini de întreținere a traducerilor, cum ar fi curățarea.
 
 `run_translation` este punctul de intrare preferat pentru orchestrarea proiectului. `translate_project` este exportat ca alias de compatibilitate cu același comportament.
 
-Traduceți fișiere Markdown din repository-ul curent în coreeană și japoneză:
+Traduceți fișierele Markdown din depozitul curent în coreeană și japoneză:
 
 ```python
 from co_op_translator.api import run_translation
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-Traduceți doar notebook-uri dintr-un root specific al proiectului:
+Traduceți numai notebook-urile din rădăcina unui proiect specific:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-Traduceți mai multe root-uri de conținut într-un apel:
+Înregistrați evenimente de progres structurate pentru o integrare:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Stochează payload-ul în tabelul job-event sau transmite-l către interfața ta UI.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Events use the versioned schema `co-op.translation.event.v1`. Integrations should
+depend on stable fields such as `type` and `stage_key`, not on human-facing
+console text or `stage_label`.
+
+Traduceți mai multe rădăcini de conținut într-un singur apel:
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-Folosiți un placeholder pe limbă când fiecare limbă ar trebui să conțină un subdirector imbricat:
+Folosiți un marcator per limbă atunci când fiecare limbă ar trebui să conțină un subdirector încorporat:
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-Dacă nici unul dintre `markdown`, `notebook`, sau `images` nu este setat, API-ul traduce toate tipurile suportate: Markdown, notebook-uri și imagini.
+Dacă niciuna dintre `markdown`, `notebook`, sau `images` nu este setată, API-ul traduce toate tipurile acceptate: Markdown, notebook-uri și imagini.
 
-## Review Translated Output
+### Păstrați editările umane acceptate cu un furnizor de stare a traducerii
 
-`run_review` rulează verificări deterministe ale traducerii fără acreditări LLM sau Vision.
+În mod implicit, Co-op Translator păstrează comportamentul său existent la nivel de fișier: când o
+sursă Markdown este învechită, întregul fișier tradus este regenerat. Integrările găzduite
+opțional pot transmite un `TranslationStateProvider` pentru a păstra
+editările umane în blocurile sursă care nu s-au schimbat.
+
+Furnizorul oferă ultima pereche sursă/țintă acceptată și înregistrează fiecare nou
+candidat. Acceptarea rămâne responsabilitatea integrării—de exemplu,
+după ce un pull request de traducere este îmbinat:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+Pentru fișierele Markdown cu o bază de referință acceptată și validă, Co-op Translator aliniază
+blocurile Markdown de nivel superior. Blocurile sursă neschimbate refolosesc blocurile traduse curente
+existente, inclusiv modificările făcute de oameni; blocurile sursă modificate sau adăugate sunt trimise
+pentru traducere; blocurile sursă șterse sunt eliminate. Dacă alinierea este ambiguă,
+structura țintă s-a schimbat, traducerea unui bloc este invalidă sau nicio bază de referință
+disponibilă, Co-op Translator revine în siguranță la calea existentă
+de traducere a întregului fișier.
+
+Această API stochează starea traducerii documentului, nu o memorie de traducere a frazelor sau
+segmentelor între documente. Se aplică în prezent traducerii proiectului Markdown
+. Comportamentul pentru notebook-uri și imagini rămâne neschimbat. Trimiterea lui `update=True`
+încă solicită regenerarea completă.
+
+Dacă unul sau mai multe fișiere nu pot fi traduse, `run_translation` declanșează un
+`RuntimeError` după ce fluxul de lucru al proiectului se încheie în loc să raporteze o
+execuție reușită cu ieșire lipsă. Integrările ar trebui să trateze acest lucru ca pe un job eșuat
+și să păstreze starea anterioară de traducere acceptată.
+
+## Revizuirea conținutului tradus
+
+`run_review` execută verificări deterministe ale traducerii fără credențiale LLM sau Vision.
 
 !!! note "Beta"
-    `run_review` este un API beta de revizuire deterministă. Nu apelează furnizori de modele și nu scrie fișiere, dar schemele de verificare și de raportare a problemelor pot evolua.
+    `run_review` este o API beta de revizuire deterministă. Nu apelează furnizori de modele și nu scrie fișiere, dar regulile de verificare și schemele de issue pot evolua.
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-Revizuiți doar fișierele schimbate față de un ref de bază și afișați ieșire în stil GitHub:
+După o traducere doar a README-ului, folosiți același scop pentru revizuire:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` revizuiește doar `README.md` din fiecare director rădăcină sursă configurat,
+inclusiv `groups` personalizate și directoarele de ieșire. Alte documente și README-uri din subdirectoare
+README-urile sunt excluse. Lipsa README-ului sursă aruncă `ValueError`; verificările de traducere eșuate
+verificările de traducere eșuate ridică `RuntimeError`.
+
+Revizuiți numai fișierele modificate față de o referință de bază și afișați ieșirea în stil GitHub:
 
 ```python
 from co_op_translator.api import run_review
@@ -274,9 +398,9 @@ run_review(
 )
 ```
 
-## Copy-Paste API Examples
+## Exemple de API pentru copiere-lipire
 
-Traduceți conținut Markdown fără scrierea în fișiere:
+Traduceți conținutul Markdown fără a scrie fișiere:
 
 ```python
 import asyncio
@@ -295,7 +419,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Traduceți și rescrieți linkuri Markdown:
+Traduceți și rescrieți link-urile Markdown:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -340,7 +464,7 @@ run_translation(
 )
 ```
 
-Traduceți mai multe root-uri:
+Traduceți mai multe rădăcini:
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-Păstrați termeni din glosar:
+Păstrați termenii din glosar:
 
 ```python
 from co_op_translator.api import run_translation
@@ -371,13 +495,16 @@ run_translation(
 )
 ```
 
-## Public Entry Points
+## Puncte de intrare publice
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## Content Translation APIs
+## API-uri pentru traducerea conținutului
 
-API-urile de traducere a conținutului sunt destinate integrărilor care deja au conținut în memorie, cum ar fi o extensie de editor, un instrument MCP, un procesator de notebook-uri sau un pipeline personalizat.
+API-urile de traducere a conținutului sunt destinate integrărilor care deja au conținut în memorie, cum ar fi o extensie de editor, un instrument MCP, un procesor de notebook-uri sau un pipeline personalizat.
 
-| Function | Input | Output | File I/O | Notes |
+| Funcție | Intrare | Ieșire | I/O fișiere | Note |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Translates Markdown content only. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Translates Markdown cells and preserves non-Markdown cells. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Extracts and translates image text, then returns a rendered image. It does not save translated image metadata. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | Nu | Asincron. Traduce doar conținutul Markdown. Nu rescrie link-urile, nu scrie metadate și nu adaugă declinări de responsabilitate. |
+| `translate_notebook_content` | Notebook JSON `str` sau `dict` | Notebook JSON `str` | Nu | Asincron. Traduce celulele Markdown și păstrează celulele non-Markdown. Nu rescrie link-urile, nu scrie metadate și nu adaugă declinări de responsabilitate. |
+| `translate_image_content` | Cale imagine | `PIL.Image.Image` | Citește doar imaginea sursă | Sincron. Extrage și traduce textul din imagine, apoi returnează o imagine redată. Nu salvează metadatele imaginii traduse. |
 
-`translate_markdown_content` and `translate_notebook_content` accept an optional `source_path` through their options. The path is passed as context to the translator; callers remain responsible for any project-specific path rewriting after translation.
+`translate_markdown_content` și `translate_notebook_content` acceptă un `source_path` opțional prin opțiunile lor. Calea este transmisă ca context traducătorului; apelanții rămân responsabili pentru orice rescriere de căi specifică proiectului după traducere.
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-The same options can be passed as dictionaries:
+Aceleași opțiuni pot fi transmise ca dicționare:
 
 ```python
 translated = await translate_markdown_content(
@@ -455,94 +588,96 @@ translated = await translate_markdown_content(
 )
 ```
 
-## Agent-Assisted Translation APIs
+## API-uri de traducere asistată de agent
 
-Agent-assisted APIs do not call Azure OpenAI or OpenAI from Co-op Translator. They prepare Markdown or notebook chunks for a host agent to translate, then reconstruct the final content from translated chunks.
+API-urile asistate de agent nu apelează furnizorul LLM configurat din Co-op Translator. Ele pregătesc fragmente de Markdown sau notebook pentru ca un agent gazdă să le traducă, apoi reconstruiesc conținutul final din fragmentele traduse.
 
-| Function | Purpose |
+| Funcție | Scop |
 | --- | --- |
-| `start_markdown_agent_translation` | Return a self-contained Markdown job with chunks, prompts, and reconstruction state. |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from a job and host-agent translated chunks. |
-| `start_notebook_agent_translation` | Return a notebook job with Markdown-cell chunks for host-agent translation. |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON while preserving code cells, outputs, and metadata. |
+| `start_markdown_agent_translation` | Returnează o sarcină Markdown autonomă cu fragmente, prompturi și stare de reconstrucție. |
+| `finish_markdown_agent_translation` | Reconstruiește Markdown dintr-o sarcină și din fragmentele traduse de agentul gazdă. |
+| `start_notebook_agent_translation` | Returnează o sarcină notebook cu fragmente din celulele Markdown pentru traducerea de către agentul gazdă. |
+| `finish_notebook_agent_translation` | Reconstruiește JSON-ul notebook-ului păstrând celulele de cod, output-urile și metadatele. |
 
-Acest flux de lucru este destinat în principal gazdelor MCP. Dacă aveți nevoie de traducere în producție a repository-ului cu Co-op Translator gestionând apelurile către furnizori, folosiți `translate_markdown_content`, `translate_notebook_content`, sau `run_translation`.
+Acest flux de lucru este destinat în principal gazdelor MCP. Dacă aveți nevoie de traducerea unui repository în producție cu Co-op Translator gestionând apelurile către furnizori, folosiți `translate_markdown_content`, `translate_notebook_content` sau `run_translation`.
 
-## Path Rewriting APIs
+## API-uri pentru rescrierea căilor
 
-API-urile de rescriere a căilor nu efectuează traducere. Ele actualizează linkurile și căile din frontmatter după ce apelanții cunosc calea sursă, calea țintă tradusă și layout-ul proiectului.
+API-urile de rescriere a căilor nu efectuează nicio traducere. Ele actualizează link-urile și căile din frontmatter după ce apelanții cunosc calea sursă, calea țintă tradusă și structura proiectului.
 
-| Function | Scope | Notes |
+| Funcție | Domeniu | Note |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | Rewrites Markdown links and supported frontmatter path fields for a translated target. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Applies Markdown path rewriting to each Markdown cell and leaves non-Markdown cells unchanged. |
+| `rewrite_markdown_paths` | Corpul Markdown și frontmatter | Rescrie link-urile Markdown și câmpurile frontmatter de căi suportate pentru o țintă tradusă. |
+| `rewrite_notebook_paths` | Celulele Markdown din JSON-ul notebook-ului | Aplică rescrierea căilor Markdown fiecărei celule Markdown și lasă neschimbate celulele non-Markdown. |
 
-Argumentul `policy` poate fi un dicționar cu aceste câmpuri:
+Argumentul `policy` poate fi un dicționar cu următoarele câmpuri:
 
-| Field | Required | Purpose |
+| Câmp | Obligatoriu | Scop |
 | --- | --- | --- |
-| `language_code` | Yes | Target language code, such as `"ko"` or `"pt-BR"`. |
-| `root_dir` | No | Source project root. Defaults to `"."`. |
-| `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
-| `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
-| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
-| `lang_subdir` | No | Optional subdirectory under each language folder. |
+| `language_code` | Da | Codul limbii țintă, cum ar fi `"ko"` sau `"pt-BR"`. |
+| `root_dir` | Nu | Rădăcina proiectului sursă. Implicit este `"."`. |
+| `translations_dir` | Nu | Directorul de ieșire pentru traducerile textului. Implicit este `translations` sub `root_dir`. |
+| `translated_images_dir` | Nu | Directorul de ieșire pentru imaginile traduse. Implicit este `translated_images` sub `root_dir`. |
+| `translation_types` | Nu | Tipurile de traducere activate. Implicit este Markdown, notebook-uri și imagini. |
+| `lang_subdir` | Nu | Subdirector opțional sub fiecare folder de limbă. |
 
-## Project Translation Parameters
+## Parametrii traducerii proiectului
 
-| Parameter | Type | Default | Purpose |
+| Parametru | Tip | Implicit | Scop |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Space-separated target language codes, such as `"ko ja fr"`, or `"all"`. Alias codes are normalized to canonical BCP 47 values. |
-| `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` are supplied. |
-| `update` | `bool` | `False` | Delete and recreate existing translations for the selected languages. |
-| `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
-| `markdown` | `bool` | `False` | Include Markdown translation. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
-| `debug` | `bool` | `False` | Enable debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
-| `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
-| `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
-| `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
-| `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
+| `language_codes` | `str` | Obligatoriu | Coduri de limbă țintă separate prin spațiu, cum ar fi `"ko ja fr"`, sau `"all"`. Codurile alias sunt normalizate la valorile canonice BCP 47. |
+| `root_dir` | `str` | `"."` | Rădăcina proiectului pentru o singură țintă de traducere. Ignorat când sunt furnizate `root_dirs` sau `groups`. |
+| `update` | `bool` | `False` | Șterge și recreează traducerile existente pentru limbile selectate. |
+| `images` | `bool` | `False` | Include traducerea imaginilor. Necesită configurare Azure AI Vision. |
+| `markdown` | `bool` | `False` | Include traducerea Markdown. |
+| `notebook` | `bool` | `False` | Include traducerea notebook-urilor Jupyter. |
+| `debug` | `bool` | `False` | Activează logarea de depanare. |
+| `save_logs` | `bool` | `False` | Salvează fișiere jurnal la nivel DEBUG sub directorul `logs/` din rădăcină. |
+| `yes` | `bool` | `True` | Confirmă automat prompturile pentru utilizare programatică și în CI. |
+| `add_disclaimer` | `bool` | `False` | Adaugă mențiuni privind traducerea automată în Markdown-ul și notebook-urile traduse. |
+| `translations_dir` | `str \| None` | `None` | Director personalizat pentru fișierele de ieșire ale traducerii textului. Căile relative se rezolvă în raport cu fiecare rădăcină. |
+| `image_dir` | `str \| None` | `None` | Director personalizat pentru imaginile traduse. Căile relative se rezolvă în raport cu fiecare rădăcină. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Mai multe rădăcini care împart aceleași setări de ieșire. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Perechi explicite `(root_dir, translations_dir)`. Au prioritate față de `root_dirs`. |
+| `repo_url` | `str \| None` | `None` | URL-ul depozitului folosit la afișarea indicațiilor din tabelul de limbi din README. |
+| `glossaries` | `Iterable[str] \| None` | `None` | Termeni din glosar de păstrat în timpul traducerii. Duplicatele și termenii goi sunt normalizați. |
+| `dry_run` | `bool` | `False` | Estimează volumul de traducere și previzualizează comportamentul de migrare fără a scrie fișiere. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Adaptor opțional de persistență pentru baza de referință acceptată și candidați pentru actualizări incrementale Markdown. Ometerea lui păstrează comportamentul existent de rescriere a fișierelor întregi. |
 
-## Review Parameters
+## Parametri de revizuire
 
-`run_review` intenționat oglindește semnătura `run_translation` acolo unde este posibil astfel încât automatizarea să poată comuta între fluxurile de traducere și revizuire cu un minim de ramificare.
+`run_review` oglindește intenționat semnătura `run_translation` acolo unde este posibil, astfel încât automatizarea să poată comuta între fluxurile de lucru de traducere și revizuire cu ramificare minimă.
 
-| Parameter | Type | Default | Purpose |
+| Parametru | Tip | Implicit | Scop |
 | --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders to review. Space-separated strings and iterables are accepted. `"all"` reviews every discovered translation language. |
-| `root_dir` | `str` | `"."` | Project root for a single review target. Ignored when `root_dirs` or `groups` are supplied. |
-| `markdown` | `bool` | `False` | Include Markdown and MDX source files. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
-| `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images are checked from Markdown. |
-| `translations_dir` | `str \| None` | `None` | Directorul de ieșire personalizat pentru traducerea textului. Căile relative se rezolvă în raport cu fiecare rădăcină. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Mai multe rădăcini care partajează aceleași setări de ieșire. |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | Folderele limbilor țintă de revizuit. Sunt acceptate șiruri separate prin spațiu și iterabile. `"all"` revizuiește fiecare limbă de traducere descoperită. |
+| `root_dir` | `str` | `"."` | Rădăcina proiectului pentru o singură țintă de revizuire. Este ignorată când `root_dirs` sau `groups` sunt furnizate. |
+| `markdown` | `bool` | `False` | Include fișierele sursă Markdown și MDX. |
+| `notebook` | `bool` | `False` | Include fișierele sursă Jupyter notebook. |
+| `images` | `bool` | `False` | Rezervat pentru paritate cu opțiunile de traducere. Referințele către imagini sunt verificate din Markdown. |
+| `translations_dir` | `str \| None` | `None` | Director personalizat pentru fișierele de ieșire ale traducerii textului. Căile relative se rezolvă în raport cu fiecare rădăcină. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Mai multe rădăcini care împart aceleași setări de ieșire. |
 | `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Perechi explicite `(root_dir, translations_dir)`. Au prioritate față de `root_dirs`. |
 | `changed_from` | `str \| None` | `None` | Referință Git folosită pentru a limita revizuirea la fișierele sursă modificate. |
+| `readme_only` | `bool` | `False` | Revizuiește doar `README.md` din fiecare rădăcină sursă. Lipsa unui README sursă ridică `ValueError`. |
 | `output_format` | `str` | `"text"` | Formatul de ieșire al revizuirii. Valorile acceptate sunt `"text"` și `"github"`. |
-| `fail_on_warnings` | `bool` | `False` | Tratează avertismentele ca și eșecuri pe lângă erori. |
-| `debug` | `bool` | `False` | Activează înregistrarea de depanare. |
-| `save_logs` | `bool` | `False` | Salvează fișierele jurnal la nivel DEBUG în directorul `logs/` din rădăcină. |
+| `fail_on_warnings` | `bool` | `False` | Tratează avertismentele ca eșecuri pe lângă erori. |
+| `debug` | `bool` | `False` | Activează logarea de depanare. |
+| `save_logs` | `bool` | `False` | Salvează fișiere jurnal la nivel DEBUG în directorul `logs/` din rădăcină. |
 
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+Dacă niciuna dintre `markdown`, `notebook` sau `images` nu este setată, API-ul revizuiește Markdown-ul, notebook-urile și referințele link către imagini acolo unde este cazul. Revizuirea nu apelează un furnizor LLM și nu necesită chei API.
 
 ## Cerințe de configurare
 
-Provider-backed translation APIs require provider configuration before translating:
+API-urile de traducere care depind de un furnizor necesită configurarea furnizorului înainte de traducere:
 
-- Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
-- Image translation requires Azure AI Vision in addition to the LLM provider.
-- `run_translation` runs lightweight connectivity checks before project translation begins.
-- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` are deterministic and do not require provider credentials.
+- Traducerea Markdown și a notebook-urilor necesită un furnizor LLM. Configurați Azure OpenAI, OpenAI sau Anthropic.
+- Traducerea imaginilor necesită Azure AI Vision pe lângă furnizorul LLM.
+- `run_translation` execută verificări de conectivitate ușoare înainte de începerea traducerii proiectului.
+- API-urile asistate de agent `start_*_agent_translation` și `finish_*_agent_translation` nu apelează furnizorii LLM ai Co-op Translator. Aplicația gazdă sau agentul MCP traduce blocurile pregătite.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths` și `run_review` sunt deterministe și nu necesită credențiale de la furnizor.
 
-Required Azure OpenAI variables:
+Variabile Azure OpenAI necesare:
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -552,39 +687,48 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Required OpenAI variables:
+Variabile OpenAI necesare:
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+Variabile Anthropic necesare:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` și `ANTHROPIC_MAX_TOKENS` sunt opționale. Microsoft Agent Framework este clientul de model implicit pentru toți furnizorii începând cu Co-op Translator 0.22.0. Semantic Kernel poate fi încă selectat temporar cu `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, dar aceasta generează un avertisment de depreciere; vezi [configurare](configuration.md#model-client-backend) pentru planul de eliminare etapizat.
+
+Variabile Azure AI Vision necesare pentru traducerea imaginilor:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` este determinist și nu necesită configurare pentru LLM sau Azure AI Vision.
 
-## Observații privind comportamentul
+## Observații despre comportament
 
-- Content translation APIs keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content needs project-relative links adjusted for a target location.
-- Project orchestration APIs add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
-- `run_translation` prints progress and estimate summaries through Click, matching the CLI user experience.
-- `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
-- `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
-- When image translation is selected, missing Vision configuration raises an error before translation starts.
-- Existing alias-based language folders are detected and can be migrated to canonical language folder names as part of the run.
-- `run_review` fails on missing translated files, missing or stale translation metadata, malformed Markdown frontmatter/code fences, and invalid translated notebook JSON.
-- `run_review` reports missing local Markdown and image link targets as warnings by default.
+- API-urile de traducere a conținutului păstrează separarea dintre traducere și rescrierea căilor proiectului. Apelați `rewrite_markdown_paths` sau `rewrite_notebook_paths` explicit când conținutul tradus necesită ajustarea linkurilor relative la proiect pentru o locație țintă.
+- API-urile de orchestrare a proiectului adaugă comportament la nivel de proiect pentru traducerea conținutului, inclusiv descoperirea fișierelor, scrieri, rescrierea căilor, metadata, curățare și declinări de responsabilitate opționale.
+- `run_translation` afișează rezumate de progres și estimări prin același raportor bazat pe Rich folosit de CLI. Ieșirea non-interactivă revine la text simplu.
+- `dry_run=True` calculează estimări folosind actualizări virtuale ale README-ului, dar nu scrie README-ul sau fișierele de traducere.
+- `groups` sunt procesate secvențial. O singură estimare agregată este afișată înainte de începerea lucrului.
+- Când este selectată traducerea imaginilor, lipsa configurării Vision generează o eroare înainte de începerea traducerii.
+- Folderele de limbă existente bazate pe aliasuri sunt detectate și pot fi migrate la nume canonice de foldere de limbă ca parte a rulării.
+- `run_review` eșuează la fișiere traduse lipsă, metadata de traducere lipsă sau învechită, frontmatter Markdown sau blocuri de cod formate incorect și JSON invalid pentru notebook-uri traduse.
+- `run_review` raportează țintele locale Markdown și link-urile către imagini lipsă ca avertismente în mod implicit.
 
 ## Cale internă de apel
 
-The API delegates to the same core implementation used by the CLI:
+API-ul delegă către aceeași implementare de bază folosită de CLI:
 
-Translation:
+Traducere:
 
 1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.
 2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.
@@ -592,29 +736,29 @@ Translation:
 4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
 5. `co_op_translator.core.project.ProjectTranslator`.
 6. `co_op_translator.core.project.TranslationManager`.
-7. Focused project translation mixins for Markdown, notebooks, and images.
-8. Markdown, notebook, text, and image translators under `co_op_translator.core`.
+7. Mixin-uri axate pe traducerea proiectului pentru Markdown, notebook-uri și imagini.
+8. Traducători pentru Markdown, notebook, text și imagini sub `co_op_translator.core`.
 
-Review:
+Revizuire:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. Deterministic checks under `co_op_translator.review.checks`
+4. Verificări deterministe sub `co_op_translator.review.checks`
 
-The following classes are useful for maintainers, but are not exported as the package-level stable API.
+Următoarele clase sunt utile pentru întreținători, dar nu sunt exportate ca API stabil la nivel de pachet.
 
 | Clasă | Modul | Responsabilitate |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Coordonează traducerea la nivel de proiect, gestionarea directoarelor, normalizarea metadatelor pe limbă și delegarea către traducători pentru Markdown, notebook-uri și imagini. |
-| `TranslationManager` | `co_op_translator.core.project.translation` | Execută munca asincronă de procesare a fișierelor pentru Markdown, notebook-uri, imagini, detectarea fișierelor învechite și actualizări ale metadatelor de traducere. |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Orchestrează citirile fișierelor Markdown, traducerea conținutului, rescrierea căilor, metadatele, declarațiile de exonerare și scrierile. |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Orchestrează citirile fișierelor notebook, traducerea celulelor Markdown, rescrierea căilor, metadatele, declarațiile de exonerare și scrierile. |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Orchestrează descoperirea imaginilor sursă, traducerea imaginilor, căile de ieșire, metadatele și scrierile. |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Găsește perechile de Markdown traduse, evaluează calitatea traducerii și citește metadatele de încredere pentru fluxuri de lucru de reparare a traducerilor cu încredere scăzută. |
-| `ReviewRunner` | `co_op_translator.review.runner` | Coordonează verificările deterministe de revizuire pe fișierele sursă, limbile țintă și rădăcinile de traducere configurate. |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Coordonează traducerea la nivel de proiect, gestionarea directoarelor, normalizarea metadata pe limbă și delegarea către traducători pentru Markdown, notebook și imagini. |
+| `TranslationManager` | `co_op_translator.core.project.translation` | Realizează lucrările asincrone de procesare a fișierelor pentru Markdown, notebook-uri, imagini, detectarea învechirii și actualizările metadata de traducere. |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Orchestrează citirea fișierelor Markdown, traducerea conținutului, rescrierea căilor, metadata, declinări de responsabilitate și scrieri. |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Orchestrează citirea fișierelor notebook, traducerea celulelor Markdown, rescrierea căilor, metadata, declinări de responsabilitate și scrieri. |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Orchestrează descoperirea imaginilor sursă, traducerea imaginilor, căile de ieșire, metadata și scrieri. |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Găsește perechile Markdown traduse, evaluează calitatea traducerii și citește metadata privind încrederea pentru fluxuri de lucru de remediere cu încredere scăzută. |
+| `ReviewRunner` | `co_op_translator.review.runner` | Coordonează verificări deterministe de revizuire pentru fișierele sursă, limbile țintă și rădăcinile de traducere configurate. |
 | `ReviewTarget` | `co_op_translator.review.targets` | Descrie o rădăcină sursă și directorul de ieșire al traducerii revizuit pentru acea rădăcină. |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Detectează foldere de limbă legacy bazate pe aliasuri și pregătește planuri de migrare către nume canonice de foldere BCP 47. |
-| `Config` | `co_op_translator.config.base_config` | Încarcă fișiere `.env` și verifică dacă furnizorii LLM necesari și furnizorii Vision opționali sunt configurați. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Detectează automat Azure OpenAI sau OpenAI, validează variabilele de mediu necesare și rulează verificări de conectivitate pentru furnizor. |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | Detectează configurația Azure AI Vision și rulează verificări de conectivitate pentru traducerea imaginilor. |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Detectează foldere de limbă vechi bazate pe aliasuri și pregătește planuri de migrare către foldere canonice BCP 47. |
+| `Config` | `co_op_translator.config.base_config` | Încarcă fișiere `.env` și verifică dacă furnizorii LLM necesari și opțional Vision sunt configurați. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Detectează automat Azure OpenAI, OpenAI sau Anthropic, validează variabilele de mediu necesare și execută verificări de conectivitate pentru furnizor. |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | Detectează configurația Azure AI Vision și execută verificări de conectivitate pentru traducerea imaginilor. |

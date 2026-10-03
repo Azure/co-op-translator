@@ -1,6 +1,6 @@
 # CLI nuoroda
 
-Co-op Translator įdiegia šiuos komandinės eilutės įėjimo taškus:
+Co-op Translator įdiegia šiuos komandų eilutės įvesties taškus:
 
 - `translate`
 - `evaluate`
@@ -8,33 +8,45 @@ Co-op Translator įdiegia šiuos komandinės eilutės įėjimo taškus:
 - `co-op-review`
 - `co-op-translator-mcp`
 
-Komandos `translate`, `evaluate`, `migrate-links` ir `co-op-review` perduodamos per `co_op_translator.__main__`, kuris pasirenka komandos įgyvendinimą pagal iškvietimo skripto pavadinimą. MCP serveris naudoja `co_op_translator.mcp.server` tiesiogiai.
+Komandos `translate`, `evaluate`, `migrate-links` ir `co-op-review` perduodamos per `co_op_translator.__main__`, kuris parenka komandos įgyvendinimą pagal paleistos programos pavadinimą. MCP serveris naudoja `co_op_translator.mcp.server` tiesiogiai.
 
 Jei renkatės tarp CLI, Python API ir MCP, pradėkite nuo [Pasirinkite savo darbo eigą](workflows.md).
 
-## Pradinis CLI srautas
+## Konsolės išvestis
+
+Interaktyvios terminalų sesijos naudoja Rich formatavimą komandų antraštėms, pažangai ir santraukoms. CI ir neinteraktyvi išvestis automatiškai grįžta prie paprasto teksto.
+
+Nustatykite `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain`, kad priverstinai gautumėte paprastą išvestį, arba `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich`, kad priverstinai gautumėte Rich išvestį. Nustatykite `CO_OP_TRANSLATOR_NO_PROGRESS=1`, kad išsaugotumėte santraukas ir slopintumėte gyvus pažangos juostas.
+
+Naudokite `translate --json-events progress.ndjson`, kai kita sistema reikalinga
+mašiniškai skaitoma pažanga. CLI toliau pateikia žmogui skirtą išvestį, tuo tarpu
+NDJSON faile rašomi versijuoti `co-op.translation.event.v1` įvykiai su
+stabiliais laukais, tokiais kaip `type`, `stage_key`, `completed`, `total` ir
+`current_path`.
+
+## Pirmas CLI naudojimas
 
 Pradėkite čia, jei naudojate Co-op Translator iš terminalo:
 
-1. Sukonfigūruokite LLM tiekėją, kaip aprašyta [Konfigūracijoje](configuration.md).
-2. Pasirinkite turinio tipą, kurį norite versti.
-3. Pirmiausia paleiskite siaurą komandą, pvz., tik Markdown vertimą.
-4. Prieš atliekant didelius repozitorijaus pakeitimus naudokite `--dry-run`.
-5. Po vertimo naudokite `co-op-review`, kad patikrintumėte struktūrą ir atnaujinimo būtinumą.
+1. Sukonfigūruokite LLM teikėją, kaip aprašyta [Konfigūracija](configuration.md).
+2. Pasirinkite turinio tipą, kurį norite išversti.
+3. Pirmiausia paleiskite siaurą komandą, pavyzdžiui, tik Markdown vertimą.
+4. Prieš didelius saugyklos pakeitimus naudokite `--dry-run`.
+5. Po vertimo naudokite `co-op-review`, kad patikrintumėte struktūrą ir aktualumą.
 
-| Tikslas | Pradinė komanda |
+| Tikslas | Komanda pradžiai |
 | --- | --- |
-| Translate Markdown documents | `translate -l "ko" -md` |
-| Translate notebooks | `translate -l "ko" -nb` |
-| Translate image text | `translate -l "ko" -img` |
-| Preview work without writing files | `translate -l "ko" -md --dry-run` |
-| Review existing translations | `co-op-review -l "ko"` |
-| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
-| Expose tools to an MCP client | Configure the [MCP Server](mcp.md) instead of running CLI commands directly. |
+| Versti Markdown dokumentus | `translate -l "ko" -md` |
+| Versti užrašų knygeles | `translate -l "ko" -nb` |
+| Versti vaizdų tekstą | `translate -l "ko" -img` |
+| Peržiūrėti darbą nerašant failų | `translate -l "ko" -md --dry-run` |
+| Peržiūrėti esamus vertimus | `co-op-review -l "ko"` |
+| Atnaujinti užrašų knygelių ir Markdown nuorodas | `migrate-links -l "ko" --dry-run` |
+| Eksponuoti įrankius MCP klientui | Sukonfigūruokite [MCP Server](mcp.md) vietoje tiesioginio CLI komandų paleidimo. |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+Verčia Markdown failus, užrašų knygeles ir vaizdų tekstą į vieną arba kelias tikslines kalbas.
 
 ```bash
 translate -l "ko ja fr"
@@ -42,71 +54,78 @@ translate -l "ko ja fr"
 
 ### Dažni pavyzdžiai
 
-Translate only Markdown:
+Versti tik Markdown:
 
 ```bash
 translate -l "de" -md
 ```
 
-Translate only notebooks:
+Versti tik užrašų knygeles:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Translate Markdown and images:
+Versti Markdown ir vaizdus:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-Update existing translations by deleting and recreating them:
+Atnaujinti esamus vertimus ištrynus ir sukūrus juos iš naujo:
 
 ```bash
 translate -l "ko" -u
 ```
 
-Run without interactive prompts:
+Paleisti be interaktyvių užklausų:
 
 ```bash
 translate -l "ko ja" -md -y
 ```
 
-Save logs:
+Išsaugoti žurnalus:
 
 ```bash
 translate -l "ko" -s
+```
+
+Rašyti struktūruotus pažangos įvykius:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
 ```
 
 ### Parinktys
 
 | Parinktis | Privaloma | Aprašymas |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Taip | Tarpais atskirti kalbų kodai, pvz. `"es fr de"`, arba `"all"`. |
-| `-r`, `--root-dir` | Ne | Projekto šaknis. Pagal nutylėjimą - dabartinis katalogas. |
-| `-u`, `--update` | Ne | Ištrinti esamus pasirinktas kalbas atitinkančius vertimus ir juos atkurti. |
-| `-img`, `--images` | Ne | Versti tik vaizdų failus. |
-| `-md`, `--markdown` | Ne | Versti tik Markdown failus. |
-| `-nb`, `--notebook` | Ne | Versti tik Jupyter užrašų knygeles (notebook). |
-| `-d`, `--debug` | Ne | Įjungti derinimo (debug) įrašymą į konsolę. |
-| `-s`, `--save-logs` | Ne | Išsaugoti DEBUG lygiu žurnalus aplanke `<root-dir>/logs/`. |
-| `-x`, `--fix` | Ne | Iš naujo išversti mažo pasitikėjimo Markdown failus, remiantis ankstesnių vertinimų rezultatais. |
-| `-c`, `--min-confidence` | Ne | Pasitikėjimo slenkstis `--fix`. Pagal nutylėjimą `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | Ne | Pridėti arba slopinti mašininio vertimo atsakomybės pastabas. Pagal nutylėjimą CLI įjungta. |
-| `-f`, `--fast` | Ne | Pasenęs greito vaizdų režimas. |
-| `-y`, `--yes` | Ne | Automatiškai patvirtinti raginimus, naudinga CI. |
-| `--repo-url` | Ne | Saugyklos URL, naudojamas README kalbų lentelės sparse-checkout patarimui. |
-| `--migrate-language-folders` | Ne | Pervardinti senas alias aplankus, pvz. `cn` arba `tw`, į kanoninius BCP 47 aplankus. |
-| `--dry-run` | Ne | Peržiūrėti kalbų aplankų migraciją ir vertimo sąmatą neįrašant failų. |
+| `-l`, `--language-codes` | Yes | Tarpais atskirti kalbų kodai, pavyzdžiui, `"es fr de"`, arba `"all"`. |
+| `-r`, `--root-dir` | No | Projekto šaknis. Pagal numatytuosius nustatymus dabartinis katalogas. |
+| `-u`, `--update` | No | Ištrinti esamus pasirinktos kalbos vertimus ir sukurti juos iš naujo. |
+| `-img`, `--images` | No | Versti tik vaizdų failus. |
+| `-md`, `--markdown` | No | Versti tik Markdown failus. |
+| `-nb`, `--notebook` | No | Versti tik Jupyter užrašų knygeles. |
+| `-d`, `--debug` | No | Įjungti derinimo lygio žurnalavimą konsolėje. |
+| `-s`, `--save-logs` | No | Išsaugoti DEBUG lygio žurnalus po `<root-dir>/logs/`. |
+| `--json-events` | No | Rašyti mašinai skaitomus vertimo pažangos įvykius kaip NDJSON. |
+| `-x`, `--fix` | No | Išversti iš naujo mažo pasitikėjimo Markdown failus remiantis ankstesniais įvertinimo rezultatais. |
+| `-c`, `--min-confidence` | No | Pasitikėjimo slenkstis `--fix`. Pagal numatytuosius nustatymus `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | No | Pridėti arba slėpti mašininio vertimo atsisakymus. CLI pagal numatytuosius nustatymus įjungta. |
+| `-f`, `--fast` | No | Nebenaudojamas greitas vaizdų režimas. |
+| `-y`, `--yes` | No | Automatiškai patvirtinti užklausas, naudinga CI. |
+| `--repo-url` | No | Saugyklos URL, naudojamas README kalbų lentelės sparse-checkout patarimui. |
+| `--migrate-language-folders` | No | Pervardyti senas alias aplankus, pvz., `cn` arba `tw`, į kanoninius BCP 47 aplankus. |
+| `--dry-run` | No | Peržiūrėti kalbų aplankų migraciją ir vertimo įverčius nerašant failų. |
 
-Jei nebuvo nurodytas tipo žymeklis (type flag), `translate` apdoroja Markdown, užrašų knygeles ir vaizdus. Vaizdų vertimas reikalauja Azure AI Vision konfigūracijos.
+Jei nebus nurodytas jokio tipo žymeklis, `translate` apdoros Markdown, užrašų knygeles ir vaizdus. Vaizdų vertimui reikalinga Azure AI Vision konfigūracija.
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+Įvertina išverstų Markdown kokybę vienai kalbai.
 
-!!! warning "Eksperimentinė"
-    `evaluate` yra eksperimentinė. Ji gali naudoti taisyklėmis grįstus ir LLM pagrindu atliekamus kokybės patikrinimus, įrašo vertinimo rezultatus į vertimo metaduomenis, ir jos įvertinimo modelis bei metaduomenų elgsena gali keistis.
+!!! warning "Eksperimentinis"
+    `evaluate` yra eksperimentinė. Ji gali naudoti taisyklėmis pagrįstus ir LLM pagrįstus kokybės patikrinimus, rašo įvertinimo rezultatus į vertimo metaduomenis, o jos vertinimo modelis ir metaduomenų elgsena gali keistis.
 
 ```bash
 evaluate -l "ko"
@@ -114,19 +133,19 @@ evaluate -l "ko"
 
 ### Dažni pavyzdžiai
 
-Use a stricter low-confidence threshold:
+Naudokite griežtesnį mažo pasitikėjimo slenkstį:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-Run rule-based checks only:
+Paleisti tik taisyklėmis pagrįstus patikrinimus:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-Run LLM-based checks only:
+Paleisti tik LLM pagrįstus patikrinimus:
 
 ```bash
 evaluate -l "ja" -D
@@ -136,22 +155,22 @@ evaluate -l "ja" -D
 
 | Parinktis | Privaloma | Aprašymas |
 | --- | --- | --- |
-| `-l`, `--language-code` | Taip | Vienas kalbos kodas, kurį reikia įvertinti. Alias kodai normalizuojami. |
-| `-r`, `--root-dir` | Ne | Projekto šaknis. Pagal nutylėjimą - dabartinis katalogas. |
-| `-c`, `--min-confidence` | Ne | Slenkstis, naudojamas išvardinant mažo pasitikėjimo vertimus. Pagal nutylėjimą `0.7`. |
-| `-d`, `--debug` | Ne | Įjungti derinimo (debug) įrašymą. |
-| `-s`, `--save-logs` | Ne | Išsaugoti DEBUG lygiu žurnalus aplanke `<root-dir>/logs/`. |
-| `-f`, `--fast` | Ne | Tik taisyklėmis grįstas vertinimas. |
-| `-D`, `--deep` | Ne | Tik LLM pagrindu atliekamas vertinimas. |
+| `-l`, `--language-code` | Yes | Vienas kalbos kodas, kurį reikia įvertinti. Alias kodai normalizuojami. |
+| `-r`, `--root-dir` | No | Projekto šaknis. Pagal numatytuosius nustatymus dabartinis katalogas. |
+| `-c`, `--min-confidence` | No | Slenkstis, naudojamas kai išvardijami mažo pasitikėjimo vertimai. Pagal numatytuosius nustatymus `0.7`. |
+| `-d`, `--debug` | No | Įjungti derinimo žurnalavimą. |
+| `-s`, `--save-logs` | No | Išsaugoti DEBUG lygio žurnalus po `<root-dir>/logs/`. |
+| `-f`, `--fast` | No | Tik taisyklėmis pagrįstas vertinimas. |
+| `-D`, `--deep` | No | Tik LLM pagrįstas vertinimas. |
 
-Pagal nutylėjimą `evaluate` naudoja tiek taisyklėmis grįstą, tiek LLM pagrindu atliekamą vertinimą. Rezultatai įrašomi į vertimo metaduomenis ir apibendrinami konsolėje.
+Pagal numatytuosius nustatymus `evaluate` naudoja tiek taisyklėmis pagrįstą, tiek LLM pagrįstą vertinimą. Rezultatai rašomi į vertimo metaduomenis ir apibendrinami konsolėje.
 
 ## co-op-review
 
-Run deterministic translation maintenance checks without API credentials.
+Paleisti deterministinius vertimo priežiūros patikrinimus be API kredencialų.
 
-!!! note "Bandomoji"
-    `co-op-review` yra bandomoji deterministinė peržiūros komanda. Ji nekviečia modelių tiekėjų ir neįrašo failų, tačiau jos patikrinimai ir išvesties problemų schema gali keistis.
+!!! note "Beta"
+    `co-op-review` yra beta versijos deterministinių peržiūrų komanda. Ji nekvietina modelių tiekėjų ir nerašo failų, tačiau jos patikrinimai ir problemų išvesties schema gali keistis.
 
 ```bash
 co-op-review -l "ko"
@@ -159,25 +178,37 @@ co-op-review -l "ko"
 
 ### Dažni pavyzdžiai
 
-Review Korean and Japanese translations from the current directory:
+Peržiūrėti Korėjiečių ir Japonų vertimus iš dabartinio katalogo:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Review a specific project root:
+Peržiūrėti konkretų projekto šaknį:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-Review only source files changed against a base ref:
+Peržiūrėti tik README po README tik vertimo:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` ignoruoja kitus dokumentus ir įdėtus README. Jis nepavyksta, jei trūksta šakninio
+`README.md`. Kartu su `--changed-from` jis peržiūri tik README,
+kai tas šaltinio failas pasikeitė. README tik vertimas palieka šaltinio README
+nepakitusią, įskaitant bet kokius bendrų skyrių žymeklius.
+
+Peržiūrėti tik šaltinio failus, kurie pasikeitė palyginus su pagrindiniu ref:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-Print GitHub-flavored Markdown output for CI summaries:
+Išspausdinti GitHub stiliaus Markdown išvestį CI santraukoms:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -187,32 +218,33 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 | Parinktis | Privaloma | Aprašymas |
 | --- | --- | --- |
-| `-l`, `--language-code` | Ne | Kalbos kodas peržiūrai. Gali būti perduodamas kelis kartus arba kaip tarpu atskirtas reikšmė. Pagal nutylėjimą - visos aptiktos vertimo kalbos. |
-| `-r`, `--root-dir` | Ne | Projekto šaknis. Pagal nutylėjimą - dabartinis katalogas. |
-| `--changed-from` | Ne | Git ref, naudojamas peržiūrai apriboti tik pakeistiems šaltinio failams. |
-| `--format` | Ne | Išvesties formatas: `text` arba `github`. Pagal nutylėjimą `text`. |
+| `-l`, `--language-code` | No | Kalbos kodas peržiūrai. Gali būti perduotas kelis kartus arba kaip tarpu atskirta reikšmė. Pagal numatytuosius nustatymus visos aptiktos vertimų kalbos. |
+| `-r`, `--root-dir` | No | Projekto šaknis. Pagal numatytuosius nustatymus dabartinis katalogas. |
+| `--changed-from` | No | Git ref, naudojamas peržiūrai apriboti iki pakeistų šaltinio failų. |
+| `--readme-only` | No | Peržiūrėti tik šakninį `README.md` vertimą. |
+| `--format` | No | Išvesties formatas: `text` arba `github`. Pagal numatytuosius nustatymus `text`. |
 
-`co-op-review` šiuo metu tikrina trūkstamus išverstus failus, trūkstamus arba pasenusius vertimo metaduomenis, Markdown frontmatter ir kodo skyriklių vientisumą, neteisingą išversto notebook JSON struktūrą ir trūkstamus vietinius Markdown arba vaizdų nuorodų tikslus. Trūkstamos nuorodos pagal nutylėjimą yra įspėjimai; struktūrinės ir atnaujinimo (freshness) problemos sukelia komandos klaidą.
+`co-op-review` šiuo metu tikrina trūkstamus išverstus failus, trūkstamus arba pasenusius vertimo metaduomenis, Markdown frontmatter ir kodo tvorų vientisumą, neteisingą išverstų užrašų knygelių JSON ir trūkstamas vietines Markdown arba vaizdų nuorodų paskirties vietas. Trūkstamos nuorodos pagal numatytuosius nustatymus yra įspėjimai; struktūrinės ir aktualumo problemos priverčia komandą nepavykti.
 
 ## co-op-translator-mcp
 
-Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+Paleisti Co-op Translator MCP serverį agentams, redaktoriams ir MCP suderinamiems klientams.
 
 ```bash
 co-op-translator-mcp
 ```
 
-The default transport is `stdio`. See the [MCP Server](mcp.md) guide for client configuration, tools, resources, and safety notes.
+Numatytoji transporto priemonė yra `stdio`. Žr. [MCP Server](mcp.md) vadovą dėl kliento konfigūracijos, įrankių, išteklių ir saugumo pastabų.
 
 ### Parinktys
 
 | Parinktis | Privaloma | Aprašymas |
 | --- | --- | --- |
-| `--transport` | Ne | MCP transportas: `stdio`, `streamable-http`, arba `sse`. Pagal nutylėjimą `stdio`. |
+| `--transport` | No | MCP transportas: `stdio`, `streamable-http`, arba `sse`. Pagal numatytuosius nustatymus `stdio`. |
 
 ## migrate-links
 
-Reprocess translated Markdown files and update notebook links so they point to translated notebooks when available.
+Perapdoroti išverstus Markdown failus ir atnaujinti užrašų knygelių nuorodas, kad jos nukreiptų į išverstus užrašų knygeles, kai jos yra prieinamos.
 
 ```bash
 migrate-links -l "ko ja"
@@ -220,19 +252,19 @@ migrate-links -l "ko ja"
 
 ### Dažni pavyzdžiai
 
-Preview link updates:
+Peržiūrėti nuorodų atnaujinimus:
 
 ```bash
 migrate-links -l "ko" --dry-run
 ```
 
-Process all supported languages without confirmation:
+Apdoroti visas palaikomas kalbas be patvirtinimo:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-Only rewrite links when translated notebooks exist:
+Perrašyti nuorodas tik tada, kai egzistuoja išverstos užrašų knygelės:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
@@ -242,18 +274,18 @@ migrate-links -l "ko" --no-fallback-to-original
 
 | Parinktis | Privaloma | Aprašymas |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Taip | Tarpais atskirti kalbų kodai arba `"all"`. |
-| `-r`, `--root-dir` | Ne | Projekto šaknis. Pagal nutylėjimą - dabartinis katalogas. |
-| `--image-dir` | Ne | Išverstų vaizdų katalogas, santykinis šakniniam katalogui. Pagal nutylėjimą `translated_images`. |
-| `--dry-run` | Ne | Rodyti failus, kurie būtų pakeisti, neįrašant atnaujinimų. |
-| `--fallback-to-original`, `--no-fallback-to-original` | Ne | Naudoti originalias notebook nuorodas, kai išverstos notebook nėra. Pagal nutylėjimą įjungta. |
-| `-d`, `--debug` | Ne | Įjungti derinimo (debug) įrašymą. |
-| `-s`, `--save-logs` | Ne | Išsaugoti DEBUG lygiu žurnalus aplanke `<root-dir>/logs/`. |
-| `-y`, `--yes` | Ne | Automatiškai patvirtinti raginimus apdorojant visas kalbas. |
+| `-l`, `--language-codes` | Yes | Tarpais atskirti kalbų kodai arba `"all"`. |
+| `-r`, `--root-dir` | No | Projekto šaknis. Pagal numatytuosius nustatymus dabartinis katalogas. |
+| `--image-dir` | No | Išverstų vaizdų katalogas, santykinis šakniniam katalogui. Pagal numatytuosius nustatymus `translated_images`. |
+| `--dry-run` | No | Rodyti failus, kurie pasikeistų, nerašant atnaujinimų. |
+| `--fallback-to-original`, `--no-fallback-to-original` | No | Naudoti originalias užrašų knygelių nuorodas, kai trūksta išverstų užrašų knygelių. Pagal numatytuosius nustatymus įjungta. |
+| `-d`, `--debug` | No | Įjungti derinimo žurnalavimą. |
+| `-s`, `--save-logs` | No | Išsaugoti DEBUG lygio žurnalus po `<root-dir>/logs/`. |
+| `-y`, `--yes` | No | Automatiškai patvirtinti užklausas apdorojant visas kalbas. |
 
-## Environment
+## Aplinka
 
-All commands require one configured LLM provider:
+Kai komandai reikalingi teikėjo kredencialai, sukonfigūruokite vieną iš šių teikėjų rinkinių. `translate --dry-run` ir `co-op-review` nereikalauja teikėjo kredencialų:
 
 ```bash
 # Azure OpenAI
@@ -266,9 +298,13 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Arba OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Arba Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Image translation additionally requires Azure AI Vision:
+Vaizdų vertimui papildomai reikalinga Azure AI Vision:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -277,71 +313,71 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 
 ## Išvesties struktūra
 
-Text translations are written under:
+Teksto vertimai rašomi į:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Translated image output is written under:
+Išverstos vaizdų išvestys rašomos į:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-For example, translating `README.md` and `docs/setup.md` into Korean produces:
+Pavyzdžiui, išvertus `README.md` ir `docs/setup.md` į korėjiečių kalbą gaunama:
 
 ```text
 translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## Kopijuoti/įklijuoti CLI pavyzdžiai
+## Kopijuoti ir įklijuoti CLI pavyzdžiai
 
-Translate Markdown into three languages:
+Versti Markdown į tris kalbas:
 
 ```bash
 translate -l "ko ja fr" -md
 ```
 
-Translate notebooks only:
+Versti užrašų knygeles tik:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Translate images only:
+Versti vaizdus tik:
 
 ```bash
 translate -l "pt-BR" -img
 ```
 
-Preview Markdown translation without writing files:
+Peržiūrėti Markdown vertimą nerašant failų:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-Repair low-confidence Markdown translations:
+Sutaisyti mažo pasitikėjimo Markdown vertimus:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-Run CI-friendly Markdown translation:
+Paleisti CI draugišką Markdown vertimą:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-Review translated output:
+Peržiūrėti išverstą išvestį:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Preview link migration:
+Peržiūrėti nuorodų migraciją:
 
 ```bash
 migrate-links -l "ko" --dry-run

@@ -1,72 +1,73 @@
-# သည်ဘာသာစကားများကို ထောက်ခံသည်
+# ထောက်ပံ့ထားသည့် ဘာသာစကားများ
 
-Co-op Translator သည် စာသား၊ နိုတ်ဘုတ် နှင့် ပုံ ဘာသာပြန်ထွက်များအတွက် အောက်ပါ ဘာသာစကားကုဒ်များကို ထောက်ပံ့သည်။
+Co-op Translator သည် စာသား၊ နိုတ်ဘွတ်ခ်နှင့် ဓာတ်ပုံ ပြန်လည်ဘာသာပြန်ထုတ်လွှင့်မှုများအတွက် အောက်ပါ ဘာသာစကားကုဒ်များကို ထောက်ပံ့သည်။
 
-သင် ဘာသာစကား အသစ်တစ်ခု ထည့်ချင်ပါက `src/co_op_translator/fonts/` အောက်ရှိ language နှင့် font များ၏ mapping များကို 업데이트 ပြီး ဘာသာစကားကို စမ်းသပ်ပြီးမှ pull request ဖွင့်ပါ။
+ဘာသာစကားအသစ်တစ်ခု ထည့်လိုပါက `src/co_op_translator/fonts/` အောက်ရှိ ဘာသာစကားနှင့် ဖောင့် မက်ပင်းများကို အပ်ဒိတ်လုပ်ပြီး pull request ဖွင့်မီ အဲဒီဘာသာစကားကို စမ်းသပ်ပါ။
 
-| Language Code | Language Name | Font | RTL Support | Known Issues |
+| ဘာသာစကားကုဒ် | ဘာသာစကားအမည် | ဖောင့် | RTL ထောက်ပံ့မှု | သိရှိထားသော ပြဿနာများ |
 | --- | --- | --- | --- | --- |
-| en | အင်္ဂလိပ် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| fr | ပြင်သစ် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| es | စပိန် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| de | ဂျာမန် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| ru | ရုရှား | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| ar | အာရဘစ် | NotoSansArabic-Medium.ttf | ရှိ | မရှိ |
-| fa | ပါရှန် (ဖာစီ) | NotoSansArabic-Medium.ttf | ရှိ | မရှိ |
-| ur | ဥာဒူး | NotoSansArabic-Medium.ttf | ရှိ | မရှိ |
-| zh-CN | တရုတ် (ရိုးရှင်း) | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
-| zh-MO | တရုတ် (ရိုးရာ၊ မကာအို) | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
-| zh-HK | တရုတ် (ရိုးရာ၊ ဟောင်ကောင်) | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
-| zh-TW | တရုတ် (ရိုးရာ၊ ထိုင်ဝမ်) | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
-| ja | ဂျပန် | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
-| ko | ကိုရီးယား | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
-| hi | ဟိန္ဒီ | NotoSansDevanagari-Medium.ttf | မရှိ | မရှိ |
-| bn | ဘင်္ဂါလီ | NotoSansBengali-Medium.ttf | မရှိ | မရှိ |
-| mr | မာရသီ | NotoSansDevanagari-Medium.ttf | မရှိ | မရှိ |
-| ne | နီပေါလီ | NotoSansDevanagari-Medium.ttf | မရှိ | မရှိ |
-| pa | ပန်ဂျာဘီ (ဂူရ်မုခီ) | NotoSansGurmukhi-Medium.ttf | မရှိ | မရှိ |
-| pt-PT | ပေါ်တူဂီ (ပေါ်တူဂီ) | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| pt-BR | ပေါ်တူဂီ (ဘရာဇီးလ်) | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| it | အီတလီ | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| lt | လစ်သူးနီးယား | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| pl | ပိုလန် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| tr | တူရကီ | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| el | ဂရိ | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| th | ထိုင်း | NotoSansThai-Medium.ttf | မရှိ | မရှိ |
-| sv | ဆွီဒင် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| da | ဒိန်းမတ် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| no | နော်ဝေ | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| fi | ဖင်လန် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| nl | ဒတ်ချ် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| he | ဟီဘရူး | NotoSansHebrew-Medium.ttf | ရှိ | မရှိ |
-| vi | ဗီယက်နမ် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| id | အင်ဒိုနီးရှား | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| ms | မလေး | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| tl | တာဂလို့ (ဖိလစ်ပိုင်) | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| sw | ဆွာဟီလီ | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| hu | ဟန်ဂေရီ | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| cs | ချက် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| sk | စလိုဗက် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| ro | ရိုမေးနီးယား | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| bg | ဘူလ်ဂေးရီးယား | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| sr | ဆားဘီးယား (စီရီလစ်) | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| hr | ခ្រូအေးရှား | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| sl | စလိုဗေးနီးယား | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| uk | ယူကရိန်း | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| my | မြန်မာ (မြန်မာ) | NotoSansMyanmar-Medium.ttf | မရှိ | မရှိ |
-| ta | တမီးလ် | NotoSansTamil-Medium.ttf | မရှိ | မရှိ |
-| et | အက်စတိုနီးယား | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| pcm | নাইဂျီးရီးယား ပစ်ဂင် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| te | တယ်လူဂု | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| ml | မာလာယာလမ် | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| kn | ကန်နာဒာ | NotoSans-Medium.ttf | မရှိ | မရှိ |
-| km | ခ្មែរ | NotoSansKhmer-Medium.ttf | မရှိ | မရှိ |
+| en | English | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| fr | French | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| es | Spanish | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| de | German | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| ru | Russian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| ar | Arabic | NotoSansArabic-Medium.ttf | ရှိ | မရှိ |
+| fa | Persian (Farsi) | NotoSansArabic-Medium.ttf | ရှိ | မရှိ |
+| ur | Urdu | NotoSansArabic-Medium.ttf | ရှိ | မရှိ |
+| zh-CN | Chinese (Simplified) | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
+| zh-MO | Chinese (Traditional, Macau) | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
+| zh-HK | Chinese (Traditional, Hong Kong) | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
+| zh-TW | Chinese (Traditional, Taiwan) | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
+| ja | Japanese | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
+| ko | Korean | NotoSansCJK-Medium.ttc | မရှိ | မရှိ |
+| hi | Hindi | NotoSansDevanagari-Medium.ttf | မရှိ | မရှိ |
+| bn | Bengali | NotoSansBengali-Medium.ttf | မရှိ | မရှိ |
+| mr | Marathi | NotoSansDevanagari-Medium.ttf | မရှိ | မရှိ |
+| ne | Nepali | NotoSansDevanagari-Medium.ttf | မရှိ | မရှိ |
+| pa | Punjabi (Gurmukhi) | NotoSansGurmukhi-Medium.ttf | မရှိ | မရှိ |
+| pt-PT | Portuguese (Portugal) | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| pt-BR | Portuguese (Brazil) | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| it | Italian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| lt | Lithuanian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| pl | Polish | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| tr | Turkish | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| el | Greek | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| th | Thai | NotoSansThai-Medium.ttf | မရှိ | မရှိ |
+| sv | Swedish | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| da | Danish | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| no | Norwegian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| fi | Finnish | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| nl | Dutch | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| he | Hebrew | NotoSansHebrew-Medium.ttf | ရှိ | မရှိ |
+| vi | Vietnamese | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| id | Indonesian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| ms | Malay | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| tl | Tagalog (Filipino) | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| sw | Swahili | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| hu | Hungarian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| cs | Czech | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| sk | Slovak | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| ro | Romanian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| bg | Bulgarian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| sr | Serbian (Cyrillic) | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| hr | Croatian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| sl | Slovenian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| uk | Ukrainian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| my | Burmese (Myanmar) | NotoSansMyanmar-Medium.ttf | မရှိ | မရှိ |
+| ta | Tamil | NotoSansTamil-Medium.ttf | မရှိ | မရှိ |
+| et | Estonian | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| pcm | Nigerian Pidgin | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| te | Telugu | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| ml | Malayalam | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| kn | Kannada | NotoSans-Medium.ttf | မရှိ | မရှိ |
+| km | Khmer | NotoSansKhmer-Medium.ttf | မရှိ | မရှိ |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | မရှိ | မရှိ |
 
-## ဘာသာစကား တစ်ခု ထည့်ရန်
+## ဘာသာစကား ထည့်သွင်းရန်
 
-ဘာသာစကား အသစ်ကို ထည့်ရန် -
+ဘာသာစကားအသစ်ကို ထည့်သွင်းရန် -
 
-1. ဘာသာစကားကုဒ်နှင့် ပြသမည့်နာမည်ကို language utilities တွင် ထည့်ပါ။
-2. `src/co_op_translator/fonts/font_language_mappings.yml` တွင် ဖောင့်ကို ထည့်သို့မဟုတ် mapping လုပ်ပါ။
-3. Markdown နှင့် ပုံ ဘာသာပြန်ထွက်များကို စမ်းသပ်ပါ။
-4. mapping နှင့် အတည်ပြုပြီးသော မှတ်တမ်းများနှင့်အတူ pull request ဖွင့်ပါ။
+1. ဘာသာစကားကုဒ်နှင့် ပြသမည့် အမည်ကို language utilities တွင် ထည့်ပါ။
+2. `src/co_op_translator/fonts/font_language_mappings.yml` တွင် ဖောင့်ကို ထည့် သို့မဟုတ် မျက်နှာချင်းဆိုင်ထားပါ။
+3. Markdown နှင့် ဓာတ်ပုံ ဘာသာပြန်ထုတ်လွှင့်မှုများကို စမ်းသပ်ပါ။
+4. မျက်နှာချင်းဆိုင်အပ်ဒိတ်နှင့် စမ်းသပ်ရေးမှတ်စုများကို ပူးတွဲ၍ pull request တစ်ခု ဖွင့်ပါ။

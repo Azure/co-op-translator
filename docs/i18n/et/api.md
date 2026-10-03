@@ -1,49 +1,49 @@
 # Pythoni API
 
-Stabiilne avalik Pythoni API eksporditakse moodulist `co_op_translator.api`. Enamik integratsioone kasutab ühte järgmistest töövoogudest:
+Püsiv avalik Pythoni API on eksporditud moodulist `co_op_translator.api`. Enamik integratsioone kasutab üht järgmistest töövoogudest:
 
-| Scenario | Use this when | Main APIs |
+| Stsenaarium | Kasutada, kui | Põhilised API-d |
 | --- | --- | --- |
-| Translate individual files or documents | Your application reads source content, calls Co-op Translator for translation, and decides where to save the result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | Your MCP host or application model will translate chunks, while Co-op Translator handles chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | You want the Python API to behave like the CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
+| Tõlgi üksikuid faile või dokumente | Teie rakendus loeb lähte sisu, kutsub Co-op Translatori tõlkimiseks ja otsustab, kuhu tulemuse salvestada. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Valmista sisu host-agendi tõlkimiseks | Teie MCP host või rakenduse mudel tõlgib tükke, samal ajal kui Co-op Translator tegeleb tükkide jagamise ja taasühendamisega. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Tõlgi kogu hoidla | Soovite, et Pythoni API käituks nagu CLI ning haldaks failide leidmist, väljundite teid, metaandmeid, puhastust ja kirjutamisi. | `run_translation` |
 
-Enamik `core`, `config`, `review` ja `utils` all olevatest madalama taseme moodulitest on teostuse üksikasjad, mida need API sisenemispunktid kasutavad.
+Enamik `core`, `config`, `review` ja `utils` alam-mooduleid on nende API sisenemispunktide rakenduslikud üksikasjad.
 
-MCP kliendid kasutavad sama avalikku API-d läbi [MCP Server](mcp.md). Kasuta seda lehekülge, kui kutseid teed Pythonilt otse, ja MCP juhendit, kui avad Co-op Translatori agendile või redaktorile. Kui valid CLI, Python API ja MCP vahel, alusta leheküljest [Choose Your Workflow](workflows.md).
+MCP kliendid kasutavad sama avalikku API-d läbi [MCP Server](mcp.md). Kasutage seda lehte, kui kutsute Pythoni otse, ja MCP juhendit, kui avaldate Co-op Translatori agendile või redaktorile. Kui otsustate CLI, Pythoni API ja MCP vahel, alustage [Vali oma töövoog](workflows.md).
 
-## Esmakordne API-voog
+## Esmane API töövoog
 
-Alusta siit, kui kutsud Co-op Translatorit Pythonist:
+Alustage siit, kui kutsute Co-op Translatorit Pythoni koodist:
 
-1. Konfigureeri LLM-teenuse pakkuja nagu kirjeldatud jaotises [Configuration](configuration.md), välja arvatud juhul, kui sa valmistad Markdowni või märkmiku tüki ainult host-agendi tõlkeks ette.
-2. Otsusta, kas su rakendus haldab failide I/O-d.
-3. Kasuta sisu-API-sid, kui su rakendus loeb ja kirjutab üksikuid faile.
-4. Kasuta `run_translation`, kui Co-op Translator peaks töötlema repositooriumi nagu CLI.
-5. Kasuta `run_review` pärast tõlget, kui vajad deterministlikke kontrolle automatiseerimises.
+1. Konfigureerige LLM-pakkuja nagu kirjeldatud lehel [Configuration](configuration.md), välja arvatud juhul, kui valmistate ainult Markdowni või notebooki tükke host-agendi tõlkimiseks.
+2. Otsustage, kas teie rakendus haldab failide sisend-/väljundit.
+3. Kasutage sisu API-sid, kui teie rakendus loeb ja kirjutab üksikuid faile.
+4. Kasutage `run_translation`, kui Co-op Translator peaks töötlema hoidlat nagu CLI.
+5. Kasutage `run_review` pärast tõlget, kui vajate automatiseerimisel deterministlikke kontrolle.
 
-| Goal | API to start with |
+| Eesmärk | Alguseks sobiv API |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
-| Translate one notebook payload | `translate_notebook_content` |
-| Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
-| Translate a full repository | `run_translation` |
-| Review translated output | `run_review` |
+| Tõlgi üks Markdowni string või fail | `translate_markdown_content` |
+| Tõlgi ühe notebooki sisu | `translate_notebook_content` |
+| Tõlgi üks pilt | `translate_image_content` |
+| Laske host-agendil tõlkida Markdowni või notebooki tükke | `start_markdown_agent_translation` või `start_notebook_agent_translation` |
+| Ümberkirjutada tõlgitud lingid pärast väljundtee valimist | `rewrite_markdown_paths` või `rewrite_notebook_paths` |
+| Tõlgi kogu hoidla | `run_translation` |
+| Kontrolli tõlgitud väljundit | `run_review` |
 
 ## Stsenaarium 1: Tõlgi üksikuid faile või dokumente
 
-Kasuta seda töövoogu siis, kui sul on juba fail, redaktori puhver, märkmiku paylaod, MCP päring või kohandatud töötluse sisend. Sinu kood haldab failide I/O-d:
+Kasutage seda töövoogu, kui teil on juba fail, redaktori puhver, notebooki sisu, MCP päring või kohandatud torujuhtme sisend. Teie kood haldab failide sisend-/väljundit:
 
-1. Loe lähte sisu.
-2. Kutsu sisu tõlke-API-d.
-3. Valikuliselt kutsu path-rewrite API-d, kui tõlgitud sisu kirjutatakse projekti tõlke kausta.
-4. Salvesta või tagasta tulemus oma rakendusest.
+1. Lugege lähte sisu.
+2. Kutsuge sisu tõlke-API-d.
+3. Vajadusel kutsuge tee ümberkirjutamise API, kui tõlgitud sisu kirjutatakse projekti tõlkekausta.
+4. Salvestage või tagastage tulemus oma rakendusest.
 
-Sisu tõlke API-d ei käivita projekti avastust, ei kirjuta metaandmeid, ei lisa allkirju ega kirjuta linke automaatselt ümber.
+Sisu tõlke-API-d ei käivita projekti avastamist, ei kirjuta metaandmeid, ei lisa vastutusklausleid ega kirjuta linke automaatselt ümber.
 
-### Markdown File
+### Markdown-fail
 
 ```python
 import asyncio
@@ -85,9 +85,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Kui tõlgitud Markdown ei ela Co-op Translatori projekti paigutuses, jäta `rewrite_markdown_paths` vahele ja salvesta tõlgitud string otse.
+Kui tõlgitud Markdown ei asu Co-op Translatori projekti paigutuses, jätke `rewrite_markdown_paths` vahele ja salvestage tõlgitud tekst otse.
 
-### Notebook File
+### Notebook-fail
 
 ```python
 import asyncio
@@ -129,9 +129,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` tõlgib Markdown-kesed ja säilitab mittemarkdown-kesed. Path-ümberkirjutus rakendub ainult Markdown-kestadele.
+`translate_notebook_content` tõlgib Markdowni lahtrid ja säilitab mitte-Markdowni lahtrid. Teede ümberkirjutamist rakendatakse ainult Markdowni lahtritele.
 
-### Image File
+### Pildifail
 
 ```python
 from pathlib import Path
@@ -154,15 +154,15 @@ target_path.parent.mkdir(parents=True, exist_ok=True)
 translated_image.save(target_path)
 ```
 
-`translate_image_content` loeb lähtepildi ja tagastab renderdatud `PIL.Image.Image`. See ei kirjelda tõlgitud pildi metaandmeid kirjana.
+`translate_image_content` loeb lähtepildi ja tagastab renderdatud `PIL.Image.Image`. See ei kirjuta tõlgitud pildi metaandmeid.
 
-## Stsenaarium 2: Tõlgi kogu repositoorium
+## Stsenaarium 2: Tõlgi kogu hoidla
 
-Kasuta seda töövoogu, kui soovid, et Pythoni API käituks nagu `translate` CLI. `run_translation` avastab toetatud failid, tõlgib valitud sisutüüpe, kirjutab ümber teed, kirjutab väljundfaile, uuendab metaandmeid ja sooritab tõlke hooldustöid nagu puhastus.
+Kasutage seda töövoogu, kui soovite, et Pythoni API käituks nagu `translate` CLI. `run_translation` avastab toetatud failid, tõlgib valitud sisutüübid, ümberkirjutab teid, kirjutab väljundfaile, uuendab metaandmeid ja teostab tõlke hooldustöid nagu puhastus.
 
-`run_translation` on eelistatud projekti orkestreerimise sisenemispunkt. `translate_project` eksporditakse kui ühilduvusalias sama käitumisega.
+`run_translation` on eelistatud projekti orkestreerimise sisenemispunkt. `translate_project` on eksportitud ühilduvusaliasena sama käitumisega.
 
-Tõlgi Markdown-faile praeguses repositooriumis korea ja jaapani keelde:
+Tõlkige Markdown-failid praegusest hoidlast korea ja jaapani keelde:
 
 ```python
 from co_op_translator.api import run_translation
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-Tõlgi ainult märkmikud konkreetsest projekti juurest:
+Tõlgi ainult notebooke ühest kindlast projekti juurkataloogist:
 
 ```python
 from co_op_translator.api import run_translation
@@ -185,7 +185,7 @@ run_translation(
 )
 ```
 
-Eelvaata tõlke mahtu ilma faile kirjutamata:
+Eelvaade tõlke mahule ilma failide kirjutamiseta:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-Tõlgi mitu sisendjuurt ühes kutses:
+Salvestage struktureeritud edenemise sündmused integratsiooni jaoks:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Salvesta sisu oma töö-sündmuste tabelisse või voogedasta see oma kasutajaliidesesse.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Sündmused kasutavad versioonitud skeemi `co-op.translation.event.v1`. Integratsioonid peaksid
+tugineda stabiilsetele väljadele nagu `type` ja `stage_key`, mitte
+konsoolitekstile ega `stage_label`.
+
+Tõlkige mitu sisu juurkausta ühes kutses:
 
 ```python
 from co_op_translator.api import run_translation
@@ -210,7 +234,7 @@ run_translation(
 )
 ```
 
-Kirjuta tõlked eksplicitsetesse väljundgruppidesse:
+Kirjutage tõlked selgesse väljundgruppi:
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-Kasuta iga keele jaoks eraldi kohatäiteid, kui iga keel peaks sisaldama pesastatud alamkausta:
+Kasutage per-keele kohatäidet, kui igal keelel peaks olema pesastatud alamkataloog:
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-Kui ükski `markdown`, `notebook` või `images` pole määratud, tõlgib API kõiki toetatud tüüpe: Markdowni, märkmikke ja pilte.
+Kui ükski `markdown`, `notebook` või `images` pole seatud, tõlgib API kõik toetatud tüübid: Markdown, notebookid ja pildid.
+
+### Säilitage aktsepteeritud inimeste muudatused tõlkeoleku pakkujaga
+
+Vaikimisi hoiab Co-op Translator oma olemasolevat failitaseme käitumist: kui
+Markdowni lähte sisu on aegunud, genereeritakse kogu tõlgitud fail uuesti. Hostitud
+integratsioonid võivad valikuliselt edastada `TranslationStateProvider`-i, et säilitada inimeste
+muudatusi lähteplokkides, mis pole muutunud.
+
+Pakkuja esitab viimase aktsepteeritud lähte/siht paari ja salvestab iga uue
+kandidaadi. Aktsepteerimine jääb integratsiooni vastutuseks—näiteks,
+pärast tõlke pull requesti integreerimist:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+Markdowni failide puhul, millel on kehtiv aktsepteeritud baasjoon, joondab Co-op Translator
+tipp-taseme Markdown blokke. Muutumata lähteplokid taaskasutavad praeguseid tõlgitud
+blokke, sh inimeste tehtud muudatusi; muudetud või lisatud lähteplokid saadetakse
+tõlkimiseks; kustutatud lähteplokid eemaldatakse. Kui joondus on ebaselge,
+sihtstruktuur muutus, bloki tõlge on kehtetu või baasjoont pole
+saadaval, langeb Co-op Translator turvaliselt tagasi olemasolevale kogu faili
+tõlke teele.
+
+See API salvestab dokumendi tõlkeolekut, mitte dokumentidevahelist fraasi või
+segmentide tõlkemälu. See kehtib hetkel Markdowni projekti
+tõlkimisele. Notebooki ja pildi käitumine on muutumatu. `update=True`
+edastamine taotleb siiski täielikku uuesti genereerimist.
+
+Kui ühte või enamat faili ei õnnestu tõlkida, viskab `run_translation`
+`RuntimeError` pärast projekti töövoo lõppu, selle asemel et teatada
+õnnestunud jooksust, kus väljund puudub. Integratsioonid peaksid seda käsitlema kui ebaõnnestunud
+tööülesannet ning säilitama eelmise aktsepteeritud tõlkeoleku.
 
 ## Tõlgitud väljundi ülevaatus
 
-`run_review` käitab deterministlikke tõlke kontrolle ilma LLMi või Visioni volitusteta.
+`run_review` käivitab deterministlikud tõlke kontrollid ilma LLMi või Visioni tõenditeta.
 
-!!! note "Beta"
-    `run_review` on beetaversiooni deterministlik ülevaate-API. See ei kutsu mudeli pakkujaid ega kirjuta faile, kuid kontrollide ja probleemiskeemide struktuur võib muutuda.
+!!! note "Beeta"
+    `run_review` on beeta-faasis deterministlik ülevaatus-API. See ei kutsu mudelipakkujaid ega kirjuta faile, kuid kontrollid ja probleemiskeemid võivad muutuda.
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-Vaata üle ainult failid, mis on muudetud baasrefiga võrreldes, ja prindi GitHubi-laadset väljundit:
+Pärast ainult README tõlget kasutage ülevaatuseks sama ulatust:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` kontrollib ainult iga konfigureeritud lähtejuure all olevat `README.md`-i,
+sh kohandatud `groups`-e ja väljundkatalooge. Teised dokumendid ja pesastatud
+README-d on välistatud. Puuduv lähte-README tekitab `ValueError`; ebaõnnestunud
+tõlke kontrollide ebaõnnestumine viskab `RuntimeError`.
+
+Kontrollige ainult faile, mis muutusid võrreldes baasrefiga, ja trükkige GitHub-stiilis väljund:
 
 ```python
 from co_op_translator.api import run_review
@@ -276,7 +400,7 @@ run_review(
 
 ## Kopeeri-kleebi API näited
 
-Tõlgi Markdown-sisu ilma failikirjeteta:
+Tõlkige Markdowni sisu ilma failikirjutusteta:
 
 ```python
 import asyncio
@@ -295,7 +419,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Tõlgi ja kirjuta Markdowni lingid ümber:
+Tõlkige ja kirjutage Markdowni lingid ümber:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -327,7 +451,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Tõlgi repositoorium Pythonilt:
+Tõlkige hoidla Pythoni abil:
 
 ```python
 from co_op_translator.api import run_translation
@@ -340,7 +464,7 @@ run_translation(
 )
 ```
 
-Tõlgi mitu juurt:
+Tõlgi mitu juurkausta:
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-Säilita terminoloogia glosaarist:
+Säilitage sõnastiku terminid:
 
 ```python
 from co_op_translator.api import run_translation
@@ -378,6 +502,9 @@ from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## Sisu tõlke API-d
+## Sisu tõlke-API-d
 
-Sisu tõlke API-d on mõeldud integratsioonidele, millel on sisu mälu sees juba olemas, nagu redaktori laiendus, MCP tööriist, märkmikute töötleja või kohandatud torujuhe.
+Sisu tõlke-API-d on mõeldud integratsioonidele, millel on sisu juba mälus, näiteks redaktori laiendus, MCP tööriist, notebooki protsessor või kohandatud torujuhtme komponent.
 
-| Function | Input | Output | File I/O | Notes |
+| Funktsioon | Sisend | Väljund | Faili sisend-/väljund | Märkused |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Translates Markdown content only. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Translates Markdown cells and preserves non-Markdown cells. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Extracts and translates image text, then returns a rendered image. It does not save translated image metadata. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Asünkroonne. Tõlgib ainult Markdowni sisu. See ei kirjuta linke ümber, ei kirjuta metaandmeid ega lisa vastutusklausleid. |
+| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Asünkroonne. Tõlgib Markdowni lahtrid ja säilitab mitte-Markdowni lahtrid. See ei kirjuta linke ümber, ei kirjuta metaandmeid ega lisa vastutusklausleid. |
+| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Ekstraheerib ja tõlgib pilditeksti, seejärel tagastab renderdatud pildi. See ei salvesta tõlgitud pildi metaandmeid. |
 
-`translate_markdown_content` ja `translate_notebook_content` aktsepteerivad valikulist `source_path` oma valikute kaudu. See path antakse tõlkijale kontekstina; kutsujad jäävad vastutavaks projekti-spetsiifilise path-ümberkirjutuse eest pärast tõlget.
+`translate_markdown_content` ja `translate_notebook_content` aktsepteerivad valikulist `source_path` oma valikute kaudu. See tee antakse tõlkijale kontekstina; kutsujad vastutavad endiselt kõigi projekti-spetsiifiliste teede ümberkirjutamise eest pärast tõlget.
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-Samad valikud saab anda ka sõnastikena:
+Samad valikud saab edastada sõnastikena:
 
 ```python
 translated = await translate_markdown_content(
@@ -455,94 +588,96 @@ translated = await translate_markdown_content(
 )
 ```
 
-## Agendi abiga tõlke API-d
+## Agendi abiga tõlke-API-d
 
-Agendi abiga API-d ei kutsu Co-op Translatorist Azure OpenAI-d ega OpenAI-d. Need valmistavad Markdowni või märkmiku tükid ette host-agendi tõlkimiseks ja seejärel konstrueerivad lõpliku sisu tõlgitud tükkidest.
+Agendiabiga API-d ei kutsu Co-op Translatorist konfigureeritud LLM-pakkujat. Need valmistavad ette Markdowni või notebooki tükke, mida host-agent tõlgib, ja seejärel rekonstrueerivad lõpliku sisu tõlgitud tükkidest.
 
-| Function | Purpose |
+| Funktsioon | Eesmärk |
 | --- | --- |
-| `start_markdown_agent_translation` | Return a self-contained Markdown job with chunks, prompts, and reconstruction state. |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from a job and host-agent translated chunks. |
-| `start_notebook_agent_translation` | Return a notebook job with Markdown-cell chunks for host-agent translation. |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON while preserving code cells, outputs, and metadata. |
+| `start_markdown_agent_translation` | Tagastab iseseisva Markdowni tööülesande koos tükkide, promptide ja rekonstruktsiooni olekuga. |
+| `finish_markdown_agent_translation` | Rekonstrueerib Markdowni tööülesannest ja host-agendi tõlgitud tükkidest. |
+| `start_notebook_agent_translation` | Tagastab notebooki tööülesande koos Markdowni lahtritükkidega host-agendi tõlkimiseks. |
+| `finish_notebook_agent_translation` | Rekonstrueerib notebooki JSON-i säilitades koodilahtrid, väljundid ja metaandmed. |
 
-See töövoog on peamiselt mõeldud MCP hostidele. Kui vajad tootmisrepositooriumi tõlget, kus Co-op Translator haldab pakkuja kutseid, kasuta `translate_markdown_content`, `translate_notebook_content` või `run_translation`.
+See töövoog on peamiselt mõeldud MCP hostidele. Kui vajate tootmises hoidla tõlget, kus Co-op Translator haldab pakkuja kutsed, kasutage `translate_markdown_content`, `translate_notebook_content` või `run_translation`.
 
-## Path-ümberkirjutuse API-d
+## Tee ümberkirjutamise API-d
 
-Path-ümberkirjutuse API-d ei tee tõlget. Need uuendavad linke ja frontmatteri teid pärast seda, kui kutsuja teab lähte teed, tõlgitud sihtteed ja projekti paigutust.
+Tee ümberkirjutamise API-d ei tee tõlget. Need uuendavad linke ja frontmatter'i teid pärast seda, kui kutsujad teavad lähte teed, tõlgitud sihtteed ja projekti paigutust.
 
-| Function | Scope | Notes |
+| Funktsioon | Ulatus | Märkused |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | Rewrites Markdown links and supported frontmatter path fields for a translated target. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Applies Markdown path rewriting to each Markdown cell and leaves non-Markdown cells unchanged. |
+| `rewrite_markdown_paths` | Markdown body and frontmatter | Ümberkirjutab Markdowni lingid ja toetatud frontmatteri tee väljad tõlgitud sihtkoha jaoks. |
+| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Rakendab Markdowni teede ümberkirjutamist iga Markdowni lahtri jaoks ja jätab mitte-Markdowni lahtrid muutumatuks. |
 
-Argumendi `policy` võib olla sõnastik järgmiste väljadega:
+Argument `policy` võib olla sõnastik järgmiste väljadega:
 
-| Field | Required | Purpose |
+| Väli | Nõutud | Eesmärk |
 | --- | --- | --- |
-| `language_code` | Yes | Target language code, such as `"ko"` or `"pt-BR"`. |
-| `root_dir` | No | Source project root. Defaults to `"."`. |
-| `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
-| `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
-| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
-| `lang_subdir` | No | Optional subdirectory under each language folder. |
+| `language_code` | Jah | Sihtkeele kood, näiteks `"ko"` või `"pt-BR"`. |
+| `root_dir` | Ei | Allika projekti juur. Vaikimisi `"."`. |
+| `translations_dir` | Ei | Teksttõlke väljundkataloog. Vaikimisi `translations` `root_dir` all. |
+| `translated_images_dir` | Ei | Tõlgitud piltide väljundkataloog. Vaikimisi `translated_images` `root_dir` all. |
+| `translation_types` | Ei | Lubatud tõlketüübid. Vaikimisi Markdown, notebookid ja pildid. |
+| `lang_subdir` | Ei | Valikuline alamkataloog iga keelekausta all. |
 
 ## Projekti tõlke parameetrid
 
-| Parameter | Type | Default | Purpose |
+| Parameeter | Tüüp | Vaikeväärtus | Eesmärk |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Space-separated target language codes, such as `"ko ja fr"`, or `"all"`. Alias codes are normalized to canonical BCP 47 values. |
-| `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` are supplied. |
-| `update` | `bool` | `False` | Delete and recreate existing translations for the selected languages. |
-| `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
-| `markdown` | `bool` | `False` | Include Markdown translation. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
-| `debug` | `bool` | `False` | Enable debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
-| `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
-| `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
-| `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
-| `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
-
-## Ülevaatuse parameetrid
-
-`run_review` peegeldab meelega `run_translation` signatuuri, kus võimalik, nii et automatiseerimine saab tõlke ja ülevaatuse töövoogude vahel minimaalse haruharuga vahetada.
-
-| Parameter | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders to review. Space-separated strings and iterables are accepted. `"all"` reviews every discovered translation language. |
-| `root_dir` | `str` | `"."` | Project root for a single review target. Ignored when `root_dirs` or `groups` are supplied. |
-| `markdown` | `bool` | `False` | Include Markdown and MDX source files. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
-| `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images are checked from Markdown. |
-| `translations_dir` | `str \| None` | `None` | Kohandatud tekstide tõlke väljundkataloog. Relatiivsed teed lahendatakse iga juurkausta suhtes. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Mitmed juurkaustad, mis jagavad samu väljundseadeid. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Selgesõnalised `(root_dir, translations_dir)` paarid. Neil on eelis `root_dirs`-i ees. |
-| `changed_from` | `str \| None` | `None` | Git ref, mida kasutatakse ülevaate piiramseks muutunud lähtefailidele. |
-| `output_format` | `str` | `"text"` | Ülevaate väljundvorming. Toetatud väärtused on `"text"` ja `"github"`. |
-| `fail_on_warnings` | `bool` | `False` | Käsitle hoiatusi ebaõnnestumistena lisaks vigadele. |
+| `language_codes` | `str` | Nõutud | Vahemärgiga eraldatud sihtkeelte koodid, nagu `"ko ja fr"`, või `"all"`. Aliaskoodid normaliseeritakse kanonilisteks BCP 47 väärtusteks. |
+| `root_dir` | `str` | `"."` | Projekti juur ühe tõlkesihendi jaoks. Ignoreeritakse, kui on antud `root_dirs` või `groups`. |
+| `update` | `bool` | `False` | Kustutab ja loob uuesti olemasolevad tõlked valitud keeltele. |
+| `images` | `bool` | `False` | Kaasa piltide tõlkimine. Nõuab Azure AI Visioni konfiguratsiooni. |
+| `markdown` | `bool` | `False` | Kaasa Markdowni tõlge. |
+| `notebook` | `bool` | `False` | Kaasa Jupyteri notebooki tõlge. |
 | `debug` | `bool` | `False` | Luba silumislogimine. |
-| `save_logs` | `bool` | `False` | Salvesta DEBUG-taseme logifailid juurkataloogis `logs/`. |
+| `save_logs` | `bool` | `False` | Salvesta DEBUG-taseme logifailid juurkausta `logs/` alla. |
+| `yes` | `bool` | `True` | Automaatselt kinnitab viipasid programmeerliku ja CI-kasutuse jaoks. |
+| `add_disclaimer` | `bool` | `False` | Lisa masintõlke lahtiütlusi tõlgitud Markdowni ja märkmike juurde. |
+| `translations_dir` | `str \| None` | `None` | Kohandatud tekstitõlke väljundkataloog. Suhtelised teed lahendatakse iga juurkataloogi suhtes. |
+| `image_dir` | `str \| None` | `None` | Kohandatud tõlgitud piltide väljundkataloog. Suhtelised teed lahendatakse iga juurkataloogi suhtes. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Mitmed juurkataloogid, mis jagavad samu väljundseadeid. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Otsesed `(root_dir, translations_dir)` paarid. Neil on eelis `root_dirs` ees. |
+| `repo_url` | `str \| None` | `None` | Repositooriumi URL, mida kasutatakse README keele tabeli juhendi renderdamisel. |
+| `glossaries` | `Iterable[str] \| None` | `None` | Sõnastiku terminid, mida tõlkimise käigus säilitatakse. Duplikaadid ja tühjad terminid normaliseeritakse. |
+| `dry_run` | `bool` | `False` | Hinda tõlke mahtu ja eelvaata migratsiooni käitumist ilma faile kirjutamata. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Valikuline aktsepteeritud-baasiline ja kandidaadi püsivusadapter inkrementaalsete Markdowni uuenduste jaoks. Selle välja jätmine säilitab olemasoleva kogu-faili käitumise. |
 
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+## Ülevaatamise parameetrid
+
+`run_review` peegeldab tahtlikult `run_translation` signatuuri, kus võimalik, nii et automatiseerimine saab minimaalse tingimusloogikaga vahetada tõlke- ja ülevaatusvoogude vahel.
+
+| Parameeter | Tüüp | Vaikimisi | Eesmärk |
+| --- | --- | --- | --- |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | Ülevaatamiseks sihtkeele kaustad. Aktsepteeritakse tühikuga eraldatud stringe ja iteratiive. `"all"` ülevaatab kõik leitud tõlkekeeli. |
+| `root_dir` | `str` | `"."` | Projekti juur ühe ülevaatuse sihtmärgi jaoks. Ignoreeritakse, kui on määratud `root_dirs` või `groups`. |
+| `markdown` | `bool` | `False` | Sisaldab Markdowni ja MDX-i lähtefaile. |
+| `notebook` | `bool` | `False` | Sisaldab Jupyteri märkmike lähtefaile. |
+| `images` | `bool` | `False` | Reserveeritud pariteedi huvides tõlkevalikutega. Pildi viiteid kontrollitakse Markdownist. |
+| `translations_dir` | `str \| None` | `None` | Kohandatud tekstitõlke väljundkataloog. Suhtelised teed lahendatakse iga juurkataloogi suhtes. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Mitmed juurkataloogid, mis jagavad samu väljundseadeid. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Otsesed `(root_dir, translations_dir)` paarid. Neil on eelis `root_dirs` ees. |
+| `changed_from` | `str \| None` | `None` | Git ref, mida kasutatakse ülevaatuse piiramiseks muudetud lähtefailidele. |
+| `readme_only` | `bool` | `False` | Ülevaatab ainult iga lähtejuure all olevat `README.md`-i. Puuduv lähte-README tekitab `ValueError`. |
+| `output_format` | `str` | `"text"` | Ülevaatuse väljundi vorming. Toetatud väärtused on `"text"` ja `"github"`. |
+| `fail_on_warnings` | `bool` | `False` | Käsitle hoiatusi vigade kõrval ka ebaõnnestumistena. |
+| `debug` | `bool` | `False` | Luba silumise logimine. |
+| `save_logs` | `bool` | `False` | Salvesta DEBUG-taseme logifailid juurkataloogi `logs/` alla. |
+
+Kui ükski `markdown`, `notebook` ega `images` pole seatud, siis API ülevaatab Markdowni, märkmikud ja pildi viited, kus see on asjakohane. Ülevaatus ei kutsu LLM-teenuse pakkujat ega nõua API-võtmeid.
 
 ## Konfiguratsiooni nõuded
 
-Provider-backed translation APIs require provider configuration before translating:
+Pakkuja-põhised tõlke-API-d nõuavad enne tõlkimist pakkuja konfiguratsiooni:
 
-- Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
-- Image translation requires Azure AI Vision in addition to the LLM provider.
-- `run_translation` runs lightweight connectivity checks before project translation begins.
-- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` are deterministic and do not require provider credentials.
+- Markdowni ja märkmiku tõlkimine nõuab LLM-teenuse pakkujat. Konfigureerige Azure OpenAI, OpenAI või Anthropic.
+- Pildi tõlkimine nõuab LLM-teenuse pakkuja kõrval Azure AI Visioni.
+- `run_translation` kontrollib kerget ühenduvust enne projekti tõlke alustamist.
+- Agenti abiga `start_*_agent_translation` ja `finish_*_agent_translation` API-d ei kutsu Co-op Translator'i LLM-teenuse pakkujaid. Hostrakendus või MCP-agent tõlgib ettevalmistatud lõigud.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths` ja `run_review` on deterministlikud ning ei vaja pakkuja mandaate.
 
-Required Azure OpenAI variables:
+Nõutavad Azure OpenAI muutujad:
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -552,69 +687,78 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Required OpenAI variables:
+Nõutavad OpenAI muutujad:
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+Nõutavad Anthropic muutujad:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` ja `ANTHROPIC_MAX_TOKENS` on valikulised. Alates Co-op Translator versioonist 0.22.0 on Microsoft Agent Framework vaikimisi mudeli klient kõigi pakkujate jaoks. Semantic Kernel'i saab ajutiselt valida `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"` abil, kuid selle valimine annab deprekeerimishoiaku; vt [konfiguratsiooni](configuration.md#model-client-backend) et tutvuda etapilise eemaldamise plaaniga.
+
+Pildi tõlkimiseks vajalikud Azure AI Vision muutujad:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` on deterministlik ja ei vaja LLM- ega Azure AI Vision konfiguratsiooni.
 
 ## Käitumise märkused
 
-- Content translation APIs keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content needs project-relative links adjusted for a target location.
-- Project orchestration APIs add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
-- `run_translation` prints progress and estimate summaries through Click, matching the CLI user experience.
-- `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
-- `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
-- When image translation is selected, missing Vision configuration raises an error before translation starts.
-- Existing alias-based language folders are detected and can be migrated to canonical language folder names as part of the run.
-- `run_review` fails on missing translated files, missing or stale translation metadata, malformed Markdown frontmatter/code fences, and invalid translated notebook JSON.
-- `run_review` reports missing local Markdown and image link targets as warnings by default.
+- Sisutõlke API-d hoiavad tõlke eraldi projekti teede ümberkirjutusest. Kutsuge otseselt `rewrite_markdown_paths` või `rewrite_notebook_paths`, kui tõlgitud sisu jaoks tuleb sihtkoha suhtelised lingid kohandada.
+- Projekti orkestreerimise API-d lisavad projekti käitumise sisu tõlkimise ümber, sealhulgas failide leidmine, kirjutamine, teede ümberkirjutamine, metaandmed, puhastus ja valikulised lahtiütlused.
+- `run_translation` kuvab edenemise ja hinnangute kokkuvõtted läbi sama Rich-põhise raportööri, mida kasutab CLI. Mitteinteraktiivne väljund kasutab lihtteksti.
+- `dry_run=True` arvutab hinnanguid, kasutades virtuaalseid README uuendusi, kuid ei kirjuta README-d ega tõlkefaile.
+- `groups` töödeldakse järjekorras. Üks kokkuvõtlik hinnang prinditakse enne töö algust.
+- Kui on valitud pildi tõlkimine, siis puuduv Visioni konfiguratsioon viskab vea enne tõlkimise alustamist.
+- Olemasolevad alias-põhised keelekaustad tuvastatakse ja neid saab jooksu käigus migreerida kanoniliste keelekaustade nimedeks.
+- `run_review` ebaõnnestub kadunud tõlgitud failide, puuduvate või aegunud tõlke-metaandmete, valesti vormistatud Markdowni frontmatteri/koodiaedikute ning vigase tõlgitud märkmiku JSON-i korral.
+- `run_review` teatab vaikimisi puuduvatest kohalikest Markdowni ja pildi viite sihtmärkidest hoiatustena.
 
-## Sisemine kutsetee
+## Sisemine kutsete rada
 
-The API delegates to the same core implementation used by the CLI:
+API delegeerib samale põhiteostusele, mida kasutab CLI:
 
 Tõlkimine:
 
-1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.
-2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.
-3. `co_op_translator.api.translation.run_translation` for full project orchestration.
+1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` mälus tehtava tõlke jaoks.
+2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` eksplitsiitseks teede järeltöötluseks.
+3. `co_op_translator.api.translation.run_translation` täielikuks projekti orkestreerimiseks.
 4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
 5. `co_op_translator.core.project.ProjectTranslator`.
 6. `co_op_translator.core.project.TranslationManager`.
-7. Focused project translation mixins for Markdown, notebooks, and images.
-8. Markdown, notebook, text, and image translators under `co_op_translator.core`.
+7. Fookustatud projekti tõlke mixinid Markdowni, märkmike ja piltide jaoks.
+8. Markdowni, märkmiku, teksti ja pildi tõlkijad `co_op_translator.core` all.
 
 Ülevaatus:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. Deterministic checks under `co_op_translator.review.checks`
+4. Deterministlikud kontrollid asuvad `co_op_translator.review.checks` all
 
-The following classes are useful for maintainers, but are not exported as the package-level stable API.
+Järgnevad klassid on hooldajatele kasulikud, kuid neid ei ekspordi paketi-taseme stabiilse API osana.
 
 | Klass | Moodul | Vastutus |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Koordineerib projekti-taseme tõlkimist, kataloogi haldust, iga keele metaandmete normaliseerimist ja delegeerimist Markdowni, notebooki ja pilditõlkijatele. |
-| `TranslationManager` | `co_op_translator.core.project.translation` | Teostab asünkroonset failitöötlust Markdowni, notebookide, piltide, aegunud oleku tuvastamise ja tõlkemetaandmete uuenduste jaoks. |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Orkestreerib Markdown-failide lugemist, sisu tõlkimist, teede ümberkirjutamist, metaandmeid, lahtiütlusi ja kirjutamisi. |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Orkestreerib notebook-failide lugemist, Markdown-rakkude tõlkimist, teede ümberkirjutamist, metaandmeid, lahtiütlusi ja kirjutamisi. |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Orkestreerib lähtepiltide avastamist, piltide tõlkimist, väljundteid, metaandmeid ja kirjutamisi. |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Leiab tõlgitud Markdowni paarid, hindab tõlke kvaliteeti ja loeb usaldusväärsuse metaandmeid madala usalduse parandustöövoogude jaoks. |
-| `ReviewRunner` | `co_op_translator.review.runner` | Koordineerib deterministlikke ülevaatuse kontrolle lähtefailide, sihtkeelte ja konfigureeritud tõlkejuuride vahel. |
-| `ReviewTarget` | `co_op_translator.review.targets` | Kirjeldab lähtejuurkausta ja selle jaoks ülevaadatavat tõlke väljundkataloogi. |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Tuvastab vananenud alias-keelekaustad ja valmistab ette kanoniliste BCP 47 kausta migratsiooniplaanid. |
-| `Config` | `co_op_translator.config.base_config` | Laadib `.env` faile ja kontrollib, kas nõutud LLM ja valikulised Visioni teenusepakkujad on konfigureeritud. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Automaatselt tuvastab Azure OpenAI või OpenAI, valideerib nõutud keskkonnamuutujad ja käivitab pakkuja ühenduvuse kontrollid. |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | Tuvastab Azure AI Vision konfiguratsiooni ja käivitab ühenduvuse kontrollid piltide tõlkimiseks. |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Koordineerib projekti tasemel tõlget, kataloogi haldust, keelepõhist metaandmete normaliseerimist ning delegeerimist Markdowni, märkmiku ja pildi tõlkijatele. |
+| `TranslationManager` | `co_op_translator.core.project.translation` | Teostab asünkroonset failitöötlust Markdowni, märkmike, piltide, aegunud oleku tuvastamise ja tõlke metaandmete värskenduste jaoks. |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Orkestreerib Markdowni failide lugemist, sisu tõlkimist, teede ümberkirjutamist, metaandmeid, lahtiütlusi ja kirjutamist. |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Orkestreerib märkmikufailide lugemist, Markdown-rakkude tõlget, teede ümberkirjutamist, metaandmeid, lahtiütlusi ja kirjutamist. |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Orkestreerib lähte-piltide leidmist, pildi tõlget, väljundteid, metaandmeid ja kirjutamist. |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Leiab tõlgitud Markdowni paarid, hindab tõlke kvaliteeti ja loeb usaldusmetaandmeid madala usaldusega parandustöövoogude jaoks. |
+| `ReviewRunner` | `co_op_translator.review.runner` | Koordineerib deterministlikke ülevaatuse kontrolle lähtefailide, sihtkeelte ja konfigureeritud tõlkejuurte vahel. |
+| `ReviewTarget` | `co_op_translator.review.targets` | Kirjeldab lähtejuurt ja selle juure jaoks ülevaadatud tõlkete väljundkataloogi. |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Tuvastab pärandalias-keelekaustad ja valmistab ette kanoniliste BCP 47 kaustade migreerimiskavad. |
+| `Config` | `co_op_translator.config.base_config` | Laeb `.env` faile ja kontrollib, kas vajalikud LLM- ja valikulised Vision-teenuse pakkujad on konfigureeritud. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Tuvastab automaatselt Azure OpenAI, OpenAI või Anthropic, valideerib nõutud keskkonnamuutujad ja käivitab pakkuja ühenduvuse kontrollid. |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | Tuvastab Azure AI Vision konfiguratsiooni ja käivitab ühenduvuse kontrollid pildi tõlkimiseks. |

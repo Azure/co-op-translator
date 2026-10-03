@@ -1,6 +1,6 @@
 # Azure AI nustatymas
 
-Use this guide when you want to configure Azure OpenAI for text translation and Azure AI Vision for image text extraction.
+Naudokite šį vadovą, kai norite sukonfigūruoti Azure OpenAI teksto vertimui ir Azure AI Vision teksto išgavimui iš vaizdų.
 
 ## Išankstiniai reikalavimai
 
@@ -24,11 +24,11 @@ Use this guide when you want to configure Azure OpenAI for text translation and 
 5. Užsirašykite endpointą, diegimo pavadinimą, modelio pavadinimą, API raktą ir API versiją.
 
 !!! note
-    Azure OpenAI API version is separate from the model version shown in Azure AI Foundry. Choose a supported API version for your deployment.
+    Azure OpenAI API versija yra atskira nuo modelio versijos, parodytos Azure AI Foundry. Pasirinkite palaikomą API versiją savo diegimui.
 
 ## Konfigūruoti Azure AI Vision
 
-Image translation uses Azure AI Vision to extract text from source images before the text is translated.
+Vaizdų vertimas naudoja Azure AI Vision, kad iš šaltinių vaizdų išgautų tekstą prieš jo vertimą.
 
 Savo Azure AI projekte suraskite Azure AI Services raktą ir endpointą.
 
@@ -56,7 +56,7 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Co-op Translator also supports optional fallback credential sets. Duplicate a complete provider set with suffixes such as `_1` or `_2`; all variables in a fallback set must share the same suffix.
+Co-op Translator taip pat palaiko neprivalomus atsarginius kredencialų rinkinius. Dubliuokite visą tiekėjo rinkinį su galūnėmis, pvz., `_1` arba `_2`; visi kintamieji atsarginio rinkinio turi turėti tą pačią galūnę.
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -68,6 +68,6 @@ AZURE_OPENAI_API_VERSION_1="2024-12-01-preview"
 
 ## Tolimesni veiksmai
 
-- Grįžkite į [Configuration](configuration.md) to set up local or CI environment variables.
+- Grįžkite į [Konfigūracija](configuration.md) norėdami nustatyti vietinius arba CI aplinkos kintamuosius.
 - Use [CLI Reference](cli.md) for translation commands.
 - Use [GitHub Actions](github-actions.md) to automate translation pull requests.

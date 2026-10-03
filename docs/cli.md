@@ -66,6 +66,19 @@ Translate only notebooks:
 translate -l "zh-CN" -nb
 ```
 
+Write documentation translations to `docs/i18n/<lang>/`:
+
+```bash
+translate -r docs --translations-dir i18n -l "ko ja" -md
+```
+
+`--translations-dir` accepts an absolute path or a path relative to `--root-dir`.
+For example, `docs/guide.md` becomes `docs/i18n/ko/guide.md` with the command above.
+The same option applies to notebooks, `--readme-only`, freshness checks,
+language-folder migration, and `--dry-run`. Image output stays under
+`<root-dir>/translated_images/`. Without this option, text output defaults to
+`<root-dir>/translations/`.
+
 Translate Markdown and images:
 
 ```bash
@@ -96,12 +109,33 @@ Write structured progress events:
 translate -l "ko ja" -md --json-events progress.ndjson
 ```
 
+### Text concurrency
+
+Use `--concurrency` to process multiple text file/language pairs at once:
+
+```bash
+translate -l "ko ja fr" -md -nb --concurrency 4
+```
+
+The default is `1`, preserving sequential execution. The value must be a positive
+integer. The limit applies within each text stage to new and outdated Markdown
+and notebook translations, formatting retries, `--fix`, and README-only languages.
+Chunks and notebook cells within a file retain their existing processing order.
+Image translation concurrency is unchanged.
+
+Choose a value that fits your provider's request and token quotas; reduce it if
+the provider throttles requests. This setting limits active file/language jobs,
+not requests per minute. `--dry-run` remains a local estimate and starts no
+translation workers.
+
 ### Options
 
 | Option | Required | Description |
 | --- | --- | --- |
 | `-l`, `--language-codes` | Yes | Space-separated language codes, such as `"es fr de"`, or `"all"`. |
 | `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
+| `--translations-dir` | No | Markdown and notebook output directory. Absolute, or relative to `--root-dir`; defaults to `translations`. |
+| `--concurrency` | No | Maximum simultaneous text file/language translations. Positive integer; defaults to `1`. |
 | `-u`, `--update` | No | Delete existing translations for selected languages and recreate them. |
 | `-img`, `--images` | No | Translate only image files. |
 | `-md`, `--markdown` | No | Translate only Markdown files. |

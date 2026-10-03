@@ -1,8 +1,8 @@
-# Supported Languages
+# Toetatud keeled
 
-Co-op Translator toetab järgmisi keelekoode teksti, märkmiku ja pilditõlke väljundite jaoks.
+Co-op Translator toetab järgmisi keelekoode teksti-, märkmiku- ja pilditõlke väljundite jaoks.
 
-Kui soovite lisada uue keele, värskendage keel- ja fondi kaardistusi kataloogis `src/co_op_translator/fonts/` ning testige keelt enne pull requesti avamist.
+Kui soovite lisada uue keele, värskendage keele ja fondi kaardistusi kataloogis `src/co_op_translator/fonts/` ning testige keelt enne pull requesti avamist.
 
 | Language Code | Language Name | Font | RTL Support | Known Issues |
 | --- | --- | --- | --- | --- |
@@ -42,31 +42,32 @@ Kui soovite lisada uue keele, värskendage keel- ja fondi kaardistusi kataloogis
 | vi | Vietnami | NotoSans-Medium.ttf | Ei | Ei |
 | id | Indoneesia | NotoSans-Medium.ttf | Ei | Ei |
 | ms | Malai | NotoSans-Medium.ttf | Ei | Ei |
-| tl | Tagalogi (Filipino) | NotoSans-Medium.ttf | Ei | Ei |
+| tl | Tagalogi (Filipiinide) | NotoSans-Medium.ttf | Ei | Ei |
 | sw | Suahiili | NotoSans-Medium.ttf | Ei | Ei |
 | hu | Ungari | NotoSans-Medium.ttf | Ei | Ei |
 | cs | Tšehhi | NotoSans-Medium.ttf | Ei | Ei |
 | sk | Slovaki | NotoSans-Medium.ttf | Ei | Ei |
 | ro | Rumeenia | NotoSans-Medium.ttf | Ei | Ei |
 | bg | Bulgaaria | NotoSans-Medium.ttf | Ei | Ei |
-| sr | Serbia (kirilitsa) | NotoSans-Medium.ttf | Ei | Ei |
-| hr | Horvaatia | NotoSans-Medium.ttf | Ei | Ei |
-| sl | Sloveenia | NotoSans-Medium.ttf | Ei | Ei |
+| sr | Serbia (kirillitsa) | NotoSans-Medium.ttf | Ei | Ei |
+| hr | Horvaadi | NotoSans-Medium.ttf | Ei | Ei |
+| sl | Sloveeni | NotoSans-Medium.ttf | Ei | Ei |
 | uk | Ukraina | NotoSans-Medium.ttf | Ei | Ei |
 | my | Birma (Myanmar) | NotoSansMyanmar-Medium.ttf | Ei | Ei |
-| ta | Tamil | NotoSansTamil-Medium.ttf | Ei | Ei |
+| ta | Tamili | NotoSansTamil-Medium.ttf | Ei | Ei |
 | et | Eesti | NotoSans-Medium.ttf | Ei | Ei |
 | pcm | Nigeeria pidžin | NotoSans-Medium.ttf | Ei | Ei |
 | te | Telugu | NotoSans-Medium.ttf | Ei | Ei |
-| ml | Malayalam | NotoSans-Medium.ttf | Ei | Ei |
+| ml | Malajalami | NotoSans-Medium.ttf | Ei | Ei |
 | kn | Kannada | NotoSans-Medium.ttf | Ei | Ei |
-| km | Khmer | NotoSansKhmer-Medium.ttf | Ei | Ei |
+| km | Khmeeri | NotoSansKhmer-Medium.ttf | Ei | Ei |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Ei | Ei |
 
-## Add a Language
+## Keele lisamine
 
-To add support for a new language:
+Uue keele toetuse lisamiseks:
 
-1. Lisage keelekood ja kuvav nimi keele utiliitidesse.
-2. Lisage või seostage font failis `src/co_op_translator/fonts/font_language_mappings.yml`.
+1. Lisage keelekood ja kuvamiseks mõeldud nimi keele utiliitidesse.
+2. Lisage või kaardistage font failis `src/co_op_translator/fonts/font_language_mappings.yml`.
 3. Testige Markdowni ja pilditõlke väljundit.
-4. Avage pull request, lisades kaardistuse ja valideerimismärkused.
+4. Avage pull requesti koos kaardistuse ja valideerimise märkmetega.

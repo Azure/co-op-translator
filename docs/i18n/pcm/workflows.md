@@ -1,12 +1,14 @@
 # Choose How You Wan Work
 
-Co-op Translator fit dey used three ways: the CLI, the Python API, and the MCP server. Dem get the same translation abilities, but each one dey fit different workflow.
+Co-op Translator fit dey used for three ways: the CLI, the Python API, and the MCP server. Dem share di same translation capabilities, but each one dey fit different workflow.
 
 Use dis page when you dey decide where to start.
 
+**If you edit translations by hand:** di default CLI and Actions workflows go retranslate changed source files full, so wetin you write for those files fit get overwritten. Read di diff before you accept any update. For Markdown block-level preservation of accepted edits, use di optional [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
+
 ## Quick Decision
 
-| If you want to... | Use | Start here |
+| If you wan... | Use | Start here |
 | --- | --- | --- |
 | Translate or review a repository from a terminal | CLI | [CLI Reference](cli.md) |
 | Add translation to a Python script, service, notebook, or CI job | Python API | [Python API](api.md) |
@@ -16,29 +18,31 @@ Use dis page when you dey decide where to start.
 
 ## Use the CLI when
 
-Choose the CLI when person or CI job dey drive repository translation from shell.
+Choose di CLI when person or CI job dey run repository translation from a shell.
 
-The CLI na the most direct way when you wan make Co-op Translator discover project files, create translated outputs, preserve the project layout, update metadata, and run review commands.
+Di CLI na di most direct way when you wan make Co-op Translator find project files, create translated outputs, preserve di project layout, update metadata, and run review commands.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
-Good fits:
+This example translates Markdown and notebooks. Add `-img` only after configuring [Azure AI Vision](configuration.md#azure-ai-vision). For a Markdown-only first run, follow [Your first translation](first-translation.md).
 
-- You dey translate repository from your terminal.
-- You want repeatable command for CI or release workflows.
+When e fit well:
+
+- You dey translate a repository from your terminal.
+- You want command wey you fit run again for CI or release workflows.
 - You want built-in project discovery, output paths, metadata, cleanup, and review.
-- You prefer command interface pass to dey write Python code.
+- You prefer command interface instead of writing Python code.
 
 ## Use the Python API when
 
-Choose the Python API when your own code suppose control the workflow.
+Choose di Python API when your own code suppose control di workflow.
 
-The API useful for apps, automation scripts, notebooks, services, and custom pipelines. E allow you call low-level content translation APIs for individual files, or run the same repository-level orchestration wey the CLI dey use.
+Di API dey useful for applications, automation scripts, notebooks, services, and custom pipelines. E dey let you call low-level content translation APIs for individual files, or run di same repository-level orchestration wey di CLI dey use.
 
 Translate one Markdown document and decide where to save am:
 
@@ -75,52 +79,45 @@ asyncio.run(main())
 Run a repository translation from Python:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
-Good fits:
+When e fit well:
 
-- Your application don already sabi read files, buffers, notebooks, or image bytes.
+- Your application don already dey read files, buffers, notebooks, or image bytes.
 - You need custom validation, storage, logging, retries, or approval flows.
-- You want translate one document, notebook, or image without to process whole repository.
-- You want repository translation, but from Python automation instead of shell command.
+- You want to translate one document, notebook, or image without processing whole repository.
+- You want repository translation, but from Python automation instead of a shell command.
 
 ## Use the MCP Server when
 
-Choose the MCP server when agent, editor, or MCP-compatible client go dey call Co-op Translator tools.
+Choose di MCP server when an agent, editor, or MCP-compatible client suppose call Co-op Translator tools.
 
-Normally for local setup, user no dey manually keep server running. MCP client go start `co-op-translator-mcp` over `stdio` when e need the tools.
+For normal local setup, di user no go dey keep server dey run by hand. Di MCP client go start `co-op-translator-mcp` over `stdio` when e need di tools.
 
-Example user requests wey agent fit handle:
+Example user requests we agent fit handle:
 
-- "Translate this Markdown file to Korean and keep the links correct."
-- "Translate this Markdown file to Korean with the agent-assisted MCP workflow, using your own model for the translated chunks."
-- "Translate this notebook to Korean, preserve code cells, and use Co-op Translator MCP to reconstruct the notebook."
-- "Translate the text in this image to Japanese and save the result."
+- "Translate dis Markdown file to Korean and make di links correct."
+- "Translate dis Markdown file to Korean with di agent-assisted MCP workflow, using your own model for di translated chunks."
+- "Translate dis notebook to Korean, keep di code cells, and use Co-op Translator MCP to reconstruct di notebook."
+- "Translate di text for this image to Japanese and save di result."
 - "Dry-run a repository translation to Spanish and tell me wetin go change."
-- "Review whether the Korean translation output dey up to date."
+- "Check whether di Korean translation output dey up to date."
 
 For Markdown and notebooks, MCP fit work for two modes:
 
 | Mode | Use when | Main tools |
 | --- | --- | --- |
-| Agent-assisted | The MCP host agent suppose translate chunks with im own model, without Co-op Translator LLM provider credentials. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Provider-backed | Co-op Translator suppose call Azure OpenAI or OpenAI directly. | `translate_markdown_content`, `translate_notebook_content` |
+| Agent-assisted | Di MCP host agent suppose translate chunks with its own model, without Co-op Translator LLM provider credentials. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Provider-backed | Co-op Translator go call Azure OpenAI, OpenAI, or Anthropic directly. | `translate_markdown_content`, `translate_notebook_content` |
 
 MCP provider-backed Markdown tool call shape:
 
@@ -150,7 +147,7 @@ MCP image tool call shape:
 }
 ```
 
-Repository translation na dry-run by default through MCP:
+Repository translation dey dry-run by default through MCP:
 
 ```json
 {
@@ -165,16 +162,16 @@ Repository translation na dry-run by default through MCP:
 }
 ```
 
-Good fits:
+When e fit well:
 
-- You want natural-language translation workflows inside agent or editor.
-- You want Markdown or notebook translation where host agent model go translate prepared chunks.
-- You want the agent to translate selected content instead of whole repository.
-- You want approval step before repository-wide writes.
-- You want one interface wey dey expose Markdown, notebook, image, review, and path-rewriting tools.
+- You want natural-language translation workflows inside an agent or editor.
+- You want Markdown or notebook translation where di host agent model translate prepared chunks.
+- You want di agent to translate selected content instead of di whole repository.
+- You want one approval step before repository-wide writes.
+- You want one interface wey show Markdown, notebook, image, review, and path-rewriting tools.
 
-## How They Fit Together
+## How Dem Dey Fit Together
 
-CLI na best default for humans wey dey translate repositories. Python API best when your code dey manage the workflow. MCP server best when agent or editor dey manage the workflow.
+Di CLI na di best default for humans wey dey translate repositories. Di Python API best when your code dey own di workflow. Di MCP server best when agent or editor dey own di workflow.
 
-All three ways dey use the same public Co-op Translator API, so you fit start with the CLI, automate with Python later, and expose the same capabilities to MCP clients when you need agent-driven workflows.
+All three paths dey use di same public Co-op Translator API, so you fit start with di CLI, automate with Python later, and expose di same capabilities to MCP clients when you need agent-driven workflows.

@@ -1,6 +1,6 @@
-# CLI справочник
+# CLI справка
 
-Co-op Translator инсталира следните командни входни точки:
+Co-op Translator инсталира следните командни точки за командния ред:
 
 - `translate`
 - `evaluate`
@@ -8,39 +8,51 @@ Co-op Translator инсталира следните командни входн
 - `co-op-review`
 - `co-op-translator-mcp`
 
-Командите `translate`, `evaluate`, `migrate-links` и `co-op-review` се изпълняват чрез `co_op_translator.__main__`, който избира реализацията на командата въз основа на името на извикания скрипт. MCP сървърът използва `co_op_translator.mcp.server` директно.
+Командите `translate`, `evaluate`, `migrate-links` и `co-op-review` се извикват чрез `co_op_translator.__main__`, който избира реализацията на командата въз основа на името на извикания скрипт. MCP сървърът използва директно `co_op_translator.mcp.server`.
 
-Ако се колебаете между CLI, Python API и MCP, започнете с [Choose Your Workflow](workflows.md).
+Ако се колебаете между CLI, Python API и MCP, започнете с [Изберете работния си процес](workflows.md).
 
-## Първи стъпки с CLI
+## Конзолен изход
+
+Интерактивните терминали използват форматирането на Rich за заглавието на командата, прогреса и обобщенията. CI и неинтерактивният изход автоматично преминават към обикновен текст.
+
+Задайте `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` за да принудите обикновен изход, или `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` за да принудите Rich изход. Задайте `CO_OP_TRANSLATOR_NO_PROGRESS=1` за да запазите обобщенията, като същевременно скриете живите ленти за прогрес.
+
+Използвайте `translate --json-events progress.ndjson` когато друга система се нуждае
+от машиночитаем прогрес. CLI продължава да генерира изход, предназначен за хора, докато
+NDJSON файлът получава версионирани събития `co-op.translation.event.v1` с
+стабилни полета като `type`, `stage_key`, `completed`, `total`, и
+`current_path`.
+
+## Първоначален поток за CLI
 
 Започнете тук, ако използвате Co-op Translator от терминал:
 
-1. Конфигурирайте доставчик на LLM, както е описано в [Configuration](configuration.md).
-2. Изберете типа съдържание, което искате да превеждате.
-3. Стартирайте фокусирана команда първо, например превод само на Markdown.
+1. Конфигурирайте доставчик на LLM, както е описано в [Конфигурация](configuration.md).
+2. Изберете типа съдържание, който искате да преведете.
+3. Стартирайте първо фокусирана команда, като например превод само на Markdown.
 4. Използвайте `--dry-run` преди големи промени в хранилището.
 5. Използвайте `co-op-review` след превода, за да проверите структурата и актуалността.
 
-| Goal | Command to start with |
+| Цел | Команда за започване |
 | --- | --- |
-| Translate Markdown documents | `translate -l "ko" -md` |
-| Translate notebooks | `translate -l "ko" -nb` |
-| Translate image text | `translate -l "ko" -img` |
-| Preview work without writing files | `translate -l "ko" -md --dry-run` |
-| Review existing translations | `co-op-review -l "ko"` |
-| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
-| Expose tools to an MCP client | Configure the [MCP Server](mcp.md) instead of running CLI commands directly. |
+| Превод на Markdown документи | `translate -l "ko" -md` |
+| Превод на бележници | `translate -l "ko" -nb` |
+| Превод на текст в изображения | `translate -l "ko" -img` |
+| Преглед на работата без записване на файлове | `translate -l "ko" -md --dry-run` |
+| Преглед на съществуващите преводи | `co-op-review -l "ko"` |
+| Актуализиране на връзките в бележници и Markdown | `migrate-links -l "ko" --dry-run` |
+| Експониране на инструменти за MCP клиент | Конфигурирайте [MCP сървъра](mcp.md) вместо да стартирате CLI команди директно. |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+Превежда Markdown файлове, бележници и текст в изображения на един или повече целеви езици.
 
 ```bash
 translate -l "ko ja fr"
 ```
 
-### Често срещани примери
+### Чести примери
 
 Превеждане само на Markdown:
 
@@ -48,25 +60,25 @@ translate -l "ko ja fr"
 translate -l "de" -md
 ```
 
-Превеждане само на notebooks:
+Превеждане само на бележници:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Превеждане на Markdown и изображения:
+Превод на Markdown и изображения:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-Актуализиране на съществуващи преводи чрез изтриване и пресъздаване:
+Актуализирайте съществуващите преводи, като ги изтриете и пресъздадете:
 
 ```bash
 translate -l "ko" -u
 ```
 
-Изпълнение без интерактивни подсказки:
+Стартиране без интерактивни подкани:
 
 ```bash
 translate -l "ko ja" -md -y
@@ -78,55 +90,62 @@ translate -l "ko ja" -md -y
 translate -l "ko" -s
 ```
 
+Записване на структурирани събития за прогрес:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
 ### Опции
 
-| Option | Required | Description |
+| Опция | Задължително | Описание |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Езикови кодове, разделени с интервал, например `"es fr de"`, или `"all"`. |
-| `-r`, `--root-dir` | No | Корен на проекта. По подразбиране е текущата директория. |
-| `-u`, `--update` | No | Изтрива съществуващите преводи за избраните езици и ги пресъздава. |
-| `-img`, `--images` | No | Превежда само файлове с изображения. |
-| `-md`, `--markdown` | No | Превежда само Markdown файлове. |
-| `-nb`, `--notebook` | No | Превежда само Jupyter notebook файлове. |
-| `-d`, `--debug` | No | Активира debug логване в конзолата. |
-| `-s`, `--save-logs` | No | Запазва логове с ниво DEBUG под `<root-dir>/logs/`. |
-| `-x`, `--fix` | No | Превежда отново Markdown файлове с ниско доверие въз основа на предишните резултати от оценката. |
-| `-c`, `--min-confidence` | No | Праг за доверие при `--fix`. По подразбиране `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | No | Добавя или премахва предупреждение за машинен превод. По подразбиране е включено в CLI. |
-| `-f`, `--fast` | No | Остарял бърз режим за изображения. |
-| `-y`, `--yes` | No | Автоматично потвърждава подсказки, полезно за CI. |
-| `--repo-url` | No | URL на хранилището, използван в таблицата с езици в README за съвет по sparse-checkout. |
-| `--migrate-language-folders` | No | Преименува наследени алтернативни папки, като `cn` или `tw`, в канонични BCP 47 папки. |
-| `--dry-run` | No | Преглед на миграцията на папки с езици и оценки за превода без записване на файлове. |
+| `-l`, `--language-codes` | Да | Кодове на езици, разделени с интервал, като `"es fr de"`, или `"all"`. |
+| `-r`, `--root-dir` | Не | Корен на проекта. По подразбиране е текущата директория. |
+| `-u`, `--update` | Не | Изтрива съществуващите преводи за избраните езици и ги пресъздава. |
+| `-img`, `--images` | Не | Превежда само файлове с изображения. |
+| `-md`, `--markdown` | Не | Превежда само Markdown файлове. |
+| `-nb`, `--notebook` | Не | Превежда само Jupyter notebook файлове. |
+| `-d`, `--debug` | Не | Разрешава debug логване в конзолата. |
+| `-s`, `--save-logs` | Не | Записва DEBUG ниво логове в `<root-dir>/logs/`. |
+| `--json-events` | Не | Записва машиночитаеми събития за напредъка на превода като NDJSON. |
+| `-x`, `--fix` | Не | Превежда отново Markdown файлове с ниско доверие въз основа на предишни резултати от оценка. |
+| `-c`, `--min-confidence` | Не | Праг на доверие за `--fix`. По подразбиране `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | Не | Добавя или премахва пояснения за машинен превод. По подразбиране е включено в CLI. |
+| `-f`, `--fast` | Не | Остарял бърз режим за изображения. |
+| `-y`, `--yes` | Не | Автоматично потвърждава подкани, полезно в CI. |
+| `--repo-url` | Не | URL на хранилището, използван в таблицата с езици в README за препоръка за sparse-checkout. |
+| `--migrate-language-folders` | Не | Преименува наследени алиас папки, като `cn` или `tw`, в канонични папки по BCP 47. |
+| `--dry-run` | Не | Преглед на миграцията на папките за езици и оценките за превод без записване на файлове. |
 
-Ако не е зададен флаг за тип, `translate` обработва Markdown, notebooks и изображения. Преводът на изображения изисква конфигурация на Azure AI Vision.
+Ако не е предоставен флаг за тип, `translate` обработва Markdown, бележници и изображения. Преводът на изображения изисква конфигурация на Azure AI Vision.
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+Оценява качеството на преведените Markdown файлове за един език.
 
 !!! warning "Експериментално"
-    `evaluate` е експериментална команда. Може да използва проверки, базирани на правила, и проверки, базирани на LLM; записва резултатите от оценката в метаданните за превода и моделът за оценяване и поведението на метаданните могат да се променят.
+    `evaluate` е експериментален. Може да използва проверки на качеството, базирани на правила, и такива, базирани на LLM, записва резултатите от оценяването в метаданните на превода и моделът за оценяване и поведението на метаданните може да се променят.
 
 ```bash
 evaluate -l "ko"
 ```
 
-### Често срещани примери
+### Чести примери
 
-Използване на по-строг праг за ниско доверие:
+Използвайте по-строг праг за ниско доверие:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-Изпълнение само на проверки, базирани на правила:
+Стартиране само на проверки, базирани на правила:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-Изпълнение само на проверки, базирани на LLM:
+Стартиране само на проверки, базирани на LLM:
 
 ```bash
 evaluate -l "ja" -D
@@ -134,32 +153,32 @@ evaluate -l "ja" -D
 
 ### Опции
 
-| Option | Required | Description |
+| Опция | Задължително | Описание |
 | --- | --- | --- |
-| `-l`, `--language-code` | Yes | Един езиков код за оценка. Алиас кодовете се нормализират. |
-| `-r`, `--root-dir` | No | Корен на проекта. По подразбиране е текущата директория. |
-| `-c`, `--min-confidence` | No | Праг, използван при изброяване на преводи с ниско доверие. По подразбиране `0.7`. |
-| `-d`, `--debug` | No | Активира debug логване. |
-| `-s`, `--save-logs` | No | Запазва логове с ниво DEBUG под `<root-dir>/logs/`. |
-| `-f`, `--fast` | No | Само оценка, базирана на правила. |
-| `-D`, `--deep` | No | Само оценка, базирана на LLM. |
+| `-l`, `--language-code` | Да | Един код на език за оценка. Алиас кодовете се нормализират. |
+| `-r`, `--root-dir` | Не | Корен на проекта. По подразбиране е текущата директория. |
+| `-c`, `--min-confidence` | Не | Праг, използван при изброяване на преводите с ниско доверие. По подразбиране `0.7`. |
+| `-d`, `--debug` | Не | Активира debug логване. |
+| `-s`, `--save-logs` | Не | Записва DEBUG ниво логове в `<root-dir>/logs/`. |
+| `-f`, `--fast` | Не | Само оценяване, базирано на правила. |
+| `-D`, `--deep` | Не | Само оценяване, базирано на LLM. |
 
-По подразбиране `evaluate` използва както оценки, базирани на правила, така и оценки, базирани на LLM. Резултатите се записват в метаданните за превода и се обобщават в конзолата.
+По подразбиране, `evaluate` използва както оценки, базирани на правила, така и такива, базирани на LLM. Резултатите се записват в метаданните на превода и се обобщават в конзолата.
 
 ## co-op-review
 
-Run deterministic translation maintenance checks without API credentials.
+Изпълнява детерминистични проверки за поддръжка на превода без API идентификационни данни.
 
 !!! note "Бета"
-    `co-op-review` е бета команда за детерминистичен преглед. Тя не извиква доставчици на модели и не записва файлове, но нейните проверки и схемата за извеждане на проблеми могат да се развиват.
+    `co-op-review` е бета детерминистична команда за преглед. Не извиква доставчици на модели и не записва файлове, но проверките и схемата на изхода за проблеми може да се променят.
 
 ```bash
 co-op-review -l "ko"
 ```
 
-### Често срещани примери
+### Чести примери
 
-Преглед на корейски и японски преводи от текущата директория:
+Прегледайте корейските и японските преводи от текущата директория:
 
 ```bash
 co-op-review -l "ko ja"
@@ -171,13 +190,25 @@ co-op-review -l "ko ja"
 co-op-review -l "fr" -r ./my-course
 ```
 
-Преглед само на изходните файлове, променени спрямо базов ref:
+Преглед само на README след превод само на README:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` игнорира други документи и вложени README-та. Командата се проваля ако корен
+`README.md` липсва. В комбинация с `--changed-from`, тя преглежда само README-то
+когато този изходен файл е променен. Преводът само на README оставя изходния README
+непроменен, включително и маркерите за споделени секции.
+
+Преглед само на изходни файлове, променени спрямо базов реф:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-Отпечатване на изход във формат GitHub-flavored Markdown за CI обобщения:
+Изведете Markdown в GitHub стил за CI обобщения:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -185,54 +216,55 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 ### Опции
 
-| Option | Required | Description |
+| Опция | Задължително | Описание |
 | --- | --- | --- |
-| `-l`, `--language-code` | No | Езиков код за преглед. Може да се подаде многократно или като стойност, разделена с интервали. По подразбиране всички открити езици за превод. |
-| `-r`, `--root-dir` | No | Корен на проекта. По подразбиране е текущата директория. |
-| `--changed-from` | No | Git ref, използван за ограничаване на прегледа до променените изходни файлове. |
-| `--format` | No | Формат на изхода: `text` или `github`. По подразбиране `text`. |
+| `-l`, `--language-code` | Не | Код на език за преглед. Може да се подаде няколко пъти или като стойност, разделена с интервали. По подразбиране — всички открити езици за превод. |
+| `-r`, `--root-dir` | Не | Корен на проекта. По подразбиране е текущата директория. |
+| `--changed-from` | Не | Git ref, използван за ограничаване на прегледа до променените изходни файлове. |
+| `--readme-only` | Не | Преглежда само коренния `README.md` превод. |
+| `--format` | Не | Формат на изхода: `text` или `github`. По подразбиране `text`. |
 
-`co-op-review` в момента проверява за липсващи преведени файлове, липсващи или неактуални метаданни за превода, целостта на Markdown frontmatter и code fence, невалиден преведен notebook JSON и липсващи локални Markdown или image цели на връзките. Липсващите връзки са предупреждения по подразбиране; структурните и проблемите с актуалността водят до провал на командата.
+co-op-review в момента проверява за липсващи преведени файлове, липсващи или остарели метаданни на превода, целостта на frontmatter и code fence в Markdown, невалиден преведен notebook JSON и липсващи локални Markdown или image цели за връзки. Липсващите връзки по подразбиране са предупреждения; структурните и проблеми с актуалността причиняват неуспех на командата.
 
 ## co-op-translator-mcp
 
-Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+Стартира MCP сървъра на Co-op Translator за агенти, редактори и MCP-съвместими клиенти.
 
 ```bash
 co-op-translator-mcp
 ```
 
-The default transport is `stdio`. See the [MCP Server](mcp.md) guide for client configuration, tools, resources, and safety notes.
+По подразбиране транспортът е `stdio`. Вижте ръководството [MCP сървър](mcp.md) за конфигурация на клиент, инструменти, ресурси и бележки за безопасност.
 
-### Options
+### Опции
 
-| Option | Required | Description |
+| Опция | Задължително | Описание |
 | --- | --- | --- |
-| `--transport` | No | MCP транспорт: `stdio`, `streamable-http`, или `sse`. По подразбиране `stdio`. |
+| `--transport` | Не | MCP транспорт: `stdio`, `streamable-http`, или `sse`. По подразбиране `stdio`. |
 
 ## migrate-links
 
-Reprocess translated Markdown files and update notebook links so they point to translated notebooks when available.
+Преработва преведените Markdown файлове и актуализира връзките към бележници така, че да сочат към преведени бележници, когато са налични.
 
 ```bash
 migrate-links -l "ko ja"
 ```
 
-### Често срещани примери
+### Чести примери
 
-Преглед на актуализации на връзки:
+Прегледайте обновленията на връзките:
 
 ```bash
 migrate-links -l "ko" --dry-run
 ```
 
-Обработване на всички поддържани езици без потвърждение:
+Обработете всички поддържани езици без потвърждение:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-Пренаписване на връзки само когато съществуват преведени notebooks:
+Презаписване на връзки само когато съществуват преведени бележници:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
@@ -240,20 +272,20 @@ migrate-links -l "ko" --no-fallback-to-original
 
 ### Опции
 
-| Option | Required | Description |
+| Опция | Задължително | Описание |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Езикови кодове, разделени с интервал, или `"all"`. |
-| `-r`, `--root-dir` | No | Корен на проекта. По подразбиране е текущата директория. |
-| `--image-dir` | No | Папка за преведени изображения спрямо корена. По подразбиране `translated_images`. |
-| `--dry-run` | No | Показва файловете, които биха се променили, без да записва актуализации. |
-| `--fallback-to-original`, `--no-fallback-to-original` | No | Използва оригиналните notebook връзки, когато преведени notebooks липсват. По подразбиране е разрешено. |
-| `-d`, `--debug` | No | Активира debug логване. |
-| `-s`, `--save-logs` | No | Запазва логове с ниво DEBUG под `<root-dir>/logs/`. |
-| `-y`, `--yes` | No | Автоматично потвърждава подсказки при обработка на всички езици. |
+| `-l`, `--language-codes` | Да | Кодове на езици, разделени с интервал, или `"all"`. |
+| `-r`, `--root-dir` | Не | Корен на проекта. По подразбиране е текущата директория. |
+| `--image-dir` | Не | Директория за преведени изображения относително на корена. По подразбиране `translated_images`. |
+| `--dry-run` | Не | Показва файловете, които биха се променили, без да записва промени. |
+| `--fallback-to-original`, `--no-fallback-to-original` | Не | Използва оригиналните връзки към бележници, когато преведените бележници липсват. По подразбиране е разрешено. |
+| `-d`, `--debug` | Не | Активира debug логване. |
+| `-s`, `--save-logs` | Не | Записва DEBUG ниво логове в `<root-dir>/logs/`. |
+| `-y`, `--yes` | Не | Автоматично потвърждава подкани при обработка на всички езици. |
 
-## Environment
+## Околна среда
 
-All commands require one configured LLM provider:
+Когато команда изисква идентификационни данни на доставчик, конфигурирайте един от тези набори от доставчици. `translate --dry-run` и `co-op-review` не изискват идентификационни данни на доставчик:
 
 ```bash
 # Azure OpenAI
@@ -266,82 +298,86 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Или OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Или Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Image translation additionally requires Azure AI Vision:
+Преводът на изображения допълнително изисква Azure AI Vision:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## Изходна структура
+## Структура на изхода
 
-Text translations are written under:
+Текстовите преводи се записват под:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Translated image output is written under:
+Преведеният изход за изображения се записва под:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-For example, translating `README.md` and `docs/setup.md` into Korean produces:
+Например, превеждането на `README.md` и `docs/setup.md` на корейски води до:
 
 ```text
 translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## Примери за копиране и поставяне в CLI
+## CLI примери за копиране и поставяне
 
-Translate Markdown into three languages:
+Превеждане на Markdown на три езика:
 
 ```bash
 translate -l "ko ja fr" -md
 ```
 
-Translate notebooks only:
+Превеждане само на бележници:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Translate images only:
+Превеждане само на изображения:
 
 ```bash
 translate -l "pt-BR" -img
 ```
 
-Preview Markdown translation without writing files:
+Преглед на превода на Markdown без записване на файлове:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-Repair low-confidence Markdown translations:
+Поправяне на Markdown преводи с ниско доверие:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-Run CI-friendly Markdown translation:
+Стартиране на CI-приятелски превод на Markdown:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-Review translated output:
+Преглед на преведения изход:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Preview link migration:
+Преглед на миграцията на връзките:
 
 ```bash
 migrate-links -l "ko" --dry-run

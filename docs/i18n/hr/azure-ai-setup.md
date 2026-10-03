@@ -1,6 +1,6 @@
 # Azure AI Postavljanje
 
-Use this guide when you want to configure Azure OpenAI for text translation and Azure AI Vision for image text extraction.
+Koristite ovaj vodič kada želite konfigurirati Azure OpenAI za prevođenje teksta i Azure AI Vision za izdvajanje teksta iz slika.
 
 ## Preduvjeti
 

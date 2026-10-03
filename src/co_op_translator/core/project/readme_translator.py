@@ -5,6 +5,7 @@ import logging
 import os
 import re
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 from typing import Iterable
 from urllib.parse import urlparse
@@ -25,6 +26,10 @@ from co_op_translator.utils.common.metadata_utils import (
     save_text_metadata_for_source,
 )
 from co_op_translator.utils.common.token_estimation import count_tokens
+from co_op_translator.utils.common.task_utils import (
+    run_tasks_concurrently,
+    validate_concurrency,
+)
 from co_op_translator.utils.markdown.path_rewriter import (
     MarkdownPathRewritePolicy,
     rewrite_markdown_paths,
@@ -58,7 +63,10 @@ class ReadmeTranslator:
         lang_subdir: str | Path | None = None,
         markdown_translator=None,
         initialize_translator: bool = True,
+        concurrency: int = 1,
     ):
+        validate_concurrency(concurrency)
+        self.concurrency = concurrency
         raw_language_codes = (
             language_codes.split()
             if isinstance(language_codes, str)
@@ -358,10 +366,13 @@ class ReadmeTranslator:
         *,
         update: bool = False,
     ) -> list[ReadmeTranslationResult]:
-        results: list[ReadmeTranslationResult] = []
-        for language_code in self.language_codes:
-            results.append(await self.translate_readme(language_code, update=update))
-        return results
+        return await run_tasks_concurrently(
+            [
+                partial(self.translate_readme, language_code, update=update)
+                for language_code in self.language_codes
+            ],
+            self.concurrency,
+        )
 
     def translate(self, *, update: bool = False) -> list[ReadmeTranslationResult]:
         return asyncio.run(self.translate_async(update=update))

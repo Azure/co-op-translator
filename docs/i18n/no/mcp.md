@@ -2,57 +2,66 @@
 
 Co-op Translator inkluderer en Model Context Protocol-server for agenter, redaktører og MCP-kompatible klienter.
 
-For standard lokal oppsett trenger ikke brukere å holde en separat server kjørende manuelt. De konfigurerer sin MCP-klient, og klienten starter `co-op-translator-mcp` automatisk over `stdio` når den trenger Co-op Translator-verktøy.
+For standard lokal oppsett trenger ikke brukere å kjøre en separat server manuelt. De konfigurerer MCP-klienten sin, og klienten starter `co-op-translator-mcp` automatisk over `stdio` når den trenger Co-op Translator-verktøy.
 
-Hvis du vurderer mellom CLI, Python API og MCP, start med [Velg arbeidsflyt](workflows.md).
+Hvis du skal velge mellom CLI, Python API og MCP, begynn med [Velg arbeidsflyt](workflows.md).
 
-Bruk MCP når en agent eller redaktør skal kalle Co-op Translator direkte:
+Bruk MCP når en agent eller redaktør bør kalle Co-op Translator direkte:
 
 | Brukermål | MCP-verktøy |
 | --- | --- |
-| Oversett et Markdown-dokument, en notatbok eller et bilde | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
-| Oversett Markdown- eller notatbokinnhold med vertsagentmodellen | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Omskriv oversatte Markdown- eller notatboklenker etter valg av målsti | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Oversett et helt prosjekt som CLI-en | `run_translation`, `translate_project` |
+| Oversett ett Markdown-dokument, notatbok eller bilde | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
+| Oversett Markdown- eller notatbokinnhold med vertagentmodellen | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Omskriv oversatte Markdown- eller notatboklenker etter å ha valgt målsti | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Oversett et helt repository som CLI-en | `run_translation`, `translate_project` |
 | Gjennomgå oversatt output uten LLM-legitimasjon | `run_review` |
-| Inspiser kapasiteter og miljøstatus | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
+| Inspiser funksjoner og miljøstatus | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-MCP-serveren pakker inn den samme offentlige Python-API-en dokumentert i [Python-API](api.md). Provider-støttede verktøy bruker de samme konfigurerte leverandørene som CLI-en og Python-API-en. Agent-assisterte verktøy forbereder biter for MCP-vertsagenten å oversette, og bruker deretter Co-op Translator for å rekonstruere den endelige Markdown-en eller notatboken.
+MCP-serveren pakker inn den samme offentlige Python-API-en dokumentert i [Python API](api.md). Leverandørstøttede verktøy bruker de samme konfigurerte providerne som CLI-en og Python-API-en. Agent-assisterte verktøy forbereder chunks for MCP-vertagenten å oversette, og bruker deretter Co-op Translator for å rekonstruere den endelige Markdown-en eller notatboken.
 
 ## Trinn 1: Installer og konfigurer Co-op Translator
 
-Installer Co-op Translator i Python-miljøet som din MCP-klient vil bruke:
+Installer Co-op Translator i Python-miljøet som MCP-klienten din vil bruke:
 
 ```bash
 pip install co-op-translator
 ```
 
-For lokal utvikling fra dette depotet, installer pakken i redigerbar modus:
+For lokal utvikling fra dette repositoryet, installer pakken i redigerbar modus:
 
 ```bash
 pip install -e .
 ```
 
-Velg oversettelsesmodusen din MCP-klient skal bruke:
+Velg oversettelsesmodus som MCP-klienten din vil bruke:
 
 | Modus | Bruk dette for | Legitimasjon |
 | --- | --- | --- |
-| Provider-støttet | Co-op Translator kaller `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, eller `run_translation`. | Markdown- og notatbokoversettelse krever Azure OpenAI eller OpenAI. Bildeoversettelse krever også Azure AI Vision. |
-| Agent-assistert | MCP-vertsagenten oversetter biter returnert av `start_markdown_agent_translation` eller `start_notebook_agent_translation`. | Ingen Co-op Translator LLM-leverandørlegitimasjon kreves for Markdown- eller notatbokbiter. Bildeoversettelse dekkes ikke av agent-assistert modus ennå. |
+| Provider-backed | Co-op Translator kaller `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, eller `run_translation`. | Oversettelse krever Azure OpenAI, OpenAI, eller Anthropic. Bildeoversettelse krever også Azure AI Vision. |
+| Agent-assisted | MCP-vertagenten oversetter chunks returnert av `start_markdown_agent_translation` eller `start_notebook_agent_translation`. | Ingen Co-op Translator LLM-providerlegitimasjon kreves for Markdown- eller notatbokchunks. Bildeoversettelse dekkes foreløpig ikke av agent-assistert modus. |
 
-Hvis du begynner med Markdown- eller notatbokoversettelse inne i en agent som Codex eller Claude Code, start med agent-assistert modus. Bruk provider-støttet modus når du vil at Co-op Translator selv skal kalle dine konfigurerte leverandører, når du oversetter bilder, eller når du kjører repositorie-nivå oversettelse som CLI-en.
+Hvis du starter med Markdown- eller notatbokoversettelse inne i en agent som Codex eller Claude Code, start med agent-assistert modus. Bruk provider-backed modus når du vil at Co-op Translator selv skal kalle de konfigurerte providerne, når du oversetter bilder, eller når du kjører repository-nivå oversettelse som CLI-en.
 
-Konfigurer leverandørlegitimasjon kun for provider-støttede arbeidsflyter:
+Konfigurer én provider for leverandørstøttede arbeidsflyter:
 
 ```bash
+# Azure OpenAI
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+
+# Eller OpenAI
+OPENAI_API_KEY="..."
+OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Eller Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Provider-støttet bildeoversettelse trenger i tillegg:
+Leverandørstøttet bildeoversettelse trenger i tillegg:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -60,13 +69,13 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
 !!! note
-    Agent-assistert modus dekker for øyeblikket Markdown og Markdown-celler i notatbøker. Bildeoversettelse bruker fortsatt den provider-støttede bilde-pipelinen og krever Azure AI Vision for OCR og layout-bevisst gjengivelse.
+    Agent-assistert modus dekker for øyeblikket Markdown og Markdown-celler i notatbøker. Bildeoversettelse bruker fortsatt leverandørstøttet bilde-pipeline og krever Azure AI Vision for OCR og layout-bevisst gjengivelse.
 
-## Trinn 2: Konfigurer din MCP-klient
+## Trinn 2: Konfigurer MCP-klienten din
 
-For det normale lokale `stdio`-oppsettet, legg til Co-op Translator i din MCP-klientkonfigurasjon. Klienten vil starte og stoppe prosessen automatisk.
+For normal lokal `stdio`-oppsett, legg Co-op Translator til i MCP-klientens konfigurasjon. Klienten starter og stopper prosessen automatisk.
 
-Installert pakkekonfigurasjon:
+Konfigurasjon for installert pakke:
 
 ```json
 {
@@ -79,7 +88,7 @@ Installert pakkekonfigurasjon:
 }
 ```
 
-Kildekassekonfigurasjon på Windows:
+Konfigurasjon for kildekode-sjekk ut på Windows:
 
 ```json
 {
@@ -93,7 +102,7 @@ Kildekassekonfigurasjon på Windows:
 }
 ```
 
-Kildekassekonfigurasjon på macOS eller Linux:
+Konfigurasjon for kildekode-sjekk ut på macOS eller Linux:
 
 ```json
 {
@@ -107,11 +116,11 @@ Kildekassekonfigurasjon på macOS eller Linux:
 }
 ```
 
-Etter å ha endret MCP-klientkonfigurasjonen, restart eller last klienten på nytt slik at den kan oppdage den nye serveren.
+Etter å ha endret MCP-klientkonfigurasjonen, start eller last klienten på nytt slik at den kan oppdage den nye serveren.
 
 ## Trinn 3: Verifiser serveren i klienten
 
-Be MCP-klienten liste tilgjengelige verktøy, eller kall en av de skrivebeskyttede hjelpefunksjonene først:
+Be MCP-klienten liste tilgjengelige verktøy, eller kall en av de skrivebeskyttede hjelperne først:
 
 ```json
 {
@@ -120,19 +129,19 @@ Be MCP-klienten liste tilgjengelige verktøy, eller kall en av de skrivebeskytte
 }
 ```
 
-Nyttige første kontroller:
+Nyttige første sjekker:
 
 | Verktøy | Hva du bør sjekke |
 | --- | --- |
 | `get_api_overview` | Bekrefter at serveren er tilgjengelig og viser tilgjengelige arbeidsflyter. |
 | `list_supported_languages` | Bekrefter at pakkede språkdata kan lastes. |
-| `get_configuration_status` | Bekrefter tilgjengeligheten til LLM- og Vision-leverandører uten å avsløre hemmelige verdier. |
+| `get_configuration_status` | Bekrefter tilgjengelighet for LLM- og Vision-providers uten å eksponere hemmelige verdier. |
 
 ## Trinn 4: Velg en arbeidsflyt
 
 ### Oversett individuelle filer eller dokumenter
 
-Bruk provider-støttede innholdsverktøy når MCP-klienten allerede har dokumentinnhold eller en bildefilbane og Co-op Translator skal kalle de konfigurerte oversettelsesleverandørene.
+Bruk leverandørstøttede innholdsverktøy når MCP-klienten allerede har dokumentinnhold eller en bildefilbane og Co-op Translator skal kalle de konfigurerte oversettelsesleverandørene.
 
 For Markdown:
 
@@ -143,22 +152,22 @@ For Markdown:
 For notatbøker:
 
 1. Kall `translate_notebook_content` med notatbok-JSON og `language_code`.
-2. Kall `rewrite_notebook_paths` hvis oversatte notatboklenker må justeres for en målsti.
-3. Skriv eller returner den endelige notatbok-JSON-en.
+2. Kall `rewrite_notebook_paths` hvis oversatte notatboklenker må justeres for en målbane.
+3. Skriv eller returner den endelige notatbok-JSONen.
 
 For bilder:
 
-1. Kall `translate_image_content` med `image_path`, `language_code`, og eventuelt `root_dir` eller `fast_mode`.
+1. Kall `translate_image_content` med `image_path`, `language_code`, og valgfri `root_dir` eller `fast_mode`.
 2. Les den returnerte `data_base64` og `mime_type`.
-3. Hvis `output_path` er oppgitt, lagres også det oversatte bildet til den stien.
+3. Hvis `output_path` er oppgitt, lagres også det oversatte bildet til den banen.
 
-Innholdsverktøyene utfører ikke prosjektdiscovery, metadataoppdateringer, ansvarsfraskrivelser eller automatisk sti-omskriving. Hvis du ønsker at vertsagenten skal oversette Markdown- eller notatbokbiter uten Co-op Translator LLM-leverandørlegitimasjon, bruk den agent-assisterte arbeidsflyten nedenfor.
+Innholdsverktøyene utfører ikke prosjektoppdagelse, metadataoppdateringer, ansvarsfraskrivelser eller automatisk sti-omskriving. Hvis du vil at vertagenten skal oversette Markdown- eller notatbokchunks uten Co-op Translator LLM-providerlegitimasjon, bruk den agent-assisterte arbeidsflyten nedenfor.
 
-### Oversett med vertsagentmodellen
+### Oversett med vertagentmodellen
 
-Bruk agent-assisterte verktøy når du vil at MCP-vertsagenten, slik som en kodeassistent, skal produsere den oversatte teksten i stedet for å konfigurere Azure OpenAI eller OpenAI for Co-op Translator.
+Bruk agent-assisterte verktøy når du vil at MCP-vertagenten, for eksempel en kodeassistent, skal produsere den oversatte teksten i stedet for å konfigurere en LLM-provider for Co-op Translator.
 
-I en chat-basert MCP-klient trenger du normalt ikke å skrive verktøy-JSON selv. Be agenten bruke den agent-assisterte arbeidsflyten:
+I en chat-basert MCP-klient trenger du vanligvis ikke å skrive verktøy-JSON selv. Be agenten bruke den agent-assisterte arbeidsflyten:
 
 ```text
 Translate this Markdown file to Korean with Co-op Translator MCP.
@@ -174,29 +183,29 @@ Use start_notebook_agent_translation, translate the returned Markdown-cell chunk
 Preserve code cells, outputs, and notebook metadata.
 ```
 
-Hvis din MCP-klient støtter serverprompter, bruk `agent_assisted_markdown_translation_prompt` for at klienten skal laste de samme arbeidsflytinstruksjonene.
+Hvis MCP-klienten din støtter serverprompter, bruk `agent_assisted_markdown_translation_prompt` for å få klienten til å laste de samme arbeidsflytinstruksjonene.
 
 For Markdown:
 
 1. Kall `start_markdown_agent_translation` med `document`, `language_code`, og eventuelt `source_path`.
-2. Oversett hver returnerte bit i vertsagenten ved å følge bitens `prompt`.
-3. Kall `finish_markdown_agent_translation` med den originale `job` og oversatte biter ved å bruke `chunk_id` og `translated_text`.
+2. Oversett hver returnerte chunk i vertagenten ved å følge chunkens `prompt`.
+3. Kall `finish_markdown_agent_translation` med den opprinnelige `job` og oversatte chunks ved å bruke `chunk_id` og `translated_text`.
 4. Hvis innholdet skal skrives til en oversatt målsti, kall `rewrite_markdown_paths`.
 
 For notatbøker:
 
 1. Kall `start_notebook_agent_translation` med notatbok-JSON og `language_code`.
-2. Oversett hver returnerte bit i vertsagenten.
-3. Kall `finish_notebook_agent_translation` med den originale `job` og oversatte biter.
-4. Kall `rewrite_notebook_paths` hvis oversatte notatboklenker må justeres for en målsti.
+2. Oversett hver returnerte chunk i vertagenten.
+3. Kall `finish_notebook_agent_translation` med den opprinnelige `job` og oversatte chunks.
+4. Kall `rewrite_notebook_paths` hvis oversatte notatboklenker trenger justering for målsti.
 
-Agent-assisterte verktøy kaller ikke Azure OpenAI eller OpenAI fra Co-op Translator. Vertsagenten er ansvarlig for å oversette de returnerte bitene. Co-op Translator håndterer Markdown-chunking, bevaring av plassholdere, gjenoppbygging av frontmatter, erstatning av notatbokceller og normalisering etter oversettelse.
+Agent-assisterte verktøy kaller ikke den konfigurerte LLM-provideren fra Co-op Translator. Vertagenten er ansvarlig for å oversette de returnerte chunks. Co-op Translator håndterer Markdown-chunking, bevaring av plassholdere, rekonstruksjon av frontmatter, utskifting av notatbokceller og normalisering etter oversettelse.
 
-### Oversett et helt prosjekt
+### Oversett et helt repository
 
-Bruk `run_translation` når brukeren ønsker at Co-op Translator skal oppføre seg som `translate` CLI-en.
+Bruk `run_translation` når brukeren vil at Co-op Translator skal oppføre seg som `translate`-CLI-en.
 
-Prosjektoversettelse har som standard `dry_run=true` slik at en agent kan inspisere omfanget før filendringer:
+Repository-oversettelse er som standard `dry_run=true` slik at en agent kan inspisere omfanget før filendringer:
 
 ```json
 {
@@ -207,7 +216,13 @@ Prosjektoversettelse har som standard `dry_run=true` slik at en agent kan inspis
 }
 ```
 
-For å tillate skriving må kalleren sette både `dry_run=false` og `confirm_write=true`:
+Resultatet fra `run_translation` inkluderer en `events`-array med versjonerte
+`co-op.translation.event.v1` fremdriftshendelser. MCP-klienter bør bruke felt som
+`type`, `stage_key`, `completed`, `total`, og `current_path` i stedet for
+å analysere fanget konsolltekst. Send med `json_events_path` for også å skrive disse hendelsene
+til en NDJSON-fil.
+
+For å tillate skriving må anroper sette både `dry_run=false` og `confirm_write=true`:
 
 ```json
 {
@@ -219,14 +234,14 @@ For å tillate skriving må kalleren sette både `dry_run=false` og `confirm_wri
 }
 ```
 
-`translate_project` eksponeres som et kompatibilitetsalias for `run_translation`.
+`translate_project` er eksponert som et kompatibilitetsalias for `run_translation`.
 
-### Gjennomgå oversatt innhold
+### Gjennomgå oversatt output
 
 Bruk `run_review` for deterministiske sjekker som ikke krever LLM- eller Vision-legitimasjon:
 
 !!! note "Beta"
-    MCP eksponerer den betatele `run_review`-API-en. Den er trygg for skrivebeskyttede gjennomgangsarbeidsflyter, men gjennomgangssjekker og issue-skjemaer kan utvikle seg.
+    MCP eksponerer beta-`run_review`-APIet. Det er trygt for skrivebeskyttede gjennomgangsarbeidsflyter, men gjennomgangssjekker og issueskjemaer kan utvikle seg.
 
 ```json
 {
@@ -241,7 +256,7 @@ Resultatet inkluderer fanget tekstutdata og et strukturert gjennomgangssammendra
 
 ## Manuelle serverkjøringer
 
-Manuelle kjøringer er hovedsakelig for feilsøking eller for transporter som oppfører seg som langlevde servere.
+Manuelle kjøringer er hovedsakelig for feilsøking eller for transportmåter som oppfører seg som langkørende servere.
 
 Feilsøk standard stdio-serveren:
 
@@ -249,7 +264,7 @@ Feilsøk standard stdio-serveren:
 co-op-translator-mcp
 ```
 
-Kjør fra en kildekasseutgave:
+Kjør fra en kildekode-sjekk ut:
 
 ```bash
 python -m co_op_translator.mcp.server
@@ -262,7 +277,7 @@ co-op-translator-mcp --transport streamable-http
 co-op-translator-mcp --transport sse
 ```
 
-For lokale redaktør- og agentintegrasjoner, foretrekk klientadministrert `stdio`-konfigurasjon i Trinn 2.
+For lokale editor- og agentintegrasjoner, foretrekk klientadministrert `stdio`-konfigurasjon i Trinn 2.
 
 ## Verktøy
 
@@ -271,34 +286,34 @@ For lokale redaktør- og agentintegrasjoner, foretrekk klientadministrert `stdio
 | `translate_markdown_content` | Oversett en Markdown-streng. | Nei |
 | `translate_notebook_content` | Oversett Markdown-celler i notatbok-JSON. | Nei |
 | `translate_image_content` | Oversett tekst i ett bilde og returner base64-bildedata. | Valgfritt, kun når `output_path` er oppgitt |
-| `start_markdown_agent_translation` | Forbered Markdown-biter for vertsagenten slik at de kan oversettes uten Co-op Translator LLM-legitimasjon. | Nei |
-| `finish_markdown_agent_translation` | Rekonstruer Markdown fra vertsagent-oversatte biter. | Nei |
-| `start_notebook_agent_translation` | Forbered notatbok Markdown-cellebiter for vertsagenten å oversette. | Nei |
-| `finish_notebook_agent_translation` | Rekonstruer notatbok-JSON fra vertsagent-oversatte biter. | Nei |
-| `rewrite_markdown_paths` | Omskriv Markdown-body og frontmatter-stier for et oversatt mål. | Nei |
-| `rewrite_notebook_paths` | Omskriv stier inne i notatbok Markdown-celler. | Nei |
-| `run_translation` | Kjør prosjekt-nivå oversettelse som CLI-en. | Ja når `dry_run=false` og `confirm_write=true` |
+| `start_markdown_agent_translation` | Forbered Markdown-chunks for at vertagenten skal oversette uten Co-op Translator LLM-legitimasjon. | Nei |
+| `finish_markdown_agent_translation` | Rekonstruer Markdown fra vertagent-oversatte chunks. | Nei |
+| `start_notebook_agent_translation` | Forbered notatbokens Markdown-cellechunks for vertagenten å oversette. | Nei |
+| `finish_notebook_agent_translation` | Rekonstruer notatbok-JSON fra vertagent-oversatte chunks. | Nei |
+| `rewrite_markdown_paths` | Omskriv Markdown-innhold og frontmatter-stier for et oversatt mål. | Nei |
+| `rewrite_notebook_paths` | Omskriv stier inne i notatbokens Markdown-celler. | Nei |
+| `run_translation` | Kjør prosjektnivå-oversettelse som CLI-en. | Ja når `dry_run=false` og `confirm_write=true` |
 | `translate_project` | Kompatibilitetsalias for `run_translation`. | Ja når `dry_run=false` og `confirm_write=true` |
 | `run_review` | Kjør deterministiske gjennomgangssjekker. | Nei |
-| `get_configuration_status` | Rapporter konfigurerte LLM- og Vision-leverandører uten å eksponere hemmeligheter. | Nei |
-| `list_supported_languages` | List støttede mål-språkkoder. | Nei |
+| `get_configuration_status` | Rapporter konfigurerte LLM- og Vision-providers uten å eksponere hemmeligheter. | Nei |
+| `list_supported_languages` | List støttede målspråkkoder. | Nei |
 | `get_api_overview` | Beskriv tilgjengelige MCP-arbeidsflyter og verktøy. | Nei |
 
 ## Ressurser
 
-| Ressurs-URI | Formål |
+| Ressurs URI | Formål |
 | --- | --- |
 | `co-op://api` | JSON-oversikt over arbeidsflyter og verktøy. |
 | `co-op://supported-languages` | JSON-liste over støttede språkkoder. |
-| `co-op://configuration` | JSON-oppsummering av leverandørtilgjengelighet uten hemmeligheter. |
+| `co-op://configuration` | JSON-oppsummering av provider-tilgjengelighet uten hemmeligheter. |
 
 ## Prompter
 
 | Prompt | Formål |
 | --- | --- |
 | `translate_markdown_document_prompt` | Veilede en MCP-klient gjennom innholdsoversettelse pluss valgfri sti-omskriving. |
-| `agent_assisted_markdown_translation_prompt` | Veilede en MCP-klient gjennom vertsagent Markdown-oversettelse uten Co-op Translator LLM-leverandørlegitimasjon. |
-| `translate_repository_prompt` | Veilede en MCP-klient gjennom prosjektoversettelse som starter med dry-run. |
+| `agent_assisted_markdown_translation_prompt` | Veilede en MCP-klient gjennom vertagent-markdown-oversettelse uten Co-op Translator LLM-providerlegitimasjon. |
+| `translate_repository_prompt` | Veilede en MCP-klient gjennom repository-oversettelse med først en dry-run. |
 
 ## Kopier-og-lim-eksempler
 
@@ -321,7 +336,7 @@ Omskriv oversatte Markdown-lenker:
 {
   "tool": "rewrite_markdown_paths",
   "arguments": {
-    "content": "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+    "content": "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
     "source_path": "docs/guide.md",
     "target_path": "translations/ko/docs/guide.md",
     "policy": {
@@ -335,7 +350,7 @@ Omskriv oversatte Markdown-lenker:
 }
 ```
 
-Oversett Markdown med vertsagentmodellen:
+Oversett Markdown med vertagentmodellen:
 
 ```json
 {
@@ -348,7 +363,7 @@ Oversett Markdown med vertsagentmodellen:
 }
 ```
 
-Etter at vertsagenten har oversatt hver returnerte bit, fullfør jobben med hele `job`-objektet returnert av `start_markdown_agent_translation`:
+Etter at vertagenten har oversatt hver returnerte chunk, fullfør jobben med det komplette `job`-objektet returnert av `start_markdown_agent_translation`:
 
 ```text
 tool: finish_markdown_agent_translation
@@ -359,7 +374,7 @@ arguments:
       translated_text: "# 안녕하세요\n\n시작하려면 `pip install`을 사용하세요."
 ```
 
-Forhåndsvis prosjektoversettelse:
+Forhåndsvis repository-oversettelse:
 
 ```json
 {
@@ -377,17 +392,17 @@ Forhåndsvis prosjektoversettelse:
 
 | Problem | Hva du kan prøve |
 | --- | --- |
-| MCP-klienten finner ikke `co-op-translator-mcp`. | Bruk den absolutte Python-eksekverbare banen og `["-m", "co_op_translator.mcp.server"]` source checkout-konfigurasjonen. |
-| Serveren er listet, men oversettelsen feiler. | Kall `get_configuration_status` og bekreft at en LLM-leverandør er tilgjengelig. |
-| Du vil ha Markdown- eller notatbokoversettelse uten Azure OpenAI/OpenAI-nøkler. | Bruk `start_markdown_agent_translation` / `finish_markdown_agent_translation` eller de tilsvarende for notatbøker slik at vertsagenten oversetter bitene. |
-| Bildeoversettelse feiler. | Bekreft at Azure AI Vision-variabler er satt og kall `get_configuration_status`. |
-| Repositorieoversettelse skriver ikke filer. | Sett `dry_run=false` og `confirm_write=true` bare etter eksplisitt brukerbekreftelse. |
-| Endringer i klientkonfigurasjonen vises ikke. | Restart eller last MCP-klienten på nytt. |
+| The MCP client cannot find `co-op-translator-mcp`. | Bruk den absolutte Python-eksekverbare banen og `["-m", "co_op_translator.mcp.server"]` source checkout-konfigurasjon. |
+| Serveren er oppført, men oversettelsen feiler. | Kall `get_configuration_status` og bekreft at en LLM-provider er tilgjengelig. |
+| Du vil ha oversettelse av Markdown eller notatbok uten leverandørlegitimasjon. | Bruk `start_markdown_agent_translation` / `finish_markdown_agent_translation` eller tilsvarende for notatbøker slik at vertagenten oversetter chunks. |
+| Image translation fails. | Bekreft at Azure AI Vision-variablene er satt og kall `get_configuration_status`. |
+| Repository-oversettelsen skriver ikke filer. | Sett `dry_run=false` og `confirm_write=true` bare etter eksplisitt brukergodkjenning. |
+| Endringer i klientkonfigurasjonen vises ikke. | Start MCP-klienten på nytt eller last den inn på nytt. |
 
 ## Sikkerhetsmerknader
 
-- MCP-verktøykall styres av modellen i vertsapplikasjonen, så repositorieoversettelse er som standard en dry-run.
-- Full repositorieoversettelse kan opprette, oppdatere eller fjerne mange filer. Krev eksplisitt brukerbekreftelse før du setter `confirm_write=true`.
+- MCP-verktøysanrop styres av modellen i vertapplikasjonen, så repository-oversettelse er som standard en dry-run.
+- Full repository-oversettelse kan opprette, oppdatere eller fjerne mange filer. Krev eksplisitt brukerbekreftelse før du setter `confirm_write=true`.
 - Konfigurasjonsstatusverktøyet returnerer aldri API-nøkler, endepunkter eller andre hemmelige verdier.
-- Bildeoversettelse returnerer base64 bildedata. Store bilder kan gi store verktøysvar.
-- Agent-assisterte verktøy returnerer kildebiter og prompter til MCP-vertsagenten. Bruk dem bare med innhold brukeren er komfortabel med å sende til den vertsagentmodellen.
+- Bildeoversettelse returnerer base64-bildedata. Store bilder kan gi store verktøyssvar.
+- Agent-assisterte verktøy returnerer kildechunks og prompter til MCP-verten. Bruk dem kun med innhold brukeren er komfortabel med å sende til den vertagentmodellen.

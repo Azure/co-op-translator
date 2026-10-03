@@ -1,13 +1,13 @@
-# Resolução de Problemas
+# Resolução de problemas
 
-Use esta página quando uma execução de tradução for bem-sucedida de forma inesperada, falhar durante a configuração ou gerar saída que necessite de revisão.
+Use esta página quando uma execução de tradução for bem-sucedida inesperadamente, falhar durante a configuração ou produzir saída que necessite de revisão.
 
 ## Comece Aqui
 
 1. Execute primeiro um comando focado, como `translate -l "ko" -md`.
-2. Adicione `-d` para registos de depuração na consola.
-3. Adicione `-s` para guardar os registos de depuração em `<root-dir>/logs/`.
-4. Execute `co-op-review` após a tradução para verificar a atualidade, a estrutura e as ligações locais.
+2. Adicione `-d` para logs de depuração no console.
+3. Adicione `-s` para guardar logs de depuração em `<root-dir>/logs/`.
+4. Execute `co-op-review` após a tradução para verificar atualidade, estrutura e ligações locais.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -26,13 +26,13 @@ No language model configuration found.
 
 Solução:
 
-- Configure Azure OpenAI ou OpenAI.
+- Configure o Azure OpenAI, OpenAI ou Anthropic.
 - Verifique se as variáveis estão no ambiente onde o comando é executado.
 - Para uso local, coloque-as em `.env` na raiz do projeto.
 
-Veja [Configuração](configuration.md).
+Consulte [Configuração](configuration.md).
 
-### Tradução de imagens sem Azure AI Vision
+### Tradução de Imagens sem Azure AI Vision
 
 Erro:
 
@@ -46,25 +46,25 @@ Solução:
 - Adicione `AZURE_AI_SERVICE_ENDPOINT`.
 - Ou execute um comando apenas de texto, como `translate -l "ko" -md`.
 
-### Chave ou endpoint inválidos
+### Chave ou Endpoint Inválido
 
-Os sintomas podem incluir `401`, erros de permissão com dados ocultos ou erros de acesso ao endpoint.
+Os sintomas podem incluir `401`, erros de permissão ocultos ou erros de acesso ao endpoint.
 
 Solução:
 
 - Confirme que a chave pertence ao mesmo recurso Azure que o endpoint.
 - Confirme que o recurso suporta Vision quando usar `-img`.
-- Confirme que o nome de deployment do Azure OpenAI e a versão da API correspondem ao seu deployment.
-- Execute com registos de depuração: `translate -l "ko" -md -d -s`.
+- Confirme que o nome da implantação do Azure OpenAI e a versão da API correspondem à sua implantação.
+- Execute com logs de depuração: `translate -l "ko" -md -d -s`.
 
-## Nenhum Ficheiro foi Traduzido
+## Nenhum Ficheiro Foi Traduzido
 
 Causas comuns:
 
 - As flags selecionadas não correspondem aos seus ficheiros.
-- Já existem ficheiros traduzidos.
+- Ficheiros traduzidos existentes já estão presentes.
 - Os ficheiros de origem estão em diretórios excluídos.
-- O comando está a ser executado a partir da raiz do projeto errada.
+- O comando está a ser executado a partir da raiz do projeto incorreta.
 
 Verificações:
 
@@ -81,17 +81,17 @@ Use `--root-dir` quando o comando for executado fora da raiz do projeto.
 A reescrita de links depende dos tipos de conteúdo selecionados:
 
 - `-nb` incluído: os links para notebooks podem apontar para notebooks traduzidos.
-- `-nb` excluído: os links para notebooks podem permanecer apontados para os notebooks de origem.
+- `-nb` excluído: os links para notebooks podem continuar a apontar para os notebooks de origem.
 - `-img` incluído: os links de imagens podem apontar para imagens traduzidas.
-- `-img` excluído: os links de imagens podem permanecer apontados para as imagens de origem.
+- `-img` excluído: os links de imagens podem continuar a apontar para as imagens de origem.
 
-Execute uma tradução completa do conteúdo quando todos os links internos devem preferir saídas traduzidas:
+Execute uma tradução completa do conteúdo quando todos os links internos devem preferir os resultados traduzidos:
 
 ```bash
 translate -l "ko" -md -nb -img
 ```
 
-Execute revisão de links após a tradução:
+Execute a revisão de links após a tradução:
 
 ```bash
 co-op-review -l "ko"
@@ -101,18 +101,18 @@ co-op-review -l "ko"
 
 Se o Markdown traduzido for renderizado incorretamente:
 
-- Verifique que o frontmatter começa e termina com `---`.
-- Verifique que o número de cercas de código (code fences) corresponde entre os ficheiros de origem e traduzidos.
-- Execute `co-op-review` para detectar problemas comuns de estrutura.
-- Traduza novamente o ficheiro específico se a saída estiver corrompida.
+- Verifique se o frontmatter começa e termina com `---`.
+- Verifique se as marcações de blocos de código têm o mesmo número entre o ficheiro de origem e o traduzido.
+- Execute `co-op-review` para detetar problemas comuns de estrutura.
+- Retraduza o ficheiro específico se a saída estiver corrompida.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## Ação do GitHub executada mas nenhum Pull Request foi criado
+## A Ação do GitHub foi Executada mas Não Foi Criado um Pull Request
 
-Se `peter-evans/create-pull-request` reportar que a branch não está à frente da base, o workflow não encontrou ficheiros para fazer commit.
+Se `peter-evans/create-pull-request` reportar que a branch não está à frente da base, o workflow não encontrou ficheiros para commitar.
 
 Causas prováveis:
 
@@ -150,9 +150,9 @@ Soluções:
 
 ## Qualidade da Tradução
 
-As traduções automáticas podem necessitar de revisão humana. Use `evaluate` apenas quando desejar pontuação de qualidade experimental e fluxos de trabalho de reparação de baixa confiança.
+As traduções automáticas podem necessitar de revisão humana. Use `evaluate` apenas quando pretender pontuação de qualidade experimental e fluxos de trabalho de reparação de baixa confiança.
 
 !!! warning "Experimental"
-    `evaluate` pode usar verificações baseadas em regras e em LLMs, e o seu modelo de pontuação e comportamento de metadados pode mudar. Mantenha-o fora dos gates obrigatórios de CI, a menos que o seu fluxo de trabalho esteja preparado para alterações.
+    O `evaluate` pode utilizar verificações baseadas em regras e em LLM, e o seu modelo de pontuação e o comportamento dos metadados podem mudar. Mantenha-o fora das gates obrigatórias do CI, a menos que o seu fluxo de trabalho esteja preparado para alterações.
 
-Para verificações determinísticas em CI, use `co-op-review` em vez disso.
+Para verificações determinísticas no CI, utilize `co-op-review`.

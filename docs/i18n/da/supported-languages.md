@@ -1,10 +1,10 @@
 # Understøttede sprog
 
-Co-op Translator understøtter følgende sprogkoder til tekst-, notebook- og billedoversættelsesoutput.
+Co-op Translator understøtter følgende sprogkoder for tekst-, notebook- og billedoversættelsesoutput.
 
-Hvis du vil tilføje et nyt sprog, opdater sprog- og skrifttypekortlægningerne under `src/co_op_translator/fonts/` og test sproget, før du åbner en pull request.
+Hvis du vil tilføje et nyt sprog, opdater sprog- og skrifttypekortlægningerne under `src/co_op_translator/fonts/` og test sproget, før du åbner et pull request.
 
-| Language Code | Language Name | Font | RTL Support | Known Issues |
+| Sprogkode | Sprognavn | Skrifttype | RTL-understøttelse | Kendte problemer |
 | --- | --- | --- | --- | --- |
 | en | Engelsk | NotoSans-Medium.ttf | Nej | Nej |
 | fr | Fransk | NotoSans-Medium.ttf | Nej | Nej |
@@ -15,15 +15,15 @@ Hvis du vil tilføje et nyt sprog, opdater sprog- og skrifttypekortlægningerne 
 | fa | Persisk (Farsi) | NotoSansArabic-Medium.ttf | Ja | Nej |
 | ur | Urdu | NotoSansArabic-Medium.ttf | Ja | Nej |
 | zh-CN | Kinesisk (forenklet) | NotoSansCJK-Medium.ttc | Nej | Nej |
-| zh-MO | Kinesisk (traditionel, Macau) | NotoSansCJK-Medium.ttc | Nej | Nej |
-| zh-HK | Kinesisk (traditionel, Hongkong) | NotoSansCJK-Medium.ttc | Nej | Nej |
-| zh-TW | Kinesisk (traditionel, Taiwan) | NotoSansCJK-Medium.ttc | Nej | Nej |
+| zh-MO | Kinesisk (traditionelt, Macau) | NotoSansCJK-Medium.ttc | Nej | Nej |
+| zh-HK | Kinesisk (traditionelt, Hongkong) | NotoSansCJK-Medium.ttc | Nej | Nej |
+| zh-TW | Kinesisk (traditionelt, Taiwan) | NotoSansCJK-Medium.ttc | Nej | Nej |
 | ja | Japansk | NotoSansCJK-Medium.ttc | Nej | Nej |
 | ko | Koreansk | NotoSansCJK-Medium.ttc | Nej | Nej |
 | hi | Hindi | NotoSansDevanagari-Medium.ttf | Nej | Nej |
 | bn | Bengalsk | NotoSansBengali-Medium.ttf | Nej | Nej |
 | mr | Marathi | NotoSansDevanagari-Medium.ttf | Nej | Nej |
-| ne | Nepalesisk | NotoSansDevanagari-Medium.ttf | Nej | Nej |
+| ne | Nepali | NotoSansDevanagari-Medium.ttf | Nej | Nej |
 | pa | Punjabi (Gurmukhi) | NotoSansGurmukhi-Medium.ttf | Nej | Nej |
 | pt-PT | Portugisisk (Portugal) | NotoSans-Medium.ttf | Nej | Nej |
 | pt-BR | Portugisisk (Brasilien) | NotoSans-Medium.ttf | Nej | Nej |
@@ -53,7 +53,7 @@ Hvis du vil tilføje et nyt sprog, opdater sprog- og skrifttypekortlægningerne 
 | hr | Kroatisk | NotoSans-Medium.ttf | Nej | Nej |
 | sl | Slovensk | NotoSans-Medium.ttf | Nej | Nej |
 | uk | Ukrainsk | NotoSans-Medium.ttf | Nej | Nej |
-| my | Burmesisk (Myanmar) | NotoSansMyanmar-Medium.ttf | Nej | Nej |
+| my | Burmensk (Myanmar) | NotoSansMyanmar-Medium.ttf | Nej | Nej |
 | ta | Tamil | NotoSansTamil-Medium.ttf | Nej | Nej |
 | et | Estisk | NotoSans-Medium.ttf | Nej | Nej |
 | pcm | Nigeriansk Pidgin | NotoSans-Medium.ttf | Nej | Nej |
@@ -61,6 +61,7 @@ Hvis du vil tilføje et nyt sprog, opdater sprog- og skrifttypekortlægningerne 
 | ml | Malayalam | NotoSans-Medium.ttf | Nej | Nej |
 | kn | Kannada | NotoSans-Medium.ttf | Nej | Nej |
 | km | Khmer | NotoSansKhmer-Medium.ttf | Nej | Nej |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Nej | Nej |
 
 ## Tilføj et sprog
 
@@ -69,4 +70,4 @@ For at tilføje understøttelse af et nyt sprog:
 1. Tilføj sprogkoden og visningsnavnet til sprogværktøjerne.
 2. Tilføj eller kortlæg en skrifttype i `src/co_op_translator/fonts/font_language_mappings.yml`.
 3. Test Markdown- og billedoversættelsesoutput.
-4. Åbn en pull request med kortlægningen og valideringsnoterne.
+4. Åbn et pull request med kortlægningen og valideringsnoterne.

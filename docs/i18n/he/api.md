@@ -1,49 +1,49 @@
-# API של Python
+# ממשק ה-API של Python
 
-ממשק ה-Python הציבורי היציב מיוצא מ-`co_op_translator.api`. רוב האינטגרציות משתמשות באחד מהזרימות העבודה האלה:
+הממשק הציבורי היציב של Python מיוצא מ-`co_op_translator.api`. רוב האינטגרציות משתמשות באחד מהזרימות עבודה האלה:
 
-| Scenario | Use this when | Main APIs |
+| תרחיש | השתמש בזה כאשר | ממשקי API עיקריים |
 | --- | --- | --- |
-| Translate individual files or documents | Your application reads source content, calls Co-op Translator for translation, and decides where to save the result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | Your MCP host or application model will translate chunks, while Co-op Translator handles chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | You want the Python API to behave like the CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
+| תרגם קבצים או מסמכים בודדים | היישום שלך קורא את התוכן המקורי, קורא ל-Co-op Translator עבור תרגום, ומחליט היכן לשמור את התוצאה. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| הכן תוכן לתרגום על ידי סוכן המאכסן | המארח MCP שלך או מודל היישום יתרגם את החלקים, בעוד Co-op Translator מטפל בחיתוך החלקים ובשחזור. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| תרגם מאגר שלם | אתה רוצה שממשק ה-Python יתנהג כמו ה-CLI ויטפל בגילוי קבצים, נתיבי פלט, מטא־דאטה, ניקוי וכתיבה. | `run_translation` |
 
-רוב המודולים ברמת הבסיס תחת `core`, `config`, `review`, ו-`utils` הם פרטי מימוש המשמשים את נקודות הכניסה של ה-API האלה.
+רוב המודולים ברמת הנמוכה תחת `core`, `config`, `review`, ו-`utils` הם פרטי מימוש המשמשים את נקודות הכניסה הללו של ה-API.
 
-לקוחות MCP משתמשים באותו ממשק ציבורי דרך ה-[MCP Server](mcp.md). השתמש בעמוד זה כאשר אתה קורא ל-Python ישירות, ובמדריך ה-MCP כשאתה חושף את Co-op Translator לסוכן או לעורך. אם אתה מתלבט בין CLI, ממשק Python, ו-MCP, התחל ב-[Choose Your Workflow](workflows.md).
+לקוחות MCP משתמשים באותו ממשק ציבורי דרך [שרת MCP](mcp.md). השתמש בעמוד הזה כשקוראים ל-Python ישירות, ובמדריך ה-MCP כאשר חושפים את Co-op Translator לסוכן או לעורך. אם אתה מחליט בין CLI, ממשק ה-Python ו-MCP, התחל ב-[בחר את זרימת העבודה שלך](workflows.md).
 
-## זרימת שימוש ראשונה ב-API
+## זרימת ה-API בפעם הראשונה
 
 התחל כאן אם אתה קורא ל-Co-op Translator מתוך קוד Python:
 
-1. קנפג ספק LLM כפי שמתואר ב-[Configuration](configuration.md), אלא אם כן אתה רק מכין קטעי Markdown או פנקסי פתקים להתרגום על ידי מארח-סוכן.
-2. החלט האם האפליקציה שלך אחראית על קלט/פלט קבצים.
-3. השתמש ב-APIs לתוכן כשהאפליקציה שלך קוראת וכותבת קבצים בודדים.
-4. השתמש ב-`run_translation` כאשר Co-op Translator אמור לעבד מאגר כמו ה-CLI.
+1. קבע ספק LLM כפי שמתואר ב-[תצורה](configuration.md), אלא אם אתה רק מכין קטעי Markdown או מחברת לתרגום על ידי הסוכן־המארח.
+2. החלט האם היישום שלך מנהל קלט/פלט של קבצים.
+3. השתמש בממשקי תוכן כאשר היישום שלך קורא וכותב קבצים בודדים.
+4. השתמש ב-`run_translation` כאשר Co-op Translator אמור לעבד מאגר בדומה ל-CLI.
 5. השתמש ב-`run_review` אחרי תרגום אם אתה צריך בדיקות דטרמיניסטיות באוטומציה.
 
-| Goal | API to start with |
+| מטרה | ממשק ה-API להתחיל איתו |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
-| Translate one notebook payload | `translate_notebook_content` |
-| Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
-| Translate a full repository | `run_translation` |
-| Review translated output | `run_review` |
+| תרגם מחרוזת Markdown או קובץ בודד | `translate_markdown_content` |
+| תרגם מטען מחברת בודדת | `translate_notebook_content` |
+| תרגם תמונה אחת | `translate_image_content` |
+| אפשר לסוכן־מארח לתרגם קטעי Markdown או מחברת | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
+| שכתב קישורים מתורגמים לאחר בחירת נתיב פלט | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
+| תרגם מאגר שלם | `run_translation` |
+| סקור פלט מתורגם | `run_review` |
 
-## תרחיש 1: לתרגם קבצים או מסמכים בודדים
+## תרחיש 1: תרגום קבצים או מסמכים בודדים
 
-השתמש בזרימת עבודה זו כאשר כבר יש לך קובץ, חוצץ עורך, payload של פנקס, בקשת MCP, או קלט צינור מותאם. הקוד שלך אחראי על I/O של קבצים:
+השתמש בזרימת עבודה זו כאשר כבר יש לך קובץ, חוצץ עורך, מטען מחברת, בקשת MCP, או קלט צינור מותאם אישית. הקוד שלך מנהל את קלט/פלט הקבצים:
 
 1. קרא את תוכן המקור.
-2. קרא ל-API לתרגום תוכן.
-3. אם רוצים, קרא ל-API לשכתוב נתיבי קישורים אם התוכן המתורגם ייכתב לתיקיית תרגום בפרויקט.
-4. שמור או החזר את התוצאה מהאפליקציה שלך.
+2. קרא לממשק API לתרגום תוכן.
+3. במידת הצורך קרא לממשק API לשכתוב נתיבים אם התוכן המתורגם יישמר בתיקיית תרגומים של הפרויקט.
+4. שמור או החזר את התוצאה מהיישום שלך.
 
-APIs לתרגום תוכן אינם מריצים גילוי פרויקט, אינם כותבים מטא-נתונים, אינם מוסיפים הצהרות אחריות, ואינם משנים קישורים אוטומטית.
+ממשקי ה-API לתרגום תוכן אינם מבצעים גילוי פרויקט, אינם כותבים מטא־דאטה, אינם מוסיפים הצהרות נלוות, ואינם משכתבים קישורים אוטומטית.
 
-### Markdown File
+### קובץ Markdown
 
 ```python
 import asyncio
@@ -85,9 +85,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-אם ה-Markdown המתורגם לא יחיה במבנה פרויקט של Co-op Translator, דלג על `rewrite_markdown_paths` ושמור את המחרוזת המתורגמת ישירות.
+אם Markdown המתורגם לא יחיה במבנה פרויקט של Co-op Translator, דלג על `rewrite_markdown_paths` ושמור את המחרוזת המתורגמת ישירות.
 
-### Notebook File
+### קובץ מחברת
 
 ```python
 import asyncio
@@ -129,9 +129,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` מתרגם תאי Markdown ושומר על תאים שאינם Markdown ללא שינוי. שכתוב נתיבים מוחל רק על תאי Markdown.
+`translate_notebook_content` מתרגם תאי Markdown ושומר על תאים שאינם Markdown. שכתוב נתיבים מוחל רק על תאי Markdown.
 
-### Image File
+### קובץ תמונה
 
 ```python
 from pathlib import Path
@@ -154,15 +154,15 @@ target_path.parent.mkdir(parents=True, exist_ok=True)
 translated_image.save(target_path)
 ```
 
-`translate_image_content` קורא את תמונת המקור ומחזיר `PIL.Image.Image` מעובדת. הוא אינו כותב מטא-נתונים של תמונה מתורגמת.
+`translate_image_content` קורא את תמונת המקור ומחזיר `PIL.Image.Image` מרונדרת. הוא אינו כותב מטא־דאטה של תמונה מתורגמת.
 
-## תרחיש 2: לתרגם מאגר שלם
+## תרחיש 2: תרגום מאגר שלם
 
-השתמש בזרימת עבודה זו כאשר אתה רוצה שממשק ה-Python יתנהג כמו ה-CLI `translate`. `run_translation` מגלה קבצים נתמכים, מתרגם סוגי תוכן נבחרים, משכתב נתיבים, כותב קבצי פלט, מעדכן מטא-נתונים, ומבצע משימות תחזוקת תרגום כגון ניקוי.
+השתמש בזרימת עבודה זו כאשר אתה רוצה שממשק ה-Python יתנהג כמו ה-CLI של `translate`. `run_translation` מגלה קבצים נתמכים, מתרגם סוגי תוכן נבחרים, משכתב נתיבים, כותב קבצי פלט, מעדכן מטא־דאטה, ומבצע משימות תחזוקת תרגום כגון ניקוי.
 
-`run_translation` הוא נקודת הכניסה המועדפת לאורקסטרציה של פרויקטים. `translate_project` מיוצא כ_ALIAS_ תאימות עם אותו התנהגות.
+`run_translation` הוא נקודת הכניסה המועדפת לאורקסטרציית פרויקט. `translate_project` מיוצא ככינוי תאימות עם אותה התנהגות.
 
-תרגם קבצי Markdown במאגר הנוכחי לקוריאנית ויפנית:
+תרגם קבצי Markdown במאגר הנוכחי לקוריאנית וליפנית:
 
 ```python
 from co_op_translator.api import run_translation
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-תרגם רק פנקסים משורש פרויקט ספציפי:
+תרגם רק מחברות מתוך שורש פרויקט מסוים:
 
 ```python
 from co_op_translator.api import run_translation
@@ -185,7 +185,7 @@ run_translation(
 )
 ```
 
-הצג בכמה ייעננו תרגום בלי לכתוב קבצים:
+הצג תצוגה מקדימה של כמות התרגום ללא כתיבת קבצים:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-תרגם מספר שורשים בשיחה אחת:
+הקלט אירועי התקדמות מובנים עבור אינטגרציה:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # אחסן את המטען בטבלת אירועי העבודה שלך או הזרם אותו לממשק המשתמש שלך.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+האירועים משתמשים בסכמה מבוססת גרסה `co-op.translation.event.v1`. אינטגרציות צריכות
+להסתמך על שדות יציבים כגון `type` ו-`stage_key`, ולא על טקסט שפונה לבני אדם
+בקונסולה או על `stage_label`.
+
+תרגם מספר שורשי תוכן בקריאה אחת:
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-השתמש במיקום-ממלא לכל שפה כאשר כל שפה צריכה להכיל ספרייה פנימית מקוננת:
+השתמש בממלא מקום לכל שפה כאשר כל שפה צריכה להכיל תיקייה מקוננת:
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-אם אף אחד מהשדות `markdown`, `notebook`, או `images` לא מוגדרים, ה-API יתמוך בכל הסוגים הנתמכים: Markdown, פנקסים ותמונות.
+אם אף אחד מהאפשרויות `markdown`, `notebook`, או `images` לא מוגדרות, ה-API מתרגם את כל סוגי הקבצים הנתמכים: Markdown, מחברות, ותמונות.
 
-## בדיקת פלט מתורגם
+### שמירת עריכות אנושיות מאושרות בעזרת ספק מצב תרגום
 
-`run_review` מריץ בדיקות תרגום דטרמיניסטיות ללא אישורי LLM או Vision.
+כברירת מחדל, Co-op Translator שומר על ההתנהגות הקיימת ברמת הקובץ: כאשר
+מקור Markdown מיושן, כל הקובץ המתורגם מתחדש. אינטגרציות מתארחות
+יכולות להעביר באופן אופציונלי `TranslationStateProvider` כדי לשמר
+עריכות אנושיות בבלוקים מקורים שלא השתנו.
 
-!!! note "Beta"
-    `run_review` הוא API ביקורת דטרמיניסטי בגרסת בטא. הוא אינו קורא לספקי מודלים ואינו כותב קבצים, אך המבדקים וסקימות הבעיות עשויים להשתנות.
+הספק מספק את זוג המקור/המטרה האחרון שהתקבל ורושם כל חדש
+מועמד. האישור נשאר באחריות האינטגרציה—למשל,
+לאחר מיזוג בקשת משיכה לתרגום:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+עבור קבצי Markdown עם בסיס מקובל תקף, Co-op Translator מיישר
+בלוקים של Markdown ברמה העליונה. בלוקים מקור שלא השתנו משתמשים מחדש בבלוקים המתורגמים הנוכחיים
+כולל עריכות שבוצעו על ידי אנשים; בלוקים מקור ששונו או נוספו נשלחים
+לתרגום; בלוקים מקור שנמחקו מוסרים. אם היישור אינו חד־משמעי,
+מבנה המטרה השתנה, תרגום בלוק אינו תקף, או אין בסיס תקף,
+זמין, Co-op Translator נופל בבטחה חזרה לנתיב התרגום המלא הקיים.
+נתיב התרגום.
+
+ממשק ה-API הזה מאחסן מצב תרגום של מסמך, ולא זיכרון תרגום של ביטויים או
+קטעים חוצי־מסמכים. זה חל כרגע על תרגום פרויקטי Markdown.
+התנהגות מחברות ותמונות ללא שינוי. העברת `update=True`
+עדיין מבקשת חידוש מלא.
+
+אם לא ניתן לתרגם קובץ או יותר, `run_translation` מעלה חריגת
+`RuntimeError` לאחר סיום זרימת העבודה של הפרויקט במקום לדווח על ריצה
+מוצלחת עם פלט חסר. אינטגרציות צריכות להתייחס לזה כעבודה שנכשלה
+ולשמור את מצב התרגום המקובל הקודם.
+
+## סקירת פלט מתורגם
+
+`run_review` מפעיל בדיקות תרגום דטרמיניסטיות ללא אישורי LLM או Vision.
+
+!!! note "בטא"
+    `run_review` הוא ממשק סקירה דטרמיניסטי בגרסת בטא. הוא אינו קורא לספקי מודלים או כותב קבצים, אך סכמות הבדיקות והבעיות עשויות להתפתח.
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-בדוק רק קבצים ששונו ביחס ל-ref בסיס והדפס פלט בפורמט GitHub-flavored:
+לאחר תרגום הכולל רק README, השתמש באותו תחום לסקירה:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` מספק סקירה רק של `README.md` תחת כל שורש מקור שהוגדר,
+כולל `groups` מותאמים ותיקיות פלט. מסמכים אחרים ו-READMEים מקוננים
+מוחרגים. חוסר README מקור מעלה `ValueError`; בדיקות תרגום שנכשלו
+מעלות `RuntimeError`.
+
+סקור רק קבצים ששונו ביחס לבסיס הפניה והדפס פלט בסגנון GitHub:
 
 ```python
 from co_op_translator.api import run_review
@@ -276,7 +400,7 @@ run_review(
 
 ## דוגמאות API להעתקה והדבקה
 
-תרגם תוכן Markdown ללא כתיבה לקבצים:
+תרגם תוכן Markdown ללא כתיבת קבצים:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -340,7 +464,7 @@ run_translation(
 )
 ```
 
-תרגם שורשים מרובים:
+תרגם מספר שורשים:
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-שמור מונחי מונחון (glossary):
+שמור מונחי מילון:
 
 ```python
 from co_op_translator.api import run_translation
@@ -378,6 +502,9 @@ from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## APIs לתרגום תוכן
+## ממשקי API לתרגום תוכן
 
-APIs לתרגום תוכן מיועדים לאינטגרציות שכבר מחזיקות תוכן בזיכרון, כגון תוסף עורך, כלי MCP, מעבד פנקסים, או צינור מותאם אישית.
+ממשקי ה-API לתרגום תוכן מיועדים לאינטגרציות שכבר מחזיקות תוכן בזיכרון, כגון תוסף עורך, כלי MCP, מעבד מחברות, או צינור מותאם אישית.
 
-| Function | Input | Output | File I/O | Notes |
+| פונקציה | קלט | פלט | קלט/פלט קבצים | הערות |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Translates Markdown content only. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Translates Markdown cells and preserves non-Markdown cells. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Extracts and translates image text, then returns a rendered image. It does not save translated image metadata. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | אסינכרוני. מתרגם רק תוכן Markdown. אינו משכתב קישורים, אינו כותב מטא־דאטה, ואינו מוסיף הצהרות נלוות. |
+| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | אסינכרוני. מתרגם תאי Markdown ומשמר תאים שאינם Markdown. אינו משכתב קישורים, אינו כותב מטא־דאטה, ואינו מצרף הצהרות נלוות. |
+| `translate_image_content` | נתיב תמונה | `PIL.Image.Image` | קורא רק את תמונת המקור | סינכרוני. מוציא ומתרגם טקסט מתמונה, ואז מחזיר תמונה מרונדרת. אינו שומר מטא־דאטה של תמונה מתורגמת. |
 
-`translate_markdown_content` ו-`translate_notebook_content` מקבלות דרך האופציות `source_path` אופציונלי. הנתיב מועבר כקונטקסט למתרגם; המתקשרים נשארים אחראים לכל שכתוב נתיבים ספציפי לפרויקט לאחר התרגום.
+`translate_markdown_content` ו-`translate_notebook_content` מקבלים `source_path` אופציונלי דרך האפשרויות שלהם. הנתיב נמסר כהקשר למתרגם; המתקשרים נשארים אחראים על כל שכתוב נתיבים ספציפי לפרויקט לאחר התרגום.
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-אותן אפשרויות ניתנות גם כ-מילונים:
+אותן אפשרויות ניתנות למסירה גם כמילונים (dictionaries):
 
 ```python
 translated = await translate_markdown_content(
@@ -455,92 +588,94 @@ translated = await translate_markdown_content(
 )
 ```
 
-## APIs בסיוע סוכן
+## ממשקי API לתרגום בסיוע סוכן
 
-APIs בסיוע סוכן אינם קוראים ל-Azure OpenAI או ל-OpenAI מתוך Co-op Translator. הם מכינים קטעי Markdown או פנקסים לתרגום על ידי סוכן מארח, ואז משחזרים את התוכן הסופי מתוך הקטעים המתורגמים.
+ממשקי API בסיוע סוכן אינם קוראים לספק LLM המוגדר מתוך Co-op Translator. הם מכינים חלקי Markdown או מחברת עבור סוכן־מארח שיתרגם אותם, ולאחר מכן משחזרים את התוכן הסופי מהחלקים המתורגמים.
 
-| Function | Purpose |
+| פונקציה | מטרה |
 | --- | --- |
-| `start_markdown_agent_translation` | Return a self-contained Markdown job with chunks, prompts, and reconstruction state. |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from a job and host-agent translated chunks. |
-| `start_notebook_agent_translation` | Return a notebook job with Markdown-cell chunks for host-agent translation. |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON while preserving code cells, outputs, and metadata. |
+| `start_markdown_agent_translation` | החזר משימה עצמאית של Markdown עם חלקים, הנחיות, ומצב שחזור. |
+| `finish_markdown_agent_translation` | שחזר Markdown ממטלה ומהחלקים המתורגמים על ידי הסוכן המארח. |
+| `start_notebook_agent_translation` | החזר משימת מחברת עם חלקי תאי Markdown לתרגום על ידי הסוכן המארח. |
+| `finish_notebook_agent_translation` | שחזר JSON של מחברת תוך שמירה על תאי קוד, פלטים, ומטא־דאטה. |
 
-זרימת עבודה זו מיועדת בעיקר למארחי MCP. אם אתה צריך תרגום מאגר בפרודקשן עם Co-op Translator שמנהל קריאות לספקים, השתמש ב-`translate_markdown_content`, `translate_notebook_content`, או `run_translation`.
+זרימת עבודה זו מיועדת בעיקר למארחי MCP. אם אתה צריך תרגום מאגר יצרני כאשר Co-op Translator מנהל קריאות לספקים, השתמש ב-`translate_markdown_content`, `translate_notebook_content`, או `run_translation`.
 
-## APIs לשכתוב נתיבים
+## ממשקי API לשכתוב נתיבים
 
-APIs לשכתוב נתיבים אינם מבצעים תרגום. הם מעדכנים קישורים ושדות frontmatter לאחר שהמתקשרים יודעים את נתיב המקור, נתיב היעד המתורגם, ומבנה הפרויקט.
+ממשקי ה-API לשכתוב נתיבים אינם מבצעים תרגום. הם מעדכנים קישורים ונתיבי frontmatter לאחר שהמתקשרים יודעים את נתיב המקור, נתיב היעד המתורגם, ומבנה הפרויקט.
 
-| Function | Scope | Notes |
+| פונקציה | היקף | הערות |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | Rewrites Markdown links and supported frontmatter path fields for a translated target. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Applies Markdown path rewriting to each Markdown cell and leaves non-Markdown cells unchanged. |
+| `rewrite_markdown_paths` | Markdown body and frontmatter | משכתב קישורי Markdown ושדות נתיב ב-frontmatter הנתמכים עבור יעד מתורגם. |
+| `rewrite_notebook_paths` | Markdown cells in notebook JSON | מיישם שכתוב נתיבים של Markdown על כל תא Markdown ומשאיר תאים שאינם Markdown ללא שינוי. |
 
-הארגומנט `policy` עשוי להיות מילון עם השדות האלה:
+הארגומנט `policy` יכול להיות מילון עם השדות האלה:
 
-| Field | Required | Purpose |
+| שדה | נדרש | מטרה |
 | --- | --- | --- |
-| `language_code` | Yes | Target language code, such as `"ko"` or `"pt-BR"`. |
-| `root_dir` | No | Source project root. Defaults to `"."`. |
-| `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
-| `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
-| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
-| `lang_subdir` | No | Optional subdirectory under each language folder. |
+| `language_code` | כן | קוד שפת יעד, כגון `"ko"` או `"pt-BR"`. |
+| `root_dir` | לא | שורש פרויקט המקור. ברירת המחדל היא `"."`. |
+| `translations_dir` | לא | תיקיית פלט לתרגום טקסט. ברירת המחדל היא `translations` תחת `root_dir`. |
+| `translated_images_dir` | לא | תיקיית פלט לתמונות מתורגמות. ברירת המחדל היא `translated_images` תחת `root_dir`. |
+| `translation_types` | לא | סוגי תרגום מופעלים. ברירת המחדל היא Markdown, מחברות, ותמונות. |
+| `lang_subdir` | לא | תת־תיקיה אופציונלית תחת כל תיקיית שפה. |
 
 ## פרמטרים לתרגום פרויקט
 
+| פרמטר | סוג | ברירת מחדל | מטרה |
+| --- | --- | --- | --- |
+| `language_codes` | `str` | נדרש | קודי שפה יעד מופרדים ברווח, כגון `"ko ja fr"` או `"all"`. קודי כינויים מנורמלים לערכי BCP 47 קנוניים. |
+| `root_dir` | `str` | `"."` | שורש הפרויקט עבור יעד תרגום יחיד. מתעלם כאשר `root_dirs` או `groups` מסופקים. |
+| `update` | `bool` | `False` | מחק ויצור מחדש תרגומים קיימים עבור השפות הנבחרות. |
+| `images` | `bool` | `False` | כלול תרגום תמונות. מצריך קונפיגורציית Azure AI Vision. |
+| `markdown` | `bool` | `False` | כלול תרגום Markdown. |
+| `notebook` | `bool` | `False` | כלול תרגום מחברות Jupyter. |
+| `debug` | `bool` | `False` | הפעל רישום ניפוי שגיאות (debug logging). |
+| `save_logs` | `bool` | `False` | שמור קבצי לוג ברמת DEBUG תחת תיקיית השורש `logs/`. |
+| `yes` | `bool` | `True` | מאשר אוטומטית בקשות אישור לשימוש תוכניתי ו־CI. |
+| `add_disclaimer` | `bool` | `False` | הוסף הודעות ויתור על תרגום מכונה ל-Markdown ולמחברות המתורגמות. |
+| `translations_dir` | `str \| None` | `None` | תיקיית פלט מותאמת לתרגום טקסט. נתיבים יחסיים מתפרשים ביחס לכל שורש. |
+| `image_dir` | `str \| None` | `None` | תיקיית פלט מותאמת לתמונות מתורגמות. נתיבים יחסיים מתפרשים ביחס לכל שורש. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | מספר שורשים החולקים את אותן הגדרות פלט. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | זוגות מפורשים של `(root_dir, translations_dir)`. בעלי עדיפות על פני `root_dirs`. |
+| `repo_url` | `str \| None` | `None` | כתובת ה-URL של המאגר המשמשת בעת יצירת טבלת השפות ב-README. |
+| `glossaries` | `Iterable[str] \| None` | `None` | מונחים ממילון לשימור במהלך התרגום. כפילויות ומונחים ריקים מנורמלים. |
+| `dry_run` | `bool` | `False` | אומד כמות תרגום ומציג תצוגה מקדימה של התנהגות ההגירה ללא כתיבת קבצים. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | מתאם אחסון אופציונלי ל-accepted-baseline ו-candidate לעדכוני Markdown אינקרמנטליים. השמטתו תשמר את התנהגות הקבצים המלאים הקיימת. |
+
+## פרמטרי סקירה
+
+`run_review` משקפת בכוונה את החתימה של `run_translation` כאשר ניתן, כך שאוטומציה תוכל לעבור בין זרימות עבודה של תרגום וביקורת עם מינימום הסתעפויות.
+
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Space-separated target language codes, such as `"ko ja fr"`, or `"all"`. Alias codes are normalized to canonical BCP 47 values. |
-| `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` are supplied. |
-| `update` | `bool` | `False` | Delete and recreate existing translations for the selected languages. |
-| `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
-| `markdown` | `bool` | `False` | Include Markdown translation. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
-| `debug` | `bool` | `False` | Enable debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
-| `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
-| `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
-| `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
-| `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | תיקיות שפה המיועדות לביקורת. מתקבלות מחרוזות מופרדות ברווחים ואיטרטורים. `"all"` סוקרות כל שפת תרגום שהתגלתה. |
+| `root_dir` | `str` | `"."` | שורש הפרויקט למטרת סקירה יחידה. מתעלם במקרה ש-`root_dirs` או `groups` מסופקים. |
+| `markdown` | `bool` | `False` | הכלל קבצי מקור של Markdown ו-MDX. |
+| `notebook` | `bool` | `False` | הכלל קבצי מקור של מחברות Jupyter. |
+| `images` | `bool` | `False` | שמורה לשם התאמה לאפשרויות התרגום. הפניות קישור לתמונות נבדקות מתוך Markdown. |
+| `translations_dir` | `str \| None` | `None` | תיקיית פלט מותאמת לתרגום טקסט. נתיבים יחסיים מתפרשים ביחס לכל שורש. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | מספר שורשים החולקים את אותן הגדרות פלט. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | זוגות מפורשים של `(root_dir, translations_dir)`. בעלי עדיפות על פני `root_dirs`. |
+| `changed_from` | `str \| None` | `None` | רפרנס Git המשמש להגבלת הסקירה לקבצי מקור ששונו. |
+| `readme_only` | `bool` | `False` | סוקר רק את `README.md` תחת כל שורש מקור. היעדר קובץ README מקור יגרום להעלאת `ValueError`. |
+| `output_format` | `str` | `"text"` | פורמט פלט הסקירה. הערכים הנתמכים הם `"text"` ו-`"github"`. |
+| `fail_on_warnings` | `bool` | `False` | לטפל באזהרות ככשלונות בנוסף לשגיאות. |
+| `debug` | `bool` | `False` | הפעלת רישום דיבוג. |
+| `save_logs` | `bool` | `False` | שמור קבצי לוג ברמת DEBUG תחת תיקיית השורש `logs/`. |
 
-## פרמטרים לבדיקה
-
-`run_review` מתוכנן לשקף בכוונה את חתימת `run_translation` ככל האפשר כדי שאוטומציה תוכל להחליף בין זרימות תרגום וביקורת עם מינימום הסתעפויות.
-
-| Parameter | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders to review. Space-separated strings and iterables are accepted. `"all"` reviews every discovered translation language. |
-| `root_dir` | `str` | `"."` | Project root for a single review target. Ignored when `root_dirs` or `groups` are supplied. |
-| `markdown` | `bool` | `False` | Include Markdown and MDX source files. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
-| `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images are checked from Markdown. |
-| `translations_dir` | `str \| None` | `None` | תיקיית פלט מותאמת לתרגום טקסט. נתיבים יחסיים מפורשים ביחס לכל שורש. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | שורשי מקור מרובים שמשתפים את אותן הגדרות פלט. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | זוגות מפורשים `(root_dir, translations_dir)`. תופסים עדיפות על פני `root_dirs`. |
-| `changed_from` | `str \| None` | `None` | הפניה ב-Git המשמשת להגבלת הבדיקה לקבצי מקור ששונו. |
-| `output_format` | `str` | `"text"` | פורמט פלט הבדיקה. הערכים הנתמכים הם `"text"` ו-`"github"`. |
-| `fail_on_warnings` | `bool` | `False` | להתייחס לאזהרות ככישלון בנוסף לשגיאות. |
-| `debug` | `bool` | `False` | הפעלת רישומי דיבוג. |
-| `save_logs` | `bool` | `False` | שמור קבצי לוג ברמת DEBUG תחת ספריית השורש `logs/`. |
-
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+אם לא מוגדרים `markdown`, `notebook` או `images`, ה-API בודק Markdown, מחברות וקישורים לתמונות היכן שמתאים. הסקירה אינה קוראת לספק LLM ואינה דורשת מפתחות API.
 
 ## דרישות תצורה
 
-ממשקי ה-API לתרגום המבוססים על ספק דורשים תצורת ספק לפני התרגום:
+ממשקי תרגום שתומכים בספק דורשים הגדרת ספק לפני התרגום:
 
-- Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
-- Image translation requires Azure AI Vision in addition to the LLM provider.
-- `run_translation` runs lightweight connectivity checks before project translation begins.
-- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` are deterministic and do not require provider credentials.
+- תרגום Markdown ומחברות דורש ספק LLM. הגדר Azure OpenAI, OpenAI, או Anthropic.
+- תרגום תמונות דורש Azure AI Vision בנוסף לספק ה-LLM.
+- `run_translation` מבצע בדיקות חיבור קלות לפני תחילת תרגום הפרויקט.
+- ממשקי ה-API המונחים על ידי סוכן `start_*_agent_translation` ו-`finish_*_agent_translation` אינם קוראים לספקי ה-LLM של Co-op Translator. יישום המאחסן או סוכן MCP מתרגם את החתיכות המוכנות.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths`, ו-`run_review` הם דטרמיניסטיים ואינם דורשים אישורי ספק.
 
 Required Azure OpenAI variables:
 
@@ -559,62 +694,71 @@ OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+Required Anthropic variables:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` ו-`ANTHROPIC_MAX_TOKENS` אופציונליים. Microsoft Agent Framework הוא לקוח המודל המוגדר כברירת מחדל עבור כל הספקים החל מ-Co-op Translator 0.22.0. ניתן עדיין לבחור זמנית ב-Semantic Kernel באמצעות `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, אך פעולה זו מפיקה אזהרת התיישנות; ראה [תצורה](configuration.md#model-client-backend) לתוכנית ההסרה בשלבים.
+
+משתני Azure AI Vision הנדרשים לתרגום תמונות:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` דטרמיניסטי ואינו דורש תצורת LLM או Azure AI Vision.
 
-## הערות על ההתנהגות
+## הערות התנהגות
 
-- ממשקי ה-API לתרגום תוכן מפרידים בין התרגום לבין שכתוב נתיבי הפרויקט. קראו במפורש ל-`rewrite_markdown_paths` או `rewrite_notebook_paths` כאשר יש להתאים קישורים יחסיים לפרויקט למיקום יעד.
-- ממשקי האורקסטרציה של הפרויקט מוסיפים התנהגות פרויקטית סביב תרגום התוכן, כולל גילוי קבצים, כתיבות, שכתוב נתיבים, מטא-דאטה, ניקוי והצהרות ויתור אופציונליות.
-- `run_translation` prints progress and estimate summaries through Click, matching the CLI user experience.
-- `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
-- `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
-- When image translation is selected, missing Vision configuration raises an error before translation starts.
-- Existing alias-based language folders are detected and can be migrated to canonical language folder names as part of the run.
-- `run_review` fails on missing translated files, missing or stale translation metadata, malformed Markdown frontmatter/code fences, and invalid translated notebook JSON.
-- `run_review` reports missing local Markdown and image link targets as warnings by default.
+- ממשקי ה-API לתרגום תוכן שומרים על הפרדת התרגום מעדכון נתיבי הפרויקט. קראו ל-`rewrite_markdown_paths` או `rewrite_notebook_paths` במפורש כאשר יש להתאים קישורים יחסיים של הפרויקט לתוכן המתורגם עבור מיקום יעד.
+- ממשקי ה-API לתזמור פרויקטים מוסיפים התנהגות פרויקטית סביב תרגום התוכן, כולל גילוי קבצים, כתיבה, עדכון נתיבים, מטא-נתונים, ניקוי ואזהרות אופציונליות.
+- `run_translation` מדפיס סיכומי התקדמות והערכות דרך אותו מדווח מבוסס Rich שבו משתמש ה-CLI. פלט שאינו אינטראקטיבי חוזר לטקסט פשוט.
+- `dry_run=True` מחשב הערכות באמצעות עדכוני README וירטואליים, אך אינו כותב את ה-README או את קבצי התרגום.
+- `groups` מעובדים ברצף. הערכה מצטברת אחת מודפסת לפני תחילת העבודה.
+- כאשר נבחר תרגום תמונות, חוסר בתצורת Vision יגרום לשגיאה לפני תחילת התרגום.
+- תיקיות שפה קיימות המבוססות על כינויים מזוהות וניתן להעבירן לשמות תיקיות שפה קנוניים כחלק מהריצה.
+- `run_review` נכשל כשיש קבצים מתורגמים חסרים, מטא-נתוני תרגום חסרים או מיושנים, frontmatter של Markdown/מחסומי קוד מעוותים, או JSON לא חוקי של מחברת מתורגמת.
+- `run_review` מדווח כברירת מחדל על חוסר ביעדי קישורי Markdown מקומיים וקישורי תמונה כאזהרות.
 
-## Internal Call Path
+## מסלול קריאה פנימי
 
-The API delegates to the same core implementation used by the CLI:
+ה-API סומך על אותה מימוש ליבה המשמש את ה-CLI:
 
 Translation:
 
-1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` עבור תרגום בזיכרון.
-2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` לעיבוד נתיבים מפורש לאחר מכן.
-3. `co_op_translator.api.translation.run_translation` לתזמור מלא של הפרויקט.
+1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.
+2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.
+3. `co_op_translator.api.translation.run_translation` for full project orchestration.
 4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
 5. `co_op_translator.core.project.ProjectTranslator`.
 6. `co_op_translator.core.project.TranslationManager`.
-7. מיקסינים ממוקדים לתרגום פרויקט עבור Markdown, notebooks, ותמונות.
-8. מתרגמי Markdown, notebook, טקסט ותמונות תחת `co_op_translator.core`.
+7. מיקסינים ממוקדים לתרגום פרויקטים עבור Markdown, מחברות ותמונות.
+8. מתרגמי Markdown, מחברות, טקסט ותמונות תחת `co_op_translator.core`.
 
 Review:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. בדיקות דטרמיניסטיות תחת `co_op_translator.review.checks`
+4. Deterministic checks under `co_op_translator.review.checks`
 
-The following classes are useful for maintainers, but are not exported as the package-level stable API.
+המחלקות הבאות מועילות למתחזקים, אך אינן מיוצאות כ-API יציב ברמת החבילה.
 
-| מחלקה | מודול | אחריות |
+| Class | Module | Responsibility |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | מתאם תרגום ברמת הפרויקט, ניהול תיקיות, נירמול מטא-נתונים לפי שפה, והפניה למתרגמי Markdown, notebook, ותמונות. |
-| `TranslationManager` | `co_op_translator.core.project.translation` | מבצע את עבודת העיבוד האסינכרוני של קבצים עבור Markdown, notebooks ותמונות, גילוי תוכן מיושן, ועדכוני מטא-נתוני תרגום. |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | מתזמר קריאות קבצי Markdown, תרגום תוכן, שכתוב נתיבים, מטא-דאטה, הצהרות ויתור, וכתיבות. |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | מתזמר קריאות קבצי notebook, תרגום תאי Markdown, שכתוב נתיבים, מטא-דאטה, הצהרות ויתור, וכתיבות. |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | מתזמר גילוי תמונות מקור, תרגום תמונות, נתיבי פלט, מטא-דאטה, וכתיבות. |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | מוצא זוגות Markdown מתורגמים, מעריך איכות התרגום, וקורא מטא-נתוני אמינות עבור זרימות עבודה לתיקון תרגומים בעלי אמינות נמוכה. |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | מתאם תרגום ברמת הפרויקט, ניהול תיקיות, נירמול מטה-נתונים לפי שפה, והפניה למתרגמי Markdown, מחברות ותמונות. |
+| `TranslationManager` | `co_op_translator.core.project.translation` | מבצע את עבודת עיבוד הקבצים האסינכרונית עבור Markdown, מחברות, תמונות, זיהוי תוכן מיושן, ועדכוני מטה-נתוני תרגום. |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | מתזמר קריאות קבצי Markdown, תרגום תוכן, שכתוב נתיבים, מטה-נתונים, הודעות ויתור וכתיבות. |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | מתזמר קריאות קבצי מחברת, תרגום תאי Markdown, שכתוב נתיבים, מטה-נתונים, הודעות ויתור וכתיבות. |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | מתזמר גילוי תמונות מקור, תרגום תמונות, נתיבי פלט, מטה-נתונים וכתיבות. |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | מאתר זוגות Markdown מתורגמים, מעריך איכות תרגום, וקורא מטה-נתוני ביטחון עבור זרימות עבודה לתיקון עם ביטחון נמוך. |
 | `ReviewRunner` | `co_op_translator.review.runner` | מתאם בדיקות סקירה דטרמיניסטיות על פני קבצי מקור, שפות יעד, ושורשי תרגום מוגדרים. |
-| `ReviewTarget` | `co_op_translator.review.targets` | מתאר שורש מקור ואת ספריית פלט התרגום הנבדקת עבור שורש זה. |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | מאתר תיקיות שפה ישנות המבוססות על כינויים ומכין תוכניות העברה לשמות תיקיות שפה קנוניים לפי BCP 47. |
-| `Config` | `co_op_translator.config.base_config` | טוען קבצי `.env` ובודק האם ספקי LLM הנדרשים וספקי Vision האופציונליים מוגדרים. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | מאתר אוטומטית Azure OpenAI או OpenAI, מאמת משתני סביבה נדרשים, ומריץ בדיקות חיבור לספק. |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | מאתר תצורת Azure AI Vision ומריץ בדיקות חיבור לתרגום תמונות. |
+| `ReviewTarget` | `co_op_translator.review.targets` | מתאר שורש מקור ותיקיית פלט התרגום שנבדקת עבור אותו שורש. |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | מזהה תיקיות שפה ותיקות על בסיס כינויים ומכין תוכניות העברה לשמות תיקיות קנוניים לפי BCP 47. |
+| `Config` | `co_op_translator.config.base_config` | טוען `.env` קבצים ובודק האם ספקי LLM הנדרשים וספקי Vision האופציונליים מוגדרים. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | מגלה אוטומטית Azure OpenAI, OpenAI או Anthropic, מאמת משתני סביבה נדרשים, ומריץ בדיקות חיבור לספק. |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | מזהה קונפיגורציית Azure AI Vision ומריץ בדיקות חיבור לתרגום תמונות. |

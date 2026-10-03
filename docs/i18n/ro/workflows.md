@@ -1,46 +1,50 @@
 # Alegeți fluxul de lucru
 
-Co-op Translator poate fi folosit în trei moduri: CLI, API-ul Python și serverul MCP. Împărtășesc aceleași capabilități de traducere, dar fiecare se potrivește unui flux de lucru diferit.
+Co-op Translator poate fi folosit în trei moduri: CLI, API-ul Python și serverul MCP. Ele împărtășesc aceleași capacități de traducere, dar fiecare se potrivește unui flux de lucru diferit.
 
 Folosiți această pagină când decideți de unde să începeți.
+
+**Dacă editați traducerile manual:** fluxurile implicite CLI și Actions retraduce fișierele sursă modificate în întregime, astfel încât formularea dvs. din acele fișiere poate fi suprascrisă. Revizuiți diff-ul înainte de a accepta o actualizare. Pentru păstrarea la nivel de bloc Markdown a editărilor acceptate, folosiți opționalul [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
 
 ## Decizie rapidă
 
 | Dacă doriți să... | Folosiți | Începeți aici |
 | --- | --- | --- |
 | Traduceți sau revizuiți un depozit dintr-un terminal | CLI | [Referință CLI](cli.md) |
-| Adăugați traducere într-un script Python, serviciu, notebook sau job CI | API Python | [API Python](api.md) |
-| Permiteți unui agent, editor sau client compatibil MCP să traducă conținutul pentru dvs. | Server MCP | [Server MCP](mcp.md) |
-| Traduceți un singur document Markdown, notebook sau o imagine pe care aplicația dvs. deja le-a încărcat | API Python sau Server MCP | [API Python](api.md) or [Server MCP](mcp.md) |
-| Traduceți un întreg depozit cu foldere de ieșire standard și metadate | CLI or `run_translation` | [Referință CLI](cli.md) or [API Python](api.md) |
+| Adăugați traducere într-un script Python, serviciu, notebook sau job CI | Python API | [Python API](api.md) |
+| Permiteți unui agent, unui editor sau unui client compatibil MCP să traducă conținut pentru dvs. | MCP Server | [MCP Server](mcp.md) |
+| Traduceți un document Markdown, un notebook sau o imagine pe care aplicația dvs. le-a încărcat deja | Python API sau MCP Server | [Python API](api.md) sau [MCP Server](mcp.md) |
+| Traduceți întregul repository cu foldere standard de ieșire și metadate | CLI sau `run_translation` | [CLI Reference](cli.md) sau [Python API](api.md) |
 
 ## Folosiți CLI când
 
-Alegeți CLI atunci când o persoană sau un job CI inițiază traducerea unui depozit dintr-un shell.
+Alegeți CLI atunci când o persoană sau un job CI inițiază traducerea depozitului dintr-un shell.
 
-CLI este calea cea mai directă când doriți ca Co-op Translator să descopere fișierele proiectului, să creeze ieșiri traduse, să păstreze structura proiectului, să actualizeze metadatele și să ruleze comenzi de revizuire.
+CLI este calea cea mai directă atunci când doriți ca Co-op Translator să descopere fișierele proiectului, să creeze ieșiri traduse, să păstreze structura proiectului, să actualizeze metadatele și să ruleze comenzi de revizuire.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
-Se potrivește bine:
+Acest exemplu traduce Markdown și notebook-uri. Adăugați `-img` doar după ce configurați [Azure AI Vision](configuration.md#azure-ai-vision). Pentru o primă rulare doar cu Markdown, urmați [Prima dvs. traducere](first-translation.md).
+
+Potrivit pentru:
 
 - Traduceți un depozit din terminalul dvs.
-- Doriți o comandă repetabilă pentru fluxuri CI sau de lansare.
-- Doriți descoperire încorporată a proiectului, căi de ieșire, metadate, curățare și revizuire.
+- Vreți o comandă repetabilă pentru fluxuri de lucru CI sau lansări.
+- Vreți descoperire încorporată a proiectului, căi de ieșire, metadate, curățare și revizuire.
 - Preferiți o interfață de comandă în loc să scrieți cod Python.
 
 ## Folosiți API-ul Python când
 
-Alegeți API-ul Python când propriul dvs. cod ar trebui să controleze fluxul de lucru.
+Alegeți API-ul Python atunci când codul dvs. ar trebui să controleze fluxul de lucru.
 
-API-ul este util pentru aplicații, scripturi de automatizare, notebook-uri, servicii și pipeline-uri personalizate. Vă permite să apelați API-uri de traducere a conținutului la nivel scăzut pentru fișiere individuale sau să rulați aceeași organizare la nivel de depozit folosită de CLI.
+API-ul este util pentru aplicații, scripturi de automatizare, notebook-uri, servicii și pipeline-uri personalizate. Vă permite să apelați API-uri de traducere a conținutului la nivel scăzut pentru fișiere individuale sau să rulați aceeași orchestrare la nivel de depozit folosită de CLI.
 
-Traduceți un singur document Markdown și decideți unde să îl salvați:
+Traduceți un document Markdown și decideți unde să îl salvați:
 
 ```python
 import asyncio
@@ -72,57 +76,50 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Rulați o traducere de depozit din Python:
+Rulați o traducere a depozitului din Python:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
-Se potrivește bine:
+Potrivit pentru:
 
-- Aplicația dvs. deja citește fișiere, buffere, notebook-uri sau octeți de imagine.
+- Aplicația dvs. citește deja fișiere, buffere, notebook-uri sau octeți de imagine.
 - Aveți nevoie de validare personalizată, stocare, jurnalizare, reîncercări sau fluxuri de aprobare.
-- Doriți să traduceți un singur document, notebook sau o imagine fără a procesa întregul depozit.
-- Doriți traducerea unui depozit, dar din automatizarea Python în locul unei comenzi shell.
+- Doriți să traduceți un document, un notebook sau o imagine fără a procesa întregul depozit.
+- Vreți traducerea depozitului, dar din automatizare Python în loc de o comandă shell.
 
 ## Folosiți serverul MCP când
 
-Alegeți serverul MCP atunci când un agent, editor sau un client compatibil MCP ar trebui să apeleze uneltele Co-op Translator.
+Alegeți serverul MCP atunci când un agent, editor sau client compatibil MCP ar trebui să apeleze instrumentele Co-op Translator.
 
-În configurația locală normală, utilizatorul nu menține manual un server pornit. Clientul MCP pornește `co-op-translator-mcp` peste `stdio` când are nevoie de unelte.
+În configurarea locală normală, utilizatorul nu menține manual un server în execuție. Clientul MCP pornește `co-op-translator-mcp` peste `stdio` când are nevoie de instrumente.
 
-Exemple de solicitări ale utilizatorului pe care le-ar putea gestiona un agent:
+Exemple de cereri ale utilizatorului pe care le-ar putea gestiona un agent:
 
 - "Traduceți acest fișier Markdown în coreeană și păstrați linkurile corecte."
-- "Traduceți acest fișier Markdown în coreeană cu fluxul de lucru MCP asistat de agent, folosind modelul dvs. pentru fragmentele traduse."
+- "Traduceți acest fișier Markdown în coreeană cu fluxul de lucru MCP asistat de agent, folosind propriul vostru model pentru segmentele traduse."
 - "Traduceți acest notebook în coreeană, păstrați celulele de cod și folosiți Co-op Translator MCP pentru a reconstrui notebook-ul."
 - "Traduceți textul din această imagine în japoneză și salvați rezultatul."
-- "Efectuați o simulare a traducerii unui depozit în spaniolă și spuneți-mi ce s-ar schimba."
-- "Revizuiți dacă ieșirea traducerii în coreeană este actualizată."
+- "Efectuați o simulare (dry-run) a unei traduceri de depozit în spaniolă și spuneți-mi ce s-ar schimba."
+- "Revizuiți dacă rezultatul traducerii în coreeană este la zi."
 
 Pentru Markdown și notebook-uri, MCP poate funcționa în două moduri:
 
-| Mod | Folosiți când | Unelte principale |
+| Mod | Folosiți când | Principalele instrumente |
 | --- | --- | --- |
-| Asistat de agent | Agentul gazdă MCP ar trebui să traducă fragmentele cu propriul model, fără acreditările providerului LLM ale Co-op Translator. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Susținut de provider | Co-op Translator ar trebui să apeleze direct Azure OpenAI sau OpenAI. | `translate_markdown_content`, `translate_notebook_content` |
+| Agent-assisted | Agentul gazdă MCP ar trebui să traducă segmentele cu propriul model, fără acreditări ale furnizorului LLM Co-op Translator. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Provider-backed | Co-op Translator ar trebui să apeleze direct Azure OpenAI, OpenAI, sau Anthropic. | `translate_markdown_content`, `translate_notebook_content` |
 
-Forma apelului uneltei Markdown susținută de provider MCP:
+Apelul instrumentului Markdown susținut de furnizor MCP:
 
 ```json
 {
@@ -137,7 +134,7 @@ Forma apelului uneltei Markdown susținută de provider MCP:
 }
 ```
 
-Forma apelului uneltei pentru imagini MCP:
+Apelul instrumentului imagine MCP:
 
 ```json
 {
@@ -150,7 +147,7 @@ Forma apelului uneltei pentru imagini MCP:
 }
 ```
 
-Traducerea depozitului este executată în modul simulare implicit prin MCP:
+Traducerea depozitului este în modul de simulare (dry-run) implicit prin MCP:
 
 ```json
 {
@@ -165,16 +162,16 @@ Traducerea depozitului este executată în modul simulare implicit prin MCP:
 }
 ```
 
-Se potrivește bine:
+Potrivit pentru:
 
 - Doriți fluxuri de lucru de traducere în limbaj natural în interiorul unui agent sau editor.
-- Doriți traducere Markdown sau notebook în care modelul agentului gazdă traduce fragmente pregătite.
+- Doriți traducerea Markdown sau a notebook-urilor unde agentul gazdă traduce segmentele pregătite.
 - Doriți ca agentul să traducă conținut selectat în locul întregului depozit.
-- Doriți un pas de aprobare înainte de scrierile la nivelul întregului depozit.
-- Doriți o singură interfață care expune unelte pentru Markdown, notebook, imagini, revizuire și rescrierea căilor.
+- Doriți un pas de aprobare înainte de scrierile la scară de întreg depozitul.
+- Vreți o singură interfață care expune instrumente pentru Markdown, notebook, imagine, revizuire și rescrierea căilor.
 
-## Cum se potrivesc împreună
+## Cum se potrivesc între ele
 
-CLI este cea mai bună alegere implicită pentru persoanele care traduc depozite. API-ul Python este cel mai bun când codul dvs. deține fluxul de lucru. Serverul MCP este cel mai bun când un agent sau editor deține fluxul de lucru.
+CLI este cel mai bun implicit pentru persoane care traduc depozite. API-ul Python este cel mai bun când codul dvs. deține fluxul de lucru. Serverul MCP este cel mai bun când un agent sau editor deține fluxul de lucru.
 
-Toate cele trei căi folosesc același API public Co-op Translator, astfel încât puteți începe cu CLI, automatiza mai târziu cu Python și expune aceleași capabilități către clienții MCP când aveți nevoie de fluxuri de lucru conduse de agenți.
+Toate cele trei căi folosesc aceeași API publică Co-op Translator, astfel încât puteți începe cu CLI, automatiza mai târziu cu Python și expune aceleași capacități clienților MCP atunci când aveți nevoie de fluxuri de lucru conduse de agenți.

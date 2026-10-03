@@ -1,6 +1,6 @@
 # Azure AI ਸੈੱਟਅਪ
 
-Use this guide when you want to configure Azure OpenAI for text translation and Azure AI Vision for image text extraction.
+ਜਦੋਂ ਤੁਸੀਂ ਟੈਕਸਟ ਤਰਜਮੇ ਲਈ Azure OpenAI ਅਤੇ ਚਿੱਤਰਾਂ ਤੋਂ ਟੈਕਸਟ ਨਿਕਾਲਣ ਲਈ Azure AI Vision ਸੰਰਚਿਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਇਸ ਗਾਈਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।
 
 ## ਲੋੜੀਂਦੀਆਂ ਸ਼ਰਤਾਂ
 
@@ -28,9 +28,9 @@ Use this guide when you want to configure Azure OpenAI for text translation and 
 
 ## Azure AI Vision ਸੰਰਚਿਤ ਕਰੋ
 
-Image translation uses Azure AI Vision to extract text from source images before the text is translated.
+ਇਮੇਜ ਤਰਜਮਾ ਟੈਕਸਟ ਦੇ ਤਰਜਮੇ ਤੋਂ ਪਹਿਲਾਂ ਸਰੋਤ ਚਿੱਤਰਾਂ ਤੋਂ ਟੈਕਸਟ ਕੱਢਣ ਲਈ Azure AI Vision ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।
 
-In your Azure AI project, find the Azure AI Services key and endpoint.
+ਆਪਣੇ Azure AI ਪ੍ਰੋਜੈਕਟ ਵਿੱਚ, Azure AI Services ਦੀ ਕੁੰਜੀ ਅਤੇ ਐਂਡਪੋਇੰਟ ਲੱਭੋ।
 
 ![Azure AI ਸੇਵਾ ਦੀ ਜਾਣਕਾਰੀ ਲੱਭੋ](../../assets/find-azure-ai-info.png)
 
@@ -56,7 +56,7 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Co-op Translator also supports optional fallback credential sets. Duplicate a complete provider set with suffixes such as `_1` or `_2`; all variables in a fallback set must share the same suffix.
+Co-op Translator ਵੀ ਵਿਕਲਪਿਕ ਫਾਲਬੈਕ ਪ੍ਰਮਾਣਿਕਤਾ ਸੈੱਟਾਂ ਦਾ ਸਹਿਯੋਗ ਕਰਦਾ ਹੈ। ਇੱਕ ਪੂਰਾ ਪ੍ਰੋਵਾਈਡਰ ਸੈੱਟ ਨਕਲ ਕਰੋ ਅਤੇ ਉਸ ਨੂੰ `_1` ਜਾਂ `_2` ਵਰਗੇ ਸਫਿਕਸ ਨਾਲ ਰੱਖੋ; ਫਾਲਬੈਕ ਸੈੱਟ ਵਿੱਚ ਸਾਰੀਆਂ ਵੈਰੀਏਬਲਾਂ ਦਾ ਸਫਿਕਸ ਇੱਕੋ ਹੀ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."

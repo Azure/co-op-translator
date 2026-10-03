@@ -1,46 +1,50 @@
-# Valige oma töövoog
+# Vali oma töövoog
 
-Co-op Translatori saab kasutada kolmel viisil: CLI, Python API ja MCP-server. Need jagavad samu tõlkevõimekusi, kuid igaüks sobib erineva töövoo jaoks.
+Co-op Translatorit saab kasutada kolmel viisil: CLI, Python API ja MCP server. Neil kõigil on samad tõlkevõimekused, kuid igaüks sobib erineva töövoo jaoks.
 
-Kasutage seda lehte, kui otsustate, kust alustada.
+Kasuta seda lehte, kui otsustad, kust alustada.
+
+**Kui muudad tõlkeid käsitsi:** vaikimisi CLI ja Actions töövood tõlgivad muudetud lähtefaile täielikult uuesti, nii et sinu sõnastus neis failides võib saada üle kirjutatud. Vaata diffi enne, kui aktsepteerid uuenduse. Heaksatud muudatuste Markdowni plokkide tasemel säilitamiseks kasuta valikulist [Python API tõlkeoleku pakkujat](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
 
 ## Kiire otsus
 
-| Kui soovite... | Kasutage | Alustage siit |
+| Kui tahad... | Kasuta | Alusta siit |
 | --- | --- | --- |
-| Tõlkida või üle vaadata repositooriumi terminalist | CLI | [CLI Reference](cli.md) |
-| Lisada tõlge Python-skripti, teenusesse, märkmikku või CI-töösse | Python API | [Python API](api.md) |
-| Lasta agendil, redaktoril või MCP-ühilduval kliendil sisu teie eest tõlkida | MCP Server | [MCP Server](mcp.md) |
-| Tõlkida üks Markdown-dokument, märkmik või pilt, mille teie rakendus on juba laadinud | Python API või MCP-server | [Python API](api.md) or [MCP Server](mcp.md) |
-| Tõlkida kogu repositoorium standardsete väljundkaustade ja metaandmetega | CLI või `run_translation` | [CLI Reference](cli.md) or [Python API](api.md) |
+| Tõlkida või üle vaadata hoidlat terminalist | CLI | [CLI viide](cli.md) |
+| Lisada tõlget Python-skripti, teenuse, märkmiku või CI-töö hulka | Python API | [Python API](api.md) |
+| Lasta agendil, redaktoril või MCP-ühilduval kliendil sinu eest sisu tõlkida | MCP Server | [MCP Server](mcp.md) |
+| Tõlkida üks Markdowni dokument, märkmik või pilt, mille su rakendus juba laadis | Python API või MCP Server | [Python API](api.md) või [MCP Server](mcp.md) |
+| Tõlkida kogu hoidla koos standardsete väljundkaustade ja metadataga | CLI või `run_translation` | [CLI viide](cli.md) või [Python API](api.md) |
 
-## Kasutage CLI-d, kui
+## Kasuta CLI-d, kui
 
-Valige CLI, kui inimene või CI-töö juhib repositooriumi tõlkimist käsurealt.
+Vali CLI, kui inimene või CI-töö juhib hoidla tõlkimist käsurealt.
 
-CLI on kõige sirgjoonelisem tee, kui soovite, et Co-op Translator avastaks projekti failid, looks tõlgitud väljundeid, säilitaks projekti ülesehituse, uuendaks metaandmeid ja käivitaks ülevaatamise käske.
+CLI on kõige otsem tee, kui soovid, et Co-op Translator avastaks projektifaile, tõlgiks need, säilitaks projekti paigutuse, uuendaks metaandmeid ja käivitaks ülevaatuse käske.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
+See näide tõlgib Markdowni ja märkmikke. Lisa `-img` alles pärast [Azure AI Vision](configuration.md#azure-ai-vision) seadistamist. Kui tahad esmalt ainult Markdowni, järgi [Sinu esimene tõlge](first-translation.md).
+
 Sobib hästi:
 
-- Te tõlgite repositooriumi käsurealt.
-- Soovite korduvkasutatavat käsku CI- või väljalasketöövoogude jaoks.
-- Soovite sisseehitatud projekti avastamist, väljundite radu, metaandmeid, puhastamist ja ülevaatamist.
-- Eelistate käsuliidest Python-koodi kirjutamisele.
+- Sa tõlgid hoidlat terminalist.
+- Sa tahad korduvat käsku CI või väljalaske töövoogude jaoks.
+- Sa tahad sisseehitatud projektide avastamist, väljundite teid, metaandmeid, puhastust ja ülevaatust.
+- Sa eelistad käsurealiidest Python-koodi kirjutamise asemel.
 
-## Kasutage Python API-d, kui
+## Kasuta Python API-d, kui
 
-Valige Python API, kui teie kood peaks kontrollima töövoogu.
+Vali Python API, kui sinu kood peaks juhtima töövoogu.
 
-API on kasulik rakenduste, automatiseerimisskriptide, märkmike, teenuste ja kohandatud torujuhtmete jaoks. See võimaldab kutsuda madala taseme sisu tõlke API-sid üksikute failide jaoks või käivitada sama repositooriumi-taseme orkestreerimist, mida kasutab CLI.
+API on kasulik rakenduste, automatiseerimisskriptide, märkmike, teenuste ja kohandatud torustike jaoks. See võimaldab kutsuda madala taseme sisu tõlke API-sid individuaalsete failide jaoks või käivitada sama hoidla-tasemel orkestreerimist, mida kasutab CLI.
 
-Tõlkige üks Markdown-dokument ja otsustage, kuhu see salvestada:
+Tõlgi üks Markdowni dokument ja otsusta, kuhu see salvestada:
 
 ```python
 import asyncio
@@ -72,57 +76,50 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Käivitage repositooriumi tõlkimine Pythonist:
+Käivita hoidla tõlkimine Pythoni kaudu:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
 Sobib hästi:
 
-- Teie rakendus loeb juba faile, puhvreid, märkmikke või pildibaite.
-- Vajate kohandatud valideerimist, salvestust, logimist, taaskatseid või kinnituse töövooge.
-- Soovite tõlkida ühte dokumenti, märkmikku või pilti ilma kogu repositooriumi töötlemata.
-- Soovite repositooriumi tõlkimist, kuid Python-automatiseerimise kaudu, mitte käsurealt.
+- Sinu rakendus loeb juba faile, puhvriandmeid, märkmikke või pildi baite.
+- Sul on vaja kohandatud valideerimist, salvestust, logimist, kordusi või heakskiitvoolusid.
+- Tahad tõlkida ühte dokumenti, märkmikku või pilti ilma kogu hoidlat töödelda.
+- Tahad hoidla tõlget, aga Pythoni automatiseerimisest, mitte käsurealt.
 
-## Kasutage MCP-serverit, kui
+## Kasuta MCP serverit, kui
 
-Valige MCP-server, kui agent, redaktor või MCP-ühilduv klient peaks kutsuma Co-op Translatori tööriistu.
+Vali MCP server, kui agent, redaktor või MCP-ühilduv klient peaks kutsuma Co-op Translator tööriistu.
 
-Tavapärases lokaalses seadistuses kasutaja ei hoia serverit käsitsi töös. MCP klient käivitab `co-op-translator-mcp` üle `stdio`, kui tal on tööriistu vaja.
+Tavapärases lokaalses seadistuses ei pea kasutaja serverit käsitsi jooksutama. MCP klient käivitab `co-op-translator-mcp` üle `stdio`, kui tööriistu on vaja.
 
-Näited kasutajapäringutest, mida agent võiks töödelda:
+Näited kasutaja päringutest, mida agent võiks käsitleda:
 
-- "Tõlgi see Markdown-fail korea keelde ja säilita lingid korrektsed."
-- "Tõlgi see Markdown-fail korea keelde agenti abistatud MCP-töövoos, kasutades oma mudelit tõlgitud osade jaoks."
-- "Tõlgi see märkmik korea keelde, säilita koodirakud ja kasuta Co-op Translatori MCP-d, et rekonstrueerida märkmik."
-- "Tõlgi selle pildi tekst jaapani keelde ja salvesta tulemus."
-- "Tee repositooriumi tõlke proovkäik hispaania keelde ja ütle mulle, mis muutuks."
-- "Kontrolli, kas korea keelde tõlgitud väljund on ajakohane."
+- "Tõlgi see Markdowni fail koreakeelseks ja hoia lingid õiged."
+- "Tõlgi see Markdowni fail koreakeelseks agenti abistatud MCP töövooga, kasutades tõlgitud lõikude jaoks oma mudelit."
+- "Tõlgi see märkmik koreakeelseks, säilita koodirakud ja kasuta Co-op Translator MCP-i märkmiku taastamiseks."
+- "Tõlgi selle pildi tekst jaapanikeelseks ja salvesta tulemus."
+- "Tee hoidla tõlke kuivkäik hispaania keelde ja ütle mulle, mis muutuks."
+- "Ülevaata, kas koreakeelne tõlke väljund on ajakohane."
 
 Markdowni ja märkmike puhul saab MCP töötada kahes režiimis:
 
-| Režiim | Kas kasutada, kui | Põhitööriistad |
+| Režiim | Kasuta, kui | Põhivahendid |
 | --- | --- | --- |
-| Agendi abiga | MCP hostagent peaks tõlkima tükke oma mudeliga, ilma Co-op Translatori LLM-teenuse mandaatideta. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Teenusepakkuja-toetatud | Co-op Translator peaks kutsuma Azure OpenAI või OpenAI otse. | `translate_markdown_content`, `translate_notebook_content` |
+| Agent-assisted | Kui MCP host-agent peaks tõlkima lõike oma mudeliga, ilma Co-op Translator LLM pakkuja mandaatideta. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Provider-backed | Kui Co-op Translator peaks otse kasutama Azure OpenAI, OpenAI või Anthropic teenuseid. | `translate_markdown_content`, `translate_notebook_content` |
 
-MCP teenusepakkuja-toetatud Markdown-tööriista kutse vorm:
+MCP pakkujapoolt toetava Markdowni tööriista kutse vorm:
 
 ```json
 {
@@ -150,7 +147,7 @@ MCP pilditööriista kutse vorm:
 }
 ```
 
-Repositooriumi tõlkimine on MCP kaudu vaikimisi proovkäivitusena:
+Hoidla tõlkimine on MCP kaudu vaikimisi kuivkäik:
 
 ```json
 {
@@ -167,14 +164,14 @@ Repositooriumi tõlkimine on MCP kaudu vaikimisi proovkäivitusena:
 
 Sobib hästi:
 
-- Soovite loomuliku keele tõlketöövooge agendi või redaktori sees.
-- Soovite Markdowni või märkmiku tõlget, kus hostagenti mudel tõlgib ettevalmistatud tükke.
-- Soovite, et agent tõlgiks valitud sisu, mitte kogu repositooriumi.
-- Soovite kinnitusetappi enne kogu repositooriumi kirjutamisi.
-- Soovite üht liidest, mis pakub Markdowni, märkmiku, pildi, ülevaatamise ja tee-ümberkirjutamise tööriistu.
+- Tahad loomuliku keele tõlke töövooge agendi või redaktori sees.
+- Tahad Markdowni või märkmiku tõlget, kus host-agent mudel tõlgib ettevalmistatud lõike.
+- Tahad, et agent tõlgiks valitud sisu, mitte kogu hoidlat.
+- Tahad heakskiitmisastet enne hoidlaüleste kirjutamiste sooritamist.
+- Tahad üht liidest, mis pakub Markdowni, märkmiku, pildi, ülevaatuse ja tee-ümberkirjutamise tööriistu.
 
-## Kuidas need omavahel sobivad
+## Kuidas need sobituvad
 
-CLI on parim vaikimisi valik inimestele, kes tõlgivad repositooriume. Python API sobib kõige paremini, kui teie kood haldab töövoogu. MCP-server on parim, kui agent või redaktor haldab töövoogu.
+CLI on parim vaikimisi valik inimestele, kes tõlgivad hoidlaid. Python API on parim, kui sinu kood juhib töövoogu. MCP server on parim, kui agent või redaktor juhib töövoogu.
 
-Kõik kolm võimalust kasutavad sama avalikku Co-op Translator API-d, nii et saate alustada CLI-ga, automatiseerida hiljem Pythoni abil ning pakkuda samu võimalusi MCP-klientidele, kui vajate agentide juhitavaid töövooge.
+Kõik kolm rada kasutavad sama avalikku Co-op Translator API-d, nii et võid alustada CLI-ga, hiljem automatiseerida Pythoniga ja pakkuda samu võimalusi MCP klientidele, kui vajad agentipõhiseid töövooge.

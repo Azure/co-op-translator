@@ -1,11 +1,11 @@
 # Rozwiązywanie problemów
 
-Użyj tej strony, gdy uruchomienie tłumaczenia zakończy się nieoczekiwanym powodzeniem, nie powiedzie się podczas konfiguracji lub wygeneruje wynik wymagający przeglądu.
+Użyj tej strony, gdy uruchomienie tłumaczenia zakończy się nieoczekiwanie sukcesem, nie powiodło się podczas konfiguracji lub wygenerowało wynik wymagający przeglądu.
 
 ## Zacznij tutaj
 
-1. Najpierw uruchom ukierunkowane polecenie, na przykład `translate -l "ko" -md`.
-2. Dodaj `-d` dla logów debugowania w konsoli.
+1. Najpierw uruchom skoncentrowane polecenie, na przykład `translate -l "ko" -md`.
+2. Dodaj `-d`, aby uzyskać logi debugowania w konsoli.
 3. Dodaj `-s`, aby zapisać logi debugowania w `<root-dir>/logs/`.
 4. Uruchom `co-op-review` po tłumaczeniu, aby sprawdzić aktualność, strukturę i linki lokalne.
 
@@ -26,9 +26,9 @@ No language model configuration found.
 
 Rozwiązanie:
 
-- Skonfiguruj Azure OpenAI lub OpenAI.
+- Skonfiguruj Azure OpenAI, OpenAI lub Anthropic.
 - Sprawdź, czy zmienne znajdują się w środowisku, w którym uruchamiane jest polecenie.
-- W przypadku użycia lokalnego umieść je w pliku `.env` w katalogu głównym projektu.
+- Dla lokalnego użycia umieść je w `.env` w katalogu głównym projektu.
 
 Zobacz [Konfiguracja](configuration.md).
 
@@ -44,24 +44,24 @@ Rozwiązanie:
 
 - Dodaj `AZURE_AI_SERVICE_API_KEY`.
 - Dodaj `AZURE_AI_SERVICE_ENDPOINT`.
-- Lub uruchom polecenie tylko dla tekstu, na przykład `translate -l "ko" -md`.
+- Lub uruchom polecenie tylko z tekstem, takie jak `translate -l "ko" -md`.
 
 ### Nieprawidłowy klucz lub punkt końcowy
 
-Objawy mogą obejmować `401`, zredagowane błędy uprawnień lub błędy dostępu do punktu końcowego.
+Objawy mogą obejmować `401`, zacenzurowane błędy uprawnień lub błędy dostępu do punktu końcowego.
 
 Rozwiązanie:
 
 - Potwierdź, że klucz należy do tego samego zasobu Azure co punkt końcowy.
 - Potwierdź, że zasób obsługuje Vision podczas używania `-img`.
-- Potwierdź, że nazwa wdrożenia Azure OpenAI oraz wersja API pasują do Twojego wdrożenia.
+- Potwierdź, że nazwa wdrożenia Azure OpenAI i wersja API pasują do twojego wdrożenia.
 - Uruchom z logami debugowania: `translate -l "ko" -md -d -s`.
 
-## Żadne pliki nie zostały przetłumaczone
+## Nie przetłumaczono żadnych plików
 
 Typowe przyczyny:
 
-- Wybrane flagi nie odpowiadają Twoim plikom.
+- Wybrane flagi nie odpowiadają twoim plikom.
 - Istnieją już przetłumaczone pliki.
 - Pliki źródłowe znajdują się w wykluczonych katalogach.
 - Polecenie jest uruchamiane z niewłaściwego katalogu głównego projektu.
@@ -74,24 +74,24 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-Użyj `--root-dir`, gdy polecenie jest uruchamiane spoza głównego katalogu projektu.
+Użyj `--root-dir`, gdy polecenie jest uruchamiane poza katalogiem głównym projektu.
 
 ## Nieoczekiwane zachowanie linków
 
-Przepisywanie linków zależy od wybranych typów treści:
+Przepisywanie linków zależy od wybranych typów zawartości:
 
-- `-nb` włączone: linki do notatników mogą wskazywać na przetłumaczone notatniki.
-- `-nb` wyłączone: linki do notatników mogą pozostać skierowane do oryginalnych notatników.
+- `-nb` włączone: linki do notebooków mogą wskazywać na przetłumaczone notebooki.
+- `-nb` wyłączone: linki do notebooków mogą pozostać skierowane na źródłowe notebooki.
 - `-img` włączone: linki do obrazów mogą wskazywać na przetłumaczone obrazy.
-- `-img` wyłączone: linki do obrazów mogą pozostać skierowane do oryginalnych obrazów.
+- `-img` wyłączone: linki do obrazów mogą pozostać skierowane na źródłowe obrazy.
 
-Uruchom pełne tłumaczenie treści, gdy wszystkie linki wewnętrzne powinny preferować przetłumaczone wersje:
+Uruchom pełne tłumaczenie zawartości, gdy wszystkie linki wewnętrzne powinny preferować przetłumaczone wyniki:
 
 ```bash
 translate -l "ko" -md -nb -img
 ```
 
-Przeprowadź przegląd linków po tłumaczeniu:
+Uruchom przegląd linków po tłumaczeniu:
 
 ```bash
 co-op-review -l "ko"
@@ -99,33 +99,33 @@ co-op-review -l "ko"
 
 ## Problemy z renderowaniem Markdown
 
-Jeśli przetłumaczony Markdown renderuje się niepoprawnie:
+Jeśli przetłumaczony Markdown renderuje się nieprawidłowo:
 
 - Sprawdź, czy frontmatter zaczyna się i kończy na `---`.
-- Sprawdź, czy liczba ograniczników bloków kodu (code fences) zgadza się między plikiem źródłowym a przetłumaczonym.
-- Uruchom `co-op-review`, aby wykryć powszechne problemy strukturalne.
-- Przetłumacz ponownie konkretny plik, jeśli wynik został uszkodzony.
+- Sprawdź, czy liczba ogrodzeń kodu (code fence) zgadza się między plikami źródłowymi a przetłumaczonymi.
+- Uruchom `co-op-review`, aby wykryć typowe problemy ze strukturą.
+- Ponownie przetłumacz konkretny plik, jeśli wynik został uszkodzony.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## Akcja GitHub uruchomiona, ale nie utworzono Pull Requesta
+## GitHub Action uruchomiony, ale nie utworzono pull requesta
 
-Jeśli `peter-evans/create-pull-request` raportuje, że gałąź nie jest przed bazą, workflow nie znalazł plików do zatwierdzenia.
+Jeśli `peter-evans/create-pull-request` raportuje, że gałąź nie jest przed bazową, workflow nie znalazł plików do zatwierdzenia.
 
 Prawdopodobne przyczyny:
 
-- Uruchomienie tłumaczenia nie wygenerowało żadnych zmian.
-- Plik `.gitignore` wyklucza `translations/`, `translated_images/` lub przetłumaczone notatniki.
-- `add-paths` nie pasuje do wygenerowanych katalogów wyjściowych.
-- Krok tłumaczenia zakończył się wcześniej.
+- Uruchomienie tłumaczenia nie wprowadziło żadnych zmian.
+- `.gitignore` wyklucza `translations/`, `translated_images/` lub przetłumaczone notebooki.
+- `add-paths` nie odpowiada generowanym katalogom wyjściowym.
+- Krok tłumaczenia zakończył się przedwcześnie.
 
 Rozwiązania:
 
 1. Potwierdź, że wygenerowane pliki istnieją w `translations/` lub `translated_images/`.
 2. Potwierdź, że `.gitignore` nie ignoruje wygenerowanych wyników.
-3. Użyj pasujących `add-paths`:
+3. Użyj dopasowanych `add-paths`:
 
    ```yaml
    with:
@@ -150,9 +150,9 @@ Rozwiązania:
 
 ## Jakość tłumaczenia
 
-Tłumaczenia maszynowe mogą wymagać przeglądu przez człowieka. Używaj `evaluate` tylko wtedy, gdy chcesz eksperymentalnego oceniania jakości i przepływów naprawczych dla niskiego zaufania.
+Tłumaczenia maszynowe mogą wymagać przeglądu przez człowieka. Używaj `evaluate` tylko wtedy, gdy chcesz eksperymentalnego oceniania jakości i workflowów naprawczych dla niskiego zaufania.
 
-!!! warning "Experimental"
-    `evaluate` może korzystać z kontroli opartych na regułach oraz na LLM, a jego model oceniania i zachowanie dotyczące metadanych mogą ulec zmianie. Nie stosuj go w obowiązkowych bramach CI, chyba że twój workflow jest przygotowany na zmiany.
+!!! warning "Eksperymentalne"
+    `evaluate` może używać kontroli opartych na regułach i LLM, a jego model oceny i zachowanie metadanych mogą ulec zmianie. Nie umieszczaj go w obowiązkowych bramach CI, chyba że twój workflow jest przygotowany na zmiany.
 
 Dla deterministycznych kontroli CI użyj zamiast tego `co-op-review`.

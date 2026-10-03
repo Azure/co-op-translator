@@ -1,16 +1,20 @@
-# Szablon README dla języków
+# Szablon języków README
 
-Co-op Translator może utrzymywać tabelę języków w README dla repozytoriów publikujących przetłumaczone treści.
+Co-op Translator może utrzymywać tabelę języków README dla repozytoriów, które publikują przetłumaczone treści.
 
-Użyj poniższych znaczników, gdy chcesz, aby Co-op Translator zastępował całą sekcję przy każdym uruchomieniu tłumaczenia. Usuń znaczniki, jeśli wolisz ręcznie utrzymywać dostosowany podzbiór.
+Użyj poniższych znaczników, gdy chcesz, aby Co-op Translator zastępował całą sekcję przy każdym uruchomieniu tłumaczenia. Usuń znaczniki, jeśli wolisz ręcznie utrzymywać niestandardowy podzbiór.
+
+Atrybucja i link „rozpoczęcie pracy” powyżej znaczników są opcjonalne. Pomagają czytelnikom dowiedzieć się, jak utrzymywane są tłumaczenia i jak przetłumaczyć własne repozytoria. Umieść je poza znacznikami, aby aktualizacje tabeli języków je zachowały. Aktualizując inne repozytorium, stosuj się do jego wytycznych dotyczących współpracy i pozwól opiekunom zdecydować, czy uwzględnić ten tekst.
 
 ````markdown
 ### Multi-Language Support
 
 #### Supported by [Co-op Translator](https://github.com/Azure/co-op-translator)
 
+Maintain your own documentation? [Start with one README and one language](https://github.com/Azure/co-op-translator/blob/main/docs/github-actions.md#your-first-readme-translation-pr).
+
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
-[Arabic](../ar/README.md) | [Bengali](../bn/README.md) | [Bulgarian](../bg/README.md) | [Burmese (Myanmar)](../my/README.md) | [Chinese (Simplified)](../zh-CN/README.md) | [Chinese (Traditional, Hong Kong)](../zh-HK/README.md) | [Chinese (Traditional, Macau)](../zh-MO/README.md) | [Chinese (Traditional, Taiwan)](../zh-TW/README.md) | [Croatian](../hr/README.md) | [Czech](../cs/README.md) | [Danish](../da/README.md) | [Dutch](../nl/README.md) | [Estonian](../et/README.md) | [Finnish](../fi/README.md) | [French](../fr/README.md) | [German](../de/README.md) | [Greek](../el/README.md) | [Hebrew](../he/README.md) | [Hindi](../hi/README.md) | [Hungarian](../hu/README.md) | [Indonesian](../id/README.md) | [Italian](../it/README.md) | [Japanese](../ja/README.md) | [Kannada](../kn/README.md) | [Khmer](../km/README.md) | [Korean](../ko/README.md) | [Lithuanian](../lt/README.md) | [Malay](../ms/README.md) | [Malayalam](../ml/README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Nigerian Pidgin](../pcm/README.md) | [Norwegian](../no/README.md) | [Persian (Farsi)](../fa/README.md) | [Polish](./README.md) | [Portuguese (Brazil)](../pt-BR/README.md) | [Portuguese (Portugal)](../pt-PT/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Romanian](../ro/README.md) | [Russian](../ru/README.md) | [Serbian (Cyrillic)](../sr/README.md) | [Slovak](../sk/README.md) | [Slovenian](../sl/README.md) | [Spanish](../es/README.md) | [Swahili](../sw/README.md) | [Swedish](../sv/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Tamil](../ta/README.md) | [Telugu](../te/README.md) | [Thai](../th/README.md) | [Turkish](../tr/README.md) | [Ukrainian](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnamese](../vi/README.md)
+[Arabic](./translations/ar/README.md) | [Bengali](./translations/bn/README.md) | [Bulgarian](./translations/bg/README.md) | [Burmese (Myanmar)](./translations/my/README.md) | [Chinese (Simplified)](./translations/zh-CN/README.md) | [Chinese (Traditional, Hong Kong)](./translations/zh-HK/README.md) | [Chinese (Traditional, Macau)](./translations/zh-MO/README.md) | [Chinese (Traditional, Taiwan)](./translations/zh-TW/README.md) | [Croatian](./translations/hr/README.md) | [Czech](./translations/cs/README.md) | [Danish](./translations/da/README.md) | [Dutch](./translations/nl/README.md) | [Estonian](./translations/et/README.md) | [Finnish](./translations/fi/README.md) | [French](./translations/fr/README.md) | [German](./translations/de/README.md) | [Greek](./translations/el/README.md) | [Hebrew](./translations/he/README.md) | [Hindi](./translations/hi/README.md) | [Hungarian](./translations/hu/README.md) | [Indonesian](./translations/id/README.md) | [Italian](./translations/it/README.md) | [Japanese](./translations/ja/README.md) | [Kannada](./translations/kn/README.md) | [Khmer](./translations/km/README.md) | [Korean](./translations/ko/README.md) | [Lithuanian](./translations/lt/README.md) | [Malay](./translations/ms/README.md) | [Malayalam](./translations/ml/README.md) | [Manipuri (Meitei Mayek)](./translations/mni/README.md) | [Marathi](./translations/mr/README.md) | [Nepali](./translations/ne/README.md) | [Nigerian Pidgin](./translations/pcm/README.md) | [Norwegian](./translations/no/README.md) | [Persian (Farsi)](./translations/fa/README.md) | [Polish](./translations/pl/README.md) | [Portuguese (Brazil)](./translations/pt-BR/README.md) | [Portuguese (Portugal)](./translations/pt-PT/README.md) | [Punjabi (Gurmukhi)](./translations/pa/README.md) | [Romanian](./translations/ro/README.md) | [Russian](./translations/ru/README.md) | [Serbian (Cyrillic)](./translations/sr/README.md) | [Slovak](./translations/sk/README.md) | [Slovenian](./translations/sl/README.md) | [Spanish](./translations/es/README.md) | [Swahili](./translations/sw/README.md) | [Swedish](./translations/sv/README.md) | [Tagalog (Filipino)](./translations/tl/README.md) | [Tamil](./translations/ta/README.md) | [Telugu](./translations/te/README.md) | [Thai](./translations/th/README.md) | [Turkish](./translations/tr/README.md) | [Ukrainian](./translations/uk/README.md) | [Urdu](./translations/ur/README.md) | [Vietnamese](./translations/vi/README.md)
 
 > **Prefer to Clone Locally?**
 >
@@ -25,10 +29,12 @@ Użyj poniższych znaczników, gdy chcesz, aby Co-op Translator zastępował ca�
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 ````
 
-Dostosuj adres URL repozytorium sparse-checkout podczas tłumaczenia:
+Spersonalizuj URL repozytorium sparse-checkout podczas tłumaczenia:
 
 ```bash
 translate -l "ko" --repo-url "https://github.com/org/repo.git"
 ```
 
-Jeśli znaczniki są obecne, Co-op Translator może zaktualizować wygenerowaną tabelę, gdy języki zostaną dodane lub zmienione.
+Jeśli znaczniki są obecne, Co-op Translator może aktualizować wygenerowaną tabelę, gdy języki zostaną dodane lub zmienione.
+
+W istniejącym README możesz dodać opcjonalną atrybucję i link „rozpoczęcie pracy” nad znacznikami tabeli języków bez zastępowania jego linków językowych lub innych treści. Wskaż linki do obsługiwanych języków na [aktualny przewodnik językowy](https://github.com/Azure/co-op-translator/blob/main/docs/supported-languages.md).

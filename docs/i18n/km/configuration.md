@@ -1,56 +1,71 @@
 # ការកំណត់
 
-Co-op Translator ត្រូវការអ្នកផ្គត់ផ្គង់ម៉ូដែលភាសា មួយ។ ការបកប្រែរូបភាពត្រូវការផងដែរ Azure AI Vision។
+Co-op Translator ត្រូវការ​អ្នកផ្គត់ផ្គងម៉ូឌែលភាសា​មួយ។ ការប្រែរូបភាពបន្ថែមទៀតត្រូវការព្រឹត្តការណ៍ Azure AI Vision។
 
-ការកំណត់ត្រូវបានអានពី environment variables។ សម្រាប់ប្រព័ន្ធ​ផLocal, ដាក់ពួកវាក្នុងឯកសារ `.env` នៅឬតាម root នៃគម្រោង។
+ការកំណត់ត្រូវបានអានពីអថេរសម្រាប់បរិបទ (environment variables)។ សម្រាប់គម្រោងក្នុងស្រុក សូមដាក់ពួកវានៅក្នុងឯកសារ `.env` នៅឫសគម្រោង។
 
-សម្រាប់ការរៀបចំធនធាន Azure, មើល [Azure AI Setup](azure-ai-setup.md)។
+សម្រាប់ការតំឡើងធនធាន Azure សូមមើល [ការតំឡើង Azure AI](azure-ai-setup.md)។
 
-## ការកំណត់​សម្រាប់​រត់​នៅ​ម៉ាស៊ីន​ផ្ទាល់
+## ការកំណត់ runtime ក្នុងកុំព្យូទ័រមូលដ្ឋាន
 
-ប្រើ virtual environment មុនពេលរត់ CLI នៅលើកុំព្យូទ័រផ្ទាល់។ Co-op Translator គាំទ្រ Python 3.10 រហូតដល់ 3.12 ។
+ប្រើបរិយាកាសមេរោគ (virtual environment) មុនពេលរត់ CLI នៅក្នុងស្រុក។ Co-op Translator គាំទ្រ Python 3.11 ដល់ 3.14។
 
-សម្រាប់ការប្រើប្រាស់ CLI ទូទៅ, តំឡើង package ដែលបានបោះពុម្ពផ្សាយនៅក្នុង virtual environment៖
+សម្រាប់ការប្រើ CLI ទូទៅ សូមដំឡើងកញ្ចប់ដែលបានបោះពុម្ពនៅក្នុង virtual environment៖
 
-=== "Windows"
+### Windows (PowerShell)
 
-    ```powershell
-    python -m venv .venv
-    .venv\Scripts\activate
-    pip install co-op-translator
-    translate --help
-    ```
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install co-op-translator
+translate --help
+```
 
-=== "macOS / Linux"
+### macOS / Linux
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install co-op-translator
-    translate --help
-    ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install co-op-translator
+translate --help
+```
 
-សម្រាប់ការអភិវឌ្ឍក្នុង repository, តំឡើងការពឹងផ្អែកពី root នៃគម្រោងជាផ្ទាល់៖
+### ការអភិវឌ្ឍន៍ Repository
+
+សម្រាប់ការអភិវឌ្ឍន៍ repository សូមដំឡើងការពឹងផ្អែកពីឫសគម្រោងជំនួស៖
 
 ```bash
 poetry install
 poetry run translate --help
 ```
 
-បន្ទាប់ពី CLI អាចប្រើបាន សូមកំណត់អ្នកផ្គត់ផ្គង់ម៉ូដែលភាសា​មួយ ក្នុង `.env` ។
+បន្ទាប់ពី CLI មានស្រាប់ សូមកំណត់អ្នកផ្គត់ផ្គង់ម៉ូឌែលភាសាមួយក្នុង `.env` ។
 
 ## ការជ្រើសរើសអ្នកផ្គត់ផ្គង់
 
-ឧបករណ៍នេះស្វ័យប្រវត្តិកំណត់អ្នកផ្គត់ផ្គង់ក្នុងលំដាប់នេះ៖
+ឧបករណ៍នេះស្វ័យប្រវត្តិរកអ្នកផ្គត់ផ្គង់នៅក្នុងលំដាប់ដូចខាងក្រោម៖
 
 1. Azure OpenAI
 2. OpenAI
+3. Anthropic
 
-ប្រសិនបើគ្មានអ្នកផ្គត់ផ្គង់ណាមួយត្រូវបានកំណត់, `translate`, `evaluate`, `migrate-links`, និង `run_translation` នឹងបរាជ័យក្នុងពេលធ្វើតេស្តការកំណត់។ `co-op-review` និង `run_review` គឺជាការត្រួតពិនិត្យថែទាំអាចកំណត់បាន ហើយមិនត្រូវការតំណក្រដាសអ្នកផ្គត់ផ្គង់ទេ។
+ការប្រែប្រើត្រូវការបញ្ជាក់អត្តសញ្ញាណអ្នកផ្គត់ផ្គង់ លើកលែងតែក្នុងការមើលជាមុនដូចជា `translate -l "ko" -md --dry-run`។ `migrate-links`, `co-op-review`, និង `run_review` ជាដំណើរការថែទាំវត្ថុដដែលដែលមានលទ្ធភាពកំណត់ និងមិនត្រូវការការបញ្ជាក់អត្តសញ្ញាណអ្នកផ្គត់ផ្គង់។
+
+## Backend របស់ client ម៉ូឌែល
+
+ចាប់ពី Co-op Translator 0.22.0, Azure OpenAI, OpenAI, និង Anthropic ប្រើ Microsoft Agent Framework ជារៀងរហូត។ មិនចាំបាច់កំណត់ backend សម្រាប់ការប្រើប្រាស់ទូទៅ។
+
+Semantic Kernel នៅតែអាចប្រើបានជាបណ្តោះអាសន្នសម្រាប់សមភាព។ ដើម្បីជ្រើសរើសវាដោយច្បាស់ សូមកំណត់៖
+
+```bash
+CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"
+```
+
+ការប្រើ Semantic Kernel នឹងបញ្ចេញការព្រមានថាកំពុងត្រូវបានលុបចេញ។ ផ្នែកកញ្ចប់នេះគ្រោងនឹងផ្លាស់ Semantic Kernel ទៅជាការពឹងផ្អែកជាជម្រើសក្នុង 0.23.0 ហើយយកការរួមបញ្ចូលចេញក្នុង 0.24.0 បើយោងទៅលលទ្ធផលសមភាព និងមតិព័ត៌មានពីអ្នកប្រើ។ Anthropic ត្រូវការនិង `agent-framework`; ការជ្រើស `semantic-kernel` ជាច្បាស់ជាមួយ Anthropic នឹងបរាជ័យដោយកំហុសកំណត់ការរៀបចំ។ តម្លៃមិនត្រឹមត្រូវនឹងបរាជ័យនៅពេលចាប់ផ្តើមកម្មវិធីប្រែដែលស្ដាប់ពីអ្នកផ្គត់ផ្គង់ មិនមែនស្ងាត់សត្រូវត្រឡប់ក្រោយទេ។ អានវិភាគការបញ្ចេញ និងរាយការណ៍បញ្ហានៅ [បញ្ហា GitHub #543](https://github.com/Azure/co-op-translator/issues/543)។
 
 ## Azure OpenAI
 
-ប្រើ Azure OpenAI នៅពេលម៉ូដែលរបស់អ្នកត្រូវបានដាក់ពង្រីកនៅក្នុង Azure AI Foundry ឬ Azure OpenAI Service។
+ប្រើ Azure OpenAI នៅពេលម៉ូឌែលរបស់អ្នកបានដាក់បញ្ជូននៅក្នុង Azure AI Foundry ឬ Azure OpenAI Service។
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -60,35 +75,50 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-ការត្រួតពិនិត្យការតភ្ជាប់ប្រើ endpoint, API key, API version, និង deployment name មុនការចាប់ផ្តើមការបកប្រែ។
+ការត្រួតពិនិត្យការតភ្ជាប់ប្រើ endpoint, API key, API version និងឈ្មោះ deployment មុនពេលការប្រែចាប់ផ្តើម។
 
 ## OpenAI
 
-ប្រើ OpenAI នៅពេលហៅ OpenAI API ត្រង់ៗ។
+ប្រើ OpenAI នៅពេលហៅ OpenAI API ដោយផ្ទាល់។
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
-OPENAI_ORG_ID="..."          # ជាជម្រើស
-OPENAI_BASE_URL="..."        # ជាជម្រើស
 ```
 
-`OPENAI_CHAT_MODEL_ID` ត្រូវការ ព្រោះ translator ត្រូវការម៉ូដែល chat បញ្ជាក់សម្រាប់ការហៅ API ។
+`OPENAI_CHAT_MODEL_ID` ត្រូវការព្រោះTranslator ត្រូវការម៉ូឌែលជឿនជាក់លាក់សម្រាប់ការហៅ API។
+
+ទុក `OPENAI_ORG_ID` និង `OPENAI_BASE_URL` ឲ្យស្អុយសម្រាប់ការកំណត់លំនាំដើម។ បញ្ចូល ID អង្គការម្នាក់តែប៉ុណ្ណោះ ប្រសិនបើគណនីរបស់អ្នកត្រូវការ ឬបញ្ចូល base URL តែពេលប្រើ endpoint ផ្ទាល់ខ្លួន។ កុំចម្លងតម្លៃគំរូសម្រាប់ការកំណត់ជាជម្រើស។
+
+## Anthropic Claude
+
+ប្រើ Anthropic នៅពេលហៅ Claude API ដោយផ្ទាល់។ បង្កើត [Anthropic API key](https://platform.claude.com/docs/en/get-started) ហើយជ្រើស [Claude model ID](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions) ដែលគាំទ្រ។
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_API_KEY` និង `ANTHROPIC_MODEL` ត្រូវការជាអច្ឆរិយភាព។ អ្នកមិនត្រូវការ​កំណត់ `CO_OP_TRANSLATOR_MODEL_CLIENT` ទេ; Agent Framework គឺជា backend លំនាំដើម។
+
+ទុក `ANTHROPIC_BASE_URL` ឲ្យស្អុយសម្រាប់ Anthropic API។ កំណត់វា​តែពេលប្រើ endpoint ផ្ទាល់ខ្លួន។
+
+`ANTHROPIC_MAX_TOKENS` ស្តង់ដារត្រូវជា `8192`, ដែលអនុញ្ញាតកន្លែងសម្រាប់ស្ត្រីបម្រើ token ច្រើនដូចជា Meitei Mayek។ កាត់បន្ថយវាបើម៉ូឌែលរបស់អ្នកឬ endpoint ដែលសាងសមភាពជាមួយ Anthropic កំណត់លទ្ធផលចេញក្រោមតម្លៃនោះ។
 
 ## Azure AI Vision
 
-ការបកប្រែរូបភាពត្រូវការការកំណត់ Azure AI Vision ដើម្បីឲ្យឧបករណ៍អាចយកអក្សរចេញពីរូបភាពមុនពេលបកប្រែវា។ 
+ការប្រែរូបភាពត្រូវការប្រើ Azure AI Vision ដើម្បីឲ្យឧបករណ៍អាចដកអត្ថបទពីរូបភាពមុនពេលម៉ូឌែលភាសាដែលបានកំណត់ធ្វើការបកប្រែ។ Anthropic អាចបកប្រែអត្ថបទដែលដកចេញដូចដដែលដូច Azure OpenAI ឬ OpenAI។
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-ប្រសិនបើការបកប្រែរូបភាពត្រូវបានជ្រើសជាមួយ `-img`, `images=True`, ឬគ្មាន content-type filter, ឧបករណ៍នឹងផ្ទៀងផ្ទាត់ការកំណត់ Vision មុនពេលចាប់ផ្តើមការបកប្រែ។
+ប្រសិនបើបានជ្រើសការប្រែរូបភាពជាមួយ `-img`, `images=True`, ឬគ្មានចម្រៀងប្រភេទខ្លឹមសារ (content-type) ផ្សេងទៀត ឧបករណ៍នឹងផ្ទៀងផ្ទាត់ការកំណត់ Vision មុនការប្រែចាប់ផ្តើម។
 
-## សំណុំគ្រប់គ្រងអត្តសញ្ញាណច្រើន
+## សំណុំអត្តសញ្ញាណច្រើន
 
-ស្រទាប់ការកំណត់គាំទ្រការកំណត់សំណុំគ្រប់គ្រងសញ្ញាច្រើន ដោយបញ្ចប់ឈ្មោះអថេរជាមួយលេខទីពីប្រភេទដដែល៖
+ស្រទាប់កំណត់ចំណាំគាំទ្រសំណុំអត្តសញ្ញាណច្រើនដោយបន្ថែមស្រេចលើអថេរជាមួយលេខដូចគ្នា៖
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -104,35 +134,37 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_2="<deployment-2>"
 AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 ```
 
-រាល់សំណុំត្រូវតែមានគ្រប់។ ការត្រួតពិនិត្យសុខភាពនឹងជ្រើសសំណុំដែលដំណើរការបានមួយ មុនពេលការបកប្រែបន្ត។
+សំណុំទាំងអស់ត្រូវតែសរុបល្អឥតខ្ចោះ។ ការត្រួតពិនិត្យសុខភាពនឹងជ្រើសសំណុំពេលដែលធ្វើការ មុនពេលការប្រែបន្ត។
 
-## តម្រូវការកម្មង់
+OpenAI និង Anthropic គាំទ្រពិធីសាស្ត្រស្រេចដូចគ្នា។ តម្រូវឲ្យរក្សាទុករាល់អថេរនៅក្នុងសំណុំអត្តសញ្ញាណនៅលើស្រេចដូចគ្នា រួមទាំងតម្លៃជាជម្រើសដូចជា `OPENAI_BASE_URL_1` ឬ `ANTHROPIC_BASE_URL_1`។
+
+## តម្រូវការកម្មវិធីបញ្ជា
 
 | Command or API | LLM required | Vision required | Notes |
 | --- | --- | --- | --- |
-| `translate -md` | ចាំបាច់ | មិនចាំបាច់ | បកប្រែ Markdown តែប៉ុណ្ណោះ។ |
-| `translate -nb` | ចាំបាច់ | មិនចាំបាច់ | បកប្រែ notebooks តែប៉ុណ្ណោះ។ |
-| `translate -img` | ចាំបាច់ | ចាំបាច់ | បកប្រែរូបភាពតែប៉ុណ្ណោះ។ |
-| `translate` with no type flags | ចាំបាច់ | ចាំបាច់ | របៀបលំនាំដើម​រួមមាន Markdown, notebooks, និង រូបភាព។ |
-| `evaluate` | ចាំបាច់ | មិនចាំបាច់ | ប្រើការវាយតម្លៃដោយ LLM លុះត្រាតែបានជ្រើស `--fast`។ |
-| `migrate-links` | ចាំបាច់ | មិនចាំបាច់ | អនុវត្តការផ្លាស់ទីតំណ (link migration), ប៉ុន្តែ​នៅតែដោយរត់ការត្រួតពិនិត្យការកំណត់រួម។ |
-| `co-op-review` | មិនចាំបាច់ | មិនចាំបាច់ | រត់ការត្រួតពិនិត្យ deterministic សម្រាប់​រចនាសម្ព័ន្ធ​បកប្រែ, ភាពទាន់សម័យ, Markdown, notebook, និង តំណក្នុងស្រុក។ |
-| `run_translation(markdown=True)` | ចាំបាច់ | មិនចាំបាច់ | ការបកប្រែ Markdown ដោយកម្មវិធី។ |
-| `run_translation(images=True)` | ចាំបាច់ | ចាំបាច់ | ការបកប្រែរូបភាពដោយកម្មវិធី។ |
-| `run_review(...)` | មិនចាំបាច់ | មិនចាំបាច់ | ការត្រួតពិនិត្យ deterministic ដោយកម្មវិធី។ |
+| `translate -md` | បាទ | ទេ | ប្រែ Markdown ប៉ុណ្ណោះ។ |
+| `translate -nb` | បាទ | ទេ | ប្រែ notebook ប៉ុណ្ណោះ។ |
+| `translate -img` | បាទ | បាទ | ប្រែរូបភាពប៉ុណ្ណោះ។ |
+| `translate` with no type flags | បាទ | បាទ | ម៉ូដលំនាំដើមរួមមាន Markdown, notebook, និងរូបភាព។ |
+| `evaluate` | បាទ | ទេ | ប្រើការវាយតម្លៃដោយ LLM លុះត្រាតែបានជ្រើស `--fast`។ |
+| `migrate-links` | ទេ | ទេ | ធ្វើការផ្លាស់ទីតំណក្នុងស្រុកដោយមិនហៅអ្នកផ្គត់ផ្គង់។ |
+| `co-op-review` | ទេ | ទេ | រត់ការត្រួតពិនិត្យរចនាសម្ព័ន្ធការប្រែដែលកំណត់, ភាពទាន់សម័យ, Markdown, notebook, និងការត្រួតពិនិត្យតំណក្នុងស្រុក។ |
+| `run_translation(markdown=True)` | បាទ | ទេ | ការប្រែ Markdown តាមកម្មវិធី។ |
+| `run_translation(images=True)` | បាទ | បាទ | ការប្រែរូបភាពតាមកម្មវិធី។ |
+| `run_review(...)` | ទេ | ទេ | ការត្រួតពិនិត្យដែល deterministic តាមកម្មវិធី។ |
 
-## ថតផ្លូវចេញ
+## តំណរលទ្ធផលចេញ
 
-ថតលទ្ធផលលំនាំដើមសម្រាប់អត្ថបទដែលបានបកប្រែ:
+លទ្ធផលចេញសម្រាប់ការប្រែអត្ថបទលំនាំដើម៖
 
 ```text
 translations/<language-code>/<source-relative-path>
 ```
 
-ថតលទ្ធផលលំនាំដើមសម្រាប់រូបភាពដែលបានបកប្រែ:
+លទ្ធផលរូបភាពដែលបានបកប្រែលំនាំដើម៖
 
 ```text
 translated_images/<language-code>/<source-relative-path>
 ```
 
-API Python អាចប្តូរថតទាំងនេះបានដោយប្រើ `translations_dir` និង `image_dir`។
+Python API អាចលើកលែងថតទាំងនេះដោយ `translations_dir` និង `image_dir`។

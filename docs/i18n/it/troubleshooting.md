@@ -1,13 +1,13 @@
 # Risoluzione dei problemi
 
-Usa questa pagina quando una esecuzione di traduzione riesce inaspettatamente, fallisce durante la configurazione o produce output che necessita di revisione.
+Usa questa pagina quando una traduzione ha successo inaspettatamente, fallisce durante la configurazione o produce un output che necessita di revisione.
 
 ## Inizia qui
 
 1. Esegui prima un comando mirato, ad esempio `translate -l "ko" -md`.
 2. Aggiungi `-d` per i log di debug sulla console.
-3. Aggiungi `-s` per salvare i log di debug in `<root-dir>/logs/`.
-4. Esegui `co-op-review` dopo la traduzione per verificare aggiornamento, struttura e link locali.
+3. Aggiungi `-s` per salvare i log di debug sotto `<root-dir>/logs/`.
+4. Esegui `co-op-review` dopo la traduzione per verificare freschezza, struttura e link locali.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -16,7 +16,7 @@ co-op-review -l "ko"
 
 ## Errori di configurazione
 
-### Nessun provider di modelli linguistici
+### Nessun provider di modello linguistico
 
 Errore:
 
@@ -26,13 +26,13 @@ No language model configuration found.
 
 Soluzione:
 
-- Configura Azure OpenAI o OpenAI.
+- Configura Azure OpenAI, OpenAI o Anthropic.
 - Verifica che le variabili siano nell'ambiente in cui viene eseguito il comando.
-- Per uso locale, inseriscile in `.env` nella radice del progetto.
+- Per uso locale, mettile in `.env` nella root del progetto.
 
 Vedi [Configurazione](configuration.md).
 
-### Traduzione delle immagini senza Azure AI Vision
+### Traduzione di immagini senza Azure AI Vision
 
 Errore:
 
@@ -54,7 +54,7 @@ Soluzione:
 
 - Conferma che la chiave appartenga alla stessa risorsa Azure dell'endpoint.
 - Conferma che la risorsa supporti Vision quando usi `-img`.
-- Conferma che il nome del deployment Azure OpenAI e la versione API corrispondano al tuo deployment.
+- Conferma che il nome della deployment di Azure OpenAI e la versione dell'API corrispondano alla tua.
 - Esegui con i log di debug: `translate -l "ko" -md -d -s`.
 
 ## Nessun file è stato tradotto
@@ -62,9 +62,9 @@ Soluzione:
 Cause comuni:
 
 - Le flag selezionate non corrispondono ai tuoi file.
-- Sono già presenti file tradotti.
-- I file sorgente si trovano in directory escluse.
-- Il comando viene eseguito dalla radice del progetto sbagliata.
+- Esistono già file tradotti.
+- I file sorgente sono sotto directory escluse.
+- Il comando viene eseguito dalla root del progetto sbagliata.
 
 Controlli:
 
@@ -74,24 +74,24 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-Usa `--root-dir` quando il comando viene eseguito al di fuori della radice del progetto.
+Usa `--root-dir` quando il comando viene eseguito al di fuori della root del progetto.
 
 ## Comportamento imprevisto dei collegamenti
 
-La riscrittura dei link dipende dai tipi di contenuto selezionati:
+La riscrittura dei collegamenti dipende dai tipi di contenuto selezionati:
 
-- `-nb` incluso: i link ai notebook possono puntare ai notebook tradotti.
-- `-nb` escluso: i link ai notebook possono rimanere puntati sui notebook sorgente.
-- `-img` incluso: i link alle immagini possono puntare alle immagini tradotte.
-- `-img` escluso: i link alle immagini possono rimanere puntati sulle immagini sorgente.
+- `-nb` incluso: i collegamenti ai notebook possono puntare ai notebook tradotti.
+- `-nb` escluso: i collegamenti ai notebook possono continuare a puntare ai notebook sorgente.
+- `-img` incluso: i collegamenti alle immagini possono puntare alle immagini tradotte.
+- `-img` escluso: i collegamenti alle immagini possono continuare a puntare alle immagini sorgente.
 
-Esegui una traduzione completa dei contenuti quando tutti i link interni devono preferire gli output tradotti:
+Esegui una traduzione completa dei contenuti quando tutti i collegamenti interni dovrebbero preferire gli output tradotti:
 
 ```bash
 translate -l "ko" -md -nb -img
 ```
 
-Esegui la revisione dei link dopo la traduzione:
+Esegui la revisione dei collegamenti dopo la traduzione:
 
 ```bash
 co-op-review -l "ko"
@@ -99,29 +99,29 @@ co-op-review -l "ko"
 
 ## Problemi di rendering del Markdown
 
-Se il Markdown tradotto non viene renderizzato correttamente:
+Se il Markdown tradotto viene renderizzato in modo errato:
 
-- Controlla che il frontmatter inizi e finisca con `---`.
-- Controlla che il numero delle fence di codice corrisponda tra i file sorgente e tradotti.
-- Esegui `co-op-review` per individuare problemi strutturali comuni.
+- Verifica che il frontmatter inizi e termini con `---`.
+- Verifica che il numero di delimitatori di codice corrisponda tra file sorgente e tradotto.
+- Esegui `co-op-review` per individuare problemi comuni di struttura.
 - Ritraduci il file specifico se l'output è stato corrotto.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## L'Action di GitHub è stata eseguita ma non è stata creato alcun pull request
+## L'azione GitHub è stata eseguita ma non è stata creata una Pull Request
 
-Se `peter-evans/create-pull-request` riporta che il branch non è avanti rispetto al base, il workflow non ha trovato file da commitare.
+Se `peter-evans/create-pull-request` segnala che il ramo non è avanti rispetto al base, il workflow non ha trovato file da commitare.
 
-Possibili cause:
+Cause probabili:
 
-- La run di traduzione non ha prodotto cambiamenti.
-- `.gitignore` esclude `translations/`, `translated_images/` o i notebook tradotti.
+- L'esecuzione di traduzione non ha prodotto modifiche.
+- `.gitignore` esclude `translations/`, `translated_images/` o notebook tradotti.
 - `add-paths` non corrisponde alle directory di output generate.
-- Il passo di traduzione è terminato in anticipo.
+- Il passo di traduzione è terminato prematuramente.
 
-Soluzioni:
+Rimedi:
 
 1. Conferma che i file generati esistano in `translations/` o `translated_images/`.
 2. Conferma che `.gitignore` non ignori gli output generati.
@@ -150,9 +150,9 @@ Soluzioni:
 
 ## Qualità della traduzione
 
-Le traduzioni automatiche possono richiedere una revisione umana. Usa `evaluate` solo quando desideri valutazioni di qualità sperimentali e workflow di riparazione per bassa confidenza.
+Le traduzioni automatiche possono necessitare di revisione umana. Usa `evaluate` solo quando desideri una valutazione della qualità sperimentale e workflow di riparazione per bassa confidenza.
 
-!!! warning "Sperimentale"
-    `evaluate` può usare controlli basati su regole e LLM, e il suo modello di scoring e il comportamento dei metadati possono cambiare. Tienilo fuori dalle pipeline CI obbligatorie a meno che il tuo workflow non sia preparato per i cambiamenti.
+!!! warning "Experimental"
+    `evaluate` può usare controlli basati su regole e su LLM, e il suo modello di punteggio e il comportamento dei metadati possono cambiare. Mantienilo fuori dai gate CI obbligatori a meno che il tuo workflow non sia preparato ai cambiamenti.
 
-Per controlli CI deterministici, usa `co-op-review` invece.
+Per controlli CI deterministici, usa invece `co-op-review`.

@@ -1,25 +1,25 @@
 # MCP サーバー
 
-Co-op Translator には、エージェント、エディター、および MCP 互換クライアント向けの Model Context Protocol サーバーが含まれています。
+Co-op Translator には、エージェント、エディタ、および MCP 互換クライアント向けの Model Context Protocol サーバーが含まれています。
 
-デフォルトのローカル構成では、ユーザーが手動で別のサーバーを常時起動しておく必要はありません。MCP クライアントを構成すると、クライアントは Co-op Translator ツールが必要になったときに自動的に `co-op-translator-mcp` を `stdio` 経由で起動します。
+デフォルトのローカル設定では、ユーザーが別途サーバーを手動で起動し続ける必要はありません。MCP クライアントを設定すると、必要に応じてクライアントが `co-op-translator-mcp` を `stdio` 経由で自動的に起動します。
 
-CLI、Python API、MCP のいずれを選ぶか迷っている場合は、まず [ワークフローを選ぶ](workflows.md) を参照してください。
+もし CLI、Python API、MCP のどれを使うか迷っている場合は、まず [ワークフローを選択](workflows.md) をご覧ください。
 
-エージェントやエディターが Co-op Translator を直接呼び出すべき場合は MCP を使用します:
+エージェントやエディタが Co-op Translator を直接呼び出す必要がある場合は MCP を使用します:
 
 | User goal | MCP tools |
 | --- | --- |
-| Translate one Markdown document, notebook, or image | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
-| Translate Markdown or notebook content with the host agent model | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Rewrite translated Markdown or notebook links after choosing the output path | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Translate a full repository like the CLI | `run_translation`, `translate_project` |
-| Review translated output without LLM credentials | `run_review` |
-| Inspect capabilities and environment status | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
+| 単一の Markdown ドキュメント、ノートブック、または画像を翻訳する | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
+| ホストエージェントモデルで Markdown またはノートブックの内容を翻訳する | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| 出力パスを選択した後に翻訳済みの Markdown またはノートブックのリンクを書き換える | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| CLI のようにリポジトリ全体を翻訳する | `run_translation`, `translate_project` |
+| LLM の資格情報なしで翻訳結果をレビューする | `run_review` |
+| 機能と環境の状態を確認する | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-MCP サーバーは [Python API](api.md) に記載されているのと同じ公開 Python API をラップします。プロバイダー対応ツールは CLI や Python API と同じ構成済みプロバイダーを使用します。エージェント支援ツールは MCP ホストエージェントが翻訳するためのチャンクを準備し、その後 Co-op Translator を使って最終的な Markdown やノートブックを再構築します。
+MCP サーバーは [Python API](api.md) に記載されている同じ公開 Python API をラップします。プロバイダ対応のツールは CLI および Python API と同じ構成済みプロバイダを使用します。エージェント支援ツールは MCP ホストエージェントが翻訳するためのチャンクを準備し、その後 Co-op Translator を使って最終的な Markdown またはノートブックを再構築します。
 
-## Step 1: Install and Configure Co-op Translator
+## ステップ 1: Co-op Translator のインストールと構成
 
 MCP クライアントが使用する Python 環境に Co-op Translator をインストールします:
 
@@ -27,7 +27,7 @@ MCP クライアントが使用する Python 環境に Co-op Translator をイ�
 pip install co-op-translator
 ```
 
-このリポジトリからローカル開発を行う場合は、パッケージを編集可能モードでインストールします:
+このリポジトリからローカル開発を行う場合は、パッケージを編集可能モードでインストールしてください:
 
 ```bash
 pip install -e .
@@ -37,22 +37,31 @@ MCP クライアントが使用する翻訳モードを選択します:
 
 | Mode | Use this for | Credentials |
 | --- | --- | --- |
-| Provider-backed | Co-op Translator calls `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, or `run_translation`. | Markdown and notebook translation require Azure OpenAI or OpenAI. Image translation also requires Azure AI Vision. |
-| Agent-assisted | The MCP host agent translates chunks returned by `start_markdown_agent_translation` or `start_notebook_agent_translation`. | No Co-op Translator LLM provider credentials are required for Markdown or notebook chunks. Image translation is not covered by agent-assisted mode yet. |
+| プロバイダ対応 | Co-op Translator が `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, または `run_translation` を呼び出します。 | 翻訳には Azure OpenAI、OpenAI、または Anthropic が必要です。画像翻訳は追加で Azure AI Vision が必要です。 |
+| エージェント支援 | MCP ホストエージェントが `start_markdown_agent_translation` や `start_notebook_agent_translation` によって返されるチャンクを翻訳します。 | Markdown やノートブックのチャンクには Co-op Translator の LLM プロバイダ資格情報は不要です。画像翻訳はまだエージェント支援モードの対象外です。 |
 
-Codex や Claude Code のようなエージェント内で Markdown やノートブックの翻訳を開始する場合は、エージェント支援モードから始めてください。Co-op Translator 自身に構成済みプロバイダーを呼び出してほしい場合、画像を翻訳する場合、または CLI のようなリポジトリ単位の翻訳を実行する場合は、プロバイダー対応モードを使用してください。
+Codex や Claude Code のようなエージェント内で Markdown やノートブックの翻訳を開始する場合は、エージェント支援モードから始めてください。Co-op Translator 自体に構成済みプロバイダを呼び出させたい場合、画像を翻訳する場合、または CLI のようなリポジトリレベルの翻訳を実行する場合は、プロバイダ対応モードを使用してください。
 
-プロバイダー対応ワークフローにはプロバイダーの認証情報を構成してください:
+プロバイダ対応のワークフローにはプロバイダを一つ設定します:
 
 ```bash
+# Azure OpenAI
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+
+# または OpenAI
+OPENAI_API_KEY="..."
+OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# または Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-プロバイダー対応の画像翻訳には追加で以下が必要です:
+プロバイダ対応の画像翻訳には、さらに次が必要です:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -60,11 +69,11 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
 !!! note
-    エージェント支援モードは現在 Markdown とノートブックの Markdown セルをカバーしています。画像翻訳はまだエージェント支援モードには含まれず、OCR とレイアウト対応レンダリングには Azure AI Vision が必要です。
+    エージェント支援モードは現在 Markdown およびノートブックの Markdown セルを対象としています。画像翻訳は引き続きプロバイダ対応の画像パイプラインを使用し、OCR とレイアウト対応のレンダリングには Azure AI Vision が必要です。
 
-## Step 2: Configure Your MCP Client
+## ステップ 2: MCP クライアントの構成
 
-通常のローカル `stdio` 構成では、Co-op Translator を MCP クライアントの構成に追加します。クライアントはプロセスを自動的に開始および停止します。
+通常のローカル `stdio` 設定では、Co-op Translator を MCP クライアントの構成に追加します。クライアントがプロセスを自動的に起動および停止します。
 
 インストール済みパッケージの構成:
 
@@ -79,7 +88,7 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 }
 ```
 
-Windows のソースチェックアウト構成:
+ソースチェックアウトの構成（Windows）:
 
 ```json
 {
@@ -93,7 +102,7 @@ Windows のソースチェックアウト構成:
 }
 ```
 
-macOS または Linux のソースチェックアウト構成:
+ソースチェックアウトの構成（macOS または Linux）:
 
 ```json
 {
@@ -107,11 +116,11 @@ macOS または Linux のソースチェックアウト構成:
 }
 ```
 
-MCP クライアント構成を変更した後、クライアントを再起動またはリロードして新しいサーバーを検出させてください。
+MCP クライアントの構成を変更したら、クライアントを再起動またはリロードして新しいサーバーを検出できるようにしてください。
 
-## Step 3: Verify the Server in the Client
+## ステップ 3: クライアントでサーバーを確認する
 
-MCP クライアントに利用可能なツールの一覧を表示させるか、まずは読み取り専用のヘルパーを呼び出してください:
+MCP クライアントに利用可能なツールの一覧を要求するか、まず読み取り専用のヘルパーのいずれかを呼び出してください:
 
 ```json
 {
@@ -120,45 +129,45 @@ MCP クライアントに利用可能なツールの一覧を表示させるか�
 }
 ```
 
-便利な最初のチェック:
+初期に行うと有用なチェック:
 
 | Tool | What to check |
 | --- | --- |
-| `get_api_overview` | サーバーに到達でき、利用可能なワークフローが表示されることを確認します。 |
-| `list_supported_languages` | 同梱された言語データが読み込めることを確認します。 |
-| `get_configuration_status` | シークレット値を晒さずに LLM と Vision プロバイダーの利用可能性を確認します。 |
+| `get_api_overview` | サーバーに到達できることを確認し、利用可能なワークフローを表示します。 |
+| `list_supported_languages` | パッケージ化された言語データが読み込めることを確認します。 |
+| `get_configuration_status` | シークレット値を公開することなく、LLM と Vision プロバイダの利用可能性を確認します。 |
 
-## Step 4: Choose a Workflow
+## ステップ 4: ワークフローを選ぶ
 
-### Translate Individual Files or Documents
+### 個別ファイルまたはドキュメントの翻訳
 
-MCP クライアントが既にドキュメントの内容や画像パスを持っており、Co-op Translator が構成済みの翻訳プロバイダーを呼び出すべき場合は、プロバイダー対応のコンテンツツールを使用してください。
+MCP クライアントに既にドキュメントの内容や画像パスがあり、Co-op Translator が構成済みの翻訳プロバイダを呼び出すべき場合は、プロバイダ対応のコンテンツツールを使用します。
 
 Markdown の場合:
 
-1. `document`、`language_code`、およびオプションで `source_path` を指定して `translate_markdown_content` を呼び出します。
-2. 翻訳結果を Co-op Translator の出力レイアウトに書き込む場合は、`rewrite_markdown_paths` を呼び出します。
-3. クライアントに最終的な `content` を書き込ませるか返却します。
+1. `document`、`language_code`、必要に応じて `source_path` を指定して `translate_markdown_content` を呼び出します。
+2. 翻訳結果が Co-op Translator の出力レイアウトに書き込まれる場合は、`rewrite_markdown_paths` を呼び出します。
+3. クライアントに最終的な `content` を書き込むか返却させます。
 
 ノートブックの場合:
 
-1. ノートブック JSON と `language_code` を指定して `translate_notebook_content` を呼び出します。
-2. 翻訳済みノートブックのリンクをターゲットパスに合わせて調整する必要がある場合は `rewrite_notebook_paths` を呼び出します。
-3. 最終的なノートブック JSON を書き込むか返却します。
+1. ノートブックの JSON と `language_code` を指定して `translate_notebook_content` を呼び出します。
+2. 翻訳済みノートブックのリンクをターゲットパスに合わせて調整する必要がある場合は、`rewrite_notebook_paths` を呼び出します。
+3. 最終的なノートブックの JSON を書き込むか返却します。
 
 画像の場合:
 
-1. `image_path`、`language_code`、およびオプションの `root_dir` や `fast_mode` を指定して `translate_image_content` を呼び出します。
+1. `image_path`、`language_code`、および任意の `root_dir` または `fast_mode` を指定して `translate_image_content` を呼び出します。
 2. 返された `data_base64` と `mime_type` を読み取ります。
-3. `output_path` が指定されている場合、翻訳済み画像はそのパスにも保存されます。
+3. `output_path` が指定されている場合、翻訳された画像もそのパスに保存されます。
 
-これらのコンテンツツールは、プロジェクトの検出、メタデータ更新、免責事項、または自動的なパス書き換えを実行しません。ホストエージェントに Co-op Translator の LLM プロバイダー認証情報なしで Markdown またはノートブックのチャンクを翻訳させたい場合は、以下のエージェント支援ワークフローを使用してください。
+コンテンツツールはプロジェクト検出、メタデータ更新、免責事項の追加、または自動的なパス書き換えを行いません。Co-op Translator の LLM プロバイダ資格情報なしでホストエージェントに Markdown やノートブックのチャンクを翻訳させたい場合は、以下のエージェント支援ワークフローを使用してください。
 
-### Translate with the Host Agent Model
+### ホストエージェントモデルで翻訳する
 
-エージェント支援ツールは、Azure OpenAI や OpenAI を Co-op Translator に構成せずに、MCP ホストエージェント（コーディングアシスタントなど）に翻訳テキストを生成させたい場合に使用します。
+Co-op Translator のために LLM プロバイダを構成する代わりに、コーディングアシスタントのような MCP ホストエージェントに翻訳テキストを生成させたい場合は、エージェント支援ツールを使用します。
 
-チャットベースの MCP クライアントでは、通常ツールの JSON を自分で書く必要はありません。エージェントにエージェント支援ワークフローを使用するよう依頼してください:
+チャットベースの MCP クライアントでは、通常ツールの JSON を自分で書く必要はありません。エージェントにエージェント支援ワークフローを使うよう依頼してください:
 
 ```text
 Translate this Markdown file to Korean with Co-op Translator MCP.
@@ -166,7 +175,7 @@ Use agent-assisted mode: call start_markdown_agent_translation, translate the re
 Keep Markdown formatting, code blocks, and links intact.
 ```
 
-ノートブックの場合も同じパターンを使用します:
+ノートブックでも同じパターンを使用します:
 
 ```text
 Translate this notebook to Korean with Co-op Translator MCP.
@@ -174,29 +183,29 @@ Use start_notebook_agent_translation, translate the returned Markdown-cell chunk
 Preserve code cells, outputs, and notebook metadata.
 ```
 
-MCP クライアントがサーバープロンプトをサポートしている場合は、クライアントに同じワークフロー指示を読み込ませるために `agent_assisted_markdown_translation_prompt` を使用してください。
+MCP クライアントがサーバープロンプトをサポートしている場合は、`agent_assisted_markdown_translation_prompt` を使用してクライアントに同じワークフロー指示を読み込ませます。
 
 Markdown の場合:
 
-1. `document`、`language_code`、およびオプションで `source_path` を指定して `start_markdown_agent_translation` を呼び出します。
-2. ホストエージェント内で返された各チャンクを、チャンクの `prompt` に従って翻訳します。
-3. 元の `job` と `chunk_id` と `translated_text` を使用して翻訳済みチャンクで `finish_markdown_agent_translation` を呼び出します。
-4. コンテンツが翻訳されたターゲットパスに書き込まれる場合は、`rewrite_markdown_paths` を呼び出します。
+1. `document`、`language_code`、および必要に応じて `source_path` を指定して `start_markdown_agent_translation` を呼び出します。
+2. 返された各チャンクをホストエージェント内でチャンクの `prompt` に従って翻訳します。
+3. 元の `job` と翻訳済みチャンク（`chunk_id` と `translated_text` を使用）を指定して `finish_markdown_agent_translation` を呼び出します。
+4. コンテンツが翻訳先のターゲットパスに書き込まれる場合は、`rewrite_markdown_paths` を呼び出します。
 
 ノートブックの場合:
 
-1. ノートブック JSON と `language_code` を指定して `start_notebook_agent_translation` を呼び出します。
-2. ホストエージェント内で返された各チャンクを翻訳します。
-3. 元の `job` と翻訳済みチャンクで `finish_notebook_agent_translation` を呼び出します。
-4. 翻訳済みノートブックのリンクをターゲットパスに合わせて調整する必要がある場合は `rewrite_notebook_paths` を呼び出します。
+1. ノートブックの JSON と `language_code` を指定して `start_notebook_agent_translation` を呼び出します。
+2. 返された各チャンクをホストエージェント内で翻訳します。
+3. 元の `job` と翻訳済みチャンクを使って `finish_notebook_agent_translation` を呼び出します。
+4. 翻訳されたノートブックのリンクでターゲットパスの調整が必要な場合は `rewrite_notebook_paths` を呼び出します。
 
-エージェント支援ツールは Co-op Translator から Azure OpenAI や OpenAI を呼び出しません。ホストエージェントが返されたチャンクの翻訳を担当します。Co-op Translator は Markdown のチャンク化、プレースホルダーの保持、フロントマターの再構築、ノートブックセルの置換、翻訳後の正規化を処理します。
+エージェント支援ツールは Co-op Translator から設定された LLM プロバイダーを呼び出しません。ホストエージェントが返されたチャンクの翻訳を担当します。Co-op Translator は Markdown のチャンク化、プレースホルダの保持、フロントマターの再構築、ノートブックセルの置換、および翻訳後の正規化を処理します。
 
-### Translate an Entire Repository
+### リポジトリ全体を翻訳する
 
-ユーザーが Co-op Translator に CLI のように動作させたい場合は `run_translation` を使用します。
+ユーザーが Co-op Translator に `translate` CLI のように動作させたい場合は `run_translation` を使用します。
 
-リポジトリ翻訳はデフォルトで `dry_run=true` になっており、エージェントがファイル変更の範囲を検査できます:
+リポジトリの翻訳はデフォルトで `dry_run=true` になっており、エージェントがファイル変更前に範囲を確認できます:
 
 ```json
 {
@@ -206,6 +215,12 @@ Markdown の場合:
   "dry_run": true
 }
 ```
+
+`run_translation` の結果にはバージョン管理された `events` 配列が含まれます
+`co-op.translation.event.v1` の進捗イベントです。MCP クライアントは
+`type`、`stage_key`、`completed`、`total`、および `current_path` のようなフィールドを使用し、
+キャプチャされたコンソールテキストを解析するのではなくそれらを参照してください。`json_events_path` を渡すと、
+それらのイベントを NDJSON ファイルにも書き込みます。
 
 書き込みを許可するには、呼び出し側が `dry_run=false` と `confirm_write=true` の両方を設定する必要があります:
 
@@ -221,12 +236,12 @@ Markdown の場合:
 
 `translate_project` は `run_translation` の互換エイリアスとして公開されています。
 
-### Review Translated Output
+### 翻訳済み出力のレビュー
 
-LLM や Vision の認証情報を必要としない決定論的チェックには `run_review` を使用します。
+LLM または Vision の資格情報を必要としない決定論的チェックには `run_review` を使用します:
 
-!!! note "Beta"
-    MCP はベータ版の `run_review` API を公開しています。読み取り専用のレビュー ワークフローには安全ですが、レビューのチェックや問題スキーマは進化する可能性があります。
+!!! note "ベータ"
+    MCP はベータの `run_review` API を公開しています。読み取り専用のレビュー ワークフローには安全ですが、レビューのチェックや問題スキーマは変更される可能性があります。
 
 ```json
 {
@@ -237,72 +252,72 @@ LLM や Vision の認証情報を必要としない決定論的チェックに�
 }
 ```
 
-結果には、キャプチャされたテキスト出力と、利用可能な場合は構造化されたレビューサマリーが含まれます。
+結果にはキャプチャされたテキスト出力と、利用可能な場合は構造化されたレビュー概要が含まれます。
 
-## Manual Server Runs
+## 手動サーバーの実行
 
-手動実行は主にデバッグや長時間実行されるサーバーのように振る舞うトランスポート向けです。
+手動実行は主にデバッグや、長時間稼働するサーバーのように振る舞うトランスポート用です。
 
-デフォルトの stdio サーバーをデバッグする:
+デフォルトの stdio サーバーをデバッグするには:
 
 ```bash
 co-op-translator-mcp
 ```
 
-ソースチェックアウトから実行する:
+ソースチェックアウトから実行するには:
 
 ```bash
 python -m co_op_translator.mcp.server
 ```
 
-長時間稼働する HTTP または SSE サーバーを起動する:
+長時間稼働する HTTP または SSE サーバーを起動するには:
 
 ```bash
 co-op-translator-mcp --transport streamable-http
 co-op-translator-mcp --transport sse
 ```
 
-ローカルのエディターやエージェント統合では、ステップ 2 のクライアント管理の `stdio` 構成を優先してください。
+ローカルのエディタやエージェント統合では、ステップ2のクライアント管理の `stdio` 設定を優先してください。
 
-## Tools
+## ツール
 
-| Tool | Purpose | Writes files |
+| ツール | 用途 | ファイルを書き込みますか |
 | --- | --- | --- |
-| `translate_markdown_content` | Translate a Markdown string. | No |
-| `translate_notebook_content` | Translate Markdown cells in notebook JSON. | No |
-| `translate_image_content` | Translate text in one image and return base64 image data. | Optional, only when `output_path` is provided |
-| `start_markdown_agent_translation` | Prepare Markdown chunks for the host agent to translate without Co-op Translator LLM credentials. | No |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from host-agent translated chunks. | No |
-| `start_notebook_agent_translation` | Prepare notebook Markdown-cell chunks for the host agent to translate. | No |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON from host-agent translated chunks. | No |
-| `rewrite_markdown_paths` | Rewrite Markdown body and frontmatter paths for a translated target. | No |
-| `rewrite_notebook_paths` | Rewrite paths inside notebook Markdown cells. | No |
-| `run_translation` | Run project-level translation like the CLI. | Yes when `dry_run=false` and `confirm_write=true` |
-| `translate_project` | Compatibility alias for `run_translation`. | Yes when `dry_run=false` and `confirm_write=true` |
-| `run_review` | Run deterministic review checks. | No |
-| `get_configuration_status` | Report configured LLM and Vision providers without exposing secrets. | No |
-| `list_supported_languages` | List supported target language codes. | No |
-| `get_api_overview` | Describe available MCP workflows and tools. | No |
+| `translate_markdown_content` | Markdown 文字列を翻訳します。 | いいえ |
+| `translate_notebook_content` | ノートブック JSON の Markdown セルを翻訳します。 | いいえ |
+| `translate_image_content` | 画像内のテキストを翻訳し、base64 画像データを返します。 | 任意（`output_path` が指定された場合のみ） |
+| `start_markdown_agent_translation` | Co-op Translator の LLM 資格情報なしでホストエージェントが翻訳できるように Markdown チャンクを準備します。 | いいえ |
+| `finish_markdown_agent_translation` | ホストエージェントが翻訳したチャンクから Markdown を再構築します。 | いいえ |
+| `start_notebook_agent_translation` | ホストエージェントが翻訳するためのノートブックの Markdown セルチャンクを準備します。 | いいえ |
+| `finish_notebook_agent_translation` | ホストエージェントが翻訳したチャンクからノートブックの JSON を再構築します。 | いいえ |
+| `rewrite_markdown_paths` | 翻訳対象に合わせて Markdown 本文とフロントマターのパスを書き換えます。 | いいえ |
+| `rewrite_notebook_paths` | ノートブックの Markdown セル内のパスを書き換えます。 | いいえ |
+| `run_translation` | CLI のようにプロジェクトレベルの翻訳を実行します。 | はい（`dry_run=false` および `confirm_write=true` のとき） |
+| `translate_project` | `run_translation` の互換エイリアス。 | はい（`dry_run=false` および `confirm_write=true` のとき） |
+| `run_review` | 決定論的レビューのチェックを実行します。 | いいえ |
+| `get_configuration_status` | シークレットを公開せずに設定された LLM および Vision プロバイダーを報告します。 | いいえ |
+| `list_supported_languages` | サポートされているターゲット言語コードを一覧表示します。 | いいえ |
+| `get_api_overview` | 利用可能な MCP ワークフローとツールを説明します。 | いいえ |
 
-## Resources
+## リソース
 
-| Resource URI | Purpose |
+| リソース URI | 用途 |
 | --- | --- |
-| `co-op://api` | JSON overview of workflows and tools. |
-| `co-op://supported-languages` | JSON list of supported language codes. |
-| `co-op://configuration` | JSON provider availability summary without secrets. |
+| `co-op://api` | ワークフローとツールの JSON 概要。 |
+| `co-op://supported-languages` | サポートされている言語コードの JSON リスト。 |
+| `co-op://configuration` | シークレットを含まないプロバイダーの可用性サマリーの JSON。 |
 
-## Prompts
+## プロンプト
 
-| Prompt | Purpose |
+| プロンプト | 用途 |
 | --- | --- |
-| `translate_markdown_document_prompt` | Guide an MCP client through content translation plus optional path rewriting. |
-| `agent_assisted_markdown_translation_prompt` | Guide an MCP client through host-agent Markdown translation without Co-op Translator LLM provider credentials. |
-| `translate_repository_prompt` | Guide an MCP client through dry-run-first repository translation. |
+| `translate_markdown_document_prompt` | コンテンツの翻訳とオプションのパス書き換えを MCP クライアントに案内します。 |
+| `agent_assisted_markdown_translation_prompt` | Co-op Translator の LLM プロバイダー資格情報なしでホストエージェントによる Markdown 翻訳を MCP クライアントに案内します。 |
+| `translate_repository_prompt` | まずはドライランを行うリポジトリ翻訳を MCP クライアントに案内します。 |
 
-## Copy-Paste Examples
+## コピー＆ペースト例
 
-Translate Markdown content:
+Markdown コンテンツを翻訳する:
 
 ```json
 {
@@ -315,13 +330,13 @@ Translate Markdown content:
 }
 ```
 
-Rewrite translated Markdown links:
+翻訳済み Markdown のリンクを書き換える:
 
 ```json
 {
   "tool": "rewrite_markdown_paths",
   "arguments": {
-    "content": "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+    "content": "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
     "source_path": "docs/guide.md",
     "target_path": "translations/ko/docs/guide.md",
     "policy": {
@@ -335,7 +350,7 @@ Rewrite translated Markdown links:
 }
 ```
 
-Translate Markdown with the host agent model:
+ホストエージェントモデルで Markdown を翻訳する:
 
 ```json
 {
@@ -348,7 +363,7 @@ Translate Markdown with the host agent model:
 }
 ```
 
-After the host agent translates each returned chunk, finish the job with the complete `job` object returned by `start_markdown_agent_translation`:
+ホストエージェントが返された各チャンクを翻訳した後、`start_markdown_agent_translation` によって返された完全な `job` オブジェクトでジョブを完了します:
 
 ```text
 tool: finish_markdown_agent_translation
@@ -359,7 +374,7 @@ arguments:
       translated_text: "# 안녕하세요\n\n시작하려면 `pip install`을 사용하세요."
 ```
 
-Preview repository translation:
+リポジトリ翻訳のプレビュー:
 
 ```json
 {
@@ -373,21 +388,21 @@ Preview repository translation:
 }
 ```
 
-## Troubleshooting
+## トラブルシューティング
 
-| Problem | What to try |
+| 問題 | 試すこと |
 | --- | --- |
-| The MCP client cannot find `co-op-translator-mcp`. | Use the absolute Python executable path and `["-m", "co_op_translator.mcp.server"]` source checkout configuration. |
-| The server is listed but translation fails. | Call `get_configuration_status` and confirm an LLM provider is available. |
-| You want Markdown or notebook translation without Azure OpenAI/OpenAI keys. | Use `start_markdown_agent_translation` / `finish_markdown_agent_translation` or the notebook equivalents so the host agent translates the chunks. |
-| Image translation fails. | Confirm Azure AI Vision variables are set and call `get_configuration_status`. |
-| Repository translation does not write files. | Set `dry_run=false` and `confirm_write=true` only after explicit user approval. |
-| Changes to client config do not appear. | Restart or reload the MCP client. |
+| MCP クライアントが `co-op-translator-mcp` を見つけられません。 | 絶対パスの Python 実行ファイルと `["-m", "co_op_translator.mcp.server"]` のソースチェックアウト構成を使用してください。 |
+| サーバーは一覧に表示されるが翻訳に失敗します。 | `get_configuration_status` を呼び出して LLM プロバイダーが利用可能であることを確認してください。 |
+| プロバイダーの資格情報なしで Markdown やノートブックの翻訳を行いたい場合。 | `start_markdown_agent_translation` / `finish_markdown_agent_translation` またはノートブックの同等の手順を使用して、ホストエージェントがチャンクを翻訳するようにしてください。 |
+| 画像の翻訳に失敗します。 | Azure AI Vision の変数が設定されていることを確認し、`get_configuration_status` を呼び出してください。 |
+| リポジトリ翻訳がファイルを書き込みません。 | 明示的なユーザー承認の後にのみ `dry_run=false` と `confirm_write=true` を設定してください。 |
+| クライアント構成の変更が反映されない。 | MCP クライアントを再起動するかリロードしてください。 |
 
-## Safety Notes
+## 安全上の注意
 
-- MCP tool calls are model-controlled by the host application, so repository translation is dry-run by default.
-- Full repository translation can create, update, or remove many files. Require explicit user approval before setting `confirm_write=true`.
-- The configuration status tool never returns API keys, endpoints, or other secret values.
-- Image translation returns base64 image data. Large images can produce large tool responses.
-- Agent-assisted tools return source chunks and prompts to the MCP host. Use them only with content the user is comfortable sending to that host agent model.
+- MCP のツール呼び出しはホストアプリケーションによってモデル制御されるため、リポジトリ翻訳はデフォルトでドライランになっています。
+- リポジトリ全体の翻訳は多くのファイルを作成、更新、または削除する可能性があります。`confirm_write=true` を設定する前に明示的なユーザー承認を要求してください。
+- 設定ステータスツールは API キー、エンドポイント、その他のシークレット値を返すことは決してありません。
+- 画像翻訳は base64 画像データを返します。大きな画像は大きなツール応答を生む可能性があります。
+- エージェント支援ツールはソースチャンクとプロンプトを MCP ホストに返します。これらはユーザーがそのホストエージェントモデルに送信することに問題ないコンテンツに対してのみ使用してください。

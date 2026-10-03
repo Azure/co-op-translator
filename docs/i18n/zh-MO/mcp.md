@@ -1,33 +1,33 @@
-# MCP Server
+# MCP 伺服器
 
-Co-op Translator 包括一個 Model Context Protocol 伺服器，供代理、編輯器和相容 MCP 的用戶端使用。
+Co-op Translator 包含一個 Model Context Protocol 伺服器，供代理、編輯器，以及與 MCP 相容的用戶端使用。
 
-在預設的本地設定中，用戶不需要手動維持一個獨立的伺服器。用戶設定其 MCP 用戶端，當需要使用 Co-op Translator 工具時，該用戶端會自動透過 `stdio` 啟動 `co-op-translator-mcp`。
+在預設的本地設定中，使用者不需手動維持一個獨立的伺服器在執行。使用者設定他們的 MCP 用戶端，當需要 Co-op Translator 工具時，該用戶端會自動透過 `stdio` 啟動 `co-op-translator-mcp`。
 
-如果你在 CLI、Python API 與 MCP 之間抉擇，請先參考 [Choose Your Workflow](workflows.md)。
+如果你正要在 CLI、Python API 與 MCP 之間做選擇，請先參閱 [選擇你的工作流程](workflows.md)。
 
-當代理或編輯器需要直接呼叫 Co-op Translator 時，使用 MCP：
+當代理或編輯器應該直接呼叫 Co-op Translator 時，請使用 MCP:
 
-| User goal | MCP tools |
+| 使用者目標 | MCP 工具 |
 | --- | --- |
-| Translate one Markdown document, notebook, or image | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
-| Translate Markdown or notebook content with the host agent model | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Rewrite translated Markdown or notebook links after choosing the output path | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Translate a full repository like the CLI | `run_translation`, `translate_project` |
-| Review translated output without LLM credentials | `run_review` |
-| Inspect capabilities and environment status | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
+| 翻譯一份 Markdown 文件、筆記本或影像 | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
+| 使用主機代理模型翻譯 Markdown 或筆記本內容 | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| 在選擇輸出路徑後重寫已翻譯的 Markdown 或筆記本連結 | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| 像 CLI 一樣翻譯整個倉庫 | `run_translation`, `translate_project` |
+| 在沒有 LLM 憑證下檢視已翻譯的輸出 | `run_review` |
+| 檢查功能與環境狀態 | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-MCP 伺服器包裝了在 [Python API](api.md) 中記載的相同公開 Python API。由提供者支援的工具使用與 CLI 及 Python API 相同的已設定提供者。由代理協助的工具會為 MCP 主機代理準備區塊以供翻譯，然後使用 Co-op Translator 重建最終的 Markdown 或筆記本。
+MCP 伺服器包裹了在 [Python API](api.md) 中記載的相同公開 Python API。提供者支援的工具使用與 CLI 和 Python API 相同配置的提供者。代理協助的工具會為 MCP 主機代理準備分段以進行翻譯，然後使用 Co-op Translator 重建最終的 Markdown 或筆記本。
 
-## Step 1: Install and Configure Co-op Translator
+## 第 1 步: 安裝並設定 Co-op Translator
 
-在你的 MCP 用戶端會使用的 Python 環境中安裝 Co-op Translator：
+在你的 MCP 用戶端將使用的 Python 環境中安裝 Co-op Translator：
 
 ```bash
 pip install co-op-translator
 ```
 
-若要從此版本庫進行本地開發，請以可編輯模式安裝套件：
+若從此儲存庫做本地開發，請以可編輯（editable）模式安裝該套件：
 
 ```bash
 pip install -e .
@@ -35,24 +35,33 @@ pip install -e .
 
 選擇你的 MCP 用戶端將使用的翻譯模式：
 
-| Mode | Use this for | Credentials |
+| 模式 | 使用情境 | 憑證 |
 | --- | --- | --- |
-| Provider-backed | Co-op Translator calls `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, or `run_translation`. | Markdown and notebook translation require Azure OpenAI or OpenAI. Image translation also requires Azure AI Vision. |
-| Agent-assisted | The MCP host agent translates chunks returned by `start_markdown_agent_translation` or `start_notebook_agent_translation`. | No Co-op Translator LLM provider credentials are required for Markdown or notebook chunks. Image translation is not covered by agent-assisted mode yet. |
+| 提供者支援模式 | Co-op Translator 會呼叫 `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, 或 `run_translation`。 | 翻譯需要 Azure OpenAI、OpenAI 或 Anthropic。影像翻譯還需要 Azure AI Vision。 |
+| 代理協助模式 | MCP 主機代理翻譯由 `start_markdown_agent_translation` 或 `start_notebook_agent_translation` 回傳的分段。 | Markdown 或筆記本的分段不需要 Co-op Translator LLM 提供者憑證。影像翻譯尚未由代理協助模式涵蓋。 |
 
-如果你在像 Codex 或 Claude Code 這類代理內開始進行 Markdown 或筆記本翻譯，請從 agent-assisted 模式開始。當你希望 Co-op Translator 自行呼叫你所設定的提供者、要翻譯影像，或要執行像 CLI 一樣的整個儲存庫翻譯時，請使用 provider-backed 模式。
+如果您在像 Codex 或 Claude Code 這類代理內開始進行 Markdown 或 notebook 的翻譯，請從 agent-assisted 模式開始。當您希望 Co-op Translator 本身去呼叫您已設定的提供者、在翻譯影像時，或在執行像 CLI 這類的倉庫級別翻譯時，請使用 provider-backed 模式。
 
-僅為 provider-backed 工作流程設定提供者憑證：
+為由提供者支援的工作流程設定一個提供者：
 
 ```bash
+# Azure OpenAI
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+
+# 或 OpenAI
+OPENAI_API_KEY="..."
+OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# 或 Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Provider-backed 的影像翻譯另外需要：
+由提供者支援的影像翻譯還另外需要：
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -60,13 +69,13 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
 !!! note
-    Agent-assisted mode currently covers Markdown and notebook Markdown cells. Image translation still uses the provider-backed image pipeline and requires Azure AI Vision for OCR and layout-aware rendering.
+    代理協助模式目前涵蓋 Markdown 以及筆記本中的 Markdown 儲存格。影像翻譯仍然使用提供者支援的影像流程，並需要 Azure AI Vision 進行 OCR 與版面感知呈現。
 
-## Step 2: Configure Your MCP Client
+## 第 2 步: 設定您的 MCP 用戶端
 
-對於一般的本地 `stdio` 設定，將 Co-op Translator 加到你的 MCP 用戶端設定中。用戶端會自動啟動與停止該程序。
+對於一般的本地 `stdio` 設定，將 Co-op Translator 新增到你的 MCP 用戶端設定中。該用戶端會自動啟動與停止該程序。
 
-已安裝套件的設定：
+Installed package configuration:
 
 ```json
 {
@@ -79,7 +88,7 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 }
 ```
 
-Windows 上的原始碼取出（source checkout）設定：
+Source checkout configuration on Windows:
 
 ```json
 {
@@ -93,7 +102,7 @@ Windows 上的原始碼取出（source checkout）設定：
 }
 ```
 
-macOS 或 Linux 上的原始碼取出（source checkout）設定：
+在 macOS 或 Linux 上的原始碼檢出設定：
 
 ```json
 {
@@ -107,11 +116,11 @@ macOS 或 Linux 上的原始碼取出（source checkout）設定：
 }
 ```
 
-在變更 MCP 用戶端設定後，重新啟動或重新載入該用戶端，以便它能發現新的伺服器。
+更改 MCP 用戶端設定後，請重新啟動或重新載入用戶端，以便它可以發現新的伺服器。
 
-## Step 3: Verify the Server in the Client
+## 第 3 步：在用戶端驗證伺服器
 
-請求 MCP 用戶端列出可用工具，或先呼叫其中一個唯讀輔助工具：
+要求 MCP 用戶端列出可用的工具，或先呼叫其中一個唯讀輔助程式：
 
 ```json
 {
@@ -120,45 +129,45 @@ macOS 或 Linux 上的原始碼取出（source checkout）設定：
 }
 ```
 
-有用的初步檢查：
+Useful first checks:
 
-| Tool | What to check |
+| 工具 | 檢查項目 |
 | --- | --- |
-| `get_api_overview` | 確認伺服器可達並顯示可用的工作流程。 |
-| `list_supported_languages` | 確認可載入打包的語言資料。 |
-| `get_configuration_status` | 確認 LLM 與 Vision 提供者可用性而不暴露機密值。 |
+| `get_api_overview` | 確認伺服器可達並顯示可用工作流程。 |
+| `list_supported_languages` | 確認已封裝的語言資料可以載入。 |
+| `get_configuration_status` | 在不揭露祕密值的情況下，確認 LLM 與 Vision 提供者的可用性。 |
 
-## Step 4: Choose a Workflow
+## 第 4 步：選擇工作流程
 
-### Translate Individual Files or Documents
+### 翻譯個別檔案或文件
 
-當 MCP 用戶端已經擁有文件內容或影像路徑，且你希望 Co-op Translator 呼叫已設定的翻譯提供者時，使用 provider-backed 的內容工具。
+當 MCP 用戶端已經擁有文件內容或圖像路徑，且 Co-op Translator 應呼叫已配置的翻譯供應商時，請使用由供應商支援的內容工具。
 
-對於 Markdown：
+For Markdown:
 
-1. 呼叫 `translate_markdown_content`，傳入 `document`、`language_code`，以及選擇性的 `source_path`。
-2. 如果翻譯結果將寫入 Co-op Translator 的輸出佈局，呼叫 `rewrite_markdown_paths`。
-3. 讓用戶端寫入或返回最終的 `content`。
+1. Call `translate_markdown_content` with `document`, `language_code`, and optionally `source_path`.
+2. 如果翻譯結果將被寫入 Co-op Translator 的輸出佈局，請呼叫 `rewrite_markdown_paths`。
+3. 讓客戶端寫入或返回最終的 `content`。
 
-對於筆記本：
+For notebooks:
 
-1. 呼叫 `translate_notebook_content`，傳入筆記本 JSON 與 `language_code`。
-2. 如需將翻譯後的筆記本連結調整為目標路徑，呼叫 `rewrite_notebook_paths`。
+1. Call `translate_notebook_content` with notebook JSON and `language_code`.
+2. 如果翻譯後的 notebook 連結需要為目標路徑進行調整，請呼叫 `rewrite_notebook_paths`。
 3. 寫入或返回最終的筆記本 JSON。
 
-對於影像：
+For images:
 
-1. 呼叫 `translate_image_content`，傳入 `image_path`、`language_code`，以及選擇性的 `root_dir` 或 `fast_mode`。
-2. 讀取回傳的 `data_base64` 與 `mime_type`。
-3. 若提供了 `output_path`，翻譯後的影像也會儲存到該路徑。
+1. Call `translate_image_content` with `image_path`, `language_code`, and optional `root_dir` or `fast_mode`.
+2. Read the returned `data_base64` and `mime_type`.
+3. 如果提供了 `output_path`，已翻譯的圖片也會儲存到該路徑。
 
-內容工具不會執行專案發現、metadata 更新、免責聲明或自動路徑重寫。若你希望主機代理在沒有 Co-op Translator 的 LLM 提供者憑證下翻譯 Markdown 或筆記本區塊，請使用下方的 agent-assisted 工作流程。
+內容工具不會執行專案偵測、元資料更新、免責聲明或自動路徑重寫。如果您想讓主機代理在沒有 Co-op Translator LLM 提供者憑證的情況下翻譯 Markdown 或 notebook 區塊，請使用下方的代理協助工作流程。
 
-### Translate with the Host Agent Model
+### 使用主機代理模型翻譯
 
-當你希望 MCP 主機代理（例如程式助理）產生翻譯文本，而不是為 Co-op Translator 設定 Azure OpenAI 或 OpenAI 時，使用 agent-assisted 工具。
+當您希望由 MCP 主機代理（例如程式編碼助理）來產生翻譯文字，而不是為 Co-op Translator 設定 LLM 提供者時，請使用代理協助工具。
 
-在以聊天為基礎的 MCP 用戶端中，通常不需要你自己撰寫工具 JSON。請求代理使用 agent-assisted 工作流程：
+在以聊天為基礎的 MCP 用戶端中，你通常不需要自己撰寫 tool JSON。請要求代理使用代理協助的工作流程：
 
 ```text
 Translate this Markdown file to Korean with Co-op Translator MCP.
@@ -174,29 +183,29 @@ Use start_notebook_agent_translation, translate the returned Markdown-cell chunk
 Preserve code cells, outputs, and notebook metadata.
 ```
 
-如果你的 MCP 用戶端支援伺服器提示（server prompts），使用 `agent_assisted_markdown_translation_prompt` 讓用戶端載入相同的工作流程指示。
+如果你的 MCP 用戶端支援伺服器提示，使用 `agent_assisted_markdown_translation_prompt` 讓用戶端載入相同的工作流程指示。
 
-對於 Markdown：
+For Markdown:
 
-1. 呼叫 `start_markdown_agent_translation`，傳入 `document`、`language_code`，以及選擇性的 `source_path`。
-2. 在主機代理中依照區塊的 `prompt` 翻譯每個回傳的區塊。
-3. 使用原始的 `job` 與以 `chunk_id` 和 `translated_text` 傳回的翻譯區塊呼叫 `finish_markdown_agent_translation`。
-4. 如果內容會寫入翻譯後的目標路徑，呼叫 `rewrite_markdown_paths`。
+1. Call `start_markdown_agent_translation` with `document`, `language_code`, and optionally `source_path`.
+2. 在主機代理中，依照 chunk `prompt` 翻譯每個返回的區塊。
+3. Call `finish_markdown_agent_translation` with the original `job` and translated chunks using `chunk_id` and `translated_text`.
+4. 如果內容會寫入已翻譯的目標路徑，請呼叫 `rewrite_markdown_paths`。
 
-對於筆記本：
+For notebooks:
 
-1. 呼叫 `start_notebook_agent_translation`，傳入筆記本 JSON 與 `language_code`。
-2. 在主機代理中翻譯每個回傳的區塊。
-3. 使用原始的 `job` 與翻譯後的區塊呼叫 `finish_notebook_agent_translation`。
-4. 若需要將翻譯後的筆記本連結調整成目標路徑，呼叫 `rewrite_notebook_paths`。
+1. Call `start_notebook_agent_translation` with notebook JSON and `language_code`.
+2. 在主機代理中翻譯每個返回的區塊。
+3. Call `finish_notebook_agent_translation` with the original `job` and translated chunks.
+4. 若已翻譯的 notebook 連結需要調整目標路徑，請呼叫 `rewrite_notebook_paths`。
 
-Agent-assisted 工具不會從 Co-op Translator 呼叫 Azure OpenAI 或 OpenAI。主機代理負責翻譯回傳的區塊。Co-op Translator 負責 Markdown 分段、保留佔位符、frontmatter 重建、筆記本儲存格替換以及翻譯後的正規化處理。
+由代理協助的工具不會從 Co-op Translator 呼叫已配置的 LLM 提供者。主機代理負責翻譯回傳的區塊。Co-op Translator 處理 Markdown 分塊、保留佔位符、frontmatter 重建、筆記本儲存格的替換，以及翻譯後的正規化。
 
-### Translate an Entire Repository
+### 翻譯整個儲存庫
 
-當用戶希望 Co-op Translator 的行為像 `translate` CLI 時，使用 `run_translation`。
+當使用者希望 Co-op Translator 的行為像 `translate` CLI 時，使用 `run_translation`。
 
-專案翻譯預設為 `dry_run=true`，以便代理在檔案變更前能先檢查範圍：
+儲存庫翻譯預設為 `dry_run=true`，以便代理程式可以在檔案變更前檢查範圍：
 
 ```json
 {
@@ -207,7 +216,13 @@ Agent-assisted 工具不會從 Co-op Translator 呼叫 Azure OpenAI 或 OpenAI�
 }
 ```
 
-若要允許寫入，呼叫方必須同時設定 `dry_run=false` 與 `confirm_write=true`：
+The `run_translation` result includes an `events` array with versioned
+`co-op.translation.event.v1` progress events. MCP clients should use fields such
+as `type`, `stage_key`, `completed`, `total`, and `current_path` instead of
+parsing captured console text. Pass `json_events_path` to also write those events
+to an NDJSON file.
+
+若要允許寫入，呼叫者必須同時設定 `dry_run=false` 與 `confirm_write=true`：
 
 ```json
 {
@@ -219,14 +234,14 @@ Agent-assisted 工具不會從 Co-op Translator 呼叫 Azure OpenAI 或 OpenAI�
 }
 ```
 
-`translate_project` 被作為 `run_translation` 的相容別名公開。
+`translate_project` 被公開為 `run_translation` 的相容別名。
 
-### Review Translated Output
+### 審閱已翻譯的輸出
 
-在不需要 LLM 或 Vision 憑證的情況下，使用 `run_review` 進行決定性檢查：
+對於不需要 LLM 或 Vision 憑證的確定性檢查，請使用 `run_review`：
 
 !!! note "Beta"
-    MCP exposes the beta `run_review` API. It is safe for read-only review workflows, but review checks and issue schemas may evolve.
+    MCP 揭露 beta 版的 `run_review` API。它對於唯讀的檢閱工作流程是安全的，但檢閱檢查與問題結構（issue schemas）可能會演進。
 
 ```json
 {
@@ -237,70 +252,70 @@ Agent-assisted 工具不會從 Co-op Translator 呼叫 Azure OpenAI 或 OpenAI�
 }
 ```
 
-當可用時，結果包含擷取的文字輸出與結構化的審查摘要。
+結果包含已擷取的文字輸出，以及在可用時的結構化審查摘要。
 
-## Manual Server Runs
+## 手動伺服器執行
 
-手動執行主要用於除錯或當傳輸層像長期運行的伺服器時使用。
+手動執行主要用於偵錯，或用於那些像長時間運行的伺服器一樣運作的傳輸。
 
-除錯預設的 stdio 伺服器：
+Debug the default stdio server:
 
 ```bash
 co-op-translator-mcp
 ```
 
-從原始碼取出執行：
+Run from a source checkout:
 
 ```bash
 python -m co_op_translator.mcp.server
 ```
 
-執行長期運行的 HTTP 或 SSE 伺服器：
+執行一個長期運行的 HTTP 或 SSE 伺服器：
 
 ```bash
 co-op-translator-mcp --transport streamable-http
 co-op-translator-mcp --transport sse
 ```
 
-對於本地編輯器與代理整合，偏好在第 2 步中由用戶端管理的 `stdio` 設定。
+對於本地編輯器和代理整合，請在步驟 2 中優先使用用戶端管理的 `stdio` 設定。
 
 ## Tools
 
-| Tool | Purpose | Writes files |
+| 工具 | 用途 | 是否寫入檔案 |
 | --- | --- | --- |
-| `translate_markdown_content` | Translate a Markdown string. | No |
-| `translate_notebook_content` | Translate Markdown cells in notebook JSON. | No |
-| `translate_image_content` | Translate text in one image and return base64 image data. | Optional, only when `output_path` is provided |
-| `start_markdown_agent_translation` | Prepare Markdown chunks for the host agent to translate without Co-op Translator LLM credentials. | No |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from host-agent translated chunks. | No |
-| `start_notebook_agent_translation` | Prepare notebook Markdown-cell chunks for the host agent to translate. | No |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON from host-agent translated chunks. | No |
-| `rewrite_markdown_paths` | Rewrite Markdown body and frontmatter paths for a translated target. | No |
-| `rewrite_notebook_paths` | Rewrite paths inside notebook Markdown cells. | No |
-| `run_translation` | Run project-level translation like the CLI. | Yes when `dry_run=false` and `confirm_write=true` |
-| `translate_project` | Compatibility alias for `run_translation`. | Yes when `dry_run=false` and `confirm_write=true` |
-| `run_review` | Run deterministic review checks. | No |
-| `get_configuration_status` | Report configured LLM and Vision providers without exposing secrets. | No |
-| `list_supported_languages` | List supported target language codes. | No |
-| `get_api_overview` | Describe available MCP workflows and tools. | No |
+| `translate_markdown_content` | 翻譯一個 Markdown 字串。 | 否 |
+| `translate_notebook_content` | 翻譯筆記本 JSON 中的 Markdown 儲存格。 | 否 |
+| `translate_image_content` | 翻譯單張影像中的文字並回傳 base64 影像資料。 | 選擇性，僅在提供 `output_path` 時 |
+| `start_markdown_agent_translation` | 為主機代理準備 Markdown 分段以翻譯，無需 Co-op Translator 的 LLM 憑證。 | 否 |
+| `finish_markdown_agent_translation` | 從主機代理翻譯回來的分段重建 Markdown。 | 否 |
+| `start_notebook_agent_translation` | 為主機代理準備筆記本中 Markdown 儲存格的分段以翻譯。 | 否 |
+| `finish_notebook_agent_translation` | 從主機代理已翻譯的分段重建筆記本 JSON。 | 否 |
+| `rewrite_markdown_paths` | 為已翻譯的目標重寫 Markdown 主體與 frontmatter 的路徑。 | 否 |
+| `rewrite_notebook_paths` | 重寫筆記本 Markdown 儲存格內的路徑。 | 否 |
+| `run_translation` | 執行專案層級的翻譯，類似 CLI。 | 是，當 `dry_run=false` 與 `confirm_write=true` 時 |
+| `translate_project` | `run_translation` 的相容別名。 | 是，當 `dry_run=false` 與 `confirm_write=true` 時 |
+| `run_review` | 執行確定性檢閱檢查。 | 否 |
+| `get_configuration_status` | 報告已配置的 LLM 與 Vision 提供者，且不揭露祕密。 | 否 |
+| `list_supported_languages` | 列出支援的目標語言代碼。 | 否 |
+| `get_api_overview` | 描述可用的 MCP 工作流程與工具。 | 否 |
 
 ## Resources
 
-| Resource URI | Purpose |
+| 資源 URI | 用途 |
 | --- | --- |
-| `co-op://api` | JSON overview of workflows and tools. |
-| `co-op://supported-languages` | JSON list of supported language codes. |
-| `co-op://configuration` | JSON provider availability summary without secrets. |
+| `co-op://api` | 工作流程與工具的 JSON 概覽。 |
+| `co-op://supported-languages` | 支援語言代碼的 JSON 列表。 |
+| `co-op://configuration` | 在不包含祕密的情況下，提供者可用性摘要的 JSON。 |
 
 ## Prompts
 
-| Prompt | Purpose |
+| 提示 | 用途 |
 | --- | --- |
-| `translate_markdown_document_prompt` | Guide an MCP client through content translation plus optional path rewriting. |
-| `agent_assisted_markdown_translation_prompt` | Guide an MCP client through host-agent Markdown translation without Co-op Translator LLM provider credentials. |
-| `translate_repository_prompt` | Guide an MCP client through dry-run-first repository translation. |
+| `translate_markdown_document_prompt` | 引導 MCP 用戶端完成內容翻譯並選擇性地重寫路徑。 |
+| `agent_assisted_markdown_translation_prompt` | 引導 MCP 用戶端在沒有 Co-op Translator LLM 提供者憑證的情況下，由主機代理翻譯 Markdown。 |
+| `translate_repository_prompt` | 引導 MCP 用戶端先以 dry-run 為先執行的倉庫翻譯。 |
 
-## Copy-Paste Examples
+## 可複製貼上的範例
 
 Translate Markdown content:
 
@@ -321,7 +336,7 @@ Rewrite translated Markdown links:
 {
   "tool": "rewrite_markdown_paths",
   "arguments": {
-    "content": "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+    "content": "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
     "source_path": "docs/guide.md",
     "target_path": "translations/ko/docs/guide.md",
     "policy": {
@@ -335,7 +350,7 @@ Rewrite translated Markdown links:
 }
 ```
 
-Translate Markdown with the host agent model:
+使用主機代理模型翻譯 Markdown：
 
 ```json
 {
@@ -348,7 +363,7 @@ Translate Markdown with the host agent model:
 }
 ```
 
-After the host agent translates each returned chunk, finish the job with the complete `job` object returned by `start_markdown_agent_translation`:
+在主機代理翻譯完每個回傳的區塊後，請使用 `start_markdown_agent_translation` 回傳的完整 `job` 物件來完成工作：
 
 ```text
 tool: finish_markdown_agent_translation
@@ -377,17 +392,17 @@ Preview repository translation:
 
 | Problem | What to try |
 | --- | --- |
-| The MCP client cannot find `co-op-translator-mcp`. | Use the absolute Python executable path and `["-m", "co_op_translator.mcp.server"]` source checkout configuration. |
-| The server is listed but translation fails. | Call `get_configuration_status` and confirm an LLM provider is available. |
-| You want Markdown or notebook translation without Azure OpenAI/OpenAI keys. | Use `start_markdown_agent_translation` / `finish_markdown_agent_translation` or the notebook equivalents so the host agent translates the chunks. |
-| Image translation fails. | Confirm Azure AI Vision variables are set and call `get_configuration_status`. |
-| Repository translation does not write files. | Set `dry_run=false` and `confirm_write=true` only after explicit user approval. |
-| Changes to client config do not appear. | Restart or reload the MCP client. |
+| MCP 用戶端找不到 `co-op-translator-mcp`。 | 請使用絕對的 Python 可執行檔路徑以及 `["-m", "co_op_translator.mcp.server"]` 的原始碼簽出設定。 |
+| 伺服器已列出但翻譯失敗。 | 呼叫 `get_configuration_status` 並確認 LLM 提供者可用。 |
+| 您想要在沒有提供者憑證的情況下進行 Markdown 或 notebook 的翻譯。 | 使用 `start_markdown_agent_translation` / `finish_markdown_agent_translation` 或 notebook 的對應項，讓主機代理翻譯這些區塊。 |
+| 影像翻譯失敗。 | 確認已設定 Azure AI Vision 變數並呼叫 `get_configuration_status`。 |
+| 儲存庫翻譯未寫入檔案。 | 僅在明確取得使用者核准後才設定 `dry_run=false` 與 `confirm_write=true`。 |
+| 用戶端設定的變更未出現。 | 重新啟動或重新載入 MCP 用戶端。 |
 
-## Safety Notes
+## 安全注意事項
 
-- MCP tool calls are model-controlled by the host application, so repository translation is dry-run by default.
-- Full repository translation can create, update, or remove many files. Require explicit user approval before setting `confirm_write=true`.
-- The configuration status tool never returns API keys, endpoints, or other secret values.
-- Image translation returns base64 image data. Large images can produce large tool responses.
-- Agent-assisted tools return source chunks and prompts to the MCP host. Use them only with content the user is comfortable sending to that host agent model.
+- MCP 工具呼叫由主機應用程式經由模型控制，因此倉庫翻譯預設為模擬執行。
+- 完整的倉庫翻譯可能會建立、更新或移除大量檔案。在設定 `confirm_write=true` 之前，請取得使用者的明確批准。
+- 設定狀態工具絕不會回傳 API 金鑰、端點或其他機密值。
+- 影像翻譯會回傳 base64 圖像資料。大型圖片可能會產生大量工具回應。
+- 代理輔助工具會將來源片段和提示回傳至 MCP 主機。只有在使用者願意將內容傳送給該主機代理模型時才使用它們。

@@ -1,22 +1,25 @@
 # Mwongozo wa Msimamizi
 
-Ukurasa huu unatoa muhtasari wa jinsi API, CLI, na tovuti ya nyaraka zilivyowekwa pamoja.
+Ukurasa huu unafupisha jinsi API, CLI, na tovuti ya nyaraka zinavyounganishwa.
 
 ## Mipaka ya API ya Umma
 
-The stable Python API is exported from:
+API thabiti ya Python inatolewa kutoka:
 
 ```python
 co_op_translator.api
 ```
 
-The public API is organized into content translation helpers, path rewriting helpers, project orchestration, and review:
+API ya umma imepangwa kuwa visaidizi vya tafsiri ya yaliyomo, visaidizi vya kuandika upya njia, upangaji wa miradi, na ukaguzi:
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,17 +31,21 @@ from co_op_translator.api import (
 )
 ```
 
-When adding new public APIs, update:
+`TranslationStateProvider` ni mpaka wa uhifadhi kwa miunganisho iliyowekwa mwenyeji.
+Inapaswa kuweka wagombea waliotengenezwa tofauti na misingi iliyokubaliwa ili
+tafsiri isiyounganishwa hawezi kuwa chanzo cha ukweli.
+
+Unapoongeza API mpya za umma, sasisha:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
-- relevant API tests under `tests/co_op_translator/`, such as `test_api.py` or `test_review_api.py`
+- vipimo vinavyohusiana vya API chini ya `tests/co_op_translator/`, kama `test_api.py` au `test_review_api.py`
 
-Avoid documenting lower-level `core` modules as stable API unless the project intends to support them directly.
+Epuka kuandika nyaraka kwa moduli za chini za `core` kama API thabiti isipokuwa mradi unakusudia kuziunga mkono moja kwa moja.
 
-## Vituo vya kuingia vya CLI
+## Nukta za kuingia za CLI
 
-Kifurushi kinaelezea skripti hizi za Poetry:
+Kifurushi kinafafanua skripti hizi za Poetry:
 
 ```toml
 [tool.poetry.scripts]
@@ -49,83 +56,83 @@ co-op-review = "co_op_translator.__main__:main"
 co-op-translator-mcp = "co_op_translator.mcp.server:main"
 ```
 
-`src/co_op_translator/__main__.py` dispatches by script name:
+`src/co_op_translator/__main__.py` hutuma kwa kutumia jina la skripti:
 
 - `translate` inaita `co_op_translator.cli.translate.translate_command`
 - `evaluate` inaita `co_op_translator.cli.evaluate.evaluate_command`
 - `migrate-links` inaita `co_op_translator.cli.migrate_links.migrate_links_command`
 - `co-op-review` inaita `co_op_translator.cli.review.review_command`
 
-`co-op-translator-mcp` hupita bila kupitia `__main__.py` na inaita `co_op_translator.mcp.server:main` moja kwa moja.
+`co-op-translator-mcp` hupitisha `__main__.py` na inaita `co_op_translator.mcp.server:main` moja kwa moja.
 
-When adding or changing CLI options, update:
+Unapoongeza au kubadilisha chaguo za CLI, sasisha:
 
-- the relevant `src/co_op_translator/cli/*.py` command
+- amri husika `src/co_op_translator/cli/*.py`
 - `docs/cli.md`
-- CLI-related tests, if behavior changes
+- Vipimo vinavyohusiana na CLI, ikiwa tabia inabadilika
 
-## Seva ya MCP
+## MCP server
 
-The MCP server is implemented in:
+Seva ya MCP imetekelezwa katika:
 
 ```python
 co_op_translator.mcp.server
 ```
 
-Seva kwa makusudi inafunika API ya Python ya umma badala ya kuita moduli za chini-nivel `core`. Weka mpaka huu usibadilike ili wateja wa MCP, wito wa Python, na CLI wawe na tabia ile ile.
+Seva kwa makusudi inafunika API ya Python ya umma badala ya kuita moduli za `core` za ngazi ya chini. Weka mpaka huu bila kubadilika ili wateja wa MCP, waiteaji wa Python, na CLI washirikiane kwa tabia ile ile.
 
-When adding or changing MCP tools, update:
+Unapoongeza au kubadilisha zana za MCP, sasisha:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
-- `docs/api.md` if the public API surface changes
+- `docs/api.md` ikiwa uso wa API ya umma unabadilika
 
-Repository translation tools are model-callable through MCP and can write many files. Keep `dry_run=True` as the default and require `confirm_write=True` before non-dry-run project translation.
+Zana za tafsiri za hazina zinaweza kuitwa kwa mfano kupitia MCP na zinaweza kuandika faili nyingi. Weka `dry_run=True` kama chaguo-msingi na hitaji `confirm_write=True` kabla ya tafsiri ya mradi isiyokuwa dry-run.
 
 ## Mtiririko wa Tafsiri
 
-The high-level project translation flow is:
+Mtiririko wa juu wa tafsiri ya mradi ni:
 
-1. Parse CLI arguments or API parameters.
-2. Validate LLM configuration with `LLMConfig`.
-3. Validate Azure AI Vision when image translation is selected.
-4. Normalize language codes.
-5. Detect legacy language folder aliases.
-6. Estimate translation volume.
-7. Update README language/course sections when applicable.
-8. Delegate project translation to `ProjectTranslator`.
-9. `ProjectTranslator` delegates file processing to `TranslationManager`.
+1. Changanua hoja za CLI au vigezo vya API.
+2. Thibitisha usanidi wa LLM kwa `LLMConfig`.
+3. Thibitisha Azure AI Vision wakati tafsiri ya picha imechaguliwa.
+4. Sawaisha misimbo ya lugha.
+5. Gundua majina mbadala ya folda za lugha za zamani.
+6. Kukadiria kiasi cha tafsiri.
+7. Sasisha sehemu za lugha/kozi za README inapofaa.
+8. Toa jukumu la tafsiri ya mradi kwa `ProjectTranslator`.
+9. `ProjectTranslator` hutoa uendeshaji wa faili kwa `TranslationManager`.
 
-`TranslationManager` is composed from focused file-type mixins:
+`TranslationManager` inaundwa kutoka kwa mixin za aina ya faili zilizolengwa:
 
-- `ProjectMarkdownTranslationMixin` handles Markdown file reads, content translation, path rewriting, metadata, disclaimers, and writes.
-- `ProjectNotebookTranslationMixin` handles notebook file reads, Markdown-cell translation, path rewriting, metadata, disclaimers, and writes.
-- `ProjectImageTranslationMixin` handles image discovery, text extraction/translation, rendered image writes, and metadata.
+- `ProjectMarkdownTranslationMixin` hushughulikia usomaji wa faili za Markdown, tafsiri ya yaliyomo, uandishi upya wa njia, metadata, taarifa za kukataa, na uandishi.
+- `ProjectNotebookTranslationMixin` hushughulikia usomaji wa faili za notebook, tafsiri ya seli za Markdown, uandishi upya wa njia, metadata, taarifa za kukataa, na uandishi.
+- `ProjectImageTranslationMixin` hushughulikia ugunduzi wa picha, uchomaji/tafsiri ya maandishi, uandishi wa picha zilizochorwa, na metadata.
 
-The lower-level content APIs skip the project workflow:
+API za maudhui za ngazi ya chini zinaruka mtiririko wa kazi wa mradi:
 
-1. `translate_markdown_content` and `translate_notebook_content` translate in-memory content only.
-2. `translate_image_content` translates text in a single image and returns a rendered image object.
-3. `rewrite_markdown_paths` and `rewrite_notebook_paths` are explicit post-processing helpers. They perform no translation and no project writes.
+1. `translate_markdown_content` na `translate_notebook_content` zinafasiri yaliyomo katika kumbukumbu pekee.
+2. `translate_image_content` inatafsiri maandishi katika picha moja na inarejesha kitu cha picha iliyochorwa.
+3. `rewrite_markdown_paths` na `rewrite_notebook_paths` ni visaidizi vya uchakataji wa baada ya wazi. Hawaitekelezi tafsiri wala uandishi wa mradi.
 
-## Mtiririko wa Ukaguzi
+## Mtiririko wa Mapitio
 
-The deterministic review flow is:
+Mtiririko wa ukaguzi unaotegemewa ni:
 
-1. Parse CLI arguments or API parameters.
-2. Normalize requested language codes.
-3. Build one or more review targets from `root_dir`, `root_dirs`, or `groups`.
-4. Optionally limit source files with `--changed-from`.
-5. Run deterministic checks for structure, translation freshness, Markdown integrity, and local link/image paths.
-6. Print either text output or GitHub-flavored Markdown.
-7. Exit with a failure when review errors are found.
+1. Changanua hoja za CLI au vigezo vya API.
+2. Sawaisha misimbo ya lugha zilizohitajika.
+3. Jenga lengo moja au zaidi la ukaguzi kutoka `root_dir`, `root_dirs`, au `groups`.
+4. Hiari punguza faili za chanzo kwa `--changed-from`.
+5. Endesha ukaguzi wa deterministic kwa muundo, ubora wa tafsiri, uadilifu wa Markdown, na njia za viungo/picha za ndani.
+6. Chapisha ama matokeo ya maandishi au Markdown yenye ladha ya GitHub.
+7. Toka kwa hitimisho la kushindwa wakati makosa ya ukaguzi yanapopatikana.
 
-The review flow does not require API keys and should remain suitable for pull request CI. The pull request workflow writes a check summary on every run and only posts a PR comment when `co-op-review` fails.
+Mtiririko wa ukaguzi hautegemei funguo za API na unabaki kupatikana kwa ukaguzi wa ndani au CI ya mteja inayojiunga kwa hiari. Hifadhi hii haisiendesha `co-op-review` moja kwa moja kwenye kila pull request.
 
-## Tovuti ya Nyaraka
+## Tovuti ya nyaraka
 
-The docs site is configured by:
+Tovuti ya nyaraka imewekwa kwa:
 
 ```text
 mkdocs.yml
@@ -133,7 +140,7 @@ requirements-docs.txt
 docs/
 ```
 
-The `docs/` directory is the canonical documentation source. Do not add new end-user guides outside this directory unless the project intentionally introduces another published documentation surface.
+Katalogi ya `docs/` ni chanzo rasmi cha nyaraka. Usiongeze mwongozo mpya wa mtumiaji wa mwisho nje ya katalogi hii isipokuwa mradi uteule kuanzisha uso mwingine wa nyaraka uliochapishwa.
 
 Build locally:
 
@@ -150,9 +157,9 @@ python -m mkdocs serve
 
 The generated site is written to `site/`, which is ignored by git.
 
-## Mtiririko wa GitHub Pages
+## Mtiririko wa kazi wa GitHub Pages
 
-`.github/workflows/docs.yml` builds the site on pull requests and deploys it on pushes to `main`.
+`.github/workflows/docs.yml` inajenga tovuti kwenye ombi za pull na kuipeleka (deploy) wakati wa kutuma (push) kwa `main`.
 
 The workflow installs:
 
@@ -160,9 +167,9 @@ The workflow installs:
 pip install -r requirements-docs.txt
 ```
 
-The docs workflow installs only the documentation toolchain. `mkdocs.yml` points `mkdocstrings` at `src/` so public API pages can be rendered from the source tree without installing the full runtime dependency set. If future API docs require importing optional runtime providers during the build, update both `.github/workflows/docs.yml` and this guide together.
+Mtiririko wa kazi wa nyaraka unasakinisha tu zana za kuandaa nyaraka. `mkdocs.yml` inaelekeza `mkdocstrings` kwa `src/` ili kurasa za API za umma ziweze kuundwa kutoka mti wa chanzo bila kusakinisha seti kamili ya utegemezi wa wakati wa utekelezaji. Ikiwa nyaraka za API zijazo zitahitaji kuingiza watoa huduma za wakati wa utekelezaji wa hiari wakati wa ujenzi, sasisha `.github/workflows/docs.yml` na mwongozo huu pamoja.
 
-## Viwango vya Ubora vya Nyaraka
+## Kiwango cha ubora wa nyaraka
 
 Before merging documentation changes, run:
 
@@ -171,4 +178,4 @@ python -m mkdocs build --strict
 git diff --check
 ```
 
-Use strict builds so broken links, invalid navigation entries, and API rendering issues fail early.
+Tumia ujenzi mkali ili viungo vilivyovunjika, vipengee vya urambazaji visivyofaa, na masuala ya uwasilishaji wa API yashindikane mapema.

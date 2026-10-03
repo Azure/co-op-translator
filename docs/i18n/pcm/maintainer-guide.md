@@ -1,8 +1,8 @@
-# Guide for Maintaina dem
+# Guide for people wey dey maintain
 
-Dis page dey summarize how the API, CLI, and documentation site dem dey wire together.
+Dis page dey summarize how di API, CLI, and documentation site dem take connect together.
 
-## Public API border
+## Public API boundary
 
 Di stable Python API dey exported from:
 
@@ -17,6 +17,9 @@ from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,17 +31,21 @@ from co_op_translator.api import (
 )
 ```
 
-If you dey add new public APIs, make you update:
+`TranslationStateProvider` na di persistence boundary for hosted integrations.
+E must keep generated candidates separate from accepted baselines so make an
+wey no don merge translation no go become di source of truth.
+
+When you dey add new public APIs, update:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
-- relevant API tests under `tests/co_op_translator/`, such as `test_api.py` or `test_review_api.py`
+- relevant API tests wey dey under `tests/co_op_translator/`, like `test_api.py` or `test_review_api.py`
 
-No dey document lower-level `core` modules as stable API unless the project wan support dem directly.
+Try no dey document lower-level `core` modules as stable API unless di project mean say e go support dem direct.
 
 ## CLI entry points
 
-Di package get these Poetry scripts:
+Di package define these Poetry scripts:
 
 ```toml
 [tool.poetry.scripts]
@@ -58,11 +65,11 @@ co-op-translator-mcp = "co_op_translator.mcp.server:main"
 
 `co-op-translator-mcp` dey bypass `__main__.py` and dey call `co_op_translator.mcp.server:main` direct.
 
-If you dey add or change CLI options, make you update:
+When you dey add or change CLI options, update:
 
-- the relevant `src/co_op_translator/cli/*.py` command
+- di relevant `src/co_op_translator/cli/*.py` command
 - `docs/cli.md`
-- CLI-related tests, if behavior changes
+- CLI-related tests, if behaviour changes
 
 ## MCP server
 
@@ -72,24 +79,24 @@ Di MCP server dey implemented in:
 co_op_translator.mcp.server
 ```
 
-Di server purposely dey wrap the public Python API instead of dey call the lower-level `core` modules. Make you keep this boundary intact so MCP clients, Python callers, and the CLI go share the same behavior.
+Di server purposely dey wrap di public Python API instead of calling lower-level `core` modules. Keep dis boundary intact so MCP clients, Python callers, and the CLI go share di same behaviour.
 
-If you dey add or change MCP tools, make you update:
+When you dey add or change MCP tools, update:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
-- `docs/api.md` if the public API surface changes
+- `docs/api.md` if di public API surface change
 
-Repository translation tools fit callable from MCP and fit write plenti files. Keep `dry_run=True` as the default and require `confirm_write=True` before any non-dry-run project translation.
+Repository translation tools fit call model through MCP and fit write plenti files. Make `dry_run=True` remain di default and require `confirm_write=True` before any non-dry-run project translation.
 
-## How translation dey flow
+## Translation flow
 
-Di high-level project translation flow be:
+Di high-level project translation flow na:
 
 1. Parse CLI arguments or API parameters.
-2. Make sure say LLM configuration correct with `LLMConfig`.
-3. Make sure say Azure AI Vision dey valid when image translation selected.
+2. Validate LLM configuration with `LLMConfig`.
+3. Validate Azure AI Vision when image translation dey selected.
 4. Normalize language codes.
 5. Detect legacy language folder aliases.
 6. Estimate translation volume.
@@ -97,21 +104,21 @@ Di high-level project translation flow be:
 8. Delegate project translation to `ProjectTranslator`.
 9. `ProjectTranslator` dey delegate file processing to `TranslationManager`.
 
-`TranslationManager` dey composed from focused file-type mixins:
+`TranslationManager` na composed from focused file-type mixins:
 
 - `ProjectMarkdownTranslationMixin` dey handle Markdown file reads, content translation, path rewriting, metadata, disclaimers, and writes.
 - `ProjectNotebookTranslationMixin` dey handle notebook file reads, Markdown-cell translation, path rewriting, metadata, disclaimers, and writes.
 - `ProjectImageTranslationMixin` dey handle image discovery, text extraction/translation, rendered image writes, and metadata.
 
-Di lower-level content APIs no dey follow the project workflow:
+Di lower-level content APIs skip di project workflow:
 
 1. `translate_markdown_content` and `translate_notebook_content` translate in-memory content only.
 2. `translate_image_content` translates text in a single image and returns a rendered image object.
-3. `rewrite_markdown_paths` and `rewrite_notebook_paths` na explicit post-processing helpers. Dem no perform translation and no write to project.
+3. `rewrite_markdown_paths` and `rewrite_notebook_paths` na explicit post-processing helpers. Dem no perform translation and no do project writes.
 
 ## Review flow
 
-Di deterministic review flow be:
+Di deterministic review flow na:
 
 1. Parse CLI arguments or API parameters.
 2. Normalize requested language codes.
@@ -119,9 +126,9 @@ Di deterministic review flow be:
 4. Optionally limit source files with `--changed-from`.
 5. Run deterministic checks for structure, translation freshness, Markdown integrity, and local link/image paths.
 6. Print either text output or GitHub-flavored Markdown.
-7. Exit with failure if review errors dey found.
+7. Exit with a failure when review errors dey found.
 
-Di review flow no need API keys and e suppose still dey suitable for pull request CI. The pull request workflow dey write a check summary on every run and e go only post a PR comment when `co-op-review` fail.
+Di review flow no need API keys and e still dey available for local checks or opt-in consumer CI. This repository no dey run `co-op-review` automatically on every pull request.
 
 ## Documentation site
 
@@ -133,7 +140,7 @@ requirements-docs.txt
 docs/
 ```
 
-The `docs/` directory na di canonical documentation source. No add new end-user guides outside dis directory unless di project mean introduce another published documentation surface.
+The `docs/` directory na di canonical documentation source. No add new end-user guides outside dis directory unless di project purposely introduce another published documentation surface.
 
 Build locally:
 
@@ -152,15 +159,15 @@ Di generated site dey write to `site/`, wey git dey ignore.
 
 ## GitHub Pages workflow
 
-`.github/workflows/docs.yml` dey build the site on pull requests and deploy am on pushes to `main`.
+`.github/workflows/docs.yml` dey build di site on pull requests and dey deploy am on pushes to `main`.
 
-The workflow dey install:
+Di workflow dey install:
 
 ```bash
 pip install -r requirements-docs.txt
 ```
 
-Di docs workflow dey install only the documentation toolchain. `mkdocs.yml` dey point `mkdocstrings` to `src/` so public API pages fit render from the source tree without installing the full runtime dependency set. If future API docs go need import optional runtime providers during the build, update both `.github/workflows/docs.yml` and dis guide together.
+Di docs workflow install only di documentation toolchain. `mkdocs.yml` point `mkdocstrings` at `src/` so public API pages fit render from the source tree without installing the full runtime dependency set. If future API docs need to import optional runtime providers during di build, update both `.github/workflows/docs.yml` and dis guide together.
 
 ## Docs quality bar
 

@@ -1,6 +1,6 @@
-# CLI Reference
+# Referensi CLI
 
-Co-op Translator menginstal titik masuk baris perintah ini:
+Co-op Translator memasang titik masuk baris perintah berikut:
 
 - `translate`
 - `evaluate`
@@ -8,33 +8,45 @@ Co-op Translator menginstal titik masuk baris perintah ini:
 - `co-op-review`
 - `co-op-translator-mcp`
 
-Perintah `translate`, `evaluate`, `migrate-links`, dan `co-op-review` meneruskan melalui `co_op_translator.__main__`, yang memilih implementasi perintah berdasarkan nama skrip yang dipanggil. Server MCP menggunakan `co_op_translator.mcp.server` secara langsung.
+Perintah `translate`, `evaluate`, `migrate-links`, dan `co-op-review` diteruskan melalui `co_op_translator.__main__`, yang memilih implementasi perintah berdasarkan nama skrip yang dipanggil. Server MCP menggunakan `co_op_translator.mcp.server` secara langsung.
 
-Jika Anda sedang memutuskan antara CLI, Python API, dan MCP, mulailah dengan [Pilih Alur Kerja Anda](workflows.md).
+Jika Anda sedang memilih antara CLI, Python API, dan MCP, mulai dengan [Pilih Alur Kerja Anda](workflows.md).
 
-## First-Time CLI Flow
+## Keluaran Konsol
+
+Terminal interaktif menggunakan format Rich untuk header perintah, kemajuan, dan ringkasan. CI dan keluaran non-interaktif secara otomatis kembali ke teks polos.
+
+Atur `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` untuk memaksa keluaran biasa, atau `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` untuk memaksa keluaran Rich. Atur `CO_OP_TRANSLATOR_NO_PROGRESS=1` untuk mempertahankan ringkasan sambil menonaktifkan bilah kemajuan langsung.
+
+Gunakan `translate --json-events progress.ndjson` ketika sistem lain membutuhkan
+kemajuan yang dapat dibaca mesin. CLI terus menampilkan keluaran yang ditujukan untuk manusia, sementara
+file NDJSON menerima peristiwa berversi `co-op.translation.event.v1` dengan
+bidang stabil seperti `type`, `stage_key`, `completed`, `total`, dan
+`current_path`.
+
+## Alur CLI Pertama Kali
 
 Mulai di sini jika Anda menggunakan Co-op Translator dari terminal:
 
-1. Konfigurasikan penyedia LLM seperti dijelaskan di [Configuration](configuration.md).
+1. Konfigurasikan penyedia LLM seperti yang dijelaskan di [Konfigurasi](configuration.md).
 2. Pilih jenis konten yang ingin Anda terjemahkan.
-3. Jalankan perintah yang fokus terlebih dahulu, seperti terjemahan khusus Markdown.
-4. Gunakan `--dry-run` sebelum perubahan besar pada repositori.
+3. Jalankan perintah terfokus terlebih dahulu, misalnya terjemahan hanya Markdown.
+4. Use `--dry-run` before large repository changes.
 5. Gunakan `co-op-review` setelah terjemahan untuk memeriksa struktur dan kebaruan.
 
-| Tujuan | Perintah untuk memulai |
+| Goal | Command to start with |
 | --- | --- |
-| Terjemahkan dokumen Markdown | `translate -l "ko" -md` |
-| Terjemahkan notebook | `translate -l "ko" -nb` |
-| Terjemahkan teks gambar | `translate -l "ko" -img` |
-| Pratinjau pekerjaan tanpa menulis file | `translate -l "ko" -md --dry-run` |
-| Tinjau terjemahan yang ada | `co-op-review -l "ko"` |
-| Perbarui tautan notebook dan Markdown | `migrate-links -l "ko" --dry-run` |
-| Mengekspos alat ke klien MCP | Konfigurasikan [Server MCP](mcp.md) alih-alih menjalankan perintah CLI secara langsung. |
+| Translate Markdown documents | `translate -l "ko" -md` |
+| Translate notebooks | `translate -l "ko" -nb` |
+| Translate image text | `translate -l "ko" -img` |
+| Preview work without writing files | `translate -l "ko" -md --dry-run` |
+| Review existing translations | `co-op-review -l "ko"` |
+| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
+| Berikan akses alat ke klien MCP | Konfigurasikan [Server MCP](mcp.md) alih-alih menjalankan perintah CLI secara langsung. |
 
 ## translate
 
-Menerjemahkan file Markdown, notebook, dan teks gambar ke satu atau lebih bahasa target.
+Terjemahkan file Markdown, notebook, dan teks gambar ke dalam satu atau lebih bahasa tujuan.
 
 ```bash
 translate -l "ko ja fr"
@@ -42,19 +54,19 @@ translate -l "ko ja fr"
 
 ### Contoh umum
 
-Terjemahkan hanya Markdown:
+Translate only Markdown:
 
 ```bash
 translate -l "de" -md
 ```
 
-Terjemahkan hanya notebook:
+Translate only notebooks:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Terjemahkan Markdown dan gambar:
+Translate Markdown and images:
 
 ```bash
 translate -l "pt-BR" -md -img
@@ -66,44 +78,51 @@ Perbarui terjemahan yang ada dengan menghapus dan membuat ulang:
 translate -l "ko" -u
 ```
 
-Jalankan tanpa prompt interaktif:
+Run without interactive prompts:
 
 ```bash
 translate -l "ko ja" -md -y
 ```
 
-Simpan log:
+Save logs:
 
 ```bash
 translate -l "ko" -s
 ```
 
-### Opsi
+Write structured progress events:
 
-| Opsi | Diperlukan | Deskripsi |
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
+### Options
+
+| Option | Required | Description |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Ya | Kode bahasa dipisahkan spasi, seperti `"es fr de"`, atau `"all"`. |
-| `-r`, `--root-dir` | Tidak | Root proyek. Default ke direktori saat ini. |
+| `-l`, `--language-codes` | Ya | Kode bahasa yang dipisahkan oleh spasi, seperti `"es fr de"`, atau `"all"`. |
+| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
 | `-u`, `--update` | Tidak | Hapus terjemahan yang ada untuk bahasa yang dipilih dan buat ulang. |
-| `-img`, `--images` | Tidak | Terjemahkan hanya file gambar. |
-| `-md`, `--markdown` | Tidak | Terjemahkan hanya file Markdown. |
-| `-nb`, `--notebook` | Tidak | Terjemahkan hanya file Jupyter notebook. |
-| `-d`, `--debug` | Tidak | Aktifkan logging debug di konsol. |
-| `-s`, `--save-logs` | Tidak | Simpan log level DEBUG di bawah `<root-dir>/logs/`. |
+| `-img`, `--images` | No | Translate only image files. |
+| `-md`, `--markdown` | No | Translate only Markdown files. |
+| `-nb`, `--notebook` | No | Translate only Jupyter notebook files. |
+| `-d`, `--debug` | Tidak | Aktifkan pencatatan debug di konsol. |
+| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
+| `--json-events` | No | Tulis peristiwa kemajuan terjemahan yang dapat dibaca mesin sebagai NDJSON. |
 | `-x`, `--fix` | Tidak | Terjemahkan ulang file Markdown dengan kepercayaan rendah berdasarkan hasil evaluasi sebelumnya. |
-| `-c`, `--min-confidence` | Tidak | Ambang kepercayaan untuk `--fix`. Defaultnya `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | Tidak | Tambahkan atau hentikan penyangkalan terjemahan mesin. Defaultnya diaktifkan di CLI. |
-| `-f`, `--fast` | Tidak | Mode gambar cepat yang sudah usang. |
-| `-y`, `--yes` | Tidak | Otomatis mengonfirmasi prompt, berguna di CI. |
-| `--repo-url` | Tidak | URL repositori yang digunakan dalam nasihat sparse-checkout pada tabel bahasa di README. |
-| `--migrate-language-folders` | Tidak | Ganti nama folder alias lama, seperti `cn` atau `tw`, menjadi folder BCP 47 kanonik. |
-| `--dry-run` | Tidak | Pratinjau migrasi folder bahasa dan perkiraan terjemahan tanpa menulis file. |
+| `-c`, `--min-confidence` | No | Confidence threshold for `--fix`. Defaults to `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | No | Tambahkan atau sembunyikan penyangkalan terjemahan mesin. Secara default diaktifkan di CLI. |
+| `-f`, `--fast` | No | Deprecated fast image mode. |
+| `-y`, `--yes` | No | Secara otomatis mengonfirmasi prompt, berguna di CI. |
+| `--repo-url` | Tidak | URL repositori yang digunakan dalam saran sparse-checkout tabel bahasa di README. |
+| `--migrate-language-folders` | No | Ganti nama folder alias lama, seperti `cn` atau `tw`, menjadi folder BCP 47 kanonis. |
+| `--dry-run` | Tidak | Pratinjau migrasi folder bahasa dan perkiraan terjemahan tanpa menulis berkas. |
 
-Jika tidak ada flag tipe yang diberikan, `translate` memproses Markdown, notebook, dan gambar. Penerjemahan gambar memerlukan konfigurasi Azure AI Vision.
+Jika tidak ada flag tipe yang diberikan, `translate` memproses Markdown, notebook, dan gambar. Terjemahan gambar memerlukan konfigurasi Azure AI Vision.
 
 ## evaluate
 
-Mengevaluasi kualitas terjemahan Markdown untuk satu bahasa.
+Evaluasi kualitas Markdown terjemahan untuk satu bahasa.
 
 !!! warning "Eksperimental"
     `evaluate` bersifat eksperimental. Perintah ini dapat menggunakan pemeriksaan kualitas berbasis aturan dan berbasis LLM, menulis hasil evaluasi ke metadata terjemahan, dan model penilaian serta perilaku metadata dapat berubah.
@@ -114,44 +133,44 @@ evaluate -l "ko"
 
 ### Contoh umum
 
-Gunakan ambang kepercayaan rendah yang lebih ketat:
+Gunakan ambang batas kepercayaan rendah yang lebih ketat:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-Jalankan pemeriksaan berbasis aturan saja:
+Run rule-based checks only:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-Jalankan pemeriksaan berbasis LLM saja:
+Run LLM-based checks only:
 
 ```bash
 evaluate -l "ja" -D
 ```
 
-### Opsi
+### Options
 
-| Opsi | Diperlukan | Deskripsi |
+| Option | Required | Description |
 | --- | --- | --- |
-| `-l`, `--language-code` | Ya | Kode bahasa tunggal untuk dievaluasi. Kode alias dinormalisasi. |
-| `-r`, `--root-dir` | Tidak | Root proyek. Default ke direktori saat ini. |
-| `-c`, `--min-confidence` | Tidak | Ambang yang digunakan saat mencantumkan terjemahan berkepercayaan rendah. Defaultnya `0.7`. |
-| `-d`, `--debug` | Tidak | Aktifkan logging debug. |
-| `-s`, `--save-logs` | Tidak | Simpan log level DEBUG di bawah `<root-dir>/logs/`. |
-| `-f`, `--fast` | Tidak | Hanya evaluasi berbasis aturan. |
-| `-D`, `--deep` | Tidak | Hanya evaluasi berbasis LLM. |
+| `-l`, `--language-code` | Yes | Single language code to evaluate. Alias codes are normalized. |
+| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
+| `-c`, `--min-confidence` | No | Ambang yang digunakan saat mencantumkan terjemahan berkepercayaan rendah. Secara default `0.7`. |
+| `-d`, `--debug` | No | Enable debug logging. |
+| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
+| `-f`, `--fast` | No | Rule-based evaluation only. |
+| `-D`, `--deep` | No | LLM-based evaluation only. |
 
-Secara default, `evaluate` menggunakan evaluasi berbasis aturan dan LLM. Hasil ditulis ke metadata terjemahan dan disimpulkan di konsol.
+Secara default, `evaluate` menggunakan evaluasi berbasis aturan dan berbasis LLM. Hasil ditulis ke metadata terjemahan dan dirangkum di konsol.
 
 ## co-op-review
 
 Jalankan pemeriksaan pemeliharaan terjemahan deterministik tanpa kredensial API.
 
 !!! note "Beta"
-    `co-op-review` adalah perintah ulasan deterministik beta. Perintah ini tidak memanggil penyedia model atau menulis file, tetapi pemeriksaan dan skema keluaran isu dapat berkembang.
+    `co-op-review` adalah perintah tinjauan deterministik beta. Perintah ini tidak memanggil penyedia model atau menulis berkas, tetapi pemeriksaan dan skema keluaran isu dapat berkembang.
 
 ```bash
 co-op-review -l "ko"
@@ -159,40 +178,53 @@ co-op-review -l "ko"
 
 ### Contoh umum
 
-Tinjau terjemahan Korea dan Jepang dari direktori saat ini:
+Tinjau terjemahan bahasa Korea dan Jepang dari direktori saat ini:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Tinjau root proyek tertentu:
+Review a specific project root:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-Tinjau hanya file sumber yang berubah terhadap ref dasar:
+Tinjau hanya README setelah terjemahan README saja:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` mengabaikan dokumen lain dan README bersarang. Ini gagal jika root
+`README.md` hilang. Digabungkan dengan `--changed-from`, ini hanya meninjau README
+ketika file sumber tersebut berubah. Terjemahan yang hanya untuk README membiarkan README sumber
+tetap tidak berubah, termasuk penanda bagian bersama apa pun.
+
+Tinjau hanya file sumber yang diubah terhadap ref dasar:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-Cetak keluaran Markdown bergaya GitHub untuk ringkasan CI:
+Cetak output Markdown bergaya GitHub untuk ringkasan CI:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
 ```
 
-### Opsi
+### Options
 
-| Opsi | Diperlukan | Deskripsi |
+| Option | Required | Description |
 | --- | --- | --- |
-| `-l`, `--language-code` | Tidak | Kode bahasa untuk ditinjau. Dapat dilewatkan beberapa kali atau sebagai nilai dipisah spasi. Defaultnya semua bahasa terjemahan yang ditemukan. |
-| `-r`, `--root-dir` | Tidak | Root proyek. Default ke direktori saat ini. |
-| `--changed-from` | Tidak | Ref Git yang digunakan untuk membatasi tinjauan ke file sumber yang berubah. |
-| `--format` | Tidak | Format keluaran: `text` atau `github`. Defaultnya `text`. |
+| `-l`, `--language-code` | Tidak | Kode bahasa untuk ditinjau. Dapat diberikan berkali-kali atau sebagai nilai yang dipisahkan spasi. Defaultnya adalah semua bahasa terjemahan yang ditemukan. |
+| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
+| `--changed-from` | Tidak | Referensi Git yang digunakan untuk membatasi peninjauan ke file sumber yang diubah. |
+| `--readme-only` | No | Review only the root `README.md` translation. |
+| `--format` | No | Output format: `text` or `github`. Defaults to `text`. |
 
-`co-op-review` saat ini memeriksa file terjemahan yang hilang, metadata terjemahan yang hilang atau usang, integritas frontmatter Markdown dan pagar kode, JSON notebook terjemahan yang tidak valid, dan target tautan lokal Markdown atau gambar yang hilang. Tautan yang hilang merupakan peringatan secara default; masalah struktural dan kebaruan membuat perintah gagal.
+`co-op-review` saat ini memeriksa file terjemahan yang hilang, metadata terjemahan yang hilang atau kadaluwarsa, integritas frontmatter Markdown dan pagar kode, JSON notebook terjemahan yang tidak valid, dan target tautan Markdown atau gambar lokal yang hilang. Tautan yang hilang adalah peringatan secara default; masalah struktural dan kebaruan menyebabkan perintah gagal.
 
 ## co-op-translator-mcp
 
@@ -202,17 +234,17 @@ Jalankan server MCP Co-op Translator untuk agen, editor, dan klien yang kompatib
 co-op-translator-mcp
 ```
 
-Transport default adalah `stdio`. Lihat panduan [Server MCP](mcp.md) untuk konfigurasi klien, alat, sumber daya, dan catatan keamanan.
+Transport default adalah `stdio`. Lihat panduan [Server MCP](mcp.md) untuk konfigurasi klien, alat, sumber daya, dan catatan keselamatan.
 
-### Opsi
+### Options
 
-| Opsi | Diperlukan | Deskripsi |
+| Option | Required | Description |
 | --- | --- | --- |
-| `--transport` | Tidak | Transport MCP: `stdio`, `streamable-http`, atau `sse`. Defaultnya `stdio`. |
+| `--transport` | No | MCP transport: `stdio`, `streamable-http`, or `sse`. Defaults to `stdio`. |
 
 ## migrate-links
 
-Proses ulang file Markdown terjemahan dan perbarui tautan notebook sehingga mengarah ke notebook terjemahan jika tersedia.
+Proses ulang file Markdown terjemahan dan perbarui tautan notebook sehingga mengarah ke notebook terjemahan saat tersedia.
 
 ```bash
 migrate-links -l "ko ja"
@@ -220,7 +252,7 @@ migrate-links -l "ko ja"
 
 ### Contoh umum
 
-Pratinjau pembaruan tautan:
+Preview link updates:
 
 ```bash
 migrate-links -l "ko" --dry-run
@@ -232,28 +264,28 @@ Proses semua bahasa yang didukung tanpa konfirmasi:
 migrate-links -l "all" -y
 ```
 
-Hanya tulis ulang tautan ketika notebook terjemahan ada:
+Hanya tulis ulang tautan ketika notebook yang diterjemahkan ada:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
 ```
 
-### Opsi
+### Options
 
-| Opsi | Diperlukan | Deskripsi |
+| Option | Required | Description |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Ya | Kode bahasa dipisahkan spasi, atau `"all"`. |
-| `-r`, `--root-dir` | Tidak | Root proyek. Default ke direktori saat ini. |
-| `--image-dir` | Tidak | Direktori gambar terjemahan relatif terhadap root. Defaultnya `translated_images`. |
+| `-l`, `--language-codes` | Yes | Space-separated language codes, or `"all"`. |
+| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
+| `--image-dir` | Tidak | Direktori gambar terjemahan relatif terhadap root. Secara default ke `translated_images`. |
 | `--dry-run` | Tidak | Tampilkan file yang akan berubah tanpa menulis pembaruan. |
 | `--fallback-to-original`, `--no-fallback-to-original` | Tidak | Gunakan tautan notebook asli ketika notebook terjemahan tidak ada. Diaktifkan secara default. |
-| `-d`, `--debug` | Tidak | Aktifkan logging debug. |
-| `-s`, `--save-logs` | Tidak | Simpan log level DEBUG di bawah `<root-dir>/logs/`. |
-| `-y`, `--yes` | Tidak | Otomatis mengonfirmasi prompt saat memproses semua bahasa. |
+| `-d`, `--debug` | No | Enable debug logging. |
+| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
+| `-y`, `--yes` | Tidak | Secara otomatis mengonfirmasi prompt saat memproses semua bahasa. |
 
 ## Environment
 
-Semua perintah memerlukan satu penyedia LLM yang dikonfigurasi:
+Saat sebuah perintah membutuhkan kredensial penyedia, konfigurasikan salah satu set penyedia ini. `translate --dry-run` dan `co-op-review` tidak memerlukan kredensial penyedia:
 
 ```bash
 # Azure OpenAI
@@ -266,82 +298,86 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Atau OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Atau Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Penerjemahan gambar juga membutuhkan Azure AI Vision:
+Terjemahan gambar juga memerlukan Azure AI Vision:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## Output layout
+## Tata letak keluaran
 
-Terjemahan teks ditulis di bawah:
+Text translations are written under:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Keluaran gambar terjemahan ditulis di bawah:
+Output gambar yang diterjemahkan ditulis di bawah:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-Sebagai contoh, menerjemahkan `README.md` dan `docs/setup.md` ke dalam bahasa Korea menghasilkan:
+For example, translating `README.md` and `docs/setup.md` into Korean produces:
 
 ```text
 translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## Copy-Paste CLI Examples
+## Contoh CLI Salin-Tempel
 
-Terjemahkan Markdown ke tiga bahasa:
+Translate Markdown into three languages:
 
 ```bash
 translate -l "ko ja fr" -md
 ```
 
-Terjemahkan notebook saja:
+Translate notebooks only:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Terjemahkan gambar saja:
+Translate images only:
 
 ```bash
 translate -l "pt-BR" -img
 ```
 
-Pratinjau terjemahan Markdown tanpa menulis file:
+Pratinjau terjemahan Markdown tanpa menulis berkas:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-Perbaiki terjemahan Markdown dengan kepercayaan rendah:
+Repair low-confidence Markdown translations:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-Jalankan terjemahan Markdown yang ramah CI:
+Run CI-friendly Markdown translation:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-Tinjau keluaran terjemahan:
+Review translated output:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Pratinjau migrasi tautan:
+Preview link migration:
 
 ```bash
 migrate-links -l "ko" --dry-run

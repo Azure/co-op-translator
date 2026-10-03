@@ -1,10 +1,10 @@
-# Microsoft Beginners Repositories
+# Microsoft စတင်သူများအတွက် Repository များ
 
 ဤစာမျက်နှာသည် Microsoft "For Beginners" repositories များတွင် shared "Other Courses" README အပိုင်းကို အသုံးပြုသော ထိန်းသိမ်းသူများအတွက် ဖြစ်သည်။
 
-Most Co-op Translator users do not need this page.
+Co-op Translator ကို အသုံးပြုသူအများစုအတွက် ဤစာမျက်နှာ မလိုအပ်ပါ။
 
-## Auto-Sync the Other Courses Section
+## အခြားသင်တန်းများ အပိုင်းကို အလိုအလျောက် ကိုက်ညီစေခြင်း
 
 README အတွင်းရှိ "Other Courses" အပိုင်းပတ်လည်တွင် အောက်ပါ မှတ်သားချက်များကို ထည့်ပါ။
 
@@ -16,7 +16,7 @@ README အတွင်းရှိ "Other Courses" အပိုင်းပတ�
 
 Co-op Translator ကို CLI သို့မဟုတ် GitHub Actions မှတဆင့် run လိုက်တိုင်း အဆိုပါ မှတ်သားချက်များအကြားရှိ အကြောင်းအရာများကို packaged template ဖြင့် အစားထိုးပေးပါလိမ့်မည်။
 
-## Update the Shared Template
+## မျှဝေထားသည့် ပုံစံကို အပ်ဒိတ်လုပ်ခြင်း
 
 Template ရဲ့ အရင်းအမြစ်ကို အောက်မှာ တွေ့နိုင်သည်။
 
@@ -30,7 +30,7 @@ src/co_op_translator/templates/other_courses.md
 2. Co-op Translator သို့ pull request ကို ဖွင့်ပါ။
 3. ပြောင်းလဲမှု ထုတ်ပြန်ပြီးနောက် ရည်မှန်းထားသော repository တွင် Co-op Translator ကို run လုပ်ပါ။
 
-## Sparse Checkout Advisory
+## Sparse Checkout အကြံပြုချက်
 
 ဘာသာပြန်ထုတ်လွှင့်ထားသော output များစွာပါဝင်လျှင် course repository များကို clone လုပ်ရရန် ကုန်ကျစရိတ်များ မြင့်တက်နိုင်သည်။ ဤသတိပေးချက်ကို ဖန်တီးထားသော ဘာသာစကား အပိုင်းများတွင် ထည့်သွင်းနိုင်သည်။
 

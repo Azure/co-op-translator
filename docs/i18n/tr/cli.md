@@ -8,125 +8,144 @@ Co-op Translator şu komut satırı giriş noktalarını kurar:
 - `co-op-review`
 - `co-op-translator-mcp`
 
-`translate`, `evaluate`, `migrate-links` ve `co-op-review` komutları, çağrılan betik adına göre komut uygulamasını seçen `co_op_translator.__main__` aracılığıyla yönlendirilir. MCP sunucusu doğrudan `co_op_translator.mcp.server` kullanır.
+`translate`, `evaluate`, `migrate-links` ve `co-op-review` komutları, çağrılan betik adına göre komut uygulamasını seçen `co_op_translator.__main__` aracılığıyla gönderilir. MCP sunucusu doğrudan `co_op_translator.mcp.server` kullanır.
 
-CLI, Python API ve MCP arasında karar veriyorsanız, [Çalışma Akışınızı Seçin](workflows.md) ile başlayın.
+CLI, Python API ve MCP arasında karar veriyorsanız, [İş Akışınızı Seçin](workflows.md) ile başlayın.
+
+## Konsol Çıkışı
+
+Etkileşimli terminaller, komut başlığı, ilerleme ve özetler için Rich biçemlendirmesini kullanır. CI ve etkileşimsiz çıktılar otomatik olarak düz metne döner.
+
+Düz çıktı zorlamak için `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` ayarlayın veya Rich çıktıyı zorlamak için `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` ayarlayın. Canlı ilerleme çubuklarını bastırırken özetleri tutmak için `CO_OP_TRANSLATOR_NO_PROGRESS=1` ayarlayın.
+
+Başka bir sistem makine tarafından okunabilir ilerlemeye ihtiyaç duyduğunda `translate --json-events progress.ndjson` kullanın
+makine tarafından okunabilir ilerleme. CLI insanlara yönelik çıktıyı görüntülemeye devam ederken,
+NDJSON dosyası, `co-op.translation.event.v1` sürümlü olayları alır ve
+sabit alanlar, ör. `type`, `stage_key`, `completed`, `total`, ve
+`current_path`.
 
 ## İlk Kez CLI Akışı
 
-Terminalden Co-op Translator kullanıyorsanız buradan başlayın:
+Bir terminalden Co-op Translator kullanıyorsanız buradan başlayın:
 
-1. [Configuration](configuration.md) altında açıklandığı gibi bir LLM sağlayıcısı yapılandırın.
+1. [Configuration](configuration.md) bölümünde açıklandığı gibi bir LLM sağlayıcısı yapılandırın.
 2. Çevirmek istediğiniz içerik türünü seçin.
-3. Önce Markdown yalnız çeviri gibi odaklanmış bir komut çalıştırın.
+3. Öncelikle odaklanmış bir komut çalıştırın; örneğin yalnızca Markdown çevirisi.
 4. Büyük depo değişikliklerinden önce `--dry-run` kullanın.
-5. Çeviriden sonra yapı ve tazelik kontrolü için `co-op-review` kullanın.
+5. Yapıyı ve güncelliği kontrol etmek için çeviriden sonra `co-op-review` kullanın.
 
-| Amaç | Başlangıç komutu |
+| Hedef | Başlamak için komut |
 | --- | --- |
-| Translate Markdown documents | `translate -l "ko" -md` |
-| Translate notebooks | `translate -l "ko" -nb` |
-| Translate image text | `translate -l "ko" -img` |
-| Preview work without writing files | `translate -l "ko" -md --dry-run` |
-| Review existing translations | `co-op-review -l "ko"` |
-| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
-| Expose tools to an MCP client | Configure the [MCP Server](mcp.md) instead of running CLI commands directly. |
+| Markdown belgelerini çevirin | `translate -l "ko" -md` |
+| Not defterlerini çevirin | `translate -l "ko" -nb` |
+| Görüntü metnini çevirin | `translate -l "ko" -img` |
+| Dosya yazmadan çalışmayı önizleyin | `translate -l "ko" -md --dry-run` |
+| Mevcut çevirileri gözden geçirin | `co-op-review -l "ko"` |
+| Not defteri ve Markdown bağlantılarını güncelleyin | `migrate-links -l "ko" --dry-run` |
+| Araçları bir MCP istemcisine açın | CLI komutlarını doğrudan çalıştırmak yerine [MCP Sunucusu](mcp.md) yapılandırın. |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+Markdown dosyalarını, not defterlerini ve görüntü metnini bir veya daha fazla hedef dile çevirin.
 
 ```bash
 translate -l "ko ja fr"
 ```
 
-### Yaygın Örnekler
+### Yaygın örnekler
 
-Sadece Markdown çevir:
+Sadece Markdown'u çevirin:
 
 ```bash
 translate -l "de" -md
 ```
 
-Sadece notebook'ları çevir:
+Sadece not defterlerini çevirin:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Markdown ve resimleri çevir:
+Markdown ve görselleri çevirin:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-Mevcut çevirileri silip yeniden oluşturarak güncelle:
+Mevcut çevirileri silip yeniden oluşturarak güncelleyin:
 
 ```bash
 translate -l "ko" -u
 ```
 
-Etkileşimli istemler olmadan çalıştır:
+Etkileşimli istemler olmadan çalıştırın:
 
 ```bash
 translate -l "ko ja" -md -y
 ```
 
-Günlükleri kaydet:
+Günlükleri kaydedin:
 
 ```bash
 translate -l "ko" -s
+```
+
+Yapılandırılmış ilerleme olayları yazın:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
 ```
 
 ### Seçenekler
 
 | Seçenek | Gerekli | Açıklama |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Boşlukla ayrılmış dil kodları, örneğin `"es fr de"`, veya `"all"`. |
-| `-r`, `--root-dir` | No | Proje kökü. Varsayılan olarak geçerli dizindir. |
-| `-u`, `--update` | No | Seçilen diller için mevcut çevirileri siler ve yeniden oluşturur. |
-| `-img`, `--images` | No | Yalnızca görüntü dosyalarını çevirir. |
-| `-md`, `--markdown` | No | Yalnızca Markdown dosyalarını çevirir. |
-| `-nb`, `--notebook` | No | Yalnızca Jupyter notebook dosyalarını çevirir. |
-| `-d`, `--debug` | No | Konsolda hata ayıklama günlüklemesini etkinleştirir. |
-| `-s`, `--save-logs` | No | DEBUG düzeyindeki günlükleri `<root-dir>/logs/` altında kaydeder. |
-| `-x`, `--fix` | No | Önceki değerlendirme sonuçlarına dayanarak düşük güvenilirlikli Markdown dosyalarını yeniden çevirir. |
-| `-c`, `--min-confidence` | No | `--fix` için güven eşiği. Varsayılan `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | No | Makine çevirisi uyarılarını ekler veya bastırır. CLI'de varsayılan olarak etkin. |
-| `-f`, `--fast` | No | Kullanımdan kaldırılmış hızlı görüntü modu. |
-| `-y`, `--yes` | No | İstemleri otomatik onaylar, CI'da kullanışlıdır. |
-| `--repo-url` | No | README diller tablosundaki sparse-checkout önerisi için kullanılan depo URL'si. |
-| `--migrate-language-folders` | No | Örneğin `cn` veya `tw` gibi eski takma ad klasörlerini kanonik BCP 47 klasör adlarına yeniden adlandırır. |
-| `--dry-run` | No | Dosya yazmadan dil klasörü göçünü ve çeviri tahminlerini önizler. |
+| `-l`, `--language-codes` | Evet | Boşlukla ayrılmış dil kodları, örneğin `"es fr de"` veya `"all"`. |
+| `-r`, `--root-dir` | Hayır | Proje kökü. Varsayılan olarak geçerli dizindir. |
+| `-u`, `--update` | Hayır | Seçilen diller için mevcut çevirileri siler ve yeniden oluşturur. |
+| `-img`, `--images` | Hayır | Sadece görsel dosyalarını çevir. |
+| `-md`, `--markdown` | Hayır | Sadece Markdown dosyalarını çevir. |
+| `-nb`, `--notebook` | Hayır | Sadece Jupyter notebook dosyalarını çevir. |
+| `-d`, `--debug` | Hayır | Konsolda hata ayıklama günlüklerini etkinleştir. |
+| `-s`, `--save-logs` | Hayır | DEBUG seviyesindeki günlükleri `<root-dir>/logs/` altında kaydet. |
+| `--json-events` | Hayır | Makine tarafından okunabilir çeviri ilerleme olaylarını NDJSON olarak yazar. |
+| `-x`, `--fix` | Hayır | Önceki değerlendirme sonuçlarına göre düşük güvene sahip Markdown dosyalarını yeniden çevirir. |
+| `-c`, `--min-confidence` | Hayır | `--fix` için güven eşiği. Varsayılan `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | Hayır | Makine çevirisi feragatnamelerini ekler veya bastırır. CLI'da varsayılan olarak etkinleştirilmiştir. |
+| `-f`, `--fast` | Hayır | Kullanımdan kaldırılmış hızlı görsel modu. |
+| `-y`, `--yes` | Hayır | İstekleri otomatik onaylar, CI için kullanışlıdır. |
+| `--repo-url` | Hayır | README diller tablosundaki sparse-checkout önerisi için kullanılan depo URL'si. |
+| `--migrate-language-folders` | Hayır | Örneğin `cn` veya `tw` gibi eski takma ad klasörlerini kanonik BCP 47 klasörlerine yeniden adlandırır. |
+| `--dry-run` | Hayır | Dosya yazmadan dil klasörü göçünü ve çeviri tahminlerini önizler. |
 
-Hiçbir tür bayrağı verilmemişse, `translate` Markdown, notebook'lar ve resimleri işler. Görüntü çevirisi Azure AI Vision yapılandırması gerektirir.
+Eğer bir tür bayrağı belirtilmezse, `translate` Markdown, notebook'ları ve görselleri işler. Görsel çevirisi Azure AI Vision yapılandırması gerektirir.
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+Bir dil için çevrilmiş Markdown kalitesini değerlendirin.
 
 !!! warning "Deneysel"
-    `evaluate` deneysel bir özelliktir. Kural tabanlı ve LLM tabanlı kalite kontrollerini kullanabilir, değerlendirme sonuçlarını çeviri meta verisine yazar ve puanlama modeli ile meta veri davranışı değişebilir.
+    `evaluate` deneysel bir özelliktir. Kural tabanlı ve LLM tabanlı kalite kontrolleri kullanabilir, değerlendirme sonuçlarını çeviri meta verilerine yazar ve puanlama modeli ile meta veri davranışı değişebilir.
 
 ```bash
 evaluate -l "ko"
 ```
 
-### Yaygın Örnekler
+### Yaygın örnekler
 
-Daha sıkı bir düşük güven eşiği kullan:
+Daha katı bir düşük güven eşiği kullanın:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-Sadece kural tabanlı kontrolleri çalıştır:
+Sadece kural tabanlı kontrolleri çalıştırın:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-Sadece LLM tabanlı kontrolleri çalıştır:
+Sadece LLM tabanlı kontrolleri çalıştırın:
 
 ```bash
 evaluate -l "ja" -D
@@ -136,48 +155,60 @@ evaluate -l "ja" -D
 
 | Seçenek | Gerekli | Açıklama |
 | --- | --- | --- |
-| `-l`, `--language-code` | Yes | Değerlendirilecek tek bir dil kodu. Takma ad kodlar normalleştirilir. |
-| `-r`, `--root-dir` | No | Proje kökü. Varsayılan olarak geçerli dizindir. |
-| `-c`, `--min-confidence` | No | Düşük güven çevirilerini listelerken kullanılan eşik. Varsayılan `0.7`. |
-| `-d`, `--debug` | No | Hata ayıklama günlüklemesini etkinleştirir. |
-| `-s`, `--save-logs` | No | DEBUG düzeyindeki günlükleri `<root-dir>/logs/` altında kaydeder. |
-| `-f`, `--fast` | No | Sadece kural tabanlı değerlendirme. |
-| `-D`, `--deep` | No | Sadece LLM tabanlı değerlendirme. |
+| `-l`, `--language-code` | Evet | Değerlendirilecek tek dil kodu. Takma ad kodları normalleştirilir. |
+| `-r`, `--root-dir` | Hayır | Proje kökü. Varsayılan olarak geçerli dizindir. |
+| `-c`, `--min-confidence` | Hayır | Düşük güvene sahip çevirileri listelerken kullanılan eşik değeri. Varsayılan `0.7`. |
+| `-d`, `--debug` | Hayır | Hata ayıklama günlük kaydını etkinleştir. |
+| `-s`, `--save-logs` | Hayır | DEBUG seviyesindeki günlükleri `<root-dir>/logs/` altında kaydet. |
+| `-f`, `--fast` | Hayır | Sadece kural tabanlı değerlendirme. |
+| `-D`, `--deep` | Hayır | Yalnızca LLM tabanlı değerlendirme. |
 
-Varsayılan olarak `evaluate` hem kural tabanlı hem de LLM tabanlı değerlendirme kullanır. Sonuçlar çeviri meta verisine yazılır ve konsolda özetlenir.
+Varsayılan olarak `evaluate` hem kural tabanlı hem de LLM tabanlı değerlendirmeyi kullanır. Sonuçlar çeviri meta verilerine yazılır ve konsolda özetlenir.
 
 ## co-op-review
 
-API kimlik bilgisi olmadan deterministik çeviri bakım kontrollerini çalıştırın.
+API kimlik bilgileri olmadan deterministik çeviri bakım kontrolleri çalıştırın.
 
 !!! note "Beta"
-    `co-op-review` beta bir deterministik denetleme komutudur. Model sağlayıcılarını çağırmaz veya dosya yazmaz, ancak kontrolleri ve sorun çıktı şeması zamanla değişebilir.
+    `co-op-review` beta bir deterministik inceleme komutudur. Model sağlayıcılarını çağırmaz veya dosya yazmaz, ancak yaptığı kontroller ve sorun çıktı şeması gelişebilir.
 
 ```bash
 co-op-review -l "ko"
 ```
 
-### Yaygın Örnekler
+### Yaygın örnekler
 
-Geçerli dizinden Korece ve Japonca çevirilerini denetle:
+Geçerli dizinden Korece ve Japonca çevirilerini inceleyin:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Belirli bir proje kökünü denetle:
+Belirli bir proje kökünü inceleyin:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-Sadece bir temel ref'e karşı değişmiş kaynak dosyaları denetle:
+README'e özel bir çeviri sonrası sadece README'i inceleyin:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` diğer belgeleri ve iç içe README'leri yoksayar. Kök
+`README.md` eksiktir. `--changed-from` ile birleştirildiğinde, sadece README'i inceler
+kaynak dosya değiştiğinde. README'e özel çeviri, kaynak README'i
+değiştirmeden bırakır; paylaşılan bölüm işaretleri dahil.
+
+Yalnızca bir temel referansa karşı değişen kaynak dosyaları inceleyin:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-CI özetleri için GitHub biçimli Markdown çıktısı yazdır:
+CI özetleri için GitHub usulü Markdown çıktısı yazdırın:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -187,52 +218,53 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 | Seçenek | Gerekli | Açıklama |
 | --- | --- | --- |
-| `-l`, `--language-code` | No | Denetlenecek dil kodu. Birden fazla kez veya boşlukla ayrılmış değer olarak verilebilir. Varsayılan tüm bulunan çeviri dilleridir. |
-| `-r`, `--root-dir` | No | Proje kökü. Varsayılan olarak geçerli dizindir. |
-| `--changed-from` | No | Denetimi değişen kaynak dosyalarla sınırlamak için kullanılan Git ref. |
-| `--format` | No | Çıktı formatı: `text` veya `github`. Varsayılan `text`. |
+| `-l`, `--language-code` | Hayır | İncelenecek dil kodu. Birden çok kere veya boşlukla ayrılmış değer olarak verilebilir. Varsayılan olarak bulunan tüm çeviri dillerini alır. |
+| `-r`, `--root-dir` | Hayır | Proje kökü. Varsayılan olarak geçerli dizindir. |
+| `--changed-from` | Hayır | İncelemeyi değişen kaynak dosyalarla sınırlamak için kullanılan Git ref'i. |
+| `--readme-only` | Hayır | Yalnızca kök `README.md` çevirisini inceleyin. |
+| `--format` | Hayır | Çıktı formatı: `text` veya `github`. Varsayılan `text`. |
 
-`co-op-review` şu anda eksik çevrilmiş dosyalar, eksik veya güncelliğini yitirmiş çeviri meta verileri, Markdown frontmatter ve kod bloğu bütünlüğü, geçersiz çevrilmiş notebook JSON'u ve eksik yerel Markdown veya görüntü bağlantı hedefleri için kontroller yapar. Eksik bağlantılar varsayılan olarak uyarıdır; yapısal ve tazelik sorunları komutu başarısız kılar.
+`co-op-review` şu anda eksik çevrilmiş dosyaları, eksik veya güncelliğini yitirmiş çeviri meta verilerini, Markdown frontmatter ve kod bloğu bütünlüğünü, geçersiz çevrilmiş not defteri JSON'unu ve eksik yerel Markdown veya resim bağlantısı hedeflerini kontrol eder. Eksik bağlantılar varsayılan olarak uyarıdır; yapısal ve tazelik sorunları komutu başarısız kılar.
 
 ## co-op-translator-mcp
 
-Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+Ajanlar, editörler ve MCP-uyumlu istemciler için Co-op Translator MCP sunucusunu çalıştırın.
 
 ```bash
 co-op-translator-mcp
 ```
 
-The default transport is `stdio`. See the [MCP Server](mcp.md) guide for client configuration, tools, resources, and safety notes.
+Varsayılan taşıma `stdio`'dur. İstemci yapılandırması, araçlar, kaynaklar ve güvenlik notları için [MCP Server](mcp.md) kılavuzuna bakın.
 
-### Options
+### Seçenekler
 
-| Option | Required | Description |
+| Seçenek | Gerekli | Açıklama |
 | --- | --- | --- |
-| `--transport` | No | MCP transport: `stdio`, `streamable-http`, or `sse`. Defaults to `stdio`. |
+| `--transport` | Hayır | MCP taşıması: `stdio`, `streamable-http` veya `sse`. Varsayılan `stdio`. |
 
 ## migrate-links
 
-Reprocess translated Markdown files and update notebook links so they point to translated notebooks when available.
+Çevrilmiş Markdown dosyalarını yeniden işleyin ve not defteri bağlantılarını, mevcut olduğunda çevrilmiş not defterlerine işaret edecek şekilde güncelleyin.
 
 ```bash
 migrate-links -l "ko ja"
 ```
 
-### Yaygın Örnekler
+### Yaygın örnekler
 
-Bağlantı güncellemelerini önizle:
+Bağlantı güncellemelerini önizleyin:
 
 ```bash
 migrate-links -l "ko" --dry-run
 ```
 
-Onay olmadan tüm desteklenen dilleri işle:
+Tüm desteklenen dilleri onaylamadan işleyin:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-Sadece çevrilmiş notebook'lar mevcut olduğunda bağlantıları yeniden yaz:
+Yalnızca çevrilmiş not defterleri mevcut olduğunda bağlantıları yeniden yazın:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
@@ -242,18 +274,18 @@ migrate-links -l "ko" --no-fallback-to-original
 
 | Seçenek | Gerekli | Açıklama |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Boşlukla ayrılmış dil kodları veya `"all"`. |
-| `-r`, `--root-dir` | No | Proje kökü. Varsayılan olarak geçerli dizindir. |
-| `--image-dir` | No | Kök dizine göre çevrilmiş resim dizini. Varsayılan `translated_images`. |
-| `--dry-run` | No | Güncellemeleri yazmadan önce değişecek dosyaları gösterir. |
-| `--fallback-to-original`, `--no-fallback-to-original` | No | Çevrilmiş notebook'lar eksik olduğunda orijinal notebook bağlantılarını kullanır. Varsayılan olarak etkin. |
-| `-d`, `--debug` | No | Hata ayıklama günlüklemesini etkinleştirir. |
-| `-s`, `--save-logs` | No | DEBUG düzeyindeki günlükleri `<root-dir>/logs/` altında kaydeder. |
-| `-y`, `--yes` | No | Tüm diller işlenirken istemleri otomatik onaylar. |
+| `-l`, `--language-codes` | Evet | Boşlukla ayrılmış dil kodları veya "all". |
+| `-r`, `--root-dir` | Hayır | Proje kökü. Varsayılan geçerli dizindir. |
+| `--image-dir` | Hayır | Kök dizine göre çevrilmiş resim dizini. Varsayılan `translated_images`. |
+| `--dry-run` | Hayır | Güncelleme yazmadan değişecek dosyaları göster. |
+| `--fallback-to-original`, `--no-fallback-to-original` | Hayır | Çevrilmiş not defterleri yoksa orijinal not defteri bağlantılarını kullan. Varsayılan olarak etkin. |
+| `-d`, `--debug` | Hayır | Hata ayıklama kaydını etkinleştir. |
+| `-s`, `--save-logs` | Hayır | DEBUG düzeyindeki günlükleri `<root-dir>/logs/` altında kaydet. |
+| `-y`, `--yes` | Hayır | Tüm diller işlenirken istemleri otomatik onayla. |
 
-## Environment
+## Ortam
 
-All commands require one configured LLM provider:
+Bir komut sağlayıcı kimlik bilgileri gerektirdiğinde, bu sağlayıcı setlerinden birini yapılandırın. `translate --dry-run` ve `co-op-review` sağlayıcı kimlik bilgileri gerektirmez:
 
 ```bash
 # Azure OpenAI
@@ -266,82 +298,86 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Veya OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Veya Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Image translation additionally requires Azure AI Vision:
+Resim çevirisi ayrıca Azure AI Vision gerektirir:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## Output layout
+## Çıktı düzeni
 
-Text translations are written under:
+Metin çevirileri şu konuma yazılır:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Translated image output is written under:
+Çevrilmiş resim çıktısı şu konuma yazılır:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-For example, translating `README.md` and `docs/setup.md` into Korean produces:
+Örneğin, `README.md` ve `docs/setup.md` dosyalarını Korece'ye çevirmek şu sonucu üretir:
 
 ```text
 translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## Copy-Paste CLI Examples
+## Kopyala-Yapıştır CLI Örnekleri
 
-Translate Markdown into three languages:
+Markdown'u üç dile çevirin:
 
 ```bash
 translate -l "ko ja fr" -md
 ```
 
-Translate notebooks only:
+Sadece not defterlerini çevirin:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Translate images only:
+Sadece resimleri çevirin:
 
 ```bash
 translate -l "pt-BR" -img
 ```
 
-Preview Markdown translation without writing files:
+Dosyaları yazmadan Markdown çevirisini önizleyin:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-Repair low-confidence Markdown translations:
+Düşük güven skorlu Markdown çevirilerini onarın:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-Run CI-friendly Markdown translation:
+CI dostu Markdown çevirisi çalıştırın:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-Review translated output:
+Çevrilmiş çıktıyı inceleyin:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Preview link migration:
+Bağlantı geçişini önizleyin:
 
 ```bash
 migrate-links -l "ko" --dry-run

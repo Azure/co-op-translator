@@ -1,13 +1,13 @@
 # 故障排除
 
-Use this page when a translation run succeeds unexpectedly, fails during configuration, or produces output that needs review.
+当翻译运行意外成功、在配置期间失败，或产生需要审阅的输出时，请使用此页面。
 
 ## 从这里开始
 
-1. 首先运行一个针对性的命令，例如 `translate -l "ko" -md`。
-2. 添加 `-d` 以启用控制台调试日志。
-3. 添加 `-s` 将调试日志保存到 `<root-dir>/logs/` 下。
-4. 翻译后运行 `co-op-review` 以检查新鲜度、结构和本地链接。
+1. 首先运行一个有针对性的命令，例如 `translate -l "ko" -md`。
+2. 添加 `-d` 以获取控制台调试日志。
+3. 添加 `-s` 将调试日志保存到 `<root-dir>/logs/`。
+4. 在翻译后运行 `co-op-review` 以检查新鲜度、结构和本地链接。
 
 ```bash
 translate -l "ko" -md -d -s
@@ -26,9 +26,9 @@ No language model configuration found.
 
 修复：
 
-- 配置 Azure OpenAI 或 OpenAI。
-- 确认这些变量存在于运行命令的环境中。
-- 在本地使用时，将它们放在项目根目录的 `.env` 中。
+- 配置 Azure OpenAI、OpenAI 或 Anthropic。
+- 验证这些变量是否在运行命令的环境中。
+- 对于本地使用，请将它们放在项目根目录的 `.env` 中。
 
 参见 [配置](configuration.md)。
 
@@ -44,17 +44,17 @@ Image translation requested but Azure AI Service is not configured.
 
 - 添加 `AZURE_AI_SERVICE_API_KEY`。
 - 添加 `AZURE_AI_SERVICE_ENDPOINT`。
-- 或者运行仅文本的命令，例如 `translate -l "ko" -md`。
+- 或运行仅文本命令，例如 `translate -l "ko" -md`。
 
-### 密钥或端点无效
+### 无效的密钥或端点
 
-症状可能包括 `401`、权限错误（被屏蔽）或端点访问错误。
+症状可能包括 `401`、被遮蔽的权限错误或端点访问错误。
 
 修复：
 
-- 确认该密钥属于与端点相同的 Azure 资源。
-- 在使用 `-img` 时确认该资源支持 Vision。
-- 确认 Azure OpenAI 部署名称和 API 版本与您的部署匹配。
+- 确认密钥属于与端点相同的 Azure 资源。
+- 使用 `-img` 时确认该资源支持 Vision。
+- 确认 Azure OpenAI 的部署名称和 API 版本与您的部署匹配。
 - 使用调试日志运行：`translate -l "ko" -md -d -s`。
 
 ## 没有文件被翻译
@@ -62,11 +62,11 @@ Image translation requested but Azure AI Service is not configured.
 常见原因：
 
 - 所选标志与您的文件不匹配。
-- 已存在已翻译的文件。
-- 源文件位于被排除的目录下。
-- 命令从错误的项目根目录运行。
+- 已存在翻译后的文件。
+- 源文件位于被排除的目录中。
+- 命令在错误的项目根目录中运行。
 
-检查：
+检查项：
 
 ```bash
 translate -l "ko" -md --dry-run
@@ -74,24 +74,24 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-当命令在项目根目录之外运行时，使用 `--root-dir`。
+当命令在项目根目录之外运行时使用 `--root-dir`。
 
 ## 意外的链接行为
 
-链接重写取决于所选的内容类型：
+链接重写取决于所选内容类型：
 
-- `-nb` 已包含：笔记本链接可以指向已翻译的笔记本。
-- `-nb` 被排除：笔记本链接可以保持指向源笔记本。
-- `-img` 已包含：图片链接可以指向已翻译的图片。
-- `-img` 被排除：图片链接可以保持指向源图片。
+- `-nb` 包含：笔记本链接可以指向已翻译的笔记本。
+- `-nb` 排除：笔记本链接可以仍然指向源笔记本。
+- `-img` 包含：图像链接可以指向已翻译的图像。
+- `-img` 排除：图像链接可以仍然指向源图像。
 
-当所有内部链接都应优先指向翻译后的输出时，运行完整内容翻译：
+当所有内部链接应优先指向翻译后的输出时，请运行完整内容翻译：
 
 ```bash
 translate -l "ko" -md -nb -img
 ```
 
-翻译后运行链接审查：
+在翻译后运行链接审查：
 
 ```bash
 co-op-review -l "ko"
@@ -101,29 +101,29 @@ co-op-review -l "ko"
 
 如果翻译后的 Markdown 渲染不正确：
 
-- 检查 frontmatter 是否以 `---` 开始和结束。
-- 检查代码块围栏数量在源文件和翻译文件之间是否匹配。
-- 运行 `co-op-review` 以捕捉常见结构问题。
-- 如果输出被损坏，请重新翻译该特定文件。
+- 检查 frontmatter 是否以 `---` 开始并结束。
+- 检查源文件和翻译文件之间的代码围栏数量是否匹配。
+- 运行 `co-op-review` 以捕捉常见的结构问题。
+- 如果输出损坏，请重新翻译该文件。
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action 已运行但未创建 Pull Request
+## GitHub Action 运行但未创建拉取请求
 
-如果 `peter-evans/create-pull-request` 报告该分支没有领先于基线，则工作流未找到可提交的文件。
+如果 `peter-evans/create-pull-request` 报告分支没有比基线领先，则工作流未找到要提交的文件。
 
-可能原因：
+可能的原因：
 
-- 翻译运行未产生任何更改。
-- `.gitignore` 排除了 `translations/`、`translated_images/` 或已翻译的笔记本。
+- 翻译运行未产生更改。
+- `.gitignore` 排除了 `translations/`、`translated_images/` 或翻译后的笔记本。
 - `add-paths` 与生成的输出目录不匹配。
 - 翻译步骤提前退出。
 
-解决方法：
+修复方法：
 
-1. 确认生成的文件存在于 `translations/` 或 `translated_images/`。
+1. 确认生成的文件存在于 `translations/` 或 `translated_images/` 中。
 2. 确认 `.gitignore` 未忽略生成的输出。
 3. 使用匹配的 `add-paths`：
 
@@ -134,7 +134,7 @@ co-op-review -l "ko" --format github
        translated_images/
    ```
 
-4. 临时向 translate 命令添加调试标志：
+4. 暂时向 translate 命令添加调试标志：
 
    ```bash
    translate -l "ko" -md -d -s
@@ -150,9 +150,9 @@ co-op-review -l "ko" --format github
 
 ## 翻译质量
 
-机器翻译可能需要人工审校。仅在您希望进行实验性质量评分和低置信度修复工作流时才使用 `evaluate`。
+机器翻译可能需要人工审校。仅在你希望使用实验性的质量评分和低置信度修复工作流时使用 `evaluate`。
 
-!!! warning "实验性"
-    `evaluate` 可以使用基于规则和基于 LLM 的检查，其评分模型和元数据行为可能会发生变化。除非您的工作流已准备好应对更改，否则不要将其纳入必需的 CI 门。
+!!! warning "Experimental"
+    `evaluate` 可以使用基于规则和基于 LLM 的检查，其评分模型和元数据行为可能会发生变化。除非你的工作流已做好应对变化的准备，否则不要将其纳入必需的 CI 检查中。
 
 对于确定性的 CI 检查，请改用 `co-op-review`。

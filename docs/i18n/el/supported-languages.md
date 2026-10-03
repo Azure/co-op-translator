@@ -1,8 +1,8 @@
-# Υποστηριζόμενες γλώσσες
+# Υποστηριζόμενες Γλώσσες
 
-Ο Co-op Translator υποστηρίζει τους ακόλουθους κωδικούς γλώσσας για εξόδους μετάφρασης κειμένου, σημειωματάριου και εικόνας.
+Ο μεταφραστής Co-op υποστηρίζει τους ακόλουθους κωδικούς γλωσσών για μεταφράσεις κειμένου, σημειωματαρίου και εικόνων.
 
-Εάν θέλετε να προσθέσετε μια νέα γλώσσα, ενημερώστε τους χάρτες γλώσσας και γραμματοσειράς κάτω από `src/co_op_translator/fonts/` και δοκιμάστε τη γλώσσα πριν ανοίξετε ένα pull request.
+Αν θέλετε να προσθέσετε μια νέα γλώσσα, ενημερώστε τις αντιστοιχίσεις γλώσσας και γραμματοσειράς στο `src/co_op_translator/fonts/` και δοκιμάστε τη γλώσσα πριν ανοίξετε ένα pull request.
 
 | Language Code | Language Name | Font | RTL Support | Known Issues |
 | --- | --- | --- | --- | --- |
@@ -15,16 +15,16 @@
 | fa | Περσικά (Φαρσί) | NotoSansArabic-Medium.ttf | Ναι | Όχι |
 | ur | Ουρντού | NotoSansArabic-Medium.ttf | Ναι | Όχι |
 | zh-CN | Κινέζικα (Απλοποιημένα) | NotoSansCJK-Medium.ttc | Όχι | Όχι |
-| zh-MO | Κινέζικα (Παραδοσιακά, Μακάου) | NotoSansCJK-Medium.ttc | Όχι | Όχι |
+| zh-MO | Κινέζικα (Παραδοσιακά, Μακάο) | NotoSansCJK-Medium.ttc | Όχι | Όχι |
 | zh-HK | Κινέζικα (Παραδοσιακά, Χονγκ Κονγκ) | NotoSansCJK-Medium.ttc | Όχι | Όχι |
 | zh-TW | Κινέζικα (Παραδοσιακά, Ταϊβάν) | NotoSansCJK-Medium.ttc | Όχι | Όχι |
 | ja | Ιαπωνικά | NotoSansCJK-Medium.ttc | Όχι | Όχι |
 | ko | Κορεατικά | NotoSansCJK-Medium.ttc | Όχι | Όχι |
 | hi | Χίντι | NotoSansDevanagari-Medium.ttf | Όχι | Όχι |
 | bn | Βεγγαλικά | NotoSansBengali-Medium.ttf | Όχι | Όχι |
-| mr | Μαραθικά | NotoSansDevanagari-Medium.ttf | Όχι | Όχι |
+| mr | Μαράθι | NotoSansDevanagari-Medium.ttf | Όχι | Όχι |
 | ne | Νεπάλι | NotoSansDevanagari-Medium.ttf | Όχι | Όχι |
-| pa | Πουντζάμπι (Gurmukhi) | NotoSansGurmukhi-Medium.ttf | Όχι | Όχι |
+| pa | Παντζαμπικά (Γκουρμούκι) | NotoSansGurmukhi-Medium.ttf | Όχι | Όχι |
 | pt-PT | Πορτογαλικά (Πορτογαλία) | NotoSans-Medium.ttf | Όχι | Όχι |
 | pt-BR | Πορτογαλικά (Βραζιλία) | NotoSans-Medium.ttf | Όχι | Όχι |
 | it | Ιταλικά | NotoSans-Medium.ttf | Όχι | Όχι |
@@ -39,7 +39,7 @@
 | fi | Φινλανδικά | NotoSans-Medium.ttf | Όχι | Όχι |
 | nl | Ολλανδικά | NotoSans-Medium.ttf | Όχι | Όχι |
 | he | Εβραϊκά | NotoSansHebrew-Medium.ttf | Ναι | Όχι |
-| vi | Βιετναμέζικα | NotoSans-Medium.ttf | Όχι | Όχι |
+| vi | Βιετναμικά | NotoSans-Medium.ttf | Όχι | Όχι |
 | id | Ινδονησιακά | NotoSans-Medium.ttf | Όχι | Όχι |
 | ms | Μαλαιικά | NotoSans-Medium.ttf | Όχι | Όχι |
 | tl | Ταγκαλόγκ (Φιλιππινέζικα) | NotoSans-Medium.ttf | Όχι | Όχι |
@@ -53,20 +53,21 @@
 | hr | Κροατικά | NotoSans-Medium.ttf | Όχι | Όχι |
 | sl | Σλοβενικά | NotoSans-Medium.ttf | Όχι | Όχι |
 | uk | Ουκρανικά | NotoSans-Medium.ttf | Όχι | Όχι |
-| my | Βιρμανικά (Myanmar) | NotoSansMyanmar-Medium.ttf | Όχι | Όχι |
+| my | Βιρμανικά (Μιανμάρ) | NotoSansMyanmar-Medium.ttf | Όχι | Όχι |
 | ta | Ταμίλ | NotoSansTamil-Medium.ttf | Όχι | Όχι |
 | et | Εσθονικά | NotoSans-Medium.ttf | Όχι | Όχι |
-| pcm | Νιγηριανό Pidgin | NotoSans-Medium.ttf | Όχι | Όχι |
+| pcm | Νιγηριανό Πίτζιν | NotoSans-Medium.ttf | Όχι | Όχι |
 | te | Τελούγκου | NotoSans-Medium.ttf | Όχι | Όχι |
-| ml | Μαλαγιαλαμικά | NotoSans-Medium.ttf | Όχι | Όχι |
+| ml | Μαλαγιαλάμ | NotoSans-Medium.ttf | Όχι | Όχι |
 | kn | Κανάντα | NotoSans-Medium.ttf | Όχι | Όχι |
 | km | Χμερ | NotoSansKhmer-Medium.ttf | Όχι | Όχι |
+| mni | Μανιπούρι (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Όχι | Όχι |
 
-## Προσθήκη Γλώσσας
+## Προσθήκη γλώσσας
 
 Για να προσθέσετε υποστήριξη για μια νέα γλώσσα:
 
 1. Προσθέστε τον κωδικό γλώσσας και το εμφανιζόμενο όνομα στις βοηθητικές λειτουργίες γλώσσας.
 2. Προσθέστε ή αντιστοιχίστε μια γραμματοσειρά στο `src/co_op_translator/fonts/font_language_mappings.yml`.
-3. Δοκιμάστε την έξοδο μετάφρασης Markdown και εικόνας.
+3. Δοκιμάστε την έξοδο μετάφρασης για Markdown και εικόνες.
 4. Ανοίξτε ένα pull request με την αντιστοίχιση και τις σημειώσεις επικύρωσης.

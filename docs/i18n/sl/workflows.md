@@ -1,45 +1,48 @@
-# Izberite svoj potek dela
+# Izberite svoj delovni tok
 
-Co-op Translator je mogoče uporabljati na tri načine: ukazna vrstica (CLI), Python API in MCP strežnik. Vsi uporabljajo enake prevajalske zmogljivosti, vendar se vsak bolj prilega drugačnemu poteku dela.
+Co-op Translator je mogoče uporabljati na tri načine: CLI, Python API in MCP strežnik. Vsi ponujajo enake možnosti prevajanja, a vsak ustreza drugačnemu poteku dela.
 
 Uporabite to stran, ko se odločate, kje začeti.
 
+**Če urejate prevode ročno:** privzeta dela z CLI in Actions ponovno prevedeta spremenjene izvorne datoteke v celoti, zato se lahko vaša besedila v teh datotekah prepišejo. Pred sprejetjem posodobitve preglejte razliko. Za ohranjanje blokovne strukture Markdown pri sprejetih uredbah uporabite izbirni [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
+
 ## Hitra odločitev
 
-| If you want to... | Use | Start here |
+| Če želite... | Uporabite | Začnite tukaj |
 | --- | --- | --- |
-| Prevesti ali pregledati repozitorij iz terminala | CLI | [Referenca CLI](cli.md) |
-| Dodajte prevajanje v Python skripto, storitev, zvezek ali CI opravilo | Python API | [Python API](api.md) |
-| Dovolite agentu, urejevalniku ali MCP-kompatibilnemu odjemalcu, da prevede vsebino namesto vas | MCP Server | [MCP strežnik](mcp.md) |
-| Prevedite en Markdown dokument, zvezek ali sliko, ki ga je vaša aplikacija že naložila | Python API or MCP Server | [Python API](api.md) or [MCP strežnik](mcp.md) |
-| Prevedite celoten repozitorij s standardnimi izhodnimi mapami in metapodatki | CLI or `run_translation` | [Referenca CLI](cli.md) or [Python API](api.md) |
+| Prevajati ali pregledovati repozitorij iz terminala | CLI | [CLI Reference](cli.md) |
+| Dodati prevajanje v Python skripto, storitev, zvezek (notebook) ali CI opravilo | Python API | [Python API](api.md) |
+| Dovolite agentu, urejevalniku ali MCP-kompatibilnemu odjemalcu, da za vas prevede vsebino | MCP Server | [MCP Server](mcp.md) |
+| Prevesti en Markdown dokument, zvezek ali sliko, ki jih je vaša aplikacija že naložila | Python API ali MCP Server | [Python API](api.md) ali [MCP Server](mcp.md) |
+| Prevesti celoten repozitorij s standardnimi izhodnimi mapami in metapodatki | CLI ali `run_translation` | [CLI Reference](cli.md) ali [Python API](api.md) |
 
 ## Uporabite CLI, ko
 
-Izberite CLI, kadar oseba ali CI opravilo izvaja prevajanje repozitorija iz ukazne vrstice.
+Izberite CLI, kadar oseba ali CI opravilo vodi prevajanje repozitorija iz ukazne vrstice.
 
-CLI je najdirektnejša pot, kadar želite, da Co-op Translator odkrije datoteke projekta, ustvari prevedene izhode, ohrani postavitev projekta, posodobi metapodatke in izvede ukaze za pregled.
+CLI je najbolj neposredna pot, kadar želite, da Co-op Translator poišče projektne datoteke, ustvari prevedene izhode, ohrani postavitev projekta, posodobi metapodatke in izvede ukaze za pregled.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
-Primerno za:
+Ta primer prevaja Markdown in zvezke. Dodajte `-img` šele po konfiguraciji [Azure AI Vision](configuration.md#azure-ai-vision). Za prvi zagon samo z Markdown sledite [Vašemu prvemu prevodu](first-translation.md).
 
-- Prev
-ajate repozitorij iz terminala.
-- Želite ponovljiv ukaz za CI ali poteke izdaj.
+Primerna uporaba:
+
+- Prevajate repozitorij iz ukazne vrstice.
+- Želite ponovljiv ukaz za CI ali poteke izdaje.
 - Želite vgrajeno odkrivanje projektov, izhodne poti, metapodatke, čiščenje in pregled.
-- Raje uporabljate ukazni vmesnik, namesto pisanja Python kode.
+- Raje imate ukazni vmesnik kot pisanje Python kode.
 
 ## Uporabite Python API, ko
 
-Izberite Python API, kadar naj vaš lasten program nadzoruje potek dela.
+Izberite Python API, kadar naj potek dela nadzoruje vaša koda.
 
-API je uporaben za aplikacije, avtomatizirane skripte, zvezke, storitve in prilagojene poteke. Omogoča klic nizkonivojskih API-jev za prevajanje vsebine za posamezne datoteke ali izvajanje iste orkestracije na ravni repozitorija, ki jo uporablja CLI.
+API je uporaben za aplikacije, avtomatizirane skripte, zvezke, storitve in prilagojene cevovode (pipelines). Omogoča klic nizkonivojskih API-jev za prevajanje vsebine za posamezne datoteke ali izvajanje iste orkestracije na ravni repozitorija, kot jo uporablja CLI.
 
 Prevedite en Markdown dokument in se odločite, kam ga shraniti:
 
@@ -76,54 +79,47 @@ asyncio.run(main())
 Zaženite prevajanje repozitorija iz Pythona:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
-Primerno za:
+Primerna uporaba:
 
-- Vaša aplikacija že bere datoteke, medpomnilnike, zvezke ali bajtne vsebine slik.
+- Vaša aplikacija že bere datoteke, medpomnilnike, zvezke ali bajte slik.
 - Potrebujete prilagojeno validacijo, shranjevanje, beleženje, ponovitve ali postopke odobritve.
-- Želite prevesti en dokument, zvezek ali sliko, brez obdelave celotnega repozitorija.
-- Želite prevajanje repozitorija, vendar iz Python avtomatizacije namesto ukaza v lupini.
+- Želite prevesti en dokument, zvezek ali sliko, ne da bi obdelali celoten repozitorij.
+- Želite prevajanje repozitorija, vendar iz Pythona (avtomatizacija) namesto prek ukazne vrstice.
 
 ## Uporabite MCP strežnik, ko
 
-Izberite MCP strežnik, kadar mora agent, urejevalnik ali MCP-kompatibilen odjemalec klicati orodja Co-op Translatorja.
+Izberite MCP strežnik, kadar naj agent, urejevalnik ali MCP-kompatibilen odjemalec kliče orodja Co-op Translatorja.
 
-V običajni lokalni namestitvi uporabnik strežnika ne poganja ročno. MCP odjemalec zažene `co-op-translator-mcp` prek `stdio`, ko potrebuje orodja.
+V običajni lokalni postavitvi uporabnik strežnika ne pusti stalno zagnanega. MCP odjemalec zažene `co-op-translator-mcp` prek `stdio`, ko potrebuje orodja.
 
-Primeri uporabniških zahtev, ki jih lahko agent obdela:
+Primeri zahtev uporabnika, ki bi jih lahko obdelal agent:
 
-- "Prevedite to Markdown datoteko v korejščino in ohranite pravilne povezave."
-- "Prevedite to Markdown datoteko v korejščino z delovnim tokom MCP, ki ga pomaga agent, in uporabite vaš lasten model za prevedene dele."
-- "Prevedite ta zvezek v korejščino, ohranite celice s kodo in uporabite Co-op Translator MCP za ponovno sestavljanje zvezka."
+- "Prevedite to Markdown datoteko v korejščino in poskrbite, da bodo povezave pravilne."
+- "Prevedite to Markdown datoteko v korejščino z agentom podprtim MCP delovnim tokom in uporabite svoj model za prevedene koščke."
+- "Prevedite ta zvezek v korejščino, ohranite celice s kodo in uporabite Co-op Translator MCP za obnovo zvezka."
 - "Prevedite besedilo na tej sliki v japonščino in shranite rezultat."
 - "Naredite suhi zagon prevajanja repozitorija v španščino in povejte, kaj bi se spremenilo."
-- "Preverite, ali je izhod korejskega prevoda posodobljen."
+- "Preverite, ali je korejski prevod ažuren."
 
 Za Markdown in zvezke lahko MCP deluje v dveh načinih:
 
-| Mode | Use when | Main tools |
+| Način | Uporabite, kadar | Glavna orodja |
 | --- | --- | --- |
-| Agent-assisted | The MCP host agent should translate chunks with its own model, without Co-op Translator LLM provider credentials. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Provider-backed | Co-op Translator should call Azure OpenAI or OpenAI directly. | `translate_markdown_content`, `translate_notebook_content` |
+| S pomočjo agenta | Ko naj gostiteljski agent MCP prevede koščke z lastnim modelom, brez poverilnic LLM ponudnika Co-op Translator. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Podprto s strani ponudnika | Co-op Translator naj neposredno kliče Azure OpenAI, OpenAI ali Anthropic. | `translate_markdown_content`, `translate_notebook_content` |
 
-MCP provider-backed Markdown tool call shape:
+Oblika klica orodja MCP za Markdown pri podpori ponudnika:
 
 ```json
 {
@@ -138,7 +134,7 @@ MCP provider-backed Markdown tool call shape:
 }
 ```
 
-MCP image tool call shape:
+MCP oblika klica orodja za slike:
 
 ```json
 {
@@ -166,16 +162,16 @@ Prevajanje repozitorija je privzeto izvedeno kot suhi zagon preko MCP:
 }
 ```
 
-Primerno za:
+Primerna uporaba:
 
-- Želite poteke prevajanja v naravnem jeziku znotraj agenta ali urejevalnika.
-- Želite prevajanje Markdowna ali zvezkov, kjer gostiteljski agentni model prevaja pripravljene kose.
+- Želite prevajalske poteke dela v naravnem jeziku znotraj agenta ali urejevalnika.
+- Želite prevajanje Markdowna ali zvezkov, kjer model gostiteljskega agenta prevaja pripravljene koščke.
 - Želite, da agent prevede izbrano vsebino namesto celotnega repozitorija.
-- Želite korak odobritve pred pisanjem po celotnem repozitoriju.
-- Želite en vmesnik, ki ponuja orodja za Markdown, zvezke, slike, pregled in prepisovanje poti.
+- Želite korak odobritve pred pisanjem v celoten repozitorij.
+- Želite en vmesnik, ki nudi orodja za Markdown, zvezke, slike, pregled in prepisovanje poti.
 
-## Kako se povezujejo
+## Kako se ujemajo
 
-CLI je najboljša privzeta izbira za ljudi, ki prevajajo repozitorije. Python API je najboljši, ko vaša koda upravlja potek dela. MCP strežnik je najboljši, ko agent ali urejevalnik upravlja potek dela.
+CLI je najboljša privzeta izbira za ljudi, ki prevajajo repozitorije. Python API je najboljši, kadar vaša koda nadzoruje potek dela. MCP strežnik je najboljši, kadar potek dela nadzoruje agent ali urejevalnik.
 
-Vse tri poti uporabljajo isti javni Co-op Translator API, zato lahko začnete z CLI, kasneje avtomatizirate z Pythonom in iste zmožnosti izpostavite MCP odjemalcem, kadar potrebujete poteke dela, ki jih poganjajo agenti.
+Vse tri poti uporabljajo isti javni Co-op Translator API, zato lahko začnete s CLI, pozneje avtomatizirate s Pythonom in iste zmogljivosti ponudite MCP odjemalcem, ko potrebujete poteke, ki jih vodijo agenti.

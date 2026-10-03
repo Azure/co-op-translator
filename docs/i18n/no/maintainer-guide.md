@@ -1,6 +1,6 @@
-# Vedlikeholderveiledning
+# Vedlikeholderguide
 
-Denne siden oppsummerer hvordan API-en, CLI-en og dokumentasjonsnettstedet er koblet sammen.
+Denne siden oppsummerer hvordan API-et, CLI-en og dokumentasjonsnettstedet er koblet sammen.
 
 ## Offentlig API-grense
 
@@ -10,13 +10,16 @@ Den stabile Python-API-en eksporteres fra:
 co_op_translator.api
 ```
 
-Den offentlige API-en er organisert i hjelpefunksjoner for innholdsoversettelse, hjelpefunksjoner for sti-omskriving, prosjektorkestrering og gjennomgang:
+Det offentlige API-et er organisert i hjelpefunksjoner for innholdsoversettelse, hjelpefunksjoner for sti-omskriving, prosjektorkestrering og gjennomgang:
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,15 +31,19 @@ from co_op_translator.api import (
 )
 ```
 
+`TranslationStateProvider` er persistensgrensen for hostede integrasjoner.
+Den må holde genererte kandidater adskilt fra aksepterte baselines slik at en
+ikke-sammenslått oversettelse ikke kan bli sannhetskilden.
+
 Når du legger til nye offentlige API-er, oppdater:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
-- relevante API-tester under `tests/co_op_translator/`, slik som `test_api.py` eller `test_review_api.py`
+- relevant API tests under `tests/co_op_translator/`, such as `test_api.py` or `test_review_api.py`
 
-Unngå å dokumentere lavnivås `core`-moduler som stabilt API med mindre prosjektet har til hensikt å støtte dem direkte.
+Unngå å dokumentere lavnivå `core`-moduler som stabilt API med mindre prosjektet har til hensikt å støtte dem direkte.
 
-## CLI inngangspunkter
+## CLI-inngangspunkter
 
 Pakken definerer disse Poetry-skriptene:
 
@@ -49,7 +56,7 @@ co-op-review = "co_op_translator.__main__:main"
 co-op-translator-mcp = "co_op_translator.mcp.server:main"
 ```
 
-`src/co_op_translator/__main__.py` ruter etter skriptnavn:
+`src/co_op_translator/__main__.py` videresender basert på skriptnavn:
 
 - `translate` kaller `co_op_translator.cli.translate.translate_command`
 - `evaluate` kaller `co_op_translator.cli.evaluate.evaluate_command`
@@ -62,7 +69,7 @@ Når du legger til eller endrer CLI-alternativer, oppdater:
 
 - den relevante `src/co_op_translator/cli/*.py`-kommandoen
 - `docs/cli.md`
-- CLI-relaterte tester, hvis atferd endres
+- CLI-relaterte tester, hvis atferden endres
 
 ## MCP-server
 
@@ -72,60 +79,60 @@ MCP-serveren er implementert i:
 co_op_translator.mcp.server
 ```
 
-Serveren pakker bevisst inn den offentlige Python-API-en i stedet for å kalle lavnivås `core`-moduler. Hold denne grensen intakt slik at MCP-klienter, Python-kallere og CLI-en deler samme oppførsel.
+Serveren pakker bevisst inn det offentlige Python-API-et i stedet for å kalle lavnivå `core`-moduler. Behold denne grensen slik at MCP-klienter, Python-kallere og CLI-en deler samme oppførsel.
 
 Når du legger til eller endrer MCP-verktøy, oppdater:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
-- `docs/api.md` hvis den offentlige API-flaten endres
+- `docs/api.md` hvis den offentlige API-overflaten endres
 
-Repository-oversettelsesverktøy er modell-kallbare gjennom MCP og kan skrive mange filer. Hold `dry_run=True` som standard og krev `confirm_write=True` før prosjektoversettelse uten dry-run.
+Repository-oversettelsesverktøy kan kalles av modellen via MCP og kan skrive mange filer. Hold `dry_run=True` som standard og krev `confirm_write=True` før prosjektoversettelse uten dry_run.
 
 ## Oversettelsesflyt
 
 Den overordnede prosjektoversettelsesflyten er:
 
-1. Analyser CLI-argumenter eller API-parametere.
+1. Parse CLI-argumenter eller API-parametre.
 2. Valider LLM-konfigurasjon med `LLMConfig`.
 3. Valider Azure AI Vision når bildeoversettelse er valgt.
 4. Normaliser språkkoder.
-5. Oppdag eldre alias for språkmapper.
-6. Estimer oversettelsesvolum.
-7. Oppdater README-språk/kursseksjoner når aktuelt.
-8. Deleger prosjektoversettelse til `ProjectTranslator`.
+5. Oppdag eldre aliaser for språkmapper.
+6. Estimer oversettelsesvolumet.
+7. Oppdater README-språk- og kursseksjoner når det er aktuelt.
+8. Deleger prosjektoversettelsen til `ProjectTranslator`.
 9. `ProjectTranslator` delegerer filbehandling til `TranslationManager`.
 
-`TranslationManager` er sammensatt av fokuserte filtype-mixins:
+`TranslationManager` er satt sammen av fokuserte mixins for filtyper:
 
 - `ProjectMarkdownTranslationMixin` håndterer lesing av Markdown-filer, innholdsoversettelse, sti-omskriving, metadata, ansvarsfraskrivelser og skriving.
-- `ProjectNotebookTranslationMixin` håndterer notatbokfil-lesing, Markdown-celle-oversettelse, sti-omskriving, metadata, ansvarsfraskrivelser og skriving.
-- `ProjectImageTranslationMixin` håndterer bildeoppdagelse, tekstekstraksjon/oversettelse, rendrede bildefiler og metadata.
+- `ProjectNotebookTranslationMixin` håndterer lesing av notatbokfiler, oversettelse av Markdown-celler, sti-omskriving, metadata, ansvarsfraskrivelser og skriving.
+- `ProjectImageTranslationMixin` håndterer bildeoppdagelse, tekstuttrekk/oversettelse, skriving av rendrerte bilder og metadata.
 
-De lavere nivå innholds-API-ene hopper over prosjektarbeidsflyten:
+De lavnivå innholds-API-ene hopper over prosjektarbeidsflyten:
 
-1. `translate_markdown_content` og `translate_notebook_content` oversetter bare innhold i minnet.
-2. `translate_image_content` oversetter tekst i ett enkelt bilde og returnerer et rendret bildeobjekt.
+1. `translate_markdown_content` og `translate_notebook_content` oversetter kun innhold i minnet.
+2. `translate_image_content` oversetter tekst i et enkelt bilde og returnerer et rendrert bildeobjekt.
 3. `rewrite_markdown_paths` og `rewrite_notebook_paths` er eksplisitte etterbehandlingshjelpere. De utfører ingen oversettelse og ingen prosjekt-skrivinger.
 
 ## Gjennomgangsflyt
 
 Den deterministiske gjennomgangsflyten er:
 
-1. Analyser CLI-argumenter eller API-parametere.
+1. Parse CLI-argumenter eller API-parametre.
 2. Normaliser forespurte språkkoder.
 3. Bygg ett eller flere gjennomgangsmål fra `root_dir`, `root_dirs`, eller `groups`.
-4. Valgfritt begrens kildefiler med `--changed-from`.
-5. Kjør deterministiske sjekker for struktur, oversettelsesaktualitet, Markdown-integritet og lokale lenke-/bildestier.
+4. Valgfritt: begrens kildefiler med `--changed-from`.
+5. Kjør deterministiske kontroller for struktur, oversettelsenes ferskhet, Markdown-integritet og lokale lenke-/bildefilstier.
 6. Skriv ut enten tekstutdata eller GitHub-flavored Markdown.
-7. Avslutt med feil når gjennomgangsfeil blir funnet.
+7. Avslutt med en feilkode når gjennomgangsfeil oppdages.
 
-Gjennomgangsflyten krever ikke API-nøkler og bør forbli egnet for pull request CI. Pull request-arbeidsflyten skriver en sjekksammendrag ved hver kjøring og legger kun ut en PR-kommentar når `co-op-review` feiler.
+Gjennomgangsfloden krever ikke API-nøkler og er fortsatt tilgjengelig for lokale kontroller eller opt-in forbruker-CI. Dette depotet kjører ikke `co-op-review` automatisk på hver pull request.
 
 ## Dokumentasjonsnettsted
 
-Dokumentasjonssiden er konfigurert av:
+Dokumentasjonsnettstedet konfigureres av:
 
 ```text
 mkdocs.yml
@@ -133,7 +140,7 @@ requirements-docs.txt
 docs/
 ```
 
-`docs/`-katalogen er den kanoniske dokumentasjonskilden. Ikke legg til nye brukerveiledninger utenfor denne katalogen med mindre prosjektet bevisst introduserer et annet publisert dokumentasjonsområde.
+Katalogen `docs/` er den kanoniske dokumentasjonskilden. Ikke legg til nye brukerveiledninger utenfor denne katalogen med mindre prosjektet med hensikt introduserer en annen publisert dokumentasjonsflate.
 
 Bygg lokalt:
 
@@ -152,7 +159,7 @@ Det genererte nettstedet skrives til `site/`, som er ignorert av git.
 
 ## GitHub Pages-arbeidsflyt
 
-`.github/workflows/docs.yml` bygger nettstedet på pull requests og distribuerer det ved push til `main`.
+`.github/workflows/docs.yml` bygger nettstedet ved pull requests og distribuerer det ved push til `main`.
 
 Arbeidsflyten installerer:
 
@@ -160,7 +167,7 @@ Arbeidsflyten installerer:
 pip install -r requirements-docs.txt
 ```
 
-Dokumentasjonsarbeidsflyten installerer kun dokumentasjonsverktøykjeden. `mkdocs.yml` peker `mkdocstrings` mot `src/` slik at offentlige API-sider kan rendres fra kildetreet uten å installere hele runtime-avhengighetssettet. Hvis fremtidige API-dokumenter krever import av valgfrie runtime-leverandører under byggingen, oppdater både `.github/workflows/docs.yml` og denne veiledningen samtidig.
+Dokumentasjonsarbeidsflyten installerer bare dokumentasjonsverktøykjeden. `mkdocs.yml` peker `mkdocstrings` mot `src/` slik at offentlige API-sider kan rendres fra kildetreet uten å installere hele settet av runtime-avhengigheter. Hvis fremtidige API-dokumenter krever import av valgfrie runtime-leverandører under bygging, oppdater både `.github/workflows/docs.yml` og denne guiden samtidig.
 
 ## Kvalitetskrav for dokumentasjon
 
@@ -171,4 +178,4 @@ python -m mkdocs build --strict
 git diff --check
 ```
 
-Bruk strenge bygg slik at ødelagte lenker, ugyldige navigasjonsoppføringer og problemer med API-rendering feiler tidlig.
+Bruk strenge bygg slik at brutte lenker, ugyldige navigasjonsoppføringer og problemer med API-rendering feiler tidlig.

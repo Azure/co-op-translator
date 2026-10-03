@@ -8,33 +8,45 @@ Co-op Translator ഈ കമാൻഡ്-ലൈൻ എൻട്രി പോയ�
 - `co-op-review`
 - `co-op-translator-mcp`
 
-`translate`, `evaluate`, `migrate-links`, και `co-op-review` കമാൻഡുകൾ `co_op_translator.__main__` വഴി ഡിസ്പാച്ച് ചെയ്യപ്പെടുന്നു, ഇത് വിളിച്ച സ്ക്രിപ്റ്റ് പേരിന്റെ അടിസ്ഥാനത്തിൽ കമാൻഡ് ഇംപ്ലിമെന്റേഷൻ തെരഞ്ഞെടുത്ത് 실행 ചെയ്യും. MCP സർവർ `co_op_translator.mcp.server` നേരിട്ട് ഉപയോഗിക്കുന്നു.
+`translate`, `evaluate`, `migrate-links`,`co-op-review` കമാൻഡുകൾ ഇൻവോക്ക് ചെയ്ത സ്ക്രിപ്റ്റ് നാമത്തിന്റെ അടിസ്ഥാനത്തിൽ കമാൻഡ് ഇംപ്ലിമെന്റേഷൻ തിരഞ്ഞെടുക്കുന്ന `co_op_translator.__main__` വഴി റൺ ചെയ്തു ലഭ്യമാക്കുന്നു. MCP സെർവർ നേരിട്ടാണ് `co_op_translator.mcp.server` ഉപയോഗിക്കുന്നത്.
 
-CLI, Python API, ഉം MCP ഉം തമ്മിൽ തിരഞ്ഞെടുക്കുന്നതിൽ നിങ്ങൾ തീരുമാനമെടുക്കുകയാണെങ്കിൽ, [നിങ്ങളുടെ വർക്‌ഫ്ലോ തിരഞ്ഞെടുക്കുക](workflows.md) എന്നതിലേയ്ക്ക് ആരംഭിക്കുക.
+CLI, Python API, MCP എന്നിവയിൽ തിരഞ്ഞെടുക്കേണ്ടതുണ്ടെങ്കിൽ [നിങ്ങളുടെ പ്രവൃത്തി രീതിയെ തിരഞ്ഞെടുക്കുക](workflows.md) മുതൽ തുടങ്ങുക.
 
-## ആദ്യമായി CLI ഉപയോഗിക്കുന്നവരുടേത്
+## കൺസോൾ ഔട്ട്‌പുട്ട്
 
-ടെർമിനലിൽനിന്ന് Co-op Translator ഉപയോഗിക്കുന്നവരോ തുടങ്ങുക:
+ഇന്ററാക്ടീവ് ടെർമിനലുകൾ കമാൻഡ് ഹെഡർ, പുരോഗതി, സംക്ഷേപങ്ങൾ എന്നിവയ്ക്ക് Rich ഫോർമാറ്റിംഗ് ഉപയോഗിക്കുന്നു. CI-യും നോൺ-ഇന്ററാക്ടീവ് ഔട്ട്പുട്ടും സ്വയമായാണ് പ്ലെയിൻ ടെക്സ്റ്റിലേക്ക് തിരിച്ചുകേൾക്കുക.
 
-1. [Configuration](configuration.md) ൽ വിശദീകരിച്ചിട്ടുള്ളതുപോലെ ഒരു LLM_PROVIDER കോൺഫിഗർ ചെയ്യുക.
-2. നിങ്ങൾ വിവർത്തനം ചെയ്യാൻ ആഗ്രഹിക്കുന്ന ഉള്ളടക്ക തരം തിരഞ്ഞെടുക്കുക.
-3. ആദ്യം ഫോകസഡ് കമാൻഡ് ஓന്ന് നടത്തുക, ഉദാഹരണത്തിന് Markdown-മാത്രം വിവർത്തനം.
-4. വലിയ റപ്പോസിറ്ററി മാറ്റങ്ങൾക്ക് മുമ്പ് `--dry-run` ഉപയോഗിക്കുക.
-5. ഘടനയും പുതുതലയും പരിശോധിക്കാൻ വിവർത്തനത്തിനുശേഷം `co-op-review` ഉപയോഗിക്കുക.
+പ്ലെയിൻ ഔട്ട്പുട്ട് നിർബന്ധിപ്പിക്കാൻ `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` സെറ്റ് ചെയ്യുക, അല്ലെങ്കിൽ Rich ഔട്ട്പുട്ട് നിർബന്ധിപ്പിക്കാൻ `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` സെറ്റ് ചെയ്യുക. ലൈവ് പുരോഗതി ബാറുകൾ മൂടിക്കളയുമ്പോഴും സംക്ഷേപങ്ങൾ സൂക്ഷിക്കാൻ `CO_OP_TRANSLATOR_NO_PROGRESS=1` സെറ്റ് ചെയ്യുക.
 
-| ലക്ഷ്യം | ആരംഭിക്കാൻ കമാൻഡ് |
+മറ്റൊരു സിസ്റ്റത്തിന് ആവശ്യമായപ്പോൾ `translate --json-events progress.ndjson` ഉപയോഗിക്കുക
+മെഷീൻ-വായിക്കാവുന്ന പുരോഗതി. CLI മനുഷ്യൻ-നോക്കിയ ഔട്ട്പുട്ട് തുടരെയും പ്രദർശിപ്പിക്കും, അതേസമയം
+NDJSON ഫയൽ പതിപ്പുചെയ്ത `co-op.translation.event.v1` ഇവന്റുകൾ സ്വീകരിക്കും, അവയുമായി
+നിശ്ചിത ഫീൽഡുകൾ ഉൾപ്പെടുന്നു, ഉദാഹരണത്തിന് `type`, `stage_key`, `completed`, `total`, എന്നിവയും
+`current_path`.
+
+## ആദ്യവട്ട CLI പ്രവാഹം
+
+ടെർമിനലിൽ നിന്നാണ് Co-op Translator ഉപയോഗിക്കുന്നത് എങ്കിൽ ഇവിടെ നിന്ന് തുടങ്ങുക:
+
+1. [ക്രമീകരണം](configuration.md) ൽ വിവരിച്ചിരിക്കുന്നതുപോലെ ഒരു LLM പ്രൊവൈഡർ കോൺഫിഗർ ചെയ്യുക.
+2. നിങ്ങൾക്കായി പരിഭാഷപ്പെടുത്താൻ ഉള്ള ഉള്ളടക്ക തരം തിരഞ്ഞെടുക്കുക.
+3. ആദ്യം ഫോകസഡ് കമാൻഡ് റൺ ചെയ്യുക, ഉദാഹരണത്തിന് Markdown-മാത്രം പരിഭാഷ.
+4. വലിയ റിപ്പോസിറ്ററി മാറ്റങ്ങൾക്ക് മുൻപ് `--dry-run` ഉപയോഗിക്കുക.
+5. പരിഭാഷയ്ക്ക് ശേഷം ഘടനയും അത് അപ് ടു ഡേറ്റ് ആണോ എന്നതും പരിശോധിക്കാൻ `co-op-review` ഉപയോഗിക്കുക.
+
+| ലക്ഷ്യം | ആരംഭിക്കാൻ ഉപയോഗിക്കുന്ന കമാൻഡ് |
 | --- | --- |
-| Translate Markdown documents | `translate -l "ko" -md` |
-| Translate notebooks | `translate -l "ko" -nb` |
-| Translate image text | `translate -l "ko" -img` |
-| Preview work without writing files | `translate -l "ko" -md --dry-run` |
-| Review existing translations | `co-op-review -l "ko"` |
-| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
-| Expose tools to an MCP client | CLI കമാൻഡുകൾ നേരിട്ട് പതിയ്ക്കുന്നതിനായി [MCP Server](mcp.md) കോൺഫിഗർ ചെയ്യുക. |
+| Markdown ഡോക്യുമെന്റുകൾ പരിഭാഷപ്പെടുത്തുക | `translate -l "ko" -md` |
+| നോട്ട്ബുക്കുകൾ പരിഭാഷപ്പെടുത്തുക | `translate -l "ko" -nb` |
+| ഇമേജ് ടെക്സ്റ്റ് പരിഭാഷപ്പെടുത്തുക | `translate -l "ko" -img` |
+| ഫയലുകൾ എഴുതാതെ പ്രവൃത്തി പ്രിവ്യൂ ചെയ്യുക | `translate -l "ko" -md --dry-run` |
+| നിലവിലുള്ള പരിഭാഷകൾ പരിശോധിക്കുക | `co-op-review -l "ko"` |
+| നോട്ട്ബുക്ക് மற்றும் Markdown ലിങ്കുകൾ അപ്‌ഡേറ്റ് ചെയ്യുക | `migrate-links -l "ko" --dry-run` |
+| MCP ക്ലയന്റിന് ടൂളുകൾ ലഭ്യമാക്കുക | CLI കമാൻഡുകൾ നേരിട്ട് റൺ ചെയ്യുന്നതിന് പകരം [MCP Server](mcp.md) കോൺഫിഗർ ചെയ്യുക. |
 
 ## translate
 
-Markdown ഫയലുകൾ, നോട്ട്‌ബുക്കുകൾ, ഇമേജ് ടെക്സ്റ്റ് ഒന്നോ അതിൽ കൂടുതൽ ലക്ഷ്യംഭാഷകളിലേക്കോ വിവർത്തനം ചെയ്യുക.
+Markdown ഫയലുകൾ, നോട്ട്ബുക്കുകൾ, ചിത്രത്തിലെ ടെക്സ്റ്റ് എന്നിവ ഒരു അല്ലെങ്കിൽ複数 ലക്ഷ്യഭാഷകളിലേക്ക് പരിഭാഷപ്പെടുത്തുക.
 
 ```bash
 translate -l "ko ja fr"
@@ -42,31 +54,31 @@ translate -l "ko ja fr"
 
 ### സാധാരണ ഉദാഹരണങ്ങൾ
 
-Markdown മാത്രം വിവർത്തനം ചെയ്യുക:
+Markdown മാത്രം പരിഭാഷ ചെയ്യുക:
 
 ```bash
 translate -l "de" -md
 ```
 
-നോട്ട്‌ബുക്കുകൾ മാത്രം വിവർത്തനം ചെയ്യുക:
+നോട്ട്ബുക്കുകൾ മാത്രം പരിഭാഷ ചെയ്യുക:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Markdown and images కలిసి വിവർത്തനം ചെയ്യുക:
+Markdown-വും ഇമേജുകളുമുണ്ടെങ്കിൽ പരിഭാഷ ചെയ്യുക:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-ഉളളതിരിച്ചെടുത്ത വിവർത്തനങ്ങൾ ഇല്ലാതാക്കി വീണ്ടും സൃഷ്‌ടിച്ച് നിലവിലുള്ള വിവർത്തനങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുക:
+നിലവിലുള്ള പരിഭാഷകൾ നീക്കം ചെയ്ത് വീണ്ടും സൃഷ്ടിച്ച് അപ്ഡേറ്റ് ചെയ്യുക:
 
 ```bash
 translate -l "ko" -u
 ```
 
-ഇന്ററാക്ടീവ് പ്രോംപ്റ്റുകൾ ഇല്ലാതെ 실행 ചെയ്യുക:
+ഇന്ററാക്ടീവ് പ്രോംപ്റ്റുകൾ ഇല്ലാതെ റൺ ചെയ്യുക:
 
 ```bash
 translate -l "ko ja" -md -y
@@ -78,35 +90,42 @@ translate -l "ko ja" -md -y
 translate -l "ko" -s
 ```
 
+ഘടിത പുരോഗതി ഇവന്റുകൾ എഴുതുക:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
 ### ഓപ്ഷനുകൾ
 
-| Option | Required | Description |
+| ഓപ്ഷൻ | ആവശ്യമാണ് | വിവരണം |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Space-separated language codes, such as `"es fr de"`, or `"all"`. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `-u`, `--update` | No | Delete existing translations for selected languages and recreate them. |
-| `-img`, `--images` | No | Translate only image files. |
-| `-md`, `--markdown` | No | Translate only Markdown files. |
-| `-nb`, `--notebook` | No | Translate only Jupyter notebook files. |
-| `-d`, `--debug` | No | Enable debug logging in the console. |
-| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-x`, `--fix` | No | Retranslate low-confidence Markdown files based on previous evaluation results. |
-| `-c`, `--min-confidence` | No | Confidence threshold for `--fix`. Defaults to `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | No | Add or suppress machine translation disclaimers. Defaults to enabled in the CLI. |
-| `-f`, `--fast` | No | Deprecated fast image mode. |
-| `-y`, `--yes` | No | Auto-confirm prompts, useful in CI. |
-| `--repo-url` | No | Repository URL used in the README languages table sparse-checkout advisory. |
-| `--migrate-language-folders` | No | Rename legacy alias folders, such as `cn` or `tw`, to canonical BCP 47 folders. |
-| `--dry-run` | No | Preview language folder migration and translation estimates without writing files. |
+| `-l`, `--language-codes` | ആവശ്യമാണ് | സ്പേസ്-വൈസ് വേർതിരിച്ച ഭാഷാ കോഡുകൾ, ഉദാഹരണത്തിന് `"es fr de"`, അല്ലെങ്കിൽ `"all"`. |
+| `-r`, `--root-dir` | ഇല്ല | പ്രോജക്റ്റ് റൂട്ടു. ഡീഫോൾട്ട് നിലവിലെ ഡയറക്ടറിയാണ്. |
+| `-u`, `--update` | ഇല്ല | തിരഞ്ഞെടുത്ത ഭാഷകളുടെ നിലവിലുള്ള പരിഭാഷകൾ നീക്കം ചെയ്ത് വീണ്ടും സൃഷ്ടിക്കുന്നു. |
+| `-img`, `--images` | ഇല്ല | ഇമേജ് ഫയലുകൾ മാത്രമേ പരിഭാഷ ചെയ്യൂ. |
+| `-md`, `--markdown` | ഇല്ല | Markdown ഫയലുകൾ മാത്രം പരിഭാഷ ചെയ്യുക. |
+| `-nb`, `--notebook` | ഇല്ല | Jupyter നോട്ട്ബുക്ക് ഫയലുകൾ മാത്രം പരിഭാഷ ചെയ്യുക. |
+| `-d`, `--debug` | ഇല്ല | കൺസോളിൽ ഡീബഗ് ലോഗിംഗ് സജ്ജമാക്കുക. |
+| `-s`, `--save-logs` | ഇല്ല | DEBUG-തലത്തിലുള്ള ലോഗുകൾ `<root-dir>/logs/`-ൽ സേവ് ചെയ്യുക. |
+| `--json-events` | இல்ல | മെഷീന്‍-വായിക്കാവുന്ന പരിഭാഷ പുരോഗതി ഇവന്റുകൾ NDJSON ആയി എഴുതുക. |
+| `-x`, `--fix` | ഇല്ല | മുമ്പ് നടത്തിയ മൂല്യനിർണ്ണയ ഫലങ്ങളുടെ അടിസ്ഥാനത്തിൽ കുറഞ്ഞ ആത്മവിശ്വാസമുള്ള Markdown ഫയലുകൾ വീണ്ടും പരിഭാഷചെയ്യുക. |
+| `-c`, `--min-confidence` | ഇല്ല | `--fix` നുവേണ്ടിയുള്ള ആത്മവിശ്വാസ പരിധി. ഡീഫോൾട്ട് `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | ഇല്ല | മെഷീൻ പരിഭാഷാ ഡിസ്ക്ലെയിമറുകൾ ചേർക്കാനും/ഒല്ലാതാക്കാനും. CLIയിൽ ഡീഫോൾട്ട് ആയി સജ്ജമാണ്. |
+| `-f`, `--fast` | ഇല്ല | ഡീപ്രിക്കേറ്റുചെയ്ത ഫാസ്റ്റ് ഇമേജ് മോഡ്. |
+| `-y`, `--yes` | ഇല്ല | പ്രോംപ്റ്റുകൾ സ്വയം സ്ഥിരീകരിക്കുക, CI-യിൽ പ്രയോജനപ്പെടുന്നു. |
+| `--repo-url` | ഇല്ല | README ഭാഷാ പട്ടികയിലെ sparse-checkout ഉപദേശംക്കായി ഉപയോഗിക്കുന്ന റിപ്പോസിറ്ററി URL. |
+| `--migrate-language-folders` | ഇല്ല | പാരമ്പര്യ അല്യാസ് ഫോൾഡറുകൾ (`cn`, `tw` തുടങ്ങിയവ) canonical BCP 47 ഫോൾഡറുകളായി പേർ മാറ്റുക. |
+| `--dry-run` | ഇല്ല | ഫയലുകൾ എഴുതാതെ ഭാഷ ഫോൾഡർ മൈഗ്രേഷൻയും പരിഭാഷാ കണക്കുകളും പ്രിവ്യൂ ചെയ്യുക. |
 
-ഓരോ തരം ഫ്ലാഗും നൽകാത്ത പക്ഷം, `translate` Markdown, നോട്ട്‌ബുക്ക്‌കൾ, ഇമേജുകൾ എല്ലാം പ്രോസസ്സ് ചെയ്യും. ഇമേജ് വിവർത്തനം Azure AI Vision കോൺഫിഗറേഷൻ ആവശ്യമാണ്.
+ടൈപ്പ് ഫ്ലാഗ് നൽകപ്പെടാത്ത പക്ഷം, `translate` Markdown, നോട്ട്ബുക്കുകൾ, ഇമേജുകൾ എന്നിവ پروസസ് ചെയ്യും. ഇമേജ് പരിഭാഷയ്ക്ക് Azure AI Vision കോൺഫിഗറേഷൻ ആവശ്യമുണ്ട്.
 
 ## evaluate
 
-ഒരു ഭാഷയ്ക്ക് വിവർത്തനമായ Markdown-ന്റെ ഗുണനിലവ് വിലയിരുത്തുക.
+ഒരു ഭാഷയ്ക്കുള്ള പരിഭാഷചെയ്ത Markdown-യുടെ ഗുണനിലവാരം മൂല്യനിർണ്ണയിക്കുക.
 
-!!! warning "Experimental"
-    `evaluate` പരീക്ഷണാത്മകമാണ്. ഇത് റൂൾ-ആധാരിതവും LLM-ആധാരിതവുമായ ഗുണനിലവാരം സംശോധനകൾ ഉപയോഗിക്കാൻ കഴിയും, വിലയിരുത്തൽ ഫലങ്ങൾ വിവർത്തന മെറ്റാഡാറ്റയിലേക്ക് എഴുതുന്നു, അതിന്റെ സ്കോറിംഗ് മോഡൽയും മെറ്റാഡാറ്റ പെരുമാറലും മാറാവുന്നതാണ്.
+!!! warning "പരീക്ഷണ ഘട്ടം"
+    `evaluate` പരീക്ഷണപരമാണ്. ഇത് നിയമാധിഷ്ഠിതവും LLM-ആധാരിതവുമായ ഗുണനിലവാര പരിശോധനകൾ ഉപയോഗിക്കാം, മൂല്യനിർണ്ണയ ഫലങ്ങൾ പരിഭാഷാ മെറ്റാഡേറ്റയിലേക്ക് എഴുതപ്പെടുകയും അതിന്റെ സ്കോറിംഗ് മോഡൽ, മെറ്റാഡേറ്റ പെരുമാറ്റം എന്നിവ മാറാവുന്നതായിരിക്കും.
 
 ```bash
 evaluate -l "ko"
@@ -114,19 +133,19 @@ evaluate -l "ko"
 
 ### സാധാരണ ഉദാഹരണങ്ങൾ
 
-കഠിനമായ കുറഞ്ഞ-ആത്മവിശ്വാസ പരിധി ഉപയോഗിക്കുക:
+കൂടുതൽ കഠിനമായ കുറഞ്ഞ-ആത്മവിശ്വാസ പരിധി ഉപയോഗിക്കുക:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-റൂൾ-ആധാരിത പരിശോധനകൾ മാത്രം നടത്തുക:
+നിയമാധിഷ്ഠിത പരിശോധനകൾ മാത്രം റൺ ചെയ്യുക:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-LLM-ആധാരിത പരിശോധനകൾ മാത്രം നടത്തുക:
+LLM-ആധാരിത പരിശോധനകൾ മാത്രം റൺ ചെയ്യുക:
 
 ```bash
 evaluate -l "ja" -D
@@ -134,24 +153,24 @@ evaluate -l "ja" -D
 
 ### ഓപ്ഷനുകൾ
 
-| Option | Required | Description |
+| ഓപ്ഷൻ | ആവശ്യമാണ് | വിവരണം |
 | --- | --- | --- |
-| `-l`, `--language-code` | Yes | Single language code to evaluate. Alias codes are normalized. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `-c`, `--min-confidence` | No | Threshold used when listing low-confidence translations. Defaults to `0.7`. |
-| `-d`, `--debug` | No | Enable debug logging. |
-| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-f`, `--fast` | No | Rule-based evaluation only. |
-| `-D`, `--deep` | No | LLM-based evaluation only. |
+| `-l`, `--language-code` | ആവശ്യമാണ് | മൂല്യനിർണ്ണയിക്കാൻ ഉപയോഗിക്കുന്ന ഒറ്റ ഭാഷാ കോഡ്. അല്യാസ് കോഡുകൾ സാധാരണരൂപത്തിലേക്ക് സ്വീകൃതമാക്കപ്പെടും. |
+| `-r`, `--root-dir` | ഇല്ല | പ്രോജക്റ്റ് റൂട്ടു. ഡീഫോൾട്ട് നിലവിലെ ഡയറക്ടറിയാണ്. |
+| `-c`, `--min-confidence` | ഇല്ല | കുറഞ്ഞ ആത്മവിശ്വാസമുള്ള പരിഭാഷകൾ ലിസ്റ്റ് ചെയ്യുമ്പോൾ ഉപയോഗിക്കുന്ന പരിധി. ഡീഫോൾട്ട് `0.7`. |
+| `-d`, `--debug` | ഇല്ല | ഡീബഗ് ലോഗിംഗ് സജ്ജമാക്കുക. |
+| `-s`, `--save-logs` | ഇല്ല | DEBUG-തലത്തിലുള്ള ലോഗുകൾ `<root-dir>/logs/`-ൽ സേവ് ചെയ്യുക. |
+| `-f`, `--fast` | ഇല്ല | നിയമാധിഷ്ഠിത മൂല്യനിർണ്ണയം മാത്രം. |
+| `-D`, `--deep` | ഇല്ല | LLM-ആധാരിത മൂല്യനിർണ്ണയം മാത്രം. |
 
-డിഫോൾട്ടായി, `evaluate` റൂൾ-ആധാരിതവും LLM-ആധാരിതവും രണ്ടു രീതികളും ഉപയോഗിക്കുന്നു. ഫലങ്ങൾ വിവർത്തന മെറ്റാഡാറ്റയിലേക്ക് എഴുതപ്പെടുകയും കൺസോളിൽ സംഗ്രഹിക്കപ്പെടുകയും ചെയ്യുന്നു.
+ഡീഫോൾട്ടായി, `evaluate` നിബന്ധനാധിഷ്ഠിതവും LLM-ആധാരിതവുമായ മൂല്യനിർണ്ണയവും രണ്ടും ഉപയോഗിക്കുന്നു. ഫലങ്ങൾ പരിഭാഷാ മെറ്റാഡേറ്റയിലേക്ക് എഴുതപ്പെടുകയും കൺസോളിൽ സംക്ഷേപമായി കാണിക്കപ്പെടുകയും ചെയ്യും.
 
 ## co-op-review
 
-API ക്രെഡൻഷ്യലുകൾ ഇല്ലാതെ детർമിനിസ്റ്റിക് വിവർത്തന പരിപാലന പരിശോധനകൾ ഓടിക്കുക.
+API ക്രെഡൻഷ്യലുകൾ വേണ്ടാതെ നിർണ്ണായകമായ പരിഭാഷ പരിപാലന പരിശോധനകൾ നടത്തുക.
 
-!!! note "Beta"
-    `co-op-review` ബീറ്റാ ഘട്ടത്തിലുള്ള ഒരു ഡീറ്റർമിനിസ്‌റ്റിക് റിവ്യൂ കമാൻഡാണ്. ഇത് മോഡൽ പ്രൊവൈഡർമാരെ വിളിക്കില്ല, ഫയലുകൾ എഴുത്തില്ല, എന്നാല്‍ അതിന്റെ ചെക്കുകളും പ്രശ്നങ്ങളുടെയും ഔട്ട്‌പുട്ട് സ്കീമയും മാറാം.
+!!! note "ബീറ്റ"
+    `co-op-review` ഒരു ബീറ്റാ നിർണ്ണായക റിവ്യൂ കമാൻഡാണ്. ഇത് മോഡൽ പ്രൊവൈഡറുകളെ വിളിക്കാറോ ഫയലുകൾ എഴുതാറോ ഇല്ല; പക്ഷേ അതിന്റെ പരിശോധനകളും പ്രശ്നങ്ങൾ പുറത്തുകൊണ്ടുവരുന്ന ഔട്ട്‌പുട്ട് സ്കീമയും വികസിക്കാവുന്നതാണ്.
 
 ```bash
 co-op-review -l "ko"
@@ -159,25 +178,37 @@ co-op-review -l "ko"
 
 ### സാധാരണ ഉദാഹരണങ്ങൾ
 
-നിലവിലെ ഡയറക്ടറിയിൽ നിന്ന് കൊറിയൻ և ജപ്പാനീസ് വിവർത്തനങ്ങൾ റിവ്യൂ ചെയ്യുക:
+നിലവിലെ ഡയറക്ടറിയിൽ നിന്ന് കൊറിയൻ மற்றும் ജാപ്പനീസ് പരിഭാഷകൾ പരിശോധിക്കുക:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-നിർദ്ദിഷ്ട പ്രോജക്ട് റൂട്ടിനെ റിവ്യൂ ചെയ്യുക:
+ഒരു പ്രത്യേക പ്രോജക്റ്റ് റൂട്ട് പരിശോധിക്കുക:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-ബേസ് റഫിന്‍െതിരെ മാറ്റപ്പെട്ട സോഴ്സ് ഫയലുകൾ മാത്രം റിവ്യൂ ചെയ്യുക:
+README-മാത്രമായ പരിഭാഷയ്ക്ക് ശേഷം README മാത്രം പരിശോധിക്കുക:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` മറ്റു ഡോക്യുമെന്റുകളും നെസ്റ്റഡ് README ഫയലുകളും അവഗണിക്കുന്നു. റൂട്ട്
+`README.md` ഇല്ലെങ്കിൽ ഇത് പരാജയപ്പെടും. `--changed-from` ചേർത്താൽ, അത് README മാത്രം
+അവലോകനം ചെയ്യുന്നു, ആ സോഴ്സ് ഫയൽ മാത്രം മാറ്റപ്പെട്ടിരിക്കുമ്പോളേ. README-മാത്രം പരിഭാഷ
+സ്രോതസ് README യെ മാറ്റമില്ലാതെയാവുന്നതാണ്, ഷെയർഡ്-സെക്ഷൻ മാർക്കറുകൾ ഉൾപ്പെടെ.
+
+ബേസ് റഫറുമായി താരതമ്യത്തിൽ മാറ്റം വന്ന സോഴ്‌സ് ഫയലുകൾ മാത്രം അവലോകനം ചെയ്യുക:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-CI സംഗ്രഹങ്ങൾക്കായി GitHub-ഫ്ലേവർഡ് Markdown ഔട്ട്പുട്ട് പ്രിന്റ് ചെയ്യുക:
+CI സംഗ്രഹങ്ങൾക്ക് GitHub-ഫ്ലേവർഡ് Markdown ഔട്ട്‌പുട്ട് പ്രിന്റ് ചെയ്യുക:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -185,34 +216,35 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 ### ഓപ്ഷനുകൾ
 
-| Option | Required | Description |
+| ഓപ്ഷൻ | ആവശ്യമാണ് | വിവരണം |
 | --- | --- | --- |
-| `-l`, `--language-code` | No | Language code to review. Can be passed multiple times or as a space-separated value. Defaults to all discovered translation languages. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `--changed-from` | No | Git ref used to limit review to changed source files. |
-| `--format` | No | Output format: `text` or `github`. Defaults to `text`. |
+| `-l`, `--language-code` | ഇല്ല | അവലോകനത്തിന് ഉള്ള ഭാഷാ കോഡ്. ഇത് പലതവണ നൽകുകയോ സ്പേസ്-വൈസ് മൂല്യമായി നൽകുകയോ ചെയ്യാവുന്നതാണ്. ഡീഫോൾട്ട് ആയി കണ്ടെത്തിയ എല്ലാ പരിഭാഷാ ഭാഷകളും തിരഞ്ഞെടുക്കപ്പെടും. |
+| `-r`, `--root-dir` | ഇല്ല | പ്രോജക്റ്റ് റൂട്ടു. ഡീഫോൾട്ട് നിലവിലെ ഡയറക്ടറിയാണ്. |
+| `--changed-from` | ഇല്ല | മാറ്റം വന്ന സോഴ്‌സ് ഫയലുകൾക്ക് മാത്രം അവലോകനം പരിധി നിശ്ചയിക്കാൻ ഉപയോഗിക്കുന്ന Git റഫറൻസ്. |
+| `--readme-only` | ഇല്ല | റൂട്ടിലെ `README.md` പരിഭാഷ മാത്രം അവലോകനം ചെയ്യുക. |
+| `--format` | ഇല്ല | ഔട്ട്‌പുട്ട് ഫോർമാറ്റ്: `text` അല്ലെങ്കിൽ `github`. ഡീഫോൾട്ട് `text`. |
 
-`co-op-review` നിലവിൽ കാണപ്പെടാത്ത വിവർത്തന ഫയലുകൾ, ഉണ്ടാക്കാത്തതോ പഴയതായ വിവർത്തന മെറ്റാഡാറ്റ, Markdown frontmatter-ഉം കോഡ് ഫെൻസ് സംരക്ഷണം, അസാധുവായ വിവർത്തന നോട്ട്‌ബുക്ക് JSON, ലോക്കൽ Markdown അല്ലെങ്കിൽ ഇമേജ് ലിങ്ക് ലക്ഷ്യങ്ങളുടെ കുറവ് എന്നിവ പരിശോധിക്കുന്നു. കുറവായ ലിങ്കുകൾ ഡീഫോൾട്ടായി മുന്നറിയിപ്പുകളാണ്; ഘടനാത്മകവും പുതുതല പ്രശ്നങ്ങളും കമാൻഡ് പരാജയപ്പെടുന്ന കാരണങ്ങളാണ്.
+`co-op-review` നിലവിൽ കണ്ടെത്തുന്ന പ്രശ്നങ്ങൾ: നഷ്ടമായ പരിഭാഷാ ഫയലുകൾ, ഇല്ലാത്തതോ പഴക്കം ചെന്നതോ ആയ പരിഭാഷാ മെറ്റാഡേറ്റ, Markdown ഫ്രൺട്മാറ്റർ/കോഡ് ഫെൻസ് സുസ്ഥിരത, അസാധുവായ പരിഭാഷചെയ്ത നോട്ട്ബുക്ക് JSON, കൂടാതെ മറഞ്ഞിരിക്കുന്ന ലോക്കൽ Markdown അല്ലെങ്കിൽ ഇമേജ് ലിങ്ക് ലക്ഷ്യങ്ങൾ. നഷ്ടമായ ലിങ്കുകൾ ഡീഫോൾട്ട് ആയി മുന്നറിയിപ്പുകളാണ്; ഘടനാത്മകവും അപ്‌ടു-ഡേറ്റ് അവസ്ഥ സംബന്ധിച്ച പ്രശ്നങ്ങൾ കമാൻഡിനെ പരാജയപ്പെടുത്തും.
 
 ## co-op-translator-mcp
 
-ഏജന്റുകൾക്കായി, എഡിറ്റർമാർക്കായി, MCP-സ്കോപ്പിലുള്ള ക്ലയന്റുകൾക്കായി Co-op Translator MCP സർവർ ഓടിക്കുക.
+ഏജന്റുകൾ, എഡിറ്റർമാർ, MCP-കോംപാറ്റിബിൾ ക്ലയന്റുകൾ എന്നിവക്ക് Co-op Translator MCP സർവറെ تشغيل ചെയ്യുക.
 
 ```bash
 co-op-translator-mcp
 ```
 
-ഡീഫോൾട്ട് ട്രാൻസ്പോർട്ട് `stdio` ആണ്. ക്ലയന്റ് കോൺഫിഗറേഷൻ, ടൂൾസ്, റിസോഴ്‌സുകൾ, സുരക്ഷാ കുറിപ്പുകൾ എന്നിവയ്ക്ക് [MCP Server](mcp.md) മാർഗനിർദ്ദേശം കാണുക.
+ഡീഫോൾട്ട് ട്രാൻസ്പോർട്ട് `stdio` ആണ്. ക്ലയന്റ് കോൺഫിഗറേഷൻ, ടൂൾസ്, റിസോഴ്‌സുകൾ, സുരക്ഷാ കുറിപ്പുകൾ എന്നിവയിലേക്ക് കാണാൻ [MCP Server](mcp.md) ഗൈഡ് പരിശോധിക്കുക.
 
 ### ഓപ്ഷനുകൾ
 
-| Option | Required | Description |
+| ഓപ്ഷൻ | ആവശ്യമാണ് | വിവരണം |
 | --- | --- | --- |
-| `--transport` | No | MCP transport: `stdio`, `streamable-http`, or `sse`. Defaults to `stdio`. |
+| `--transport` | ഇല്ല | MCP ട്രാൻസ്പോർട്ട്: `stdio`, `streamable-http`, അല്ലെങ്കിൽ `sse`. ഡീഫോൾട്ട് `stdio`. |
 
 ## migrate-links
 
-വിവർത്തനമാക്കിയ Markdown ഫയലുകൾ വീണ്ടും പ്രോസസ്സ് ചെയ്ത് നോട്ട്ബുക്ക് ലിങ്കുകൾ ലഭ്യമായാൽ വിവർത്തന നോട്ട്‌ബുക്കുകളിലേക്ക് പോയിന്റ് ചെയ്യുന്നതായി അപ്ഡേറ്റ് ചെയ്യുക.
+പരിഭാഷചെയ്ത Markdown ഫയലുകൾ വീണ്ടും പ്രോസസ് ചെയ്ത് നോട്ട്ബുക്ക് ലിങ്കുകൾ ലഭ്യമായെങ്കിൽ പരിഭാഷചെയ്ത നോട്ട്ബുക്കുകളിലേക്ക് സൂചിപ്പിക്കുന്നവിധം അപ്‌ഡേറ്റ് ചെയ്യുക.
 
 ```bash
 migrate-links -l "ko ja"
@@ -220,19 +252,19 @@ migrate-links -l "ko ja"
 
 ### സാധാരണ ഉദാഹരണങ്ങൾ
 
-ലിങ്ക് അപ്‌ഡേറ്റുകൾ മുന്നോട്ടുള്ക്ക് കാണുക:
+ലിങ്ക് അപ്‌ഡേറ്റുകൾ പ്രിവ്യൂ ചെയ്യുക:
 
 ```bash
 migrate-links -l "ko" --dry-run
 ```
 
-Confirm ഇല്ലാതെ എല്ലാ സപ്പോർട്ടഡ് ഭാഷകളും പ്രോസസ്സ് ചെയ്യുക:
+സ്ഥിരീകരണം ചോദിക്കാതെ 모든 പിന്തുണയുള്ള ഭാഷകൾ പ്രോസസ് ചെയ്യുക:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-വിവർത്തന നോട്ട്‌ബുക്കുകൾ മാത്രമേ ഉണ്ടായിരിക്കുമ്പോഴേ ലിങ്കുകൾ പുനഃലേഖനം ചെയ്യൂ:
+പരിഭാഷചെയ്ത നോട്ട്ബുക്കുകൾ ഉണ്ടായിരിക്കുമ്പോഴേ മാത്രം ലിങ്കുകൾ വീണ്ടും എഴുതുക:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
@@ -240,56 +272,60 @@ migrate-links -l "ko" --no-fallback-to-original
 
 ### ഓപ്ഷനുകൾ
 
-| Option | Required | Description |
+| ഓപ്ഷൻ | ആവശ്യമാണ് | വിവരണം |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Space-separated language codes, or `"all"`. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `--image-dir` | No | Translated image directory relative to the root. Defaults to `translated_images`. |
-| `--dry-run` | No | Show files that would change without writing updates. |
-| `--fallback-to-original`, `--no-fallback-to-original` | No | Use original notebook links when translated notebooks are missing. Enabled by default. |
-| `-d`, `--debug` | No | Enable debug logging. |
-| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-y`, `--yes` | No | Auto-confirm prompts when processing all languages. |
+| `-l`, `--language-codes` | ആവശ്യമാണ് | സ്പേസ്-വൈസ് വേർതിരിച്ച ഭാഷാ കോഡുകൾ, അല്ലെങ്കിൽ `"all"`. |
+| `-r`, `--root-dir` | ഇല്ല | പ്രോജക്റ്റ് റൂട്ടു. ഡീഫോൾട്ട് നിലവിലെ ഡയറക്ടറിയാണ്. |
+| `--image-dir` | ഇല്ല | റൂട്ടിനോട് അനുബന്ധമായ പരിഭാഷചെയ്ത ഇമേജ് ഡയറക്റ്ററി. ഡീഫോൾട്ട് `translated_images`. |
+| `--dry-run` | ഇല്ല | അപ്‌ഡേറ്റുകൾ എഴുതാതെ എന്തെല്ലാം ഫയലുകൾ മാറുമെന്നു കാണിക്കുക. |
+| `--fallback-to-original`, `--no-fallback-to-original` | ഇല്ല | പരിഭാഷചെയ്ത നോട്ട്ബുക്കുകൾ ലഭ്യമല്ലെങ്കിൽ ഓർജിനൽ നോട്ട്ബുക്ക് ലിങ്കുകൾ ഉപയോഗിക്കുക. ഇത് ഡീഫോൾട്ടായി സജീവമാണ്. |
+| `-d`, `--debug` | ഇല്ല | ഡീബഗ് ലോഗിംഗ് സജ്ജമാക്കുക. |
+| `-s`, `--save-logs` | ഇല്ല | DEBUG-തലത്തിലുള്ള ലോഗുകൾ `<root-dir>/logs/`-ൽ സേവ് ചെയ്യുക. |
+| `-y`, `--yes` | ഇല്ല | എല്ലാ ഭാഷകളും പ്രോസസ് ചെയ്യുമ്പോൾ പ്രോംപ്റ്റുകൾ സ്വയം സ്ഥിരീകരിക്കുക. |
 
-## Environment
+## പരിസ്ഥിതി
 
-എല്ലാ കമാൻഡുകളും ഒരു കോൺഫിഗർ ചെയ്ത LLM പ്രൊവൈഡർ ഒന്നിനെ ആവശ്യപ്പെടുന്നു:
+കമാൻഡ് പ്രൊവൈഡർ ക്രെഡൻഷ്യലുകൾ ആവശ്യപ്പെടുമ്പോൾ, ഈ പ്രൊവൈഡർ സെറ്റുകളിൽ ഒന്നിനെ കോൺഫിഗർ ചെയ്യുക. `translate --dry-run`ക്കും `co-op-review`ക്കും പ്രൊവൈഡർ ക്രെഡൻഷ്യലുകൾ ആവശ്യമില്ല.
 
 ```bash
-# ആസ്യൂർ ഓപൺഎഐ
+# ആസ്യൂർ ഓപ്പൺഎഐ
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 
-# അതവാ ഓപൺഎഐ
+# അതവാ ഓപ്പൺഎഐ
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# അതവാ ആൻത്രോപിക്
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-ഇമേജ് വിവർത്തനത്തിന് കൂടാതെ Azure AI Vision ആവശ്യമാണ്:
+ഇമേജ് പരിഭാഷയ്ക്ക് കൂടാതെ Azure AI Vision ആവശ്യമാണ്:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## ഔട്ട്പുട്ട് ലേയൗട്ട്
+## ഔട്ട്‌പുട്ട് ലേഔട്ട്
 
-ടെക്സ്റ്റ് വിവർത്തനങ്ങൾ താഴെ എഴുതപ്പെടുന്നു:
+ടെക്സ്റ്റ് പരിഭാഷകൾ താഴെ എഴുതപ്പെടുന്നു:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-വിവർത്തനമായ ഇമേജ് ഔട്ട്പുട്ട് താഴെ എഴുതപ്പെടുന്നു:
+പരിഭാഷചെയ്ത ഇമേജ് ഔട്ട്‌പുട്ടുകൾ താഴെ എഴുതപ്പെടുന്നു:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-ഉദാഹരണത്തിന്, `README.md` และ `docs/setup.md` കൊറിയൻ ഭാഷയിലേക്കു വിവർത്തനം ചെയ്യുമ്പോൾ ഉളള ഫയൽ നിർമ്മാണം:
+ഉദാഹരണത്തിന്, `README.md`യും `docs/setup.md`യും കൊറിയൻ ഭാഷയിലേക്ക് പരിഭാഷ ചെയ്‌താൽ ഉണ്ടാകുന്നത്:
 
 ```text
 translations/ko/README.md
@@ -298,50 +334,50 @@ translations/ko/docs/setup.md
 
 ## കോപി-പേസ്റ്റ് CLI ഉദാഹരണങ്ങൾ
 
-Markdown മൂന്ന് ഭാഷകളിലേക്കു വിവർത്തനം ചെയ്യുക:
+Markdown മൂന്ന് ഭാഷകളിലേക്ക് പരിഭാഷ ചെയ്യുക:
 
 ```bash
 translate -l "ko ja fr" -md
 ```
 
-നോട്ട്‌ബുക്കുകൾ മാത്രം വിവർത്തനം ചെയ്യുക:
+നോട്ട്ബുക്കുകൾ മാത്രം പരിഭാഷ ചെയ്യുക:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-ഇമേജുകൾ മാത്രം വിവർത്തനം ചെയ്യുക:
+ഇമേജുകൾ മാത്രം പരിഭാഷ ചെയ്യുക:
 
 ```bash
 translate -l "pt-BR" -img
 ```
 
-Markdown വിവർത്തനം ഫയലുകൾ എഴുതാതെ മുപ്പറാക്കൽ കാണുക:
+ഫയലുകൾ എഴുതാതെ Markdown പരിഭാഷ പ്രിവ്യൂ ചെയ്യുക:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-കുറഞ്ഞ-ആത്മവിശ്വാസമുള്ള Markdown വിവർത്തനങ്ങൾ റിപ്പെയ്ർ ചെയ്യുക:
+കുറഞ്ഞ ആത്മവിശ്വാസമുള്ള Markdown പരിഭാഷകൾ പരിഹരിക്കുക:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-CI സൗഹൃദ Markdown വിവർത്തനം നടത്തുക:
+CI-സൗഹൃദ Markdown പരിഭാഷ റൺ ചെയ്യുക:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-വിവർത്തന ഔട്ട്പുട്ട് റിവ്യൂ ചെയ്യുക:
+പരിഭാഷ ചെയ്ത ഔട്ട്‌പുട്ട് അവലോകനം ചെയ്യുക:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-ലിങ്ക് മൈഗ്രേഷൻ മുൻകൂർ കാണുക:
+ലിങ്ക് മൈഗ്രേഷൻ പ്രിവ്യൂ ചെയ്യുക:
 
 ```bash
 migrate-links -l "ko" --dry-run

@@ -1,13 +1,13 @@
 # Tõrkeotsing
 
-Kasutage seda lehte, kui tõlkerun õnnestub ootamatult, ebaõnnestub konfiguratsiooni ajal või genereerib väljundi, mida tuleb üle vaadata.
+Kasutage seda lehte, kui tõlkeprotsess õnnestub ootamatult, ebaõnnestub konfiguratsiooni ajal või annab väljundi, mis vajab ülevaatust.
 
-## Alustamiseks
+## Alustage siit
 
-1. Käivitage esmalt sihitud käsk, näiteks `translate -l "ko" -md`.
+1. Käivitage esmalt spetsiifiline käsk, näiteks `translate -l "ko" -md`.
 2. Lisage `-d` konsooli silumislogide jaoks.
-3. Lisage `-s`, et salvestada silumislogid kataloogi `<root-dir>/logs/`.
-4. Käivitage pärast tõlkimist `co-op-review`, et kontrollida ajakohasust, struktuuri ja kohalikke linke.
+3. Lisage `-s`, et salvestada silumislogid asukohta `<root-dir>/logs/`.
+4. Käivitage pärast tõlget `co-op-review`, et kontrollida ajakohasust, struktuuri ja kohalikke linke.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -16,7 +16,7 @@ co-op-review -l "ko"
 
 ## Konfiguratsiooni vead
 
-### Keeltemudeli pakkujat pole
+### Keelemudeli pakkujat pole
 
 Viga:
 
@@ -26,11 +26,11 @@ No language model configuration found.
 
 Lahendus:
 
-- Konfigureerige Azure OpenAI või OpenAI.
-- Kontrollige, et muutujad oleksid keskkonnas, kus käsk käivitatakse.
-- Kohalikuks kasutuseks lisage need projekti juurkausta faili `.env`.
+- Konfigureerige Azure OpenAI, OpenAI või Anthropic.
+- Kontrollige, et muutujad on keskkonnas, kus käsk käivitatakse.
+- Kohalikuks kasutuseks pange need projekti juurkausta `.env`.
 
-Vaadake [Konfiguratsioon](configuration.md).
+Vaadake [Konfiguratsiooni](configuration.md).
 
 ### Pildi tõlkimine ilma Azure AI Visionita
 
@@ -44,27 +44,27 @@ Lahendus:
 
 - Lisage `AZURE_AI_SERVICE_API_KEY`.
 - Lisage `AZURE_AI_SERVICE_ENDPOINT`.
-- Või käivitage tekstipõhine käsk, näiteks `translate -l "ko" -md`.
+- Või käivitage ainult teksti käsk, näiteks `translate -l "ko" -md`.
 
-### Vigane võti või lõpp-punkt
+### Kehtetu võti või lõpp-punkt
 
-Sümptomiteks võivad olla `401`, loata seotud veateated või lõpp-punkti juurdepääsu vead.
+Sümptomiteks võivad olla `401`, õiguste vead või lõpp-punkti ligipääsuvead.
 
 Lahendus:
 
 - Kinnitage, et võti kuulub samale Azure'i ressursile kui lõpp-punkt.
-- Kinnitage, et ressurss toetab Visioni, kui kasutatakse `-img`.
-- Kinnitage, et Azure OpenAI juurutuse nimi ja API-versioon vastavad teie seadistusele.
+- Kinnitage, et ressurss toetab Vision-i, kui kasutate `-img`.
+- Kinnitage, et Azure OpenAI juurutuse nimi ja API versioon vastavad teie juurutusele.
 - Käivitage silumislogidega: `translate -l "ko" -md -d -s`.
 
 ## Ühtegi faili ei tõlgitud
 
-Levinumad põhjused:
+Tavalised põhjused:
 
-- Valitud lipud ei vasta teie failidele.
-- Olemas on juba tõlgitud failid.
-- Allikfailid asuvad välistatud kataloogides.
-- Käsk käivitati valest projekti juurkaustast.
+- Valitud lipud ei sobi teie failidega.
+- Tõlgitud failid on juba olemas.
+- Allika failid asuvad välistatud kataloogides.
+- Käsk töötab vale projekti juurest.
 
 Kontrollid:
 
@@ -80,18 +80,18 @@ Kasutage `--root-dir`, kui käsk käivitatakse väljaspool projekti juurkausta.
 
 Linkide ümberkirjutamine sõltub valitud sisutüüpidest:
 
-- `-nb` included: notebook links can point to translated notebooks.
-- `-nb` excluded: notebook links can remain pointed at source notebooks.
-- `-img` included: image links can point to translated images.
-- `-img` excluded: image links can remain pointed at source images.
+- `-nb` lisatud: notebooki lingid võivad viidata tõlgitud märkmikutele.
+- `-nb` välistatud: notebooki lingid võivad jääda viitama lähte-märkmikutele.
+- `-img` lisatud: pildilingid võivad viidata tõlgitud piltidele.
+- `-img` välistatud: pildilingid võivad jääda viitama lähtepiltidele.
 
-Käivitage täielik sisu tõlkimine, kui kõik sisemised lingid peaksid eelistama tõlgitud väljundeid:
+Käivitage täielik sisu tõlge, kui kõik sisemised lingid peaksid eelistama tõlgitud väljundeid:
 
 ```bash
 translate -l "ko" -md -nb -img
 ```
 
-Käivitage linkide ülevaatus pärast tõlkimist:
+Käivitage linkide ülevaatus pärast tõlget:
 
 ```bash
 co-op-review -l "ko"
@@ -101,31 +101,31 @@ co-op-review -l "ko"
 
 Kui tõlgitud Markdown renderdub valesti:
 
-- Kontrollige, et frontmatter algab ja lõpeb `---`-ga.
-- Kontrollige, et lähte- ja tõlgitud failide koodiplokkide piiritlejate arv (``` ) on sama.
-- Käivitage `co-op-review`, et püüda tavalisi struktuuriprobleeme.
+- Kontrollige, et frontmatter algab ja lõpeb `---`.
+- Kontrollige, et koodi tõkete arvu (```) oleks sama allika ja tõlgitud failide vahel.
+- Käivitage `co-op-review`, et tuvastada levinud struktuuriprobleeme.
 - Tõlkige konkreetne fail uuesti, kui väljund oli rikutud.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action käivitus, kuid pull requesti ei loodud
+## GitHub Action jooksis, kuid pull-päringut ei loodud
 
-Kui `peter-evans/create-pull-request` teatab, et haru ei ole baasist ees, ei leidnud töövoog commitimiseks faile.
+Kui `peter-evans/create-pull-request` teatab, et haru ei ole baasist ees, siis töövoog ei leidnud commiteerimiseks faile.
 
 Tõenäolised põhjused:
 
-- Tõlkerun ei tekitanud muudatusi.
-- `.gitignore` välistab `translations/`, `translated_images/` või tõlgitud märkmikud.
+- Tõlkejooks ei tootnud muudatusi.
+- `.gitignore` välistab `translations/`, `translated_images/` või tõlgitud märkmikuid.
 - `add-paths` ei vasta genereeritud väljundkataloogidele.
-- Tõlkimise samm lõpetas enneaegselt.
+- Tõlkesamm lõpetas enneaegselt.
 
 Lahendused:
 
-1. Kinnitage, et genereeritud failid eksisteerivad kataloogides `translations/` või `translated_images/`.
+1. Kinnitage, et genereeritud failid asuvad kaustades `translations/` või `translated_images/`.
 2. Kinnitage, et `.gitignore` ei ignoreeri genereeritud väljundeid.
-3. Use matching `add-paths`:
+3. Kasutage vastavaid `add-paths`:
 
    ```yaml
    with:
@@ -134,13 +134,13 @@ Lahendused:
        translated_images/
    ```
 
-4. Temporarily add debug flags to the translate command:
+4. Ajutiselt lisage translate-käsule silumislipud:
 
    ```bash
    translate -l "ko" -md -d -s
    ```
 
-5. Confirm workflow permissions include:
+5. Kinnitage, et töövoo õigustes on lisatud:
 
    ```yaml
    permissions:
@@ -150,9 +150,9 @@ Lahendused:
 
 ## Tõlke kvaliteet
 
-Masintõlked võivad vajada inimlikku ülevaatust. Kasutage `evaluate` ainult siis, kui soovite eksperimentaalset kvaliteedihindamist ja madala usaldusväärsusega paranduste töövooge.
+Masintõlkeid võib vaja minna inimlikku ülevaatust. Kasutage `evaluate` ainult siis, kui soovite eksperimentaalset kvaliteedi hindamist ja madala usaldusastmega paranduste töövooge.
 
-!!! warning "Experimental"
-    `evaluate` võib kasutada reeglipõhiseid ja LLM-põhiseid kontrolle, ning selle hindamismudel ja metaandmete käitumine võivad muutuda. Ärge lisage seda nõutavatesse CI-väravatesse, kui teie töövoog ei ole muutusteks ette valmistatud.
+!!! warning "Eksperimentaalne"
+    `evaluate` võib kasutada reeglipõhiseid ja LLM-põhiseid kontrolle ning selle skoorimismudel ja metainfo käitumine võivad muutuda. Hoidke seda eemal nõutavatest CI-väravatest, kui teie töövoog ei ole muudatusteks valmis.
 
 Deterministlike CI-kontrollide jaoks kasutage selle asemel `co-op-review`.

@@ -10,6 +10,10 @@ from co_op_translator.core.llm import JupyterNotebookTranslator
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
 from co_op_translator.core.project.project_translator import ProjectTranslator
 from co_op_translator.core.project.readme_translator import ReadmeTranslator
+from co_op_translator.utils.common.metadata_utils import (
+    calculate_file_hash,
+    read_text_metadata_for_source,
+)
 
 
 class Provider:
@@ -28,11 +32,14 @@ class Provider:
     translate_notebook = translate_markdown
 
 
-@pytest.mark.parametrize("entrypoint", ["cli", "api"])
+@pytest.mark.parametrize(
+    "entrypoint,output_directory",
+    [("cli", "translations"), ("cli", "i18n"), ("api", "translations")],
+)
 @pytest.mark.parametrize("mode", ["markdown", "notebook", "readme"])
 @pytest.mark.parametrize("dry_run", [False, True])
 def test_entrypoints_run_real_workflows_with_concurrency(
-    monkeypatch, tmp_path, entrypoint, mode, dry_run
+    monkeypatch, tmp_path, entrypoint, output_directory, mode, dry_run
 ):
     provider = Provider()
     (tmp_path / "README.md").write_text("# Hello", encoding="utf-8")
@@ -93,6 +100,8 @@ def test_entrypoints_run_real_workflows_with_concurrency(
             "--no-disclaimer",
             "-y",
         ]
+        if output_directory != "translations":
+            args += ["--translations-dir", output_directory]
         if dry_run:
             args.append("--dry-run")
         result = CliRunner().invoke(cli.translate_command, args)
@@ -104,10 +113,13 @@ def test_entrypoints_run_real_workflows_with_concurrency(
     else:
         assert provider.peak == 2
         name = "guide.ipynb" if mode == "notebook" else "README.md"
-        assert all(
-            (tmp_path / "translations" / lang / name).is_file()
-            for lang in ("ko", "ja", "fr")
-        )
+        for lang in ("ko", "ja", "fr"):
+            language_dir = tmp_path / output_directory / lang
+            assert (language_dir / name).is_file()
+            metadata = read_text_metadata_for_source(language_dir, name)
+            assert metadata["original_hash"] == calculate_file_hash(tmp_path / name)
+        if output_directory != "translations":
+            assert not (tmp_path / "translations").exists()
 
 
 @pytest.mark.parametrize("invalid", ["0", "-1", "1.5", "two"])

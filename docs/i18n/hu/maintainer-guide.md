@@ -1,8 +1,8 @@
-# Karbantartói útmutató
+# Fenntartói útmutató
 
 Ez az oldal összefoglalja, hogyan kapcsolódnak egymáshoz az API, a CLI és a dokumentációs oldal.
 
-## Publikus API határ
+## Nyilvános API határa
 
 A stabil Python API innen kerül exportálásra:
 
@@ -10,13 +10,16 @@ A stabil Python API innen kerül exportálásra:
 co_op_translator.api
 ```
 
-A publikus API a következőkre tagolódik: tartalomfordítási segédletek, útvonal-átírási segédletek, projekt-orchesztráció és ellenőrzés:
+A nyilvános API tartalomfordítást segítő, útvonal-átírást segítő, projekt-orchesztrációs és ellenőrzési részekre van felosztva:
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,17 +31,21 @@ from co_op_translator.api import (
 )
 ```
 
-Új publikus API-k hozzáadásakor frissítsd:
+A `TranslationStateProvider` jelenti a hosztolt integrációk perzisztencia-határát.
+El kell különítenie a generált jelölteket az elfogadott alapvonalaktól, így egy
+össze nem olvasztott fordítás ne válhasson az igazság forrásává.
+
+Új nyilvános API-k hozzáadásakor frissítse:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
-- relevant API tests under `tests/co_op_translator/`, such as `test_api.py` or `test_review_api.py`
+- a releváns API-tesztek a `tests/co_op_translator/` alatt, például a `test_api.py` vagy `test_review_api.py`
 
-Kerüld a legalacsonyabb szintű `core` modulok dokumentálását stabil API-ként, kivéve ha a projekt kifejezetten támogatni kívánja azokat.
+Kerülje az alacsonyabb szintű `core` modulok dokumentálását stabil API-ként, hacsak a projekt nem szándékozik közvetlenül támogatni azokat.
 
 ## CLI belépési pontok
 
-A csomag az alábbi Poetry script-eket definiálja:
+A csomag a következő Poetry szkripteket határozza meg:
 
 ```toml
 [tool.poetry.scripts]
@@ -49,83 +56,83 @@ co-op-review = "co_op_translator.__main__:main"
 co-op-translator-mcp = "co_op_translator.mcp.server:main"
 ```
 
-A `src/co_op_translator/__main__.py` fájl a script név alapján irányít:
+`src/co_op_translator/__main__.py` scriptnév alapján irányít:
 
-- `translate` meghívja `co_op_translator.cli.translate.translate_command`
-- `evaluate` meghívja `co_op_translator.cli.evaluate.evaluate_command`
-- `migrate-links` meghívja `co_op_translator.cli.migrate_links.migrate_links_command`
-- `co-op-review` meghívja `co_op_translator.cli.review.review_command`
+- `translate` meghívja a `co_op_translator.cli.translate.translate_command`
+- `evaluate` meghívja a `co_op_translator.cli.evaluate.evaluate_command`
+- `migrate-links` meghívja a `co_op_translator.cli.migrate_links.migrate_links_command`
+- `co-op-review` meghívja a `co_op_translator.cli.review.review_command`
 
-`co-op-translator-mcp` megkerüli a `__main__.py`-t és közvetlenül meghívja a `co_op_translator.mcp.server:main`-t.
+`co-op-translator-mcp` kikerüli a `__main__.py`-t, és közvetlenül a `co_op_translator.mcp.server:main`-t hívja.
 
-CLI opciók hozzáadásakor vagy módosításakor frissítsd:
+CLI-opciók hozzáadása vagy módosítása esetén frissítse:
 
-- the relevant `src/co_op_translator/cli/*.py` command
+- a megfelelő `src/co_op_translator/cli/*.py` parancs
 - `docs/cli.md`
-- CLI-related tests, if behavior changes
+- CLI-hoz kapcsolódó tesztek, ha a viselkedés megváltozik
 
 ## MCP szerver
 
-Az MCP szerver a következő helyen van megvalósítva:
+Az MCP szerver az alábbi fájlban van megvalósítva:
 
 ```python
 co_op_translator.mcp.server
 ```
 
-A szerver szándékosan a publikus Python API-t burkolja be ahelyett, hogy az alacsonyabb szintű `core` modulokat hívná. Tartsd érintetlenül ezt a határt, hogy az MCP kliens, a Python hívók és a CLI ugyanazt a viselkedést osszák.
+A szerver szándékosan a nyilvános Python API-t csomagolja be ahelyett, hogy az alacsonyabb szintű `core` modulokat hívná. Ezt a határt tartsa érintetlenül, hogy az MCP kliens, a Python hívók és a CLI ugyanazt a viselkedést osszák.
 
-MCP eszközök hozzáadásakor vagy módosításakor frissítsd:
+MCP eszközök hozzáadásakor vagy módosításakor frissítse:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
-- `docs/api.md` ha a publikus API felület változik
+- `docs/api.md` ha a nyilvános API felülete megváltozik
 
-A repository fordító eszközök modellel hívhatók az MCP-n keresztül és sok fájlt képesek írni. Tartsd alapértelmezettként a `dry_run=True`-t, és kérj `confirm_write=True`-t nem-dry-run projektfordítás előtt.
+A repozitórium fordítási eszközei MCP-n keresztül modellként hívhatók, és sok fájlt írhatnak. Tartsa alapértelmezettnek a `dry_run=True`-t, és követelje a `confirm_write=True` engedélyezését, mielőtt nem-dry-run projektfordítást indít.
 
 ## Fordítási folyamat
 
 A magas szintű projektfordítási folyamat a következő:
 
-1. CLI argumentumok vagy API paraméterek elemzése.
-2. Az LLM konfiguráció érvényesítése a `LLMConfig` segítségével.
-3. Az Azure AI Vision ellenőrzése, ha a képek fordítása van kiválasztva.
+1. CLI-argumentumok vagy API-paraméterek elemzése.
+2. Az LLM konfiguráció érvényesítése `LLMConfig` segítségével.
+3. Azure AI Vision ellenőrzése, ha képfordítás van kiválasztva.
 4. Nyelvkódok normalizálása.
-5. Régi nyelvi mappa aliasainak felismerése.
-6. A fordítási mennyiség becslése.
-7. README nyelvi/tanfolyam szakaszainak frissítése, ha alkalmazható.
-8. A projekt fordításának delegálása a `ProjectTranslator`-nek.
-9. A `ProjectTranslator` a fájlfeldolgozást a `TranslationManager`-nek delegálja.
+5. Régi nyelvi mappa aliasok felismerése.
+6. A fordítás mennyiségének becslése.
+7. A README nyelvi/kurzus szakaszainak frissítése, ha alkalmazható.
+8. A projektfordítás delegálása a `ProjectTranslator`-hez.
+9. `ProjectTranslator` átadja a fájlfeldolgozást a `TranslationManager`-nek.
 
-A `TranslationManager` különálló fájltípus-mixinekből áll:
+A `TranslationManager` fókuszált fájltípusú mixinekből épül fel:
 
-- A `ProjectMarkdownTranslationMixin` kezeli a Markdown fájlok beolvasását, a tartalom fordítását, az útvonalak átírását, a metaadatokat, a felelősségkizárásokat és az írást.
-- A `ProjectNotebookTranslationMixin` kezeli a notebook fájlok beolvasását, a Markdown-cellák fordítását, az útvonalak átírását, a metaadatokat, a felelősségkizárásokat és az írást.
-- A `ProjectImageTranslationMixin` kezeli a képek felderítését, a szöveg kivonatolását/fordítását, a renderelt képek írását és a metaadatokat.
+- `ProjectMarkdownTranslationMixin` kezeli a Markdown fájlok olvasását, a tartalom fordítását, az útvonal-átírást, a metaadatokat, a felelősségkizárásokat és a fájlok írását.
+- `ProjectNotebookTranslationMixin` kezeli a notebook fájlok olvasását, a Markdown-cellák fordítását, az útvonal-átírást, a metaadatokat, a felelősségkizárásokat és a fájlok írását.
+- `ProjectImageTranslationMixin` kezeli a képek felfedezését, a szöveg kinyerését/fordítását, a renderelt képek írását és a metaadatokat.
 
-Az alacsonyabb szintű tartalom API-k kihagyják a projekt munkafolyamatot:
+Az alacsonyabb szintű tartalom-API-k kihagyják a projekt munkafolyamatát:
 
-1. A `translate_markdown_content` és a `translate_notebook_content` csak memóriabeli tartalmat fordít.
-2. A `translate_image_content` egyetlen képen található szöveget fordít és visszaad egy renderelt kép objektumot.
-3. A `rewrite_markdown_paths` és a `rewrite_notebook_paths` explicit utófeldolgozó segédfüggvények. Nem végeznek fordítást és nem írnak projektfájlokat.
+1. A `translate_markdown_content` és `translate_notebook_content` csak a memóriában lévő tartalmat fordítja.
+2. A `translate_image_content` egyetlen képből fordítja a szöveget és egy renderelt képobjektumot ad vissza.
+3. A `rewrite_markdown_paths` és a `rewrite_notebook_paths` explicit utófeldolgozó segédek. Nem végeznek fordítást és nem írnak projektfájlokat.
 
-## Ellenőrzési folyamat
+## Áttekintési folyamat
 
-A determinisztikus ellenőrzési folyamat a következő:
+A determinisztikus áttekintési folyamat a következő:
 
-1. CLI argumentumok vagy API paraméterek elemzése.
+1. CLI-argumentumok vagy API-paraméterek elemzése.
 2. A kért nyelvkódok normalizálása.
-3. Egy vagy több ellenőrzési célpont létrehozása a `root_dir`, `root_dirs` vagy `groups`-ból.
-4. Opcionálisan szűkítheted a forrásfájlokat a `--changed-from` opcióval.
-5. Futtasd a determinisztikus ellenőrzéseket a struktúra, a fordítás frissessége, a Markdown integritása és a helyi link/kép útvonalak ellen.
-6. Nyomtasd ki szöveges formában vagy GitHub-stílusú Markdown-ként.
-7. Kilép hibaállapottal, ha ellenőrzési hibákat talált.
+3. Egy vagy több áttekintési célt épít a `root_dir`, `root_dirs` vagy `groups` alapján.
+4. Opcionálisan korlátozza a forrásfájlokat a `--changed-from` opcióval.
+5. Futtasson determinisztikus ellenőrzéseket a struktúrára, a fordítás frissességére, a Markdown integritására és a helyi link/kép útvonalakra.
+6. Szöveges kimenetet vagy GitHub-stílusú Markdown-t jelenítsen meg.
+7. Sikertelenséggel lépjen ki, ha áttekintési hibákat talál.
 
-Az ellenőrzési folyamat nem igényel API kulcsokat, és alkalmas kell maradjon pull request CI-hez. A pull request munkafolyamat minden futtatáskor egy ellenőrzési összefoglalót ír, és csak akkor tesz PR megjegyzést, ha a `co-op-review` sikertelen.
+Az áttekintési folyamat nem igényel API-kulcsokat, és elérhető helyi ellenőrzésekhez vagy opt-in fogyasztói CI-hez. Ez a repozitórium nem futtatja automatikusan a `co-op-review`-t minden pull requestnél.
 
 ## Dokumentációs oldal
 
-A dokumentációs oldal az alábbiakkal van konfigurálva:
+A dokumentációs oldal a következővel van konfigurálva:
 
 ```text
 mkdocs.yml
@@ -133,7 +140,7 @@ requirements-docs.txt
 docs/
 ```
 
-A `docs/` könyvtár a kanonikus dokumentációs forrás. Ne adj hozzá új végfelhasználói útmutatókat ezen könyvtáron kívülre, hacsak a projekt nem vezet be szándékosan egy másik közzétett dokumentációs felületet.
+A `docs/` könyvtár a kanonikus dokumentációs forrás. Ne adjon hozzá új végfelhasználói útmutatókat ezen a könyvtáron kívül, hacsak a projekt szándékosan nem vezet be egy másik közzétett dokumentációs felületet.
 
 Helyben építés:
 
@@ -142,7 +149,7 @@ python -m pip install -r requirements-docs.txt
 python -m mkdocs build --strict
 ```
 
-Helyi előnézet:
+Előnézet helyben:
 
 ```bash
 python -m mkdocs serve
@@ -152,23 +159,23 @@ A generált oldal a `site/` könyvtárba kerül, amelyet a git figyelmen kívül
 
 ## GitHub Pages munkafolyamat
 
-A .github/workflows/docs.yml a pull requestek során építi az oldalt, és push esetén telepíti a `main`-re.
+`.github/workflows/docs.yml` a pull requesteken építi az oldalt és a `main`-re történő pushokkor telepíti.
 
-A munkafolyamat telepíti:
+A workflow a következőket telepíti:
 
 ```bash
 pip install -r requirements-docs.txt
 ```
 
-A dokumentációs munkafolyamat csak a dokumentációs eszközkészletet telepíti. A `mkdocs.yml` a `mkdocstrings`-et a `src/`-ra mutatja, így a publikus API oldalak a forrásfából renderelhetők telepített teljes futtatási függőségek nélkül. Ha a jövőbeli API dokumentációkhoz szükség lesz opcionális futtatási providerek importálására a build során, frissítsd egyszerre a `.github/workflows/docs.yml`-t és ezt az útmutatót.
+A dokumentációs workflow csak a dokumentációs eszközkészletet telepíti. A `mkdocs.yml` a `mkdocstrings`-et a `src/`-ra mutatja, így a nyilvános API-oldalak a forrásfáról renderelhetők a teljes futtatásidejű függőségek telepítése nélkül. Ha a jövőbeni API-dokumentációk a build során opcionális futtatói szolgáltatók importálását igénylik, frissítse együtt mindkettőt: `.github/workflows/docs.yml` és ezt az útmutatót.
 
-## Dokumentáció minőségi küszöb
+## Dokumentációs minőségi követelmények
 
-A dokumentációs változtatások egyesítése előtt futtasd:
+Mielőtt egyesítené a dokumentációs változtatásokat, futtassa:
 
 ```bash
 python -m mkdocs build --strict
 git diff --check
 ```
 
-Használj szigorú build beállításokat, hogy a törött linkek, érvénytelen navigációs bejegyzések és az API renderelési problémák korán hibára fussanak.
+Használjon szigorú buildet, hogy a törött linkek, érvénytelen navigációs bejegyzések és az API-renderelési problémák korán hibát okozzanak.

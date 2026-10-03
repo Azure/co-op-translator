@@ -1,6 +1,6 @@
-# Referenca CLI
+# CLI Referenca
 
-Co-op Translator namesti naslednje vstopne točke ukazne vrstice:
+Co-op Translator namesti te vstopne točke ukazne vrstice:
 
 - `translate`
 - `evaluate`
@@ -8,33 +8,45 @@ Co-op Translator namesti naslednje vstopne točke ukazne vrstice:
 - `co-op-review`
 - `co-op-translator-mcp`
 
-Ukazi `translate`, `evaluate`, `migrate-links` in `co-op-review` se pošiljajo prek `co_op_translator.__main__`, ki izbere implementacijo ukaza glede na ime poklicanega skripta. MCP strežnik uporablja `co_op_translator.mcp.server` neposredno.
+Ukazi `translate`, `evaluate`, `migrate-links` in `co-op-review` se pošiljajo skozi `co_op_translator.__main__`, ki izbere implementacijo ukaza glede na ime priklicanega skripta. MCP strežnik uporablja `co_op_translator.mcp.server` neposredno.
 
-Če se odločate med CLI, Python API in MCP, začnite z [Izberite svoj potek dela](workflows.md).
+Če se odločate med CLI, Python API in MCP, začnite s [Izberite svoj delovni potek](workflows.md).
 
-## Postopek pri prvi uporabi CLI
+## Izhod konzole
+
+Interaktivni terminali uporabljajo oblikovanje Rich za glavo ukaza, prikaz napredka in povzetke. CI in neinteraktivni izhod se samodejno vrneta na navadno besedilo.
+
+Nastavite `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` za prisilni navadni izhod, ali `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` za prisilni Rich izhod. Nastavite `CO_OP_TRANSLATOR_NO_PROGRESS=1` za ohranjanje povzetkov ob zatiranju živih vrstic napredka.
+
+Uporabite `translate --json-events progress.ndjson`, kadar drugo sistem potrebuje strojno berljiv napredek. CLI še vedno prikazuje izhod za ljudi, medtem ko datoteka NDJSON prejme verzionirane dogodke `co-op.translation.event.v1` z stabilnimi polji, kot so `type`, `stage_key`, `completed`, `total` in `current_path`.
+
+
+
+
+
+## Prvi postopek uporabe CLI
 
 Začnite tukaj, če uporabljate Co-op Translator iz terminala:
 
-1. Konfigurirajte ponudnika LLM, kot je opisano v [Configuration](configuration.md).
+1. Konfigurirajte ponudnika LLM, kot je opisano v [Konfiguracija](configuration.md).
 2. Izberite vrsto vsebine, ki jo želite prevesti.
-3. Najprej zaženite osredotočen ukaz, na primer prevod samo Markdowna.
-4. Pred večjimi spremembami v repozitoriju uporabite `--dry-run`.
+3. Najprej zaženite osredotočen ukaz, na primer prevod samo Markdown datotek.
+4. Pred večjimi spremembami repozitorija uporabite `--dry-run`.
 5. Po prevajanju uporabite `co-op-review` za preverjanje strukture in ažurnosti.
 
 | Cilj | Ukaz za začetek |
 | --- | --- |
-| Prevedi Markdown dokumente | `translate -l "ko" -md` |
-| Prevedi zvezke | `translate -l "ko" -nb` |
-| Prevedi besedilo na slikah | `translate -l "ko" -img` |
+| Prevajanje Markdown dokumentov | `translate -l "ko" -md` |
+| Prevajanje zvezkov | `translate -l "ko" -nb` |
+| Prevajanje besedila na slikah | `translate -l "ko" -img` |
 | Predogled dela brez zapisovanja datotek | `translate -l "ko" -md --dry-run` |
-| Preglej obstoječe prevode | `co-op-review -l "ko"` |
-| Posodobi povezave v zvezkih in Markdownu | `migrate-links -l "ko" --dry-run` |
-| Omogoči orodja MCP odjemalcu | Konfigurirajte [MCP strežnik](mcp.md) namesto neposrednega zagona CLI ukazov. |
+| Pregled obstoječih prevodov | `co-op-review -l "ko"` |
+| Posodobitev povezav zvezkov in Markdowna | `migrate-links -l "ko" --dry-run` |
+| Omogočanje orodij za MCP odjemalca | Namesto neposrednega zagona CLI ukazov konfigurirajte [MCP strežnik](mcp.md). |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+Prevajajte Markdown datoteke, zvezke in besedilo na slikah v enega ali več ciljnih jezikov.
 
 ```bash
 translate -l "ko ja fr"
@@ -60,7 +72,7 @@ Prevedi Markdown in slike:
 translate -l "pt-BR" -md -img
 ```
 
-Posodobi obstoječe prevode z izbrisom in ponovnim ustvarjanjem:
+Posodobite obstoječe prevode z njihovim brisanjem in ponovnim ustvarjanjem:
 
 ```bash
 translate -l "ko" -u
@@ -78,35 +90,42 @@ Shrani dnevnike:
 translate -l "ko" -s
 ```
 
+Zapiši strukturirane dogodke napredka:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
 ### Možnosti
 
-| Možnost | Obvezno | Opis |
+| Možnost | Zahtevano | Opis |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Da | Jezikovne kode, ločene s presledki, na primer `"es fr de"`, ali `"all"`. |
+| `-l`, `--language-codes` | Da | Kode jezikov ločene s presledkom, na primer `"es fr de"`, ali `"all"`. |
 | `-r`, `--root-dir` | Ne | Koren projekta. Privzeto trenutni imenik. |
 | `-u`, `--update` | Ne | Izbriše obstoječe prevode za izbrane jezike in jih ponovno ustvari. |
-| `-img`, `--images` | Ne | Prevede samo datoteke s slikami. |
-| `-md`, `--markdown` | Ne | Prevede samo Markdown datoteke. |
-| `-nb`, `--notebook` | Ne | Prevede samo Jupyter notebook datoteke. |
+| `-img`, `--images` | Ne | Prevedi samo slikovne datoteke. |
+| `-md`, `--markdown` | Ne | Prevedi samo Markdown datoteke. |
+| `-nb`, `--notebook` | Ne | Prevedi samo Jupyter zvezke. |
 | `-d`, `--debug` | Ne | Omogoči debug beleženje v konzoli. |
-| `-s`, `--save-logs` | Ne | Shrani dnevnike na ravni DEBUG v `<root-dir>/logs/`. |
+| `-s`, `--save-logs` | Ne | Shrani dnevnik na ravni DEBUG v `<root-dir>/logs/`. |
+| `--json-events` | Ne | Zapiše strojno berljive dogodke napredka prevajanja kot NDJSON. |
 | `-x`, `--fix` | Ne | Ponovno prevede Markdown datoteke z nizko zanesljivostjo na podlagi prejšnjih rezultatov ocenjevanja. |
 | `-c`, `--min-confidence` | Ne | Prag zanesljivosti za `--fix`. Privzeto `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | Ne | Dodaj ali onemogoči izjavo o strojnih prevodih. Privzeto omogočeno v CLI. |
-| `-f`, `--fast` | Ne | Zastarel hiter način za slike. |
+| `--add-disclaimer`, `--no-disclaimer` | Ne | Dodaj ali potlači izjavo o strojno prevedenem besedilu. Privzeto omogočeno v CLI. |
+| `-f`, `--fast` | Ne | Zastareli hiter način za slike. |
 | `-y`, `--yes` | Ne | Samodejno potrdi pozive, uporabno v CI. |
-| `--repo-url` | Ne | URL repozitorija, uporabljen v nasvetu za sparse-checkout v tabeli jezikov v README. |
-| `--migrate-language-folders` | Ne | Preimenuje zastarele alias mape, kot so `cn` ali `tw`, v kanonične mape BCP 47. |
-| `--dry-run` | Ne | Predogled migracije map jezikov in ocen prevajanja brez pisanja datotek. |
+| `--repo-url` | Ne | URL repozitorija, uporabljen v tabeli jezikov README za nasvet sparse-checkout. |
+| `--migrate-language-folders` | Ne | Preimenuje zastarele alias mape, kot sta `cn` ali `tw`, v kanonične BCP 47 mape. |
+| `--dry-run` | Ne | Predogled migracije jezikovnih map in ocen prevajanja brez zapisovanja datotek. |
 
-Če ni naveden noben tip zastavice, `translate` obdela Markdown, zvezke in slike. Prevod slik zahteva konfiguracijo Azure AI Vision.
+Če ni podan noben tip zastavice, `translate` obdela Markdown, zvezke in slike. Prevajanje slik zahteva konfiguracijo Azure AI Vision.
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+Ocenjevanje kakovosti prevedenega Markdowna za en jezik.
 
 !!! warning "Eksperimentalno"
-    `evaluate` je eksperimentalna. Lahko uporablja preverjanja kakovosti na osnovi pravil in na osnovi LLM, zapisuje rezultate ocenjevanja v prevodne metapodatke, in njen model ocenjevanja ter obnašanje metapodatkov se lahko spremenita.
+    `evaluate` je eksperimentalno. Lahko uporablja preverjanja kakovosti, ki temeljijo na pravilih in na LLM, zapisuje rezultate ocenjevanja v prevodne metapodatke in se lahko spremenita njegov model točkovanja in obnašanje metapodatkov.
 
 ```bash
 evaluate -l "ko"
@@ -114,19 +133,19 @@ evaluate -l "ko"
 
 ### Pogosti primeri
 
-Uporabite strožji prag nizke zanesljivosti:
+Uporabite strožji prag za nizko zaupanje:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-Zaženite samo preverjanja na osnovi pravil:
+Zaženi samo preverjanja, ki temeljijo na pravilih:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-Zaženite samo preverjanja na osnovi LLM:
+Zaženi samo preverjanja, ki temeljijo na LLM:
 
 ```bash
 evaluate -l "ja" -D
@@ -134,24 +153,24 @@ evaluate -l "ja" -D
 
 ### Možnosti
 
-| Možnost | Obvezno | Opis |
+| Možnost | Zahtevano | Opis |
 | --- | --- | --- |
-| `-l`, `--language-code` | Da | Ena jezikovna koda za ocenjevanje. Alias kode se normalizirajo. |
+| `-l`, `--language-code` | Da | Ena koda jezika za ocenjevanje. Alias kode se normalizirajo. |
 | `-r`, `--root-dir` | Ne | Koren projekta. Privzeto trenutni imenik. |
-| `-c`, `--min-confidence` | Ne | Prag, uporabljen pri navajanju prevodov z nizko zanesljivostjo. Privzeto `0.7`. |
+| `-c`, `--min-confidence` | Ne | Prag, uporabljen pri izpisu prevodov z nizko zanesljivostjo. Privzeto `0.7`. |
 | `-d`, `--debug` | Ne | Omogoči debug beleženje. |
-| `-s`, `--save-logs` | Ne | Shrani dnevnike na ravni DEBUG v `<root-dir>/logs/`. |
+| `-s`, `--save-logs` | Ne | Shrani dnevnik na ravni DEBUG v `<root-dir>/logs/`. |
 | `-f`, `--fast` | Ne | Samo ocenjevanje na osnovi pravil. |
 | `-D`, `--deep` | Ne | Samo ocenjevanje na osnovi LLM. |
 
-Privzeto `evaluate` uporablja tako preverjanja na osnovi pravil kot na osnovi LLM. Rezultati se zapišejo v prevodne metapodatke in so povzeti v konzoli.
+Privzeto `evaluate` uporablja tako ocenjevanje na osnovi pravil kot tudi na osnovi LLM. Rezultati se zapišejo v prevodne metapodatke in povzemejo v konzoli.
 
 ## co-op-review
 
-Run deterministic translation maintenance checks without API credentials.
+Zaženite deterministične preglede vzdrževanja prevodov brez API poverilnic.
 
 !!! note "Beta"
-    `co-op-review` je beta determinističen ukaz za pregled. Ne kliče ponudnikov modelov niti ne zapisuje datotek, vendar se lahko njegovi preverjalni postopki in shema izhoda zadev spremenijo.
+    `co-op-review` je beta determinističen ukaz za pregled. Ne kliče ponudnikov modelov niti ne zapisuje datotek, vendar se lahko spreminjajo njegovi preverjalni postopki in shema izhoda težav.
 
 ```bash
 co-op-review -l "ko"
@@ -159,25 +178,37 @@ co-op-review -l "ko"
 
 ### Pogosti primeri
 
-Preglej korejske in japonske prevode iz trenutnega imenika:
+Preglejte korejske in japonske prevode iz trenutnega imenika:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Preglej določen koren projekta:
+Preglejte določen koren projekta:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-Preglej samo izvorne datoteke, spremenjene glede na osnovni ref:
+Preglejte le README po prevodu, izvedenem samo za README:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` zanemari druge dokumente in vgrajene README datoteke. Ne uspe, če manjka korenski `README.md`. V kombinaciji z `--changed-from` pregleda README le, ko se ta izvorna datoteka spremeni. Prevod le README pusti izvorni README nespremenjen, vključno z morebitnimi oznakami deljenih odsekov.
+
+
+
+
+Preglejte samo izvorne datoteke, ki so se spremenile glede na osnovno referenco:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-Natisni izhod v formatu GitHub-ovega Markdown za povzetke v CI:
+Izpiše Markdown v GitHub obliki za povzetke CI:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -185,34 +216,35 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 ### Možnosti
 
-| Možnost | Obvezno | Opis |
+| Možnost | Zahtevano | Opis |
 | --- | --- | --- |
-| `-l`, `--language-code` | Ne | Jezikovna koda za pregled. Lahko se poda večkrat ali kot vrednost, ločena s presledkom. Privzeto vsi odkrijeni prevodni jeziki. |
+| `-l`, `--language-code` | Ne | Koda jezika za pregled. Lahko jo podate večkrat ali kot vrednost ločeno s presledki. Privzeto vsi najdeni prevodni jeziki. |
 | `-r`, `--root-dir` | Ne | Koren projekta. Privzeto trenutni imenik. |
-| `--changed-from` | Ne | Git ref, uporabljen za omejitev pregleda na spremenjene izvorne datoteke. |
-| `--format` | Ne | Izhodni format: `text` ali `github`. Privzeto `text`. |
+| `--changed-from` | Ne | Git referenca, uporabljena za omejitev pregleda na spremenjene izvorne datoteke. |
+| `--readme-only` | Ne | Preglej samo prevod korenskega `README.md`. |
+| `--format` | Ne | Format izhoda: `text` ali `github`. Privzeto `text`. |
 
-`co-op-review` trenutno preverja manjkajoče prevedene datoteke, manjkajoče ali zastarele prevodne metapodatke, integriteto Markdown frontmatter in ograj kode, nepravilno preveden JSON zvezkov in manjkajoče lokalne cilje povezav v Markdownu ali slikah. Manjkajoče povezave so privzeto opozorila; strukturalne in problematične zastarelosti povzročijo neuspeh ukaza.
+`co-op-review` trenutno preverja manjkajoče prevedene datoteke, manjkajoče ali zastarele prevodne metapodatke, integriteto Markdown frontmatter in code fence-ov, neveljaven preveden JSON zvezka ter manjkajoče lokalne cilje povezav v Markdownu ali slikah. Manjkajoče povezave so privzeto opozorila; strukturne in ažurnostne težave povzročijo, da ukaz ne uspe.
 
 ## co-op-translator-mcp
 
-Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+Zaženite MCP strežnik Co-op Translator za agente, urednike in odjemalce združljive z MCP.
 
 ```bash
 co-op-translator-mcp
 ```
 
-Privzeti transport je `stdio`. Oglejte si vodnik [MCP strežnik](mcp.md) za konfiguracijo odjemalcev, orodij, virov in varnostne opombe.
+Privzeti transport je `stdio`. Oglejte si vodnik [MCP strežnik](mcp.md) za konfiguracijo odjemalca, orodja, vire in varnostne opombe.
 
 ### Možnosti
 
-| Možnost | Obvezno | Opis |
+| Možnost | Zahtevano | Opis |
 | --- | --- | --- |
 | `--transport` | Ne | MCP transport: `stdio`, `streamable-http`, ali `sse`. Privzeto `stdio`. |
 
 ## migrate-links
 
-Ponovno obdela prevedene Markdown datoteke in posodobi povezave v zvezkih, tako da kažejo na prevedene zvezke, kadar so na voljo.
+Ponovno obdela prevedene Markdown datoteke in posodobi povezave zvezkov, tako da kažejo na prevedene zvezke, kadar so na voljo.
 
 ```bash
 migrate-links -l "ko ja"
@@ -226,13 +258,13 @@ Predogled posodobitev povezav:
 migrate-links -l "ko" --dry-run
 ```
 
-Obdelaj vse podprte jezike brez potrditve:
+Obdelajte vse podprte jezike brez potrditve:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-Prepiši povezave le, ko prevedeni zvezki obstajajo:
+Prepiši povezave le, ko prevodi zvezkov obstajajo:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
@@ -240,20 +272,20 @@ migrate-links -l "ko" --no-fallback-to-original
 
 ### Možnosti
 
-| Možnost | Obvezno | Opis |
+| Možnost | Zahtevano | Opis |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Da | Jezikovne kode, ločene s presledki, ali `"all"`. |
+| `-l`, `--language-codes` | Da | Kode jezikov ločene s presledkom, ali `"all"`. |
 | `-r`, `--root-dir` | Ne | Koren projekta. Privzeto trenutni imenik. |
-| `--image-dir` | Ne | Mapa prevedenih slik glede na koren. Privzeto `translated_images`. |
-| `--dry-run` | Ne | Prikaži datoteke, ki bi se spremenile, brez zapisovanja posodobitev. |
-| `--fallback-to-original`, `--no-fallback-to-original` | Ne | Uporabi izvirne povezave na zvezke, ko prevedeni zvezki manjkajo. Privzeto omogočeno. |
+| `--image-dir` | Ne | Mapo prevedenih slik relativno na koren. Privzeto `translated_images`. |
+| `--dry-run` | Ne | Pokaže datoteke, ki bi se spremenile, brez zapisa posodobitev. |
+| `--fallback-to-original`, `--no-fallback-to-original` | Ne | Uporabi izvirne povezave do zvezkov, ko prevodi manjkajo. Privzeto omogočeno. |
 | `-d`, `--debug` | Ne | Omogoči debug beleženje. |
-| `-s`, `--save-logs` | Ne | Shrani dnevnike na ravni DEBUG v `<root-dir>/logs/`. |
+| `-s`, `--save-logs` | Ne | Shrani dnevnik na ravni DEBUG v `<root-dir>/logs/`. |
 | `-y`, `--yes` | Ne | Samodejno potrdi pozive pri obdelavi vseh jezikov. |
 
 ## Okolje
 
-Vsi ukazi zahtevajo en konfiguriran ponudnik LLM:
+Ko ukaz zahteva poverilnice ponudnika, konfigurirajte enega od teh kompletov ponudnikov. `translate --dry-run` in `co-op-review` ne zahtevata poverilnic ponudnikov:
 
 ```bash
 # Azure OpenAI
@@ -266,24 +298,28 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Ali OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Ali Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Prevod slik dodatno zahteva Azure AI Vision:
+Za prevajanje slik je dodatno potrebna Azure AI Vision:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## Struktura izhoda
+## Razpored izhoda
 
-Besedilni prevodi se zapišejo v:
+Besedilni prevodi se zapišejo pod:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Prevedena slikovna izhodna vsebina se zapiše v:
+Izhod prevedenih slik se zapiše pod:
 
 ```text
 translated_images/<language-code>/<original-path>
@@ -316,7 +352,7 @@ Prevedi samo slike:
 translate -l "pt-BR" -img
 ```
 
-Predogled prevoda Markdown brez pisanja datotek:
+Predogled prevoda Markdown brez zapisovanja datotek:
 
 ```bash
 translate -l "de es" -md --dry-run
@@ -329,13 +365,13 @@ evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-Zaženi CI-prijazen prevod Markdown:
+Zaženi CI-prijazen prevod Markdowna:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-Preglej prevedeno vsebino:
+Preglej prevedeni izhod:
 
 ```bash
 co-op-review -l "ko ja"

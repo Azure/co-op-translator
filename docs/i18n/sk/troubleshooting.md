@@ -1,20 +1,20 @@
 # Riešenie problémov
 
-Použite túto stránku, keď preklad prebehne neočakávane úspešne, zlyhá počas konfigurácie alebo vygeneruje výstup, ktorý je potrebné skontrolovať.
+Použite túto stránku, keď preklad prebehne neočakávane úspešne, zlyhá počas konfigurácie alebo vygeneruje výstup, ktorý potrebuje kontrolu.
 
 ## Začnite tu
 
-1. Spustite najskôr zameraný príkaz, napríklad `translate -l "ko" -md`.
-2. Pridajte `-d` pre ladenie (debug) v konzole.
-3. Pridajte `-s` na uloženie debug záznamov do `<root-dir>/logs/`.
-4. Po preklade spustite `co-op-review` na kontrolu čerstvosti, štruktúry a lokálnych odkazov.
+1. Najskôr spustite zameraný príkaz, napríklad `translate -l "ko" -md`.
+2. Pridajte `-d` pre debug logy v konzole.
+3. Pridajte `-s`, aby sa debug logy uložili do `<root-dir>/logs/`.
+4. Po preklade spustite `co-op-review` na kontrolu aktuálnosti, štruktúry a lokálnych odkazov.
 
 ```bash
 translate -l "ko" -md -d -s
 co-op-review -l "ko"
 ```
 
-## Chyby konfigurácie
+## Konfiguračné chyby
 
 ### Žiadny poskytovateľ jazykového modelu
 
@@ -26,9 +26,9 @@ No language model configuration found.
 
 Riešenie:
 
-- Nakonfigurujte Azure OpenAI alebo OpenAI.
-- Overte, že premenné sú v prostredí, kde sa príkaz spúšťa.
-- Pri lokálnom použití umiestnite ich do `.env` v koreňovom adresári projektu.
+- Nakonfigurujte Azure OpenAI, OpenAI alebo Anthropic.
+- Skontrolujte, či sú premenné v prostredí, z ktorého sa príkaz spúšťa.
+- Pre lokálne použitie vložte ich do `.env` v koreňovom adresári projektu.
 
 Pozrite si [Konfigurácia](configuration.md).
 
@@ -44,27 +44,27 @@ Riešenie:
 
 - Pridajte `AZURE_AI_SERVICE_API_KEY`.
 - Pridajte `AZURE_AI_SERVICE_ENDPOINT`.
-- Alebo spustite len textový príkaz, napríklad `translate -l "ko" -md`.
+- Alebo spustite príkaz len s textom, napríklad `translate -l "ko" -md`.
 
 ### Neplatný kľúč alebo koncový bod
 
-Príznaky môžu zahŕňať `401`, vymazané chyby oprávnení alebo chyby prístupu ku koncovému bodu.
+Príznaky môžu zahŕňať `401`, chyby oprávnení s odstránenými údajmi alebo chyby prístupu ku koncovému bodu.
 
 Riešenie:
 
-- Potvrďte, že kľúč patrí tomu istému Azure zdroju ako koncový bod.
-- Potvrďte, že zdroj podporuje Vision pri použití `-img`.
-- Potvrďte, že názov nasadenia Azure OpenAI a verzia API zodpovedajú vášmu nasadeniu.
-- Spustite s ladením: `translate -l "ko" -md -d -s`.
+- Overte, či kľúč patrí rovnakému Azure zdroju ako koncový bod.
+- Overte, či zdroj podporuje Vision pri použití `-img`.
+- Overte, či názov nasadenia Azure OpenAI a verzia API zodpovedajú vášmu nasadeniu.
+- Spustite s debug logmi: `translate -l "ko" -md -d -s`.
 
 ## Žiadne súbory neboli preložené
 
 Bežné príčiny:
 
-- Vybrané prepínače nezodpovedajú vašim súborom.
+- Vybrané prepínače neodpovedajú vašim súborom.
 - Už existujú preložené súbory.
-- Zdrojové súbory sa nachádzajú vo vylúčených adresároch.
-- Príkaz sa spúšťa z nesprávneho koreňového adresára projektu.
+- Zdrojové súbory sú v vylúčených adresároch.
+- Príkaz sa spúšťa z nesprávneho koreňa projektu.
 
 Kontroly:
 
@@ -78,14 +78,14 @@ Použite `--root-dir`, keď sa príkaz spúšťa mimo koreňa projektu.
 
 ## Neočakávané správanie odkazov
 
-Prepísanie odkazov závisí od vybraných typov obsahu:
+Prepisovanie odkazov závisí od vybraných typov obsahu:
 
 - `-nb` zahrnuté: odkazy na notebooky môžu smerovať na preložené notebooky.
 - `-nb` vylúčené: odkazy na notebooky môžu zostať nasmerované na zdrojové notebooky.
 - `-img` zahrnuté: odkazy na obrázky môžu smerovať na preložené obrázky.
-- `-img` vylúčené: odkazy na obrázky môžu zostať nasmerované na zdrojové obrázky.
+- `-img` vylúčené: odkazy na obrázky môžu zostať smerovať na zdrojové obrázky.
 
-Spustite kompletný preklad obsahu, keď majú všetky vnútorné odkazy preferovať preložené výstupy:
+Spustite úplný preklad obsahu, ak majú všetky vnútorné odkazy uprednostňovať preložené výstupy:
 
 ```bash
 translate -l "ko" -md -nb -img
@@ -103,28 +103,28 @@ Ak sa preložený Markdown vykresľuje nesprávne:
 
 - Skontrolujte, či frontmatter začína a končí `---`.
 - Skontrolujte, či sa počet ohraničení kódu zhoduje medzi zdrojovými a preloženými súbormi.
-- Spustite `co-op-review` na zachytenie bežných problémov so štruktúrou.
-- Znovu preložte konkrétny súbor, ak bol výstup poškodený.
+- Spustite `co-op-review`, aby ste zachytili bežné štrukturálne problémy.
+- Preložte konkrétny súbor znova, ak bol výstup poškodený.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action bežal, ale nebol vytvorený pull request
+## GitHub Action sa spustil, ale nebol vytvorený žiadny Pull Request
 
-Ak `peter-evans/create-pull-request` hlási, že vetva nie je pred základnou vetvou, workflow nenašiel žiadne súbory na commit.
+Ak `peter-evans/create-pull-request` hlási, že vetva nie je pred základnou vetvou, workflow nenašiel žiadne súbory na commitovanie.
 
 Pravdepodobné príčiny:
 
-- Preklad nezaznamenal žiadne zmeny.
+- Prekladový beh nevygeneroval žiadne zmeny.
 - `.gitignore` vylučuje `translations/`, `translated_images/` alebo preložené notebooky.
 - `add-paths` nezodpovedá vygenerovaným výstupným adresárom.
-- Krok prekladu sa predčasne ukončil.
+- Prekladací krok sa ukončil predčasne.
 
 Riešenia:
 
-1. Potvrďte, že vygenerované súbory existujú v `translations/` alebo `translated_images/`.
-2. Potvrďte, že `.gitignore` neignoruje vygenerované výstupy.
+1. Overte, či vygenerované súbory existujú v `translations/` alebo `translated_images/`.
+2. Overte, či `.gitignore` neignoruje vygenerované výstupy.
 3. Použite zodpovedajúce `add-paths`:
 
    ```yaml
@@ -134,13 +134,13 @@ Riešenia:
        translated_images/
    ```
 
-4. Dočasne pridajte ladiace prepínače k príkazu translate:
+4. Dočasne pridajte debug prepínače k príkazu translate:
 
    ```bash
    translate -l "ko" -md -d -s
    ```
 
-5. Potvrďte, že oprávnenia workflow zahŕňajú:
+5. Overte, či workflow povolenia zahŕňajú:
 
    ```yaml
    permissions:
@@ -150,9 +150,9 @@ Riešenia:
 
 ## Kvalita prekladu
 
-Strojové preklady môžu vyžadovať ľudskú kontrolu. Používajte `evaluate` len keď chcete experimentálne hodnotenie kvality a pracovné postupy opráv pri nízkej dôvere.
+Strojové preklady môžu vyžadovať ľudskú kontrolu. Používajte `evaluate` iba ak chcete experimentálne hodnotenie kvality a pracovné postupy oprav s nízkou dôverou.
 
-!!! warning "Experimentálne"
-    `evaluate` môže používať pravidlové a LLM založené kontroly a jeho hodnotiaci model a správanie s metadátami sa môžu zmeniť. Nepoužívajte ho v povinných CI bránach, pokiaľ váš workflow nie je pripravený na zmeny.
+!!! warning "Experimental"
+    `evaluate` môže používať pravidlové a LLM-ové kontroly, a jeho model skórovania a správanie metadát sa môžu zmeniť. Nezahŕňajte ho do požadovaných CI brán, pokiaľ váš workflow nie je pripravený na zmeny.
 
 Pre deterministické CI kontroly používajte namiesto toho `co-op-review`.

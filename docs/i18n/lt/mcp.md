@@ -1,8 +1,8 @@
 # MCP serveris
 
-Co-op Translator turi Model Context Protocol serverį agentams, redaktoriams ir MCP suderinamiems klientams.
+Co-op Translator įtraukia Model Context Protocol serverį agentams, redaktoriams ir MCP suderinamiems klientams.
 
-Numatytam vietiniam nustatymui vartotojams nereikia atskirai ranka paleisti serverio. Jie sukonfigūruoja savo MCP klientą, ir klientas automatiškai paleidžia `co-op-translator-mcp` per `stdio`, kai reikia Co-op Translator įrankių.
+Dėl numatyto vietinio nustatymo vartotojams nereikia rankiniu būdu paleisti atskiro serverio. Jie sukonfigūruoja savo MCP klientą, ir klientas automatiškai paleidžia `co-op-translator-mcp` per `stdio`, kai jam reikalingi Co-op Translator įrankiai.
 
 Jei renkatės tarp CLI, Python API ir MCP, pradėkite nuo [Pasirinkite savo darbo eigą](workflows.md).
 
@@ -10,24 +10,24 @@ Naudokite MCP, kai agentas arba redaktorius turėtų tiesiogiai kviesti Co-op Tr
 
 | Vartotojo tikslas | MCP įrankiai |
 | --- | --- |
-| Išversti vieną Markdown dokumentą, užrašų knygelę (notebook) arba vaizdą | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
-| Išversti Markdown arba notebook turinį naudojant pagrindinio agento modelį | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Perrašyti išverstų Markdown ar notebook nuorodas pasirinkus išvesties kelią | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Išversti visą saugyklą (repository) panašiai kaip CLI | `run_translation`, `translate_project` |
-| Peržiūrėti išverstą turinį be LLM kredencialų | `run_review` |
+| Išversti vieną Markdown dokumentą, užrašų knygelę arba vaizdą | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
+| Išversti Markdown arba užrašų knygelės turinį naudojant pagrindinio agento modelį | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Perrašyti išverstus Markdown arba užrašų knygelės nuorodas po išvesties kelio pasirinkimo | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Išversti visą saugyklą kaip CLI | `run_translation`, `translate_project` |
+| Peržiūrėti išverstą išvestį be LLM kredencialų | `run_review` |
 | Patikrinti galimybes ir aplinkos būseną | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-MCP serveris apgaubia tą pačią viešą Python API, aprašytą [Python API](api.md). Priemonių funkcijos, palaikomos tiekėjo, naudoja tuos pačius sukonfigūruotus tiekėjus kaip ir CLI bei Python API. Agento pagalbos įrankiai paruošia gabalus, kuriuos MCP pagrindinis agentas išverčia, o tada Co-op Translator rekonstruoja galutinį Markdown arba notebook.
+MCP serveris apgaubia tą pačią viešą Python API, aprašytą [Python API](api.md). Teikėjo palaikomi įrankiai naudoja tuos pačius sukonfigūruotus teikėjus kaip CLI ir Python API. Agentų palaikomi įrankiai paruošia fragmentus, kuriuos MCP host agentas išverčia, o tada Co-op Translator rekonstruoja galutinį Markdown arba notebook.
 
-## 1 žingsnis: Įdiekite ir sukonfigūruokite Co-op Translator
+## Žingsnis 1: Įdiekite ir sukonfigūruokite Co-op Translator
 
-Įdiekite Co-op Translator į Python aplinką, kurią naudos jūsų MCP klientas:
+Įdiekite Co-op Translator į Python aplinką, kurios naudos jūsų MCP klientas:
 
 ```bash
 pip install co-op-translator
 ```
 
-Vietiniam vystymui iš šios saugyklos įdiekite paketą redaguojamu režimu:
+Vietiniam kūrimui iš šios saugyklos įdiekite paketą redaguojamu režimu:
 
 ```bash
 pip install -e .
@@ -35,24 +35,33 @@ pip install -e .
 
 Pasirinkite vertimo režimą, kurį naudos jūsų MCP klientas:
 
-| Režimas | Naudoti šiam tikslui | Kredencialai |
+| Režimas | Naudojamas | Kredencialai |
 | --- | --- | --- |
-| Tiekėjo palaikomas | Co-op Translator iškviečia `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` arba `run_translation`. | Markdown ir notebook vertimams reikalingi Azure OpenAI arba OpenAI. Vaizdų vertimui taip pat reikalingas Azure AI Vision. |
-| Agento pagalba | MCP pagrindinis agentas išverčia gabalus, kuriuos grąžina `start_markdown_agent_translation` arba `start_notebook_agent_translation`. | Norint versti Markdown arba notebook gabalus, Co-op Translator LLM tiekėjo kredencialai nėra reikalingi. Vaizdų vertimas dar nepalaikomas agento pagalbos režimu. |
+| Teikėjo pagrįstas | Co-op Translator kviečia `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, arba `run_translation`. | Vertimui reikalingas Azure OpenAI, OpenAI arba Anthropic. Vaizdo vertimui taip pat reikalingas Azure AI Vision. |
+| Agentų palaikomas | MCP host agentas išverčia fragmentus, grąžintus `start_markdown_agent_translation` arba `start_notebook_agent_translation`. | Markdown arba notebook fragmentams Co-op Translator LLM teikėjo kredencialai nereikalingi. Vaizdų vertimas kol kas neapima agentų palaikymo režimo. |
 
-Jei pradedate nuo Markdown arba notebook vertimo agento aplinkoje, pavyzdžiui Codex ar Claude Code, pradėkite nuo agento pagalbos režimo. Naudokite tiekėjo palaikomą režimą, kai norite, kad pats Co-op Translator kviestų jūsų sukonfigūruotus tiekėjus, kai verčiate vaizdus arba kai vykdote saugyklos lygio vertimą, panašų į CLI.
+Jei pradedate vertimą iš Markdown arba notebook viduje agento, pvz., Codex arba Claude Code, pradėkite nuo agentų palaikymo režimo. Naudokite teikėjo palaikomą režimą, kai norite, kad pats Co-op Translator kreiptųsi į sukonfigūruotus teikėjus, kai verčiate vaizdus, arba kai vykdote saugyklos lygio vertimą kaip CLI.
 
-Tiekėjo kredencialus konfigūruokite tik tiekėjo palaikymui skirtoms darbo eigoms:
+Sukonfigūruokite vieną teikėją teikėjo palaikomiems darbo eigoms:
 
 ```bash
+# Azure OpenAI
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+
+# Arba OpenAI
+OPENAI_API_KEY="..."
+OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Arba Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Tiekėjo palaikomam vaizdų vertimui papildomai reikalinga:
+Teikėjo palaikomam vaizdų vertimui papildomai reikalinga:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -60,13 +69,13 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
 !!! note
-    Agent-assisted mode currently covers Markdown and notebook Markdown cells. Image translation still uses the provider-backed image pipeline and requires Azure AI Vision for OCR and layout-aware rendering.
+    Agentų palaikomas režimas šiuo metu apima Markdown ir notebook Markdown ląsteles. Vaizdų vertimas vis dar naudoja teikėjo palaikomą vaizdų srautą ir reikalauja Azure AI Vision OCR ir išdėstymo palaikančio atvaizdavimo.
 
-## 2 žingsnis: Sukonfigūruokite savo MCP klientą
+## Žingsnis 2: Sukonfigūruokite savo MCP klientą
 
-Paprastam vietiniam `stdio` nustatymui pridėkite Co-op Translator į savo MCP kliento konfigūraciją. Klientas automatiškai paleis ir sustabdys procesą.
+Dėl įprasto vietinio `stdio` nustatymo pridėkite Co-op Translator į savo MCP kliento konfigūraciją. Klientas automatiškai paleis ir sustabdys procesą.
 
-Installed package configuration:
+Įdiegto paketo konfigūracija:
 
 ```json
 {
@@ -79,7 +88,7 @@ Installed package configuration:
 }
 ```
 
-Source checkout configuration on Windows:
+Šaltinio kodo konfigūracija Windows:
 
 ```json
 {
@@ -93,7 +102,7 @@ Source checkout configuration on Windows:
 }
 ```
 
-Source checkout configuration on macOS or Linux:
+Šaltinio kodo konfigūracija macOS arba Linux:
 
 ```json
 {
@@ -107,11 +116,11 @@ Source checkout configuration on macOS or Linux:
 }
 ```
 
-Po MCP kliento konfigūracijos pakeitimo paleiskite arba įkraukite klientą iš naujo, kad jis galėtų aptikti naują serverį.
+Pakeitus MCP kliento konfigūraciją, paleiskite iš naujo arba perkraukite klientą, kad jis galėtų aptikti naują serverį.
 
-## 3 žingsnis: Patikrinkite serverį kliente
+## Žingsnis 3: Patikrinkite serverį kliente
 
-Paprašykite MCP kliento išvardinti prieinamus įrankius arba pirmiausia iškvieskite vieną iš tik skaitymui skirtų pagalbininkų:
+Paprašykite MCP kliento išvardinti galimus įrankius arba pirmiausia iškvieskite vieną iš tik skaitymui skirtų pagalbinių funkcijų:
 
 ```json
 {
@@ -124,41 +133,41 @@ Naudingi pirmieji patikrinimai:
 
 | Įrankis | Ką patikrinti |
 | --- | --- |
-| `get_api_overview` | Patvirtina, kad serveris pasiekiamas ir rodo prieinamas darbo eigas. |
-| `list_supported_languages` | Patvirtina, kad galima įkelti įtrauktus kalbų duomenis. |
-| `get_configuration_status` | Patvirtina LLM ir Vision tiekėjų prieinamumą neatskleidžiant slaptų reikšmių. |
+| `get_api_overview` | Patvirtina, kad serveris pasiekiamas ir parodo galimas darbo eigas. |
+| `list_supported_languages` | Patvirtina, kad supakuoti kalbų duomenys gali būti įkelti. |
+| `get_configuration_status` | Patvirtina LLM ir Vision teikėjų prieinamumą neatskleidžiant slaptų reikšmių. |
 
-## 4 žingsnis: Pasirinkite darbo eigą
+## Žingsnis 4: Pasirinkite darbo eigą
 
 ### Išversti atskirus failus ar dokumentus
 
-Naudokite tiekėjo palaikomus turinio įrankius, kai MCP klientas jau turi dokumento turinį arba vaizdo kelią ir Co-op Translator turėtų kviesti sukonfigūruotus vertimo tiekėjus.
+Naudokite teikėjo palaikomus turinio įrankius, kai MCP klientas jau turi dokumento turinį arba vaizdo kelią ir Co-op Translator turėtų kreiptis į sukonfigūruotus vertimo teikėjus.
 
 Markdown atveju:
 
-1. Iškvieskite `translate_markdown_content` su `document`, `language_code` ir, jei reikia, `source_path`.
-2. Jei išverstas rezultatas bus įrašytas į Co-op Translator išvesties maketą, iškvieskite `rewrite_markdown_paths`.
+1. Iškvieskite `translate_markdown_content` su `document`, `language_code` ir neprivalomu `source_path`.
+2. Jei išverstas rezultatas bus įrašytas į Co-op Translator išvesties išdėstymą, iškvieskite `rewrite_markdown_paths`.
 3. Leiskite klientui įrašyti arba grąžinti galutinį `content`.
 
-Notebook atveju:
+Užrašų knygelėms:
 
 1. Iškvieskite `translate_notebook_content` su notebook JSON ir `language_code`.
-2. Iškvieskite `rewrite_notebook_paths`, jei reikia pakoreguoti išverstų notebook nuorodas pagal tikslinį kelią.
+2. Iškvieskite `rewrite_notebook_paths`, jei išverstų notebook nuorodų reikia pakeisti pagal tikslinį kelią.
 3. Įrašykite arba grąžinkite galutinį notebook JSON.
 
-Vaizdų atveju:
+Vaizdams:
 
 1. Iškvieskite `translate_image_content` su `image_path`, `language_code` ir neprivalomu `root_dir` arba `fast_mode`.
 2. Perskaitykite grąžintus `data_base64` ir `mime_type`.
-3. Jei pateiktas `output_path`, išverstas vaizdas taip pat įrašomas į tą kelią.
+3. Jei pateiktas `output_path`, išverstas vaizdas taip pat bus išsaugotas tame kelyje.
 
-Turinio įrankiai neatlieka projekto aptikimo, metaduomenų atnaujinimų, įspėjimų ar automatinio kelių perrašymo. Jei norite, kad pagrindinis agentas išversti Markdown ar notebook gabalus be Co-op Translator LLM tiekėjo kredencialų, naudokite žemiau pateiktą agento pagalbos darbo eigą.
+Turinio įrankiai neatlieka projekto aptikimo, metaduomenų atnaujinimų, atsakomybės apribojimų ar automatinio kelių perrašymo. Jei norite, kad host agentas išverstų Markdown arba notebook fragmentus be Co-op Translator LLM teikėjo kredencialų, naudokite žemiau pateiktą agentų palaikomą darbo eigą.
 
-### Vertimas naudojant pagrindinio agento modelį
+### Vertimas su host agent modeliu
 
-Naudokite agento pagalbos įrankius, kai norite, kad MCP pagrindinis agentas, pavyzdžiui, kodo asistentas, sugeneruotų išverstą tekstą vietoje to, kad sukonfigūruotumėte Azure OpenAI arba OpenAI Co-op Translator.
+Naudokite agentų palaikomus įrankius, kai norite, kad MCP host agentas, pvz., kodo asistentas, sukurtų išverstą tekstą vietoje to, kad sukonfigūruotumėte LLM teikėją Co-op Translator.
 
-Chat pagrindu veikiančiame MCP kliente paprastai nereikia rašyti įrankio JSON ranka. Paprašykite agento naudoti agento pagalbos darbo eigą:
+Pokalbių pagrindu veikiančiame MCP kliente paprastai nereikia rašyti įrankio JSON patiems. Paprašykite agento naudoti agentų palaikomą darbo eigą:
 
 ```text
 Translate this Markdown file to Korean with Co-op Translator MCP.
@@ -166,7 +175,7 @@ Use agent-assisted mode: call start_markdown_agent_translation, translate the re
 Keep Markdown formatting, code blocks, and links intact.
 ```
 
-Notebook atveju naudokite tą pačią schemą:
+Užrašų knygelėms naudokite tą patį modelį:
 
 ```text
 Translate this notebook to Korean with Co-op Translator MCP.
@@ -174,29 +183,29 @@ Use start_notebook_agent_translation, translate the returned Markdown-cell chunk
 Preserve code cells, outputs, and notebook metadata.
 ```
 
-Jei jūsų MCP klientas palaiko serverio užklausas, naudokite `agent_assisted_markdown_translation_prompt`, kad klientas užkrautų tas pačias darbo eigos instrukcijas.
+Jei jūsų MCP klientas palaiko serverio užklausas, naudokite `agent_assisted_markdown_translation_prompt`, kad klientas įkeltų tą pačią darbo eigos instrukciją.
 
 Markdown atveju:
 
-1. Iškvieskite `start_markdown_agent_translation` su `document`, `language_code` ir, jei reikia, `source_path`.
-2. Išverskite kiekvieną grąžintą gabalą pagrindiniame agentui sekdami gabalo `prompt`.
-3. Iškvieskite `finish_markdown_agent_translation` su originaliu `job` ir išvertais gabalais, naudojant `chunk_id` ir `translated_text`.
+1. Iškvieskite `start_markdown_agent_translation` su `document`, `language_code` ir neprivalomu `source_path`.
+2. Išverskite kiekvieną grąžintą fragmentą host agente, sekdami fragmento `prompt`.
+3. Iškvieskite `finish_markdown_agent_translation` su originaliu `job` ir išverstais fragmentais, nurodydami `chunk_id` ir `translated_text`.
 4. Jei turinys bus įrašytas į išverstą tikslinį kelią, iškvieskite `rewrite_markdown_paths`.
 
-Notebook atveju:
+Užrašų knygelėms:
 
 1. Iškvieskite `start_notebook_agent_translation` su notebook JSON ir `language_code`.
-2. Išversti kiekvieną grąžintą gabalą pagrindiniame agentui.
-3. Iškvieskite `finish_notebook_agent_translation` su originaliu `job` ir išvertais gabalais.
-4. Iškvieskite `rewrite_notebook_paths`, jei reikia pakoreguoti išverstų notebook nuorodas pagal tikslinį kelią.
+2. Išverskite kiekvieną grąžintą fragmentą host agente.
+3. Iškvieskite `finish_notebook_agent_translation` su originaliu `job` ir išvertais fragmentais.
+4. Iškvieskite `rewrite_notebook_paths`, jei išverstų notebook nuorodų reikia pritaikyti tiksliniam keliui.
 
-Agent-assisted įrankiai nekviečia Azure OpenAI arba OpenAI iš Co-op Translator. Pagrindinis agentas yra atsakingas už grąžintų gabalų vertimą. Co-op Translator tvarko Markdown gabalavimą, vietos rezervavimo ženklų išsaugojimą, frontmatter rekonstrukciją, notebook langelių pakeitimą ir povertiminę normalizaciją.
+Agentų palaikomi įrankiai nekviečia sukonfigūruoto LLM teikėjo per Co-op Translator. Host agentas yra atsakingas už grąžintų fragmentų vertimą. Co-op Translator rūpinasi Markdown suskaidymu į fragmentus, vietos rezervavimo ženklų išsaugojimu, frontmatter atkūrimu, notebook ląstelių pakeitimu ir vertimo po apdorojimo normalizavimu.
 
 ### Išversti visą saugyklą
 
 Naudokite `run_translation`, kai vartotojas nori, kad Co-op Translator elgtųsi kaip `translate` CLI.
 
-Saugyklos vertimas pagal nutylėjimą naudoja `dry_run=true`, kad agentas galėtų patikrinti apimtį prieš keičiant failus:
+Saugyklos vertimas pagal nutylėjimą naudoja `dry_run=true`, kad agentas galėtų peržiūrėti apimtį prieš failų pakeitimus:
 
 ```json
 {
@@ -207,7 +216,13 @@ Saugyklos vertimas pagal nutylėjimą naudoja `dry_run=true`, kad agentas galėt
 }
 ```
 
-Kad leisti įrašymus, kvietėjas turi nustatyti tiek `dry_run=false`, tiek `confirm_write=true`:
+`run_translation` rezultatas apima `events` masyvą su verzijuotais
+`co-op.translation.event.v1` progreso įvykiais. MCP klientai turėtų naudoti laukus tokius
+kaip `type`, `stage_key`, `completed`, `total`, ir `current_path` vietoj
+nagrinėjimo užfiksuoto konsolės teksto. Nurodykite `json_events_path`, kad taip pat įrašytumėte tuos įvykius
+į NDJSON failą.
+
+Norint leisti įrašymus, kvietėjas turi nustatyti tiek `dry_run=false`, tiek `confirm_write=true`:
 
 ```json
 {
@@ -219,14 +234,14 @@ Kad leisti įrašymus, kvietėjas turi nustatyti tiek `dry_run=false`, tiek `con
 }
 ```
 
-`translate_project` pateikiamas kaip suderinamumo aliasas `run_translation`.
+`translate_project` yra pateiktas kaip suderinamumo aliasas `run_translation`.
 
-### Peržiūrėti išverstą turinį
+### Peržiūrėti išverstą išvestį
 
-Naudokite `run_review` determinizuotoms patikroms, kurios nereikalauja LLM ar Vision kredencialų:
+Naudokite `run_review` deterministiniams patikrinimams, kuriems nereikia LLM ar Vision kredencialų:
 
 !!! note "Beta"
-    MCP exposes the beta `run_review` API. It is safe for read-only review workflows, but review checks and issue schemas may evolve.
+    MCP pateikia beta `run_review` API. Jis saugus tik skaitymui skirtoms peržiūros darbo eigoms, tačiau peržiūros patikrinimai ir problemų schemos gali keistis.
 
 ```json
 {
@@ -237,11 +252,11 @@ Naudokite `run_review` determinizuotoms patikroms, kurios nereikalauja LLM ar Vi
 }
 ```
 
-Rezultatas apima užfiksuotą teksto išvestį ir, kai prieinama, struktūruotą peržiūros santrauką.
+Rezultatas apima užfiksuotą tekstinę išvestį ir struktūrizuotą peržiūros santrauką, kai ji prieinama.
 
 ## Rankiniai serverio paleidimai
 
-Rankiniai paleidimai skirti labiau derinimui arba transportams, kurie elgiasi kaip ilgai veikiantys serveriai.
+Rankiniai paleidimai dažniausiai skirti derinimui arba transportams, kurie elgiasi kaip ilgai veikiantys serveriai.
 
 Derinkite numatytąjį stdio serverį:
 
@@ -249,7 +264,7 @@ Derinkite numatytąjį stdio serverį:
 co-op-translator-mcp
 ```
 
-Paleisti iš source checkout:
+Paleisti iš šaltinio kopijos:
 
 ```bash
 python -m co_op_translator.mcp.server
@@ -262,45 +277,45 @@ co-op-translator-mcp --transport streamable-http
 co-op-translator-mcp --transport sse
 ```
 
-Vietinėms redaktoriaus ir agente integracijoms pirmenybę teikite kliento valdomam `stdio` nustatymui 2 žingsnyje.
+Vietinėms redaktoriaus ir agento integracijoms pirmenybę teikite kliento valdomai `stdio` konfigūracijai Žingsnyje 2.
 
 ## Įrankiai
 
 | Įrankis | Paskirtis | Rašo failus |
 | --- | --- | --- |
 | `translate_markdown_content` | Išversti Markdown eilutę. | Ne |
-| `translate_notebook_content` | Išversti Markdown langelius notebook JSON. | Ne |
-| `translate_image_content` | Išversti tekstą viename vaizde ir grąžinti base64 vaizdo duomenis. | Pasirinktina, tik kai pateiktas `output_path` |
-| `start_markdown_agent_translation` | Paruošti Markdown gabalus pagrindiniam agentui versti be Co-op Translator LLM kredencialų. | Ne |
-| `finish_markdown_agent_translation` | Atkurti Markdown iš pagrindinio agento išverstų gabalų. | Ne |
-| `start_notebook_agent_translation` | Paruošti notebook Markdown-langelių gabalus pagrindiniam agentui versti. | Ne |
-| `finish_notebook_agent_translation` | Atkurti notebook JSON iš pagrindinio agento išverstų gabalų. | Ne |
-| `rewrite_markdown_paths` | Perrašyti Markdown kūną ir frontmatter keliams tinkamiems išverstam tikslui. | Ne |
-| `rewrite_notebook_paths` | Perrašyti kelius notebook Markdown langeliuose. | Ne |
+| `translate_notebook_content` | Išversti Markdown ląsteles notebook JSON. | Ne |
+| `translate_image_content` | Išversti tekstą viename vaizde ir grąžinti base64 vaizdo duomenis. | Pasirenkama, tik kai pateiktas `output_path` |
+| `start_markdown_agent_translation` | Paruošti Markdown fragmentus, kad host agentas galėtų juos išversti be Co-op Translator LLM kredencialų. | Ne |
+| `finish_markdown_agent_translation` | Rekonstruoti Markdown iš host agente išverstų fragmentų. | Ne |
+| `start_notebook_agent_translation` | Paruošti notebook Markdown ląstelių fragmentus, kuriuos host agentas išvers. | Ne |
+| `finish_notebook_agent_translation` | Rekonstruoti notebook JSON iš host agente išverstų fragmentų. | Ne |
+| `rewrite_markdown_paths` | Perrašyti Markdown turinį ir frontmatter kelius skirtam išvesties keliui. | Ne |
+| `rewrite_notebook_paths` | Perrašyti kelius notebook Markdown ląstelėse. | Ne |
 | `run_translation` | Vykdyti projekto lygio vertimą kaip CLI. | Taip, kai `dry_run=false` ir `confirm_write=true` |
 | `translate_project` | Suderinamumo aliasas `run_translation`. | Taip, kai `dry_run=false` ir `confirm_write=true` |
-| `run_review` | Vykdyti determinizuotas peržiūros patikras. | Ne |
-| `get_configuration_status` | Pranešti apie sukonfigūruotus LLM ir Vision tiekėjus neatskleidžiant slaptažodžių. | Ne |
+| `run_review` | Vykdyti deterministinius peržiūros patikrinimus. | Ne |
+| `get_configuration_status` | Pranešti apie sukonfigūruotus LLM ir Vision teikėjus neatskleidžiant slaptų duomenų. | Ne |
 | `list_supported_languages` | Išvardinti palaikomų tikslinių kalbų kodus. | Ne |
-| `get_api_overview` | Apibūdinti prieinamas MCP darbo eigas ir įrankius. | Ne |
+| `get_api_overview` | Apibūdinti galimas MCP darbo eigas ir įrankius. | Ne |
 
-## Ištekliai
+## Resursai
 
-| Resource URI | Paskirtis |
+| Resurso URI | Paskirtis |
 | --- | --- |
 | `co-op://api` | JSON apžvalga apie darbo eigas ir įrankius. |
 | `co-op://supported-languages` | JSON sąrašas palaikomų kalbų kodų. |
-| `co-op://configuration` | JSON tiekėjų prieinamumo santrauka be slaptų reikšmių. |
+| `co-op://configuration` | JSON teikėjų prieinamumo santrauka be slaptų duomenų. |
 
-## Užklausos
+## Promptai
 
-| Užklausa | Paskirtis |
+| Prompt | Paskirtis |
 | --- | --- |
-| `translate_markdown_document_prompt` | Nurodyti MCP klientui turinio vertimą ir neprivalomą kelių perrašymą. |
-| `agent_assisted_markdown_translation_prompt` | Nurodyti MCP klientui, kaip atlikti pagrindinio agento Markdown vertimą be Co-op Translator LLM tiekėjo kredencialų. |
-| `translate_repository_prompt` | Nurodyti MCP klientui saugyklos vertimą, kai pradedama nuo dry-run. |
+| `translate_markdown_document_prompt` | Nurodo MCP klientui turinio vertimo eigą bei neprivalomą kelių perrašymą. |
+| `agent_assisted_markdown_translation_prompt` | Nurodo MCP klientui host-agento Markdown vertimo eigą be Co-op Translator LLM teikėjo kredencialų. |
+| `translate_repository_prompt` | Nurodo MCP klientui saugyklos vertimą, pradedant peržiūra (dry-run). |
 
-## Kopijuoti ir įklijuoti pavyzdžiai
+## Kopijuoti-ir-įklijuoti pavyzdžiai
 
 Išversti Markdown turinį:
 
@@ -321,7 +336,7 @@ Perrašyti išverstų Markdown nuorodas:
 {
   "tool": "rewrite_markdown_paths",
   "arguments": {
-    "content": "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+    "content": "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
     "source_path": "docs/guide.md",
     "target_path": "translations/ko/docs/guide.md",
     "policy": {
@@ -335,7 +350,7 @@ Perrašyti išverstų Markdown nuorodas:
 }
 ```
 
-Išversti Markdown naudojant pagrindinio agento modelį:
+Išversti Markdown su host agent modeliu:
 
 ```json
 {
@@ -348,7 +363,7 @@ Išversti Markdown naudojant pagrindinio agento modelį:
 }
 ```
 
-Po to, kai pagrindinis agentas išverčia kiekvieną grąžintą gabalą, užbaikite darbą su pilnu `job` objektu, kurį grąžino `start_markdown_agent_translation`:
+Kai host agentas išvers kiekvieną grąžintą fragmentą, užbaikite darbą naudodami pilną `job` objektą, kurį grąžino `start_markdown_agent_translation`:
 
 ```text
 tool: finish_markdown_agent_translation
@@ -359,7 +374,7 @@ arguments:
       translated_text: "# 안녕하세요\n\n시작하려면 `pip install`을 사용하세요."
 ```
 
-Peržiūra saugyklos vertimo:
+Peržiūrėti saugyklos vertimą:
 
 ```json
 {
@@ -377,17 +392,17 @@ Peržiūra saugyklos vertimo:
 
 | Problema | Ką išbandyti |
 | --- | --- |
-| MCP klientas neranda `co-op-translator-mcp`. | Naudokite absoliutų Python vykdomąjį failą ir `["-m", "co_op_translator.mcp.server"]` source checkout konfigūraciją. |
-| Serveris nurodytas, bet vertimas nepavyksta. | Iškvieskite `get_configuration_status` ir patikrinkite, ar yra prieinamas LLM tiekėjas. |
-| Norite Markdown ar notebook vertimo be Azure OpenAI/OpenAI raktų. | Naudokite `start_markdown_agent_translation` / `finish_markdown_agent_translation` arba atitinkamus notebook įrankius, kad pagrindinis agentas išverstų gabalus. |
+| MCP klientas negali rasti `co-op-translator-mcp`. | Naudokite absoliutų Python vykdomojo failo kelią ir `["-m", "co_op_translator.mcp.server"]` šaltinio checkout konfigūraciją. |
+| Serveris yra išvardintas, bet vertimas nepavyksta. | Iškvieskite `get_configuration_status` ir patikrinkite, ar yra prieinamas LLM teikėjas. |
+| Norite Markdown arba notebook vertimo be teikėjo kredencialų. | Naudokite `start_markdown_agent_translation` / `finish_markdown_agent_translation` arba atitinkamus notebook įrankius, kad host agentas išverstų fragmentus. |
 | Vaizdų vertimas nepavyksta. | Patikrinkite, ar nustatyti Azure AI Vision kintamieji ir iškvieskite `get_configuration_status`. |
 | Saugyklos vertimas neįrašo failų. | Nustatykite `dry_run=false` ir `confirm_write=true` tik gavus aiškų vartotojo patvirtinimą. |
-| Kliento konfigūracijos pakeitimai neatsispindi. | Paleiskite arba įkraukite MCP klientą iš naujo. |
+| Kliento konfigūracijos pakeitimai neatsiranda. | Paleiskite arba perkraukite MCP klientą. |
 
 ## Saugumo pastabos
 
-- MCP įrankių kvietimai yra valdomi modelio per pagrindinę programą, todėl saugyklos vertimas pagal nutylėjimą yra dry-run.
-- Pilnas saugyklos vertimas gali sukurti, atnaujinti arba pašalinti daug failų. Prieš nustatant `confirm_write=true` reikalaukite aiškaus vartotojo patvirtinimo.
+- MCP įrankių kvietimai yra valdomi host programos modelio, todėl saugyklos vertimas pagal nutylėjimą yra dry-run.
+- Visas saugyklos vertimas gali sukurti, atnaujinti arba pašalinti daug failų. Reikalaukite aiškaus vartotojo patvirtinimo prieš nustatant `confirm_write=true`.
 - Konfigūracijos būsenos įrankis niekada negrąžina API raktų, galinių taškų ar kitų slaptų reikšmių.
-- Vaizdų vertimas grąžina base64 vaizdo duomenis. Dideli vaizdai gali sukurti didelius įrankio atsakymus.
-- Agento pagalbos įrankiai grąžina šaltinio gabalus ir užklausas MCP pagrindiniam agentui. Naudokite juos tik su turiniu, kurį vartotojas sutinka siųsti tam pagrindinio agento modeliui.
+- Vaizdų vertimas grąžina base64 vaizdo duomenis. Dideli vaizdai gali sukurti didelius įrankių atsakymus.
+- Agentų palaikomi įrankiai grąžina šaltinio fragmentus ir prompt'us MCP hostui. Naudokite juos tik su turiniu, kurį vartotojas yra pasirengęs siųsti tam host agent modeliui.

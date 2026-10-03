@@ -1,6 +1,6 @@
 # Referencja CLI
 
-Co-op Translator instaluje następujące punkty wejścia w wierszu poleceń:
+Co-op Translator instaluje te punkty wejścia w wierszu poleceń:
 
 - `translate`
 - `evaluate`
@@ -8,125 +8,144 @@ Co-op Translator instaluje następujące punkty wejścia w wierszu poleceń:
 - `co-op-review`
 - `co-op-translator-mcp`
 
-Polecenia `translate`, `evaluate`, `migrate-links` i `co-op-review` są wywoływane przez `co_op_translator.__main__`, który wybiera implementację polecenia na podstawie nazwy uruchomionego skryptu. Serwer MCP używa bezpośrednio `co_op_translator.mcp.server`.
+Polecenia `translate`, `evaluate`, `migrate-links` i `co-op-review` przechodzą przez `co_op_translator.__main__`, który wybiera implementację polecenia na podstawie nazwy uruchomionego skryptu. Serwer MCP używa bezpośrednio `co_op_translator.mcp.server`.
 
 Jeśli zastanawiasz się między CLI, Python API i MCP, zacznij od [Wybierz swój przepływ pracy](workflows.md).
 
-## Pierwsze uruchomienie CLI
+## Wyjście konsoli
 
-Zacznij tutaj, jeśli korzystasz z Co-op Translator z terminala:
+Interaktywne terminale używają formatowania Rich dla nagłówka polecenia, postępu i podsumowań. Wyjście w CI i w trybie nieinteraktywnym automatycznie przełącza się na zwykły tekst.
 
-1. Skonfiguruj dostawcę LLM zgodnie z opisem w [Configuration](configuration.md).
+Ustaw `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain`, aby wymusić zwykłe wyjście, lub `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich`, aby wymusić wyjście Rich. Ustaw `CO_OP_TRANSLATOR_NO_PROGRESS=1`, aby zachować podsumowania, jednocześnie wyłączając animowane paski postępu.
+
+Użyj `translate --json-events progress.ndjson`, gdy inny system potrzebuje
+maszynowo czytelnego postępu. CLI nadal będzie renderować wyjście dla ludzi, podczas gdy
+plik NDJSON otrzyma wersjonowane zdarzenia `co-op.translation.event.v1` ze
+stabilnymi polami takimi jak `type`, `stage_key`, `completed`, `total` oraz
+`current_path`.
+
+## Pierwszy przebieg w CLI
+
+Zacznij tutaj, jeśli używasz Co-op Translator z terminala:
+
+1. Skonfiguruj dostawcę LLM zgodnie z opisem w [Konfiguracja](configuration.md).
 2. Wybierz typ treści, który chcesz przetłumaczyć.
 3. Najpierw uruchom ukierunkowane polecenie, na przykład tłumaczenie tylko Markdown.
-4. Użyj `--dry-run` przed dużymi zmianami w repozytorium.
+4. Użyj `--dry-run` przed szerokimi zmianami w repozytorium.
 5. Użyj `co-op-review` po tłumaczeniu, aby sprawdzić strukturę i aktualność.
 
 | Cel | Polecenie początkowe |
 | --- | --- |
-| Translate Markdown documents | `translate -l "ko" -md` |
-| Translate notebooks | `translate -l "ko" -nb` |
-| Translate image text | `translate -l "ko" -img` |
-| Preview work without writing files | `translate -l "ko" -md --dry-run` |
-| Review existing translations | `co-op-review -l "ko"` |
-| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
-| Expose tools to an MCP client | Configure the [MCP Server](mcp.md) instead of running CLI commands directly. |
+| Tłumaczenie dokumentów Markdown | `translate -l "ko" -md` |
+| Tłumaczenie notebooków | `translate -l "ko" -nb` |
+| Tłumaczenie tekstu na obrazach | `translate -l "ko" -img` |
+| Podgląd pracy bez zapisywania plików | `translate -l "ko" -md --dry-run` |
+| Przegląd istniejących tłumaczeń | `co-op-review -l "ko"` |
+| Aktualizacja linków w notebookach i Markdown | `migrate-links -l "ko" --dry-run` |
+| Udostępnienie narzędzi klientowi MCP | Skonfiguruj [Serwer MCP](mcp.md) zamiast uruchamiać polecenia CLI bezpośrednio. |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+Tłumaczy pliki Markdown, notebooki i tekst na obrazach na jeden lub więcej języków docelowych.
 
 ```bash
 translate -l "ko ja fr"
 ```
 
-### Typowe przykłady
+### Przykłady ogólne
 
-Translate only Markdown:
+Tłumacz tylko Markdown:
 
 ```bash
 translate -l "de" -md
 ```
 
-Translate only notebooks:
+Tłumacz tylko notebooki:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Translate Markdown and images:
+Tłumacz Markdown i obrazy:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-Update existing translations by deleting and recreating them:
+Zaktualizuj istniejące tłumaczenia, usuwając je i tworząc ponownie:
 
 ```bash
 translate -l "ko" -u
 ```
 
-Run without interactive prompts:
+Uruchom bez interaktywnych monitów:
 
 ```bash
 translate -l "ko ja" -md -y
 ```
 
-Save logs:
+Zapisz logi:
 
 ```bash
 translate -l "ko" -s
 ```
 
+Zapisuj strukturalne zdarzenia postępu:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
 ### Opcje
 
-| Option | Required | Description |
+| Opcja | Wymagane | Opis |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Space-separated language codes, such as `"es fr de"`, or `"all"`. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `-u`, `--update` | No | Delete existing translations for selected languages and recreate them. |
-| `-img`, `--images` | No | Translate only image files. |
-| `-md`, `--markdown` | No | Translate only Markdown files. |
-| `-nb`, `--notebook` | No | Translate only Jupyter notebook files. |
-| `-d`, `--debug` | No | Enable debug logging in the console. |
-| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-x`, `--fix` | No | Retranslate low-confidence Markdown files based on previous evaluation results. |
-| `-c`, `--min-confidence` | No | Confidence threshold for `--fix`. Defaults to `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | No | Add or suppress machine translation disclaimers. Defaults to enabled in the CLI. |
-| `-f`, `--fast` | No | Deprecated fast image mode. |
-| `-y`, `--yes` | No | Auto-confirm prompts, useful in CI. |
-| `--repo-url` | No | Repository URL used in the README languages table sparse-checkout advisory. |
-| `--migrate-language-folders` | No | Rename legacy alias folders, such as `cn` or `tw`, to canonical BCP 47 folders. |
-| `--dry-run` | No | Preview language folder migration and translation estimates without writing files. |
+| `-l`, `--language-codes` | Yes | Kody języków oddzielone spacją, na przykład `"es fr de"`, lub `"all"`. |
+| `-r`, `--root-dir` | No | Katalog projektu. Domyślnie bieżący katalog. |
+| `-u`, `--update` | No | Usuń istniejące tłumaczenia dla wybranych języków i utwórz je ponownie. |
+| `-img`, `--images` | No | Tłumacz tylko pliki obrazów. |
+| `-md`, `--markdown` | No | Tłumacz tylko pliki Markdown. |
+| `-nb`, `--notebook` | No | Tłumacz tylko pliki Jupyter notebook. |
+| `-d`, `--debug` | No | Włącz logowanie debugujące w konsoli. |
+| `-s`, `--save-logs` | No | Zapisz logi poziomu DEBUG w `<root-dir>/logs/`. |
+| `--json-events` | No | Zapisz maszynowo czytelne zdarzenia postępu tłumaczenia jako NDJSON. |
+| `-x`, `--fix` | No | Ponownie przetłumacz pliki Markdown o niskim zaufaniu na podstawie poprzednich wyników ewaluacji. |
+| `-c`, `--min-confidence` | No | Próg zaufania dla `--fix`. Domyślnie `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | No | Dodaj lub stłum komunikaty zastrzegające dotyczące tłumaczenia maszynowego. Domyślnie w CLI włączone. |
+| `-f`, `--fast` | No | Przestarzały tryb szybkiego tłumaczenia obrazów. |
+| `-y`, `--yes` | No | Automatyczne potwierdzanie monitów, przydatne w CI. |
+| `--repo-url` | No | URL repozytorium używany w tabeli języków README w poradach dotyczących sparse-checkout. |
+| `--migrate-language-folders` | No | Zmień nazwy starszych aliasów folderów, takich jak `cn` lub `tw`, na kanoniczne foldery BCP 47. |
+| `--dry-run` | No | Podgląd migracji folderów językowych i szacunków tłumaczenia bez zapisywania plików. |
 
-If no type flag is provided, `translate` processes Markdown, notebooks, and images. Image translation requires Azure AI Vision configuration.
+Jeśli nie podano flagi typu, `translate` przetwarza Markdown, notebooki i obrazy. Tłumaczenie obrazów wymaga konfiguracji Azure AI Vision.
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+Ocenia jakość przetłumaczonego Markdown dla jednego języka.
 
 !!! warning "Eksperymentalne"
-    `evaluate` is experimental. It can use rule-based and LLM-based quality checks, writes evaluation results into translation metadata, and its scoring model and metadata behavior may change.
+    `evaluate` jest eksperymentalne. Może używać kontroli opartych na regułach i na LLM, zapisuje wyniki ewaluacji w metadanych tłumaczenia, a jego model punktacji i zachowanie dotyczące metadanych mogą ulec zmianie.
 
 ```bash
 evaluate -l "ko"
 ```
 
-### Typowe przykłady
+### Przykłady ogólne
 
-Use a stricter low-confidence threshold:
+Użyj surowszego progu niskiego zaufania:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-Run rule-based checks only:
+Uruchom tylko kontrole oparte na regułach:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-Run LLM-based checks only:
+Uruchom tylko kontrole oparte na LLM:
 
 ```bash
 evaluate -l "ja" -D
@@ -134,50 +153,62 @@ evaluate -l "ja" -D
 
 ### Opcje
 
-| Option | Required | Description |
+| Opcja | Wymagane | Opis |
 | --- | --- | --- |
-| `-l`, `--language-code` | Yes | Single language code to evaluate. Alias codes are normalized. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `-c`, `--min-confidence` | No | Threshold used when listing low-confidence translations. Defaults to `0.7`. |
-| `-d`, `--debug` | No | Enable debug logging. |
-| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-f`, `--fast` | No | Rule-based evaluation only. |
-| `-D`, `--deep` | No | LLM-based evaluation only. |
+| `-l`, `--language-code` | Yes | Pojedynczy kod języka do ewaluacji. Aliasowe kody są normalizowane. |
+| `-r`, `--root-dir` | No | Katalog projektu. Domyślnie bieżący katalog. |
+| `-c`, `--min-confidence` | No | Próg używany przy wypisywaniu tłumaczeń o niskim zaufaniu. Domyślnie `0.7`. |
+| `-d`, `--debug` | No | Włącz logowanie debugujące. |
+| `-s`, `--save-logs` | No | Zapisz logi poziomu DEBUG w `<root-dir>/logs/`. |
+| `-f`, `--fast` | No | Tylko ewaluacja oparta na regułach. |
+| `-D`, `--deep` | No | Tylko ewaluacja oparta na LLM. |
 
-By default, `evaluate` uses both rule-based and LLM-based evaluation. Results are written into translation metadata and summarized in the console.
+Domyślnie `evaluate` używa zarówno ewaluacji opartej na regułach, jak i na LLM. Wyniki są zapisywane w metadanych tłumaczenia i podsumowywane w konsoli.
 
 ## co-op-review
 
-Run deterministic translation maintenance checks without API credentials.
+Uruchom deterministyczne kontrole konserwacji tłumaczeń bez poświadczeń do API.
 
 !!! note "Beta"
-    `co-op-review` is a beta deterministic review command. It does not call model providers or write files, but its checks and issue output schema may evolve.
+    `co-op-review` to beta polecenie przeglądowe o charakterze deterministycznym. Nie wywołuje dostawców modeli ani nie zapisuje plików, ale jego kontrole i schemat wyjścia problemów mogą ewoluować.
 
 ```bash
 co-op-review -l "ko"
 ```
 
-### Typowe przykłady
+### Przykłady ogólne
 
-Review Korean and Japanese translations from the current directory:
+Przejrzyj tłumaczenia koreańskie i japońskie z bieżącego katalogu:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Review a specific project root:
+Przejrzyj konkretny katalog projektu:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-Review only source files changed against a base ref:
+Przejrzyj tylko README po tłumaczeniu tylko README:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` ignoruje inne dokumenty i zagnieżdżone README. Kończy się niepowodzeniem, jeśli główny
+`README.md` w katalogu root jest brakujący. W połączeniu z `--changed-from`, przegląda tylko README
+gdy ten plik źródłowy uległ zmianie. Tłumaczenie tylko README pozostawia oryginalne README
+bez zmian, włącznie z wszelkimi znacznikami wspólnych sekcji.
+
+Przejrzyj tylko pliki źródłowe zmienione względem bazowego refa:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-Print GitHub-flavored Markdown output for CI summaries:
+Wydrukuj wyjście w Markdown zgodne z GitHub dla podsumowań CI:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -185,54 +216,55 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 ### Opcje
 
-| Option | Required | Description |
+| Opcja | Wymagane | Opis |
 | --- | --- | --- |
-| `-l`, `--language-code` | No | Language code to review. Can be passed multiple times or as a space-separated value. Defaults to all discovered translation languages. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `--changed-from` | No | Git ref used to limit review to changed source files. |
-| `--format` | No | Output format: `text` or `github`. Defaults to `text`. |
+| `-l`, `--language-code` | No | Kod języka do przeglądu. Można przekazać wielokrotnie lub jako wartość oddzieloną spacjami. Domyślnie wszystkie wykryte języki tłumaczeń. |
+| `-r`, `--root-dir` | No | Katalog projektu. Domyślnie bieżący katalog. |
+| `--changed-from` | No | Ref Git używany do ograniczenia przeglądu do zmienionych plików źródłowych. |
+| `--readme-only` | No | Przeglądaj tylko tłumaczenie głównego `README.md`. |
+| `--format` | No | Format wyjścia: `text` lub `github`. Domyślnie `text`. |
 
-`co-op-review` currently checks for missing translated files, missing or stale translation metadata, Markdown frontmatter and code fence integrity, invalid translated notebook JSON, and missing local Markdown or image link targets. Missing links are warnings by default; structural and freshness problems fail the command.
+`co-op-review` obecnie sprawdza brakujące przetłumaczone pliki, brakujące lub przestarzałe metadane tłumaczeń, poprawność frontmatter Markdown i bloków kodu, nieprawidłowe przetłumaczone JSONy notebooków oraz brakujące lokalne cele linków w Markdown lub obrazach. Brakujące linki są domyślnie ostrzeżeniami; problemy ze strukturą i aktualnością powodują niepowodzenie polecenia.
 
 ## co-op-translator-mcp
 
-Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+Uruchom serwer Co-op Translator MCP dla agentów, redaktorów i klientów zgodnych z MCP.
 
 ```bash
 co-op-translator-mcp
 ```
 
-The default transport is `stdio`. See the [Serwer MCP](mcp.md) guide for client configuration, tools, resources, and safety notes.
+Domyślnym transportem jest `stdio`. Zobacz przewodnik [Serwer MCP](mcp.md) dotyczący konfiguracji klienta, narzędzi, zasobów i uwag dotyczących bezpieczeństwa.
 
 ### Opcje
 
-| Option | Required | Description |
+| Opcja | Wymagane | Opis |
 | --- | --- | --- |
-| `--transport` | No | MCP transport: `stdio`, `streamable-http`, or `sse`. Defaults to `stdio`. |
+| `--transport` | No | Transport MCP: `stdio`, `streamable-http` lub `sse`. Domyślnie `stdio`. |
 
 ## migrate-links
 
-Reprocess translated Markdown files and update notebook links so they point to translated notebooks when available.
+Ponownie przetwórz przetłumaczone pliki Markdown i zaktualizuj linki w notebookach tak, aby wskazywały na przetłumaczone notebooki, gdy są dostępne.
 
 ```bash
 migrate-links -l "ko ja"
 ```
 
-### Typowe przykłady
+### Przykłady ogólne
 
-Preview link updates:
+Podgląd aktualizacji linków:
 
 ```bash
 migrate-links -l "ko" --dry-run
 ```
 
-Process all supported languages without confirmation:
+Przetwórz wszystkie obsługiwane języki bez potwierdzenia:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-Only rewrite links when translated notebooks exist:
+Przepisuj linki tylko wtedy, gdy istnieją przetłumaczone notebooki:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
@@ -240,20 +272,20 @@ migrate-links -l "ko" --no-fallback-to-original
 
 ### Opcje
 
-| Option | Required | Description |
+| Opcja | Wymagane | Opis |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Space-separated language codes, or `"all"`. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `--image-dir` | No | Translated image directory relative to the root. Defaults to `translated_images`. |
-| `--dry-run` | No | Show files that would change without writing updates. |
-| `--fallback-to-original`, `--no-fallback-to-original` | No | Use original notebook links when translated notebooks are missing. Enabled by default. |
-| `-d`, `--debug` | No | Enable debug logging. |
-| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-y`, `--yes` | No | Auto-confirm prompts when processing all languages. |
+| `-l`, `--language-codes` | Yes | Kody języków oddzielone spacją, lub `"all"`. |
+| `-r`, `--root-dir` | No | Katalog projektu. Domyślnie bieżący katalog. |
+| `--image-dir` | No | Katalog przetłumaczonych obrazów względem katalogu root. Domyślnie `translated_images`. |
+| `--dry-run` | No | Pokaż pliki, które uległyby zmianie bez zapisywania aktualizacji. |
+| `--fallback-to-original`, `--no-fallback-to-original` | No | Użyj oryginalnych linków do notebooków, gdy przetłumaczone notebooki są brakujące. Domyślnie włączone. |
+| `-d`, `--debug` | No | Włącz logowanie debugujące. |
+| `-s`, `--save-logs` | No | Zapisz logi poziomu DEBUG w `<root-dir>/logs/`. |
+| `-y`, `--yes` | No | Automatyczne potwierdzanie monitów przy przetwarzaniu wszystkich języków. |
 
-## Environment
+## Środowisko
 
-All commands require one configured LLM provider:
+Gdy polecenie wymaga poświadczeń dostawcy, skonfiguruj jeden z tych zestawów dostawców. `translate --dry-run` i `co-op-review` nie wymagają poświadczeń dostawcy:
 
 ```bash
 # Azure OpenAI
@@ -266,82 +298,86 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Lub OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Lub Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Image translation additionally requires Azure AI Vision:
+Tłumaczenie obrazów dodatkowo wymaga Azure AI Vision:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## Output layout
+## Układ wyjścia
 
-Text translations are written under:
+Tłumaczenia tekstowe są zapisywane pod:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Translated image output is written under:
+Wyjście przetłumaczonych obrazów jest zapisywane pod:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-For example, translating `README.md` and `docs/setup.md` into Korean produces:
+Na przykład tłumaczenie `README.md` i `docs/setup.md` na koreański daje:
 
 ```text
 translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## Przykłady CLI do kopiowania
+## Przykłady CLI do kopiowania i wklejania
 
-Translate Markdown into three languages:
+Tłumacz Markdown na trzy języki:
 
 ```bash
 translate -l "ko ja fr" -md
 ```
 
-Translate notebooks only:
+Tłumacz tylko notebooki:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Translate images only:
+Tłumacz tylko obrazy:
 
 ```bash
 translate -l "pt-BR" -img
 ```
 
-Preview Markdown translation without writing files:
+Podgląd tłumaczenia Markdown bez zapisywania plików:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-Repair low-confidence Markdown translations:
+Napraw tłumaczenia Markdown o niskim zaufaniu:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-Run CI-friendly Markdown translation:
+Uruchom tłumaczenie Markdown przyjazne dla CI:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-Review translated output:
+Przejrzyj przetłumaczone wyjście:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Preview link migration:
+Podgląd migracji linków:
 
 ```bash
 migrate-links -l "ko" --dry-run

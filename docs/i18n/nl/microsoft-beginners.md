@@ -1,4 +1,4 @@
-# Microsoft Beginners Repositories
+# Microsoft Beginners-repositories
 
 Deze pagina is voor beheerders van Microsoft "For Beginners" repositories die de gedeelde "Other Courses" README-sectie gebruiken.
 

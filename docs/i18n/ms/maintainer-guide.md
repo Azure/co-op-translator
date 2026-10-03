@@ -1,22 +1,25 @@
 # Panduan Penyelenggara
 
-This page summarizes how the API, CLI, and documentation site are wired together.
+Halaman ini meringkaskan bagaimana API, CLI, dan laman dokumentasi disambungkan bersama.
 
 ## Sempadan API Awam
 
-The stable Python API is exported from:
+API Python stabil dieksport dari:
 
 ```python
 co_op_translator.api
 ```
 
-The public API is organized into content translation helpers, path rewriting helpers, project orchestration, and review:
+API awam diatur kepada pembantu terjemahan kandungan, pembantu penulisan semula laluan, penyelarasan projek, dan semakan:
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,17 +31,21 @@ from co_op_translator.api import (
 )
 ```
 
-When adding new public APIs, update:
+`TranslationStateProvider` adalah sempadan persistensi untuk integrasi yang dihoskan.
+Ia mesti memastikan calon yang dijana dipisahkan daripada garis asas yang diterima supaya
+terjemahan yang belum digabungkan tidak menjadi sumber kebenaran.
+
+Apabila menambah API awam baru, kemas kini:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
 - relevant API tests under `tests/co_op_translator/`, such as `test_api.py` or `test_review_api.py`
 
-Avoid documenting lower-level `core` modules as stable API unless the project intends to support them directly.
+Elakkan mendokumentasikan modul `core` peringkat rendah sebagai API stabil melainkan projek berniat menyokongnya secara langsung.
 
 ## Titik masuk CLI
 
-The package defines these Poetry scripts:
+Pakej ini mentakrifkan skrip Poetry berikut:
 
 ```toml
 [tool.poetry.scripts]
@@ -49,83 +56,83 @@ co-op-review = "co_op_translator.__main__:main"
 co-op-translator-mcp = "co_op_translator.mcp.server:main"
 ```
 
-`src/co_op_translator/__main__.py` dispatches by script name:
+`src/co_op_translator/__main__.py` mengagihkan berdasarkan nama skrip:
 
-- `translate` memanggil `co_op_translator.cli.translate.translate_command`
-- `evaluate` memanggil `co_op_translator.cli.evaluate.evaluate_command`
-- `migrate-links` memanggil `co_op_translator.cli.migrate_links.migrate_links_command`
-- `co-op-review` memanggil `co_op_translator.cli.review.review_command`
+- `translate` calls `co_op_translator.cli.translate.translate_command`
+- `evaluate` calls `co_op_translator.cli.evaluate.evaluate_command`
+- `migrate-links` calls `co_op_translator.cli.migrate_links.migrate_links_command`
+- `co-op-review` calls `co_op_translator.cli.review.review_command`
 
-`co-op-translator-mcp` melangkau `__main__.py` dan memanggil `co_op_translator.mcp.server:main` secara langsung.
+`co-op-translator-mcp` memintas `__main__.py` dan memanggil `co_op_translator.mcp.server:main` secara langsung.
 
-When adding or changing CLI options, update:
+Apabila menambah atau mengubah pilihan CLI, kemas kini:
 
-- the relevant `src/co_op_translator/cli/*.py` command
+- arahan `src/co_op_translator/cli/*.py` yang berkaitan
 - `docs/cli.md`
-- CLI-related tests, if behavior changes
+- ujian berkaitan CLI, jika tingkah laku berubah
 
 ## Pelayan MCP
 
-The MCP server is implemented in:
+Pelayan MCP diimplementasikan dalam:
 
 ```python
 co_op_translator.mcp.server
 ```
 
-The server intentionally wraps the public Python API rather than calling lower-level `core` modules. Keep this boundary intact so MCP clients, Python callers, and the CLI share the same behavior.
+Pelayan dengan sengaja membalut API Python awam daripada memanggil modul `core` peringkat lebih rendah. Kekalkan sempadan ini supaya klien MCP, pemanggil Python, dan CLI berkongsi tingkah laku yang sama.
 
-When adding or changing MCP tools, update:
+Apabila menambah atau mengubah alat MCP, kemas kini:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
 - `docs/api.md` if the public API surface changes
 
-Repository translation tools are model-callable through MCP and can write many files. Keep `dry_run=True` as the default and require `confirm_write=True` before non-dry-run project translation.
+Alat terjemahan repositori boleh dipanggil model melalui MCP dan boleh menulis banyak fail. Kekalkan `dry_run=True` sebagai lalai dan memerlukan `confirm_write=True` sebelum terjemahan projek bukan dry-run.
 
 ## Aliran terjemahan
 
-The high-level project translation flow is:
+Aliran terjemahan projek peringkat tinggi ialah:
 
 1. Huraikan argumen CLI atau parameter API.
 2. Sahkan konfigurasi LLM dengan `LLMConfig`.
 3. Sahkan Azure AI Vision apabila terjemahan imej dipilih.
-4. Normalkan kod bahasa.
-5. Kesan alias folder bahasa warisan.
+4. Normalisasikan kod bahasa.
+5. Mengesan alias folder bahasa lama.
 6. Anggarkan jumlah terjemahan.
 7. Kemas kini bahagian bahasa/kursus dalam README apabila berkenaan.
-8. Delegasikan terjemahan projek kepada `ProjectTranslator`.
-9. `ProjectTranslator` mendelegasikan pemprosesan fail kepada `TranslationManager`.
+8. Serahkan terjemahan projek kepada `ProjectTranslator`.
+9. `ProjectTranslator` menyerahkan pemprosesan fail kepada `TranslationManager`.
 
-`TranslationManager` is composed from focused file-type mixins:
+`TranslationManager` disusun daripada mixin berfokus pada jenis fail:
 
 - `ProjectMarkdownTranslationMixin` mengendalikan pembacaan fail Markdown, terjemahan kandungan, penulisan semula laluan, metadata, penafian, dan penulisan.
 - `ProjectNotebookTranslationMixin` mengendalikan pembacaan fail notebook, terjemahan sel Markdown, penulisan semula laluan, metadata, penafian, dan penulisan.
-- `ProjectImageTranslationMixin` mengendalikan penemuan imej, ekstraksi/terjemahan teks, penulisan imej yang dirender, dan metadata.
+- `ProjectImageTranslationMixin` mengendalikan penemuan imej, pengektrakan/terjemahan teks, penulisan imej yang dirender, dan metadata.
 
-The lower-level content APIs skip the project workflow:
+API kandungan peringkat rendah tidak melalui aliran kerja projek:
 
 1. `translate_markdown_content` dan `translate_notebook_content` menterjemah kandungan dalam memori sahaja.
-2. `translate_image_content` menterjemah teks dalam satu imej dan mengembalikan objek imej yang dirender.
-3. `rewrite_markdown_paths` dan `rewrite_notebook_paths` adalah pembantu pasca-pemprosesan eksplisit. Mereka tidak menjalankan terjemahan dan tidak melakukan penulisan projek.
+2. `translate_image_content` menterjemah teks dalam satu imej dan memulangkan objek imej yang dirender.
+3. `rewrite_markdown_paths` dan `rewrite_notebook_paths` adalah pembantu pemprosesan pasca yang jelas. Mereka tidak melakukan terjemahan dan tidak menulis projek.
 
 ## Aliran semakan
 
-The deterministic review flow is:
+Aliran semakan deterministik ialah:
 
 1. Huraikan argumen CLI atau parameter API.
-2. Normalkan kod bahasa yang diminta.
-3. Bina satu atau lebih sasaran semakan dari `root_dir`, `root_dirs`, atau `groups`.
-4. Secara pilihan, hadkan fail sumber dengan `--changed-from`.
+2. Normalisasikan kod bahasa yang diminta.
+3. Bina satu atau lebih sasaran semakan daripada `root_dir`, `root_dirs`, atau `groups`.
+4. Secara pilihan hadkan fail sumber dengan `--changed-from`.
 5. Jalankan pemeriksaan deterministik untuk struktur, kesegaran terjemahan, integriti Markdown, dan laluan pautan/imej tempatan.
 6. Cetak sama ada keluaran teks atau Markdown berperisa GitHub.
 7. Keluar dengan kegagalan apabila ralat semakan ditemui.
 
-The review flow does not require API keys and should remain suitable for pull request CI. The pull request workflow writes a check summary on every run and only posts a PR comment when `co-op-review` fails.
+Aliran semakan tidak memerlukan kunci API dan kekal tersedia untuk pemeriksaan tempatan atau CI pengguna pilih masuk. Repositori ini tidak menjalankan `co-op-review` secara automatik pada setiap pull request.
 
 ## Laman dokumentasi
 
-The docs site is configured by:
+Laman dokumentasi dikonfigurasikan oleh:
 
 ```text
 mkdocs.yml
@@ -133,42 +140,42 @@ requirements-docs.txt
 docs/
 ```
 
-The `docs/` directory is the canonical documentation source. Do not add new end-user guides outside this directory unless the project intentionally introduces another published documentation surface.
+Direktori `docs/` adalah sumber dokumentasi kanonik. Jangan tambahkan panduan pengguna akhir baru di luar direktori ini melainkan projek secara sengaja memperkenalkan permukaan dokumentasi yang diterbitkan lain.
 
-Build locally:
+Bina secara tempatan:
 
 ```bash
 python -m pip install -r requirements-docs.txt
 python -m mkdocs build --strict
 ```
 
-Preview locally:
+Pratonton secara tempatan:
 
 ```bash
 python -m mkdocs serve
 ```
 
-The generated site is written to `site/`, which is ignored by git.
+Laman yang dijana ditulis ke `site/`, yang diabaikan oleh git.
 
 ## Aliran kerja GitHub Pages
 
-`.github/workflows/docs.yml` builds the site on pull requests and deploys it on pushes to `main`.
+`.github/workflows/docs.yml` membina laman pada pull request dan menyebarkannya apabila ada push ke `main`.
 
-The workflow installs:
+Aliran kerja memasang:
 
 ```bash
 pip install -r requirements-docs.txt
 ```
 
-The docs workflow installs only the documentation toolchain. `mkdocs.yml` points `mkdocstrings` at `src/` so public API pages can be rendered from the source tree without installing the full runtime dependency set. If future API docs require importing optional runtime providers during the build, update both `.github/workflows/docs.yml` and this guide together.
+Aliran kerja docs memasang hanya rantaian alat dokumentasi. `mkdocs.yml` menunjukkan `mkdocstrings` ke `src/` supaya halaman API awam boleh dihasilkan dari pokok sumber tanpa memasang set pergantungan runtime penuh. Jika dokumen API masa depan memerlukan pengimportan pembekal runtime pilihan semasa binaan, kemas kini kedua-dua `.github/workflows/docs.yml` dan panduan ini bersama-sama.
 
-## Ambang kualiti dokumen
+## Bar kualiti dokumentasi
 
-Before merging documentation changes, run:
+Sebelum menggabungkan perubahan dokumentasi, jalankan:
 
 ```bash
 python -m mkdocs build --strict
 git diff --check
 ```
 
-Use strict builds so broken links, invalid navigation entries, and API rendering issues fail early.
+Guna binaan yang ketat supaya pautan rosak, entri navigasi tidak sah, dan isu rendering API gagal awal.

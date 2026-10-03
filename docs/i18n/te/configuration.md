@@ -1,43 +1,45 @@
-# కన్ఫిగరేషన్
+# కాన్ఫిగరేషన్
 
-Co-op Translator కి ఒక భాషా మోడల్ ప్రొవైడర్ అవసరం. చిత్ర అనువాదానికి అదనంగా Azure AI Vision అవసరం.
+Co-op Translatorకి ఒక భాషా మోడల్ ప్రొవైడర్ అవసరం. చిత్ర అనువాదానికి అదనంగా Azure AI Vision అవసరం.
 
-కన్ఫిగరేషన్‌ను పరిసర వేరియబుల్స్ నుండి చదివుతుంది. స్థానిక ప్రాజెక్టుల కోసం, అవి ప్రాజెక్ట్ రూట్‌లో `.env` ఫైల్‌లో ఉంచండి.
+కాన్ఫిగరేషన్‌ను ఎన్విరాన్‌మెంట్ వేరియబుల్స్ నుంచి చదివి తీసుకుంటుంది. స్థానిక ప్రాజెక్టుల కోసం, వాటిని ప్రాజెక్ట్ రూట్‌లోని `.env` ఫైల్‌లో ఉంచండి.
 
-Azure వనరుల సెటప్ కోసం చూడండి [Azure AI సెటప్](azure-ai-setup.md).
+Azure వనరులు సెటప్ కోసం, చూడండి [Azure AI సెటప్](azure-ai-setup.md).
 
-## స్థానిక రన్‌టైమ్ సెటప్
+## లోకల్ రన్‌టైమ్ సెటప్
 
-స్థానికంగా CLI ను 실행 చేసే ముందు వర్చువల్ ఎన్విరాన్‌మెంట్ ఉపయోగించండి. Co-op Translator Python 3.10 నుంచి 3.12 వరకు మద్దతు ఇస్తుంది.
+CLI ను స్థానికంగా నడిపించే ముందు వర్చువల్ ఎన్విరాన్‌మెంట్‌ను ఉపయోగించండి. Co-op Translator Python 3.11 నుండి 3.14 వరకు మద్దతు ఇస్తుంది.
 
-సాధారణ CLI వాడుక కోసం, ప్రచురిత ప్యాకేజీని వర్చువల్ ఎన్విరాన్‌మెంట్ లో ఇన్‌స్టాల్ చేయండి:
+సాధారణ CLI ఉపయోగానికి, పబ్లిష్ చేసిన ప్యాకేజీని వర్చువల్ ఎన్విరాన్‌మెంట్ లో ఇన్‌స్టాల్ చేయండి:
 
-=== "Windows"
+### Windows (PowerShell)
 
-    ```powershell
-    python -m venv .venv
-    .venv\Scripts\activate
-    pip install co-op-translator
-    translate --help
-    ```
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install co-op-translator
+translate --help
+```
 
-=== "macOS / Linux"
+### macOS / Linux
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install co-op-translator
-    translate --help
-    ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install co-op-translator
+translate --help
+```
 
-For repository development, install dependencies from the project root instead:
+### రిపోజిటరీ అభివృద్ధి
+
+రిపోజిటరీ అభివృద్ధికి, బదులుగా ప్రాజెక్ట్ రూట్ నుండే డిపెండెన్సీలు ఇన్‌స్టాల్ చేయండి:
 
 ```bash
 poetry install
 poetry run translate --help
 ```
 
-CLI లభ్యమైతే, `.env` లో ఒక భాషా మోడల్ ప్రొవైడర్‌ను కాన్ఫిగర్ చేయండి.
+CLI అందుబాటులోకి వచ్చిన తర్వాత, `.env` లో ఒక భాషా మోడల్ ప్రొవైడర్‌ని కాన్ఫిగర్ చేయండి.
 
 ## ప్రొవైడర్ ఎంపిక
 
@@ -45,12 +47,25 @@ CLI లభ్యమైతే, `.env` లో ఒక భాషా మోడల్ 
 
 1. Azure OpenAI
 2. OpenAI
+3. Anthropic
 
-ఈ రెండింటిలో ఏ ప్రొవైడర్ కాన్ఫిగర్ చేయబడకపోతే, `translate`, `evaluate`, `migrate-links`, మరియు `run_translation` కాన్ఫిగరేషన్ తనిఖీల సమయంలో విఫలమవుతాయి. `co-op-review` మరియు `run_review` డిటర్మినిస్టిక్ నిర్వహణ తనిఖీలు కావడంతో ప్రొవైడర్ క్రెడెంసియల్స్ అవసరం ఉండదు.
+అనువాదానికి ప్రొవైడర్ క్రెడెన్షియల్స్ అవసరం, కానీ `translate -l "ko" -md --dry-run` వంటి ప్రివ్యూలకు తప్పు. `migrate-links`, `co-op-review`, మరియు `run_review` నిర్ణీతమైన నిర్వహణ చర్యలు మరియు ప్రొవైడర్ క్రెడెన్షియల్స్ అవసరం ఉండవు.
+
+## మోడల్ క్లయింట్ బ్యాక్‌ఎండ్
+
+Co-op Translator 0.22.0 నుండి, Azure OpenAI, OpenAI మరియు Anthropic డిఫాల్ట్‌గా Microsoft Agent Framework ను ఉపయోగిస్తాయి. సాధారణ ఉపయోగానికి బ్యాక్‌ఎండ్ సెట్టింగ్ అవసరం లేదు.
+
+Semantic Kernel అనుకూలత కోసం తాత్కాలికంగా అందుబాటులో ఉంటుంది. దీన్ని స్పష్టంగా ఎన్నుకోవాలంటే, సెట్ చేయండి:
+
+```bash
+CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"
+```
+
+Semantic Kernel ను ఉపయోగిస్తే డిప్రికేషన్ హెచ్చరిక ఉత్పన్నమవుతుంది. ప్యాకేజ్ లో Semantic Kernel ను 0.23.0 లో ఐచ్ఛిక డిపెండెన్సీగా మార్చడానికి ప్లాన్ ఉంది మరియు 0.24.0 లో ఇంటిగ్రేషన్ తీసివేయడానికి ఉద్దేశంగా ఉంది, ఇది అనుకూలత ఫలితాలు మరియు వినియోగదారుల అభిప్రాయాలపై ఆధారపడి ఉంటుంది. Anthropic కు `agent-framework` అవసరం; Anthropic తో `semantic-kernel` ను ఖచ్చితంగా ఎంపిక చేయడం కాన్ఫిగరేషన్ లో లోపంతో విఫలమవుతుంది. తప్పు విలువలు సైలెంట్‌గా fallback లేకుండా provider-backed translator ప్రారంభించేటప్పుడు విఫలమవుతాయి. విడుదలను అనుసరించండి మరియు అడ్డంకులను నివేదించండి [GitHub ఇష్యూ #543](https://github.com/Azure/co-op-translator/issues/543).
 
 ## Azure OpenAI
 
-మీ మోడల్ Azure AI Foundry లేదా Azure OpenAI Serviceలో డిప్లాయ్ చేయబడినపుడు Azure OpenAI ఉపయోగించండి.
+మీ మోడెల్ Azure AI Foundry లేదా Azure OpenAI Service లో డిప్లాయ్ చేయబడినప్పుడు Azure OpenAI ను ఉపయోగించండి.
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -60,35 +75,50 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-కనెక్టివిటీ తనిఖీ ట్రాన్స్లేషన్ ప్రారంభం కాకముందు endpoint, API key, API version మరియు deployment name ను పరీక్షిస్తుంది.
+కనెక్టివిటీ తనిఖీ అనువాదం ప్రారంభించే ముందు endpoint, API key, API version మరియు deployment name ను ఉపయోగిస్తుంది.
 
 ## OpenAI
 
-OpenAI API ను నేరుగా పిలిచే సమయంలో OpenAI ఉపయోగించండి.
+OpenAI API ను నేరుగా పిలవుతున్నప్పుడు OpenAI ను ఉపయోగించండి.
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
-OPENAI_ORG_ID="..."          # ఐచ్ఛిక
-OPENAI_BASE_URL="..."        # ఐచ్ఛిక
 ```
 
-`OPENAI_CHAT_MODEL_ID` అవసరం, ఎందుకంటే ట్రాన్స్‌లేటర్‌కు API కాల్స్ కోసం స్పష్టమైన చాట్ మోడల్ అవసరం.
+`OPENAI_CHAT_MODEL_ID` అవసరం, ఎందుకంటే అనువాదకానికి API కాల్స్ కోసం స్పష్టమైన చాట్ మోడల్ అవసరం.
+
+`OPENAI_ORG_ID` మరియు `OPENAI_BASE_URL` ను డిఫాల్ట్ సెటప్ కోసం unset గా ఉంచండి. మీ ఖాతాకు ఒక organization ID అవసరమైతే మాత్రమే అది జోడించండి, లేదా కస్టమ్ endpoint ఉపయోగిస్తున్నప్పుడు మాత్రమే base URL జోడించండి. ఐచ్ఛిక సెట్టింగ్స్ కోసం ప్లేస్‌హోల్డర్ విలువలను కాపీ చేయకండి.
+
+## Anthropic Claude
+
+Claude API ను నేరుగా పిలవుతున్నప్పుడు Anthropic ను ఉపయోగించండి. ఒక [Anthropic API కీ](https://platform.claude.com/docs/en/get-started) సృష్టించండి మరియు మద్దతు ఇచ్చే ఒక [Claude మోడల్ ID](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions) ఎంచుకోండి.
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_API_KEY` మరియు `ANTHROPIC_MODEL` అవసరం. `CO_OP_TRANSLATOR_MODEL_CLIENT` ను సెట్ చేయాల్సిన అవసరం లేదు; Agent Framework డిఫాల్ట్ బ్యాక్‌ఎండ్.
+
+Anthropic API కోసం `ANTHROPIC_BASE_URL` ను unset గా ఉంచండి. కస్టమ్ endpoint ఉపయోగిస్తున్నప్పుడు మాత్రమే దీన్ని సెట్ చేయండి.
+
+`ANTHROPIC_MAX_TOKENS` పూర్వనిర్ణీతంగా `8192` కు సెట్ ఉంటుంది, ఇది Meitei Mayek వంటి టోకెన్-సాంద్రత ఉన్న స్క్రిప్ట్‌లకు స్థలం ఉంచుతుంది. మీ మోడల్ లేదా Anthropic-అనుకూల endpoint అవుట్పుట్‌ను ఆ పరిమితికి కింద పెట్టినప్పుడు దీన్ని తగ్గించండి.
 
 ## Azure AI Vision
 
-చిత్ర అనువాదానికి Azure AI Vision అవసరం, ఎందుకంటే టూల్ అనువాదానికి ముందు చిత్రాల నుండి టెక్స్ట్‌ను ఎక్స్‌ట్రాక్ట్ చేయాలి.
+చిత్ర అనువాదానికి Azure AI Vision అవసరం, తద్వారా టూల్ చిత్రాల నుంచి టెక్స్ట్‌ను తీసి, కాన్ఫిగర్ చేయబడిన భాషా మోడల్ అనువదించే ముందు అది చేయగలదు. Anthropic కూడా తీసిన టెక్ట్స్‌ను Azure OpenAI లేదా OpenAI లాగానే అనువదించగలదు.
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-చిత్ర అనువాదం `-img`, `images=True` లేదా content-type ఫిల్టర్ లేనప్పుడు ఎంచుకోబడినట్లయితే, టూల్ అనువాదం మొదలయ్యే ముందు Vision కాన్ఫిగరేషన్‌ను ధృవీకরుస్తుంది.
+`-img`, `images=True`, లేదా content-type ఫిల్టర్ లేకపోతే చిత్ర అనువాదం ఎంచుకుంటే, టూల్ అనువాదం ప్రారంభం కాకముందే Vision కాన్ఫిగరేషన్‌ని నిర్ధారిస్తుంది.
 
 ## బహుళ క్రెడెన్షియల్ సెట్లు
 
-కన్ఫిగరేషన్ లేయర్ ఒకే ఇండెక్స్‌తో వేరియబుల్స్‌కు సఫిక్స్ పెట్టి బహుళ క్రెడెన్షియల్ సెట్లను మద్దతు చేస్తుంది:
+కాన్ఫిగరేషన్ లేయర్ ఒకే సూచికతో వేరియబుల్స్‌కు సఫిక్స్ ఇవ్వడం ద్వారా బహుళ క్రెడెన్షియల్ సెట్లకు మద్దతు ఇస్తుంది:
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -104,22 +134,24 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_2="<deployment-2>"
 AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 ```
 
-ప్రతి సెటు పూర్తి ఉండాలి. హెల్త్ చెక్ అనువాదం కొనసాగిపోవడానికి ముందు పనిచేసే సెట్ను ఎంపిక చేస్తుంది.
+ప్రతి సెట్ పూర్తిగా ఉండాలి. అనువాదం ప్రారంభం కాకముందు హెల్త్ చెక్ పనిచేస్తున్న సెట్‌ను ఎంచుకుంటుంది.
 
-## ఆదేశాల అవసరాలు
+OpenAI మరియు Anthropic అదే సఫిక్స్ కాన్వెన్షన్‌ను మద్దతు ఇస్తాయి. ప్రతి క్రెడెన్షియల్ సెట్‌లోని ప్రతి వేరియబిల్ అదే సఫిక్స్‌లో ఉంచండి, `OPENAI_BASE_URL_1` లేదా `ANTHROPIC_BASE_URL_1` వంటి ఐచ్ఛిక విలువలను కూడా.
 
-| ఆదేశం లేదా API | LLM అవసరమా | Vision అవసరమా | గమనికలు |
+## కమాండ్ అవసరాలు
+
+| కమాండ్ లేదా API | LLM అవసరమా | Vision అవసరమా | గమనికలు |
 | --- | --- | --- | --- |
-| `translate -md` | అవును | కాదు | Markdown మాత్రమే అనువదిస్తుంది. |
-| `translate -nb` | అవును | కాదు | నోట్బుక్స్ మాత్రమే అనువదిస్తుంది. |
+| `translate -md` | అవును | లేదు | Markdown మాత్రమే అనువదిస్తుంది. |
+| `translate -nb` | అవును | లేదు | నోట్బుక్స్ మాత్రమే అనువదిస్తుంది. |
 | `translate -img` | అవును | అవును | చిత్రాలు మాత్రమే అనువదిస్తుంది. |
-| `translate` with no type flags | అవును | అవును | డిఫాల్ట్ మోడ్‌లో Markdown, నోట్బుక్స్, మరియు చిత్రాలు ఉంటాయి. |
-| `evaluate` | అవును | కాదు | `--fast` సెలెక్ట్ కాకపోతే LLM మూల్యాంకనాన్ని ఉపయోగిస్తుంది. |
-| `migrate-links` | అవును | కాదు | లింక్ మైగ్రేషన్‌ను అమలు చేస్తుంది, కానీ ఇంకా పంచుకున్న కాన్ఫిగరేషన్ తనిఖీలు నడిపిస్తుంది. |
-| `co-op-review` | కాదు | లేదు | డిటర్మినిస్టిక్ అనువాద నిర్మాణం, తాజత్వం, Markdown, నోట్బుక్, మరియు లోకల్ లింక్ తనిఖీలు నడిపిస్తుంది. |
-| `run_translation(markdown=True)` | అవును | కాదు | ప్రోగ్రామాటిక్ Markdown అనువాదం. |
-| `run_translation(images=True)` | అవును | అవును | ప్రోగ్రామాటిక్ చిత్ర అనువాదం. |
-| `run_review(...)` | కాదు | కాదు | ప్రోగ్రామాటిక్ డిటర్మినిస్టిక్ సమీక్ష. |
+| `translate` with no type flags | అవును | అవును | డిఫాల్ట్ మోడ్‌లో Markdown, నోట్బుక్స్ మరియు చిత్రాలు ఉంటాయి. |
+| `evaluate` | అవును | లేదు | `--fast` ఎంచుకోకపోతే LLM మూల్యాంకనం ఉపయోగిస్తుంది. |
+| `migrate-links` | లేదు | లేదు | ప్రొవైడర్ కాల్స్ లేకుండా స్థానిక లింక్ మైగ్రేషన్‌ను నిర్వహిస్తుంది. |
+| `co-op-review` | లేదు | లేదు | నిర్ధారిత అనువాద నిర్మాణం, తాజాదన, Markdown, నోట్బుక్ మరియు స్థానిక లింక్ తనిఖీలను నడుపుతుంది. |
+| `run_translation(markdown=True)` | అవును | లేదు | ప్రోగ్రామాటిక్ Markdown అనువాదం. |
+| `run_translation(images=True)` | అవును | అవును | ప్రోగ్రామాటిక్ చిత్రం అనువాదం. |
+| `run_review(...)` | లేదు | లేదు | ప్రోగ్రామాటిక్ నిర్ణీత సమీక్ష. |
 
 ## అవుట్‌పుట్ డైరెక్టరీలు
 
@@ -129,10 +161,10 @@ AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 translations/<language-code>/<source-relative-path>
 ```
 
-డిఫాల్ట్ అనువదించిన చిత్ర అవుట్‌పుట్:
+డిఫాల్ట్ అనువదించిన చిత్రం అవుట్‌పుట్:
 
 ```text
 translated_images/<language-code>/<source-relative-path>
 ```
 
-Python API ఈ డైరెక్టరీలను `translations_dir` మరియు `image_dir`తో ఓవర్‌రైడ్ చేయవచ్చు.
+Python API ఈ డైరెక్టరీలను `translations_dir` మరియు `image_dir` తో ఓవర్‌రైడ్ చేయగలదు.

@@ -1,58 +1,67 @@
-# ម៉ាស៊ីនបម្រើ MCP
+# ម៉ាស៊ីនមេ MCP
 
-Co-op Translator មានម៉ាស៊ីនបម្រើ Model Context Protocol សម្រាប់ភ្នាក់ងារ អ្នកកែសម្រួល និងអ្នកប្រើប្រាស់ដែលគាំទ្រ MCP ។
+Co-op Translator រួមមានម៉ាស៊ីនមេ Model Context Protocol សម្រាប់ភ្នាក់ងារ អេឌីទ័រ និងកម្មវិធីអតិថិជនដែលគាំទ្រ MCP។
 
-សម្រាប់ការកំណត់ค่า​រកទីតាំង​ឈានមូលដ្ឋាន (local) ពេញនិយម អ្នកប្រើមិនចាំបាច់រត់ម៉ាស៊ីនបម្រើបាក់​ទូដដោយដៃឡើយ។ ពួកគេកំណត់តម្លៃអតិថិជន MCP របស់ពួកគេ ហើយអតិថិជននោះនឹងចាប់ផ្តើម `co-op-translator-mcp` ដោយស្វ័យប្រវត្តិលើ `stdio` នៅពេលវាត្រូវការឧបករណ៍ Co-op Translator ។
+សម្រាប់ការកំណត់លំនាំដើមនៅក្នុងបរិយាកាស local អ្នកប្រើមិនចាំបាច់រត់ម៉ាស៊ីនមេបំបែកដោយដៃទេ។ ពួកគេកំណត់រចនាសម្ព័ន្ធកម្មវិធីអតិថិជន MCP ហើយអតិថិជននោះនឹងចាប់ផ្ដើម `co-op-translator-mcp` ដោយស្វ័យប្រវត្តិតាម `stdio` នៅពេលដែលវាត្រូវការឧបករណ៍ Co-op Translator។
 
-បើអ្នកកំពុងសម្រេចចិត្តរវាង CLI, Python API, និង MCP សូមចាប់ផ្ដើមជាមួយ [Choose Your Workflow](workflows.md) ។
+បើអ្នកកំពុងជ្រើសរើសរវាង CLI, Python API, និង MCP សូមចាប់ផ្ដើមជាមួយ [ជ្រើសរើសដំណើរការងារ](workflows.md)។
 
-ប្រើ MCP នៅពេលភ្នាក់ងារ ឬអ្នកកែសម្រួល គួរតែនៅតែហៅ Co-op Translator ដោយផ្ទាល់៖
+ប្រើ MCP នៅពេលដែលភ្នាក់ងារ ឬកម្មវិធីកែសម្រួល គួរត្រូវហៅ Co-op Translator ដោយផ្ទាល់៖
 
-| គោលដៅអ្នកប្រើ | ឧបករណ៍ MCP |
+| គោលដៅ​អ្នក​ប្រើ | ឧបករណ៍ MCP |
 | --- | --- |
-| បកប្រែឯកសារ Markdown មួយ ឬ notebook ឬ រូបភាព | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
-| បកប្រែខ្លឹមសារ Markdown ឬ notebook ជាមួយម៉ូដែលភ្ញៀវ | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| កែសម្រួលភ្ជាប់ Markdown ឬ notebook បន្ទាប់ពីជ្រើសទីតាំងផ្លូវចេញ | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| បកប្រែ repository ទាំងមូល ដូចជា CLI | `run_translation`, `translate_project` |
-| ពិនិត្យលទ្ធផលបកប្រែក្នុងគ្មានសមាជិក LLM | `run_review` |
-| ពិនិត្យមើលសមត្ថភាព និងស្ថានភាពបរិបទ | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
+| បកប្រែឯកសារ Markdown, notebook ឬរូបភាពមួយ | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
+| បកប្រែមាតិកា Markdown ឬ notebook ជាមួយម៉ូដែលភ្នាក់ងារ (host agent model) | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| សរសេរឡើងវិញតំណភ្ជាប់នៃ Markdown ឬ notebook បន្ទាប់ពីជ្រើសផ្លូវចេញ | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| បកប្រែគម្រោងទាំងមូលដូចជា CLI | `run_translation`, `translate_project` |
+| ពិនិត្យលទ្ធផលដែលបានបកប្រែដោយគ្មានសញ្ញាប័ត្រ LLM | `run_review` |
+| ពិនិត្យសមត្ថភាព និងស្ថានភាពបរិយាកាស | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-ម៉ាស៊ីន​បម្រើ MCP បញ្ចอบ API សាធារណៈ Python ដដែលដែលបានរាយនៅ [Python API](api.md) ។ ឧបករណ៍ដែលពឹងផ្អែកលើអ្នកផ្គត់ផ្គង់ប្រើអ្នកផ្គត់ផ្គង់ដែលបានកំណត់ដូចជា CLI និង Python API ។ ឧបករណ៍ជួយដោយភ្នាក់ងារ (Agent-assisted) រៀបចំចំណែកសម្រាប់ភ្ញៀវម៉ាស៊ីនបម្រើ MCP ដើម្បីបកប្រែ បន្ទាប់មកប្រើ Co-op Translator ដើម្បីសង់ឡើងវិញ Markdown ឬ notebook ចុងក្រោយ។
+ម៉ាស៊ីនមេ MCP ប្រមូល API សាធារណៈ Python ដូចគ្នាដែលបានតំណើរការនៅក្នុង [Python API](api.md)។ ឧបករណ៍ដែលផ្អែកលើអ្នកផ្តល់ប្រើអ្នកផ្តល់ដែលបានកំណត់រចនាសម្ព័ន្ធដូចគ្នាជាមួយ CLI និង Python API។ ឧបករណ៍ជំនួយដោយភ្នាក់ងារ រៀបចំគ្រាប់សម្រាប់ភ្នាក់ងារម្ចាស់ MCP ឲ្យបកប្រែ បន្ទាប់មកប្រើ Co-op Translator ដើម្បីស្តារឡើងវិញ Markdown ឬ notebook ចុងក្រោយ។
 
-## ជំហ៊ាន 1: តំឡើង និងកំណត់ค่า Co-op Translator
+## ជំហានទី 1: ធ្វើការ​ដំឡើង និងកំណត់រចនាសម្ព័ន្ធ Co-op Translator
 
-តំឡើង Co-op Translator នៅក្នុងបរិយាកាស Python ដែលអតិថិជន MCP របស់អ្នកនឹងប្រើ៖
+ដំឡើង Co-op Translator នៅក្នុងបរិយាកាស Python ដែលកម្មវិធីអតិថិជន MCP របស់អ្នកនឹងប្រើ៖
 
 ```bash
 pip install co-op-translator
 ```
 
-សម្រាប់ការអភិវឌ្ឍនៅលើដែនកំណត់ពី repository នេះ តំឡើង package ក្នុងម៉ូដដែលអាចកែបាន (editable mode)៖
+សម្រាប់ការអភិវឌ្ឍក្នុងស្រុកពី repository នេះ សូមដំឡើង package ក្នុងរបៀប editable៖
 
 ```bash
 pip install -e .
 ```
 
-ជ្រើសម៉ូដបកប្រែដែលអតិថិជន MCP របស់អ្នកនឹងប្រើ៖
+ជ្រើសរើសរបៀបបកប្រែដែលកម្មវិធីអតិថិជន MCP របស់អ្នកនឹងប្រើ៖
 
-| Mode | ប្រើសម្រាប់ | ទិន្នន័យសមាធី (Credentials) |
+| របៀប | ប្រើសម្រាប់ | សញ្ញាប័ត្រ |
 | --- | --- | --- |
-| Provider-backed | Co-op Translator ហៅ `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, ឬ `run_translation`។ | ការបកប្រែ Markdown និង notebook ត្រូវការកូនស្រី Azure OpenAI ឬ OpenAI។ ការបកប្រែរូបភាពក៏ត្រូវការក៏ Azure AI Vision។ |
-| Agent-assisted | ភ្ញៀវម៉ាស៊ីនបម្រើ MCP បកប្រែចំណែកដែលបានត្រឡប់ពី `start_markdown_agent_translation` ឬ `start_notebook_agent_translation`។ | មិនចាំបាច់មានសមាជិក Co-op Translator LLM សម្រាប់ចំណែក Markdown ឬ notebook។ មូដ agent-assisted មិនទាន់គ្របដណ្តប់ការបកប្រែរូបភាពទេ។ |
+| Provider-backed | Co-op Translator នឹងហៅ `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, ឬ `run_translation`។ | ការបកប្រែត្រូវការអ្នកផ្តល់ Azure OpenAI, OpenAI, ឬ Anthropic។ ការបកប្រែរូបភាពក៏ត្រូវការ Azure AI Vision ផងដែរ។ |
+| Agent-assisted | ភ្នាក់ងារម្ចាស់ MCP បកប្រែគ្រាប់ដែលត្រឡប់មកពី `start_markdown_agent_translation` ឬ `start_notebook_agent_translation`។ | មិនត្រូវការសញ្ញាប័ត្រ provider LLM របស់ Co-op Translator សម្រាប់គ្រាប់ Markdown ឬ notebook។ ការបកប្រែរូបភាពមិនទាន់គ្របដណ្តប់ដោយម៉ូដជំនួយដោយភ្នាក់ងារ។ |
 
-បើអ្នកចាប់ផ្តើមជាមួយការបកប្រែ Markdown ឬ notebook ក្នុងភ្នាក់ងារដូចជា Codex ឬ Claude Code សូមចាប់ផ្តើមជាមួយម៉ូដ agent-assisted ។ ប្រើ provider-backed បើអ្នកចង់ឲ្យ Co-op Translator ហៅអ្នកផ្គត់ផ្គង់ដែលបានកំណត់ផ្ទាល់ ឬពេលអ្នកកំពុងបកប្រែរូបភាព ឬពេលអ្នកកំពុងរត់ការបកប្រែកម្រិត repository ដូចជា CLI ។
+ប្រសិនបើអ្នកចាប់ផ្ដើមជាមួយការបកប្រែ Markdown ឬ notebook ក្នុងភ្នាក់ងារ ដូចជា Codex ឬ Claude Code សូមចាប់ផ្ដើមដោយម៉ូដជំនួយដោយភ្នាក់ងារ។ ប្រើម៉ូដដែលផ្អែកលើអ្នកផ្តល់ នៅពេលដែលអ្នកចង់ឲ្យ Co-op Translator សរសេរហៅអ្នកផ្តល់ដែលបានកំណត់ដោយខ្លួនឯង, នៅពេលដែលអ្នកកំពុងបកប្រែរូបភាព, ឬនៅពេលដែលអ្នកកំពុងរត់ការបកប្រែកម្រិតគម្រោងដូចជា CLI។
 
-កំណត់សម្រាប់ភ្ជាប់អ្នកផ្គត់ផ្គង់តែសម្រាប់កម្មវិធីដែលពឹងផ្អែកលើអ្នកផ្គត់ផ្គង់ (provider-backed)៖
+កំណត់អ្នកផ្តល់មួយសម្រាប់ workflow ដែលផ្អែកលើអ្នកផ្តល់៖
 
 ```bash
+# Azure OpenAI
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+
+# ឬ OpenAI
+OPENAI_API_KEY="..."
+OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# ឬ Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-ការបកប្រែរូបភាពដែលពឹងផ្អែកលើអ្នកផ្គត់ផ្គង់ត្រូវការបន្ថែម៖
+ការបកប្រែរូបភាពដែលផ្អែកលើអ្នកផ្តល់ត្រូវការបន្ថែម៖
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -60,13 +69,13 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
 !!! note
-    ម៉ូដ agent-assisted ពាក់ព័ន្ធបច្ចុប្បន្នគ្របដណ្តប់ Markdown និងកោសិកា Markdown ក្នុង notebook។ ការបកប្រែរូបភាពនៅតែប្រើបំពង់រូបភាពដែលពឹងផ្អែកលើអ្នកផ្គត់ផ្គង់ ហើយត្រូវការកូនស្រី Azure AI Vision សម្រាប់ OCR និង ការបង្ហាញដែលយល់ពីលំដាប់ទំហំ (layout-aware) ។
+    ម៉ូដជំនួយដោយភ្នាក់ងារ បច្ចុប្បន្នកំពុងគ្របដណ្តប់លើ Markdown និងកោសិកា Markdown ក្នុងកំណត់ត្រា (notebook). ការបកប្រែរូបភាពនៅតែប្រើបណ្តាញដំណើរការរូបភាពដែលគាំទ្រដោយអ្នកផ្គត់ផ្គង់ និងទាមទារ Azure AI Vision សម្រាប់ OCR និងការរៀបចំតាមរចនាសម្ព័ន្ធ (layout-aware rendering).
 
-## ជំហ៊ាន 2: កំណត់តម្លៃអតិថិជន MCP របស់អ្នក
+## ជំហានទី 2: កំណត់រចនាសម្ព័ន្ធកម្មវិធីអតិថិជន MCP របស់អ្នក
 
-សម្រាប់ការកំណត់ `stdio` ទូទៅនៅក្នុងเครื่องកុំព្យូទ័រផ្ទាល់ (local) បន្ថែម Co-op Translator ទៅក្នុងការកំណត់តម្លៃអតិថិជន MCP របស់អ្នក។ អតិថិជននឹងចាប់ផ្តើម និងបញ្ឈប់ដំណើរការ ដោយស្វ័យប្រវត្តិក្នុងករណីនេះ។
+សម្រាប់ការកំណត់ `stdio` ស្តង់ដារផ្ទាល់, បន្ថែម Co-op Translator ទៅក្នុងកំណត់រចនាសម្ព័ន្ធកម្មវិធីអតិថិជន MCP។ អតិថិជននឹងចាប់ផ្ដើម និងផ្អាកដំណើរការនោះដោយស្វ័យប្រវត្តិ។
 
-កំណត់តម្លៃ package ដែលបានតំឡើង:
+Installed package configuration:
 
 ```json
 {
@@ -79,7 +88,7 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 }
 ```
 
-កំណត់តម្លៃពី source checkout លើ Windows:
+Source checkout configuration on Windows:
 
 ```json
 {
@@ -93,7 +102,7 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 }
 ```
 
-កំណត់តម្លៃពី source checkout លើ macOS ឬ Linux:
+កំណត់​រចនាសម្ព័ន្ធសម្រាប់ source checkout នៅលើ macOS ឬ Linux:
 
 ```json
 {
@@ -107,11 +116,11 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 }
 ```
 
-បន្ទាប់ពីផ្លាស់ប្តូរការកំណត់អតិថិជន MCP សូមបញ្ចុះ ឬផ្ទុកឡើងវិញអតិថិជន ដើម្បីវាមានឱកាសស្វែងរកម៉ាស៊ីនបម្រើថ្មី។
+បន្ទាប់ពីផ្លាស់ប្តូរកំណត់រចនាសម្ព័ន្ធកម្មវិធីអតិថិជន MCP សូមចាប់ផ្ដើមឡើងវិញ ឬផ្ទុកឡើងវិញអតិថិជន ដើម្បីឲ្យវាអាចស្វែងរកម៉ាស៊ីនមេថ្មី។
 
-## ជំហ៊ាន 3: បញ្ជាក់ម៉ាស៊ីនបម្រើក្នុងអតិថិជន
+## ជំហានទី 3: បញ្ជាក់ម៉ាស៊ីនមេក្នុងកម្មវិធីអតិថិជន
 
-ស្នើអតិថិជន MCP ដើម្បីបញ្ជីឧបករណ៍ដែលមាន សូម្បីតែហៅមួយក្នុងចំណោមកម្មវិធីជំនួយសម្រាប់អានគត់៖
+សូមឲ្យកម្មវិធីអតិថិជន MCP បញ្ជីឧបករណ៍ដែលមាន ឬហៅមួយក្នុងចំណោមឧបករណ៍ជំនួយអានតែបានមុន៖
 
 ```json
 {
@@ -122,43 +131,43 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 
 ការត្រួតពិនិត្យដំបូងដែលមានប្រយោជន៍៖
 
-| ឧបករណ៍ | ត្រូវត្រួតពិនិត្យអ្វី |
+| ឧបករណ៍ | ត្រូវពិនិត្យអ្វី |
 | --- | --- |
-| `get_api_overview` | បញ្ជាក់ថាម៉ាស៊ីនបម្រើអាចទំនាក់ទំនងបាន និងបង្ហាញ workflow ដែលមាន។ |
-| `list_supported_languages` | បញ្ជាក់ថា ទិន្នន័យភាសាបញ្ចូលអាចផ្ទុកបាន។ |
-| `get_configuration_status` | បញ្ជាក់ពីភាពជាប់រួមរបស់អ្នកផ្គត់ផ្គង់ LLM និង Vision ដោយមិនបង្ហាញតម្លៃសម្ងាត់។ |
+| `get_api_overview` | បញ្ជាក់ថាម៉ាស៊ីនមេអាចទំនាក់ទំនងបាន និងបង្ហាញដំណើរការងារដែលមាន។ |
+| `list_supported_languages` | បញ្ជាក់ថាដុំទិន្នន័យភាសាដែលបានរួមបញ្ចូលអាចត្រូវបានផ្ទុក។ |
+| `get_configuration_status` | បញ្ជាក់ពីភាពមានស្រាប់នៃអ្នកផ្តល់ LLM និង Vision ដោយមិនបង្ហាញតម្លៃសម្ងាត់។ |
 
-## ជំហ៊ាន 4: ជ្រើស workflow
+## ជំហានទី 4: ជ្រើសរើសដំណើរការងារ
 
-### បកប្រែឯកសារឬឯកសារឯកតាច្រើនៗ
+### បកប្រែឯកសារ ឬឯកសារផ្ទាល់ខ្លួន
 
-ប្រើឧបករណ៍ដែលពឹងផ្អែកលើអ្នកផ្គត់ផ្គង់ (provider-backed content tools) នៅពេលអតិថិជន MCP មានខ្លឹមសារឯកសារឬផ្លូវរូបភាព និងចង់ឲ្យ Co-op Translator ហៅអ្នកផ្គត់ផ្គង់ដែលបានកំណត់។
+ប្រើឧបករណ៍មាតិកាដែលផ្អែកលើអ្នកផ្តល់ នៅពេលដែលកម្មវិធីអតិថិជន MCP មានមាតិកាឯកសារ ឬផ្លូវរូបភាពរួចហើយ ហើយ Co-op Translator គួរតែហៅអ្នកផ្តល់ដែលបានកំណត់។
 
 សម្រាប់ Markdown:
 
-1. ហៅ `translate_markdown_content` ជាមួយ `document`, `language_code`, និងជម្រើស `source_path` ។
-2. ប្រសិនបើលទ្ធផលបានបកប្រែត្រូវបានសរសេរចូលទ្រង់ទ្រាយចេញ Co-op Translator សូមហៅ `rewrite_markdown_paths` ។
-3. អនុញ្ញាតឲ្យអតិថិជនសរសេរ ឬត្រឡប់ `content` ចុងក្រោយ។
+1. ហៅ `translate_markdown_content` ជាមួយ `document`, `language_code`, និងជាជម្រើស `source_path`។
+2. ប្រសិនបើលទ្ធផលបានបកប្រែត្រូវបានសរសេរចូលក្នុងលំនាំចេញរបស់ Co-op Translator សូមហៅ `rewrite_markdown_paths`។
+3. អោយអតិថិជនសរសេរ ឬបញ្ជូនត្រឡប់ `content` ចុងក្រោយ។
 
 សម្រាប់ notebooks:
 
-1. ហៅ `translate_notebook_content` ជាមួយ JSON នៃ notebook និង `language_code` ។
-2. ហៅ `rewrite_notebook_paths` ប្រសិនបើភ្ជាប់ក្នុង notebook ដែលបានបកប្រែត្រូវត្រូវបានកែសម្រួលសម្រាប់ផ្លូវគោលដៅ។
-3. សរសេរ ឬត្រឡប់ JSON នៃ notebook ចុងក្រោយ។
+1. ហៅ `translate_notebook_content` ជាមួយ JSON នៃ notebook និង `language_code`។
+2. ហៅ `rewrite_notebook_paths` ប្រសិនបើតំណនៃ notebook ដែលបានបកប្រែ ត្រូវបានកែសម្រួលសម្រាប់ផ្លូវគោលដៅ។
+3. សរសេរ ឬបញ្ជូនត្រឡប់ JSON ចុងក្រោយនៃ notebook។
 
 សម្រាប់រូបភាព:
 
-1. ហៅ `translate_image_content` ជាមួយ `image_path`, `language_code`, និងជម្រើស `root_dir` ឬ `fast_mode` ។
-2. អាន `data_base64` និង `mime_type` ដែលត្រូវបានត្រឡប់មកវិញ។
-3. ប្រសិនបើបានផ្តល់ `output_path` រូបភាពដែលបានបកប្រែក៏ត្រូវបានរក្សាទុកនៅផ្លូវនោះផងដែរ។
+1. ហៅ `translate_image_content` ជាមួយ `image_path`, `language_code`, និងជាជម្រើស `root_dir` ឬ `fast_mode`។
+2. អាន `data_base64` និង `mime_type` ដែលត្រឡប់មក។
+3. ប្រសិនបើផ្គត់ផ្គង់ `output_path` រូបភាពដែលបានបកប្រែក៏នឹងត្រូវរក្សាទុកទៅផ្លូវនោះផងដែរ។
 
-ឧបករណ៍ខ្លឹមសារ (content tools) មិនអនុវត្តការស្វែងរក project, បច្ចប្បន្នភាព metadata, សេចក្តីប្រកាសបក្សព័ន្ធ, ឬការកែសម្រួលផ្លូវដោយស្វ័យប្រវត្តិទេ។ ប្រសិនបើអ្នកចង់ឲ្យភ្ញៀវម៉ាស៊ីនបម្រើបកប្រែចំណែក Markdown ឬ notebook ដោយគ្មានសមាជិក Co-op Translator LLM បញ្ចូល សូមប្រើ workflow agent-assisted ខាងក្រោម។
+ឧបករណ៍មាតិការនេះមិនអនុវត្តការស្វែងរកគម្រោង ការអាប់ដេតមេតាដាតា ការបដិសេធ ឬការសរសេរផ្លូវជាស្វ័យប្រវត្តិ ទេ។ ប្រសិនបើអ្នកចង់ឲ្យភ្នាក់ងារម្ចាស់ផ្ទះបកប្រែគ្រាប់ Markdown ឬ notebook ដោយគ្មានសញ្ញាប័ត្រ provider LLM របស់ Co-op Translator សូមប្រើដំណើរការជំនួយដោយភ្នាក់ងារខាងក្រោម។
 
-### បកប្រែជាមួយម៉ូដែលភ្ញៀវ (Host Agent Model)
+### បកប្រែជាមួយម៉ូដែលភ្នាក់ងារម្ចាស់ផ្ទះ
 
-ប្រើឧបករណ៍ agent-assisted នៅពេលអ្នកចង់ឲ្យភ្ញៀវម៉ាស៊ីនបម្រើ MCP ផ្ទាល់ ដូចជា ជំនួយការកូដ កំណត់អក្សរ ដែលផលិតអត្ថបទបានបកប្រែជំនួសការកំណត់ Azure OpenAI ឬ OpenAI សម្រាប់ Co-op Translator ។
+ប្រើឧបករណ៍ជំនួយដោយភ្នាក់ងារ នៅពេលដែលអ្នកចង់ឲ្យភ្នាក់ងារម្ចាស់ MCP ដូចជាជំនួយក្នុងការសរសេរកូដ បង្កើតអត្ថបទដែលបានបកប្រែ ជំនួសការកំណត់អ្នកផ្តល់ LLM សម្រាប់ Co-op Translator។
 
-នៅក្នុងអតិថិជន MCP ប្រភេទ chat-based ទូទៅ អ្នកមិនចាំបាច់សរសេរ JSON ដៃសម្រាប់ឧបករណ៍ទេ។ សូមស្នើឲ្យភ្ញៀវប្រើ workflow agent-assisted៖
+នៅក្នុងកម្មវិធីអតិថិជន MCP ដែលមានមូលដ្ឋានជាជជែក អ្នកជាទូទៅមិនចាំបាច់សរសេរ JSON ឧបករណ៍ដោយខ្លួនឯងទេ។ សុំឲ្យភ្នាក់ងារ ប្រើដំណើរការជំនួយដោយភ្នាក់ងារ៖
 
 ```text
 Translate this Markdown file to Korean with Co-op Translator MCP.
@@ -166,7 +175,7 @@ Use agent-assisted mode: call start_markdown_agent_translation, translate the re
 Keep Markdown formatting, code blocks, and links intact.
 ```
 
-សម្រាប់ notebooks ប្រើទម្រង់ដូចគ្នា៖
+សម្រាប់ notebooks ប្រើលំនាំដូចគ្នា៖
 
 ```text
 Translate this notebook to Korean with Co-op Translator MCP.
@@ -174,29 +183,29 @@ Use start_notebook_agent_translation, translate the returned Markdown-cell chunk
 Preserve code cells, outputs, and notebook metadata.
 ```
 
-ប្រសិនបើអតិថិជន MCP របស់អ្នកគាំទ្រ server prompts សូមប្រើ `agent_assisted_markdown_translation_prompt` ដើម្បីឲ្យអតិថិជនផ្ទុកសេចក្តីណែនាំ workflow ដូចគ្នា។
+ប្រសិនបើកម្មវិធីអតិថិជន MCP របស់អ្នកគាំទ្រសារ server prompts សូមប្រើ `agent_assisted_markdown_translation_prompt` ដើម្បីឲ្យអតិថិជនផ្ទុកសេចក្តីណែនាំដំណើរការដូចគ្នា។
 
 សម្រាប់ Markdown:
 
-1. ហៅ `start_markdown_agent_translation` ជាមួយ `document`, `language_code`, និងជម្រើស `source_path` ។
-2. បកប្រែចំណែកដែលត្រូវបានត្រឡប់មកក្នុងភ្ញៀវម៉ាស៊ីនបម្រើដោយអនុវត្ត `prompt` របស់ចំណែកនីមួយៗ។
-3. ហៅ `finish_markdown_agent_translation` ជាមួយ `job` ដើម និងចំណែកដែលបានបកប្រែក្នុងការ​ប្រើ `chunk_id` និង `translated_text` ។
-4. ប្រសិនបើខ្លឹមសារត្រូវបានសរសេរចូលផ្លូវគោលដៅដែលបានបកប្រែ សូមហៅ `rewrite_markdown_paths` ។
+1. ហៅ `start_markdown_agent_translation` ជាមួយ `document`, `language_code`, និងជាជម្រើស `source_path`។
+2. បកប្រែគ្រាប់នីមួយៗដែលត្រឡប់មកក្នុងភ្នាក់ងារម្ចាស់ដោយតាម `prompt` របស់គ្រាប់។
+3. ហៅ `finish_markdown_agent_translation` ជាមួយ `job` ដើម និងគ្រាប់ដែលបានបកប្រែ ដោយប្រើ `chunk_id` និង `translated_text`។
+4. ប្រសិនបើមាតិកានឹងត្រូវបានសរសេរទៅផ្លូវគោលដៅដែលបានបកប្រែ សូមហៅ `rewrite_markdown_paths`។
 
 សម្រាប់ notebooks:
 
-1. ហៅ `start_notebook_agent_translation` ជាមួយ JSON នៃ notebook និង `language_code` ។
-2. បកប្រែចំណែកនីមួយៗក្នុងភ្ញៀវម៉ាស៊ីនបម្រើ។
+1. ហៅ `start_notebook_agent_translation` ជាមួយ JSON នៃ notebook និង `language_code`។
+2. បកប្រែគ្រាប់នីមួយៗដែលត្រឡប់មកក្នុងភ្នាក់ងារម្ចាស់។
 3. ហៅ `finish_notebook_agent_translation` ជាមួយ `job` ដើម និងចំណែកដែលបានបកប្រែ។
-4. ហៅ `rewrite_notebook_paths` ប្រសិនបើភ្ជាប់ក្នុង notebook ត្រូវការកែសម្រួលសម្រាប់ផ្លូវគោលដៅ។
+4. ហៅ `rewrite_notebook_paths` ប្រសិនបើតំណក្នុង notebook ដែលបានបកប្រែ ត្រូវការកែផ្លូវគោលដៅ។
 
-ឧបករណ៍ agent-assisted មិនហៅ Azure OpenAI ឬ OpenAI ពី Co-op Translator ទេ។ ភ្ញៀវម៉ាស៊ីនបម្រើមានកាតព្វកិច្ចក្នុងការបកប្រែចំណែកដែលត្រូវបានត្រឡប់។ Co-op Translator ប្រគល់ការចែកចាយ Markdown, រក្សាទុកកន្លែងទំនេរ (placeholders), សង់ឡើងវិញ frontmatter, ជំនួសកោសិកា notebook, និងធ្វើ normalization បន្ទាប់បកប្រែ។
+ឧបករណ៍ជំនួយដោយភ្នាក់ងារមិនហៅអ្នកផ្តល់ LLM ដែលបានកំណត់ពី Co-op Translator ទេ។ ភ្នាក់ងារអាហ្វត (host agent) មានសារៈសំខាន់ក្នុងការបកប្រែចំណែកដែលបានត្រឡប់មកវិញ។ Co-op Translator ទទួលខុសត្រូវក្នុងការបែងចែក Markdown ជាចំណែក, រក្សាទុកចំណុចដាក់ជំនួស, ស្ដារឡើងវិញ frontmatter, ជំនួសកោសិកា notebook និងធ្វើឲ្យធម្មតាផ្សេងៗបន្ទាប់ពីបកប្រែ។
 
 ### បកប្រែ Repository ទាំងមូល
 
-ប្រើ `run_translation` នៅពេលអ្នកចង់ឲ្យ Co-op Translator ប្រព្រឹត្តទៅដូចជា CLI `translate` ។
+ប្រើ `run_translation` នៅពេលដែលអ្នកប្រើចង់ឱ្យ Co-op Translator ប្រតិបត្តិដូច CLI `translate`។
 
-ការបកប្រែ repository នឹងកំណត់តម្លៃលំនាំដើមជា `dry_run=true` ដូច្នេះភ្ញៀវអាចពិនិត្យដែនកំណត់មុនការផ្លាស់ប្តូរ​ឯកសារ៖
+ការបកប្រែ Repository មានតម្លៃដើមជា `dry_run=true` ដើម្បីឱ្យភ្នាក់ងារអាចពិនិត្យដែនកំណត់មុនពេលកែប្រែឯកសារ៖
 
 ```json
 {
@@ -207,7 +216,13 @@ Preserve code cells, outputs, and notebook metadata.
 }
 ```
 
-ដើម្បីអនុញ្ញាតឲ្យសរសេរ និយោជកត្រូវតែដាក់ទាំង `dry_run=false` និង `confirm_write=true` ៖
+លទ្ធផល `run_translation` រួមមានអារេ `events` ដែលមាន
+`co-op.translation.event.v1` នៃព្រឹត្តិការណ៍បង្ហាញស្ថានភាព។ អតិថិជន MCP គួរប្រើវាលដូចជា
+`type`, `stage_key`, `completed`, `total`, និង `current_path` ជំនួស
+ការវិភាគអត្ថបទកុងសុលដែលបានចាប់យក។ ផ្ដល់ `json_events_path` ដើម្បីសរសេរព្រឹត្តិការណ៍ទាំងនោះ
+ទៅក្នុងឯកសារ NDJSON។
+
+ដើម្បីអនុញ្ញាតការសរសេរ អ្នកហៅត្រូវកំណត់ទាំង `dry_run=false` និង `confirm_write=true`៖
 
 ```json
 {
@@ -219,14 +234,14 @@ Preserve code cells, outputs, and notebook metadata.
 }
 ```
 
-`translate_project` ត្រូវបានបង្ហាញជាឈ្មោះជំនួសសមត្ថភាពសម្រាប់ `run_translation` ។
+`translate_project` ត្រូវបានផ្ដល់ជាឈ្មោះសមភាពសម្រាប់ `run_translation`។
 
 ### ពិនិត្យលទ្ធផលដែលបានបកប្រែ
 
-ប្រើ `run_review` សម្រាប់ការត្រួតពិនិត្យដែលកំណត់ទិសដៅ ដែលមិនទាមទារសមាជិក LLM ឬ Vision ៖
+ប្រើ `run_review` សម្រាប់ការត្រួតពិនិត្យដែលមានលទ្ធផលកំណត់ត្រា ហើយមិនទាមទារអត្តសញ្ញាណ LLM ឬ Vision ទេ៖
 
-!!! note "Beta"
-    MCP បង្ហាញ API ជាកម្រិតប៊ីតា `run_review` ។ វាសុវត្ថិសម្រាប់ workflow ពិនិត្យអានតែប៉ុណ្ណោះ ប៉ុន្តែការត្រួតពិនិត្យ និង schema កំហុសអាចបន្តផ្លាស់ប្តូរបាន។
+!!! note "ប៊ីតា"
+    MCP បង្ហាញ API `run_review` ជាស៊េរីប៊ីតា។ វាសុវត្ថិសម្រាប់ដំណើរការត្រួតពិនិត្យការអានតែប៉ុណ្ណោះ ប៉ុន្តែការត្រួតពិនិត្យ និងស្គីមបញ្ហាអាចមានការផ្លាស់ប្តូរ។
 
 ```json
 {
@@ -237,72 +252,72 @@ Preserve code cells, outputs, and notebook metadata.
 }
 ```
 
-លទ្ធផលរួមមានលទ្ធផលអក្សរដែលចាប់បាន និងសេចក្តីសង្ខេបការពិនិត្យដែលមានរចនាសម្ព័ន្ធនៅពេលមាន។
+លទ្ធផលរួមមានអត្ថបទដែលបានចាប់យក និងសេចក្តីសង្ខេបការពិនិត្យដែលមានរចនាសម្ព័ន្ធ នៅពេលមាន។
 
-## រត់ម៉ាស៊ីនបម្រើដោយដៃ (Manual Server Runs)
+## ការរត់ម៉ាស៊ីនមេដោយដៃ
 
-ការរត់ដោយដៃភាគច្រើនសម្រាប់ដោះស្រាយបញ្ហា ឬសម្រាប់ការដឹកជញ្ជូនដែលប្រព្រឹត្តដូចម៉ាស៊ីនបម្រើដំណើររយៈប្រវែងវែង។
+ការរត់ដោយដៃភាគច្រើនសម្រាប់ដោះស្រាយបញ្ហា ឬសម្រាប់ transports ដែលដំណើរការដូចម៉ាស៊ីនមេរយៈពេលយូរ។
 
-ដោះស្រាយបញ្ហាម៉ាស៊ីនបម្រើ stdio លំនាំដើម៖
+Debug the default stdio server:
 
 ```bash
 co-op-translator-mcp
 ```
 
-រត់ពី source checkout៖
+Run from a source checkout:
 
 ```bash
 python -m co_op_translator.mcp.server
 ```
 
-រត់ម៉ាស៊ីនបម្រើ HTTP ឬ SSE អាយុកាលវែង៖
+រត់ម៉ាស៊ីនមេ HTTP ឬ SSE រយៈពេលយូរ:
 
 ```bash
 co-op-translator-mcp --transport streamable-http
 co-op-translator-mcp --transport sse
 ```
 
-សម្រាប់ការរួមបញ្ចូលជាមួយកម្មវិធីកែសម្រួល និងភ្នាក់ងារក្នុងដែនកំណត់ (local) សូមពេញចិត្តជាមួយការកំណត់ `stdio` ដែលគ្រប់គ្រងដោយអតិថិជន ក្នុងជំហ៊ាន 2 ។
+សម្រាប់ការរួមបញ្ចូលជាមួយកម្មវិធីកែសម្រួលក្នុងកន្លែង និងភ្នាក់ងារ ជ្រើសប្រើការកំណត់ `stdio` ដែលគ្រប់គ្រងដោយ client ក្នុងជំហានទី 2។
 
-## ឧបករណ៍
+## Tools
 
 | ឧបករណ៍ | គោលបំណង | សរសេរឯកសារ |
 | --- | --- | --- |
-| `translate_markdown_content` | បកប្រែអក្សារ Markdown មួយ។ | ទេ |
+| `translate_markdown_content` | បកប្រែខ្សែអក្សារ Markdown។ | ទេ |
 | `translate_notebook_content` | បកប្រែកោសិកា Markdown ក្នុង JSON នៃ notebook។ | ទេ |
-| `translate_image_content` | បកប្រែអត្ថបទក្នុងរូបភាពមួយ និងត្រឡប់ទិន្នន័យរូបភាពជា base64។ | ជម្រើស, មានតែពេល `output_path` ត្រូវបានផ្តល់ |
-| `start_markdown_agent_translation` | ត្រៀមចំណែក Markdown សម្រាប់ភ្ញៀវម៉ាស៊ីនបម្រើបកប្រែដោយគ្មានសមាជិក Co-op Translator LLM។ | ទេ |
-| `finish_markdown_agent_translation` | ស្ដារឡើងវិញ Markdown ពីចំណែកដែលភ្ញៀវម៉ាស៊ីនបម្រើបានបកប្រែ។ | ទេ |
-| `start_notebook_agent_translation` | ត្រៀមចំណែកកោសិកា Markdown ក្នុង notebook សម្រាប់ភ្ញៀវម៉ាស៊ីនបម្រើបកប្រែ។ | ទេ |
-| `finish_notebook_agent_translation` | ស្ដារឡើងវិញ JSON នៃ notebook ពីចំណែកដែលភ្ញៀវម៉ាស៊ីនបម្រើបានបកប្រែរ។ | ទេ |
-| `rewrite_markdown_paths` | កែសម្រួលផ្លូវក្នុងខ្លឹមសារ Markdown និង frontmatter សម្រាប់គោលដៅដែលបានបកប្រែ។ | ទេ |
-| `rewrite_notebook_paths` | កែសម្រួលផ្លូវក្នុងកោសិកា Markdown របស់ notebook។ | ទេ |
-| `run_translation` | រត់ការបកប្រែកម្រិត project ដូចជា CLI។ | មាន នៅពេល `dry_run=false` និង `confirm_write=true` |
-| `translate_project` | ឈ្មោះជំនួសសមរម្យសម្រាប់ `run_translation`។ | មាន នៅពេល `dry_run=false` និង `confirm_write=true` |
-| `run_review` | រត់ការត្រួតពិនិត្យដែលកំណត់ទិសដៅ។ | ទេ |
-| `get_configuration_status` | រាយការណ៍អ្នកផ្គត់ផ្គង់ LLM និង Vision ដែលបានកំណត់ ដោយមិនបង្ហាញសម្ងាត់។ | ទេ |
-| `list_supported_languages` | បញ្ជីកូដភាសាគោលដៅដែលគាំទ្រ។ | ទេ |
-| `get_api_overview` | ពិពណ៌នាអំពី workflow និងឧបករណ៍ MCP ដែលមាន។ | ទេ |
+| `translate_image_content` | បកប្រែអត្ថបទក្នុងរូបភាពមួយ និងប្រគល់ទិន្នន័យរូបភាព base64។ | ជាជម្រើស, តែត្រឹមពេលតែម្តងដែលបានផ្ដល់ `output_path` |
+| `start_markdown_agent_translation` | រៀបចំចំណែក Markdown សម្រាប់ភ្នាក់ងារ (host agent) ដើម្បីបកប្រែដោយគ្មានអាជ្ញាប័ណ្ណ LLM របស់ Co-op Translator។ | ទេ |
+| `finish_markdown_agent_translation` | ស្ដារឡើងវិញ Markdown ពីចំណែកដែលភ្នាក់ងារ (host agent) បានបកប្រែ។ | ទេ |
+| `start_notebook_agent_translation` | រៀបចំចំណែកកោសិកា Markdown នៃ notebook សម្រាប់ភ្នាក់ងារ (host agent) បកប្រែ। | ទេ |
+| `finish_notebook_agent_translation` | ស្ដារឡើងវិញ JSON នៃ notebook ពីចំណែកដែលភ្នាក់ងារ (host agent) បានបកប្រែ។ | ទេ |
+| `rewrite_markdown_paths` | ប្តូរវិញផ្លូវនៅក្នុងខ្លឹមសាររ៉េ Markdown និង frontmatter សម្រាប់គោលដៅដែលបានបកប្រែ។ | ទេ |
+| `rewrite_notebook_paths` | ប្តូរវិញផ្លូវនៅក្នុងកោសិកា Markdown របស់ notebook។ | ទេ |
+| `run_translation` | ដំណើរការបកប្រែកម្រិតគម្រោង ដូច CLI។ | បាទ បើ `dry_run=false` និង `confirm_write=true` |
+| `translate_project` | ឈ្មោះសមភាពសម្រាប់ `run_translation`។ | បាទ បើ `dry_run=false` និង `confirm_write=true` |
+| `run_review` | អនុវត្តត្រួតពិនិត្យដែលកំណត់លទ្ធផល។ | ទេ |
+| `get_configuration_status` | រាយការណ៍អ្នកផ្តល់ LLM និង Vision ដែលបានកំណត់ ដោយមិនបង្ហាញអំពីសម្ងាត់។ | ទេ |
+| `list_supported_languages` | បង្ហាញបញ្ជីកូដភាសាគោលដៅដែលគាំទ្រ។ | ទេ |
+| `get_api_overview` | ពណ៌នា workflows និងឧបករណ៍ MCP ដែលមានស្រាប់។ | ទេ |
 
-## ធនធាន
+## Resources
 
 | Resource URI | គោលបំណង |
 | --- | --- |
-| `co-op://api` | សេចក្តីសង្ខេប JSON នៃ workflow និងឧបករណ៍។ |
+| `co-op://api` | ទិដ្ឋភាពទូទៅ JSON នៃ workflows និងឧបករណ៍។ |
 | `co-op://supported-languages` | បញ្ជី JSON នៃកូដភាសាដែលគាំទ្រ។ |
-| `co-op://configuration` | សេចក្តីសង្ខេបភាពមានស្រាប់របស់អ្នកផ្គត់ផ្គង់ ដោយមិនមានសម្ងាត់។ |
+| `co-op://configuration` | សេចក្តីសង្ខេប JSON នៃភាពអាចប្រើបានរបស់អ្នកផ្តល់ដោយមិនបង្ហាញសម្ងាត់។ |
 
-## សេចក្តីណែនាំ (Prompts)
+## Prompts
 
 | Prompt | គោលបំណង |
 | --- | --- |
-| `translate_markdown_document_prompt` | មគ្គុទេសក៍សម្រាប់អតិថិជន MCP តាមរយៈការបកប្រែខ្លឹមសារ និងជម្រើសកែផ្លូវ។ |
-| `agent_assisted_markdown_translation_prompt` | មគ្គុទេសក៍សម្រាប់អតិថិជន MCP តាមរយៈការបកប្រែ Markdown ដោយភ្ញៀវម៉ាស៊ីនបម្រើ ដោយគ្មានសមាជិក LLM នៃ Co-op Translator។ |
-| `translate_repository_prompt` | មគ្គុទេសក៍សម្រាប់អតិថិជន MCP តាមរយៈការបកប្រែ repository ដែលអនុវត្ត dry-run មុន។ |
+| `translate_markdown_document_prompt` | ជួយណែនាំអតិថិជន MCP តាមដានការបកប្រែខ្លឹមសារ និងជម្រើសកែផ្លូវ។ |
+| `agent_assisted_markdown_translation_prompt` | ជួយណែនាំអតិថិជន MCP តាមដានការបកប្រែ Markdown ដោយភ្នាក់ងារ (host agent) ដោយគ្មានអាជ្ញាប័ណ្ណ LLM នៃ Co-op Translator។ |
+| `translate_repository_prompt` | ផ្ដល់ការណែនាំដល់អតិថិជន MCP សម្រាប់ការបកប្រែ Repository ដែលចាប់ផ្តើមដោយ dry-run ជាមុន។ |
 
-## ឧទាហរណ៍ចម្លង-បិទបិទ (Copy-Paste Examples)
+## ឧទាហរណ៍សម្រាប់ចម្លង និង ភ្ជាប់
 
-បកប្រែខ្លឹមសារ Markdown៖
+បកប្រែខ្លឹមសារ Markdown:
 
 ```json
 {
@@ -315,13 +330,13 @@ co-op-translator-mcp --transport sse
 }
 ```
 
-កែសម្រួលភ្ជាប់ Markdown ដែលបានបកប្រែ៖
+ប្តូរតំណ Markdown ដែលបានបកប្រែ:
 
 ```json
 {
   "tool": "rewrite_markdown_paths",
   "arguments": {
-    "content": "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+    "content": "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
     "source_path": "docs/guide.md",
     "target_path": "translations/ko/docs/guide.md",
     "policy": {
@@ -335,7 +350,7 @@ co-op-translator-mcp --transport sse
 }
 ```
 
-បកប្រែ Markdown ជាមួយម៉ូដែលភ្ញៀវ៖
+បកប្រែ Markdown ជាមួយម៉ូឌែលភ្នាក់ងារ (host agent):
 
 ```json
 {
@@ -348,7 +363,7 @@ co-op-translator-mcp --transport sse
 }
 ```
 
-បន្ទាប់ពីភ្ញៀវម៉ាស៊ីនបម្រើបកប្រែចំណែកដែលបានត្រឡប់មក ត្រូវបញ្ចប់ការងារ ដោយប្រើ `job` ពេញលេញ ដែលត្រូវបានត្រឡប់ពី `start_markdown_agent_translation` ៖
+បន្ទាប់ពីភ្នាក់ងារ (host agent) បកប្រែចំណែកនីមួយៗដែលបានត្រឡប់មកវិញ សូមបញ្ចប់ការងារ ដោយប្រើអង្គភាព `job` ពេញលេញ ដែលបានត្រឡប់ពី `start_markdown_agent_translation`:
 
 ```text
 tool: finish_markdown_agent_translation
@@ -359,7 +374,7 @@ arguments:
       translated_text: "# 안녕하세요\n\n시작하려면 `pip install`을 사용하세요."
 ```
 
-ទស្សនាមុនការបកប្រែ repository៖
+មើលមុននូវការបកប្រែ Repository:
 
 ```json
 {
@@ -373,21 +388,21 @@ arguments:
 }
 ```
 
-## ដោះស្រាយបញ្ហា (Troubleshooting)
+## Troubleshooting
 
-| បញ្ហា | ត្រូវព្យាយាមអ្វី |
+| បញ្ហា | តើត្រូវព្យាយាមអ្វី |
 | --- | --- |
-| អតិថិជន MCP មិនអាចរកឃើញ `co-op-translator-mcp` បាន។ | ប្រើ path លម្អិតនៃ Python executable និង `["-m", "co_op_translator.mcp.server"]` ក្នុងកំណត់តម្លៃ source checkout។ |
-| ម៉ាស៊ីនបម្រើត្រូវបានរាយប៉ុណ្ណោះ តែការបកប្រែបរាជ័យ។ | ហៅ `get_configuration_status` និងបញ្ជាក់ថាអ្នកផ្គត់ផ្គង់ LLM មានស្រាប់។ |
-| អ្នកចង់បានការបកប្រែ Markdown ឬ notebook ដោយគ្មានកូនស្រី Azure OpenAI/OpenAI ។ | ប្រើ `start_markdown_agent_translation` / `finish_markdown_agent_translation` ឬប្រភេទ notebook ឲ្យភ្ញៀវម៉ាស៊ីនបម្រើបកប្រែចំណែក។ |
-| ការបកប្រែរូបភាពបរាជ័យ។ | បញ្ជាក់ថาตัวแปร Azure AI Vision ត្រូវបានកំណត់ ហើយហៅ `get_configuration_status` ។ |
-| ការបកប្រែ repository មិនបានសរសេរឯកសារ។ | ដាក់ `dry_run=false` និង `confirm_write=true` បន្ទាប់ពីមានការយល់ព្រមច្បាស់ពីអ្នកប្រើ។ |
-| ការផ្លាស់ប្តូរទៅកាន់កំណត់តម្លៃអតិថិជនមិនបង្ហាញ។ | ចាប់ផ្តើមឡើងវិញ ឬផ្ទុកឡើងវិញអតិថិជន MCP ។
+| អតិថិជន MCP មិនអាចរកឃើញ `co-op-translator-mcp` ទេ។ | ប្រើផ្លូវ Python អនុវត្តដោយពេញលេញ និងកំណត់ source checkout `["-m", "co_op_translator.mcp.server"]`។ |
+| ម៉ាស៊ីនមេត្រូវបានបញ្ជីប៉ុន្តែការបកប្រែបរាជ័យ។ | ហៅ `get_configuration_status` និងបញ្ជាក់ថាអ្នកផ្តល់ LLM មានស្រាប់។ |
+| អ្នកចង់បកប្រែ Markdown ឬ notebook ដោយគ្មានអាជ្ញាប័ណ្ណអ្នកផ្តល់។ | ប្រើ `start_markdown_agent_translation` / `finish_markdown_agent_translation` ឬសមរាប់សម្រាប់ notebook ដូច្នេះភ្នាក់ងារ (host agent) នឹងបកប្រែចំណែក។ |
+| ការបកប្រែរូបភាពបរាជ័យ។ | ប្រាកដថាតម្លៃអថេរ Azure AI Vision ត្រូវបានកំណត់ ហើយហៅ `get_configuration_status`។ |
+| ការបកប្រែ Repository មិនសរសេរឯកសារ។ | កំណត់ `dry_run=false` និង `confirm_write=true` តែបន្ទាប់ពីបានទទួលការយល់ព្រមពីអ្នកប្រើយ៉ាងច្បាស់។ |
+| ការផ្លាស់ប្តូរនៅក្នុងការកំណត់ client មិនបង្ហាញ។ | ចាប់ផ្តើមឡើងវិញ ឬផ្ទុកឡើងវិញអតិថិជន MCP។ |
 
-## សេចក្តីអនុវត្តសុវត្ថិភាព (Safety Notes)
+## កំណត់ចំណាំសុវត្ថិភាព
 
-- ការ ហៅឧបករណ៍ MCP ត្រូវបានគ្រប់គ្រងដោយម៉ូដែល (model-controlled) ដោយកម្មវិធីម្ចាស់ (host application), ដូច្នេះការបកប្រែ repository ត្រូវបានកំណត់ជា dry-run ដោយលំនាំ។
-- ការបកប្រែ repository ពេញលេញ អាចបង្កើត បច្ចុប្បន្នភាព ឬលុបឯកសារច្រើន។ សូមទាមទារការយល់ព្រមកំណត់ច្បាស់ពីអ្នកប្រើ មុនពេលដាក់ `confirm_write=true` ។
-- ឧបករណ៍ស្ថានភាពកំណត់ (configuration status) មិនដែលត្រឡប់សោ API, endpoints, ឬតម្លៃសម្ងាត់ផ្សេងទៀតឡា។ 
-- ការបកប្រែរូបភាព ត្រឡប់ទិន្នន័យរូបភាពជា base64។ រូបភាពធំនឹងបង្កើតចម្លើយឧបករណ៍ដែលធំ។ 
-- ឧបករណ៍ agent-assisted ត្រឡប់ចំណែកដើម និង prompt ទៅភ្ញៀវម៉ាស៊ីនបម្រើ MCP។ ប្រើវិធីនេះតែនៅពេលខ្លឹមសារដែលអ្នកប្រើមានមនសិទ្ធិស្នាក់នៅក្នុងការផ្ញើទៅម៉ូដែលភ្ញៀវនោះ។
+- ការហៅឧបករណ៍ MCP ត្រូវបានគ្រប់គ្រងដោយម៉ូឌែលនៃកម្មវិធីម៉ាស៊ីម (host application), ដូច្នេះការបកប្រែ Repository គឺជា dry-run លំនាំដើម។
+- ការបកប្រែ Repository ពេញលេញអាចបង្កើត, កែប្រែ, ឬលុបឯកសារច្រើន។ ត្រូវទាមទារការយល់ព្រមយ៉ាងច្បាស់ពីអ្នកប្រើ មុនពេលកំណត់ `confirm_write=true`។
+- ឧបករណ៍ស្ថានភាពកំណត់មិនដែលត្រឡប់កូនសោ API, endpoints, ឬតម្លៃសម្ងាត់ផ្សេងៗ។
+- ការបកប្រែរូបភាពបញ្ជូនទិន្នន័យរូបភាពជា base64។ រូបភាពធំៗអាចបង្កើតចម្លើយឧបករណ៍ដែលមានទំហំធំ។
+- ឧបករណ៍ជំនួយដោយភ្នាក់ងារត្រឡប់ចំណែកប្រភព និង prompts ទៅកាន់ម៉ាស៊ីនផ្ដល់ MCP (host)。 ជ្រើសប្រើពួកវាប៉ុណ្ណោះសម្រាប់ខ្លីមសារ​ដែលអ្នកប្រើមានក្ដីពេញចិត្តក្នុងការផ្ញើទៅម៉ូឌែលភ្នាក់ងារ host នោះ។

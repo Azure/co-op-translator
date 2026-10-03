@@ -6,7 +6,7 @@ Większość użytkowników Co-op Translator nie potrzebuje tej strony.
 
 ## Automatyczne synchronizowanie sekcji Other Courses
 
-Add these markers around the "Other Courses" section in your README:
+Umieść te znaczniki wokół sekcji "Inne kursy" w swoim README:
 
 ```markdown
 <!-- CO-OP TRANSLATOR OTHER COURSES START -->
@@ -14,7 +14,7 @@ Add these markers around the "Other Courses" section in your README:
 <!-- CO-OP TRANSLATOR OTHER COURSES END -->
 ```
 
-Each time Co-op Translator runs through the CLI or GitHub Actions, it replaces the content between the markers with the packaged template.
+Za każdym razem, gdy Co-op Translator uruchamia się przez CLI lub w GitHub Actions, zastępuje zawartość między znacznikami dostarczonym szablonem.
 
 ## Aktualizowanie udostępnionego szablonu
 

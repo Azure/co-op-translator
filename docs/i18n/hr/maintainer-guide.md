@@ -1,6 +1,6 @@
 # Vodič za održavatelje
 
-Ova stranica sažima kako su API, CLI i stranica dokumentacije povezani.
+Ova stranica sažima kako su API, CLI i stranica s dokumentacijom međusobno povezani.
 
 ## Granica javnog API-ja
 
@@ -10,13 +10,16 @@ Stabilni Python API izvezen je iz:
 co_op_translator.api
 ```
 
-Javni API organiziran je u pomoćnike za prevođenje sadržaja, pomoćnike za prepisivanje putanja, orkestraciju projekta i pregled:
+Javni API organiziran je u pomoćnike za prevođenje sadržaja, pomoćnike za prepisivanje putanja, orkestraciju projekata i pregled:
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,13 +31,17 @@ from co_op_translator.api import (
 )
 ```
 
+`TranslationStateProvider` je granica za trajnu pohranu za hostirane integracije.
+Mora držati generirane kandidate odvojeno od prihvaćenih osnovnih verzija tako da
+ne-spojeni prijevod ne postane izvor istine.
+
 Prilikom dodavanja novih javnih API-ja, ažurirajte:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
-- relevantne API testove pod `tests/co_op_translator/`, kao što su `test_api.py` ili `test_review_api.py`
+- odgovarajući API testovi u `tests/co_op_translator/`, kao što su `test_api.py` ili `test_review_api.py`
 
-Izbjegavajte dokumentirati niže razine `core` modula kao stabilni API osim ako projekt namjerava izravno podržavati te module.
+Izbjegavajte dokumentiranje niže razine `core` modula kao stabilnog API-ja, osim ako projekt ne namjerava izravno podržavati te module.
 
 ## Ulazne točke CLI-ja
 
@@ -49,20 +56,20 @@ co-op-review = "co_op_translator.__main__:main"
 co-op-translator-mcp = "co_op_translator.mcp.server:main"
 ```
 
-`src/co_op_translator/__main__.py` prosljeđuje prema nazivu skripte:
+`src/co_op_translator/__main__.py` preusmjerava prema nazivu skripte:
 
 - `translate` poziva `co_op_translator.cli.translate.translate_command`
 - `evaluate` poziva `co_op_translator.cli.evaluate.evaluate_command`
 - `migrate-links` poziva `co_op_translator.cli.migrate_links.migrate_links_command`
 - `co-op-review` poziva `co_op_translator.cli.review.review_command`
 
-`co-op-translator-mcp` zaobilazi `__main__.py` i poziva `co_op_translator.mcp.server:main` izravno.
+`co-op-translator-mcp` zaobilazi `__main__.py` i izravno poziva `co_op_translator.mcp.server:main`.
 
-Prilikom dodavanja ili promjene CLI opcija, ažurirajte:
+Prilikom dodavanja ili mijenjanja CLI opcija, ažurirajte:
 
-- relevantnu `src/co_op_translator/cli/*.py` naredbu
+- odgovarajuću naredbu u `src/co_op_translator/cli/*.py`
 - `docs/cli.md`
-- testove povezane s CLI-jem, ako se ponašanje promijeni
+- testovi vezani uz CLI, ako se ponašanje promijeni
 
 ## MCP poslužitelj
 
@@ -72,56 +79,56 @@ MCP poslužitelj je implementiran u:
 co_op_translator.mcp.server
 ```
 
-Poslužitelj namjerno koristi javni Python API umjesto pozivanja niže razine `core` modula. Održavajte ovu granicu netaknutom kako bi MCP klijenti, Python pozivači i CLI dijelili isto ponašanje.
+Poslužitelj namjerno obuhvaća javni Python API umjesto da poziva niže razine `core` module. Ostavite ovu granicu netaknutom tako da MCP klijenti, Python pozivatelji i CLI dijele isto ponašanje.
 
-Prilikom dodavanja ili promjene MCP alata, ažurirajte:
+Prilikom dodavanja ili mijenjanja MCP alata, ažurirajte:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
-- `docs/api.md` ako se površina javnog API-ja promijeni
+- `docs/api.md` ako se javna površina API-ja promijeni
 
-Alati za prevođenje repozitorija mogu se pozivati modelom preko MCP-a i mogu pisati mnogo datoteka. Ostavite `dry_run=True` kao zadano i zahtijevajte `confirm_write=True` prije prevođenja projekta koje nije suho pokretanje.
+Alati za prevođenje u repozitoriju mogu se pozivati putem modela kroz MCP i mogu zapisati mnogo datoteka. Ostavite `dry_run=True` kao zadanu vrijednost i zahtijevajte `confirm_write=True` prije izvođenja prevođenja projekta bez suhog pokusa.
 
 ## Tijek prevođenja
 
-Visokorazinski tijek prevođenja projekta je:
+Opći tijek prevođenja projekta je:
 
-1. Parsiranje CLI argumenata ili API parametara.
-2. Validacija LLM konfiguracije s `LLMConfig`.
-3. Validacija Azure AI Vision kada je odabrano prevođenje slika.
-4. Normaliziranje kodova jezika.
-5. Otkrivanje zastarjelih aliasa mapa jezika.
-6. Procjena opsega prevođenja.
-7. Ažuriranje README odjeljaka za jezik/predmet kad je primjenjivo.
-8. Delegiranje prevođenja projekta na `ProjectTranslator`.
+1. Parsirajte CLI argumente ili API parametre.
+2. Provjerite konfiguraciju LLM-a s `LLMConfig`.
+3. Provjerite Azure AI Vision kada je odabrano prevođenje slika.
+4. Normalizirajte kodove jezika.
+5. Otkrivanje zastarjelih aliasa za mape jezika.
+6. Procijenite opseg prevođenja.
+7. Ažurirajte odjeljke jezika/tečaja u README-u kad je primjenjivo.
+8. Delegirajte prevođenje projekta na `ProjectTranslator`.
 9. `ProjectTranslator` delegira obradu datoteka na `TranslationManager`.
 
-`TranslationManager` je sastavljen od mixinova fokusiranih na tipove datoteka:
+`TranslationManager` sastoji se od fokusiranih mixina za vrste datoteka:
 
-- `ProjectMarkdownTranslationMixin` rukuje čitanjem Markdown datoteka, prevođenjem sadržaja, prepisivanjem putanja, metapodacima, izjavama o odricanju odgovornosti i zapisivanjem.
-- `ProjectNotebookTranslationMixin` rukuje čitanjem datoteka bilježnice, prevođenjem Markdown-ćelija, prepisivanjem putanja, metapodacima, izjavama o odricanju odgovornosti i zapisivanjem.
-- `ProjectImageTranslationMixin` rukuje otkrivanjem slika, ekstrakcijom/prevođenjem teksta, zapisivanjem renderiranih slika i metapodacima.
+- `ProjectMarkdownTranslationMixin` upravlja čitanjem Markdown datoteka, prevođenjem sadržaja, prepisivanjem putanja, metapodacima, izjavama o odricanju odgovornosti i zapisivanjem.
+- `ProjectNotebookTranslationMixin` upravlja čitanjem notebook datoteka, prevođenjem Markdown ćelija, prepisivanjem putanja, metapodacima, izjavama o odricanju odgovornosti i zapisivanjem.
+- `ProjectImageTranslationMixin` upravlja pronalaženjem slika, izdvajanje i prevođenjem teksta, zapisivanjem renderiranih slika i metapodacima.
 
-Niže razine API-ja za sadržaj preskaču tijek rada projekta:
+Niže razine API-ja za sadržaj preskaču projektni tijek rada:
 
 1. `translate_markdown_content` i `translate_notebook_content` prevode samo sadržaj u memoriji.
-2. `translate_image_content` prevodi tekst u jednoj slici i vraća renderirani objekt slike.
-3. `rewrite_markdown_paths` i `rewrite_notebook_paths` su eksplicitni pomoćnici za postprocesiranje. Ne izvode prevođenje niti zapise projekta.
+2. `translate_image_content` prevodi tekst na pojedinačnoj slici i vraća renderirani objekt slike.
+3. `rewrite_markdown_paths` i `rewrite_notebook_paths` su eksplicitni pomoćnici za naknadnu obradu. Ne obavljaju prevođenje niti zapisuju u projekt.
 
 ## Tijek pregleda
 
 Deterministički tijek pregleda je:
 
-1. Parsiranje CLI argumenata ili API parametara.
-2. Normaliziranje traženih kodova jezika.
-3. Sastavljanje jednog ili više ciljeva pregleda iz `root_dir`, `root_dirs` ili `groups`.
-4. Opcionalno ograničavanje izvornih datoteka s `--changed-from`.
-5. Pokretanje determinističkih provjera strukture, svježine prijevoda, integriteta Markdowna i lokalnih putanja linkova/slika.
-6. Ispisivanje ili tekstualnog izlaza ili Markdowna u GitHub stilu.
-7. Izlaz s neuspjehom kada se pronađu pogreške u pregledu.
+1. Parsirajte CLI argumente ili API parametre.
+2. Normalizirajte tražene kodove jezika.
+3. Izgradite jedan ili više ciljeva pregleda iz `root_dir`, `root_dirs` ili `groups`.
+4. Opcionalno ograničite izvorne datoteke pomoću `--changed-from`.
+5. Pokrenite determinističke provjere za strukturu, svježinu prijevoda, integritet Markdowna i lokalne putanje poveznica/slika.
+6. Ispišite ili tekstualni izlaz ili Markdown u GitHub stilu.
+7. Izađite s greškom ako se pronađu pogreške pri pregledu.
 
-Tijek pregleda ne zahtijeva API ključeve i trebao bi ostati prikladan za CI u pull requestovima. Radni tok za pull request zapisuje sažetak provjere pri svakom pokretanju i objavljuje komentar na PR samo kada `co-op-review` ne uspije.
+Tijek pregleda ne zahtijeva API ključeve i dostupan je za lokalne provjere ili za CI koji korisnik uključi (opt-in). Ovaj repozitorij ne pokreće `co-op-review` automatski za svaki pull request.
 
 ## Stranica dokumentacije
 
@@ -133,7 +140,7 @@ requirements-docs.txt
 docs/
 ```
 
-Direktorij `docs/` je kanonski izvor dokumentacije. Nemojte dodavati nove vodiče za krajnje korisnike izvan ovog direktorija osim ako projekt namjerno ne uvede drugo objavljeno mjesto dokumentacije.
+Direktorij `docs/` je kanonski izvor dokumentacije. Ne dodajte nove vodiče za krajnjeg korisnika izvan ovog direktorija osim ako projekt namjerno ne uvodi drugo javno dostupno mjesto dokumentacije.
 
 Izgradite lokalno:
 
@@ -142,27 +149,27 @@ python -m pip install -r requirements-docs.txt
 python -m mkdocs build --strict
 ```
 
-Pregledajte lokalno:
+Preview lokalno:
 
 ```bash
 python -m mkdocs serve
 ```
 
-Generirana stranica se zapisuje u `site/`, koji git ignorira.
+Generirana stranica zapisuje se u `site/`, koja je ignorirana od strane gita.
 
-## Radni tok GitHub Pages
+## GitHub Pages radni tijek
 
-`.github/workflows/docs.yml` gradi stranicu na pull requestovima i objavljuje je na push-evima na `main`.
+`.github/workflows/docs.yml` izgrađuje stranicu za pull requestove i postavlja je pri pushu na `main`.
 
-Radni tok instalira:
+Radni tijek instalira:
 
 ```bash
 pip install -r requirements-docs.txt
 ```
 
-Radni tok za dokumentaciju instalira samo alatni lanac za dokumentaciju. `mkdocs.yml` usmjerava `mkdocstrings` na `src/` tako da se stranice javnog API-ja mogu prikazati iz izvornog stabla bez instaliranja kompletnog skupa runtime ovisnosti. Ako buduće API dokumentacije zahtijevaju uvoz opcionalnih runtime providera tijekom izgradnje, ažurirajte i `.github/workflows/docs.yml` i ovaj vodič zajedno.
+Radni tijek za dokumentaciju instalira samo alatni lanac za dokumentaciju. `mkdocs.yml` usmjerava `mkdocstrings` na `src/` tako da se stranice javnog API-ja mogu renderirati iz izvornog stabla bez instaliranja kompletnog skupa runtime ovisnosti. Ako buduće API dokumentacije zahtijevaju uvoz opcionalnih runtime providera tijekom izgradnje, ažurirajte `.github/workflows/docs.yml` i ovaj vodič zajedno.
 
-## Standard kvalitete dokumentacije
+## Kriteriji kvalitete dokumentacije
 
 Prije spajanja promjena dokumentacije, pokrenite:
 
@@ -171,4 +178,4 @@ python -m mkdocs build --strict
 git diff --check
 ```
 
-Koristite stroge buildove kako bi slomljeni linkovi, nevažeći unosi u navigaciji i problemi s prikazivanjem API-ja izazvali greške rano.
+Koristite strogu izgradnju kako bi slomljene poveznice, neispravni unosi u navigaciji i problemi pri prikazu API-ja bili otkriveni na vrijeme.

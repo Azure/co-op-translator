@@ -1,13 +1,13 @@
 # Vianetsintä
 
-Käytä tätä sivua, kun käännöskierros onnistuu odottamattomasti, epäonnistuu konfiguroinnin aikana tai tuottaa tarkistettavaa sisältöä.
+Käytä tätä sivua, kun käännösajo onnistuu odottamattomasti, epäonnistuu asetusten määrittelyn aikana tai tuottaa tulosta, joka vaatii tarkistusta.
 
 ## Aloita tästä
 
-1. Suorita ensin kohdennettu komento, esimerkiksi `translate -l "ko" -md`.
-2. Lisää `-d` debug-lokeja varten.
-3. Lisää `-s` tallentaaksesi debug-lokit hakemistoon `<root-dir>/logs/`.
-4. Suorita `co-op-review` käännöksen jälkeen tarkistaaksesi tuoreuden, rakenteen ja paikalliset linkit.
+1. Suorita ensin kohdistettu komento, esimerkiksi `translate -l "ko" -md`.
+2. Lisää `-d` saadaksesi konsolin debug-lokit.
+3. Lisää `-s` tallentaaksesi debug-lokit polkuun `<root-dir>/logs/`.
+4. Suorita `co-op-review` käännöksen jälkeen tarkistaaksesi ajantasaisuuden, rakenteen ja paikalliset linkit.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -16,7 +16,7 @@ co-op-review -l "ko"
 
 ## Konfigurointivirheet
 
-### Ei kielimallin tarjoajaa
+### Ei kielimallipalveluntarjoajaa
 
 Virhe:
 
@@ -26,13 +26,13 @@ No language model configuration found.
 
 Korjaus:
 
-- Määritä Azure OpenAI tai OpenAI.
-- Varmista, että muuttujat ovat ympäristössä, jossa komento suoritetaan.
-- Paikalliseen käyttöön laita ne `.env`-tiedostoon projektin juureen.
+- Määritä Azure OpenAI, OpenAI tai Anthropic.
+- Varmista, että muuttujat ovat siinä ympäristössä, jossa komento suoritetaan.
+- Paikalliseen käyttöön laita ne projektin juureen tiedostoon `.env`.
 
-Katso [Konfigurointi](configuration.md).
+Katso [Asetukset](configuration.md).
 
-### Kuvakäännökset ilman Azure AI Visionia
+### Kuvien kääntäminen ilman Azure AI Visionia
 
 Virhe:
 
@@ -48,23 +48,23 @@ Korjaus:
 
 ### Virheellinen avain tai päätepiste
 
-Oireisiin voi kuulua `401`, sensuroidut käyttöoikeusvirheet tai päätepisteen käyttöön liittyvät virheet.
+Oireita voivat olla `401`-virheet, sensuroidut käyttöoikeusvirheet tai päätepisteen käyttöön liittyvät virheet.
 
 Korjaus:
 
 - Varmista, että avain kuuluu samaan Azure-resurssiin kuin päätepiste.
-- Varmista, että resurssi tukee Visionia, kun käytät `-img`.
-- Varmista, että Azure OpenAI -käyttöönoton nimi ja API-versio vastaavat käyttöönottoasi.
+- Varmista, että resurssi tukee Visionia käytettäessä `-img`-valitsinta.
+- Varmista, että Azure OpenAI -käyttöönoton nimi ja API-versio vastaavat sinun käyttöönottoasi.
 - Suorita debug-lokeilla: `translate -l "ko" -md -d -s`.
 
 ## Tiedostoja ei käännetty
 
 Yleisiä syitä:
 
-- Valitut liput eivät vastaa tiedostojasi.
+- Valitut valitsimet eivät vastaa tiedostojasi.
 - Käännettyjä tiedostoja on jo olemassa.
-- Lähdetiedostot ovat suljettujen hakemistojen alla.
-- Kommentoa ajetaan väärästä projektin juurihakemistosta.
+- Lähdetiedostot sijaitsevat poissuljetuissa hakemistoissa.
+- Komento suoritetaan väärästä projektin juurihakemistosta.
 
 Tarkistukset:
 
@@ -74,18 +74,18 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-Käytä `--root-dir` kun komento ajetaan projektin juuren ulkopuolelta.
+Käytä `--root-dir`-valitsinta, kun komento suoritetaan projektin juuren ulkopuolelta.
 
-## Odottamaton linkkikäyttäytyminen
+## Odottamaton linkkien käyttäytyminen
 
 Linkkien uudelleenkirjoitus riippuu valituista sisältötyypeistä:
 
-- `-nb` mukana: muistikirjalinkit voivat osoittaa käännettyihin muistikirjoihin.
-- `-nb` poissa: muistikirjalinkit voivat jäädä osoittamaan lähde-muistikirjoihin.
-- `-img` mukana: kuvien linkit voivat osoittaa käännettyihin kuviin.
-- `-img` poissa: kuvien linkit voivat jäädä osoittamaan lähdekuviin.
+- `-nb` mukana: notebook-linkit voivat osoittaa käännettyihin notebookeihin.
+- `-nb` pois: notebook-linkit voivat pysyä osoittamassa alkuperäisiin notebookeihin.
+- `-img` mukana: kuvalinkit voivat osoittaa käännettyihin kuviin.
+- `-img` pois: kuvalinkit voivat jäädä osoittamaan alkuperäisiin kuviin.
 
-Suorita täydellinen sisällönkäännös, kun kaikkien sisäisten linkkien tulisi suosia käännettyjä versioita:
+Suorita täydellinen sisällön käännös, kun kaikkien sisäisten linkkien tulisi suosia käännettyjä tiedostoja:
 
 ```bash
 translate -l "ko" -md -nb -img
@@ -97,34 +97,34 @@ Suorita linkkitarkistus käännöksen jälkeen:
 co-op-review -l "ko"
 ```
 
-## Markdownin renderöintiongelmat
+## Markdownin renderöinti-ongelmat
 
 Jos käännetty Markdown renderöityy väärin:
 
 - Tarkista, että frontmatter alkaa ja päättyy `---`.
-- Tarkista, että koodiaitausten määrät vastaavat lähde- ja käännettyjen tiedostojen välillä.
-- Suorita `co-op-review` yleisten rakenneongelmien havaitsemiseksi.
-- Käännä kyseinen tiedosto uudelleen, jos tulos oli vioittunut.
+- Tarkista, että koodiaitausten määrät vastaavat toisiaan lähde- ja käännetyissä tiedostoissa.
+- Suorita `co-op-review` havaitaksesi yleiset rakenneongelmat.
+- Käännä kyseinen tiedosto uudelleen, jos tulos oli korruptoitunut.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub-aktion suoritus mutta vetopyyntöä ei luotu
+## GitHub Action suoritettiin mutta pull requestia ei luotu
 
-Jos `peter-evans/create-pull-request` ilmoittaa, että haara ei ole edellä basea, työnkulku ei löytänyt sitoutettavia tiedostoja.
+Jos `peter-evans/create-pull-request` raportoi, että haara ei ole edellä basea, työnkulku ei löytänyt tiedostoja commitattavaksi.
 
 Todennäköiset syyt:
 
 - Käännösajo ei tuottanut muutoksia.
-- `.gitignore` sulkee pois `translations/`, `translated_images/` tai käännetyt muistikirjat.
-- `add-paths` ei vastaa tuotettuja tuloshakemistoja.
+- `.gitignore` sulkee pois `translations/`, `translated_images/`, tai käännetyt notebookit.
+- `add-paths` ei vastaa luotuja tulostuskansioita.
 - Käännösvaihe keskeytyi aikaisin.
 
 Korjaukset:
 
-1. Varmista, että tuotetut tiedostot löytyvät hakemistoista `translations/` tai `translated_images/`.
-2. Varmista, että `.gitignore` ei ohita tuotettuja tuloksia.
+1. Varmista, että luodut tiedostot löytyvät hakemistoista `translations/` tai `translated_images/`.
+2. Varmista, ettei `.gitignore` ohita luotuja tulosteita.
 3. Käytä vastaavia `add-paths`-asetuksia:
 
    ```yaml
@@ -134,7 +134,7 @@ Korjaukset:
        translated_images/
    ```
 
-4. Lisää tilapäisesti debug-lippuja translate-komentoon:
+4. Lisää väliaikaisesti debug-valitsimet translate-komentoon:
 
    ```bash
    translate -l "ko" -md -d -s
@@ -150,9 +150,9 @@ Korjaukset:
 
 ## Käännöksen laatu
 
-Konekäännökset saattavat vaatia ihmistarkistusta. Käytä `evaluate`-komentoa vain, kun haluat kokeellista laadun pisteytystä ja alhaisen luottamuksen korjaustyönkulkuja.
+Konekäännökset saattavat tarvita ihmisen tarkistusta. Käytä `evaluate`-komentoa vain, kun haluat kokeellista laadun pisteytystä ja matalan luottamuksen korjaustyönkulkuja.
 
 !!! warning "Kokeellinen"
-    `evaluate` voi käyttää sääntöpohjaisia ja LLM-pohjaisia tarkistuksia, ja sen pisteytysmalli sekä metadatankäsittely voivat muuttua. Älä ota sitä osaksi pakollisia CI-portteja ellei työnkulkusi ole valmistautunut muutoksiin.
+    `evaluate` voi käyttää sääntöpohjaisia ja LLM-pohjaisia tarkistuksia, ja sen pisteytysmalli sekä metadatan käytös saattavat muuttua. Pidä sitä poissa pakollisista CI-portaista, ellei työnkulkusi ole valmistautunut muutoksiin.
 
-For deterministic CI checks, use `co-op-review` instead.
+Deterministisiin CI-tarkastuksiin käytä sen sijaan `co-op-review`.

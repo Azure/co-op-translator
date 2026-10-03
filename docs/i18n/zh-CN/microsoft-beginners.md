@@ -14,7 +14,7 @@
 <!-- CO-OP TRANSLATOR OTHER COURSES END -->
 ```
 
-Each time Co-op Translator runs through the CLI or GitHub Actions, it replaces the content between the markers with the packaged template.
+每次 Co-op Translator 通过 CLI 或 GitHub Actions 运行时，它都会用打包的模板替换标记之间的内容。
 
 ## 更新共享模板
 
@@ -27,8 +27,8 @@ src/co_op_translator/templates/other_courses.md
 To update the shared content:
 
 1. Edit the template.
-2. Open a pull request to Co-op Translator.
-3. After the change is released, run Co-op Translator in the target repository.
+2. 向 Co-op Translator 提交拉取请求.
+3. 更改发布后，在目标仓库中运行 Co-op Translator。
 
 ## 稀疏检出建议
 

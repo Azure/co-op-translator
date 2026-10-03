@@ -1,20 +1,20 @@
-# Fix Wahala
+# How to Solve Wahala
 
-Use dis page wen translation run succeed wen you no expect, fail during configuration, or e produce output wey need to be checked.
+Use dis page wen translation run succeed wey nobody expect, fail during configuration, or produce output wey need review.
 
-## Start from here
+## How to Start
 
-1. Run one focused command first, like `translate -l "ko" -md`.
-2. Add `-d` make console show debug logs.
-3. Add `-s` to save debug logs under `<root-dir>/logs/`.
-4. Run `co-op-review` after translation to check freshness, structure, and local links.
+1. First run small focused command, like `translate -l "ko" -md`.
+2. Put `-d` make e show console debug logs.
+3. Put `-s` make e save debug logs for `<root-dir>/logs/`.
+4. Run `co-op-review` after translation make you check freshness, structure, and local links.
 
 ```bash
 translate -l "ko" -md -d -s
 co-op-review -l "ko"
 ```
 
-## Configuration Errors
+## Configuration Wahala
 
 ### No Language Model Provider
 
@@ -26,9 +26,9 @@ No language model configuration found.
 
 Fix:
 
-- Set up Azure OpenAI or OpenAI.
-- Make sure the variables dey for the environment wey the command dey run.
-- If you dey use locally, put dem inside `.env` for the project root.
+- Configure Azure OpenAI, OpenAI, or Anthropic.
+- Verify say the variables dey for the environment wey the command dey run.
+- For local use, put dem for `.env` for the project root.
 
 See [Configuration](configuration.md).
 
@@ -44,7 +44,7 @@ Fix:
 
 - Add `AZURE_AI_SERVICE_API_KEY`.
 - Add `AZURE_AI_SERVICE_ENDPOINT`.
-- Or run one text-only command like `translate -l "ko" -md`.
+- Or run text-only command like `translate -l "ko" -md`.
 
 ### Invalid Key or Endpoint
 
@@ -53,18 +53,18 @@ Symptoms fit include `401`, redacted permission errors, or endpoint access error
 Fix:
 
 - Confirm say the key belong to the same Azure resource as the endpoint.
-- Confirm say the resource support Vision when you dey use `-img`.
-- Confirm Azure OpenAI deployment name and API version match your deployment.
+- Confirm say the resource support Vision if you dey use `-img`.
+- Confirm Azure OpenAI deployment name and API version dey match your deployment.
 - Run with debug logs: `translate -l "ko" -md -d -s`.
 
-## No Files Were Translated
+## No Files No Translate
 
 Common causes:
 
 - The selected flags no match your files.
 - Translated files don already dey present.
 - Source files dey under excluded directories.
-- The command dey run from wrong project root.
+- The command dey run from the wrong project root.
 
 Checks:
 
@@ -74,18 +74,18 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-Use `--root-dir` when the command dey run outside the project root.
+Use `--root-dir` wen the command dey run outside the project root.
 
 ## Unexpected Link Behavior
 
-Link rewriting depend on which content types you select:
+Link rewriting depend on selected content types:
 
 - `-nb` included: notebook links fit point to translated notebooks.
-- `-nb` excluded: notebook links fit still point to source notebooks.
+- `-nb` excluded: notebook links fit remain point to source notebooks.
 - `-img` included: image links fit point to translated images.
-- `-img` excluded: image links fit still point to source images.
+- `-img` excluded: image links fit remain point to source images.
 
-Run full content translation when you want all internal links to prefer translated outputs:
+Run full content translation when all internal links suppose prefer translated outputs:
 
 ```bash
 translate -l "ko" -md -nb -img
@@ -97,34 +97,34 @@ Run link review after translation:
 co-op-review -l "ko"
 ```
 
-## Markdown Rendering Issues
+## Markdown Rendering Wahala
 
-If translated Markdown no dey render correct:
+If translated Markdown no render correct:
 
 - Check say frontmatter start and end with `---`.
 - Check say code fence counts match between source and translated files.
 - Run `co-op-review` to catch common structure issues.
-- Re-translate the specific file if the output don corrupt.
+- Re-translate that specific file if the output corrupt.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action Ran but No Pull Request Was Created
+## GitHub Action Run but No Pull Request Create
 
-If `peter-evans/create-pull-request` talk say the branch no ahead of base, the workflow no find files to commit.
+If `peter-evans/create-pull-request` report say the branch no ahead of base, the workflow no find files to commit.
 
 Likely causes:
 
 - The translation run no produce any changes.
 - `.gitignore` dey exclude `translations/`, `translated_images/`, or translated notebooks.
 - `add-paths` no match the generated output directories.
-- The translation step exit early.
+- The translation step stop early.
 
 Fixes:
 
-1. Confirm generated files dey for `translations/` or `translated_images/`.
-2. Confirm `.gitignore` no dey ignore the generated outputs.
+1. Confirm say generated files dey for `translations/` or `translated_images/`.
+2. Confirm `.gitignore` no ignore generated outputs.
 3. Use matching `add-paths`:
 
    ```yaml
@@ -140,7 +140,7 @@ Fixes:
    translate -l "ko" -md -d -s
    ```
 
-5. Confirm workflow permissions include:
+5. Confirm say workflow permissions include:
 
    ```yaml
    permissions:
@@ -150,9 +150,9 @@ Fixes:
 
 ## Translation Quality
 
-Machine translations fit need human review. Use `evaluate` only when you want experimental quality scoring and low-confidence repair workflows.
+Machine translations fit need human review. Use `evaluate` only if you want experimental quality scoring and low-confidence repair workflows.
 
 !!! warning "Experimental"
-    `evaluate` fit use rule-based and LLM-based checks, and im scoring model and metadata behavior fit change. Keep am outside required CI gates unless your workflow don ready for changes.
+    `evaluate` fit use rule-based and LLM-based checks, and its scoring model and metadata behavior fit change. Keep am out of required CI gates unless your workflow don ready for changes.
 
 For deterministic CI checks, use `co-op-review` instead.

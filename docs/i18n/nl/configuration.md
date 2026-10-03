@@ -1,56 +1,71 @@
 # Configuratie
 
-Co-op Translator vereist één provider voor taalmodellen. Beeldvertaling vereist daarnaast Azure AI Vision.
+Co-op Translator vereist één taalmodelprovider. Voor beeldvertaling is daarnaast Azure AI Vision vereist.
 
-Configuratie wordt gelezen uit omgevingsvariabelen. Voor lokale projecten, plaats ze in een `.env` bestand in de projectroot.
+Configuration wordt gelezen uit omgevingsvariabelen. Voor lokale projecten plaats je ze in een `.env` bestand in de projectroot.
 
-Voor Azure resource setup, zie [Azure AI Setup](azure-ai-setup.md).
+Voor het instellen van Azure-resources, zie [Azure AI-configuratie](azure-ai-setup.md).
 
-## Lokale runtime-configuratie
+## Lokale runtime-instelling
 
-Gebruik een virtuele omgeving voordat je de CLI lokaal uitvoert. Co-op Translator ondersteunt Python 3.10 tot en met 3.12.
+Gebruik een virtuele omgeving voordat je de CLI lokaal uitvoert. Co-op Translator ondersteunt Python 3.11 tot en met 3.14.
 
-Voor normaal CLI-gebruik, installeer het gepubliceerde pakket binnen een virtuele omgeving:
+Voor gewoon CLI-gebruik, installeer het gepubliceerde pakket binnen een virtuele omgeving:
 
-=== "Windows"
+### Windows (PowerShell)
 
-    ```powershell
-    python -m venv .venv
-    .venv\Scripts\activate
-    pip install co-op-translator
-    translate --help
-    ```
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install co-op-translator
+translate --help
+```
 
-=== "macOS / Linux"
+### macOS / Linux
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install co-op-translator
-    translate --help
-    ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install co-op-translator
+translate --help
+```
 
-Voor repository-ontwikkeling, installeer in plaats daarvan afhankelijkheden vanuit de projectroot:
+### Repository-ontwikkeling
+
+Voor ontwikkeling van de repository, installeer in plaats daarvan de afhankelijkheden vanuit de projectroot:
 
 ```bash
 poetry install
 poetry run translate --help
 ```
 
-Nadat de CLI beschikbaar is, configureer je één provider voor taalmodellen in `.env`.
+Nadat de CLI beschikbaar is, configureer je één taalmodelprovider in `.env`.
 
 ## Providerselectie
 
-Het hulpmiddel detecteert automatisch providers in deze volgorde:
+Het hulpmiddel detecteert providers automatisch in de volgende volgorde:
 
 1. Azure OpenAI
 2. OpenAI
+3. Anthropic
 
-Als geen van beide providers is geconfigureerd, falen `translate`, `evaluate`, `migrate-links`, en `run_translation` tijdens de configuratiecontroles. `co-op-review` en `run_review` zijn deterministische onderhoudscontroles en vereisen geen providerreferenties.
+Vertaling vereist provider-referenties, behalve voor previews zoals `translate -l "ko" -md --dry-run`. `migrate-links`, `co-op-review`, en `run_review` zijn deterministische onderhoudsoperaties en vereisen geen provider-referenties.
+
+## Modelclient-backend
+
+Vanaf Co-op Translator 0.22.0 gebruiken Azure OpenAI, OpenAI en Anthropic standaard Microsoft Agent Framework. Er is geen backend-instelling nodig voor normaal gebruik.
+
+Semantic Kernel blijft tijdelijk beschikbaar voor compatibiliteit. Om het expliciet te selecteren, stel in:
+
+```bash
+CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"
+```
+
+Het gebruik van Semantic Kernel geeft een verouderingswaarschuwing. Het pakket is van plan om Semantic Kernel in 0.23.0 naar een optionele afhankelijkheid te verplaatsen en de integratie in 0.24.0 te verwijderen, afhankelijk van compatibiliteitsresultaten en gebruikersfeedback. Anthropic vereist `agent-framework`; het expliciet selecteren van `semantic-kernel` met Anthropic faalt met een configuratiefout. Ongeldige waarden resulteren in fouten tijdens de initialisatie van de provider-ondersteunde vertaler in plaats van stilletjes terug te vallen. Volg de uitrol en rapporteer blokkades in [GitHub-issue #543](https://github.com/Azure/co-op-translator/issues/543).
 
 ## Azure OpenAI
 
-Gebruik Azure OpenAI wanneer je model is gedeployed in Azure AI Foundry of Azure OpenAI Service.
+Gebruik Azure OpenAI wanneer je model is uitgerold in Azure AI Foundry of Azure OpenAI Service.
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -60,35 +75,50 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-De connectiviteitscontrole gebruikt het eindpunt, de API-sleutel, API-versie en de deploymentnaam voordat de vertaling begint.
+De verbindingscontrole gebruikt de endpoint, API-sleutel, API-versie en deploymentnaam voordat de vertaling begint.
 
 ## OpenAI
 
-Gebruik OpenAI wanneer je rechtstreeks de OpenAI API aanroept.
+Gebruik OpenAI wanneer je direct de OpenAI-API aanroept.
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
-OPENAI_ORG_ID="..."          # optioneel
-OPENAI_BASE_URL="..."        # optioneel
 ```
 
 `OPENAI_CHAT_MODEL_ID` is vereist omdat de vertaler een expliciet chatmodel nodig heeft voor API-aanroepen.
 
+Laat `OPENAI_ORG_ID` en `OPENAI_BASE_URL` leeg in de standaardconfiguratie. Voeg een organisatie-ID alleen toe als je account er een nodig heeft, of een base URL alleen bij gebruik van een aangepast endpoint. Kopieer geen voorbeeldwaarden voor optionele instellingen.
+
+## Anthropic Claude
+
+Gebruik Anthropic wanneer je direct de Claude-API aanroept. Maak een [Anthropic API-sleutel](https://platform.claude.com/docs/en/get-started) en kies een ondersteunde [Claude-model-ID](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions).
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_API_KEY` en `ANTHROPIC_MODEL` zijn vereist. Je hoeft `CO_OP_TRANSLATOR_MODEL_CLIENT` niet in te stellen; Agent Framework is de standaardbackend.
+
+Laat `ANTHROPIC_BASE_URL` leeg voor de Anthropic-API. Stel het alleen in bij gebruik van een aangepast endpoint.
+
+`ANTHROPIC_MAX_TOKENS` heeft als standaard `8192`, wat ruimte laat voor token-rijke scripts zoals Meitei Mayek. Verlaag het als je model of een Anthropic-compatibel endpoint uitvoer daaronder limiteert.
+
 ## Azure AI Vision
 
-Beeldvertaling vereist Azure AI Vision zodat het hulpmiddel tekst uit afbeeldingen kan extraheren voordat het die vertaalt.
+Beeldvertaling vereist Azure AI Vision zodat het hulpmiddel tekst uit afbeeldingen kan extraheren voordat het geconfigureerde taalmodel het vertaalt. Anthropic kan de geëxtraheerde tekst vertalen net als Azure OpenAI of OpenAI.
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-Als beeldvertaling is geselecteerd met `-img`, `images=True`, of geen content-type filter, valideert het hulpmiddel de Vision-configuratie voordat de vertaling begint.
+Als beeldvertaling is geselecteerd met `-img`, `images=True`, of geen content-typefilter, valideert het hulpmiddel de Vision-configuratie voordat de vertaling start.
 
-## Meerdere sets met referenties
+## Meerdere referentiesets
 
-De configuratielaag ondersteunt meerdere sets met referenties door variabelen van hetzelfde achtervoegsel (index) te voorzien:
+De configuratielaag ondersteunt meerdere referentiesets door variabelen te voorzien van hetzelfde indexachtervoegsel:
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -106,20 +136,22 @@ AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 
 Elke set moet compleet zijn. De gezondheidscontrole selecteert een werkende set voordat de vertaling doorgaat.
 
-## Vereisten per commando
+OpenAI en Anthropic ondersteunen dezelfde suffixconventie. Houd elke variabele in een referentieset op hetzelfde achtervoegsel, inclusief optionele waarden zoals `OPENAI_BASE_URL_1` of `ANTHROPIC_BASE_URL_1`.
+
+## Vereisten voor commando's
 
 | Commando of API | LLM vereist | Vision vereist | Opmerkingen |
 | --- | --- | --- | --- |
 | `translate -md` | Ja | Nee | Vertaalt alleen Markdown. |
 | `translate -nb` | Ja | Nee | Vertaalt alleen notebooks. |
 | `translate -img` | Ja | Ja | Vertaalt alleen afbeeldingen. |
-| `translate` with no type flags | Ja | Ja | De standaardmodus omvat Markdown, notebooks en afbeeldingen. |
+| `translate` with no type flags | Ja | Ja | Standaardmodus bevat Markdown, notebooks en afbeeldingen. |
 | `evaluate` | Ja | Nee | Gebruikt LLM-evaluatie tenzij `--fast` is geselecteerd. |
-| `migrate-links` | Ja | Nee | Voert linkmigratie uit, maar voert nog steeds gedeelde configuratiecontroles uit. |
-| `co-op-review` | Nee | Nee | Voert deterministische controles uit op vertaalkader, actualiteit, Markdown, notebooks en lokale links. |
-| `run_translation(markdown=True)` | Ja | Nee | Programmatische Markdown-vertaling. |
-| `run_translation(images=True)` | Ja | Ja | Programmatische beeldvertaling. |
-| `run_review(...)` | Nee | Nee | Programmatische deterministische controle. |
+| `migrate-links` | Nee | Nee | Voert lokale linkmigratie uit zonder provider-aanroepen. |
+| `co-op-review` | Nee | Nee | Voert deterministische controles uit voor vertaalstructuur, actualiteit, Markdown, notebook en lokale links. |
+| `run_translation(markdown=True)` | Ja | Nee | Programmeerbare Markdown-vertaling. |
+| `run_translation(images=True)` | Ja | Ja | Programmeerbare beeldvertaling. |
+| `run_review(...)` | Nee | Nee | Programmeerbare deterministische review. |
 
 ## Uitvoermappen
 

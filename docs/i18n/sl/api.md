@@ -1,49 +1,49 @@
 # Python API
 
-Stabilen javni Python API je izvezen iz `co_op_translator.api`. Večina integracij uporablja enega od teh potekov:
+Stabilni javni Python vmesnik (API) je izvezen iz `co_op_translator.api`. Večina integracij uporablja enega od teh potekov:
 
 | Scenario | Use this when | Main APIs |
 | --- | --- | --- |
-| Translate individual files or documents | Vaša aplikacija bere izvorno vsebino, kliče Co-op Translator za prevod in odloči, kam shraniti rezultat. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | Vaš MCP gostitelj ali aplikacijski model bo prevajal kose, medtem ko Co-op Translator upravlja razbitje na kose in rekonstrukcijo. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | Želite, da se Python API obnaša kot CLI in upravlja odkrivanje, izhodne poti, metapodatke, čiščenje in zapise. | `run_translation` |
+| Prevedi posamezne datoteke ali dokumente | Vaša aplikacija prebere izvorno vsebino, pokliče Co-op Translator za prevod in odloči, kam shraniti rezultat. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Pripravi vsebino za prevod s strani gostiteljskega agenta | Vaš MCP gostitelj ali model aplikacije bo prevedel koščke, medtem ko Co-op Translator poskrbi za razdelitev in rekonstrukcijo. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Prevedi celoten repozitorij | Želite, da se Python API obnaša kot CLI in obvladuje odkrivanje, izhodne poti, metapodatke, čiščenje in pisanja. | `run_translation` |
 
-Večina nižjenivojskih modulov pod `core`, `config`, `review` in `utils` so implementacijski detajli, ki jih uporabljajo ti API vstopni punkti.
+Večina nižjenivojskih modulov pod `core`, `config`, `review` in `utils` je implementacijske podrobnosti, ki jih uporabljajo ti vstopni API-ji.
 
-MCP klienti uporabljajo isti javni API preko [MCP Server](mcp.md). Uporabite to stran, ko kličete Python neposredno, in MCP vodnik, ko izpostavljate Co-op Translator agentu ali urejevalniku. Če se odločate med CLI, Python API in MCP, začnite z [Choose Your Workflow](workflows.md).
+MCP odjemalci uporabljajo isti javni API preko [MCP Server](mcp.md). Uporabite to stran, ko kličete Python neposredno, in MCP vodnik, ko izpostavljate Co-op Translator agentu ali urejevalniku. Če se odločate med CLI, Python API in MCP, začnite z [Izberite svoj potek dela](workflows.md).
 
-## Začetni potek uporabe API
+## Prvi potek uporabe API-ja
 
-Začnite tukaj, če kličete Co-op Translator iz Python kode:
+Začnite tukaj, če kličete Co-op Translator iz Pythona:
 
-1. Konfigurirajte ponudnika LLM, kot je opisano v [Configuration](configuration.md), razen če samo pripravljate Markdown ali notebook kose za prevajanje z gostiteljskim agentom.
-2. Odločite, ali vaša aplikacija upravlja datotečni I/O.
-3. Uporabite vsebinski API, ko vaša aplikacija bere in piše posamezne datoteke.
-4. Uporabite `run_translation`, ko naj Co-op Translator obdela repozitorij kot CLI.
-5. Uporabite `run_review` po prevajanju, če potrebujete deterministične preglede v avtomatizaciji.
+1. Konfigurirajte ponudnika LLM tako, kot je opisano v [Configuration](configuration.md), razen če pripravljate samo Markdown ali notebook koščke za prevod s strani gostiteljskega agenta.
+2. Odločite, ali vaša aplikacija upravlja z datotečnim I/O.
+3. Uporabite vsebinske API-je, ko vaša aplikacija bere in zapisuje posamezne datoteke.
+4. Uporabite `run_translation`, ko naj Co-op Translator obdela repozitorij podobno kot CLI.
+5. Uporabite `run_review` po prevajanju, če potrebujete deterministične kontrole v avtomatizaciji.
 
 | Goal | API to start with |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
-| Translate one notebook payload | `translate_notebook_content` |
-| Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
-| Translate a full repository | `run_translation` |
-| Review translated output | `run_review` |
+| Prevedi en Markdown niz ali datoteko | `translate_markdown_content` |
+| Prevedi en notebook payload | `translate_notebook_content` |
+| Prevedi eno sliko | `translate_image_content` |
+| Dovolite gostiteljskemu agentu, da prevede Markdown ali notebook koščke | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
+| Prepišite prevedene povezave po izbiri izhodne poti | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
+| Prevedi celoten repozitorij | `run_translation` |
+| Preglej prevedeno izhodno vsebino | `run_review` |
 
-## Scenario 1: Translate Individual Files or Documents
+## Scenarij 1: Prevedi posamezne datoteke ali dokumente
 
-Uporabite ta potek, ko že imate datoteko, vsebino urejevalnika, notebook payload, MCP zahtevo ali vhod iz prilagojenega cevovoda. Vaša koda upravlja datotečni I/O:
+Uporabite ta potek, ko že imate datoteko, vsebnik urejevalnika, notebook payload, MCP zahtevo ali lasten vhod za cevovod (pipeline). Vaša koda upravlja datotečni I/O:
 
 1. Preberite izvorno vsebino.
 2. Pokličite API za prevajanje vsebine.
-3. Po želji pokličite API za prepisovanje poti, če bo prevedena vsebina zapisana v projektno prevajalsko mapo.
-4. Shranite ali vrnite rezultat iz vaše aplikacije.
+3. Po želji pokličite API za prepisovanje poti, če bo prevedena vsebina zapisana v mapo projekta za prevode.
+4. Shrani ali vrni rezultat iz vaše aplikacije.
 
-API-ji za prevajanje vsebine ne izvajajo odkrivanja projekta, ne zapišejo metapodatkov, ne dodajo izjav o strojni prevodi in samodejno ne prepisujejo povezav.
+Vsebinski API-ji za prevajanje ne izvajajo odkrivanja projekta, ne zapisujejo metapodatkov, ne dodajajo obvestil in samodejno ne prepisujejo povezav.
 
-### Markdown File
+### Datoteka Markdown
 
 ```python
 import asyncio
@@ -85,9 +85,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Če prevedeni Markdown ne bo živel v postavitvi projekta Co-op Translator, preskočite `rewrite_markdown_paths` in shranite prevedeni niz neposredno.
+Če prevedeni Markdown ne bo v Co-op Translator postavitvi projekta, preskočite `rewrite_markdown_paths` in shranite prevedeni niz neposredno.
 
-### Notebook File
+### Datoteka zvezka
 
 ```python
 import asyncio
@@ -129,9 +129,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` prevaja Markdown celice in ohranja ne-Markdown celice. Prepisovanje poti se uporablja samo za Markdown celice.
+`translate_notebook_content` prevede Markdown celice in ohranja ne-Markdown celice. Prepisovanje poti se uporablja samo za Markdown celice.
 
-### Image File
+### Datoteka slike
 
 ```python
 from pathlib import Path
@@ -156,11 +156,11 @@ translated_image.save(target_path)
 
 `translate_image_content` prebere izvorno sliko in vrne renderirano `PIL.Image.Image`. Ne zapisuje prevedenih metapodatkov slike.
 
-## Scenario 2: Translate an Entire Repository
+## Scenarij 2: Prevedi celoten repozitorij
 
-Uporabite ta potek, ko želite, da se Python API obnaša kot `translate` CLI. `run_translation` odkrije podprte datoteke, prevede izbrane vrste vsebin, prepiše poti, zapiše izhodne datoteke, posodobi metapodatke in izvede naloge vzdrževanja prevajanja, kot je čiščenje.
+Uporabite ta potek, ko želite, da se Python API obnaša kot `translate` CLI. `run_translation` odkrije podprte datoteke, prevede izbrane vrste vsebin, prepiše poti, zapiše izhodne datoteke, posodobi metapodatke in izvede vzdrževalna opravila prevajanja, kot je čiščenje.
 
-`run_translation` je priporočen vstopni prikaz za orkestracijo projektov. `translate_project` je izvezen kot združljivostni alias z enakim vedenjem.
+`run_translation` je prednostna vstopna točka za orkestracijo projektov. `translate_project` je izvezen kot združljivostni vzdevek z enakim vedenjem.
 
 Prevedite Markdown datoteke v trenutnem repozitoriju v korejščino in japonščino:
 
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-Prevedite samo zvezke iz določenega korena projekta:
+Prevedite samo notebooke iz določene korenske mape projekta:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-Prevedite več korenov vsebine v enem klicu:
+Zabeležite strukturirane dogodke napredka za integracijo:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Shrani vsebino v svojo tabelo dogodkov opravila ali jo pretoči v uporabniški vmesnik.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Dogodki uporabljajo verzionirano shemo `co-op.translation.event.v1`. Integracije bi morale
+se opirati na stabilna polja, kot sta `type` in `stage_key`, ne na uporabniku namenjeno
+konzolno besedilo ali `stage_label`.
+
+Prevedite več korenin vsebine v enem klicu:
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-Uporabite nadomestni znak na jezik za primer, ko naj vsak jezik vsebuje gnezdeno podmapo:
+Uporabite označbo (placeholder) na jezik, kadar naj vsak jezik vsebuje gnezdeno podmapo:
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-Če nobeden od `markdown`, `notebook`, ali `images` ni nastavljen, API prevede vse podprte tipe: Markdown, notebooks in slike.
+Če nobena od možnosti `markdown`, `notebook` ali `images` ni nastavljena, API prevede vse podprte vrste: Markdown, notebooke in slike.
 
-## Review Translated Output
+### Ohrani sprejete ročne spremembe z zagotavljalcem stanja prevoda
 
-`run_review` izvaja deterministične preverbe prevajanja brez LLM ali Vision poverilnic.
+Privzeto Co-op Translator ohranja svoje obstoječe vedenje na ravni datotek: ko je
+izvorni Markdown zastarel, se celotna prevedena datoteka znova ustvari. Gostovane
+integracije lahko opcijsko posredujejo `TranslationStateProvider`, da ohranijo ročne
+ureditve v izvornih blokih, ki se niso spremenili.
+
+Ponudnik zagotovi zadnji sprejeti par izvor/cilj in zabeleži vsak nov
+kandidat. Sprejem ostaja odgovornost integracije—na primer,
+po združitvi pull requesta za prevod:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+Za Markdown datoteke s veljavno sprejeto osnovo, Co-op Translator poravna
+vrhnje nivojske Markdown bloke. Nespremenjeni izvorni bloki ponovno uporabijo trenutne prevedene
+bloke, vključno z ročnimi popravki; spremenjeni ali dodani izvorni bloki se pošljejo
+v prevod; izbrisani izvorni bloki so odstranjeni. Če je poravnava dvoumna,
+se je struktura cilja spremenila, je prevod bloka neveljaven ali ni na voljo nobene osnove,
+se Co-op Translator varno vrne na obstoječi postopek prevajanja celotne datoteke.
+
+
+
+segmentne prevodne pomnilnike. Trenutno velja za prevajanje Markdown projektov.
+Vedenje za notebooke in slike ostaja nespremenjeno. Posredovanje `update=True`
+še vedno zahteva popolno regeneracijo.
+
+Če eno ali več datotek ni mogoče prevesti, `run_translation` sproži
+`RuntimeError` po zaključku poteka dela projekta namesto poročanja o
+uspešnem izvajanju z manjkajočim izhodom. Integracije bi morale to obravnavati kot neuspešno
+nalogo in obdržati prejšnje sprejeto stanje prevoda.
+
+## Pregled prevedenega izhoda
+
+`run_review` izvaja deterministične kontrole prevoda brez LLM ali Vision poverilnic.
 
 !!! note "Beta"
-    `run_review` je beta deterministični pregledni API. Ne kliče ponudnikov modelov ali ne zapisuje datotek, vendar se sheme preverjanja in poročil lahko razvijejo.
+    `run_review` je beta deterministični API za pregledovanje. Ne kliče ponudnikov modelov ali zapisuje datotek, vendar se lahko preverjanja in sheme težav spreminjajo.
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-Preglejte samo datoteke, spremenjene glede na osnovni ref, in natisnite izhod v GitHub formatu:
+Po prevodu, ki je omejen na README, uporabite isti obseg za pregled:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` pregleda samo `README.md` v vsaki konfigurirani izvorni korenski mapi,
+vključno s prilagojenimi `groups` in izhodnimi mapami. Drugi dokumenti in gnezdene
+README datoteke so izključene. Manjkajoče izvorno README sproži `ValueError`; neuspešna
+preverjanja prevoda povzročijo `RuntimeError`.
+
+Preglejte samo datoteke, spremenjene glede na osnovno referenco in izpišite izhod v GitHub slogu:
 
 ```python
 from co_op_translator.api import run_review
@@ -274,9 +398,9 @@ run_review(
 )
 ```
 
-## Copy-Paste API Examples
+## Primeri API-jev za kopiranje in lepljenje
 
-Prevedite Markdown vsebino brez zapisovanja datotek:
+Prevedite vsebino Markdown brez zapisovanja datotek:
 
 ```python
 import asyncio
@@ -295,7 +419,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Prevedite in prepišite Markdown povezave:
+Prevedite in prepišite povezave v Markdownu:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -327,7 +451,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Prevedite repozitorij iz Pythona:
+Prevedite repozitorij z Pythona:
 
 ```python
 from co_op_translator.api import run_translation
@@ -340,7 +464,7 @@ run_translation(
 )
 ```
 
-Prevedite več korenov:
+Prevedite več korenskih map:
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-Ohranite izraze iz glosarja:
+Ohranite izraze slovarja:
 
 ```python
 from co_op_translator.api import run_translation
@@ -371,13 +495,16 @@ run_translation(
 )
 ```
 
-## Public Entry Points
+## Javne vstopne točke
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## Content Translation APIs
+## API-ji za prevajanje vsebine
 
-API-ji za prevajanje vsebine so namenjeni integracijam, ki že imajo vsebino v pomnilniku, kot so vtičnik urejevalnika, MCP orodje, procesor zvezkov ali prilagojen cevovod.
+API-ji za prevajanje vsebine so namenjeni integracijam, ki že imajo vsebino v pomnilniku, na primer razširitvi urejevalnika, orodju MCP, procesorju zvezkov ali prilagojenemu cevovodu.
 
-| Function | Input | Output | File I/O | Notes |
+| Funkcija | Vhod | Izhod | Datotečni I/O | Opombe |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Prevede samo Markdown vsebino. Ne prepisuje povezav, ne zapisuje metapodatkov in ne dodaja izjav. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Prevede Markdown celice in ohrani ne-Markdown celice. Ne prepisuje povezav, ne zapisuje metapodatkov in ne dodaja izjav. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Izvleče in prevede besedilo na sliki, nato vrne renderirano sliko. Ne shrani prevedenih metapodatkov slike. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | Ne | Asinhrono. Prevede samo vsebino Markdown. Ne prepisuje povezav, ne zapisuje metapodatkov in ne dodaja izjav o omejitvah. |
+| `translate_notebook_content` | Notebook JSON `str` ali `dict` | Notebook JSON `str` | Ne | Asinhrono. Prevede Markdown celice in ohranja ne-Markdown celice. Ne prepisuje povezav, ne zapisuje metapodatkov in ne dodaja izjav o omejitvah. |
+| `translate_image_content` | Pot do slike | `PIL.Image.Image` | Prebere samo izvorno sliko | Sinhrono. Izvleče in prevede besedilo slike, nato vrne upodobljeno sliko. Ne shrani metapodatkov prevedene slike. |
 
-`translate_markdown_content` in `translate_notebook_content` sprejmeta opcijsko `source_path` prek svojih možnosti. Pot se posreduje kot kontekst prevajalcu; klicalci so še vedno odgovorni za kakršnokoli projektno-specifično prepisovanje poti po prevodu.
+`translate_markdown_content` in `translate_notebook_content` sprejmeta izbirno `source_path` skozi svoje možnosti. Pot se posreduje kot kontekst prevajalcu; klicatelji ostanejo odgovorni za morebitno projektno-specifično prepisovanje poti po prevodu.
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-Iste možnosti je mogoče posredovati kot slovarje:
+Enake možnosti je mogoče posredovati kot slovarji:
 
 ```python
 translated = await translate_markdown_content(
@@ -455,94 +588,96 @@ translated = await translate_markdown_content(
 )
 ```
 
-## Agent-Assisted Translation APIs
+## API-ji za prevajanje z agentno pomočjo
 
-API-ji s podporo agenta ne kličejo Azure OpenAI ali OpenAI iz Co-op Translator. Pripravijo Markdown ali notebook kose za gostiteljskega agenta, da jih prevede, nato rekonstruirajo končno vsebino iz prevedenih kosov.
+API-ji z agentno pomočjo ne kličejo konfiguriranega ponudnika LLM v Co-op Translatorju. Pripravijo kose Markdowna ali zvezka za gostiteljskega agenta, da jih prevede, nato pa rekonstruirajo končno vsebino iz prevedenih kosov.
 
-| Function | Purpose |
+| Funkcija | Namen |
 | --- | --- |
-| `start_markdown_agent_translation` | Vrne samostojen Markdown job s kosi, pozivi in stanjem za rekonstrukcijo. |
-| `finish_markdown_agent_translation` | Rekonstruira Markdown iz joba in prevedenih kosov host-agenta. |
-| `start_notebook_agent_translation` | Vrne notebook job z Markdown-celičnimi kosi za prevod s strani host-agenta. |
-| `finish_notebook_agent_translation` | Rekonstruira notebook JSON in ohrani kode, izhode in metapodatke. |
+| `start_markdown_agent_translation` | Vrne samostojno Markdown opravilo s kosi, pozivi in stanjem rekonstrukcije. |
+| `finish_markdown_agent_translation` | Rekonstruira Markdown iz opravila in kosov, prevedenih s strani gostiteljskega agenta. |
+| `start_notebook_agent_translation` | Vrne opravilo zvezka s kosi Markdown celic za prevod s strani gostiteljskega agenta. |
+| `finish_notebook_agent_translation` | Rekonstruira JSON zvezka ob ohranitvi kodnih celic, izhodov in metapodatkov. |
 
-Ta potek je predvsem namenjen MCP gostiteljem. Če potrebujete produkcijsko prevajanje repozitorija, kjer Co-op Translator upravlja klice ponudnikov, uporabite `translate_markdown_content`, `translate_notebook_content` ali `run_translation`.
+Ta potek dela je predvsem namenjen gostiteljem MCP. Če potrebujete prevod repozitorija v produkciji, pri katerem Co-op Translator upravlja klice ponudnikov, uporabite `translate_markdown_content`, `translate_notebook_content` ali `run_translation`.
 
-## Path Rewriting APIs
+## API-ji za prepisovanje poti
 
-API-ji za prepisovanje poti ne izvajajo prevajanja. Posodobijo povezave in polja frontmatter po tem, ko imajo klicalci informacije o izvorni poti, prevedeni ciljni poti in postavitvi projekta.
+API-ji za prepisovanje poti ne izvajajo prevodov. Posodabljajo povezave in poti v frontmatterju potem, ko klicatelji poznajo izvorno pot, prevedeno ciljno pot in postavitev projekta.
 
-| Function | Scope | Notes |
+| Funkcija | Obseg | Opombe |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | Prepiše Markdown povezave in podprta frontmatter polja poti za preveden cilj. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Uporabi prepisovanje Markdown poti na vsako Markdown celico in pusti ne-Markdown celice nespremenjene. |
+| `rewrite_markdown_paths` | Telo Markdowna in frontmatter | Prepiše povezave v Markdownu in podprta polja poti v frontmatterju za prevedeno ciljno mesto. |
+| `rewrite_notebook_paths` | Markdown celice v JSON zvezka | Uporablja prepisovanje poti v Markdownu za vsako Markdown celico in pusti ne-Markdown celice nespremenjene. |
 
-Argument `policy` je lahko slovar s temi polji:
+Argument `policy` je lahko slovar z naslednjimi polji:
 
-| Field | Required | Purpose |
+| Polje | Obvezno | Namen |
 | --- | --- | --- |
-| `language_code` | Yes | Ciljna koda jezika, npr. `"ko"` ali `"pt-BR"`. |
-| `root_dir` | No | Izvorni koren projekta. Privzeto `"."`. |
-| `translations_dir` | No | Izhodna mapa za prevedeno besedilo. Privzeto `translations` znotraj `root_dir`. |
-| `translated_images_dir` | No | Izhodna mapa za prevedene slike. Privzeto `translated_images` znotraj `root_dir`. |
-| `translation_types` | No | Omogočene vrste prevodov. Privzeto Markdown, notebooks in slike. |
-| `lang_subdir` | No | Opcijska podmapa znotraj vsake jezikovne mape. |
+| `language_code` | Da | Koda ciljanega jezika, na primer `"ko"` ali `"pt-BR"`. |
+| `root_dir` | Ne | Izvorna korenska mapa projekta. Privzeto `"."`. |
+| `translations_dir` | Ne | Izhodna mapa za prevedeno besedilo. Privzeto `translations` pod `root_dir`. |
+| `translated_images_dir` | Ne | Izhodna mapa za prevedene slike. Privzeto `translated_images` pod `root_dir`. |
+| `translation_types` | Ne | Omogočeni tipi prevajanja. Privzeto Markdown, zvezki in slike. |
+| `lang_subdir` | Ne | Izbirna podmapa v vsaki mapi jezika. |
 
-## Project Translation Parameters
+## Parametri prevajanja projekta
 
-| Parameter | Type | Default | Purpose |
+| Parameter | Tip | Privzeto | Namen |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Ciljne kode jezikov, ločene s presledki, npr. `"ko ja fr"`, ali `"all"`. Alias kode se normalizirajo v kanonične BCP 47 vrednosti. |
-| `root_dir` | `str` | `"."` | Koren projekta za en cilj prevoda. Ignorirano, ko so podani `root_dirs` ali `groups`. |
-| `update` | `bool` | `False` | Izbriše in ponovno ustvari obstoječe prevode za izbrane jezike. |
+| `language_codes` | `str` | Obvezno | Ciljne jezikovne kode ločene s presledki, na primer `"ko ja fr"` ali `"all"`. Nadomestne kode se normalizirajo v kanonične vrednosti BCP 47. |
+| `root_dir` | `str` | `"."` | Korenska mapa projekta za en prevodni cilj. Prezrto, ko so podani `root_dirs` ali `groups`. |
+| `update` | `bool` | `False` | Izbriše in znova ustvari obstoječe prevode za izbrane jezike. |
 | `images` | `bool` | `False` | Vključi prevajanje slik. Zahteva konfiguracijo Azure AI Vision. |
-| `markdown` | `bool` | `False` | Vključi prevajanje Markdown. |
-| `notebook` | `bool` | `False` | Vključi prevajanje Jupyter notebookov. |
+| `markdown` | `bool` | `False` | Vključi prevajanje Markdowna. |
+| `notebook` | `bool` | `False` | Vključi prevajanje Jupyter zvezkov. |
 | `debug` | `bool` | `False` | Omogoči debug beleženje. |
-| `save_logs` | `bool` | `False` | Shrani DEBUG nivo log datotek v korensko mapo `logs/`. |
-| `yes` | `bool` | `True` | Samodejno potrdi pozive za programatično in CI uporabo. |
-| `add_disclaimer` | `bool` | `False` | Doda izjave o strojnih prevodih v prevedene Markdown in notebooke. |
-| `translations_dir` | `str \| None` | `None` | Prilagojena izhodna mapa za prevod besedila. Relativne poti se rešujejo glede na vsak koren. |
-| `image_dir` | `str \| None` | `None` | Prilagojena izhodna mapa za prevedene slike. Relativne poti se rešujejo glede na vsak koren. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Več korenov, ki delijo iste izhodne nastavitve. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Izrecne `(root_dir, translations_dir)` pare. Ima prednost pred `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | URL repozitorija, uporabljen pri upodobitvi navodil tabele jezikov v README. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Izrazi iz glosarja, ki naj se ohranijo med prevajanjem. Duplicirani in prazni izrazi se normalizirajo. |
-| `dry_run` | `bool` | `False` | Ocenite obseg prevajanja in predogled vedenja migracije brez zapisovanja datotek. |
+| `save_logs` | `bool` | `False` | Shrani datoteke dnevnika ravni DEBUG v korenski imenik `logs/`. |
+| `yes` | `bool` | `True` | Samodejno potrdi pozive za programatično rabo in CI. |
+| `add_disclaimer` | `bool` | `False` | Dodaj izjave o strojnih prevodih v prevedene Markdown datoteke in zvezke. |
+| `translations_dir` | `str \| None` | `None` | Po meri določena izhodna mapa za prevedeno besedilo. Relativne poti se razrešijo glede na vsako korensko mapo. |
+| `image_dir` | `str \| None` | `None` | Po meri določena izhodna mapa za prevedene slike. Relativne poti se razrešijo glede na vsako korensko mapo. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Več korenskih map, ki delijo iste izhodne nastavitve. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Izrecni pari `(root_dir, translations_dir)`. Ima prednost pred `root_dirs`. |
+| `repo_url` | `str \| None` | `None` | URL repozitorija, uporabljen pri upodabljanju navodil za tabelo jezikov v README. |
+| `glossaries` | `Iterable[str] \| None` | `None` | Izrazi slovarja, ki naj ostanejo ohranjeni med prevodom. Podvojeni in prazni vnosi se normalizirajo. |
+| `dry_run` | `bool` | `False` | Oceni obseg prevajanja in prikaže predogled migracijskega vedenja brez zapisovanja datotek. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Izbiren adapter za trajno shranjevanje accepted-baseline in candidate stanj za inkrementalne posodobitve Markdowna. Če ga izpustite, se ohrani obstoječe vedenje obdelave celotnih datotek. |
 
-## Review Parameters
+## Parametri pregleda
 
-`run_review` namerno zrcali podpis `run_translation`, kjer je mogoče, tako da lahko avtomatizacija preklaplja med prevodnim in preglednim potekom z minimalnim vejami.
+`run_review` namensko zrcali podpis `run_translation`, kjer je mogoče, tako da lahko avtomatizacija preklaplja med prevajalskimi in preglednimi poteki z minimalnim razvejanjem.
 
-| Parameter | Type | Default | Purpose |
+| Parameter | Tip | Privzeto | Namen |
 | --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Ciljne jezikovne mape za pregled. Sprejemajo se stringi, ločeni s presledki, in iterable. `"all"` pregleda vsak odkrit prevodni jezik. |
-| `root_dir` | `str` | `"."` | Koren projekta za en cilj pregleda. Ignorirano, ko so podani `root_dirs` ali `groups`. |
-| `markdown` | `bool` | `False` | Vključi izvorne Markdown in MDX datoteke. |
-| `notebook` | `bool` | `False` | Vključi Jupyter notebook izvorne datoteke. |
-| `images` | `bool` | `False` | Rezervirano za vzporednost z možnostmi prevajanja. Referenčne povezave do slik se preverijo iz Markdown. |
-| `translations_dir` | `str \| None` | `None` | Prilagojen imenik za izhod prevedenega besedila. Relativne poti se rešujejo glede na vsak koren. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Več korenov, ki delijo iste nastavitve izhoda. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Jasno določeni `(root_dir, translations_dir)` pari. Ima prednost pred `root_dirs`. |
-| `changed_from` | `str \| None` | `None` | Git ref, uporabljen za omejitev pregleda na spremenjene izvorne datoteke. |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | Ciljne mape jezikov za pregled. Sprejemajo se nizi, ločeni s presledki, in iterabilni tipi. `"all"` pregleda vse odkrite jezike prevodov. |
+| `root_dir` | `str` | `"."` | Korenska mapa projekta za en cilj pregleda. Ignorirano, ko so podani `root_dirs` ali `groups`. |
+| `markdown` | `bool` | `False` | Vključi izvorne datoteke Markdown in MDX. |
+| `notebook` | `bool` | `False` | Vključi izvorne datoteke Jupyter zvezkov. |
+| `images` | `bool` | `False` | Rezervirano za skladnost z možnostmi prevajanja. Sklici na slike se preverjajo v Markdown datotekah. |
+| `translations_dir` | `str \| None` | `None` | Po meri določena izhodna mapa za prevedeno besedilo. Relativne poti se razrešijo glede na vsako korensko mapo. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Več korenskih map, ki delijo enake izhodne nastavitve. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Izrecni pari `(root_dir, translations_dir)`. Ima prednost pred `root_dirs`. |
+| `changed_from` | `str \| None` | `None` | Git referenca, uporabljena za omejitev pregleda na spremenjene izvorne datoteke. |
+| `readme_only` | `bool` | `False` | Preglej samo `README.md` v vsaki izvorni korenski mapi. Manjkajoči izvorni README sproži `ValueError`. |
 | `output_format` | `str` | `"text"` | Format izhoda pregleda. Podprte vrednosti so `"text"` in `"github"`. |
-| `fail_on_warnings` | `bool` | `False` | Obravnava opozorila kot neuspehe poleg napak. |
-| `debug` | `bool` | `False` | Omogoči debug zapisovanje. |
-| `save_logs` | `bool` | `False` | Shrani dnevniške datoteke nivoja DEBUG v korenski imenik `logs/`. |
+| `fail_on_warnings` | `bool` | `False` | Obravnavaj opozorila kot neuspehe poleg napak. |
+| `debug` | `bool` | `False` | Omogoči debug zapisovanje dnevnika. |
+| `save_logs` | `bool` | `False` | Shrani dnevniške datoteke na ravni DEBUG v korensko mapo `logs/`. |
 
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+Če nobena izmed možnosti `markdown`, `notebook` ali `images` ni nastavljena, API pregleda Markdown, zvezke in sklice na slike, kjer je primerno. Pregled ne kliče ponudnika LLM in ne zahteva API ključev.
 
-## Configuration Requirements
+## Zahteve konfiguracije
 
-Provider-backed translation APIs require provider configuration before translating:
+Prevajalski API-ji, ki temeljijo na ponudnikih, zahtevajo konfiguracijo ponudnika pred prevajanjem:
 
-- Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
-- Image translation requires Azure AI Vision in addition to the LLM provider.
-- `run_translation` runs lightweight connectivity checks before project translation begins.
-- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` are deterministic and do not require provider credentials.
+- Prevodi Markdowna in zvezkov zahtevajo ponudnika LLM. Konfigurirajte Azure OpenAI, OpenAI ali Anthropic.
+- Prevajanje slik poleg ponudnika LLM zahteva Azure AI Vision.
+- `run_translation` izvede lahke preglede povezljivosti, preden se začne prevajanje projekta.
+- API-ji z asistenco agenta `start_*_agent_translation` in `finish_*_agent_translation` ne kličejo Co-op Translator LLM ponudnikov. Gostiteljska aplikacija ali MCP agent prevede pripravljene koščke.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths` in `run_review` so deterministični in ne zahtevajo poverilnic ponudnika.
 
-Required Azure OpenAI variables:
+Zahtevane spremenljivke za Azure OpenAI:
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -552,69 +687,78 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Required OpenAI variables:
+Zahtevane spremenljivke za OpenAI:
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+Zahtevane spremenljivke za Anthropic:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` in `ANTHROPIC_MAX_TOKENS` sta izbirni. Microsoft Agent Framework je privzeti modelni odjemalec za vse ponudnike od različice Co-op Translator 0.22.0 naprej. Semantic Kernel je še vedno mogoče začasno izbrati z `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, vendar to sproži opozorilo o odstranitvi; glejte [configuration](configuration.md#model-client-backend) za načrt postopne odstranitve.
+
+Zahtevane spremenljivke Azure AI Vision za prevajanje slik:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` je determinističen in ne zahteva konfiguracije LLM ali Azure AI Vision.
 
-## Behavior Notes
+## Opombe o vedenju
 
-- Content translation APIs keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content needs project-relative links adjusted for a target location.
-- Project orchestration APIs add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
-- `run_translation` prints progress and estimate summaries through Click, matching the CLI user experience.
-- `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
-- `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
-- When image translation is selected, missing Vision configuration raises an error before translation starts.
-- Existing alias-based language folders are detected and can be migrated to canonical language folder names as part of the run.
-- `run_review` fails on missing translated files, missing or stale translation metadata, malformed Markdown frontmatter/code fences, and invalid translated notebook JSON.
-- `run_review` reports missing local Markdown and image link targets as warnings by default.
+- API-ji za prevajanje vsebin ločijo prevajanje od prepisovanja poti projekta. Kličite `rewrite_markdown_paths` ali `rewrite_notebook_paths` izrecno, ko je treba pri prevedeni vsebini prilagoditi povezave relativno na projekt za ciljno lokacijo.
+- API-ji za orkestracijo projektov dodajo vedenje projekta okoli prevajanja vsebin, vključno z iskanjem datotek, pisanjem, prepisovanjem poti, metapodatki, čiščenjem in neobveznimi izjavami.
+- `run_translation` izpiše povzetke napredka in ocen prek istega Rich-podprtih poročevalca, ki ga uporablja CLI. Neinteraktivni izhod preide na navaden tekst.
+- `dry_run=True` izračuna ocene z uporabo virtualnih posodobitev README, vendar ne zapiše README ali prevodnih datotek.
+- `groups` se obdelujejo zaporedno. Pred pričetkom dela se izpiše ena združena ocena.
+- Ko je izbran prevod slik, bo manjkajoča Vision konfiguracija sprožila napako pred začetkom prevajanja.
+- Obstoječe jezikovne mape, ki temeljijo na aliasih, se zaznajo in jih je mogoče kot del izvajanja migrirati v kanonična imena jezikovnih map.
+- `run_review` ne uspe ob manjkajočih prevedenih datotekah, manjkajočih ali zastarelih prevodnih metapodatkih, nepravilnem Markdown frontmatterju/oznaki za kodo ter neveljavnem JSON-u prevedenega zvezka.
+- `run_review` po privzetku poroča o manjkajočih lokalnih ciljih Markdowna in povezavah do slik kot opozorila.
 
-## Internal Call Path
+## Notranja klicna pot
 
-The API delegates to the same core implementation used by the CLI:
+API delegira na isto osnovno implementacijo, ki jo uporablja CLI:
 
-Translation:
+Prevajanje:
 
-1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.
-2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.
-3. `co_op_translator.api.translation.run_translation` for full project orchestration.
+1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, ali `translate_image_content` za prevajanje v pomnilniku.
+2. `co_op_translator.api.translation.rewrite_markdown_paths` ali `rewrite_notebook_paths` za izrecno post-obdelavo poti.
+3. `co_op_translator.api.translation.run_translation` za polno orkestracijo projekta.
 4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
 5. `co_op_translator.core.project.ProjectTranslator`.
 6. `co_op_translator.core.project.TranslationManager`.
-7. Focused project translation mixins for Markdown, notebooks, and images.
-8. Markdown, notebook, text, and image translators under `co_op_translator.core`.
+7. Osredotočeni mixini za prevajanje projektov za Markdown, zvezke in slike.
+8. Prevajalci za Markdown, zvezke, besedilo in slike v `co_op_translator.core`.
 
-Review:
+Pregled:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. Deterministic checks under `co_op_translator.review.checks`
+4. Deterministični pregledi pod `co_op_translator.review.checks`
 
-The following classes are useful for maintainers, but are not exported as the package-level stable API.
+Naslednji razredi so koristni za vzdrževalce, vendar niso izpostavljeni kot stabilen API na ravni paketa.
 
-| Class | Module | Responsibility |
+| Razred | Modul | Odgovornost |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Usmerja prevajanje na ravni projekta, upravljanje imenikov, normalizacijo metapodatkov po jezikih in delegiranje na prevajalce za Markdown, zvezke in slike. |
-| `TranslationManager` | `co_op_translator.core.project.translation` | Izvaja asinhrono obdelavo datotek za Markdown, zvezke, slike, zaznavanje zastarelosti in posodobitve metapodatkov prevoda. |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Orkestrira branje Markdown datotek, prevod vsebine, prepisovanje poti, metapodatke, izjave o omejitvi odgovornosti in zapisovanje. |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Orkestrira branje zvezkov, prevod Markdown celic, prepisovanje poti, metapodatke, izjave o omejitvi odgovornosti in zapisovanje. |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Orkestrira odkrivanje izvornih slik, prevod slik, izhodne poti, metapodatke in zapisovanje. |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Najde pare prevedenih Markdown datotek, oceni kakovost prevoda in prebere metapodatke o zaupanju za delovne tokove popravil z nizkim zaupanjem. |
-| `ReviewRunner` | `co_op_translator.review.runner` | Koordinira deterministične preglede čez izvorne datoteke, ciljne jezike in konfigurirane prevajalske korene. |
-| `ReviewTarget` | `co_op_translator.review.targets` | Opisuje izvorni koren in mapo z izhodom prevoda, ki se preverja za ta koren. |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Zazna zastarele alias jezikovne mape in pripravi načrte migracije v kanonične BCP 47 mape. |
-| `Config` | `co_op_translator.config.base_config` | Naloži `.env` datoteke in preveri, ali so zahtevani LLM in neobvezni Vision ponudniki konfigurirani. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Samodejno zazna Azure OpenAI ali OpenAI, preveri zahtevane spremenljivke okolja in izvede preizkuse povezljivosti ponudnika. |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | Zazna konfiguracijo Azure AI Vision in izvede preizkuse povezljivosti za prevajanje slik. |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Koordinira prevajanje na ravni projekta, upravljanje imenikov, normalizacijo metapodatkov na jezik in delegiranje prevajalcem za Markdown, zvezke in slike. |
+| `TranslationManager` | `co_op_translator.core.project.translation` | Izvaja asinhrono obdelavo datotek za Markdown, zvezke, slike, zaznavanje zastarelosti in posodobitve prevodnih metapodatkov. |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Orkestrira branje Markdown datotek, prevajanje vsebine, prepisovanje poti, metapodatke, izjave in zapisovanje. |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Orkestrira branje zvezkov, prevajanje Markdown celic, prepisovanje poti, metapodatke, izjave in zapisovanje. |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Orkestrira odkrivanje izvornih slik, prevajanje slik, izhodne poti, metapodatke in zapisovanje. |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Poišče pare prevedenih Markdown datotek, oceni kakovost prevoda in prebere metapodatke o zaupanju za delovne tokove popravil z nizkim zaupanjem. |
+| `ReviewRunner` | `co_op_translator.review.runner` | Koordinira deterministične preglede čez izvorne datoteke, ciljne jezike in konfigurirane prevodne korene. |
+| `ReviewTarget` | `co_op_translator.review.targets` | Opisuje izvorno korensko mapo in izhodno mapo prevodov, ki se pregleda za to korenino. |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Zazna stare jezikovne mape z aliasi in pripravi načrte za migracijo v kanonične BCP 47 mape. |
+| `Config` | `co_op_translator.config.base_config` | Naloži `.env` datoteke in preveri, ali so zahtevani LLM in izbirni Vision ponudniki konfigurirani. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Samodejno zazna Azure OpenAI, OpenAI ali Anthropic, preveri zahtevane okoljske spremenljivke in izvede preglede povezljivosti ponudnikov. |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | Zazna konfiguracijo Azure AI Vision in izvede preglede povezljivosti za prevajanje slik. |

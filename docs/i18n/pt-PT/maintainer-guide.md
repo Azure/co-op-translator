@@ -1,22 +1,25 @@
-# Maintainer Guide
+# Guia do Mantenedor
 
-This page summarizes how the API, CLI, and documentation site are wired together.
+Esta página resume como a API, a CLI e o site de documentação estão interligados.
 
-## Public API boundary
+## Limite da API pública
 
-The stable Python API is exported from:
+A API Python estável é exportada a partir de:
 
 ```python
 co_op_translator.api
 ```
 
-The public API is organized into content translation helpers, path rewriting helpers, project orchestration, and review:
+A API pública está organizada em auxiliares de tradução de conteúdo, auxiliares de reescrita de caminhos, orquestração de projetos e revisão:
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,17 +31,21 @@ from co_op_translator.api import (
 )
 ```
 
-When adding new public APIs, update:
+`TranslationStateProvider` é a fronteira de persistência para integrações hospedadas.
+Deve manter os candidatos gerados separados das linhas de base aceites para que uma
+tradução não mesclada não se torne a fonte da verdade.
+
+Ao adicionar novas APIs públicas, atualize:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
-- relevant API tests under `tests/co_op_translator/`, such as `test_api.py` or `test_review_api.py`
+- testes de API relevantes em `tests/co_op_translator/`, como `test_api.py` ou `test_review_api.py`
 
-Avoid documenting lower-level `core` modules as stable API unless the project intends to support them directly.
+Evite documentar módulos `core` de baixo nível como API estável, a menos que o projeto pretenda suportá-los diretamente.
 
-## CLI entry points
+## Pontos de entrada da CLI
 
-The package defines these Poetry scripts:
+O pacote define estes scripts do Poetry:
 
 ```toml
 [tool.poetry.scripts]
@@ -49,7 +56,7 @@ co-op-review = "co_op_translator.__main__:main"
 co-op-translator-mcp = "co_op_translator.mcp.server:main"
 ```
 
-`src/co_op_translator/__main__.py` dispatches by script name:
+`src/co_op_translator/__main__.py` encaminha conforme o nome do script:
 
 - `translate` chama `co_op_translator.cli.translate.translate_command`
 - `evaluate` chama `co_op_translator.cli.evaluate.evaluate_command`
@@ -58,74 +65,74 @@ co-op-translator-mcp = "co_op_translator.mcp.server:main"
 
 `co-op-translator-mcp` contorna `__main__.py` e chama `co_op_translator.mcp.server:main` diretamente.
 
-When adding or changing CLI options, update:
+Ao adicionar ou alterar opções da CLI, atualize:
 
-- the relevant `src/co_op_translator/cli/*.py` command
+- o comando relevante em `src/co_op_translator/cli/*.py`
 - `docs/cli.md`
-- CLI-related tests, if behavior changes
+- testes relacionados com a CLI, caso o comportamento mude
 
-## MCP server
+## Servidor MCP
 
-The MCP server is implemented in:
+O servidor MCP está implementado em:
 
 ```python
 co_op_translator.mcp.server
 ```
 
-The server intentionally wraps the public Python API rather than calling lower-level `core` modules. Keep this boundary intact so MCP clients, Python callers, and the CLI share the same behavior.
+O servidor envolve propositadamente a API Python pública em vez de chamar módulos `core` de nível inferior. Mantenha essa fronteira intacta para que os clientes MCP, chamadores Python e a CLI partilhem o mesmo comportamento.
 
-When adding or changing MCP tools, update:
+Ao adicionar ou alterar ferramentas MCP, atualize:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
-- `docs/api.md` if the public API surface changes
+- `docs/api.md` se a superfície da API pública mudar
 
-Repository translation tools are model-callable through MCP and can write many files. Keep `dry_run=True` as the default and require `confirm_write=True` before non-dry-run project translation.
+As ferramentas de tradução do repositório são invocáveis por modelo através do MCP e podem escrever muitos ficheiros. Mantenha `dry_run=True` como padrão e exija `confirm_write=True` antes da tradução do projeto fora do modo dry-run.
 
-## Translation flow
+## Fluxo de tradução
 
-The high-level project translation flow is:
+O fluxo de tradução de alto nível do projeto é:
 
-1. Parse CLI arguments or API parameters.
-2. Validate LLM configuration with `LLMConfig`.
-3. Validate Azure AI Vision when image translation is selected.
-4. Normalize language codes.
-5. Detect legacy language folder aliases.
-6. Estimate translation volume.
-7. Update README language/course sections when applicable.
-8. Delegate project translation to `ProjectTranslator`.
-9. `ProjectTranslator` delegates file processing to `TranslationManager`.
+1. Analisar argumentos da CLI ou parâmetros da API.
+2. Validar a configuração LLM com `LLMConfig`.
+3. Validar o Azure AI Vision quando a tradução de imagens for selecionada.
+4. Normalizar códigos de idioma.
+5. Detetar aliases de pastas de idioma legadas.
+6. Estimar o volume de tradução.
+7. Atualizar secções de idioma/curso do README quando aplicável.
+8. Delegar a tradução do projeto para `ProjectTranslator`.
+9. `ProjectTranslator` delega o processamento de ficheiros a `TranslationManager`.
 
-`TranslationManager` is composed from focused file-type mixins:
+`TranslationManager` é composto por mixins focados por tipo de ficheiro:
 
-- `ProjectMarkdownTranslationMixin` handles Markdown file reads, content translation, path rewriting, metadata, disclaimers, and writes.
-- `ProjectNotebookTranslationMixin` handles notebook file reads, Markdown-cell translation, path rewriting, metadata, disclaimers, and writes.
-- `ProjectImageTranslationMixin` handles image discovery, text extraction/translation, rendered image writes, and metadata.
+- `ProjectMarkdownTranslationMixin` trata da leitura de ficheiros Markdown, tradução de conteúdo, reescrita de caminhos, metadados, avisos e gravações.
+- `ProjectNotebookTranslationMixin` trata da leitura de ficheiros de notebook, tradução de células Markdown, reescrita de caminhos, metadados, avisos e gravações.
+- `ProjectImageTranslationMixin` trata da descoberta de imagens, extração/tradução de texto, gravação de imagens renderizadas e metadados.
 
-The lower-level content APIs skip the project workflow:
+As APIs de conteúdo de nível inferior ignoram o fluxo de trabalho do projeto:
 
-1. `translate_markdown_content` and `translate_notebook_content` translate in-memory content only.
-2. `translate_image_content` translates text in a single image and returns a rendered image object.
-3. `rewrite_markdown_paths` and `rewrite_notebook_paths` are explicit post-processing helpers. They perform no translation and no project writes.
+1. `translate_markdown_content` e `translate_notebook_content` traduzem apenas conteúdo em memória.
+2. `translate_image_content` traduz texto numa única imagem e devolve um objeto de imagem renderizada.
+3. `rewrite_markdown_paths` e `rewrite_notebook_paths` são auxiliares de pós-processamento explícitos. Não efetuam tradução nem gravações no projeto.
 
-## Review flow
+## Fluxo de revisão
 
-The deterministic review flow is:
+O fluxo de revisão determinístico é:
 
-1. Parse CLI arguments or API parameters.
-2. Normalize requested language codes.
-3. Build one or more review targets from `root_dir`, `root_dirs`, or `groups`.
-4. Optionally limit source files with `--changed-from`.
-5. Run deterministic checks for structure, translation freshness, Markdown integrity, and local link/image paths.
-6. Print either text output or GitHub-flavored Markdown.
-7. Exit with a failure when review errors are found.
+1. Analisar argumentos da CLI ou parâmetros da API.
+2. Normalizar os códigos de idioma solicitados.
+3. Construir um ou mais alvos de revisão a partir de `root_dir`, `root_dirs` ou `groups`.
+4. Opcionalmente, limitar ficheiros de origem com `--changed-from`.
+5. Executar verificações determinísticas para estrutura, atualidade da tradução, integridade do Markdown e caminhos locais de ligações/imagens.
+6. Imprimir saída em texto ou Markdown no formato GitHub.
+7. Sair com falha quando forem encontrados erros de revisão.
 
-The review flow does not require API keys and should remain suitable for pull request CI. The pull request workflow writes a check summary on every run and only posts a PR comment when `co-op-review` fails.
+O fluxo de revisão não requer chaves de API e permanece disponível para verificações locais ou CI de consumidor com opt-in. Este repositório não executa `co-op-review` automaticamente em cada pull request.
 
-## Documentation site
+## Site de documentação
 
-The docs site is configured by:
+O site de documentação é configurado por:
 
 ```text
 mkdocs.yml
@@ -133,42 +140,42 @@ requirements-docs.txt
 docs/
 ```
 
-The `docs/` directory is the canonical documentation source. Do not add new end-user guides outside this directory unless the project intentionally introduces another published documentation surface.
+O diretório `docs/` é a fonte canónica da documentação. Não adicione novos guias para utilizadores finais fora deste diretório, a menos que o projeto introduza intencionalmente outra superfície de documentação publicada.
 
-Build locally:
+Construir localmente:
 
 ```bash
 python -m pip install -r requirements-docs.txt
 python -m mkdocs build --strict
 ```
 
-Preview locally:
+Pré-visualizar localmente:
 
 ```bash
 python -m mkdocs serve
 ```
 
-The generated site is written to `site/`, which is ignored by git.
+O site gerado é escrito em `site/`, que é ignorado pelo git.
 
-## GitHub Pages workflow
+## Fluxo de trabalho do GitHub Pages
 
-`.github/workflows/docs.yml` builds the site on pull requests and deploys it on pushes to `main`.
+`.github/workflows/docs.yml` constrói o site em pull requests e faz o deploy quando há pushes para `main`.
 
-The workflow installs:
+O fluxo de trabalho instala:
 
 ```bash
 pip install -r requirements-docs.txt
 ```
 
-The docs workflow installs only the documentation toolchain. `mkdocs.yml` points `mkdocstrings` at `src/` so public API pages can be rendered from the source tree without installing the full runtime dependency set. If future API docs require importing optional runtime providers during the build, update both `.github/workflows/docs.yml` and this guide together.
+O fluxo de documentação instala apenas a cadeia de ferramentas de documentação. O `mkdocs.yml` aponta o `mkdocstrings` para `src/` para que as páginas da API pública possam ser renderizadas a partir da árvore de código sem instalar o conjunto completo de dependências de runtime. Se documentação futura da API exigir a importação de provedores de runtime opcionais durante a construção, atualize tanto `.github/workflows/docs.yml` quanto este guia em conjunto.
 
-## Docs quality bar
+## Padrão de qualidade da documentação
 
-Before merging documentation changes, run:
+Antes de fundir alterações na documentação, execute:
 
 ```bash
 python -m mkdocs build --strict
 git diff --check
 ```
 
-Use strict builds so broken links, invalid navigation entries, and API rendering issues fail early.
+Use compilações estritas para que ligações quebradas, entradas de navegação inválidas e problemas de renderização da API sejam detetados precocemente.

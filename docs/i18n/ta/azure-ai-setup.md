@@ -1,6 +1,6 @@
 # Azure AI அமைப்பு
 
-Use this guide when you want to configure Azure OpenAI for text translation and Azure AI Vision for image text extraction.
+இந்த வழிகாட்டியை உரை மொழிபெயர்ப்பிற்காக Azure OpenAI-ஐ மற்றும் படங்களில் இருந்து உரையை பிரித்தெடுக்க Azure AI Vision-ஐ அமைக்க விரும்பும் போது பயன்படுத்தவும்.
 
 ## முன் நிபந்தனைகள்
 
@@ -56,7 +56,7 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Co-op Translator also supports optional fallback credential sets. Duplicate a complete provider set with suffixes such as `_1` or `_2`; all variables in a fallback set must share the same suffix.
+Co-op Translator கூடுதலாக விருப்பமான பதிலாகக் கொள்ளக்கூடிய கடவுச்சான்று தொகுதிகளை ஆதரிக்கிறது. `_1` அல்லது `_2` போன்ற பின்னெழுத்துகளுடன் ஒரு முழு வழங்குநர் தொகுப்பை நகலெடுக்கவும்; பதிலாகக் கொள்ளக்கூடிய தொகுதியிலுள்ள அனைத்து மாறிகளும் ஒரே பின்னெழுத்தை பகிர வேண்டும்.
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."

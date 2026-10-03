@@ -1,10 +1,10 @@
 # Поддържани езици
 
-Co-op Translator поддържа следните кодове на езици за текстови, notebook и изображенчески преводни резултати.
+Co-op Translator поддържа следните езикови кодове за изходи от превод на текст, бележници и изображения.
 
-Ако искате да добавите нов език, актуализирайте езиковите и шрифтовите съпоставяния под `src/co_op_translator/fonts/` и тествайте езика преди да отворите pull request.
+Ако искате да добавите нов език, актуализирайте съпоставките на езика и шрифтовете в `src/co_op_translator/fonts/` и тествайте езика, преди да отворите pull request.
 
-| Language Code | Language Name | Font | RTL Support | Known Issues |
+| Код на езика | Име на езика | Шрифт | Поддръжка на RTL | Известни проблеми |
 | --- | --- | --- | --- | --- |
 | en | Английски | NotoSans-Medium.ttf | Не | Не |
 | fr | Френски | NotoSans-Medium.ttf | Не | Не |
@@ -24,7 +24,7 @@ Co-op Translator поддържа следните кодове на езици 
 | bn | Бенгалски | NotoSansBengali-Medium.ttf | Не | Не |
 | mr | Марати | NotoSansDevanagari-Medium.ttf | Не | Не |
 | ne | Непалски | NotoSansDevanagari-Medium.ttf | Не | Не |
-| pa | Пенджаби (Гурмукхи) | NotoSansGurmukhi-Medium.ttf | Не | Не |
+| pa | Пенджабски (Гурмукхи) | NotoSansGurmukhi-Medium.ttf | Не | Не |
 | pt-PT | Португалски (Португалия) | NotoSans-Medium.ttf | Не | Не |
 | pt-BR | Португалски (Бразилия) | NotoSans-Medium.ttf | Не | Не |
 | it | Италиански | NotoSans-Medium.ttf | Не | Не |
@@ -32,17 +32,17 @@ Co-op Translator поддържа следните кодове на езици 
 | pl | Полски | NotoSans-Medium.ttf | Не | Не |
 | tr | Турски | NotoSans-Medium.ttf | Не | Не |
 | el | Гръцки | NotoSans-Medium.ttf | Не | Не |
-| th | Тайландски | NotoSansThai-Medium.ttf | Не | Не |
+| th | Тайски | NotoSansThai-Medium.ttf | Не | Не |
 | sv | Шведски | NotoSans-Medium.ttf | Не | Не |
 | da | Датски | NotoSans-Medium.ttf | Не | Не |
 | no | Норвежки | NotoSans-Medium.ttf | Не | Не |
 | fi | Фински | NotoSans-Medium.ttf | Не | Не |
-| nl | Холандски | NotoSans-Medium.ttf | Не | Не |
+| nl | Нидерландски | NotoSans-Medium.ttf | Не | Не |
 | he | Иврит | NotoSansHebrew-Medium.ttf | Да | Не |
 | vi | Виетнамски | NotoSans-Medium.ttf | Не | Не |
 | id | Индонезийски | NotoSans-Medium.ttf | Не | Не |
 | ms | Малайски | NotoSans-Medium.ttf | Не | Не |
-| tl | Тагалог (Филипински) | NotoSans-Medium.ttf | Не | Не |
+| tl | Тагалог (филипински) | NotoSans-Medium.ttf | Не | Не |
 | sw | Суахили | NotoSans-Medium.ttf | Не | Не |
 | hu | Унгарски | NotoSans-Medium.ttf | Не | Не |
 | cs | Чешки | NotoSans-Medium.ttf | Не | Не |
@@ -60,13 +60,14 @@ Co-op Translator поддържа следните кодове на езици 
 | te | Телугу | NotoSans-Medium.ttf | Не | Не |
 | ml | Малаялам | NotoSans-Medium.ttf | Не | Не |
 | kn | Каннада | NotoSans-Medium.ttf | Не | Не |
-| km | Кмерски | NotoSansKhmer-Medium.ttf | Не | Не |
+| km | Кхмерски | NotoSansKhmer-Medium.ttf | Не | Не |
+| mni | Манипури (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Не | Не |
 
 ## Добавяне на език
 
 За да добавите поддръжка за нов език:
 
-1. Добавете кода на езика и показваното име в езиковите помощни програми.
-2. Добавете или присъединете шрифт в `src/co_op_translator/fonts/font_language_mappings.yml`.
-3. Тествайте резултата от превода на Markdown и изображения.
-4. Отворете pull request с мапинга и бележките за валидация.
+1. Добавете езиковия код и показваното име в помощните средства за езици.
+2. Добавете или съпоставете шрифт във `src/co_op_translator/fonts/font_language_mappings.yml`.
+3. Тествайте изхода от превода за Markdown и изображения.
+4. Отворете pull request със съответствията и бележките за валидиране.

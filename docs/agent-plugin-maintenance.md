@@ -24,6 +24,18 @@ First confirm that the client lists the plugin from the repository marketplace.
 Then install it in a test profile and open a new session. Do not change a user's
 global plugin settings just to run a test.
 
+Also test the pushed branch through the remote marketplace path in a separate
+profile. Replace the repository and ref with the ones under review:
+
+```bash
+codex plugin marketplace add OWNER/REPO --ref BRANCH --sparse .agents/plugins --sparse plugins/co-op-translator
+codex plugin add co-op-translator@co-op-translator
+codex plugin list --marketplace co-op-translator --json
+```
+
+Compare the installed plugin files with the reviewed commit. A local install
+does not test the Git source or sparse paths.
+
 Use the requests below without naming the product or adding hidden hints. Record
 the client and model version, enabled skills, request, selected skill, tool calls,
 and outcome. Explicit `$co-op-translator` invocation only tests explicit use.

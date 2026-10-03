@@ -41,9 +41,13 @@ Once the package is available on the upstream default branch, a remote install
 can use:
 
 ```bash
-codex plugin marketplace add Azure/co-op-translator
+codex plugin marketplace add Azure/co-op-translator --sparse .agents/plugins --sparse plugins/co-op-translator
 codex plugin add co-op-translator@co-op-translator
 ```
+
+The sparse paths limit the checkout to the marketplace and plugin files. Add
+`--ref <branch-or-tag>` when testing a package before it reaches the default
+branch.
 
 Open a new agent session after installation. In a supported desktop client,
 the repository marketplace also exposes the plugin in the plugin browser.

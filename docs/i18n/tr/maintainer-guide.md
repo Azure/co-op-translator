@@ -1,10 +1,10 @@
-# Sürdürme Kılavuzu
+# Bakım Kılavuzu
 
 Bu sayfa API, CLI ve dokümantasyon sitesinin nasıl birbirine bağlandığını özetler.
 
 ## Genel API sınırı
 
-The stable Python API is exported from:
+Kararlı Python API'si şu yerden dışa aktarılır:
 
 ```python
 co_op_translator.api
@@ -17,6 +17,9 @@ from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,15 +31,19 @@ from co_op_translator.api import (
 )
 ```
 
-Yeni genel API'ler eklerken, güncelleyin:
+`TranslationStateProvider` barındırılan entegrasyonlar için kalıcılık sınırıdır.
+Oluşturulan adayları kabul edilmiş temel sürümlerden ayrı tutmalıdır, böylece bir
+birleştirilmemiş çeviri gerçek kaynak haline gelemez.
+
+Yeni genel API'ler eklerken güncelleyin:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
 - ilgili API testleri `tests/co_op_translator/` altında, örneğin `test_api.py` veya `test_review_api.py`
 
-Projede doğrudan desteklemeyi amaçlamadıkça, daha düşük seviyeli `core` modüllerini kararlı API olarak belgelemekten kaçının.
+Proje bunları doğrudan desteklemeyi amaçlamıyorsa alt düzey `core` modüllerini kararlı API olarak belgelemeyin.
 
-## CLI entry points
+## CLI giriş noktaları
 
 Paket şu Poetry betiklerini tanımlar:
 
@@ -49,83 +56,83 @@ co-op-review = "co_op_translator.__main__:main"
 co-op-translator-mcp = "co_op_translator.mcp.server:main"
 ```
 
-`src/co_op_translator/__main__.py` script adına göre yönlendirir:
+`src/co_op_translator/__main__.py` betik adına göre yönlendirir:
 
-- `translate` `co_op_translator.cli.translate.translate_command`'i çağırır
-- `evaluate` `co_op_translator.cli.evaluate.evaluate_command`'i çağırır
-- `migrate-links` `co_op_translator.cli.migrate_links.migrate_links_command`'u çağırır
+- `translate` `co_op_translator.cli.translate.translate_command`'ı çağırır
+- `evaluate` `co_op_translator.cli.evaluate.evaluate_command`'ı çağırır
+- `migrate-links` `co_op_translator.cli.migrate_links.migrate_links_command`'ı çağırır
 - `co-op-review` `co_op_translator.cli.review.review_command`'ı çağırır
 
-`co-op-translator-mcp` `__main__.py`'yi atlar ve `co_op_translator.mcp.server:main`'i doğrudan çağırır.
+`co-op-translator-mcp` `__main__.py`'yi atlayarak doğrudan `co_op_translator.mcp.server:main`'i çağırır.
 
-CLI seçenekleri eklerken veya değiştirirken, güncelleyin:
+CLI seçenekleri eklerken veya değiştirirken güncelleyin:
 
 - ilgili `src/co_op_translator/cli/*.py` komutu
 - `docs/cli.md`
-- CLI ile ilgili testler, davranış değişirse
+- Davranış değişirse CLI ile ilgili testler
 
-## MCP server
+## MCP sunucusu
 
-The MCP server is implemented in:
+MCP sunucusu şu dosyada uygulanmıştır:
 
 ```python
 co_op_translator.mcp.server
 ```
 
-Sunucu, kasıtlı olarak daha düşük seviyeli `core` modüllerini çağırmak yerine genel Python API'sini sarar. Bu sınırı koruyun ki MCP istemcileri, Python çağırıcıları ve CLI aynı davranışı paylaşsın.
+Sunucu kasıtlı olarak alt düzey `core` modüllerini çağırmak yerine genel Python API'sini sarar. MCP istemcileri, Python çağıranlar ve CLI'nin aynı davranışı paylaşması için bu sınırı koruyun.
 
-MCP araçları eklerken veya değiştirirken, güncelleyin:
+MCP araçları eklerken veya değiştirirken güncelleyin:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
-- genel API yüzeyi değişirse `docs/api.md`
+- `docs/api.md` (genel API yüzeyi değişirse)
 
-Depo çeviri araçları MCP aracılığıyla modele çağrılabilir ve birçok dosya yazabilir. Varsayılan olarak `dry_run=True` tutun ve gerçek (non-dry-run) proje çevirisinden önce `confirm_write=True` gerektirin.
+Depo çeviri araçları MCP aracılığıyla modele çağrılabilir ve birçok dosya yazabilir. Varsayılan olarak `dry_run=True` bırakın ve dry-run olmayan proje çevirisi öncesinde `confirm_write=True` gerektirin.
 
-## Translation flow
+## Çeviri akışı
 
-Yüksek seviyeli proje çeviri akışı şöyledir:
+Yüksek seviyeli proje çeviri akışı şu şekildedir:
 
 1. CLI argümanlarını veya API parametrelerini ayrıştırın.
-2. LLM yapılandırmasını `LLMConfig` ile doğrulayın.
-3. Resim çevirisi seçildiğinde Azure AI Vision'ı doğrulayın.
+2. `LLMConfig` ile LLM yapılandırmasını doğrulayın.
+3. Görüntü çevirisi seçildiğinde Azure AI Vision'ı doğrulayın.
 4. Dil kodlarını normalleştirin.
 5. Eski dil klasörü takma adlarını tespit edin.
 6. Çeviri hacmini tahmin edin.
-7. Uygunsa README dil/kurs bölümlerini güncelleyin.
+7. Uygun olduğunda README dil/kurs bölümlerini güncelleyin.
 8. Proje çevirisini `ProjectTranslator`'a devredin.
-9. `ProjectTranslator` dosya işleme görevini `TranslationManager`'a devreder.
+9. `ProjectTranslator`, dosya işlemlerini `TranslationManager`'a devreder.
 
-`TranslationManager` odaklanmış dosya-tipi mixin'lerinden oluşur:
+`TranslationManager` odaklanmış dosya türü mixin'lerinden oluşur:
 
-- `ProjectMarkdownTranslationMixin` Markdown dosya okumalarını, içerik çevirisini, yol yeniden yazmayı, meta verileri, feragatnameleri ve yazma işlemlerini ele alır.
-- `ProjectNotebookTranslationMixin` notebook dosya okumalarını, Markdown hücre çevirisini, yol yeniden yazmayı, meta verileri, feragatnameleri ve yazma işlemlerini ele alır.
-- `ProjectImageTranslationMixin` resim keşfini, metin çıkarma/çeviriyi, oluşturulmuş resim yazımlarını ve meta verileri ele alır.
+- `ProjectMarkdownTranslationMixin` Markdown dosya okuma, içerik çevirisi, yol yeniden yazma, metadata, feragatnameler ve yazma işlemlerini ele alır.
+- `ProjectNotebookTranslationMixin` notebook dosya okumaları, Markdown hücresi çevirisi, yol yeniden yazma, metadata, feragatnameler ve yazma işlemlerini ele alır.
+- `ProjectImageTranslationMixin` görüntü keşfi, metin çıkarma/çeviri, oluşturulmuş görüntü yazmaları ve metadata işlemlerini ele alır.
 
-Daha düşük seviyeli içerik API'leri proje iş akışını atlar:
+Alt düzey içerik API'leri proje iş akışını atlar:
 
 1. `translate_markdown_content` ve `translate_notebook_content` yalnızca bellekteki içeriği çevirir.
-2. `translate_image_content` tek bir resimdeki metni çevirir ve oluşturulmuş bir resim nesnesi döndürür.
-3. `rewrite_markdown_paths` ve `rewrite_notebook_paths` açık düzey sonrası işleme yardımcılarıdır. Hiç çeviri veya proje yazımı yapmazlar.
+2. `translate_image_content` tek bir görüntüdeki metni çevirir ve oluşturulmuş bir görüntü nesnesi döndürür.
+3. `rewrite_markdown_paths` ve `rewrite_notebook_paths` açıkça tanımlanmış son işlem yardımcılarıdır. Bunlar çeviri yapmaz ve proje yazımı gerçekleştirmez.
 
-## Review flow
+## İnceleme akışı
 
-Deterministik inceleme akışı şudur:
+Deterministik inceleme akışı şu şekildedir:
 
 1. CLI argümanlarını veya API parametrelerini ayrıştırın.
 2. İstenen dil kodlarını normalleştirin.
-3. Bir veya daha fazla inceleme hedefini `root_dir`, `root_dirs` veya `groups`'tan oluşturun.
-4. İsteğe bağlı olarak kaynak dosyaları `--changed-from` ile sınırlayın.
-5. Yapı, çeviri tazeliği, Markdown bütünlüğü ve yerel bağlantı/resim yolları için deterministik kontroller çalıştırın.
-6. Metin çıktısı veya GitHub usulü Markdown yazdırın.
-7. İnceleme hataları bulunduğunda başarısızlık ile çıkış yapın.
+3. `root_dir`, `root_dirs` veya `groups`'tan bir veya daha fazla inceleme hedefi oluşturun.
+4. İsteğe bağlı olarak `--changed-from` ile kaynak dosyaları sınırlayın.
+5. Yapı, çeviri tazeliği, Markdown bütünlüğü ve yerel bağlantı/görüntü yolları için deterministik kontrolleri çalıştırın.
+6. Metin çıktısı veya GitHub uyumlu Markdown yazdırın.
+7. İnceleme hataları bulunduğunda hata ile çıkış yapın.
 
-İnceleme akışı API anahtarları gerektirmez ve pull request CI için uygun kalmalıdır. Pull request iş akışı her çalıştırmada bir kontrol özeti yazar ve yalnızca `co-op-review` başarısız olduğunda bir PR yorumu gönderir.
+İnceleme akışı API anahtarları gerektirmez ve yerel kontroller veya isteğe bağlı tüketici CI için kullanılabilir durumda kalır. Bu depo her pull request'te `co-op-review`'u otomatik olarak çalıştırmaz.
 
-## Documentation site
+## Dokümantasyon sitesi
 
-The docs site is configured by:
+Doküman sitesi şu şekilde yapılandırılır:
 
 ```text
 mkdocs.yml
@@ -133,42 +140,42 @@ requirements-docs.txt
 docs/
 ```
 
-`docs/` dizini kanonik dokümantasyon kaynağıdır. Proje kasıtlı olarak başka bir yayımlanmış dokümantasyon yüzeyi tanıtmadıkça, bu dizinin dışına yeni son kullanıcı kılavuzları eklemeyin.
+`docs/` dizini kanonik dokümantasyon kaynağıdır. Proje kasıtlı olarak başka bir yayımlanmış dokümantasyon yüzeyi tanıtmadıkça bu dizinin dışına yeni son-kullanıcı kılavuzları eklemeyin.
 
-Build locally:
+Yerel olarak oluşturun:
 
 ```bash
 python -m pip install -r requirements-docs.txt
 python -m mkdocs build --strict
 ```
 
-Preview locally:
+Yerelde önizleyin:
 
 ```bash
 python -m mkdocs serve
 ```
 
-Oluşturulan site `site/`'ye yazılır; bu dizin git tarafından yoksayılır.
+Oluşturulan site `site/` dizinine yazılır; bu dizin git tarafından yoksayılır.
 
-## GitHub Pages workflow
+## GitHub Pages iş akışı
 
-`.github/workflows/docs.yml` siteyi pull request'lerde oluşturur ve `main`'e push edildiğinde dağıtır.
+`.github/workflows/docs.yml` dosyası pull request'lerde siteyi oluşturur ve `main`'e yapılan push'larda dağıtır.
 
-The workflow installs:
+İş akışı şunları kurar:
 
 ```bash
 pip install -r requirements-docs.txt
 ```
 
-Dokümantasyon iş akışı yalnızca dokümantasyon araç zincirini kurar. `mkdocs.yml`, `mkdocstrings`'i `src/`'e yönlendirir, böylece genel API sayfaları tam çalışma zamanı bağımlılık setini kurmadan kaynak ağaçtan oluşturulabilir. Gelecekte API dokümantasyonunun derleme sırasında isteğe bağlı çalışma zamanı sağlayıcılarını içe aktarmayı gerektirmesi durumunda, hem `.github/workflows/docs.yml` hem de bu kılavuzu birlikte güncelleyin.
+Docs iş akışı yalnızca dokümantasyon araç zincirini kurar. `mkdocs.yml`, `mkdocstrings`'i `src/`'e işaret eder; böylece genel API sayfaları tam çalışma zamanı bağımlılık kümesini yüklemeden kaynak ağacından oluşturulabilir. Gelecekteki API dokümanlarının derleme sırasında isteğe bağlı çalışma zamanı sağlayıcılarını içe aktarmayı gerektirmesi durumunda, hem `.github/workflows/docs.yml`'i hem de bu kılavuzu birlikte güncelleyin.
 
-## Docs quality bar
+## Doküman kalite eşiği
 
-Before merging documentation changes, run:
+Dokümantasyon değişikliklerini birleştirmeden önce çalıştırın:
 
 ```bash
 python -m mkdocs build --strict
 git diff --check
 ```
 
-Kırık bağlantılar, geçersiz gezinme girdileri ve API oluşturma sorunlarının erken başarısız olması için katı derlemeler kullanın.
+Kırık bağlantılar, geçersiz gezinme girdileri ve API render hatalarının erken tespit edilmesi için katı derlemeler kullanın.

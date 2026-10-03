@@ -1,22 +1,25 @@
-# ਮੇਨਟੇਨਰ ਗਾਈਡ
+# ਮੈਂਟੇਨਰ ਗਾਈਡ
 
-ਇਹ ਪੰਨਾ ਸੰਖੇਪ ਵਿੱਚ ਦੱਸਦਾ ਹੈ ਕਿ API, CLI, ਅਤੇ ਦਸਤਾਵੇਜ਼ ਸਾਈਟ ਇਕੱਠੇ ਕਿਵੇਂ ਕੰਮ ਕਰਦੀਆਂ ਹਨ।
+ਇਹ ਪੰਨਾ ਸੰਖੇਪ ਵਿੱਚ ਦਰਸਾਉਂਦਾ ਹੈ ਕਿ API, CLI, ਅਤੇ ਡੌਕਯੂਮੈਂਟੇਸ਼ਨ ਸਾਈਟ ਇਕੱਠੇ ਕਿਵੇਂ ਜੋੜੇ ਗਏ ਹਨ।
 
-## ਪਬਲਿਕ API ਦੀ ਸੀਮਾ
+## ਪਬਲਿਕ API ਸੀਮਾ
 
-The stable Python API is exported from:
+ਸਥਿਰ Python API ਇਹਨਾਂ ਤੋਂ ਐਕਸਪੋਰਟ ਕੀਤੀ ਜਾਂਦੀ ਹੈ:
 
 ```python
 co_op_translator.api
 ```
 
-The public API is organized into content translation helpers, path rewriting helpers, project orchestration, and review:
+ਪਬਲਿਕ API ਨੂੰ ਸਮੱਗਰੀ ਅਨੁਵਾਦ ਸਹਾਇਕ, ਪਾਥ ਪੂਨਲਿਖਣ ਸਹਾਇਕ, ਪ੍ਰੋਜੈਕਟ ਪ੍ਰਬੰਧਨ, ਅਤੇ ਸਮੀਖਿਆ ਵਿੱਚ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ ਹੈ:
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,17 +31,21 @@ from co_op_translator.api import (
 )
 ```
 
-When adding new public APIs, update:
+`TranslationStateProvider` ਹੋਸਟ ਕੀਤੀਆਂ ਇੰਟੇਗ੍ਰੇਸ਼ਨਾਂ ਲਈ ਡਾਟਾ ਟਿਕਾਊਪਨ ਦੀ ਸੀਮਾ ਹੈ।
+ਇਹ ਬਣਾਏ ਗਏ ਉਮੀਦਵਾਰਾਂ ਨੂੰ ਮੰਨਿਆ ਗਿਆ ਬੇਸਲਾਈਨ ਤੋਂ ਵੱਖਰਾ ਰੱਖਣਾ ਚਾਹੀਦਾ ਹੈ ਤਾਂ ਕਿ ਇੱਕ
+ਅਣਮਰਜ ਕੀਤੀ ਅਨੁਵਾਦ ਸੱਚਾਈ ਦਾ ਸਰੋਤ ਬਣ ਨਾ ਜਾਵੇ।
+
+ਜਦੋਂ ਨਵੇਂ ਪਬਲਿਕ APIs ਜੋੜਦੇ ਹੋ, ਅਪਡੇਟ ਕਰੋ:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
 - relevant API tests under `tests/co_op_translator/`, such as `test_api.py` or `test_review_api.py`
 
-Avoid documenting lower-level `core` modules as stable API unless the project intends to support them directly.
+ਨੀਚਲੇ-ਸਤਰ ਦੇ `core` ਮਾਡਿਊਲਾਂ ਨੂੰ ਸਥਿਰ API ਵਜੋਂ ਡੌਕਯੂਮੈਂਟ ਕਰਨ ਤੋਂ ਬਚੋ ਜਦ ਤੱਕ ਪ੍ਰੋਜੈਕਟ ਸਿੱਧੇ ਤੌਰ 'ਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਸਪੋਰਟ ਕਰਨ ਦੀ ਇੱਛਿਆ ਨਾ ਰੱਖਦਾ ਹੋਵੇ।
 
-## CLI entry points
+## CLI ਐਂਟਰੀ ਪੌਇੰਟ
 
-The package defines these Poetry scripts:
+ਪੈਕੇਜ ਇਹਨਾਂ Poetry ਸਕ੍ਰਿਪਟਾਂ ਨੂੰ ਪਰਿਭਾਸ਼ਿਤ ਕਰਦਾ ਹੈ:
 
 ```toml
 [tool.poetry.scripts]
@@ -49,7 +56,7 @@ co-op-review = "co_op_translator.__main__:main"
 co-op-translator-mcp = "co_op_translator.mcp.server:main"
 ```
 
-`src/co_op_translator/__main__.py` script name ਦੇ ਅਨੁਸਾਰ ਡਿਸਪੈਚ ਕਰਦਾ ਹੈ:
+`src/co_op_translator/__main__.py` ਸਕ੍ਰਿਪਟ ਨਾਂ ਦੇ ਅਧਾਰ 'ਤੇ ਡਿਸਪੈਚ ਕਰਦਾ ਹੈ:
 
 - `translate` `co_op_translator.cli.translate.translate_command` ਨੂੰ ਕਾਲ ਕਰਦਾ ਹੈ
 - `evaluate` `co_op_translator.cli.evaluate.evaluate_command` ਨੂੰ ਕਾਲ ਕਰਦਾ ਹੈ
@@ -58,74 +65,74 @@ co-op-translator-mcp = "co_op_translator.mcp.server:main"
 
 `co-op-translator-mcp` `__main__.py` ਨੂੰ ਬਾਈਪਾਸ ਕਰਦਾ ਹੈ ਅਤੇ ਸਿੱਧਾ `co_op_translator.mcp.server:main` ਨੂੰ ਕਾਲ ਕਰਦਾ ਹੈ।
 
-When adding or changing CLI options, update:
+CLI ਵਿਕਲਪ ਜੋੜਦੇ ਜਾਂ ਬਦਲਦੇ ਸਮੇਂ, ਅਪਡੇਟ ਕਰੋ:
 
 - the relevant `src/co_op_translator/cli/*.py` command
 - `docs/cli.md`
-- CLI-related tests, if behavior changes
+- CLI-ਸੰਬੰਧੀ ਟੈਸਟ, ਜੇ ਵਿਵਹਾਰ ਬਦਲਦਾ ਹੈ
 
-## MCP server
+## MCP ਸਰਵਰ
 
-The MCP server is implemented in:
+MCP ਸਰਵਰ ਇਹਨਾਂ ਵਿੱਚ ਲਾਗੂ ਕੀਤਾ ਗਿਆ ਹੈ:
 
 ```python
 co_op_translator.mcp.server
 ```
 
-ਸਰਵਰ ਜਾਣਬੂਝ ਕੇ ਪਬਲਿਕ Python API ਨੂੰ ਰੈਪ ਕਰਦਾ ਹੈ ਨ ਕਿ ਨਿਚਲੇ-ਪੱਧਰ ਦੇ `core` ਮੋਡੀਊਲਾਂ ਨੂੰ ਕਾਲ ਕਰੇ। ਇਸ ਸੀਮਾ ਨੂੰ ਅਖੰਡ ਰੱਖੋ ਤਾਂ ਜੋ MCP ਕਲਾਇੰਟ, Python ਕਾਲ ਕਰਨ ਵਾਲੇ, ਅਤੇ CLI ਦਾ ਵਿਹਾਰ ਇੱਕੋ ਜਿਹਾ ਰਹੇ।
+ਸਰਵਰ ਇਰਾਦਾਪੂਰਕ ਢੰਗ ਨਾਲ ਪਬਲਿਕ Python API ਨੂੰ ਰੈਪ ਕਰਦਾ ਹੈ ਨਾਂ ਕਿ ਨੀਚਲੇ-ਸਤਰ ਦੇ `core` ਮਾਡਿਊਲਾਂ ਨੂੰ ਕਾਲ ਕਰਨ ਦੇ। ਇਸ ਸੀਮਾ ਨੂੰ ਅਖੰਡ ਰੱਖੋ ਤਾਂ ਜੋ MCP ਕਲਾਇੰਟਾਂ, Python ਕਾਲਰਾਂ, ਅਤੇ CLI ਇੱਕੋ ਵਹਿਵਾਰ ਸਾਂਝਾ ਕਰਨ।
 
-When adding or changing MCP tools, update:
+MCP ਟੂਲ ਜੋੜਦੇ ਜਾਂ ਬਦਲਦੇ ਸਮੇਂ, ਅਪਡੇਟ ਕਰੋ:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
 - `docs/api.md` if the public API surface changes
 
-Repository translation tools are model-callable through MCP and can write many files. Keep `dry_run=True` as the default and require `confirm_write=True` before non-dry-run project translation.
+ਰਿਪੋਜ਼ਿਟਰੀ ਅਨੁਵਾਦ ਟੂਲ MCP ਰਾਹੀਂ ਮਾਡਲ-ਕਾਲੇਬਲ ਹੁੰਦੇ ਹਨ ਅਤੇ ਕਈ ਫਾਇਲਾਂ ਲਿਖ ਸਕਦੇ ਹਨ। ਡਿਫੋਲਟ ਵਜੋਂ `dry_run=True` ਰੱਖੋ ਅਤੇ ਗੈਰ-dry-run ਪ੍ਰੋਜੈਕਟ ਅਨੁਵਾਦ ਤੋਂ ਪਹਿਲਾਂ `confirm_write=True` ਦੀ ਲੋੜ ਰੱਖੋ।
 
-## Translation flow
+## ਅਨੁਵਾਦ ਪ੍ਰਵਾਹ
 
-The high-level project translation flow is:
+ਉੱਚ-ਸਤਰ ਪ੍ਰੋਜੈਕਟ ਅਨੁਵਾਦ ਪ੍ਰਵਾਹ ਇਹ ਹੈ:
 
-1. Parse CLI arguments or API parameters.
-2. Validate LLM configuration with `LLMConfig`.
-3. Validate Azure AI Vision when image translation is selected.
-4. Normalize language codes.
-5. Detect legacy language folder aliases.
-6. Estimate translation volume.
-7. Update README language/course sections when applicable.
-8. Delegate project translation to `ProjectTranslator`.
-9. `ProjectTranslator` delegates file processing to `TranslationManager`.
+1. CLI ਆਰਗੂਮੈਂਟ ਜਾਂ API ਪੈਰਾਮੀਟਰਾਂ ਨੂੰ ਪਾਰਸ ਕਰੋ।
+2. `LLMConfig` ਨਾਲ LLM ਸੰਰਚਨਾ ਦੀ ਜਾਂਚ ਕਰੋ।
+3. ਜਦੋਂ ਇਮੇਜ ਅਨੁਵਾਦ ਚੁਣਿਆ ਗਿਆ ਹੋਵੇ ਤਾਂ Azure AI Vision ਦੀ ਜਾਂਚ ਕਰੋ।
+4. ਭਾਸ਼ਾ ਕੋਡਾਂ ਨੂੰ ਨਾਰਮਲਾਈਜ਼ ਕਰੋ।
+5. ਲੈਗਸੀ ਭਾਸ਼ਾ ਫੋਲਡਰ ਉਪਨਾਮਾਂ ਦੀ ਪਹਿਚਾਣ ਕਰੋ।
+6. ਅਨੁਵਾਦ ਦੀ ਮਾਤਰਾ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਓ।
+7. ਜਦੋਂ ਲਾਗੂ ਹੋਵੇ ਤਾਂ README ਦੀ ਭਾਸ਼ਾ/ਕੋਰਸ ਸੈਕਸ਼ਨਾਂ ਨੂੰ ਅਪਡੇਟ ਕਰੋ।
+8. ਪ੍ਰੋਜੈਕਟ ਅਨੁਵਾਦ `ProjectTranslator` ਨੂੰ ਸੌਂਪੋ।
+9. `ProjectTranslator` ਫਾਈਲ ਪ੍ਰੋਸੈਸਿੰਗ ਨੂੰ `TranslationManager` ਨੂੰ ਸੌਂਪਦਾ ਹੈ।
 
-`TranslationManager` is composed from focused file-type mixins:
+`TranslationManager` ਕੇਂਦ੍ਰਿਤ ਫਾਈਲ-ਟਾਈਪ ਮਿਕਸੀਨ ਤੋਂ ਬਣਿਆ ਹੈ:
 
-- `ProjectMarkdownTranslationMixin` handles Markdown file reads, content translation, path rewriting, metadata, disclaimers, and writes.
-- `ProjectNotebookTranslationMixin` handles notebook file reads, Markdown-cell translation, path rewriting, metadata, disclaimers, and writes.
-- `ProjectImageTranslationMixin` handles image discovery, text extraction/translation, rendered image writes, and metadata.
+- `ProjectMarkdownTranslationMixin` Markdown ਫਾਈਲ ਪੜ੍ਹਨ, ਸਮੱਗਰੀ ਅਨੁਵਾਦ, ਪਾਥ ਪੂਨਲਿਖਣ, ਮੈਟਾਡੇਟਾ, ਡਿਸਕਲੇਮਰ, ਅਤੇ ਲਿਖਾਈਆਂ ਸੰਭਾਲਦਾ ਹੈ।
+- `ProjectNotebookTranslationMixin` ਨੋਟਬੁੱਕ ਫਾਈਲ ਪੜ੍ਹਨ, Markdown-ਸੈੱਲ ਅਨੁਵਾਦ, ਪਾਥ ਪੂਨਲਿਖਣ, ਮੈਟਾਡੇਟਾ, ਡਿਸਕਲੇਮਰ, ਅਤੇ ਲਿਖਾਈਆਂ ਸੰਭਾਲਦਾ ਹੈ।
+- `ProjectImageTranslationMixin` ਇਮੇਜ ਦੀ ਖੋਜ, ਟੈਕਸਟ ਨਿਕਾਲਣ/ਅਨੁਵਾਦ, ਰੇਂਡਰ ਕੀਤੇ ਇਮੇਜ ਲਿਖਾਈਆਂ, ਅਤੇ ਮੈਟਾਡੇਟਾ ਸੰਭਾਲਦਾ ਹੈ।
 
-The lower-level content APIs skip the project workflow:
+ਨੀਵਾਂ-ਸਤਰ ਸਮੱਗਰੀ API ਪ੍ਰੋਜੈਕਟ ਵਰਕਫਲੋ ਨੂੰ ਛੱਡ ਦਿੰਦੇ ਹਨ:
 
-1. `translate_markdown_content` and `translate_notebook_content` translate in-memory content only.
-2. `translate_image_content` translates text in a single image and returns a rendered image object.
-3. `rewrite_markdown_paths` and `rewrite_notebook_paths` are explicit post-processing helpers. They perform no translation and no project writes.
+1. `translate_markdown_content` ਅਤੇ `translate_notebook_content` ਸਿਰਫ਼ ਮੇਮਰੀ ਅੰਦਰਲੀ ਸਮੱਗਰੀ ਦਾ ਅਨੁਵਾਦ ਕਰਦੇ ਹਨ।
+2. `translate_image_content` ਇੱਕ ਹੀ ਇਮੇਜ ਵਿੱਚ ਟੈਕਸਟ ਦਾ ਅਨੁਵਾਦ ਕਰਦਾ ਹੈ ਅਤੇ ਇੱਕ ਰੇਂਡਰ ਕੀਤਾ ਹੋਇਆ ਇਮੇਜ ਓਬਜੈਕਟ ਵਾਪਸ ਕਰਦਾ ਹੈ।
+3. `rewrite_markdown_paths` ਅਤੇ `rewrite_notebook_paths` ਖਾਸ ਪੋਸਟ-ਪ੍ਰੋਸੈਸਿੰਗ ਸਹਾਇਕ ਹਨ। ਇਹ ਕੋਈ ਅਨੁਵਾਦ ਜਾਂ ਪ੍ਰੋਜੈਕਟ ਲਿਖਾਈ ਨਹੀਂ ਕਰਦੇ।
 
-## Review flow
+## ਸਮੀਖਿਆ ਪ੍ਰਵਾਹ
 
-The deterministic review flow is:
+ਨਿਰਧਾਰਿਤ ਸਮੀਖਿਆ ਪ੍ਰਵਾਹ ਇਹ ਹੈ:
 
-1. Parse CLI arguments or API parameters.
-2. Normalize requested language codes.
-3. Build one or more review targets from `root_dir`, `root_dirs`, or `groups`.
-4. Optionally limit source files with `--changed-from`.
-5. Run deterministic checks for structure, translation freshness, Markdown integrity, and local link/image paths.
-6. Print either text output or GitHub-flavored Markdown.
-7. Exit with a failure when review errors are found.
+1. CLI ਆਰਗੂਮੈਂਟ ਜਾਂ API ਪੈਰਾਮੀਟਰਾਂ ਨੂੰ ਪਾਰਸ ਕਰੋ।
+2. ਮੰਗੇ ਗਏ ਭਾਸ਼ਾ ਕੋਡਾਂ ਨੂੰ ਨਾਰਮਲਾਈਜ਼ ਕਰੋ।
+3. `root_dir`, `root_dirs`, ਜਾਂ `groups` ਤੋਂ ਇੱਕ ਜਾਂ ਵੱਧ ਸਮੀਖਿਆ ਟਾਰਗਟ ਬਣਾਓ।
+4. ਵਿਕਲਪਕ ਤੌਰ 'ਤੇ ਸੋਰਸ ਫਾਈਲਾਂ ਨੂੰ `--changed-from` ਨਾਲ ਸੀਮਿਤ ਕਰੋ।
+5. ਸਟ੍ਰੱਕਚਰ, ਅਨੁਵਾਦ ਤਾਜਗੀ, Markdown ਅਖੰਡਤਾ, ਅਤੇ ਲੋਕਲ ਲਿੰਕ/ਇਮੇਜ ਪਾਥਾਂ ਲਈ ਨਿਰਧਾਰਿਤ ਚੈੱਕ ਚਲਾਓ।
+6. ਜਾਂ ਤਾਂ ਟੈਕਸਟ ਆਊਟਪੁੱਟ ਪ੍ਰਿੰਟ ਕਰੋ ਜਾਂ GitHub-ਫਲੇਵਰਡ Markdown।
+7. ਜਦੋਂ ਸਮੀਖਿਆ ਦੀਆਂ ਗਲਤੀਆਂ ਮਿਲਦੀਆਂ ਹਨ ਤਾਂ ਫੇਲ ਨਾਲ ਐਗਜ਼ਿਟ ਕਰੋ।
 
-The review flow does not require API keys and should remain suitable for pull request CI. The pull request workflow writes a check summary on every run and only posts a PR comment when `co-op-review` fails.
+ਸਮੀਖਿਆ ਪ੍ਰਵਾਹ ਲਈ API ਕੀਜ਼ ਲੋੜੀਂਦੀਆਂ ਨਹੀਂ ਹਨ ਅਤੇ ਇਹ ਲੋਕਲ ਚੈੱਕ ਜਾਂ opt-in consumer CI ਲਈ ਉਪਲਬਧ ਰਹਿੰਦਾ ਹੈ। ਇਹ ਰਿਪੋਜ਼ਿਟਰੀ ਹਰ ਪુલ ਰਿਕਵੇਸਟ 'ਤੇ ਆਟੋਮੈਟਿਕ ਤੌਰ 'ਤੇ `co-op-review` ਨਹੀਂ ਚਲਾਂਦੀ।
 
-## Documentation site
+## ਡੌਕਯੂਮੈਂਟੇਸ਼ਨ ਸਾਈਟ
 
-The docs site is configured by:
+ਡੌਕਸ ਸਾਈਟ ਦੀ ਸੰਰਚਨਾ ਇਹਨਾਂ ਦੁਆਰਾ ਕੀਤੀ ਜਾਂਦੀ ਹੈ:
 
 ```text
 mkdocs.yml
@@ -133,42 +140,42 @@ requirements-docs.txt
 docs/
 ```
 
-The `docs/` directory is the canonical documentation source. Do not add new end-user guides outside this directory unless the project intentionally introduces another published documentation surface.
+`docs/` ਡਾਇਰੈਕਟਰੀ ਪ੍ਰਮਾਣਿਕ ਡੌਕਯੂਮੈਂਟੇਸ਼ਨ ਸੋਰਸ ਹੈ। ਇਸ ਡਾਇਰੈਕਟਰੀ ਤੋਂ ਬਾਹਰ ਨਵੇਂ end-user ਗਾਈਡਸ ਨਾ ਜੋੜੋ ਜਦ ਤਕ ਪ੍ਰੋਜੈਕਟ ਜਾਣ-ਬੂਝ ਕੇ ਹੋਰ ਕੋਈ ਪ੍ਰਕਾਸ਼ਿਤ ਡੌਕਯੂਮੈਂਟੇਸ਼ਨ ਸਤਹ ਨਹੀਂ ਲਿਆਉਂਦਾ।
 
-Build locally:
+ਸਥਾਨਕ ਤੌਰ 'ਤੇ ਬਣਾਓ:
 
 ```bash
 python -m pip install -r requirements-docs.txt
 python -m mkdocs build --strict
 ```
 
-Preview locally:
+ਲੋਕਲ ਪ੍ਰੀਵਿਊ:
 
 ```bash
 python -m mkdocs serve
 ```
 
-The generated site is written to `site/`, which is ignored by git.
+ਜਨਰੇਟ ਕੀਤੀ ਸਾਈਟ `site/` ਵਿੱਚ ਲਿਖੀ ਜਾਂਦੀ ਹੈ, ਜੋ git ਵੱਲੋਂ ਨਜ਼ਰਅੰਦਾਜ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।
 
-## GitHub Pages workflow
+## GitHub Pages ਵਰਕਫਲੋ
 
-`.github/workflows/docs.yml` builds the site on pull requests and deploys it on pushes to `main`.
+`.github/workflows/docs.yml` ਪูล ਰਿਕਵੇਸਟਾਂ 'ਤੇ ਸਾਈਟ ਬਣਾਉਂਦਾ ਹੈ ਅਤੇ `main` 'ਤੇ ਪੁਸ਼ ਹੋਣ ਤੇ ਡੀਪਲੋਏ ਕਰਦਾ ਹੈ।
 
-The workflow installs:
+ਵਰਕਫਲੋ ਇਹਨਾਂ ਨੂੰ ਇੰਸਟਾਲ ਕਰਦਾ ਹੈ:
 
 ```bash
 pip install -r requirements-docs.txt
 ```
 
-The docs workflow installs only the documentation toolchain. `mkdocs.yml` points `mkdocstrings` at `src/` so public API pages can be rendered from the source tree without installing the full runtime dependency set. If future API docs require importing optional runtime providers during the build, update both `.github/workflows/docs.yml` and this guide together.
+ਡੌਕਸ ਵਰਕਫਲੋ ਸਿਰਫ ਡੌਕਯੂਮੈਂਟੇਸ਼ਨ ਟੂਲਚੇਨ ਨੂੰ ਇੰਸਟਾਲ ਕਰਦਾ ਹੈ। `mkdocs.yml` `mkdocstrings` ਨੂੰ `src/` ਵੱਲ ਪੋਇੰਟ ਕਰਦਾ ਹੈ ਤਾਂ ਜੋ ਪਬਲਿਕ API ਪੇਜ਼ ਸੋਰਸ ਟ੍ਰੀ ਤੋਂ ਰੇਂਡਰ ਕੀਤੇ ਜਾ ਸਕਣ ਬਿਨਾਂ ਪੂਰੇ ਰਨਟਾਈਮ ਡਿਪੇਂਡੈਂਸੀ ਸੈੱਟ ਨੂੰ ਇੰਸਟਾਲ ਕੀਤੇ। ਜੇ ਅਗਲੇ API ਡੌਕਸ ਨੂੰ ਬਿਲਡ ਦੌਰਾਨ ਵਿਕਲਪਿਕ ਰਨਟਾਈਮ ਪ੍ਰਦਾਤਿਆਂ ਨੂੰ ਇੰਪੋਰਟ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ, ਤਾਂ `.github/workflows/docs.yml` ਅਤੇ ਇਹ ਗਾਈਡ ਦੋਹਾਂ ਨੂੰ ਅਪਡੇਟ ਕਰੋ।
 
-## Docs quality bar
+## ਡੌਕਸ ਗੁਣਵੱਤਾ ਬਾਰ
 
-Before merging documentation changes, run:
+ਡੌਕਯੂਮੈਂਟੇਸ਼ਨ ਬਦਲਾਵ ਮਿਲਾਉਣ ਤੋਂ ਪਹਿਲਾਂ, ਚਲਾਓ:
 
 ```bash
 python -m mkdocs build --strict
 git diff --check
 ```
 
-Use strict builds so broken links, invalid navigation entries, and API rendering issues fail early.
+ਕਠੋਰ ਬਿਲਡ ਵਰਤੋਂ ਤਾਂ ਜੋ ਟੁਟੇ ਹੋਏ ਲਿੰਕ, ਗਲਤ ਨੈਵੀਗੇਸ਼ਨ ਐਂਟਰੀਜ਼, ਅਤੇ API ਰੇਂਡਰਿੰਗ ਸਮੱਸਿਆਵਾਂ ਜਲਦੀ ਫੇਲ ਹੋ ਜਾਣ।

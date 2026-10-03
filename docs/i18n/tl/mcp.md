@@ -1,25 +1,25 @@
 # MCP Server
 
-Kasama sa Co-op Translator ang isang Model Context Protocol server para sa mga agent, editor, at mga kliyenteng katugma ng MCP.
+Naglalaman ang Co-op Translator ng isang Model Context Protocol (MCP) server para sa mga agent, editor, at mga kliyenteng MCP-compatible.
 
-Para sa default na lokal na setup, hindi nagpapatakbo ang mga gumagamit ng hiwalay na server nang mano-mano. Kino-configure nila ang kanilang MCP client, at awtomatikong sinisimulan ng client ang `co-op-translator-mcp` sa pamamagitan ng `stdio` kapag kailangan nito ng mga tool ng Co-op Translator.
+Para sa default na lokal na setup, hindi nagpapatakbo nang hiwalay ang mga gumagamit ng isang server. Ina-configure nila ang kanilang MCP client, at awtomatikong sinisimulan ng client ang `co-op-translator-mcp` sa pamamagitan ng `stdio` kapag kailangan nito ng mga tool ng Co-op Translator.
 
-Kung nagdedesisyon ka sa pagitan ng CLI, Python API, at MCP, magsimula sa [Piliin ang Iyong Daloy ng Trabaho](workflows.md).
+Kung pinipili mo sa pagitan ng CLI, Python API, at MCP, simulan sa [Piliin ang Iyong Workflow](workflows.md).
 
-Gamitin ang MCP kapag ang isang agent o editor ay dapat tumawag nang direkta sa Co-op Translator:
+Gamitin ang MCP kapag dapat direktang tawagan ng isang agent o editor ang Co-op Translator:
 
-| User goal | MCP tools |
+| Layunin ng gumagamit | Mga tool ng MCP |
 | --- | --- |
-| Translate one Markdown document, notebook, or image | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
-| Translate Markdown or notebook content with the host agent model | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Rewrite translated Markdown or notebook links after choosing the output path | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Translate a full repository like the CLI | `run_translation`, `translate_project` |
-| Review translated output without LLM credentials | `run_review` |
-| Inspect capabilities and environment status | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
+| Isalin ang isang dokumentong Markdown, notebook, o imahe | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
+| Isalin ang nilalaman ng Markdown o notebook gamit ang host agent model | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| I-rewrite ang mga isinalin na link ng Markdown o notebook pagkatapos pumili ng output na path | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Isalin ang buong repositoryo tulad ng CLI | `run_translation`, `translate_project` |
+| Suriin ang isinaling output nang wala ang LLM credentials | `run_review` |
+| Suriin ang mga kakayahan at katayuan ng kapaligiran | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-Ang MCP server ay naglalaman ng parehong public Python API na dinokumento sa [Python API](api.md). Gumagamit ang mga tool na may provider ng parehong naka-configure na mga provider tulad ng CLI at Python API. Inihahanda ng mga agent-assisted na tool ang mga chunk para isalin ng MCP host agent, pagkatapos ay ginagamit ng Co-op Translator ang mga ito para muling buuin ang huling Markdown o notebook.
+Ang MCP server ay nagbabalot ng parehong public Python API na dokumentado sa [Python API](api.md). Gumagamit ang mga tool na suportado ng provider ng parehong naka-configure na mga provider tulad ng CLI at Python API. Inihahanda ng mga agent-assisted na tool ang mga chunk para isalin ng MCP host agent, pagkatapos ay ginagamit ang Co-op Translator upang mabuo muli ang panghuling Markdown o notebook.
 
-## Step 1: Install and Configure Co-op Translator
+## Hakbang 1: I-install at I-configure ang Co-op Translator
 
 I-install ang Co-op Translator sa Python environment na gagamitin ng iyong MCP client:
 
@@ -33,26 +33,35 @@ Para sa lokal na pag-develop mula sa repositoryong ito, i-install ang package sa
 pip install -e .
 ```
 
-Piliin ang modo ng pagsasalin na gagamitin ng iyong MCP client:
+Piliin ang translation mode na gagamitin ng iyong MCP client:
 
-| Mode | Use this for | Credentials |
+| Mode | Gamitin para sa | Mga kredensyal |
 | --- | --- | --- |
-| Provider-backed | Tinatawagan ng Co-op Translator ang `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, o `run_translation`. | Kinakailangan ang Azure OpenAI o OpenAI para sa pagsasalin ng Markdown at notebook. Kinakailangan din ang Azure AI Vision para sa pagsasalin ng mga imahe. |
-| Agent-assisted | Isinasalin ng MCP host agent ang mga chunk na ibinabalik ng `start_markdown_agent_translation` o `start_notebook_agent_translation`. | Hindi kinakailangan ang mga Co-op Translator LLM provider credentials para sa mga Markdown o notebook chunk. Hindi pa sakop ng agent-assisted mode ang pagsasalin ng mga imahe. |
+| Provider-backed | Tumatawag ang Co-op Translator ng `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, o `run_translation`. | Nangangailangan ang pagsasalin ng Azure OpenAI, OpenAI, o Anthropic. Nangangailangan din ang image translation ng Azure AI Vision. |
+| Agent-assisted | Isinasalin ng MCP host agent ang mga chunk na ibinalik ng `start_markdown_agent_translation` o `start_notebook_agent_translation`. | Hindi kinakailangan ang Co-op Translator LLM provider credentials para sa mga chunk ng Markdown o notebook. Hindi pa sakop ng agent-assisted mode ang image translation. |
 
-Kung nagsisimula ka sa pagsasalin ng Markdown o notebook sa loob ng isang agent tulad ng Codex o Claude Code, magsimula sa agent-assisted mode. Gamitin ang provider-backed mode kapag gusto mong ang Co-op Translator mismo ang tumawag sa iyong naka-configure na mga provider, kapag nagsasalin ka ng mga imahe, o kapag nagpapatupad ka ng pagsasalin ng repositoryo tulad ng CLI.
+Kung nagsisimula ka sa pagsasalin ng Markdown o notebook sa loob ng isang agent tulad ng Codex o Claude Code, magsimula sa agent-assisted mode. Gamitin ang provider-backed mode kapag gusto mong ang Co-op Translator mismo ang tumawag sa iyong naka-configure na mga provider, kapag nagsasalin ka ng mga imahe, o kapag nagpapatakbo ka ng translation sa antas ng repositoryo tulad ng CLI.
 
-I-configure lamang ang provider credentials para sa mga provider-backed na workflow:
+I-configure ang isang provider para sa provider-backed workflows:
 
 ```bash
+# Azure OpenAI
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+
+# O OpenAI
+OPENAI_API_KEY="..."
+OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# O Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Kailangan din ng provider-backed image translation ang:
+Dagdag na kinakailangan para sa provider-backed image translation:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -60,13 +69,13 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
 !!! note
-    Sakop ng agent-assisted mode ngayon ang Markdown at mga cell ng notebook Markdown. Ang pagsasalin ng imahe ay gumagamit pa rin ng provider-backed image pipeline at nangangailangan ng Azure AI Vision para sa OCR at layout-aware rendering.
+    Sa kasalukuyan, sinasaklaw ng agent-assisted mode ang Markdown at mga Markdown cell sa notebook. Ang image translation ay gumagamit pa rin ng provider-backed image pipeline at nangangailangan ng Azure AI Vision para sa OCR at layout-aware rendering.
 
-## Step 2: Configure Your MCP Client
+## Hakbang 2: I-configure ang Iyong MCP Client
 
-Para sa normal na lokal na `stdio` setup, idagdag ang Co-op Translator sa configuration ng iyong MCP client. Awtomatikong sisimulan at ihihinto ng client ang proseso.
+Para sa normal na lokal na `stdio` setup, idagdag ang Co-op Translator sa iyong MCP client configuration. Awtomatikong sisimulan at ihihinto ng client ang proseso.
 
-Installed package configuration:
+Konfigurasyon para sa naka-install na package:
 
 ```json
 {
@@ -79,7 +88,7 @@ Installed package configuration:
 }
 ```
 
-Source checkout configuration on Windows:
+Konfigurasyon ng source checkout sa Windows:
 
 ```json
 {
@@ -93,7 +102,7 @@ Source checkout configuration on Windows:
 }
 ```
 
-Source checkout configuration on macOS or Linux:
+Konfigurasyon ng source checkout sa macOS o Linux:
 
 ```json
 {
@@ -109,9 +118,9 @@ Source checkout configuration on macOS or Linux:
 
 Pagkatapos baguhin ang MCP client configuration, i-restart o i-reload ang client upang madiskubre nito ang bagong server.
 
-## Step 3: Verify the Server in the Client
+## Hakbang 3: Beripikahin ang Server sa Client
 
-Hilingin sa MCP client na ilista ang magagamit na mga tool, o tawagan muna ang isa sa mga read-only helper:
+Hilingin sa MCP client na ilista ang mga available na tool, o tumawag muna ng isa sa mga read-only helper:
 
 ```json
 {
@@ -120,45 +129,45 @@ Hilingin sa MCP client na ilista ang magagamit na mga tool, o tawagan muna ang i
 }
 ```
 
-Mga kapaki-pakinabang na unang tseke:
+Mga kapaki-pakinabang na unang tsek:
 
-| Tool | What to check |
+| Tool | Ano ang susuriin |
 | --- | --- |
-| `get_api_overview` | Kinukumpirma na maaabot ang server at ipinapakita ang magagamit na mga workflow. |
-| `list_supported_languages` | Kinukumpirma na maaaring i-load ang naka-package na language data. |
-| `get_configuration_status` | Kinukumpirma ang availability ng LLM at Vision provider nang hindi inilalantad ang mga secret na halaga. |
+| `get_api_overview` | Kinukumpirma na maaabot ang server at ipinapakita ang mga available na workflow. |
+| `list_supported_languages` | Kinukumpirma na maaaring i-load ang naka-package na data ng wika. |
+| `get_configuration_status` | Kinukumpirma ang availability ng LLM at Vision provider nang hindi ibinubunyag ang mga secret na halaga. |
 
-## Step 4: Choose a Workflow
+## Hakbang 4: Pumili ng Workflow
 
-### Translate Individual Files or Documents
+### Isalin ang Indibidwal na Mga File o Dokumento
 
-Gamitin ang provider-backed content tools kapag ang MCP client ay mayroon nang nilalaman ng dokumento o path ng imahe at ang Co-op Translator ang dapat tumawag sa mga naka-configure na provider para sa pagsasalin.
+Gamitin ang provider-backed content tools kapag mayroon na ang MCP client ng content ng dokumento o image path at dapat tawagan ng Co-op Translator ang naka-configure na mga translation provider.
 
 Para sa Markdown:
 
-1. Tawagan ang `translate_markdown_content` na may `document`, `language_code`, at opsyonal na `source_path`.
-2. Kung ang na-translate na resulta ay isusulat sa isang Co-op Translator output layout, tawagan ang `rewrite_markdown_paths`.
-3. Hayaan ang client na isulat o ibalik ang panghuling `content`.
+1. Tawagin ang `translate_markdown_content` kasama ang `document`, `language_code`, at opsyonal na `source_path`.
+2. Kung ang isinaling resulta ay isusulat sa isang Co-op Translator output layout, tawagin ang `rewrite_markdown_paths`.
+3. Hayaan ang client na isulat o ibalik ang pangwakas na `content`.
 
 Para sa mga notebook:
 
-1. Tawagan ang `translate_notebook_content` na may notebook JSON at `language_code`.
-2. Tawagan ang `rewrite_notebook_paths` kung kailangang ayusin ang mga link ng na-translate na notebook para sa target na path.
-3. Isulat o ibalik ang panghuling notebook JSON.
+1. Tawagin ang `translate_notebook_content` gamit ang notebook JSON at `language_code`.
+2. Tawagin ang `rewrite_notebook_paths` kung kailangan i-adjust ang mga isinaling link ng notebook para sa target na path.
+3. Isulat o ibalik ang pangwakas na notebook JSON.
 
 Para sa mga imahe:
 
-1. Tawagan ang `translate_image_content` na may `image_path`, `language_code`, at opsyonal na `root_dir` o `fast_mode`.
+1. Tawagin ang `translate_image_content` kasama ang `image_path`, `language_code`, at opsyonal na `root_dir` o `fast_mode`.
 2. Basahin ang ibinalik na `data_base64` at `mime_type`.
-3. Kung ibinigay ang `output_path`, ang na-translate na imahe ay isinasave din sa path na iyon.
+3. Kung ibinigay ang `output_path`, isasave din ang isinaling imahe sa path na iyon.
 
-Hindi ginagawa ng mga content tool ang project discovery, mga pag-update ng metadata, disclaimers, o awtomatikong pag-rewrite ng mga path. Kung gusto mong ang host agent ang magsalin ng mga chunk ng Markdown o notebook nang walang Co-op Translator LLM provider credentials, gamitin ang agent-assisted workflow sa ibaba.
+Hindi isinasagawa ng mga content tool ang project discovery, metadata updates, disclaimers, o awtomatikong path rewriting. Kung gusto mong isalin ng host agent ang mga chunk ng Markdown o notebook nang walang Co-op Translator LLM provider credentials, gamitin ang agent-assisted workflow sa ibaba.
 
-### Translate with the Host Agent Model
+### Isalin gamit ang Host Agent Model
 
-Gamitin ang agent-assisted tools kapag gusto mong ang MCP host agent, tulad ng isang coding assistant, ang gumawa ng na-translate na teksto sa halip na i-configure ang Azure OpenAI o OpenAI para sa Co-op Translator.
+Gamitin ang agent-assisted tools kapag gusto mong ang MCP host agent, tulad ng isang coding assistant, ang gumawa ng isinaling teksto sa halip na mag-configure ng LLM provider para sa Co-op Translator.
 
-Sa isang chat-based MCP client, karaniwang hindi mo kailangang isulat ang tool JSON nang manu-mano. Hilingin sa agent na gamitin ang agent-assisted workflow:
+Sa isang chat-based na MCP client, karaniwan hindi mo kailangang isulat ang tool JSON mismo. Hilingin sa agent na gamitin ang agent-assisted workflow:
 
 ```text
 Translate this Markdown file to Korean with Co-op Translator MCP.
@@ -174,29 +183,29 @@ Use start_notebook_agent_translation, translate the returned Markdown-cell chunk
 Preserve code cells, outputs, and notebook metadata.
 ```
 
-Kung sinusuportahan ng iyong MCP client ang server prompts, gamitin ang `agent_assisted_markdown_translation_prompt` upang ipaload ng client ang parehong mga instruksyon ng workflow.
+Kung sinusuportahan ng iyong MCP client ang server prompts, gamitin ang `agent_assisted_markdown_translation_prompt` para ipaload ng client ang parehong workflow instructions.
 
 Para sa Markdown:
 
-1. Tawagan ang `start_markdown_agent_translation` na may `document`, `language_code`, at opsyonal na `source_path`.
+1. Tawagin ang `start_markdown_agent_translation` kasama ang `document`, `language_code`, at opsyonal na `source_path`.
 2. Isalin ang bawat ibinalik na chunk sa host agent sa pamamagitan ng pagsunod sa chunk `prompt`.
-3. Tawagan ang `finish_markdown_agent_translation` na may orihinal na `job` at mga na-translate na chunk gamit ang `chunk_id` at `translated_text`.
-4. Kung isusulat ang content sa isang na-translate na target path, tawagan ang `rewrite_markdown_paths`.
+3. Tawagin ang `finish_markdown_agent_translation` gamit ang orihinal na `job` at mga isinaling chunk na may `chunk_id` at `translated_text`.
+4. Kung isusulat ang content sa isang isinaling target path, tawagin ang `rewrite_markdown_paths`.
 
 Para sa mga notebook:
 
-1. Tawagan ang `start_notebook_agent_translation` na may notebook JSON at `language_code`.
+1. Tawagin ang `start_notebook_agent_translation` gamit ang notebook JSON at `language_code`.
 2. Isalin ang bawat ibinalik na chunk sa host agent.
-3. Tawagan ang `finish_notebook_agent_translation` na may orihinal na `job` at mga na-translate na chunk.
-4. Tawagan ang `rewrite_notebook_paths` kung kailangan ang pagsasaayos ng mga link ng na-translate na notebook para sa target-path.
+3. Tawagin ang `finish_notebook_agent_translation` gamit ang orihinal na `job` at mga isinaling chunk.
+4. Tawagin ang `rewrite_notebook_paths` kung kailangan i-adjust ang mga isinaling link ng notebook para sa target-path.
 
-Hindi tumatawag ang agent-assisted tools ng Azure OpenAI o OpenAI mula sa Co-op Translator. Ang host agent ang may pananagutan sa pagsasalin ng mga ibinalik na chunk. Pinangangasiwaan ng Co-op Translator ang Markdown chunking, pagpapanatili ng placeholder, rekonstruksyon ng frontmatter, pagpapalit ng mga cell ng notebook, at post-translation normalization.
+Hindi tinatawag ng agent-assisted tools ang naka-configure na LLM provider mula sa Co-op Translator. Ang host agent ang responsable sa pagsasalin ng mga ibinalik na chunk. Hinahandle ng Co-op Translator ang Markdown chunking, pagpapanatili ng mga placeholder, rekonstruksyon ng frontmatter, pagpapalit ng notebook cell, at post-translation normalization.
 
-### Translate an Entire Repository
+### Isalin ang Buong Repositoryo
 
 Gamitin ang `run_translation` kapag gusto ng user na kumilos ang Co-op Translator tulad ng `translate` CLI.
 
-Ang pagsasalin ng repositoryo ay default sa `dry_run=true` upang makapagsiyasat muna ang isang agent bago magbago ng mga file:
+Ang repository translation ay default na `dry_run=true` upang makapag-inspect ang agent ng scope bago ang mga pagbabago sa file:
 
 ```json
 {
@@ -207,7 +216,13 @@ Ang pagsasalin ng repositoryo ay default sa `dry_run=true` upang makapagsiyasat 
 }
 ```
 
-Upang payagan ang pagsusulat, dapat itakda ng caller parehong `dry_run=false` at `confirm_write=true`:
+Ang resulta ng `run_translation` ay may kasamang `events` array na may versioned
+`co-op.translation.event.v1` na progress events. Dapat gamitin ng mga MCP client ang mga field tulad ng
+`type`, `stage_key`, `completed`, `total`, at `current_path` sa halip na
+i-parse ang na-capture na console text. I-pass ang `json_events_path` para isulat din ang mga event na iyon
+sa isang NDJSON na file.
+
+Upang payagan ang pagsulat, dapat itakda ng tumatawag ang parehong `dry_run=false` at `confirm_write=true`:
 
 ```json
 {
@@ -219,14 +234,14 @@ Upang payagan ang pagsusulat, dapat itakda ng caller parehong `dry_run=false` at
 }
 ```
 
-Ibinubukas ang `translate_project` bilang compatibility alias para sa `run_translation`.
+`translate_project` ay inihahayag bilang compatibility alias para sa `run_translation`.
 
-### Review Translated Output
+### Suriin ang Isinaling Output
 
 Gamitin ang `run_review` para sa deterministic checks na hindi nangangailangan ng LLM o Vision credentials:
 
 !!! note "Beta"
-    Inilalantad ng MCP ang beta `run_review` API. Ligtas ito para sa read-only review workflows, ngunit maaaring magbago ang review checks at issue schemas.
+    Ipinapakita ng MCP ang beta na `run_review` API. Ligtas ito para sa mga read-only na review workflow, ngunit ang mga review check at issue schema ay maaaring magbago.
 
 ```json
 {
@@ -237,11 +252,11 @@ Gamitin ang `run_review` para sa deterministic checks na hindi nangangailangan n
 }
 ```
 
-Kasama sa resulta ang na-capture na text output at isang structured review summary kapag magagamit.
+Kasama sa resulta ang na-capture na text output at isang structured review summary kapag available.
 
-## Manual Server Runs
+## Manu-manong Pagpapatakbo ng Server
 
-Pangunahin para sa debugging o para sa mga transport na kumikilos tulad ng mga long-running server ang mga manual run.
+Ang manu-manong pagpapatakbo ay pangunahin para sa debugging o para sa mga transport na kumikilos na parang mga long-running server.
 
 I-debug ang default na stdio server:
 
@@ -249,13 +264,13 @@ I-debug ang default na stdio server:
 co-op-translator-mcp
 ```
 
-Patakbuhin mula sa isang source checkout:
+Patakbuhin mula sa source checkout:
 
 ```bash
 python -m co_op_translator.mcp.server
 ```
 
-Patakbuhin ang isang long-lived HTTP o SSE server:
+Patakbuhin ang isang pangmatagalang HTTP o SSE server:
 
 ```bash
 co-op-translator-mcp --transport streamable-http
@@ -264,45 +279,45 @@ co-op-translator-mcp --transport sse
 
 Para sa lokal na editor at agent integrations, mas piliin ang client-managed na `stdio` configuration sa Hakbang 2.
 
-## Tools
+## Mga Tool
 
-| Tool | Purpose | Writes files |
+| Tool | Layunin | Nagsusulat ng mga file |
 | --- | --- | --- |
-| `translate_markdown_content` | Translate a Markdown string. | Hindi |
-| `translate_notebook_content` | Translate Markdown cells in notebook JSON. | Hindi |
-| `translate_image_content` | Translate text in one image and return base64 image data. | Opsyonal, lamang kapag ibinigay ang `output_path` |
-| `start_markdown_agent_translation` | Prepare Markdown chunks for the host agent to translate without Co-op Translator LLM credentials. | Hindi |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from host-agent translated chunks. | Hindi |
-| `start_notebook_agent_translation` | Prepare notebook Markdown-cell chunks for the host agent to translate. | Hindi |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON from host-agent translated chunks. | Hindi |
-| `rewrite_markdown_paths` | Rewrite Markdown body and frontmatter paths for a translated target. | Hindi |
-| `rewrite_notebook_paths` | Rewrite paths inside notebook Markdown cells. | Hindi |
-| `run_translation` | Run project-level translation like the CLI. | Oo kapag `dry_run=false` at `confirm_write=true` |
-| `translate_project` | Compatibility alias for `run_translation`. | Oo kapag `dry_run=false` at `confirm_write=true` |
-| `run_review` | Run deterministic review checks. | Hindi |
-| `get_configuration_status` | Report configured LLM and Vision providers without exposing secrets. | Hindi |
-| `list_supported_languages` | List supported target language codes. | Hindi |
-| `get_api_overview` | Describe available MCP workflows and tools. | Hindi |
+| `translate_markdown_content` | Isalin ang isang Markdown string. | Hindi |
+| `translate_notebook_content` | Isalin ang mga Markdown cell sa notebook JSON. | Hindi |
+| `translate_image_content` | Isalin ang teksto sa isang imahe at ibalik ang base64 image data. | Opsyonal, lamang kapag ibinigay ang `output_path` |
+| `start_markdown_agent_translation` | Ihanda ang mga Markdown chunk para isalin ng host agent nang walang Co-op Translator LLM credentials. | Hindi |
+| `finish_markdown_agent_translation` | I-rekonstrak ang Markdown mula sa mga chunk na isinalin ng host agent. | Hindi |
+| `start_notebook_agent_translation` | Ihanda ang mga notebook Markdown-cell chunk para isalin ng host agent. | Hindi |
+| `finish_notebook_agent_translation` | I-rekonstrak ang notebook JSON mula sa mga chunk na isinalin ng host agent. | Hindi |
+| `rewrite_markdown_paths` | I-rewrite ang katawan ng Markdown at mga path sa frontmatter para sa isinaling target. | Hindi |
+| `rewrite_notebook_paths` | I-rewrite ang mga path sa loob ng mga notebook Markdown cell. | Hindi |
+| `run_translation` | Patakbuhin ang project-level translation tulad ng CLI. | Oo kapag `dry_run=false` at `confirm_write=true` |
+| `translate_project` | Compatibility alias para sa `run_translation`. | Oo kapag `dry_run=false` at `confirm_write=true` |
+| `run_review` | Patakbuhin ang deterministic review checks. | Hindi |
+| `get_configuration_status` | Iulat ang naka-configure na LLM at Vision providers nang hindi ibinubunyag ang mga lihim. | Hindi |
+| `list_supported_languages` | Ilista ang mga suportadong target language codes. | Hindi |
+| `get_api_overview` | Ilarawan ang mga available na MCP workflow at tool. | Hindi |
 
-## Resources
+## Mga Resurso
 
-| Resource URI | Purpose |
+| Resource URI | Layunin |
 | --- | --- |
-| `co-op://api` | JSON overview of workflows and tools. |
-| `co-op://supported-languages` | JSON list of supported language codes. |
-| `co-op://configuration` | JSON provider availability summary without secrets. |
+| `co-op://api` | JSON na overview ng mga workflow at tool. |
+| `co-op://supported-languages` | JSON na listahan ng mga suportadong language codes. |
+| `co-op://configuration` | JSON na buod ng availability ng provider nang walang mga lihim. |
 
-## Prompts
+## Mga Prompt
 
-| Prompt | Purpose |
+| Prompt | Layunin |
 | --- | --- |
-| `translate_markdown_document_prompt` | Guide an MCP client through content translation plus optional path rewriting. |
-| `agent_assisted_markdown_translation_prompt` | Guide an MCP client through host-agent Markdown translation without Co-op Translator LLM provider credentials. |
-| `translate_repository_prompt` | Guide an MCP client through dry-run-first repository translation. |
+| `translate_markdown_document_prompt` | Gabayan ang MCP client sa content translation kasama ang opsyonal na path rewriting. |
+| `agent_assisted_markdown_translation_prompt` | Gabayan ang MCP client sa host-agent Markdown translation nang walang Co-op Translator LLM provider credentials. |
+| `translate_repository_prompt` | Gabayan ang MCP client sa dry-run-first na repository translation. |
 
-## Copy-Paste Examples
+## Mga Halimbawa na Kopyahin-I-paste
 
-Translate Markdown content:
+Isalin ang nilalaman ng Markdown:
 
 ```json
 {
@@ -315,13 +330,13 @@ Translate Markdown content:
 }
 ```
 
-Rewrite translated Markdown links:
+I-rewrite ang mga isinaling link ng Markdown:
 
 ```json
 {
   "tool": "rewrite_markdown_paths",
   "arguments": {
-    "content": "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+    "content": "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
     "source_path": "docs/guide.md",
     "target_path": "translations/ko/docs/guide.md",
     "policy": {
@@ -335,7 +350,7 @@ Rewrite translated Markdown links:
 }
 ```
 
-Translate Markdown with the host agent model:
+Isalin ang Markdown gamit ang host agent model:
 
 ```json
 {
@@ -348,7 +363,7 @@ Translate Markdown with the host agent model:
 }
 ```
 
-After the host agent translates each returned chunk, finish the job with the complete `job` object returned by `start_markdown_agent_translation`:
+Pagkatapos isalin ng host agent ang bawat ibinalik na chunk, tapusin ang job gamit ang kumpletong `job` object na ibinalik ng `start_markdown_agent_translation`:
 
 ```text
 tool: finish_markdown_agent_translation
@@ -359,7 +374,7 @@ arguments:
       translated_text: "# 안녕하세요\n\n시작하려면 `pip install`을 사용하세요."
 ```
 
-Preview repository translation:
+I-preview ang pagsasalin ng repositoryo:
 
 ```json
 {
@@ -373,21 +388,21 @@ Preview repository translation:
 }
 ```
 
-## Troubleshooting
+## Pag-troubleshoot
 
-| Problem | What to try |
+| Problema | Ano ang susubukan |
 | --- | --- |
-| The MCP client cannot find `co-op-translator-mcp`. | Gamitin ang absolute na Python executable path at ang `["-m", "co_op_translator.mcp.server"]` source checkout configuration. |
-| The server is listed but translation fails. | Tawagan ang `get_configuration_status` at kumpirmahin na may available na LLM provider. |
-| You want Markdown or notebook translation without Azure OpenAI/OpenAI keys. | Gamitin ang `start_markdown_agent_translation` / `finish_markdown_agent_translation` o ang mga katumbas para sa notebook upang ang host agent ang magsalin ng mga chunk. |
-| Image translation fails. | Kumpirmahin na naka-set ang Azure AI Vision variables at tawagan ang `get_configuration_status`. |
-| Repository translation does not write files. | Itakda lamang ang `dry_run=false` at `confirm_write=true` pagkatapos ng tahasang pag-apruba ng user. |
-| Changes to client config do not appear. | I-restart o i-reload ang MCP client. |
+| Hindi mahanap ng MCP client ang `co-op-translator-mcp`. | Gamitin ang absolute na Python executable path at `["-m", "co_op_translator.mcp.server"]` source checkout configuration. |
+| Nakalista ang server pero nabigo ang pagsasalin. | Tawagin ang `get_configuration_status` at kumpirmahin na may available na LLM provider. |
+| Gusto mong pagsalin ng Markdown o notebook nang walang provider credentials. | Gamitin ang `start_markdown_agent_translation` / `finish_markdown_agent_translation` o ang mga katumbas na notebook para isalin ng host agent ang mga chunk. |
+| Nabibigo ang image translation. | Kumpirmahin na naka-set ang Azure AI Vision variables at tawagin ang `get_configuration_status`. |
+| Hindi nagsusulat ng files ang repository translation. | Itakda ang `dry_run=false` at `confirm_write=true` lamang pagkatapos ng tahasang pag-apruba ng gumagamit. |
+| Hindi lumilitaw ang mga pagbabago sa client config. | I-restart o i-reload ang MCP client. |
 
-## Safety Notes
+## Mga Tala sa Kaligtasan
 
-- Ang mga tawag sa MCP tool ay kinokontrol ng modelo ng host application, kaya ang pagsasalin ng repositoryo ay dry-run bilang default.
-- Ang buong pagsasalin ng repositoryo ay maaaring lumikha, mag-update, o mag-alis ng maraming mga file. Humingi ng tahasang pag-apruba ng user bago itakda ang `confirm_write=true`.
-- Hindi ibinabalik ng configuration status tool ang mga API key, endpoint, o iba pang secret na halaga.
-- Nagbabalik ang pagsasalin ng imahe ng base64 image data. Maaari mag-produce ng malalaking tugon ang malalaking imahe.
-- Nagbabalik ang agent-assisted tools ng source chunks at mga prompt sa MCP host. Gamitin ang mga ito lamang sa content na komportable ang user na ipapadala sa host agent model.
+- Ang mga pagtawag sa MCP tool ay kinokontrol ng modelo ng host application, kaya ang repository translation ay dry-run bilang default.
+- Ang buong repository translation ay maaaring lumikha, mag-update, o mag-alis ng maraming file. Humiling ng tahasang pag-apruba ng gumagamit bago itakda ang `confirm_write=true`.
+- Ang configuration status tool ay hindi kailanman nagbabalik ng API keys, endpoints, o iba pang mga secret na halaga.
+- Nagbabalik ang image translation ng base64 image data. Ang malalaking imahe ay maaaring magresulta ng malaking mga tugon mula sa tool.
+- Ang agent-assisted tools ay nagbabalik ng source chunks at prompts sa MCP host. Gamitin lamang ang mga ito sa content na komportable ang gumagamit na ipadala sa host agent model na iyon.

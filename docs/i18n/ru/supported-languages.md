@@ -1,10 +1,10 @@
 # Поддерживаемые языки
 
-Co-op Translator поддерживает следующие коды языков для вывода перевода текста, ноутбуков и изображений.
+Co-op Translator поддерживает следующие коды языков для перевода текста, блокнотов и изображений.
 
-Если вы хотите добавить новый язык, обновите соответствия языка и шрифтов в `src/co_op_translator/fonts/` и протестируйте язык перед открытием pull request.
+Если вы хотите добавить новый язык, обновите сопоставления языков и шрифтов в `src/co_op_translator/fonts/` и протестируйте язык перед открытием pull request.
 
-| Language Code | Language Name | Font | RTL Support | Known Issues |
+| Код языка | Название языка | Шрифт | Поддержка RTL | Известные проблемы |
 | --- | --- | --- | --- | --- |
 | en | Английский | NotoSans-Medium.ttf | Нет | Нет |
 | fr | Французский | NotoSans-Medium.ttf | Нет | Нет |
@@ -14,7 +14,7 @@ Co-op Translator поддерживает следующие коды языко
 | ar | Арабский | NotoSansArabic-Medium.ttf | Да | Нет |
 | fa | Персидский (фарси) | NotoSansArabic-Medium.ttf | Да | Нет |
 | ur | Урду | NotoSansArabic-Medium.ttf | Да | Нет |
-| zh-CN | Китайский (упрощенный) | NotoSansCJK-Medium.ttc | Нет | Нет |
+| zh-CN | Китайский (упрощённый) | NotoSansCJK-Medium.ttc | Нет | Нет |
 | zh-MO | Китайский (традиционный, Макао) | NotoSansCJK-Medium.ttc | Нет | Нет |
 | zh-HK | Китайский (традиционный, Гонконг) | NotoSansCJK-Medium.ttc | Нет | Нет |
 | zh-TW | Китайский (традиционный, Тайвань) | NotoSansCJK-Medium.ttc | Нет | Нет |
@@ -24,7 +24,7 @@ Co-op Translator поддерживает следующие коды языко
 | bn | Бенгальский | NotoSansBengali-Medium.ttf | Нет | Нет |
 | mr | Маратхи | NotoSansDevanagari-Medium.ttf | Нет | Нет |
 | ne | Непальский | NotoSansDevanagari-Medium.ttf | Нет | Нет |
-| pa | Пенджабский (гурмухи) | NotoSansGurmukhi-Medium.ttf | Нет | Нет |
+| pa | Пенджаби (Gurmukhi) | NotoSansGurmukhi-Medium.ttf | Нет | Нет |
 | pt-PT | Португальский (Португалия) | NotoSans-Medium.ttf | Нет | Нет |
 | pt-BR | Португальский (Бразилия) | NotoSans-Medium.ttf | Нет | Нет |
 | it | Итальянский | NotoSans-Medium.ttf | Нет | Нет |
@@ -42,8 +42,8 @@ Co-op Translator поддерживает следующие коды языко
 | vi | Вьетнамский | NotoSans-Medium.ttf | Нет | Нет |
 | id | Индонезийский | NotoSans-Medium.ttf | Нет | Нет |
 | ms | Малайский | NotoSans-Medium.ttf | Нет | Нет |
-| tl | Тагалог (филиппинский) | NotoSans-Medium.ttf | Нет | Нет |
-| sw | Суахили | NotoSans-Medium.ttf | Нет | Нет |
+| tl | Тагальский (филиппинский) | NotoSans-Medium.ttf | Нет | Нет |
+| sw | Свахили | NotoSans-Medium.ttf | Нет | Нет |
 | hu | Венгерский | NotoSans-Medium.ttf | Нет | Нет |
 | cs | Чешский | NotoSans-Medium.ttf | Нет | Нет |
 | sk | Словацкий | NotoSans-Medium.ttf | Нет | Нет |
@@ -53,7 +53,7 @@ Co-op Translator поддерживает следующие коды языко
 | hr | Хорватский | NotoSans-Medium.ttf | Нет | Нет |
 | sl | Словенский | NotoSans-Medium.ttf | Нет | Нет |
 | uk | Украинский | NotoSans-Medium.ttf | Нет | Нет |
-| my | Бирманский (Мьянма) | NotoSansMyanmar-Medium.ttf | Нет | Нет |
+| my | Бирманский (Myanmar) | NotoSansMyanmar-Medium.ttf | Нет | Нет |
 | ta | Тамильский | NotoSansTamil-Medium.ttf | Нет | Нет |
 | et | Эстонский | NotoSans-Medium.ttf | Нет | Нет |
 | pcm | Нигерийский пиджин | NotoSans-Medium.ttf | Нет | Нет |
@@ -61,12 +61,13 @@ Co-op Translator поддерживает следующие коды языко
 | ml | Малаялам | NotoSans-Medium.ttf | Нет | Нет |
 | kn | Каннада | NotoSans-Medium.ttf | Нет | Нет |
 | km | Кхмерский | NotoSansKhmer-Medium.ttf | Нет | Нет |
+| mni | Манипури (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Нет | Нет |
 
 ## Добавить язык
 
 Чтобы добавить поддержку нового языка:
 
-1. Добавьте код языка и отображаемое имя в утилиты языков.
+1. Добавьте код языка и отображаемое имя в утилиты работы с языками.
 2. Добавьте или сопоставьте шрифт в `src/co_op_translator/fonts/font_language_mappings.yml`.
-3. Проверьте вывод перевода Markdown и изображений.
-4. Откройте pull request с сопоставлением и заметками о валидации.
+3. Протестируйте вывод перевода Markdown и изображений.
+4. Откройте pull request с сопоставлением и заметками по валидации.

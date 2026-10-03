@@ -1,10 +1,10 @@
 # Langues prises en charge
 
-Co-op Translator prend en charge les codes de langues suivants pour les sorties de traduction de texte, de carnets et d'images.
+Co-op Translator prend en charge les codes de langue suivants pour les sorties de traduction de texte, de notebook et d'image.
 
 Si vous souhaitez ajouter une nouvelle langue, mettez à jour les mappages de langue et de police sous `src/co_op_translator/fonts/` et testez la langue avant d'ouvrir une pull request.
 
-| Language Code | Language Name | Font | RTL Support | Known Issues |
+| Language Code | Nom de la langue | Font | Prise en charge RTL | Problèmes connus |
 | --- | --- | --- | --- | --- |
 | en | Anglais | NotoSans-Medium.ttf | Non | Non |
 | fr | Français | NotoSans-Medium.ttf | Non | Non |
@@ -42,7 +42,7 @@ Si vous souhaitez ajouter une nouvelle langue, mettez à jour les mappages de la
 | vi | Vietnamien | NotoSans-Medium.ttf | Non | Non |
 | id | Indonésien | NotoSans-Medium.ttf | Non | Non |
 | ms | Malais | NotoSans-Medium.ttf | Non | Non |
-| tl | Tagalog (philippin) | NotoSans-Medium.ttf | Non | Non |
+| tl | Tagalog (Philippin) | NotoSans-Medium.ttf | Non | Non |
 | sw | Swahili | NotoSans-Medium.ttf | Non | Non |
 | hu | Hongrois | NotoSans-Medium.ttf | Non | Non |
 | cs | Tchèque | NotoSans-Medium.ttf | Non | Non |
@@ -61,12 +61,13 @@ Si vous souhaitez ajouter une nouvelle langue, mettez à jour les mappages de la
 | ml | Malayalam | NotoSans-Medium.ttf | Non | Non |
 | kn | Kannada | NotoSans-Medium.ttf | Non | Non |
 | km | Khmer | NotoSansKhmer-Medium.ttf | Non | Non |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Non | Non |
 
 ## Ajouter une langue
 
 Pour ajouter la prise en charge d'une nouvelle langue :
 
-1. Ajoutez le code de langue et le nom d'affichage aux utilitaires de langues.
+1. Ajoutez le code de langue et le nom d'affichage aux utilitaires de langue.
 2. Ajoutez ou associez une police dans `src/co_op_translator/fonts/font_language_mappings.yml`.
-3. Testez la sortie de traduction pour Markdown et images.
+3. Testez les sorties de traduction Markdown et image.
 4. Ouvrez une pull request avec le mappage et les notes de validation.

@@ -1,6 +1,6 @@
 # Azure AI seadistamine
 
-Use this guide when you want to configure Azure OpenAI for text translation and Azure AI Vision for image text extraction.
+Kasuta seda juhendit, kui soovid seadistada Azure OpenAI teksti tõlkimiseks ja Azure AI Vision piltidelt teksti eraldamiseks.
 
 ## Eeltingimused
 
@@ -30,7 +30,7 @@ Use this guide when you want to configure Azure OpenAI for text translation and 
 
 Piltide tõlkimine kasutab Azure AI Visioni selleks, et eraldada tekst lähtepiltidelt enne teksti tõlkimist.
 
-In your Azure AI project, find the Azure AI Services key and endpoint.
+Leia oma Azure AI projektis Azure AI Servicesi võti ja lõpp-punkt.
 
 ![Leia Azure AI teenuse teave](../../assets/find-azure-ai-info.png)
 

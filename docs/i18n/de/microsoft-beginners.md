@@ -1,10 +1,10 @@
-# Microsoft Beginners Repositories
+# Microsoft-Anfänger-Repositories
 
 Diese Seite richtet sich an Maintainer von Microsoft "For Beginners" Repositorys, die den gemeinsamen README-Bereich "Other Courses" verwenden.
 
 Die meisten Co-op Translator-Benutzer benötigen diese Seite nicht.
 
-## Auto-Sync the Other Courses Section
+## Abschnitt 'Andere Kurse' automatisch synchronisieren
 
 Fügen Sie diese Marker um den "Other Courses"-Abschnitt in Ihrem README ein:
 
@@ -16,7 +16,7 @@ Fügen Sie diese Marker um den "Other Courses"-Abschnitt in Ihrem README ein:
 
 Jedes Mal, wenn Co-op Translator über die CLI oder GitHub Actions ausgeführt wird, ersetzt er den Inhalt zwischen den Markern durch die gepackte Vorlage.
 
-## Update the Shared Template
+## Aktualisiere die gemeinsame Vorlage
 
 Die Vorlage befindet sich unter:
 
@@ -30,7 +30,7 @@ Um den gemeinsamen Inhalt zu aktualisieren:
 2. Öffnen Sie einen Pull Request bei Co-op Translator.
 3. Nachdem die Änderung veröffentlicht wurde, führen Sie Co-op Translator im Ziel-Repository aus.
 
-## Sparse Checkout Advisory
+## Hinweis zum Sparse Checkout
 
 Große Kurs-Repositorys können beim Klonen kostspielig werden, wenn sie viele übersetzte Ausgaben enthalten. Sie können diesen Hinweis in generierten Sprachabschnitten aufnehmen:
 

@@ -1,22 +1,25 @@
-# مینٹینر رہنما
+# مینٹینر کا رہنما
 
-یہ صفحہ خلاصہ پیش کرتا ہے کہ API، CLI، اور دستاویزاتی سائٹ کس طرح آپس میں مربوط ہیں۔
+یہ صفحہ خلاصہ بیان کرتا ہے کہ API، CLI، اور دستاویزی سائٹ کس طرح مربوط ہیں۔
 
-## پبلک API کی حد
+## عوامی API کی حد
 
-مستحکم Python API درج ذیل سے برآمد ہوتی ہے:
+مستحکم Python API مندرجہ ذیل جگہ سے برآمد ہوتی ہے:
 
 ```python
 co_op_translator.api
 ```
 
-پبلک API مندرجہ ذیل حصوں میں منظم ہے: مواد کے ترجمے کے مددگار، راستہ دوبارہ لکھنے کے مددگار، پروجیکٹ آرکسٹریشن، اور جائزہ:
+عوامی API کو مواد کے ترجمے کے ہیلپرز، راستوں کو دوبارہ لکھنے کے ہیلپرز، پروجیکٹ آرکسٹریشن، اور جائزے میں منظم کیا گیا ہے:
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,17 +31,21 @@ from co_op_translator.api import (
 )
 ```
 
-جب نئے پبلک APIs شامل کریں، اپ ڈیٹ کریں:
+`TranslationStateProvider` ہوسٹ شدہ انضمام کے لیے پائیداری کی حد ہے۔
+اسے تیار کردہ امیدواروں کو قبول شدہ بنیادی نسخوں سے الگ رکھنا چاہیے تاکہ ایک
+غیر ضم شدہ ترجمہ حقیقت کا ماخذ نہیں بن سکتا۔
+
+جب نئے عوامی APIs شامل کیے جائیں تو درج ذیل کو اپ ڈیٹ کریں:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
-- relevant API tests under `tests/co_op_translator/`, such as `test_api.py` or `test_review_api.py`
+- متعلقہ API ٹیسٹس جو `tests/co_op_translator/` کے تحت ہوں، جیسے `test_api.py` یا `test_review_api.py`
 
-اس بات سے گریز کریں کہ نچلے درجے کے `core` ماڈیولز کو بطور مستحکم API دستاویزی شکل دی جائے جب تک کہ پروجیکٹ انہیں براہِ راست سپورٹ کرنے کا ارادہ نہ رکھتا ہو۔
+جب تک پروجیکٹ کا ارادہ براہ راست ان کی حمایت کرنے کا نہ ہو، نچلے سطح کے `core` ماڈیولز کو مستحکم API کے طور پر دستاویزی شکل دینے سے گریز کریں۔
 
 ## CLI انٹری پوائنٹس
 
-پیکیج یہ Poetry اسکرپٹس متعین کرتا ہے:
+پیکج درج ذیل Poetry اسکرپٹس متعین کرتا ہے:
 
 ```toml
 [tool.poetry.scripts]
@@ -51,18 +58,18 @@ co-op-translator-mcp = "co_op_translator.mcp.server:main"
 
 `src/co_op_translator/__main__.py` اسکرپٹ کے نام کے مطابق ڈسپیچ کرتا ہے:
 
-- `translate` کال کرتا ہے `co_op_translator.cli.translate.translate_command`
-- `evaluate` کال کرتا ہے `co_op_translator.cli.evaluate.evaluate_command`
-- `migrate-links` کال کرتا ہے `co_op_translator.cli.migrate_links.migrate_links_command`
-- `co-op-review` کال کرتا ہے `co_op_translator.cli.review.review_command`
+- `translate` `co_op_translator.cli.translate.translate_command` کو کال کرتا ہے
+- `evaluate` `co_op_translator.cli.evaluate.evaluate_command` کو کال کرتا ہے
+- `migrate-links` `co_op_translator.cli.migrate_links.migrate_links_command` کو کال کرتا ہے
+- `co-op-review` `co_op_translator.cli.review.review_command` کو کال کرتا ہے
 
-`co-op-translator-mcp` براہِ راست `__main__.py` کو بائی پاس کرتا ہے اور براہِ راست `co_op_translator.mcp.server:main` کو کال کرتا ہے۔
+`co-op-translator-mcp` `__main__.py` کو بائی پاس کرتا ہے اور براہِ راست `co_op_translator.mcp.server:main` کو کال کرتا ہے۔
 
-جب CLI اختیارات شامل یا تبدیل کریں، اپ ڈیٹ کریں:
+جب CLI اختیارات شامل یا تبدیل کیے جائیں تو درج ذیل کو اپ ڈیٹ کریں:
 
-- the relevant `src/co_op_translator/cli/*.py` command
+- متعلقہ `src/co_op_translator/cli/*.py` کمانڈ
 - `docs/cli.md`
-- CLI-related tests, if behavior changes
+- CLI سے متعلقہ ٹیسٹس، اگر رویہ بدلتا ہے
 
 ## MCP سرور
 
@@ -72,60 +79,60 @@ MCP سرور درج ذیل میں نافذ کیا گیا ہے:
 co_op_translator.mcp.server
 ```
 
-سرور جان بوجھ کر پبلک Python API کو لپیٹتا ہے بجائے اس کے کہ نچلے درجے کے `core` ماڈیولز کو کال کرے۔ اس سرحد کو برقرار رکھیں تاکہ MCP کلائنٹس، Python کالرز، اور CLI ایک ہی رویہ شیئر کریں۔
+سرور جان بوجھ کر عوامی Python API کو ریپ کرتا ہے بجائے اس کے کہ یہ نچلے درجے کے `core` ماڈیولز کو کال کرے۔ اس حد کو برقرار رکھیں تاکہ MCP کلائنٹس، Python کالرز، اور CLI ایک ہی رویہ شیئر کریں۔
 
-جب MCP ٹولز شامل یا تبدیل کریں، اپ ڈیٹ کریں:
+جب MCP ٹولز شامل یا تبدیل کیے جائیں تو، درج ذیل کو اپ ڈیٹ کریں:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
-- `docs/api.md` if the public API surface changes
+- `docs/api.md` اگر عوامی API کا احاطہ تبدیل ہوتا ہے
 
-Repository translation tools are model-callable through MCP and can write many files. Keep `dry_run=True` as the default and require `confirm_write=True` before non-dry-run project translation.
+ریپوزیٹری ترجمہ کے ٹولز MCP کے ذریعے ماڈل-کال ایبل ہیں اور کئی فائلیں لکھ سکتے ہیں۔ `dry_run=True` کو بطور ڈیفالٹ رکھیں اور غیر-dry-run پروجیکٹ ترجمہ سے پہلے `confirm_write=True` درکار کریں۔
 
-## ترجمہ کا بہاؤ
+## ترجمے کا بہاؤ
 
-پراجیکٹ کے اعلی سطحی ترجمہ کا بہاؤ یہ ہے:
+پروجیکٹ کے اعلیٰ سطحی ترجمے کا بہاؤ یہ ہے:
 
-1. CLI دلائل یا API پیرامیٹرز کو تجزیہ کریں۔
-2. LLM کنفیگریشن کو `LLMConfig` کے ساتھ تصدیق کریں۔
-3. جب تصویر کے ترجمے کا انتخاب کیا گیا ہو تو Azure AI Vision کی تصدیق کریں۔
-4. زبان کے کوڈز کو معیاری بنائیں۔
-5. لیگیسی زبان کے فولڈر الیاس کا پتہ لگائیں۔
+1. CLI دلائل یا API پیرامیٹرز کو پارس کریں۔
+2. LLMConfig کے ساتھ LLM کنفیگریشن کی توثیق کریں۔
+3. جب امیج ترجمہ منتخب کیا گیا ہو تو Azure AI Vision کی تصدیق کریں۔
+4. زبان کے کوڈز کو نارملائز کریں۔
+5. پرانے زبان فولڈر کے عرفی نام کا پتہ لگائیں۔
 6. ترجمے کے حجم کا اندازہ لگائیں۔
-7. جب قابلِ اطلاق ہو تو README کی زبان/کورس سیکشنز کو اپ ڈیٹ کریں۔
-8. پراجیکٹ کے ترجمے کو `ProjectTranslator` کو تفویض کریں۔
-9. `ProjectTranslator` فائل پروسیسنگ کو `TranslationManager` کو تفویض کرتا ہے۔
+7. جب قابلِ اطلاق ہو تو README کے زبان/کورس سیکشنز کو اپ ڈیٹ کریں۔
+8. پروجیکٹ ترجمہ کو `ProjectTranslator` کو سونپیں۔
+9. `ProjectTranslator` فائل پراسیسنگ کو `TranslationManager` کو سونپتا ہے۔
 
-`TranslationManager` مخصوص فائل-ٹائپ مکس انز سے مرکب ہے:
+`TranslationManager` مخصوص فائل ٹائپ مکسِنز سے مرکب ہوتا ہے:
 
-- `ProjectMarkdownTranslationMixin` Markdown فائل پڑھنے، مواد کے ترجمے، راستہ دوبارہ لکھنے، میٹا ڈیٹا، ڈس کلیمرز، اور لکھنے کو ہینڈل کرتا ہے۔
-- `ProjectNotebookTranslationMixin` نوٹ بک فائل پڑھنے، Markdown-سیل کے ترجمے، راستہ دوبارہ لکھنے، میٹا ڈیٹا، ڈس کلیمرز، اور لکھنے کو ہینڈل کرتا ہے۔
-- `ProjectImageTranslationMixin` امیج کی دریافت، متن نکالنا/ترجمہ، رینڈر شدہ تصویر کی تحریر، اور میٹا ڈیٹا کو ہینڈل کرتا ہے۔
+- `ProjectMarkdownTranslationMixin` Markdown فائل کی پڑھائی، مواد کے ترجمے، راستہ دوبارہ لکھنے، میٹا ڈیٹا، ڈس کلیمرز، اور لکھائی کو ہینڈل کرتا ہے۔
+- `ProjectNotebookTranslationMixin` نوٹ بک فائل کی پڑھائی، Markdown-سیل کے ترجمے، راستہ دوبارہ لکھنے، میٹا ڈیٹا، ڈس کلیمر، اور لکھائی کو ہینڈل کرتا ہے۔
+- `ProjectImageTranslationMixin` امیج کی دریافت، متن نکالنا/ترجمہ، رینڈر کردہ امیج لکھائی، اور میٹا ڈیٹا کو ہینڈل کرتا ہے۔
 
-نچلے سطح کے مواد API پروجیکٹ ورک فلو کو چھوڑ دیتے ہیں:
+نچلی سطح کے مواد API پروجیکٹ ورک فلو کو چھوڑ دیتے ہیں:
 
-1. `translate_markdown_content` and `translate_notebook_content` صرف میموری میں موجود مواد کا ترجمہ کرتے ہیں۔
-2. `translate_image_content` ایک تصویر میں متن کا ترجمہ کرتا ہے اور ایک رینڈر شدہ تصویر آبجیکٹ واپس کرتا ہے۔
-3. `rewrite_markdown_paths` and `rewrite_notebook_paths` واضح پوسٹ-پروسیسنگ ہیلپرز ہیں۔ یہ نہ تو ترجمہ کرتے ہیں اور نہ ہی پروجیکٹ تحریرات کرتے ہیں۔
+1. `translate_markdown_content` اور `translate_notebook_content` صرف میموری میں موجود مواد کا ترجمہ کرتے ہیں۔
+2. `translate_image_content` ایک تصویر میں متن کا ترجمہ کرتا ہے اور ایک رینڈرڈ امیج آبجیکٹ واپس کرتا ہے۔
+3. `rewrite_markdown_paths` اور `rewrite_notebook_paths` واضح پوسٹ-پروسیسنگ ہیلپرز ہیں۔ یہ کوئی ترجمہ یا پروجیکٹ لکھائی نہیں کرتے۔
 
 ## جائزہ کا بہاؤ
 
-ڈیٹرمنسٹک جائزے کا بہاؤ یہ ہے:
+متعین جائزے کا بہاؤ یہ ہے:
 
-1. CLI دلائل یا API پیرامیٹرز کو تجزیہ کریں۔
-2. درخواست کردہ زبان کے کوڈز کو معیاری بنائیں۔
-3. `root_dir`, `root_dirs`, یا `groups` سے ایک یا زیادہ جائزہ ٹارگٹس بنائیں۔
-4. اختیاری طور پر سورس فائلوں کو `--changed-from` کے ساتھ محدود کریں۔
-5. ساخت، ترجمے کی تازگی، Markdown سالمیت، اور لوکل لنک/امیج راستوں کے لیے ڈیٹرمنسٹک چیک چلائیں۔
-6. یا تو متن آؤٹ پٹ پرنٹ کریں یا GitHub-flavored Markdown۔
-7. جب جائزہ میں غلطیاں ملیں تو ناکامی کے ساتھ باہر نکلیں۔
+1. CLI دلائل یا API پیرامیٹرز کو پارس کریں۔
+2. درخواست کردہ زبان کے کوڈز کو نارملائز کریں۔
+3. `root_dir`, `root_dirs`, یا `groups` سے ایک یا زیادہ جائزے کے ہدف بنائیں۔
+4. اختیاری طور پر `--changed-from` کے ساتھ ماخذ فائلوں کو محدود کریں۔
+5. ساخت، ترجمے کی تازگی، Markdown کی سالمیت، اور مقامی لنک/امیج راستوں کے لیے متعین چیکس چلائیں۔
+6. یا تو ٹیکسٹ آؤٹ پٹ پرنٹ کریں یا GitHub طرز کا Markdown۔
+7. جب جائزے میں غلطیاں ملیں تو ناکامی کے ساتھ خارج ہوں۔
 
-جائزہ بہاؤ کو API keys کی ضرورت نہیں ہوتی اور یہ pull request CI کے لیے مناسب رہنا چاہیے۔ pull request ورک فلو ہر رن پر چیک سمری لکھتا ہے اور صرف اس وقت PR کمنٹ پوسٹ کرتا ہے جب `co-op-review` ناکام ہو۔
+جائزے کا بہاؤ API کیز کا تقاضا نہیں کرتا اور مقامی جانچ یا اختیاری صارف CI کے لیے دستیاب رہتا ہے۔ یہ ریپوزیٹری ہر پل ریکویسٹ پر خودکار طور پر `co-op-review` نہیں چلاتی۔
 
 ## دستاویزی سائٹ
 
-ڈوکس سائٹ درج ذیل سے کنفیگر کی جاتی ہے:
+دستاویزی سائٹ درج ذیل کے ذریعے تشکیل دی گئی ہے:
 
 ```text
 mkdocs.yml
@@ -133,42 +140,42 @@ requirements-docs.txt
 docs/
 ```
 
-`docs/` ڈائریکٹری کینونیکل دستاویزاتی ماخذ ہے۔ اس ڈائریکٹری کے باہر نئے اینڈ-یوزر گائیڈز نہ شامل کریں جب تک کہ پروجیکٹ جان بوجھ کر کوئی اور شائع شدہ ڈاکیومنٹیشن سطح متعارف نہ کرائے۔
+`docs/` ڈائریکٹری سرکاری دستاویزی ماخذ ہے۔ نئے اینڈ-یوزر گائیڈز اس ڈائریکٹری کے باہر نہ شامل کریں جب تک کہ پروجیکٹ جان بوجھ کر کوئی دوسرا شائع شدہ دستاویزاتی سطح متعارف نہ کروائے۔
 
-لوکل طور پر بنائیں:
+مقامی طور پر بلڈ کریں:
 
 ```bash
 python -m pip install -r requirements-docs.txt
 python -m mkdocs build --strict
 ```
 
-مقامی پیش نظارہ:
+مقامی طور پر پیش نظارہ کریں:
 
 ```bash
 python -m mkdocs serve
 ```
 
-جنریٹر کی گئی سائٹ `site/` میں لکھی جاتی ہے، جسے git نظر انداز کرتا ہے۔
+تخلیق شدہ سائٹ `site/` میں لکھی جاتی ہے، جسے git نظر انداز کرتا ہے۔
 
 ## GitHub Pages ورک فلو
 
-.github/workflows/docs.yml pull requests پر سائٹ بناتا ہے اور `main` پر pushes پر اسے تعینات کرتا ہے۔
+`.github/workflows/docs.yml` پل ریکویسٹ پر سائٹ کو بلڈ کرتا ہے اور `main` پر push ہونے پر اسے ڈپلائے کرتا ہے۔
 
-ورک فلو یہ انسٹال کرتا ہے:
+ورک فلو درج ذیل کو انسٹال کرتا ہے:
 
 ```bash
 pip install -r requirements-docs.txt
 ```
 
-ڈوکس ورک فلو صرف دستاویزات کے ٹول چین کو انسٹال کرتا ہے۔ `mkdocs.yml` `mkdocstrings` کو `src/` کی طرف اشارہ کرتا ہے تاکہ پبلک API صفحات سورس ٹری سے رینڈر کیے جا سکیں بغیر مکمل رن ٹائم ڈیپنڈینسی سیٹ کو انسٹال کیے۔ اگر مستقبل کے API دستاویزات کو بلڈ کے دوران اختیاری رن ٹائم پرووائیڈرز کو امپورٹ کرنے کی ضرورت ہو، تو دونوں `.github/workflows/docs.yml` اور اس گائیڈ کو ایک ساتھ اپ ڈیٹ کریں۔
+دستاویزات ورک فلو صرف دستاویزی ٹول چین انسٹال کرتا ہے۔ `mkdocs.yml` `mkdocstrings` کو `src/` کی طرف اشارہ کرتا ہے تاکہ عوامی API صفحات سورس ٹری سے مکمل رن ٹائم ڈیپنڈنسی سیٹ کو انسٹال کیے بغیر رینڈر کیے جا سکیں۔ اگر مستقبل کے API دستاویزات کو بلڈ کے دوران اختیاری رن ٹائم پرووائیڈرز کو امپورٹ کرنے کی ضرورت ہو، تو دونوں `.github/workflows/docs.yml` اور اس گائیڈ کو ساتھ اپ ڈیٹ کریں۔
 
 ## دستاویزات کا معیار
 
-دستاویزاتی تبدیلیاں مرج کرنے سے پہلے، چلائیں:
+دستاویزی تبدیلیاں مرج کرنے سے پہلے، چلائیں:
 
 ```bash
 python -m mkdocs build --strict
 git diff --check
 ```
 
-سخت بلڈز استعمال کریں تاکہ ٹوٹے ہوئے لنکس، غلط نیویگیشن انٹریز، اور API رینڈرنگ کے مسائل جلدی ناکام ہوں۔
+سخت بلڈز استعمال کریں تاکہ ٹوٹے ہوئے لنکس، غیر درست نیویگیشن اندراجات، اور API رینڈرنگ مسائل جلدی ناکام ہوں۔

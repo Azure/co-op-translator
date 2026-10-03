@@ -1,12 +1,12 @@
 # Fejlfinding
 
-Brug denne side, når en oversættelseskørsel lykkes uventet, fejler under konfiguration, eller producerer output, der har brug for gennemgang.
+Brug denne side, når en oversættelseskørsel lykkes uventet, fejler under konfigurationen eller genererer output, der skal gennemgås.
 
-## Kom i gang
+## Start her
 
-1. Kør først en fokuseret kommando, for eksempel `translate -l "ko" -md`.
-2. Tilføj `-d` for konsolens debuglogfiler.
-3. Tilføj `-s` for at gemme debuglogs under `<root-dir>/logs/`.
+1. Kør først en fokuseret kommando, f.eks. `translate -l "ko" -md`.
+2. Tilføj `-d` for konsolens fejlsøgningslogs.
+3. Tilføj `-s` for at gemme fejlsøgningslogs under `<root-dir>/logs/`.
 4. Kør `co-op-review` efter oversættelsen for at tjekke aktualitet, struktur og lokale links.
 
 ```bash
@@ -26,9 +26,9 @@ No language model configuration found.
 
 Løsning:
 
-- Konfigurer Azure OpenAI eller OpenAI.
+- Konfigurer Azure OpenAI, OpenAI eller Anthropic.
 - Bekræft, at variablerne er i det miljø, hvor kommandoen kører.
-- For lokal brug, placér dem i `.env` i projektets rodmappe.
+- Til lokal brug skal du lægge dem i `.env` i projektets rodmappe.
 
 Se [Konfiguration](configuration.md).
 
@@ -44,26 +44,26 @@ Løsning:
 
 - Tilføj `AZURE_AI_SERVICE_API_KEY`.
 - Tilføj `AZURE_AI_SERVICE_ENDPOINT`.
-- Eller kør en tekstbaseret kommando såsom `translate -l "ko" -md`.
+- Eller kør en tekstbaseret kommando, f.eks. `translate -l "ko" -md`.
 
 ### Ugyldig nøgle eller endpoint
 
-Symptomer kan omfatte `401`, maskerede tilladelsesfejl eller adgangsfejl til endpoint.
+Symptomer kan inkludere `401`, tilladelsesfejl med skjulte oplysninger eller fejl ved adgang til endpointet.
 
 Løsning:
 
-- Bekræft, at nøglen hører til den samme Azure-ressource som endpoint.
-- Bekræft, at ressourcen understøtter Vision ved brug af `-img`.
-- Bekræft, at Azure OpenAI udrulningsnavn og API-version matcher din udrulning.
-- Kør med debuglogs: `translate -l "ko" -md -d -s`.
+- Bekræft, at nøglen tilhører den samme Azure-ressource som endpointet.
+- Bekræft, at ressourcen understøtter Vision, når du bruger `-img`.
+- Bekræft, at Azure OpenAI-deploymentnavnet og API-versionen matcher din deployment.
+- Kør med fejlsøgningslogs: `translate -l "ko" -md -d -s`.
 
 ## Ingen filer blev oversat
 
 Almindelige årsager:
 
-- De valgte flags matcher ikke dine filer.
-- Oversatte filer eksisterer allerede.
-- Kildefiler ligger i udelukkede mapper.
+- De valgte flag stemmer ikke overens med dine filer.
+- Oversatte filer findes allerede.
+- Kildefiler ligger i ekskluderede mapper.
 - Kommandoen køres fra det forkerte projektrod.
 
 Kontroller:
@@ -74,18 +74,18 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-Brug `--root-dir`, når kommandoen køres uden for projektets rodmappe.
+Brug `--root-dir`, når kommandoen køres uden for projektroden.
 
 ## Uventet linkadfærd
 
-Omskrivning af links afhænger af valgte indholdstyper:
+Omskrivning af links afhænger af de valgte indholdstyper:
 
 - `-nb` inkluderet: notebook-links kan pege på oversatte notebooks.
-- `-nb` ekskluderet: notebook-links kan forblive pegende på kilde-notebooks.
+- `-nb` ekskluderet: notebook-links kan forblive peget på kilde-notebooks.
 - `-img` inkluderet: billedlinks kan pege på oversatte billeder.
-- `-img` ekskluderet: billedlinks kan forblive pegende på kilde-billeder.
+- `-img` ekskluderet: billedlinks kan forblive peget på kildebilleder.
 
-Kør en fuld indholdsoversættelse, når alle interne links bør foretrække oversatte output:
+Kør en fuld indholdsoversættelse, når alle interne links skal foretrække oversatte output:
 
 ```bash
 translate -l "ko" -md -nb -img
@@ -101,30 +101,30 @@ co-op-review -l "ko"
 
 Hvis oversat Markdown gengives forkert:
 
-- Kontroller, at frontmatter starter og slutter med `---`.
-- Kontroller, at antal code fences matcher mellem kilde- og oversatte filer.
-- Kør `co-op-review` for at fange almindelige strukturproblemer.
-- Oversæt den specifikke fil igen, hvis outputtet blev beskadiget.
+- Tjek, at frontmatter starter og slutter med `---`.
+- Tjek, at antallet af kodehegn matcher mellem kilde- og oversatte filer.
+- Kør `co-op-review` for at opdage almindelige strukturproblemer.
+- Oversæt den specifikke fil igen, hvis outputtet blev korrupt.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action kørte, men ingen pull request blev oprettet
+## GitHub Action kørte, men der blev ikke oprettet en pull request
 
-Hvis `peter-evans/create-pull-request` rapporterer, at branchen ikke ligger foran base, fandt workflowet ingen filer at committe.
+Hvis `peter-evans/create-pull-request` rapporterer, at branchen ikke ligger foran base, fandt workflowet ingen filer at commite.
 
 Sandsynlige årsager:
 
-- Oversættelseskørslen producerede ingen ændringer.
-- `.gitignore` udelukker `translations/`, `translated_images/` eller oversatte notebooks.
+- Oversættelseskørslen medførte ingen ændringer.
+- `.gitignore` ekskluderer `translations/`, `translated_images/` eller oversatte notebooks.
 - `add-paths` matcher ikke de genererede outputmapper.
-- Oversættelsestrinnet afsluttede tidligt.
+- Oversættelsestrinet afsluttede tidligt.
 
 Løsninger:
 
 1. Bekræft, at genererede filer findes i `translations/` eller `translated_images/`.
-2. Bekræft, at `.gitignore` ikke ignorerer genererede outputs.
+2. Bekræft, at `.gitignore` ikke ignorerer de genererede outputs.
 3. Brug matchende `add-paths`:
 
    ```yaml
@@ -150,9 +150,9 @@ Løsninger:
 
 ## Oversættelseskvalitet
 
-Maskinoversættelser kan kræve menneskelig gennemgang. Brug `evaluate` kun, når du ønsker eksperimentel kvalitetsvurdering og lavtillids-reparationsarbejdsgange.
+Maskinoversættelser kan kræve menneskelig gennemgang. Brug `evaluate` kun, når du ønsker eksperimentel kvalitetsvurdering og workflows til reparation ved lav tillid.
 
 !!! warning "Eksperimentel"
-    `evaluate` kan bruge regelbaserede og LLM-baserede kontroller, og dets scoringsmodel og metadataadfærd kan ændre sig. Hold det ude af krævede CI-gates, medmindre din workflow er forberedt på ændringer.
+    `evaluate` kan bruge regelbaserede og LLM-baserede kontroller, og dens scoremodel og metadataadfærd kan ændre sig. Hold den ude af påkrævede CI-gates, medmindre dit workflow er forberedt på ændringer.
 
-For deterministiske CI-kontroller, brug `co-op-review` i stedet.
+Til deterministiske CI-kontroller skal du i stedet bruge `co-op-review`.

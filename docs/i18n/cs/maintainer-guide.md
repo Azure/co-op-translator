@@ -1,8 +1,8 @@
-# Příručka pro správce
+# Příručka správce
 
-Tato stránka shrnuje, jak jsou API, CLI a dokumentační web propojeny.
+Tato stránka shrnuje, jak jsou API, CLI a dokumentační web provázány.
 
-## Hranice veřejného API
+## Veřejná hranice API
 
 Stabilní Python API je exportováno z:
 
@@ -10,13 +10,16 @@ Stabilní Python API je exportováno z:
 co_op_translator.api
 ```
 
-Veřejné API je uspořádáno do pomocníků pro překlad obsahu, přepisování cest, orchestraci projektů a revize:
+Veřejné API je rozděleno na pomocníky pro překlad obsahu, pomocníky pro přepisování cest, orchestraci projektů a revizi:
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     run_review,
     run_translation,
     rewrite_markdown_paths,
@@ -28,17 +31,21 @@ from co_op_translator.api import (
 )
 ```
 
-Při přidání nových veřejných API aktualizujte:
+`TranslationStateProvider` je perzistenční hranice pro hostované integrace.
+Musí uchovávat vygenerované kandidáty odděleně od přijatých základních verzí, aby
+nesloučený překlad nemohl stát zdrojem pravdy.
+
+Při přidávání nových veřejných API aktualizujte:
 
 - `src/co_op_translator/api/__init__.py`
 - `docs/api.md`
-- relevantní API testy pod `tests/co_op_translator/`, jako `test_api.py` nebo `test_review_api.py`
+- příslušné testy API v `tests/co_op_translator/`, například `test_api.py` nebo `test_review_api.py`
 
-Vyvarujte se dokumentování nižších modulů `core` jako stabilního API, pokud projekt nezamýšlí tyto moduly přímo podporovat.
+Vyvarujte se dokumentování nízkoúrovňových modulů `core` jako stabilního API, pokud projekt neplánuje jejich přímou podporu.
 
 ## Vstupní body CLI
 
-Balíček definuje tyto skripty Poetry:
+Balíček definuje tyto Poetry skripty:
 
 ```toml
 [tool.poetry.scripts]
@@ -49,7 +56,7 @@ co-op-review = "co_op_translator.__main__:main"
 co-op-translator-mcp = "co_op_translator.mcp.server:main"
 ```
 
-`src/co_op_translator/__main__.py` přeposílá podle názvu skriptu:
+`src/co_op_translator/__main__.py` směruje podle názvu skriptu:
 
 - `translate` volá `co_op_translator.cli.translate.translate_command`
 - `evaluate` volá `co_op_translator.cli.evaluate.evaluate_command`
@@ -60,68 +67,68 @@ co-op-translator-mcp = "co_op_translator.mcp.server:main"
 
 Při přidávání nebo změně možností CLI aktualizujte:
 
-- příslušný `src/co_op_translator/cli/*.py` příkaz
+- příslušný příkaz v `src/co_op_translator/cli/*.py`
 - `docs/cli.md`
 - testy související s CLI, pokud se chování změní
 
 ## MCP server
 
-MCP server je implementován v:
+Server MCP je implementován v:
 
 ```python
 co_op_translator.mcp.server
 ```
 
-Server záměrně obaluje veřejné Python API místo volání nižších modulů `core`. Zachovejte tuto hranici, aby klienti MCP, volající z Pythonu a CLI sdíleli stejné chování.
+Server úmyslně obaluje veřejné Python API místo volání nízkoúrovňových modulů `core`. Zachovejte tuto hranici, aby klienti MCP, volající z Pythonu a CLI sdíleli stejné chování.
 
 Při přidávání nebo změně nástrojů MCP aktualizujte:
 
 - `src/co_op_translator/mcp/server.py`
 - `tests/co_op_translator/test_mcp_server.py`
 - `docs/mcp.md`
-- `docs/api.md` pokud se změní veřejné rozhraní API
+- `docs/api.md` pokud se změní veřejné API
 
-Nástroje pro překlad repozitáře jsou volatelné modelem přes MCP a mohou zapisovat mnoho souborů. Zachovejte `dry_run=True` jako výchozí a vyžadujte `confirm_write=True` před překladem projektu mimo režim dry-run.
+Nástroje pro překlad repozitáře jsou volatelné modelem přes MCP a mohou zapisovat mnoho souborů. Zachovejte `dry_run=True` jako výchozí a vyžadujte `confirm_write=True` před překladem projektu mimo dry-run.
 
-## Překladový tok
+## Průběh překladu
 
-Vysoká úroveň toku překladu projektu je:
+Vysokoúrovňový průběh překladu projektu je:
 
 1. Zpracovat argumenty CLI nebo parametry API.
 2. Ověřit konfiguraci LLM pomocí `LLMConfig`.
-3. Ověřit Azure AI Vision, když je vybrán překlad obrázků.
+3. Ověřit Azure AI Vision, pokud je vybrán překlad obrázků.
 4. Normalizovat kódy jazyků.
-5. Detekovat zastaralé aliasy složek jazyků.
+5. Detekovat aliasy starších jazykových složek.
 6. Odhadnout objem překladu.
-7. Aktualizovat sekce README týkající se jazyka/kurzu, je-li to relevantní.
-8. Přenechat překlad projektu `ProjectTranslator`.
+7. Aktualizovat sekce README týkající se jazyka/kurzu, pokud je to relevantní.
+8. Delegovat překlad projektu na `ProjectTranslator`.
 9. `ProjectTranslator` deleguje zpracování souborů na `TranslationManager`.
 
-`TranslationManager` je složen z mixinů zaměřených na typy souborů:
+`TranslationManager` se skládá z mixinů zaměřených na typy souborů:
 
-- `ProjectMarkdownTranslationMixin` zpracovává čtení Markdown souborů, překlad obsahu, přepisování cest, metadata, prohlášení o vyloučení odpovědnosti a zápisy.
-- `ProjectNotebookTranslationMixin` zpracovává čtení notebooků, překlad buňek Markdown, přepisování cest, metadata, prohlášení o vyloučení odpovědnosti a zápisy.
-- `ProjectImageTranslationMixin` zpracovává objevování obrázků, extrakci/překlad textu, zápisy renderovaných obrázků a metadata.
+- `ProjectMarkdownTranslationMixin` zpracovává čtení Markdown souborů, překlad obsahu, přepis cest, metadata, prohlášení o vyloučení odpovědnosti a zápisy.
+- `ProjectNotebookTranslationMixin` zpracovává čtení notebooků, překlad Markdown buněk, přepis cest, metadata, prohlášení o vyloučení odpovědnosti a zápisy.
+- `ProjectImageTranslationMixin` zajišťuje objevování obrázků, extrakci/překlad textu, zápisy renderovaných obrázků a metadata.
 
-Nižší obsahová API vynechávají pracovní postup projektu:
+Nízkoúrovňová API pro obsah přeskočí projektový pracovní postup:
 
 1. `translate_markdown_content` a `translate_notebook_content` překládají pouze obsah v paměti.
-2. `translate_image_content` překládá text v jednom obrázku a vrací renderovaný objekt obrázku.
-3. `rewrite_markdown_paths` a `rewrite_notebook_paths` jsou explicitní pomocníci pro post-processing. Nevykonávají žádný překlad ani zápisy projektu.
+2. `translate_image_content` překládá text v jednom obrázku a vrací objekt renderovaného obrázku.
+3. `rewrite_markdown_paths` a `rewrite_notebook_paths` jsou explicitní pomocníci pro post-processing. Neprovádějí žádný překlad ani žádné zápisy do projektu.
 
-## Revizní tok
+## Průběh revize
 
 Deterministický průběh revize je:
 
 1. Zpracovat argumenty CLI nebo parametry API.
 2. Normalizovat požadované kódy jazyků.
-3. Vytvořit jeden nebo více revizních cílů z `root_dir`, `root_dirs` nebo `groups`.
-4. Volitelně omezit zdrojové soubory pomocí `--changed-from`.
-5. Spustit deterministické kontroly struktury, čerstvosti překladu, integrity Markdownu a lokálních cest odkazů/obrázků.
+3. Vytvořit jeden nebo více cílů revize z `root_dir`, `root_dirs` nebo `groups`.
+4. Nepovinně omezit zdrojové soubory pomocí `--changed-from`.
+5. Spustit deterministické kontroly struktury, aktuálnosti překladu, integrity Markdownu a lokálních cest odkazů/obrázků.
 6. Vytisknout buď textový výstup, nebo Markdown ve stylu GitHubu.
-7. Ukončit s chybou, pokud jsou nalezeny chyby revize.
+7. Ukončit s chybou, když jsou nalezeny chyby revize.
 
-Revizní tok nevyžaduje API klíče a měl by zůstat vhodný pro CI v pull requestech. Workflow pro pull request zapíše souhrn kontroly při každém spuštění a zveřejní komentář k PR pouze tehdy, když `co-op-review` selže.
+Průběh revize nevyžaduje API klíče a zůstává dostupný pro lokální kontroly nebo volitelný CI spotřebitele. Tento repozitář nespouští `co-op-review` automaticky na každém pull requestu.
 
 ## Dokumentační web
 
@@ -133,9 +140,9 @@ requirements-docs.txt
 docs/
 ```
 
-Adresář `docs/` je kanonickým zdrojem dokumentace. Nepřidávejte nové příručky pro koncové uživatele mimo tento adresář, pokud projekt záměrně nezavádí další publikovanou dokumentační plochu.
+Adresář `docs/` je kanonickým zdrojem dokumentace. Přidávejte nové návody pro koncové uživatele mimo tento adresář pouze tehdy, pokud projekt záměrně zavádí jinou publikovanou dokumentační plochu.
 
-Sestavit lokálně:
+Sestavte lokálně:
 
 ```bash
 python -m pip install -r requirements-docs.txt
@@ -148,27 +155,27 @@ Náhled lokálně:
 python -m mkdocs serve
 ```
 
-Vygenerovaný web je zapsán do `site/`, který je ignorován gitem.
+Vygenerovaný web je zapsán do `site/`, které je ignorováno gitem.
 
-## GitHub Pages workflow
+## Pracovní postup GitHub Pages
 
 `.github/workflows/docs.yml` sestavuje web při pull requestech a nasazuje jej při pushích do `main`.
 
-Workflow instaluje:
+The workflow installs:
 
 ```bash
 pip install -r requirements-docs.txt
 ```
 
-Workflow dokumentace instaluje pouze nástroje dokumentačního řetězce. `mkdocs.yml` směruje `mkdocstrings` na `src/`, takže stránky veřejného API lze vykreslit ze stromu zdrojů bez instalace celého souboru runtime závislostí. Pokud budou budoucí dokumentace API vyžadovat import volitelných poskytovatelů runtime během sestavení, aktualizujte současně `.github/workflows/docs.yml` i tuto příručku.
+Workflow instaluje pouze nástroje dokumentace. `mkdocs.yml` ukazuje `mkdocstrings` na `src/` tak, aby stránky veřejného API mohly být vykresleny ze zdrojového stromu bez instalace plné sady runtime závislostí. Pokud budoucí API dokumentace budou vyžadovat import volitelných runtime providerů během sestavení, aktualizujte zároveň `.github/workflows/docs.yml` a tuto příručku.
 
-## Kvalita dokumentace
+## Prah kvality dokumentace
 
-Před sloučením změn v dokumentaci spusťte:
+Before merging documentation changes, run:
 
 ```bash
 python -m mkdocs build --strict
 git diff --check
 ```
 
-Používejte přísné sestavení, aby se vadné odkazy, neplatné položky navigace a problémy s vykreslováním API projevily brzy.
+Používejte přísné sestavení, aby se poškozené odkazy, neplatné položky navigace a problémy s vykreslením API odhalily brzy.

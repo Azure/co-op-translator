@@ -1,6 +1,6 @@
 # CLI संदर्भ
 
-Co-op Translator ये कमांड-लाइन एंट्री पॉइंट्स इंस्टॉल करता है:
+Co-op Translator इन कमांड-लाइन एंट्री पॉइंट्स को इंस्टॉल करता है:
 
 - `translate`
 - `evaluate`
@@ -8,33 +8,45 @@ Co-op Translator ये कमांड-लाइन एंट्री पॉ�
 - `co-op-review`
 - `co-op-translator-mcp`
 
-The `translate`, `evaluate`, `migrate-links`, and `co-op-review` commands dispatch through `co_op_translator.__main__`, which selects the command implementation based on the invoked script name. The MCP server uses `co_op_translator.mcp.server` directly.
+कमांड `translate`, `evaluate`, `migrate-links`, और `co-op-review` को `co_op_translator.__main__` के माध्यम से डिस्पैच किया जाता है, जो बुलाए गए स्क्रिप्ट नाम के आधार पर कमांड के कार्यान्वयन का चयन करता है। MCP सर्वर सीधे `co_op_translator.mcp.server` का उपयोग करता है।
 
-If you are deciding between CLI, Python API, and MCP, start with [अपना वर्कफ़्लो चुनें](workflows.md).
+यदि आप CLI, Python API, और MCP के बीच निर्णय ले रहे हैं, तो [Choose Your Workflow](workflows.md) से शुरू करें।
 
-## पहली बार CLI प्रवाह
+## कंसोल आउटपुट
 
-Start here if you are using Co-op Translator from a terminal:
+Interactive टर्मिनल कमांड हेडर, प्रोग्रेस, और सारांशों के लिए Rich फ़ॉर्मैटिंग का उपयोग करते हैं। CI और गैर-इंटरएक्टिव आउटपुट स्वतः ही सादा टेक्स्ट पर वापस लौटता है।
 
-1. एक LLM प्रदाता को कॉन्फ़िगर करें जैसा कि [कॉन्फ़िगरेशन](configuration.md) में वर्णित है।
-2. वह सामग्री प्रकार चुनें जिसे आप अनुवादित करना चाहते हैं।
-3. पहले एक लक्षित कमांड चलाएं, जैसे केवल Markdown का अनुवाद।
+सादा आउटपुट के लिए `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` सेट करें, या Rich आउटपुट के लिए `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` सेट करें। लाइव प्रोग्रेस बार को दबाकर सारांश बनाए रखने के लिए `CO_OP_TRANSLATOR_NO_PROGRESS=1` सेट करें।
+
+जब किसी अन्य सिस्टम को मशीन-पठनीय प्रगति की आवश्यकता हो तो `translate --json-events progress.ndjson` का उपयोग करें
+CLI मानव-पठनीय आउटपुट को रेंडर करना जारी रखता है, जबकि
+NDJSON फ़ाइल संस्करणीकृत `co-op.translation.event.v1` इवेंट्स प्राप्त करती है जिनमें
+स्थिर फ़ील्ड जैसे `type`, `stage_key`, `completed`, `total`, और
+`current_path` शामिल हैं।
+
+## पहली बार CLI फ्लो
+
+यदि आप टर्मिनल से Co-op Translator का उपयोग कर रहे हैं तो यहीं से शुरू करें:
+
+1. [Configuration](configuration.md) में वर्णित अनुसार एक LLM प्रदाता कॉन्फ़िगर करें।
+2. जिस सामग्री प्रकार का आप अनुवाद करना चाहते हैं, उसे चुनें।
+3. पहले एक लक्षित कमांड चलाएँ, जैसे केवल Markdown अनुवाद।
 4. बड़े रिपॉजिटरी परिवर्तन से पहले `--dry-run` का उपयोग करें।
-5. संरचना और ताजगी की जाँच करने के लिए अनुवाद के बाद `co-op-review` का उपयोग करें।
+5. संरचना और ताज़गी की जाँच के लिए अनुवाद के बाद `co-op-review` का उपयोग करें।
 
-| लक्ष्य | प्रारंभ करने के लिए कमांड |
+| लक्ष्य | शुरू करने के लिए कमांड |
 | --- | --- |
-| Markdown दस्तावेज़ अनुवाद करें | `translate -l "ko" -md` |
-| नोटबुक अनुवाद करें | `translate -l "ko" -nb` |
-| छवि पाठ का अनुवाद करें | `translate -l "ko" -img` |
-| फाइलें लिखे बिना काम का पूर्वावलोकन करें | `translate -l "ko" -md --dry-run` |
-| मौजूदा अनुवादों की समीक्षा करें | `co-op-review -l "ko"` |
-| नोटबुक और Markdown लिंक अपडेट करें | `migrate-links -l "ko" --dry-run` |
-| MCP क्लाइंट को टूल्स उपलब्ध कराएँ | CLI कमांड सीधे चलाने के बजाय [MCP सर्वर](mcp.md) कॉन्फ़िगर करें। |
+| Translate Markdown documents | `translate -l "ko" -md` |
+| Translate notebooks | `translate -l "ko" -nb` |
+| Translate image text | `translate -l "ko" -img` |
+| Preview work without writing files | `translate -l "ko" -md --dry-run` |
+| Review existing translations | `co-op-review -l "ko"` |
+| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
+| Expose tools to an MCP client | CLI कमांड सीधे चलाने की बजाय [MCP Server](mcp.md) को कॉन्फ़िगर करें। |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+Markdown फ़ाइलों, नोटबुक्स, और इमेज टेक्स्ट को एक या अधिक लक्ष्य भाषाओं में अनुवाद करें।
 
 ```bash
 translate -l "ko ja fr"
@@ -42,31 +54,31 @@ translate -l "ko ja fr"
 
 ### सामान्य उदाहरण
 
-केवल Markdown अनुवाद करें:
+केवल Markdown का अनुवाद करें:
 
 ```bash
 translate -l "de" -md
 ```
 
-केवल नोटबुक अनुवाद करें:
+केवल नोटबुक्स का अनुवाद करें:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Markdown और छवियाँ अनुवाद करें:
+Markdown और इमेज का अनुवाद करें:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-मौजूदा अनुवादों को हटाकर और पुनः बनाकर अपडेट करें:
+मौजूदा अनुवादों को हटाकर फिर से बनाकर अपडेट करें:
 
 ```bash
 translate -l "ko" -u
 ```
 
-इंटरएक्टिव प्रॉम्प्ट्स के बिना चलाएं:
+इंटरएक्टिव प्रॉम्प्ट के बिना चलाएँ:
 
 ```bash
 translate -l "ko ja" -md -y
@@ -78,35 +90,42 @@ translate -l "ko ja" -md -y
 translate -l "ko" -s
 ```
 
+संरचित प्रगति इवेंट लिखें:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
 ### विकल्प
 
 | विकल्प | आवश्यक | विवरण |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | स्पेस-सेपरेटेड भाषा कोड, जैसे `"es fr de"`, या `"all"`। |
-| `-r`, `--root-dir` | No | प्रोजेक्ट रूट। डिफ़ॉल्ट वर्तमान निर्देशिका। |
-| `-u`, `--update` | No | चुनी हुई भाषाओं के लिए मौजूदा अनुवाद हटाएँ और उन्हें पुनः बनाएं। |
-| `-img`, `--images` | No | केवल छवि फ़ाइलों का अनुवाद करें। |
-| `-md`, `--markdown` | No | केवल Markdown फ़ाइलों का अनुवाद करें। |
-| `-nb`, `--notebook` | No | केवल Jupyter नोटबुक फ़ाइलों का अनुवाद करें। |
-| `-d`, `--debug` | No | कंसोल में डिबग लॉगिंग सक्षम करें। |
-| `-s`, `--save-logs` | No | `<root-dir>/logs/` के तहत DEBUG-स्तर के लॉग सहेजें। |
-| `-x`, `--fix` | No | पिछले मूल्यांकन परिणामों के आधार पर कम-विश्वास Markdown फ़ाइलों को पुनः अनुवाद करें। |
-| `-c`, `--min-confidence` | No | `--fix` के लिए विश्वसनीयता सीमा। डिफ़ॉल्ट `0.7`। |
-| `--add-disclaimer`, `--no-disclaimer` | No | मशीन अनुवाद अस्वीकरण जोड़ें या दबाएँ। CLI में डिफ़ॉल्ट रूप से सक्षम। |
-| `-f`, `--fast` | No | अप्रचलित तेज़ इमेज मोड। |
-| `-y`, `--yes` | No | प्रॉम्प्ट्स को स्वतः-पुष्टि करें, CI में उपयोगी। |
-| `--repo-url` | No | README भाषाओं तालिका के sparse-checkout सलाह में उपयोग किया जाने वाला रिपॉजिटरी URL। |
-| `--migrate-language-folders` | No | पुराने उपनाम फ़ोल्डरों को, जैसे `cn` या `tw`, canonical BCP 47 फ़ोल्डरों में नाम बदलें। |
-| `--dry-run` | No | फाइलें लिखे बिना भाषा फ़ोल्डर माइग्रेशन और अनुवाद अनुमान का पूर्वावलोकन करें। |
+| `-l`, `--language-codes` | हाँ | स्पेस-से पृथक भाषा कोड, जैसे "es fr de", या "all". |
+| `-r`, `--root-dir` | नहीं | प्रोजेक्ट रूट। डिफ़ॉल्ट वर्तमान निर्देशिका है। |
+| `-u`, `--update` | नहीं | चुनी हुई भाषाओं के लिए मौजूदा अनुवाद हटाकर उन्हें पुनः बनाएं। |
+| `-img`, `--images` | नहीं | केवल इमेज फ़ाइलों का अनुवाद करें। |
+| `-md`, `--markdown` | नहीं | केवल Markdown फ़ाइलों का अनुवाद करें। |
+| `-nb`, `--notebook` | नहीं | केवल Jupyter नोटबुक फ़ाइलों का अनुवाद करें। |
+| `-d`, `--debug` | नहीं | कंसोल में डिबग लॉगिंग सक्षम करें। |
+| `-s`, `--save-logs` | नहीं | DEBUG-स्तर के लॉग `<root-dir>/logs/` के तहत सहेजें। |
+| `--json-events` | नहीं | मशीन-पठनीय अनुवाद प्रगति इवेंट्स को NDJSON के रूप में लिखें। |
+| `-x`, `--fix` | नहीं | पिछले मूल्यांकन परिणामों के आधार पर कम-विश्वास Markdown फ़ाइलों को पुन:अनुवाद करें। |
+| `-c`, `--min-confidence` | नहीं | `--fix` के लिए विश्वास सीमा। डिफ़ॉल्ट `0.7` है। |
+| `--add-disclaimer`, `--no-disclaimer` | नहीं | मशीन अनुवाद अस्वीकरण जोड़ें या दबाएँ। CLI में डिफ़ॉल्ट रूप से सक्षम है। |
+| `-f`, `--fast` | नहीं | अप्रचलित तेज़ इमेज मोड। |
+| `-y`, `--yes` | नहीं | प्रॉम्प्टों को स्वचालित रूप से पुष्टि करें, CI में उपयोगी। |
+| `--repo-url` | नहीं | README भाषाओं की तालिका sparse-checkout सलाह में उपयोग किया जाने वाला रिपॉजिटरी URL। |
+| `--migrate-language-folders` | नहीं | पुराने उपनाम फ़ोल्डर्स, जैसे `cn` या `tw`, को मानक BCP 47 फ़ोल्डर्स में पुनर्नामित करें। |
+| `--dry-run` | नहीं | फ़ाइलें लिखे बिना भाषा फ़ोल्डर माइग्रेशन और अनुवाद अनुमानों का पूर्वावलोकन। |
 
-If no type flag is provided, `translate` processes Markdown, notebooks, and images. Image translation requires Azure AI Vision configuration.
+यदि कोई प्रकार फ़्लैग नहीं दिया गया है, तो `translate` Markdown, नोटबुक्स, और इमेजेज़ को प्रोसेस करता है। इमेज अनुवाद के लिए Azure AI Vision कॉन्फ़िगरेशन आवश्यक है।
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+एक भाषा के लिए अनुवादित Markdown की गुणवत्ता का मूल्यांकन करें।
 
 !!! warning "प्रायोगिक"
-    `evaluate` is experimental. It can use rule-based and LLM-based quality checks, writes evaluation results into translation metadata, and its scoring model and metadata behavior may change.
+    `evaluate` प्रायोगिक है। यह नियम-आधारित और LLM-आधारित गुणवत्ता जाँचों का उपयोग कर सकता है, मूल्यांकन परिणामों को अनुवाद मेटाडेटा में लिखता है, और इसका स्कोरिंग मॉडल तथा मेटाडेटा व्यवहार बदल सकते हैं।
 
 ```bash
 evaluate -l "ko"
@@ -120,13 +139,13 @@ evaluate -l "ko"
 evaluate -l "es" -c 0.8
 ```
 
-केवल नियम-आधारित जाँच चलाएं:
+केवल नियम-आधारित जाँच चलाएँ:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-केवल LLM-आधारित जाँच चलाएं:
+केवल LLM-आधारित जाँच चलाएँ:
 
 ```bash
 evaluate -l "ja" -D
@@ -136,22 +155,22 @@ evaluate -l "ja" -D
 
 | विकल्प | आवश्यक | विवरण |
 | --- | --- | --- |
-| `-l`, `--language-code` | Yes | मूल्यांकन करने के लिए एकल भाषा कोड। उपनाम कोड सामान्यीकृत होते हैं। |
-| `-r`, `--root-dir` | No | प्रोजेक्ट रूट। डिफ़ॉल्ट वर्तमान निर्देशिका। |
-| `-c`, `--min-confidence` | No | उन कम-विश्वास अनुवादों को सूचीबद्ध करने के लिए प्रयुक्त सीमा। डिफ़ॉल्ट `0.7`। |
-| `-d`, `--debug` | No | डिबग लॉगिंग सक्षम करें। |
-| `-s`, `--save-logs` | No | `<root-dir>/logs/` के तहत DEBUG-स्तर के लॉग सहेजें। |
-| `-f`, `--fast` | No | केवल नियम-आधारित मूल्यांकन। |
-| `-D`, `--deep` | No | केवल LLM-आधारित मूल्यांकन। |
+| `-l`, `--language-code` | हाँ | मूल्यांकन के लिए एकल भाषा कोड। उपनाम कोड सामान्यीकृत किए जाते हैं। |
+| `-r`, `--root-dir` | नहीं | प्रोजेक्ट रूट। डिफ़ॉल्ट वर्तमान निर्देशिका है। |
+| `-c`, `--min-confidence` | नहीं | कम-विश्वास अनुवादों को सूचीबद्ध करते समय उपयोग की जाने वाली सीमा। डिफ़ॉल्ट `0.7` है। |
+| `-d`, `--debug` | नहीं | डिबग लॉगिंग सक्षम करें। |
+| `-s`, `--save-logs` | नहीं | DEBUG-स्तर के लॉग `<root-dir>/logs/` के तहत सहेजें। |
+| `-f`, `--fast` | नहीं | केवल नियम-आधारित मूल्यांकन। |
+| `-D`, `--deep` | नहीं | केवल LLM-आधारित मूल्यांकन। |
 
 डिफ़ॉल्ट रूप से, `evaluate` दोनों नियम-आधारित और LLM-आधारित मूल्यांकन का उपयोग करता है। परिणाम अनुवाद मेटाडेटा में लिखे जाते हैं और कंसोल में सारांशित होते हैं।
 
 ## co-op-review
 
-Run deterministic translation maintenance checks without API credentials.
+API क्रेडेंशियल्स के बिना निर्धारक अनुवाद रखरखाव जाँच चलाएँ।
 
 !!! note "बीटा"
-    `co-op-review` is a beta deterministic review command. It does not call model providers or write files, but its checks and issue output schema may evolve.
+    `co-op-review` एक बीटा निर्धारक समीक्षा कमांड है। यह मॉडल प्रदाताओं को कॉल नहीं करता और फ़ाइलें नहीं लिखता, लेकिन इसके चेक और इश्यू आउटपुट स्कीमा बदल सकते हैं।
 
 ```bash
 co-op-review -l "ko"
@@ -171,13 +190,25 @@ co-op-review -l "ko ja"
 co-op-review -l "fr" -r ./my-course
 ```
 
-केवल उन स्रोत फ़ाइलों की समीक्षा करें जो बेस रेफ के खिलाफ बदली गई हैं:
+README-केवल अनुवाद के बाद सिर्फ README की समीक्षा करें:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` अन्य दस्तावेज़ों और नेस्टेड README को अनदेखा करता है। यदि रूट
+`README.md` गायब है तो यह विफल हो जाता है। `--changed-from` के साथ संयोजन में, यह केवल तभी README की समीक्षा करता है
+जब वह सोर्स फ़ाइल बदली हो। README-केवल अनुवाद स्रोत README को अपरिवर्तित छोड़ता है,
+जिसमें कोई भी साझा-सेक्शन मार्कर शामिल हैं।
+
+केवल उन सोर्स फ़ाइलों की समीक्षा करें जो बेस रेफ़ के खिलाफ बदली गई हों:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-CI सारांशों के लिए GitHub-उन्मुख Markdown आउटपुट प्रिंट करें:
+CI सारांशों के लिए GitHub-फ्लेवर्ड Markdown आउटपुट प्रिंट करें:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -187,32 +218,33 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 | विकल्प | आवश्यक | विवरण |
 | --- | --- | --- |
-| `-l`, `--language-code` | No | समीक्षा के लिए भाषा कोड। कई बार पास किया जा सकता है या स्पेस-सेपरेटेड मान के रूप में। डिफ़ॉल्ट सभी पाए गए अनुवादित भाषाएँ। |
-| `-r`, `--root-dir` | No | प्रोजेक्ट रूट। डिफ़ॉल्ट वर्तमान निर्देशिका। |
-| `--changed-from` | No | स्रोत फ़ाइलों को सीमित करने के लिए उपयोग किया जाने वाला Git रेफ। |
-| `--format` | No | आउटपुट फ़ॉर्मेट: `text` या `github`। डिफ़ॉल्ट `text`। |
+| `-l`, `--language-code` | नहीं | समीक्षा के लिए भाषा कोड। इसे कई बार पास किया जा सकता है या स्पेस-से पृथक मान के रूप में। डिफ़ॉल्ट सभी खोजी गई अनुवाद भाषाएँ हैं। |
+| `-r`, `--root-dir` | नहीं | प्रोजेक्ट रूट। डिफ़ॉल्ट वर्तमान निर्देशिका है। |
+| `--changed-from` | नहीं | बदली हुई सोर्स फ़ाइलों तक समीक्षा को सीमित करने के लिए उपयोग किया गया Git रेफ़। |
+| `--readme-only` | नहीं | केवल रूट `README.md` अनुवाद की समीक्षा करें। |
+| `--format` | नहीं | आउटपुट प्रारूप: `text` या `github`. डिफ़ॉल्ट `text` है। |
 
-`co-op-review` वर्तमान में ग़ायब अनुवादित फ़ाइलों, ग़ायब या पुराने अनुवाद मेटाडेटा, Markdown frontmatter और कोड फेंस अखंडता, अवैध अनुवादित नोटबुक JSON, और ग़ायब स्थानीय Markdown या इमेज लिंक लक्ष्यों के लिए जाँच करता है। ग़ायब लिंक डिफ़ॉल्ट रूप से चेतावनियाँ होती हैं; संरचनात्मक और ताजगी संबंधित समस्याएँ कमांड को असफल कर देती हैं।
+`co-op-review` वर्तमान में अनुपस्थित अनूदित फ़ाइलों, अनुपस्थित या पुराना अनुवाद मेटाडेटा, Markdown frontmatter और कोड फ़ेन्स की अखंडता, अमान्य अनूदित नोटबुक JSON, और स्थानीय Markdown या इमेज लिंक लक्ष्यों की अनुपस्थिति की जाँच करता है। लिंक की कमी डिफ़ॉल्ट रूप से चेतावनियाँ हैं; संरचनात्मक और ताजगी समस्याएँ कमांड को विफल करती हैं।
 
 ## co-op-translator-mcp
 
-Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+एजेंट्स, एडिटर्स, और MCP-अनुकूल क्लाइंट्स के लिए Co-op Translator MCP सर्वर चलाएँ।
 
 ```bash
 co-op-translator-mcp
 ```
 
-The default transport is `stdio`. See the [MCP सर्वर](mcp.md) guide for client configuration, tools, resources, and safety notes.
+डिफ़ॉल्ट ट्रांसपोर्ट `stdio` है। क्लाइंट कॉन्फ़िगरेशन, टूल्स, संसाधन, और सुरक्षा नोट्स के लिए [MCP Server](mcp.md) गाइड देखें।
 
 ### विकल्प
 
 | विकल्प | आवश्यक | विवरण |
 | --- | --- | --- |
-| `--transport` | No | MCP ट्रांसपोर्ट: `stdio`, `streamable-http`, या `sse`। डिफ़ॉल्ट `stdio`। |
+| `--transport` | नहीं | MCP ट्रांसपोर्ट: `stdio`, `streamable-http`, या `sse`. डिफ़ॉल्ट `stdio` है। |
 
 ## migrate-links
 
-Reprocess translated Markdown files and update notebook links so they point to translated notebooks when available.
+अनुवादित Markdown फ़ाइलों को पुनःप्रोसेस करें और नोटबुक लिंक अपडेट करें ताकि वे उपलब्ध होने पर अनूदित नोटबुक की ओर इशारा करें।
 
 ```bash
 migrate-links -l "ko ja"
@@ -220,19 +252,19 @@ migrate-links -l "ko ja"
 
 ### सामान्य उदाहरण
 
-लिंक अपडेट्स का पूर्वावलोकन करें:
+लिंक अपडेट का पूर्वावलोकन करें:
 
 ```bash
 migrate-links -l "ko" --dry-run
 ```
 
-पुष्टिकरण के बिना सभी समर्थित भाषाओं को प्रोसेस करें:
+सभी समर्थित भाषाओं को बिना पुष्टि के प्रोसेस करें:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-केवल तब लिंक रीराइट करें जब अनुवादित नोटबुक उपलब्ध हों:
+केवल तब लिंक पुनर्लेखन करें जब अनूदित नोटबुक मौजूद हों:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
@@ -242,18 +274,18 @@ migrate-links -l "ko" --no-fallback-to-original
 
 | विकल्प | आवश्यक | विवरण |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | स्पेस-सेपरेटेड भाषा कोड, या `"all"`। |
-| `-r`, `--root-dir` | No | प्रोजेक्ट रूट। डिफ़ॉल्ट वर्तमान निर्देशिका। |
-| `--image-dir` | No | रूट के सापेक्ष अनुवादित इमेज निर्देशिका। डिफ़ॉल्ट `translated_images`। |
-| `--dry-run` | No | अपडेट लिखे बिना जिन फ़ाइलों में बदलाव होंगे उन्हें दिखाएँ। |
-| `--fallback-to-original`, `--no-fallback-to-original` | No | जब अनुवादित नोटबुक गायब हों तो मूल नोटबुक लिंक का उपयोग करें। डिफ़ॉल्ट सक्षम। |
-| `-d`, `--debug` | No | डिबग लॉगिंग सक्षम करें। |
-| `-s`, `--save-logs` | No | `<root-dir>/logs/` के तहत DEBUG-स्तर के लॉग सहेजें। |
-| `-y`, `--yes` | No | सभी भाषाओं को प्रोसेस करते समय प्रॉम्प्ट्स को स्वतः-पुष्टि करें। |
+| `-l`, `--language-codes` | हाँ | स्पेस-से पृथक भाषा कोड, या "all". |
+| `-r`, `--root-dir` | नहीं | प्रोजेक्ट रूट। डिफ़ॉल्ट वर्तमान निर्देशिका है। |
+| `--image-dir` | नहीं | रूट के सापेक्ष अनूदित इमेज निर्देशिका। डिफ़ॉल्ट `translated_images` है। |
+| `--dry-run` | नहीं | वे फ़ाइलें दिखाएँ जो बदलेंगी, बिना अपडेट लिखे। |
+| `--fallback-to-original`, `--no-fallback-to-original` | नहीं | अनूदित नोटबुक मौजूद नहीं होने पर मूल नोटबुक लिंक का उपयोग करें। डिफ़ॉल्ट रूप से सक्षम। |
+| `-d`, `--debug` | नहीं | डिबग लॉगिंग सक्षम करें। |
+| `-s`, `--save-logs` | नहीं | DEBUG-स्तर के लॉग `<root-dir>/logs/` के तहत सहेजें। |
+| `-y`, `--yes` | नहीं | सभी भाषाओं को प्रोसेस करते समय प्रॉम्प्ट्स को स्वचालित रूप से कन्फर्म करें। |
 
-## पर्यावरण
+## वातावरण
 
-All commands require one configured LLM provider:
+जब किसी कमांड को प्रदाता क्रेडेंशियल की आवश्यकता हो, तो इन प्रदाता सेट्स में से एक कॉन्फ़िगर करें। `translate --dry-run` और `co-op-review` को प्रदाता क्रेडेंशियल की आवश्यकता नहीं है:
 
 ```bash
 # एज़्योर ओपनएआई
@@ -266,9 +298,13 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # या ओपनएआई
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# या एंथ्रोपिक
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Image translation additionally requires Azure AI Vision:
+इमेज अनुवाद के लिए अतिरिक्त रूप से Azure AI Vision आवश्यक है:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -277,19 +313,19 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 
 ## आउटपुट लेआउट
 
-Text translations are written under:
+टेक्स्ट अनुवाद निम्न स्थानों पर लिखे जाते हैं:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Translated image output is written under:
+अनूदित इमेज आउटपुट निम्न स्थान पर लिखा जाता है:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-For example, translating `README.md` and `docs/setup.md` into Korean produces:
+उदाहरण के लिए, `README.md` और `docs/setup.md` को कोरियाई में अनुवाद करने से यह बनता है:
 
 ```text
 translations/ko/README.md
@@ -304,38 +340,38 @@ Markdown को तीन भाषाओं में अनुवाद कर
 translate -l "ko ja fr" -md
 ```
 
-केवल नोटबुक अनुवाद करें:
+केवल नोटबुक्स का अनुवाद करें:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-केवल छवियाँ अनुवाद करें:
+केवल इमेज का अनुवाद करें:
 
 ```bash
 translate -l "pt-BR" -img
 ```
 
-फाइलें लिखे बिना Markdown अनुवाद का पूर्वावलोकन करें:
+फ़ाइलें लिखे बिना Markdown अनुवाद का पूर्वावलोकन करें:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-कम-विश्वास Markdown अनुवादों की मरम्मत करें:
+कम-विश्वास Markdown अनुवाद ठीक करें:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-CI-अनुकूल Markdown अनुवाद चलाएँ:
+CI-फ्रेंडली Markdown अनुवाद चलाएँ:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-अनुवादित आउटपुट की समीक्षा करें:
+अनूदित आउटपुट की समीक्षा करें:
 
 ```bash
 co-op-review -l "ko ja"

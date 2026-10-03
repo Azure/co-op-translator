@@ -1,43 +1,45 @@
 # Konfiguraatio
 
-Co-op Translator vaatii yhden kielimallitarjoajan. Kuvien kääntäminen vaatii lisäksi Azure AI Visionin.
+Co-op Translator vaatii yhden kielimallin tarjoajan. Kuvien käännös edellyttää lisäksi Azure AI Visionia.
 
-Konfiguraatio luetaan ympäristömuuttujista. Paikallisissa projekteissa laita ne projektin juureen tiedostoon `.env`.
+Konfiguraatio luetaan ympäristömuuttujista. Paikallisissa projekteissa sijoita ne projektin juureen tiedostoon `.env`.
 
-For Azure resource setup, see [Azure AI Setup](azure-ai-setup.md).
+Azure-resurssien määritystä varten katso [Azure AI -asennus](azure-ai-setup.md).
 
-## Paikallinen ajonaikainen asennus
+## Paikallinen suoritusaikaympäristön asennus
 
-Käytä virtuaaliympäristöä ennen CLI:n ajamista paikallisesti. Co-op Translator tukee Python 3.10–3.12.
+Käytä virtuaaliympäristöä ennen CLI:n suorittamista paikallisesti. Co-op Translator tukee Python 3.11–3.14.
 
-Tavalliseen CLI-käyttöön asenna julkaistu paketti virtuaaliympäristöön:
+Tavallista CLI-käyttöä varten asenna julkaistu paketti virtuaaliympäristöön:
 
-=== "Windows"
+### Windows (PowerShell)
 
-    ```powershell
-    python -m venv .venv
-    .venv\Scripts\activate
-    pip install co-op-translator
-    translate --help
-    ```
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install co-op-translator
+translate --help
+```
 
-=== "macOS / Linux"
+### macOS / Linux
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install co-op-translator
-    translate --help
-    ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install co-op-translator
+translate --help
+```
 
-For repository development, install dependencies from the project root instead:
+### Repositorion kehitys
+
+Repositorion kehitystä varten asenna riippuvuudet projektin juuresta sen sijaan:
 
 ```bash
 poetry install
 poetry run translate --help
 ```
 
-Kun CLI on käytettävissä, määritä yksi kielimallitarjoaja tiedostossa `.env`.
+Kun CLI on saatavilla, määritä yksi kielimallin tarjoaja tiedostossa `.env`.
 
 ## Tarjoajan valinta
 
@@ -45,12 +47,25 @@ Työkalu tunnistaa tarjoajat automaattisesti tässä järjestyksessä:
 
 1. Azure OpenAI
 2. OpenAI
+3. Anthropic
 
-Jos kumpaakaan tarjoajaa ei ole konfiguroitu, `translate`, `evaluate`, `migrate-links` ja `run_translation` epäonnistuvat konfiguraatiotarkistuksissa. `co-op-review` ja `run_review` ovat deterministisiä ylläpitotarkistuksia eivätkä vaadi tarjoajatunnuksia.
+Käännös vaatii tarjoajan tunnistetiedot, lukuun ottamatta esikatseluja kuten `translate -l "ko" -md --dry-run`. `migrate-links`, `co-op-review`, ja `run_review` ovat deterministisiä ylläpitotoimintoja eivätkä vaadi tarjoajan tunnistetietoja.
+
+## Mallin asiakas-backend
+
+Co-op Translator 0.22.0:sta alkaen Azure OpenAI, OpenAI ja Anthropic käyttävät oletuksena Microsoft Agent Frameworkia. Normaalissa käytössä backend-asetusta ei tarvita.
+
+Semantic Kernel on toistaiseksi saatavilla yhteensopivuussyistä. Valitaksesi sen nimenomaisesti, aseta:
+
+```bash
+CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"
+```
+
+Semantic Kernelin käyttäminen aiheuttaa vanhentumisvaroituksen. Paketin on tarkoitus siirtää Semantic Kernel valinnaiseksi riippuvuudeksi versiossa 0.23.0 ja poistaa integraatio versiossa 0.24.0, riippuen yhteensopivuustuloksista ja käyttäjäpalautteesta. Anthropic vaatii `agent-framework`; `semantic-kernel` -valinnan nimenomainen käyttö Anthropicin kanssa epäonnistuu konfiguraatiovirheeseen. Virheelliset arvot epäonnistuvat tarjoajaa käyttävän kääntäjän alustuksessa sen sijaan, että ne hiljaisesti palauttaisivat oletukseen. Seuraa käyttöönottoa ja raportoi estävät tekijät [GitHub-issue #543](https://github.com/Azure/co-op-translator/issues/543).
 
 ## Azure OpenAI
 
-Käytä Azure OpenAIta, kun mallisi on otettu käyttöön Azure AI Foundryssa tai Azure OpenAI Service -palvelussa.
+Käytä Azure OpenAI:ta, kun mallisi on otettu käyttöön Azure AI Foundryssa tai Azure OpenAI -palvelussa.
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -60,35 +75,50 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Yhteyden tarkistus käyttää endpointia, API-avainta, API-versiota ja deploymentin nimeä ennen käännöksen aloittamista.
+Yhteyden tarkistus käyttää endpoint-osoitetta, API-avainta, API-versiota ja käyttöönoton nimeä ennen käännöksen aloittamista.
 
 ## OpenAI
 
-Käytä OpenAI:ta kutsuttaessa OpenAI-APIa suoraan.
+Käytä OpenAI:ta, kun kutsut OpenAI-APIa suoraan.
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
-OPENAI_ORG_ID="..."          # valinnainen
-OPENAI_BASE_URL="..."        # valinnainen
 ```
 
-`OPENAI_CHAT_MODEL_ID` vaaditaan, koska kääntäjä tarvitsee eksplisiittisen chat-mallin API-kutsuja varten.
+`OPENAI_CHAT_MODEL_ID` vaaditaan, koska kääntäjä tarvitsee selkeän chat-mallin API-kutsuja varten.
+
+Jätä `OPENAI_ORG_ID` ja `OPENAI_BASE_URL` määrittämättä oletusasetusta varten. Lisää organisaatio-ID vain, jos tilisi sitä tarvitsee, tai base URL vain, kun käytät mukautettua päätepistettä. Älä kopioi paikkamerkkien arvoja valinnaisiin asetuksiin.
+
+## Anthropic Claude
+
+Käytä Anthropicia, kun kutsut Claude-APIa suoraan. Luo [Anthropic API -avain](https://platform.claude.com/docs/en/get-started) ja valitse tuettu [Claude-mallin ID](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions).
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_API_KEY` ja `ANTHROPIC_MODEL` ovat pakollisia. Sinun ei tarvitse asettaa `CO_OP_TRANSLATOR_MODEL_CLIENT`; Agent Framework on oletustaustana.
+
+Jätä `ANTHROPIC_BASE_URL` määrittämättä Anthropicin API:lle. Aseta se vain, kun käytät mukautettua päätepistettä.
+
+`ANTHROPIC_MAX_TOKENS` oletusarvo on `8192`, mikä jättää tilaa tokenirikkaalle skriptikäytölle kuten Meitei Mayekille. Laske arvoa, jos mallisi tai Anthropic-yhteensopiva päätepiste rajoittaa tuottoa alle tämän.
 
 ## Azure AI Vision
 
-Kuvien kääntäminen vaatii Azure AI Visionin, jotta työkalu voi poimia tekstiä kuvista ennen niiden kääntämistä.
+Kuvien käännös vaatii Azure AI Visionin, jotta työkalu voi poimia tekstiä kuvista ennen, kuin asetettu kielimalli kääntää sen. Anthropic voi kääntää poimitun tekstin aivan kuten Azure OpenAI tai OpenAI.
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-Jos kuvien kääntäminen on valittu `-img`:llä, `images=True`:llä tai ilman sisältötyypin suodatinta, työkalu validoi Vision-konfiguraation ennen käännöksen alkamista.
+Jos kuvien käännös on valittu optioilla `-img`, `images=True` tai ilman sisältötyypin suodatinta, työkalu validoi Vision-konfiguraation ennen käännöksen aloittamista.
 
-## Useita tunnussarjoja
+## Useita tunnistetietosarjoja
 
-Konfiguraatiokerros tukee useita tunnussarjoja lisäämällä muuttujien perään saman indeksin:
+Konfiguraatiokerros tukee useita tunnistetietosarjoja lisäämällä samoja indeksejä muuttujien loppuun:
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -104,35 +134,37 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_2="<deployment-2>"
 AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 ```
 
-Jokaisen sarjan on oltava täydellinen. Terveystarkistus valitsee toimivan sarjan ennen kuin käännös jatkuu.
+Jokaisen sarjan on oltava täydellinen. Terveystarkistus valitsee toimivan sarjan ennen käännöksen jatkumista.
+
+OpenAI ja Anthropic tukevat samaa sufiksikonventiota. Pidä jokainen muuttuja tunnistetietosarjassa samalla sufiksilla, mukaan lukien valinnaiset arvot kuten `OPENAI_BASE_URL_1` tai `ANTHROPIC_BASE_URL_1`.
 
 ## Komentojen vaatimukset
 
-| Komento tai API | LLM vaaditaan | Vision vaaditaan | Huomautukset |
+| Command or API | LLM required | Vision required | Notes |
 | --- | --- | --- | --- |
-| `translate -md` | Kyllä | Ei | Kääntää vain Markdownia. |
-| `translate -nb` | Kyllä | Ei | Kääntää vain muistikirjoja. |
-| `translate -img` | Kyllä | Kyllä | Kääntää vain kuvia. |
-| `translate` ilman tyyppilippuja | Kyllä | Kyllä | Oletustila sisältää Markdownin, muistikirjat ja kuvat. |
-| `evaluate` | Kyllä | Ei | Käyttää LLM-arviointia, ellei `--fast` ole valittu. |
-| `migrate-links` | Kyllä | Ei | Suorittaa linkkien migraation, mutta suorittaa silti jaetut konfiguraatiotarkastukset. |
-| `co-op-review` | Ei | Ei | Suorittaa deterministisiä tarkistuksia käännösrakenteesta, ajantasaisuudesta, Markdownista, muistikirjoista ja paikallisista linkeistä. |
+| `translate -md` | Kyllä | Ei | Kääntää vain Markdownin. |
+| `translate -nb` | Kyllä | Ei | Kääntää vain notebookit. |
+| `translate -img` | Kyllä | Kyllä | Kääntää vain kuvat. |
+| `translate` with no type flags | Kyllä | Kyllä | Oletustila sisältää Markdownin, notebookit ja kuvat. |
+| `evaluate` | Kyllä | Ei | Käyttää LLM-arviointia, ellei valita `--fast`. |
+| `migrate-links` | Ei | Ei | Suorittaa paikallisen linkkien migraation ilman tarjoajakutsuja. |
+| `co-op-review` | Ei | Ei | Suorittaa deterministiset tarkistukset käännösrakenteesta, tuoreudesta, Markdownista, notebookeista ja paikallisista linkeistä. |
 | `run_translation(markdown=True)` | Kyllä | Ei | Ohjelmallinen Markdown-käännös. |
-| `run_translation(images=True)` | Kyllä | Kyllä | Ohjelmallinen kuvien käännös. |
-| `run_review(...)` | Ei | Ei | Ohjelmallinen deterministinen tarkastus. |
+| `run_translation(images=True)` | Kyllä | Kyllä | Ohjelmallinen kuvakäännös. |
+| `run_review(...)` | Ei | Ei | Ohjelmallinen deterministinen tarkistus. |
 
-## Tulostuskansiot
+## Tulostushakemistot
 
-Oletustekstinkäännöksen tulostus:
+Oletustekstikäännöksen ulostulo:
 
 ```text
 translations/<language-code>/<source-relative-path>
 ```
 
-Oletuskäännettyjen kuvien tulostus:
+Default translated image output:
 
 ```text
 translated_images/<language-code>/<source-relative-path>
 ```
 
-Python-API voi yliajaa nämä hakemistot käyttämällä `translations_dir` ja `image_dir`.
+Python-rajapinta voi ohittaa nämä hakemistot käyttämällä `translations_dir` ja `image_dir`.

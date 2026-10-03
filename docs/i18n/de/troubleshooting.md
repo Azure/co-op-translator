@@ -1,13 +1,13 @@
 # Fehlerbehebung
 
-Use this page when a translation run succeeds unexpectedly, fails during configuration, or produces output that needs review.
+Verwenden Sie diese Seite, wenn ein Übersetzungslauf unerwartet erfolgreich ist, während der Konfiguration fehlschlägt oder Ausgaben erzeugt, die überprüft werden müssen.
 
 ## Erste Schritte
 
-1. Run a focused command first, such as `translate -l "ko" -md`.
-2. Add `-d` for console debug logs.
-3. Add `-s` to save debug logs under `<root-dir>/logs/`.
-4. Run `co-op-review` after translation to check freshness, structure, and local links.
+1. Führen Sie zuerst einen gezielten Befehl aus, z. B. `translate -l "ko" -md`.
+2. Fügen Sie `-d` für Debug-Logs in der Konsole hinzu.
+3. Fügen Sie `-s` hinzu, um Debug-Logs unter `<root-dir>/logs/` zu speichern.
+4. Führen Sie `co-op-review` nach der Übersetzung aus, um Aktualität, Struktur und lokale Links zu prüfen.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -24,10 +24,10 @@ Fehler:
 No language model configuration found.
 ```
 
-Behebung:
+Lösung:
 
-- Konfigurieren Sie Azure OpenAI oder OpenAI.
-- Überprüfen Sie, dass die Variablen in der Umgebung vorhanden sind, in der der Befehl ausgeführt wird.
+- Konfigurieren Sie Azure OpenAI, OpenAI oder Anthropic.
+- Überprüfen Sie, ob die Variablen in der Umgebung vorhanden sind, in der der Befehl ausgeführt wird.
 - Für lokale Nutzung legen Sie sie in `.env` im Projektstamm ab.
 
 Siehe [Konfiguration](configuration.md).
@@ -40,28 +40,28 @@ Fehler:
 Image translation requested but Azure AI Service is not configured.
 ```
 
-Behebung:
+Lösung:
 
 - Fügen Sie `AZURE_AI_SERVICE_API_KEY` hinzu.
 - Fügen Sie `AZURE_AI_SERVICE_ENDPOINT` hinzu.
-- Oder führen Sie einen reinen Textbefehl aus, z. B. `translate -l "ko" -md`.
+- Oder führen Sie einen textbasierten Befehl wie `translate -l "ko" -md` aus.
 
 ### Ungültiger Schlüssel oder Endpunkt
 
-Symptome können `401`, maskierte Berechtigungsfehler oder Zugriffsfehler auf den Endpunkt umfassen.
+Symptome können `401`, geschwärzte Berechtigungsfehler oder Endpunktzugriffsfehler umfassen.
 
-Behebung:
+Lösung:
 
-- Bestätigen Sie, dass der Schlüssel zur gleichen Azure-Ressource wie der Endpunkt gehört.
-- Bestätigen Sie, dass die Ressource Vision unterstützt, wenn Sie `-img` verwenden.
-- Bestätigen Sie, dass der Bereitstellungsname von Azure OpenAI und die API-Version mit Ihrer Bereitstellung übereinstimmen.
-- Führen Sie mit Debug-Protokollen aus: `translate -l "ko" -md -d -s`.
+- Bestätigen Sie, dass der Schlüssel zur selben Azure-Ressource wie der Endpunkt gehört.
+- Bestätigen Sie, dass die Ressource Vision unterstützt, wenn `-img` verwendet wird.
+- Bestätigen Sie, dass der Azure OpenAI-Bereitstellungsname und die API-Version mit Ihrer Bereitstellung übereinstimmen.
+- Führen Sie mit Debug-Logs aus: `translate -l "ko" -md -d -s`.
 
 ## Keine Dateien wurden übersetzt
 
 Häufige Ursachen:
 
-- Die ausgewählten Flags passen nicht zu Ihren Dateien.
+- Die gewählten Flags passen nicht zu Ihren Dateien.
 - Bereits übersetzte Dateien sind vorhanden.
 - Quelldateien befinden sich in ausgeschlossenen Verzeichnissen.
 - Der Befehl wird vom falschen Projektstamm ausgeführt.
@@ -76,16 +76,16 @@ translate -l "ko" -img --dry-run
 
 Verwenden Sie `--root-dir`, wenn der Befehl außerhalb des Projektstamms ausgeführt wird.
 
-## Unerwartetes Link-Verhalten
+## Unerwartetes Linkverhalten
 
 Das Umschreiben von Links hängt von den ausgewählten Inhaltstypen ab:
 
-- `-nb` enthalten: Notebook-Links können auf übersetzte Notebooks verweisen.
-- `-nb` ausgeschlossen: Notebook-Links können weiterhin auf die Quell-Notebooks zeigen.
-- `-img` enthalten: Bildlinks können auf übersetzte Bilder verweisen.
-- `-img` ausgeschlossen: Bildlinks können weiterhin auf die Quellbilder zeigen.
+- `-nb` eingeschlossen: Notebook-Links können auf übersetzte Notebooks verweisen.
+- `-nb` ausgeschlossen: Notebook-Links können weiterhin auf Quell-Notebooks zeigen.
+- `-img` eingeschlossen: Bildlinks können auf übersetzte Bilder verweisen.
+- `-img` ausgeschlossen: Bildlinks können weiterhin auf Quellbilder zeigen.
 
-Führen Sie eine vollständige Inhaltsübersetzung durch, wenn alle internen Links bevorzugt auf die übersetzten Ausgaben verweisen sollen:
+Führen Sie eine vollständige Inhaltsübersetzung durch, wenn alle internen Links übersetzte Ausgaben bevorzugen sollen:
 
 ```bash
 translate -l "ko" -md -nb -img
@@ -97,34 +97,34 @@ Führen Sie nach der Übersetzung eine Link-Überprüfung durch:
 co-op-review -l "ko"
 ```
 
-## Probleme bei der Markdown-Darstellung
+## Probleme beim Markdown-Rendering
 
 Wenn übersetztes Markdown falsch gerendert wird:
 
-- Prüfen Sie, dass das Frontmatter mit `---` beginnt und endet.
-- Prüfen Sie, dass die Anzahl der Code-Fences zwischen Quell- und Übersetzungsdateien übereinstimmt.
-- Führen Sie `co-op-review` aus, um häufige Strukturprobleme zu erkennen.
-- Übersetzen Sie die betroffene Datei erneut, wenn die Ausgabe beschädigt wurde.
+- Prüfen Sie, ob Frontmatter mit `---` beginnt und endet.
+- Prüfen Sie, ob die Anzahl der Code-Fences zwischen Quell- und Übersetzungsdateien übereinstimmt.
+- Führen Sie `co-op-review` aus, um häufige Strukturprobleme zu finden.
+- Übersetzen Sie die spezifische Datei erneut, wenn die Ausgabe beschädigt wurde.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action ausgeführt, aber kein Pull Request erstellt
+## GitHub Action ausgeführt, aber kein Pull Request wurde erstellt
 
-Wenn `peter-evans/create-pull-request` meldet, dass der Branch nicht vor dem Basisbranch liegt, hat der Workflow keine Dateien zum Committen gefunden.
+Wenn `peter-evans/create-pull-request` meldet, dass der Branch nicht vor dem Basis-Branch liegt, hat der Workflow keine Dateien zum Committen gefunden.
 
-Mögliche Ursachen:
+Wahrscheinliche Ursachen:
 
 - Der Übersetzungslauf hat keine Änderungen erzeugt.
 - `.gitignore` schließt `translations/`, `translated_images/` oder übersetzte Notebooks aus.
-- `add-paths` stimmt nicht mit den erzeugten Ausgabeverzeichnissen überein.
+- `add-paths` stimmt nicht mit den generierten Ausgabeverzeichnissen überein.
 - Der Übersetzungsschritt wurde vorzeitig beendet.
 
 Lösungen:
 
-1. Bestätigen Sie, dass erzeugte Dateien in `translations/` oder `translated_images/` existieren.
-2. Bestätigen Sie, dass `.gitignore` die erzeugten Ausgaben nicht ignoriert.
+1. Bestätigen Sie, dass generierte Dateien in `translations/` oder `translated_images/` vorhanden sind.
+2. Stellen Sie sicher, dass `.gitignore` generierte Ausgaben nicht ignoriert.
 3. Verwenden Sie passende `add-paths`:
 
    ```yaml
@@ -134,13 +134,13 @@ Lösungen:
        translated_images/
    ```
 
-4. Fügen Sie vorübergehend Debug-Flags zum translate-Befehl hinzu:
+4. Fügen Sie dem translate-Befehl vorübergehend Debug-Flags hinzu:
 
    ```bash
    translate -l "ko" -md -d -s
    ```
 
-5. Bestätigen Sie, dass die Workflow-Berechtigungen Folgendes umfassen:
+5. Bestätigen Sie, dass die Workflow-Berechtigungen enthalten:
 
    ```yaml
    permissions:
@@ -150,9 +150,9 @@ Lösungen:
 
 ## Übersetzungsqualität
 
-Maschinelle Übersetzungen müssen möglicherweise von Menschen überprüft werden. Verwenden Sie `evaluate` nur, wenn Sie experimentelle Qualitätsbewertungen und Workflows zur Reparatur bei geringer Zuverlässigkeit wünschen.
+Maschinelle Übersetzungen benötigen möglicherweise eine menschliche Überprüfung. Verwenden Sie `evaluate` nur, wenn Sie experimentelle Qualitätsbewertungen und Reparatur-Workflows bei geringer Vertrauenswürdigkeit wünschen.
 
-!!! warning "Experimental"
-    `evaluate` kann regelbasierte und LLM-basierte Prüfungen verwenden; sein Bewertungsmodell und das Verhalten bei Metadaten können sich ändern. Verwenden Sie es nicht in obligatorischen CI-Gates, es sei denn, Ihr Workflow ist auf Änderungen vorbereitet.
+!!! warning "Experimentell"
+    `evaluate` kann regelbasierte und LLM-basierte Prüfungen verwenden, und sein Bewertungsmodell sowie das Metadatenverhalten können sich ändern. Schließen Sie es aus den erforderlichen CI-Gates aus, es sei denn, Ihr Workflow ist auf Änderungen vorbereitet.
 
 Für deterministische CI-Prüfungen verwenden Sie stattdessen `co-op-review`.

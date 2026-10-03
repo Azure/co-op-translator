@@ -1,21 +1,21 @@
 # Azure AI စတင်ပြင်ဆင်ခြင်း
 
-Use this guide when you want to configure Azure OpenAI for text translation and Azure AI Vision for image text extraction.
+စာသားဘာသာပြန်ရန် Azure OpenAI ကို ဖွဲ့စည်းရန်နှင့် ပုံများမှ စာသားထုတ်ယူရန် Azure AI Vision ကို ပြင်ဆင်ရန်လိုသောအခါ ဒီလမ်းညွှန်ကို အသုံးပြုပါ။
 
 ## Prerequisites
 
 - An Azure subscription.
-- Permission to create or use Azure AI resources and model deployments.
-- A project in Azure AI Foundry or equivalent access to Azure OpenAI and Azure AI Vision resources.
+- Azure AI အရင်းအမြစ်များနှင့် မော်ဒယ် တပ်ဆင်မှုများကို ဖန်တီးသုံးရန် ခွင့်ပြုချက်။
+- Azure AI Foundry ထဲတွင် စီမံကိန်းတစ်ခု သို့မဟုတ် Azure OpenAI နှင့် Azure AI Vision အရင်းအမြစ်များသို့ ညီမျှသော ဝင်ရောက်ခွင့်။
 
-## Create an Azure AI Project
+## Azure AI စီမံကိန်း တည်ဆောက်ခြင်း
 
 1. [Azure AI Foundry](https://ai.azure.com) ကို ဖွင့်ပါ။
 2. ပရောဂျက် အသစ် တစ်ခု ဖန်တီးရန် သို့မဟုတ် ရွေးချယ်ပါ။
 3. ပရောဂျက်အတွက် AI hub တစ်ခု ဖန်တီးရန် သို့မဟုတ် ရွေးချယ်ပါ။
 4. ဖန်တီးပြီးနောက် ပရောဂျက် အကျဉ်းချုံး ကို ဖွင့်ပါ။
 
-## Deploy an Azure OpenAI Model
+## Azure OpenAI မော်ဒယ် တပ်ဆင်ခြင်း
 
 1. ပရောဂျက်တွင် **Models + endpoints** ကို ဖွင့်ပါ။
 2. **Deploy model** ကို ရွေးပါ။
@@ -26,11 +26,11 @@ Use this guide when you want to configure Azure OpenAI for text translation and 
 !!! note
     Azure OpenAI API version သည် Azure AI Foundry တွင် ပြသထားသော model version နှင့် သီးခြားပါသည်။ သင့် deployment အတွက် ထောက်ပံ့ထားသော API version ကို ရွေးချယ်ပါ။
 
-## Configure Azure AI Vision
+## Azure AI Vision ကို ဖွဲ့စည်းခြင်း
 
-Image translation uses Azure AI Vision to extract text from source images before the text is translated.
+ပုံဘာသာပြန်ရာတွင် စာသားကို ဘာသာပြန်ရန်မပြုမီ ပုံအရင်းမြစ်များမှ စာသားများကို ထုတ်ယူရန် Azure AI Vision ကို အသုံးပြုသည်။
 
-In your Azure AI project, find the Azure AI Services key and endpoint.
+သင်၏ Azure AI စီမံကိန်းတွင် Azure AI Services key နှင့် endpoint ကို ရှာဖွေပါ။
 
 ![Azure AI service အချက်အလက်များ ရှာဖွေပါ](../../assets/find-azure-ai-info.png)
 
@@ -39,7 +39,7 @@ Record:
 - Azure AI Service endpoint
 - Azure AI Service API key
 
-## Environment Variables
+## ပတ်ဝန်းကျင် အပြောင်းအလဲများ
 
 Add the credentials to your `.env` file or CI secrets.
 
@@ -56,7 +56,7 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Co-op Translator also supports optional fallback credential sets. Duplicate a complete provider set with suffixes such as `_1` or `_2`; all variables in a fallback set must share the same suffix.
+Co-op Translator သည် ရွေးချယ်စရာ fallback credential စုံများကိုလည်း ထောက်ပံ့သည်။ `_1` သို့မဟုတ် `_2` ကဲ့သို့သော suffix များဖြင့် provider စုံတစ်ခုလုံးကို မိတ္တူယူပါ; fallback စုံအတွင်းရှိ အပြည့်အစုံ variable များအားလုံးသည် တစ်ခုတည်းသော suffix ကို မျှဝေထားရမည်။
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -66,8 +66,8 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_1="<deployment-1>"
 AZURE_OPENAI_API_VERSION_1="2024-12-01-preview"
 ```
 
-## Next Steps
+## နောက်ဆက်တွဲ အဆင့်များ
 
-- Return to [ဆက်တင်](configuration.md) to set up local or CI environment variables.
+- [ဆက်တင်](configuration.md) သို့ ပြန်သွား၍ local သို့မဟုတ် CI ပတ်ဝန်းကျင်အတွက် environment variables များ သတ်မှတ်ပါ။
 - Use [CLI Reference](cli.md) for translation commands.
 - Use [GitHub Actions](github-actions.md) to automate translation pull requests.

@@ -24,7 +24,7 @@
 5. ಎಂಡ್ಪಾಯಿಂಟ್, ನಿಯೋಜನೆಯ ಹೆಸರು, ಮಾದರಿ ಹೆಸರು, API ಕೀ ಮತ್ತು API ಆವೃತ್ತಿಯನ್ನು ದಾಖಲೆಮಾಡಿ.
 
 !!! note
-    The Azure OpenAI API version is separate from the model version shown in Azure AI Foundry. Choose a supported API version for your deployment.
+    Azure OpenAI API ಆವೃತ್ತಿ Azure AI Foundry ನಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲಾದ ಮಾದರಿ ಆವೃತ್ತಿಯಿಂದ ಬೇರ್ಪಟ್ಟಿದೆ. ನಿಮ್ಮ ನಿಯೋಜನೆಗಾಗಿ ಬೆಂಬಲಿತ API ಆವೃತ್ತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.
 
 ## Azure AI Vision ಅನ್ನು ಸಂರಚಿಸಿ
 

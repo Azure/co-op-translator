@@ -1,6 +1,6 @@
 # CLI-referanse
 
-Co-op Translator installerer disse kommandolinje-kommandoene:
+Co-op Translator installerer disse kommandolinje-tilgangspunktene:
 
 - `translate`
 - `evaluate`
@@ -8,33 +8,45 @@ Co-op Translator installerer disse kommandolinje-kommandoene:
 - `co-op-review`
 - `co-op-translator-mcp`
 
-Kommandoene `translate`, `evaluate`, `migrate-links` og `co-op-review` ruter gjennom `co_op_translator.__main__`, som velger kommandoimplementasjonen basert på det påkallte skriptnavnet. MCP-serveren bruker `co_op_translator.mcp.server` direkte.
+Kommandoene `translate`, `evaluate`, `migrate-links`, og `co-op-review` rutes gjennom `co_op_translator.__main__`, som velger kommandorealiseringen basert på det påkallte skriptnavnet. MCP-serveren bruker `co_op_translator.mcp.server` direkte.
 
 Hvis du skal velge mellom CLI, Python-API og MCP, start med [Velg arbeidsflyt](workflows.md).
+
+## Konsollutdata
+
+Interaktive terminaler bruker Rich-formatering for kommandohode, fremdrift og sammendrag. CI og ikke-interaktiv utdata faller automatisk tilbake til ren tekst.
+
+Sett `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` for å tvinge ren utdata, eller `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` for å tvinge Rich-utdata. Sett `CO_OP_TRANSLATOR_NO_PROGRESS=1` for å beholde sammendrag mens live fremdriftslinjer undertrykkes.
+
+Bruk `translate --json-events progress.ndjson` når et annet system trenger
+maskin-lesbar fremdrift. CLI-en fortsetter å vise menneskevennlig utdata, mens
+NDJSON-filen mottar versjonerte `co-op.translation.event.v1`-hendelser med
+stabile felt som `type`, `stage_key`, `completed`, `total`, og
+`current_path`.
 
 ## Førstegangs CLI-flyt
 
 Start her hvis du bruker Co-op Translator fra en terminal:
 
 1. Konfigurer en LLM-leverandør som beskrevet i [Konfigurasjon](configuration.md).
-2. Velg innholdstypen du vil oversette.
-3. Kjør først en fokusert kommando, for eksempel kun Markdown-oversettelse.
+2. Velg hvilken innholdstype du vil oversette.
+3. Kjør en fokusert kommando først, for eksempel kun Markdown-oversettelse.
 4. Bruk `--dry-run` før store endringer i depotet.
-5. Bruk `co-op-review` etter oversettelse for å sjekke struktur og aktualitet.
+5. Bruk `co-op-review` etter oversettelse for å kontrollere struktur og ferskhet.
 
 | Mål | Kommando å starte med |
 | --- | --- |
 | Oversett Markdown-dokumenter | `translate -l "ko" -md` |
 | Oversett notatbøker | `translate -l "ko" -nb` |
-| Oversett tekst i bilder | `translate -l "ko" -img` |
+| Oversett bildetekst | `translate -l "ko" -img` |
 | Forhåndsvis arbeid uten å skrive filer | `translate -l "ko" -md --dry-run` |
-| Gjennomgå eksisterende oversettelser | `co-op-review -l "ko"` |
-| Oppdater lenker i notatbøker og Markdown | `migrate-links -l "ko" --dry-run` |
+| Gå gjennom eksisterende oversettelser | `co-op-review -l "ko"` |
+| Oppdater notatbok- og Markdown-lenker | `migrate-links -l "ko" --dry-run` |
 | Eksponer verktøy for en MCP-klient | Konfigurer [MCP-serveren](mcp.md) i stedet for å kjøre CLI-kommandoer direkte. |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+Oversett Markdown-filer, notatbøker og bildetekst til ett eller flere mål-språk.
 
 ```bash
 translate -l "ko ja fr"
@@ -78,35 +90,42 @@ Lagre logger:
 translate -l "ko" -s
 ```
 
-### Alternativer
+Skriv strukturerte fremdriftshendelser:
 
-| Alternativ | Påkrevd | Beskrivelse |
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
+### Valg
+
+| Valg | Obligatorisk | Beskrivelse |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Ja | Mellomromseparerte språkkoder, for eksempel "es fr de", eller "all". |
-| `-r`, `--root-dir` | Nei | Prosjektrot. Standard er den gjeldende katalogen. |
-| `-u`, `--update` | Nei | Slett eksisterende oversettelser for valgte språk og opprett dem på nytt. |
-| `-img`, `--images` | Nei | Oversett kun bildefiler. |
-| `-md`, `--markdown` | Nei | Oversett kun Markdown-filer. |
-| `-nb`, `--notebook` | Nei | Oversett kun Jupyter-notatbøker. |
-| `-d`, `--debug` | Nei | Aktiver feilsøkingslogging i konsollen. |
-| `-s`, `--save-logs` | Nei | Lagre DEBUG-nivå logger under `<root-dir>/logs/`. |
-| `-x`, `--fix` | Nei | Oversett på nytt Markdown-filer med lav konfidens basert på tidligere evalueringsresultater. |
-| `-c`, `--min-confidence` | Nei | Konfidensgrense for `--fix`. Standard er `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | Nei | Legg til eller undertrykk fraskrivelser om maskinoversettelse. Standard er aktivert i CLI. |
-| `-f`, `--fast` | Nei | Utfaset rask bildemodus. |
-| `-y`, `--yes` | Nei | Bekreft spørsmål automatisk, nyttig i CI. |
-| `--repo-url` | Nei | Depot-URL brukt i README-språk-tabellens anbefaling om sparse-checkout. |
-| `--migrate-language-folders` | Nei | Gi nytt navn til eldre alias-mapper, som `cn` eller `tw`, til kanoniske BCP 47-mapper. |
-| `--dry-run` | Nei | Forhåndsvis migrering av språkmapper og oversettelsesestimater uten å skrive filer. |
+| `-l`, `--language-codes` | Yes | Mellomromseparerte språkkoder, som `"es fr de"`, eller `"all"`. |
+| `-r`, `--root-dir` | No | Prosjektrot. Standard er gjeldende katalog. |
+| `-u`, `--update` | No | Slett eksisterende oversettelser for valgte språk og gjenskap dem. |
+| `-img`, `--images` | No | Oversett kun bildefiler. |
+| `-md`, `--markdown` | No | Oversett kun Markdown-filer. |
+| `-nb`, `--notebook` | No | Oversett kun Jupyter-notatbøker. |
+| `-d`, `--debug` | No | Aktiver debug-logging i konsollen. |
+| `-s`, `--save-logs` | No | Lagre DEBUG-nivå logger under `<root-dir>/logs/`. |
+| `--json-events` | No | Skriv maskin-lesbare oversettelsesfremdriftshendelser som NDJSON. |
+| `-x`, `--fix` | No | Oversett på nytt Markdown-filer med lav konfidens basert på tidligere evalueringsresultater. |
+| `-c`, `--min-confidence` | No | Konfidensterskel for `--fix`. Standard er `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | No | Legg til eller undertrykk maskinoversettelsesansvarsfraskrivelser. Aktivert som standard i CLI. |
+| `-f`, `--fast` | No | Avviklet rask bildemodus. |
+| `-y`, `--yes` | No | Bekreft spørsmål automatisk, nyttig i CI. |
+| `--repo-url` | No | Depot-URL brukt i README-språk-tabellens sparse-checkout-anbefaling. |
+| `--migrate-language-folders` | No | Gi nytt navn til eldre alias-mapper, som `cn` eller `tw`, til kanoniske BCP 47-mapper. |
+| `--dry-run` | No | Forhåndsvis migrering av språkmapper og oversettelsesestimat uten å skrive filer. |
 
-Hvis ingen typeflagg er angitt, behandler `translate` Markdown, notatbøker og bilder. Bildeoversettelse krever konfigurasjon av Azure AI Vision.
+Hvis ingen type-flagg er oppgitt, behandler `translate` Markdown, notatbøker og bilder. Bildeoversettelse krever Azure AI Vision-konfigurasjon.
 
 ## evaluate
 
 Evaluer kvaliteten på oversatt Markdown for ett språk.
 
 !!! warning "Eksperimentell"
-    `evaluate` er eksperimentell. Den kan bruke regelbaserte og LLM-baserte kvalitetskontroller, skriver evalueringsresultater til oversettelsesmetadata, og scoringsmodellen og metadata-atferden kan endres.
+    `evaluate` er eksperimentell. Den kan bruke regelbaserte og LLM-baserte kvalitetskontroller, skriver evalueringsresultater i oversettelsesmetadata, og dens scoringsmodell og metadataoppførsel kan endre seg.
 
 ```bash
 evaluate -l "ko"
@@ -114,7 +133,7 @@ evaluate -l "ko"
 
 ### Vanlige eksempler
 
-Bruk en strengere terskel for lav konfidens:
+Bruk en strengere lav-konfidensterskel:
 
 ```bash
 evaluate -l "es" -c 0.8
@@ -132,17 +151,17 @@ Kjør kun LLM-baserte kontroller:
 evaluate -l "ja" -D
 ```
 
-### Alternativer
+### Valg
 
-| Alternativ | Påkrevd | Beskrivelse |
+| Valg | Obligatorisk | Beskrivelse |
 | --- | --- | --- |
-| `-l`, `--language-code` | Ja | Enkel språkkode som skal evalueres. Alias-koder normaliseres. |
-| `-r`, `--root-dir` | Nei | Prosjektrot. Standard er den gjeldende katalogen. |
-| `-c`, `--min-confidence` | Nei | Terskel brukt når man lister opp oversettelser med lav konfidens. Standard er `0.7`. |
-| `-d`, `--debug` | Nei | Aktiver debug-logging. |
-| `-s`, `--save-logs` | Nei | Lagre DEBUG-nivå logger under `<root-dir>/logs/`. |
-| `-f`, `--fast` | Nei | Kun regelbasert evaluering. |
-| `-D`, `--deep` | Nei | Kun LLM-basert evaluering. |
+| `-l`, `--language-code` | Yes | Enkel språkkode som skal evalueres. Alias-koder normaliseres. |
+| `-r`, `--root-dir` | No | Prosjektrot. Standard er gjeldende katalog. |
+| `-c`, `--min-confidence` | No | Terskel brukt ved oppføring av lav-konfidens-oversettelser. Standard er `0.7`. |
+| `-d`, `--debug` | No | Aktiver debug-logging. |
+| `-s`, `--save-logs` | No | Lagre DEBUG-nivå logger under `<root-dir>/logs/`. |
+| `-f`, `--fast` | No | Kun regelbasert evaluering. |
+| `-D`, `--deep` | No | Kun LLM-basert evaluering. |
 
 Som standard bruker `evaluate` både regelbasert og LLM-basert evaluering. Resultatene skrives inn i oversettelsesmetadata og oppsummeres i konsollen.
 
@@ -151,7 +170,7 @@ Som standard bruker `evaluate` både regelbasert og LLM-basert evaluering. Resul
 Kjør deterministiske vedlikeholdskontroller for oversettelser uten API-legitimasjon.
 
 !!! note "Beta"
-    `co-op-review` er en beta deterministisk gjennomgangskommando. Den kaller ikke modelltilbydere eller skriver filer, men kontrollene og skjemaet for utdataene om problemer kan endres.
+    `co-op-review` er en beta deterministisk gjennomgangskommando. Den kaller ikke modellleverandører eller skriver filer, men sjekkene og skjemaet for feilutdata kan utvikle seg.
 
 ```bash
 co-op-review -l "ko"
@@ -159,40 +178,53 @@ co-op-review -l "ko"
 
 ### Vanlige eksempler
 
-Gjennomgå koreanske og japanske oversettelser fra gjeldende katalog:
+Gå gjennom koreanske og japanske oversettelser fra gjeldende katalog:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Gjennomgå en spesifikk prosjektrot:
+Gå gjennom et spesifikt prosjektrot:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-Kun gjennomgå kildefiler endret i forhold til en base-ref:
+Gå kun gjennom README etter en oversettelse som bare var README:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` ignorerer andre dokumenter og innfelte README-er. Den feiler hvis rotens `README.md` mangler. Kombinert med `--changed-from` gjennomgår den kun README når den kildefilen endret seg. README-only-oversettelse lar kilde-README være uendret, inkludert eventuelle delte seksjonsmarkører.
+
+
+
+
+Gå kun gjennom kildefiler som er endret mot en base-ref:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-Skriv ut GitHub-flavored Markdown-utdata for CI-oppsummeringer:
+Skriv ut GitHub-flavored Markdown-utdata for CI-sammendrag:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
 ```
 
-### Alternativer
+### Valg
 
-| Alternativ | Påkrevd | Beskrivelse |
+| Valg | Obligatorisk | Beskrivelse |
 | --- | --- | --- |
-| `-l`, `--language-code` | Nei | Språkkode som skal gjennomgås. Kan sendes flere ganger eller som en mellomromseparert verdi. Standard er alle oppdagede oversettelsesspråk. |
-| `-r`, `--root-dir` | Nei | Prosjektrot. Standard er den gjeldende katalogen. |
-| `--changed-from` | Nei | Git-ref brukt for å begrense gjennomgangen til endrede kildefiler. |
-| `--format` | Nei | Utdataformat: `text` eller `github`. Standard er `text`. |
+| `-l`, `--language-code` | No | Språkkode å gjennomgå. Kan gis flere ganger eller som en mellomrom-separert verdi. Standard er alle oppdagede oversettelsesspråk. |
+| `-r`, `--root-dir` | No | Prosjektrot. Standard er gjeldende katalog. |
+| `--changed-from` | No | Git-ref brukt for å begrense gjennomgangen til endrede kildefiler. |
+| `--readme-only` | No | Gå kun gjennom rotens `README.md`-oversettelse. |
+| `--format` | No | Utdataformat: `text` eller `github`. Standard er `text`. |
 
-`co-op-review` sjekker for manglende oversatte filer, manglende eller utdaterte oversettelsesmetadata, integriteten til Markdown-frontmatter og kodeblokker, ugyldig oversatt notatbok-JSON, og manglende lokale mål for Markdown- eller bildelenker. Manglende lenker er advarsler som standard; strukturelle og aktualitetsproblemer fører til at kommandoen feiler.
+`co-op-review` sjekker for manglende oversatte filer, manglende eller utdaterte oversettelsesmetadata, Markdown frontmatter og kodegjerde-integritet, ugyldig oversatt notatbok-JSON, og manglende lokale Markdown- eller bildelenkemål. Manglende lenker er advarsler som standard; strukturelle og ferskhetsproblemer gjør at kommandoen feiler.
 
 ## co-op-translator-mcp
 
@@ -202,17 +234,17 @@ Kjør Co-op Translator MCP-serveren for agenter, redaktører og MCP-kompatible k
 co-op-translator-mcp
 ```
 
-Standardtransport er `stdio`. Se [MCP-serveren](mcp.md)-veiledningen for klientkonfigurasjon, verktøy, ressurser og sikkerhetsmerknader.
+Standard transport er `stdio`. Se guiden for [MCP-serveren](mcp.md) for klientkonfigurasjon, verktøy, ressurser og sikkerhetsnotater.
 
-### Alternativer
+### Valg
 
-| Alternativ | Påkrevd | Beskrivelse |
+| Valg | Obligatorisk | Beskrivelse |
 | --- | --- | --- |
-| `--transport` | Nei | MCP-transport: `stdio`, `streamable-http`, eller `sse`. Standard er `stdio`. |
+| `--transport` | No | MCP-transport: `stdio`, `streamable-http`, eller `sse`. Standard er `stdio`. |
 
 ## migrate-links
 
-Reprosesser oversatte Markdown-filer og oppdater notatboklenker slik at de peker til oversatte notatbøker når disse er tilgjengelige.
+Behandle oversatte Markdown-filer på nytt og oppdater notatboklenker slik at de peker til oversatte notatbøker når tilgjengelig.
 
 ```bash
 migrate-links -l "ko ja"
@@ -226,34 +258,34 @@ Forhåndsvis lenkeoppdateringer:
 migrate-links -l "ko" --dry-run
 ```
 
-Prosesser alle støttede språk uten bekreftelse:
+Behandle alle støttede språk uten bekreftelse:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-Skriv kun om lenker når oversatte notatbøker eksisterer:
+Skriv kun om lenker når oversatte notatbøker finnes:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
 ```
 
-### Alternativer
+### Valg
 
-| Alternativ | Påkrevd | Beskrivelse |
+| Valg | Obligatorisk | Beskrivelse |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Ja | Mellomromseparerte språkkoder, eller `"all"`. |
-| `-r`, `--root-dir` | Nei | Prosjektrot. Standard er den gjeldende katalogen. |
-| `--image-dir` | Nei | Katalog for oversatte bilder relativt til roten. Standard er `translated_images`. |
-| `--dry-run` | Nei | Vis filer som ville endres uten å skrive oppdateringer. |
-| `--fallback-to-original`, `--no-fallback-to-original` | Nei | Bruk originale notatboklenker når oversatte notatbøker mangler. Aktivert som standard. |
-| `-d`, `--debug` | Nei | Aktiver feilsøkingslogging. |
-| `-s`, `--save-logs` | Nei | Lagre DEBUG-nivå logger under `<root-dir>/logs/`. |
-| `-y`, `--yes` | Nei | Bekreft forespørsler automatisk når alle språk behandles. |
+| `-l`, `--language-codes` | Yes | Mellomromseparerte språkkoder, eller `"all"`. |
+| `-r`, `--root-dir` | No | Prosjektrot. Standard er gjeldende katalog. |
+| `--image-dir` | No | Katalog for oversatte bilder relativt til rot. Standard er `translated_images`. |
+| `--dry-run` | No | Vis filer som ville endres uten å skrive oppdateringer. |
+| `--fallback-to-original`, `--no-fallback-to-original` | No | Bruk opprinnelige notatboklenker når oversatte notatbøker mangler. Aktivert som standard. |
+| `-d`, `--debug` | No | Aktiver debug-logging. |
+| `-s`, `--save-logs` | No | Lagre DEBUG-nivå logger under `<root-dir>/logs/`. |
+| `-y`, `--yes` | No | Bekreft spørsmål automatisk når alle språk behandles. |
 
 ## Miljø
 
-Alle kommandoene krever én konfigurert LLM-leverandør:
+Når en kommando krever leverandørlegitimasjon, konfigurer ett av disse leverandørsettene. `translate --dry-run` og `co-op-review` krever ikke leverandørlegitimasjon:
 
 ```bash
 # Azure OpenAI
@@ -266,6 +298,10 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Eller OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Eller Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
 Bildeoversettelse krever i tillegg Azure AI Vision:
@@ -296,7 +332,7 @@ translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## Kopier-og-lim-inn CLI-eksempler
+## Kopier-og-lim CLI-eksempler
 
 Oversett Markdown til tre språk:
 
@@ -322,7 +358,7 @@ Forhåndsvis Markdown-oversettelse uten å skrive filer:
 translate -l "de es" -md --dry-run
 ```
 
-Reparer Markdown-oversettelser med lav konfidens:
+Reparer lavkonfidens Markdown-oversettelser:
 
 ```bash
 evaluate -l "ko" -c 0.8
@@ -335,7 +371,7 @@ Kjør CI-vennlig Markdown-oversettelse:
 translate -l "ko ja" -md -y -s
 ```
 
-Gjennomgå oversatt innhold:
+Gjennomgå oversatt utdata:
 
 ```bash
 co-op-review -l "ko ja"

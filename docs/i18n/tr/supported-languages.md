@@ -1,8 +1,8 @@
 # Desteklenen Diller
 
-Co-op Translator, metin, defter ve görüntü çeviri çıktıları için aşağıdaki dil kodlarını destekler.
+Co-op Translator, metin, not defteri ve görüntü çeviri çıktıları için aşağıdaki dil kodlarını destekler.
 
-Yeni bir dil eklemek istiyorsanız, `src/co_op_translator/fonts/` altındaki dil ve yazı tipi eşlemelerini güncelleyin ve pull request açmadan önce dili test edin.
+Yeni bir dil eklemek istiyorsanız, `src/co_op_translator/fonts/` altında dil ve yazı tipi eşlemelerini güncelleyin ve bir pull request açmadan önce dili test edin.
 
 | Dil Kodu | Dil Adı | Yazı Tipi | RTL Desteği | Bilinen Sorunlar |
 | --- | --- | --- | --- | --- |
@@ -37,7 +37,7 @@ Yeni bir dil eklemek istiyorsanız, `src/co_op_translator/fonts/` altındaki dil
 | da | Danca | NotoSans-Medium.ttf | Hayır | Yok |
 | no | Norveççe | NotoSans-Medium.ttf | Hayır | Yok |
 | fi | Fince | NotoSans-Medium.ttf | Hayır | Yok |
-| nl | Flemenkçe | NotoSans-Medium.ttf | Hayır | Yok |
+| nl | Hollandaca | NotoSans-Medium.ttf | Hayır | Yok |
 | he | İbranice | NotoSansHebrew-Medium.ttf | Evet | Yok |
 | vi | Vietnamca | NotoSans-Medium.ttf | Hayır | Yok |
 | id | Endonezce | NotoSans-Medium.ttf | Hayır | Yok |
@@ -53,7 +53,7 @@ Yeni bir dil eklemek istiyorsanız, `src/co_op_translator/fonts/` altındaki dil
 | hr | Hırvatça | NotoSans-Medium.ttf | Hayır | Yok |
 | sl | Slovence | NotoSans-Medium.ttf | Hayır | Yok |
 | uk | Ukraynaca | NotoSans-Medium.ttf | Hayır | Yok |
-| my | Birmanca (Myanmar) | NotoSansMyanmar-Medium.ttf | Hayır | Yok |
+| my | Burmaca (Myanmar) | NotoSansMyanmar-Medium.ttf | Hayır | Yok |
 | ta | Tamilce | NotoSansTamil-Medium.ttf | Hayır | Yok |
 | et | Estonca | NotoSans-Medium.ttf | Hayır | Yok |
 | pcm | Nijerya Pidgin | NotoSans-Medium.ttf | Hayır | Yok |
@@ -61,12 +61,13 @@ Yeni bir dil eklemek istiyorsanız, `src/co_op_translator/fonts/` altındaki dil
 | ml | Malayalam | NotoSans-Medium.ttf | Hayır | Yok |
 | kn | Kannada | NotoSans-Medium.ttf | Hayır | Yok |
 | km | Kmerce | NotoSansKhmer-Medium.ttf | Hayır | Yok |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Hayır | Yok |
 
 ## Bir Dil Ekle
 
-Yeni bir dil desteği eklemek için:
+Yeni bir dili desteklemek için:
 
-1. Dil kodunu ve görüntülenen adını dil yardımcı programlarına ekleyin.
-2. Bir yazı tipini `src/co_op_translator/fonts/font_language_mappings.yml` dosyasına ekleyin veya eşleyin.
+1. Dil kodunu ve görüntülenecek adı dil yardımcı araçlarına ekleyin.
+2. Add or map a font in `src/co_op_translator/fonts/font_language_mappings.yml`.
 3. Markdown ve görüntü çeviri çıktısını test edin.
 4. Eşleme ve doğrulama notlarıyla birlikte bir pull request açın.

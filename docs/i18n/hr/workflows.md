@@ -1,44 +1,48 @@
-# Odaberite svoj tijek rada
+# Odaberite svoj radni tijek
 
-Co-op Translator se može koristiti na tri načina: CLI, Python API i MCP server. Dijele iste mogućnosti prevođenja, ali svaki odgovara drugačijem tijeku rada.
+Co-op Translator se može koristiti na tri načina: CLI, Python API i MCP server. Dijele iste mogućnosti prevođenja, ali svaki odgovara drugačijem radnom tijeku.
 
-Upotrijebite ovu stranicu kada odlučujete gdje početi.
+Koristite ovu stranicu kada odlučujete gdje započeti.
+
+**Ako ručno uređujete prijevode:** zadani CLI i Actions radni tijekovi ponovno prevode promijenjene izvorne datoteke u cjelini, pa se vaša formulacija u tim datotekama može prebrisati. Pregledajte razliku (diff) prije prihvaćanja ažuriranja. Za očuvanje prihvaćenih izmjena na razini Markdown blokova koristite opcionalni [Python API pružatelj stanja prijevoda](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
 
 ## Brza odluka
 
-| Ako želite... | Koristite | Počnite ovdje |
+| Ako želite... | Upotrijebite | Počnite ovdje |
 | --- | --- | --- |
-| Prevesti ili pregledati repozitorij iz terminala | CLI | [CLI referenca](cli.md) |
-| Dodati prijevod u Python skriptu, servis, bilježnicu ili CI zadatak | Python API | [Python API](api.md) |
-| Neka agent, uređivač ili MCP-kompatibilni klijent prevede sadržaj za vas | MCP Server | [MCP Server](mcp.md) |
-| Prevesti jedan Markdown dokument, bilježnicu ili sliku koji je vaša aplikacija već učitala | Python API or MCP Server | [Python API](api.md) or [MCP Server](mcp.md) |
-| Prevesti čitav repozitorij s uobičajenim izlaznim mapama i metapodacima | CLI or `run_translation` | [CLI referenca](cli.md) or [Python API](api.md) |
+| Prevesti ili pregledati spremište iz terminala | CLI | [Referenca za CLI](cli.md) |
+| Dodati prijevod u Python skriptu, servis, bilježnicu (notebook) ili CI posao | Python API | [Python API](api.md) |
+| Neka agent, uređivač ili MCP-kompatibilni klijent prevede sadržaj umjesto vas | MCP Server | [MCP Server](mcp.md) |
+| Prevesti jedan Markdown dokument, bilježnicu ili sliku koju je vaša aplikacija već učitala | Python API ili MCP Server | [Python API](api.md) ili [MCP Server](mcp.md) |
+| Prevesti cijelo spremište s uobičajenim izlaznim mapama i metapodacima | CLI or `run_translation` | [Referenca za CLI](cli.md) or [Python API](api.md) |
 
 ## Koristite CLI kada
 
-Odaberite CLI kada osoba ili CI zadatak pokreće prevođenje repozitorija iz terminala.
+Odaberite CLI kada osoba ili CI posao pokreće prevođenje spremišta iz terminala.
 
-CLI je najizravniji put kada želite da Co-op Translator otkrije datoteke projekta, stvori prevedene izlaze, sačuva strukturu projekta, ažurira metapodatke i pokrene naredbe za pregled.
+CLI je najizravniji put kada želite da Co-op Translator otkrije projektne datoteke, stvori prevedene izlaze, očuva raspored projekta, ažurira metapodatke i pokrene naredbe za pregled.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
-Dobro odgovara:
+Ovaj primjer prevodi Markdown i bilježnice. Dodajte `-img` tek nakon konfiguriranja [Azure AI Vision](configuration.md#azure-ai-vision). Za prvo pokretanje samo za Markdown slijedite [Vaš prvi prijevod](first-translation.md).
 
-- Prevodi­te repozitorij iz terminala.
-- Želite ponovljivu naredbu za CI ili release tijekove rada.
-- Želite ugrađeno otkrivanje projekta, izlazne putanje, metapodatke, čišćenje i pregled.
-- Preferirate sučelje naredbenog retka umjesto pisanja Python koda.
+Prikladno za:
+
+- Prevodite spremište iz terminala.
+- Želite ponovljivu naredbu za CI ili release radne tijekove.
+- Želite ugrađeno otkrivanje projekta, izlazne puteve, metapodatke, čišćenje i pregled.
+- Dajete prednost naredbenom sučelju umjesto pisanju Python koda.
 
 ## Koristite Python API kada
 
-Odaberite Python API kada vaš kod treba kontrolirati tijek rada.
+Odaberite Python API kada vaš kod treba kontrolirati radni tijek.
 
-API je koristan za aplikacije, automatizirane skripte, bilježnice, servise i prilagođene pipelineove. Omogućuje vam pozivanje niskorazinskih API-ja za prevođenje sadržaja za pojedinačne datoteke ili pokretanje iste orkestracije na razini repozitorija koju koristi CLI.
+API je koristan za aplikacije, automatizirane skripte, bilježnice, servise i prilagođene pipelineove. Omogućuje pozivanje niskorazinskih API-ja za prevođenje sadržaja za pojedinačne datoteke ili pokretanje iste orkestracije na razini spremišta koju koristi CLI.
 
 Prevedite jedan Markdown dokument i odlučite gdje ga spremiti:
 
@@ -72,57 +76,50 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Pokrenite prevođenje repozitorija iz Pythona:
+Pokrenite prevođenje spremišta iz Pythona:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
-Dobro odgovara:
+Prikladno za:
 
 - Vaša aplikacija već čita datoteke, buffere, bilježnice ili bajtove slike.
-- Trebate prilagođenu validaciju, pohranu, evidentiranje, ponovne pokušaje ili tokove odobravanja.
-- Želite prevesti jedan dokument, bilježnicu ili sliku bez obrade čitavog repozitorija.
-- Želite prevođenje repozitorija, ali iz Python automatizacije umjesto naredbe u terminalu.
+- Potrebna vam je prilagođena validacija, pohrana, zapisivanje (logging), ponovna pokušavanja ili tokovi odobravanja.
+- Želite prevesti jedan dokument, bilježnicu ili sliku bez obrade cijelog spremišta.
+- Želite prevođenje spremišta, ali iz Python automatizacije umjesto naredbe u shellu.
 
 ## Koristite MCP Server kada
 
-Odaberite MCP server kada agent, uređivač ili MCP-kompatibilni klijent treba pozvati alate Co-op Translatora.
+Odaberite MCP server kada agent, uređivač ili MCP-kompatibilni klijent treba pozvati Co-op Translator alate.
 
-U uobičajenoj lokalnoj postavci korisnik ne pokreće ručno server. MCP klijent pokreće `co-op-translator-mcp` preko `stdio` kada mu trebaju alati.
+U normalnoj lokalnoj konfiguraciji korisnik ne održava server ručno. MCP klijent pokreće `co-op-translator-mcp` preko `stdio` kada mu trebaju alati.
 
 Primjeri korisničkih zahtjeva koje bi agent mogao obraditi:
 
-- "Prevedite ovu Markdown datoteku na korejski i zadržite ispravne poveznice."
-- "Prevedite ovu Markdown datoteku na korejski s MCP tijek rada uz pomoć agenta, koristeći vlastiti model za prevedene dijelove."
-- "Prevedite ovu bilježnicu na korejski, sačuvajte ćelije s kodom i upotrijebite Co-op Translator MCP za rekonstrukciju bilježnice."
-- "Prevedite tekst na ovoj slici na japanski i spremite rezultat."
-- "Izvedite probni (dry-run) prijevod repozitorija na španjolski i recite mi što bi se promijenilo."
-- "Provjerite je li korejski prijevod ažuran."
+- "Prevedi ovu Markdown datoteku na korejski i zadrži ispravne poveznice."
+- "Prevedi ovu Markdown datoteku na korejski koristeći MCP radni tijek uz pomoć agenta, koristeći vlastiti model za prevedene dijelove."
+- "Prevedi ovu bilježnicu na korejski, sačuvaj kodne ćelije i upotrijebi Co-op Translator MCP za rekonstrukciju bilježnice."
+- "Prevedi tekst na ovoj slici na japanski i spremi rezultat."
+- "Napravite probno (dry-run) prevođenje spremišta na španjolski i recite mi što bi se promijenilo."
+- "Provjeri je li izlaz korejskog prijevoda ažuriran."
 
-Za Markdown i bilježnice, MCP može raditi u dva načina rada:
+Za Markdown i bilježnice, MCP može raditi na dva načina:
 
-| Način | Koristite kada | Glavni alati |
+| Način | Koristi se kada | Glavni alati |
 | --- | --- | --- |
-| Uz pomoć agenta | Kada MCP host agent treba prevesti dijelove koristeći vlastiti model, bez vjerodajnica Co-op Translator LLM providera. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Podržano od providera | Kada Co-op Translator treba izravno pozvati Azure OpenAI ili OpenAI. | `translate_markdown_content`, `translate_notebook_content` |
+| Agent-assisted | Domaćinski MCP agent treba prevesti dijelove vlastitim modelom, bez vjerodajnica pružatelja LLM-a Co-op Translatora. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Provider-backed | Co-op Translator bi trebao izravno pozivati Azure OpenAI, OpenAI ili Anthropic. | `translate_markdown_content`, `translate_notebook_content` |
 
-Oblik poziva Markdown alata za MCP s podrškom providera:
+Oblik poziva alata za Markdown podržanog MCP providerom:
 
 ```json
 {
@@ -137,7 +134,7 @@ Oblik poziva Markdown alata za MCP s podrškom providera:
 }
 ```
 
-Oblik poziva za MCP alat za slike:
+MCP image tool call shape:
 
 ```json
 {
@@ -150,7 +147,7 @@ Oblik poziva za MCP alat za slike:
 }
 ```
 
-Po zadanim postavkama, prevođenje repozitorija putem MCP-a je probni (dry-run):
+Prevođenje spremišta putem MCP-a je po zadanom probno (dry-run):
 
 ```json
 {
@@ -165,16 +162,16 @@ Po zadanim postavkama, prevođenje repozitorija putem MCP-a je probni (dry-run):
 }
 ```
 
-Dobro odgovara:
+Prikladno za:
 
-- Želite tijekove rada za prevođenje na prirodnom jeziku unutar agenta ili uređivača.
-- Želite prevođenje Markdowna ili bilježnica gdje model host agenta prevodi pripremljene dijelove.
-- Želite da agent prevede odabrani sadržaj umjesto cijelog repozitorija.
-- Želite korak odobrenja prije pisanja po cijelom repozitoriju.
-- Želite jedno sučelje koje izlaže alate za Markdown, bilježnice, slike, pregled i prepisivanje putanja.
+- Želite radne tijekove prevođenja u prirodnom jeziku unutar agenta ili uređivača.
+- Želite prevođenje Markdowna ili bilježnica gdje domaćinski agentov model prevodi pripremljene dijelove.
+- Želite da agent prevede odabrani sadržaj umjesto cijelog spremišta.
+- Želite korak odobrenja prije upisa promjena u cijelo spremište.
+- Želite sučelje koje izlaže alate za Markdown, bilježnice, slike, pregled i prepisivanje putanja.
 
 ## Kako se uklapaju
 
-CLI je najbolji zadani izbor za ljude koji prevode repozitorije. Python API je najbolji kada vaš kod upravlja tijekom rada. MCP server je najbolji kada agent ili uređivač upravlja tijekom rada.
+CLI je najbolji zadani izbor za ljude koji prevode spremišta. Python API je najbolji kada vaš kod upravlja radnim tijekom. MCP server je najbolji kada agent ili uređivač upravlja radnim tijekom.
 
-Sva tri pristupa koriste isti javni Co-op Translator API, pa možete početi s CLI-jem, kasnije automatizirati s Pythonom i izložiti iste mogućnosti MCP klijentima kada trebate tijekove rada vođene agentom.
+Sva tri puta koriste isti javni Co-op Translator API, pa možete započeti s CLI-jem, kasnije automatizirati s Pythonom i izložiti iste mogućnosti MCP klijentima kad trebate radne tijekove kojima upravlja agent.

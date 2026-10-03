@@ -1,23 +1,23 @@
 # MCP сървър
 
-Co-op Translator включва MCP (Model Context Protocol) сървър за агенти, редактори и MCP-съвместими клиенти.
+Co-op Translator включва сървър на Model Context Protocol за агенти, редактори и клиенти, съвместими с MCP.
 
-За стандартната локална конфигурация потребителите не поддържат отделен сървър ръчно. Те конфигурират своя MCP клиент и клиентът стартира `co-op-translator-mcp` автоматично по `stdio`, когато се нуждае от инструментите на Co-op Translator.
+За подразбиращата се локална конфигурация потребителите не пускат отделен сървър ръчно. Те конфигурират своя MCP клиент, а клиентът стартира `co-op-translator-mcp` автоматично през `stdio`, когато се нуждае от инструментите на Co-op Translator.
 
-Ако се колебаете между CLI, Python API и MCP, започнете с [Изберете своя работен процес](workflows.md).
+Ако се колебаете между CLI, Python API и MCP, започнете с [Изберете вашия работен поток](workflows.md).
 
-Използвайте MCP, когато агент или редактор трябва директно да извика Co-op Translator:
+Използвайте MCP когато агент или редактор трябва да извика директно Co-op Translator:
 
-| User goal | MCP tools |
+| Цел на потребителя | Инструменти в MCP |
 | --- | --- |
-| Translate one Markdown document, notebook, or image | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
-| Translate Markdown or notebook content with the host agent model | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Rewrite translated Markdown or notebook links after choosing the output path | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Translate a full repository like the CLI | `run_translation`, `translate_project` |
-| Review translated output without LLM credentials | `run_review` |
-| Inspect capabilities and environment status | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
+| Превод на един Markdown документ, тетрадка или изображение | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
+| Превод на Markdown или съдържание на тетрадка с модела на хост агента | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Пренаписване на преведени връзки в Markdown или тетрадка след избора на път за изхода | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Превод на цял репозиториум като при CLI | `run_translation`, `translate_project` |
+| Преглед на преведеното съдържание без LLM идентификационни данни | `run_review` |
+| Проверка на възможностите и състоянието на средата | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-MCP сървърът обвива същия публичен Python API, документиран в [Python API](api.md). Инструментите, поддържани от доставчици, използват същите конфигурирани доставчици като CLI и Python API. Инструментите с помощта на агент подготвят парчета (chunks) за MCP хост агента да ги преведе, след което използват Co-op Translator за реконструкция на крайния Markdown или бележник.
+MCP сървърът обвива същото публично Python API, документирано в [Python API](api.md). Инструментите, базирани на доставчик, използват същите конфигурирани доставчици като CLI и Python API. Инструментите с помощта на агент подготвят фрагменти за хост агента на MCP да ги преведе, след което използват Co-op Translator за реконструиране на финалния Markdown или тетрадка.
 
 ## Стъпка 1: Инсталиране и конфигуриране на Co-op Translator
 
@@ -27,7 +27,7 @@ MCP сървърът обвива същия публичен Python API, док
 pip install co-op-translator
 ```
 
-За локална разработка от това хранилище, инсталирайте пакета в editable режим:
+За локална разработка от това репозитори, инсталирайте пакета в editable режим:
 
 ```bash
 pip install -e .
@@ -35,24 +35,33 @@ pip install -e .
 
 Изберете режима на превод, който ще използва вашият MCP клиент:
 
-| Mode | Use this for | Credentials |
+| Режим | Използва се за | Удостоверителни данни |
 | --- | --- | --- |
-| Provider-backed | Co-op Translator calls `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, or `run_translation`. | Markdown and notebook translation require Azure OpenAI or OpenAI. Image translation also requires Azure AI Vision. |
-| Agent-assisted | The MCP host agent translates chunks returned by `start_markdown_agent_translation` or `start_notebook_agent_translation`. | No Co-op Translator LLM provider credentials are required for Markdown or notebook chunks. Image translation is not covered by agent-assisted mode yet. |
+| С доставчик | Co-op Translator извиква `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` или `run_translation`. | За превод са необходими Azure OpenAI, OpenAI или Anthropic. За превод на изображения се изисква и Azure AI Vision. |
+| С помощта на агент | Хост агентът на MCP превежда фрагментите, върнати от `start_markdown_agent_translation` или `start_notebook_agent_translation`. | Не са необходими LLM доставчик удостоверителни данни за Co-op Translator за фрагменти от Markdown или тетрадки. Преводът на изображения все още не е покрит от режима с помощта на агент. |
 
-Ако започвате с превод на Markdown или бележници вътре в агент като Codex или Claude Code, започнете с agent-assisted режим. Използвайте provider-backed режим, когато искате самият Co-op Translator да извика конфигурираните доставчици, когато превеждате изображения или когато изпълнявате превод на ниво репозитория като CLI.
+Ако започвате с превод на Markdown или тетрадка вътре в агент като Codex или Claude Code, започнете с режима с помощта на агент. Използвайте режим с доставчик, когато искате самият Co-op Translator да извиква вашите конфигурирани доставчици, когато превеждате изображения или когато извършвате превод на ниво проект като при CLI.
 
-Конфигурирайте данните за доставчиците само за provider-backed работни потоци:
+Конфигурирайте един доставчик за работни потоци, базирани на доставчик:
 
 ```bash
+# Azure OpenAI
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+
+# Или OpenAI
+OPENAI_API_KEY="..."
+OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Или Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Provider-backed преводът на изображения изисква допълнително:
+За превод на изображения с доставчик допълнително е необходимо:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -60,13 +69,13 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
 !!! note
-    Agent-assisted режимът в момента покрива Markdown и Markdown клетки в бележниците. Преводът на изображения все още използва provider-backed изображенческия pipeline и изисква Azure AI Vision за OCR и рендиране, което отчита оформлението.
+    Режимът с помощта на агент в момента покрива Markdown и Markdown клетки в тетрадки. Преводът на изображения все още използва pipeline-а, базиран на доставчик, и изисква Azure AI Vision за OCR и рендиране, отчитащо оформлението.
 
 ## Стъпка 2: Конфигурирайте вашия MCP клиент
 
-За нормалната локална `stdio` конфигурация добавете Co-op Translator към конфигурацията на вашия MCP клиент. Клиентът ще стартира и спре процеса автоматично.
+За нормалната локална `stdio` конфигурация добавете Co-op Translator към конфигурацията на вашия MCP клиент. Клиентът автоматично ще стартира и спира процеса.
 
-Конфигуриране за инсталиран пакет:
+Конфигурация за инсталиран пакет:
 
 ```json
 {
@@ -79,7 +88,7 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 }
 ```
 
-Конфигурация при източников checkout в Windows:
+Конфигурация за source checkout на Windows:
 
 ```json
 {
@@ -93,7 +102,7 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 }
 ```
 
-Конфигурация при източников checkout в macOS или Linux:
+Конфигурация за source checkout на macOS или Linux:
 
 ```json
 {
@@ -107,11 +116,11 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 }
 ```
 
-След промяна на конфигурацията на MCP клиента, рестартирайте или презаредете клиента, за да открие новия сървър.
+След промяна на конфигурацията на MCP клиента, рестартирайте или презаредете клиента, за да може да открие новия сървър.
 
 ## Стъпка 3: Проверете сървъра в клиента
 
-Помолете MCP клиента да изброи наличните инструменти или извикайте един от read-only помощниците първо:
+Помолете MCP клиента да изброи наличните инструменти или първо извикайте един от помощните read-only инструменти:
 
 ```json
 {
@@ -122,43 +131,43 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 
 Полезни първи проверки:
 
-| Tool | What to check |
+| Инструмент | Какво да проверите |
 | --- | --- |
 | `get_api_overview` | Потвърждава, че сървърът е достъпен и показва наличните работни потоци. |
-| `list_supported_languages` | Потвърждава, че пакетните данни за езици могат да бъдат заредени. |
-| `get_configuration_status` | Потвърждава наличието на LLM и Vision доставчици без да разкрива секретни стойности. |
+| `list_supported_languages` | Потвърждава, че пакетните езикови данни могат да бъдат заредени. |
+| `get_configuration_status` | Потвърждава наличността на LLM и Vision доставчици без разкриване на секретни стойности. |
 
 ## Стъпка 4: Изберете работен поток
 
-### Превод на отделни файлове или документи
+### Превеждане на отделни файлове или документи
 
-Използвайте provider-backed инструменти за съдържание, когато MCP клиентът вече разполага със съдържанието на документа или път към изображение и Co-op Translator трябва да извика конфигурираните доставчици.
+Използвайте инструментите, базирани на доставчик, когато MCP клиентът вече има съдържанието на документа или път до изображение и Co-op Translator трябва да извика конфигурираните доставчици за превод.
 
 За Markdown:
 
 1. Извикайте `translate_markdown_content` с `document`, `language_code` и по избор `source_path`.
-2. Ако преведеният резултат ще бъде записан в изходен layout на Co-op Translator, извикайте `rewrite_markdown_paths`.
-3. Нека клиентът запише или върне крайното `content`.
+2. Ако преведеният резултат ще бъде записан в изходната структура на Co-op Translator, извикайте `rewrite_markdown_paths`.
+3. Нека клиентът запише или върне финалното `content`.
 
-За бележници:
+За тетрадки:
 
-1. Извикайте `translate_notebook_content` с JSON на бележника и `language_code`.
-2. Извикайте `rewrite_notebook_paths` ако преведените връзки в бележника трябва да бъдат коригирани за целев път.
-3. Запишете или върнете крайния JSON на бележника.
+1. Извикайте `translate_notebook_content` с JSON на тетрадката и `language_code`.
+2. Извикайте `rewrite_notebook_paths`, ако преведените връзки в тетрадката трябва да бъдат коригирани за целевия път.
+3. Запишете или върнете крайния JSON на тетрадката.
 
 За изображения:
 
 1. Извикайте `translate_image_content` с `image_path`, `language_code` и по избор `root_dir` или `fast_mode`.
 2. Прочетете върнатите `data_base64` и `mime_type`.
-3. Ако е предоставен `output_path`, преведеното изображение също се запазва на този път.
+3. Ако е предоставен `output_path`, преведеното изображение също се записва на този път.
 
-Инструментите за съдържание не извършват откриване на проекти, актуализации на метаданни, отказни бележки или автоматично пренаписване на пътища. Ако искате хост агентът да преведе Markdown или парчета от бележник без Co-op Translator LLM доставчик данни, използвайте agent-assisted работния поток по-долу.
+Инструментите за съдържание не извършват откриване на проект, актуализации на метаданни, откази за отговорност или автоматично пренаписване на пътища. Ако искате хост агентът да преведе фрагменти от Markdown или тетрадки без удостоверителни данни за LLM доставчик на Co-op Translator, използвайте работния поток с помощта на агент по-долу.
 
-### Превод с хост агентния модел
+### Превод с модела на хост агента
 
-Използвайте agent-assisted инструменти, когато искате MCP хост агентът, като например помощник за програмиране, да произведе преведения текст вместо да конфигурирате Azure OpenAI или OpenAI за Co-op Translator.
+Използвайте инструментите с помощта на агент, когато искате хост агентът на MCP, като кодиращ помощник, да генерира преведения текст вместо да конфигурирате LLM доставчик за Co-op Translator.
 
-В чат-базиран MCP клиент обикновено не е нужно сами да пишете JSON за инструмента. Помолете агента да използва agent-assisted работния поток:
+В чат-базиран MCP клиент обикновено не е нужно да пишете JSON за инструменти сами. Помолете агента да използва работния поток с помощта на агент:
 
 ```text
 Translate this Markdown file to Korean with Co-op Translator MCP.
@@ -166,7 +175,7 @@ Use agent-assisted mode: call start_markdown_agent_translation, translate the re
 Keep Markdown formatting, code blocks, and links intact.
 ```
 
-За бележници използвайте същия модел:
+За тетрадки използвайте същия подход:
 
 ```text
 Translate this notebook to Korean with Co-op Translator MCP.
@@ -179,24 +188,24 @@ Preserve code cells, outputs, and notebook metadata.
 За Markdown:
 
 1. Извикайте `start_markdown_agent_translation` с `document`, `language_code` и по избор `source_path`.
-2. Превеждайте всяко върнато парче в хост агента, следвайки парчето `prompt`.
-3. Извикайте `finish_markdown_agent_translation` с оригиналната `job` и преведените парчета, използвайки `chunk_id` и `translated_text`.
-4. Ако съдържанието ще бъде записано в преведен целев път, извикайте `rewrite_markdown_paths`.
+2. Преведете всеки върнат фрагмент в хост агента, следвайки `prompt` на фрагмента.
+3. Извикайте `finish_markdown_agent_translation` с оригиналната `job` и преведените фрагменти, използвайки `chunk_id` и `translated_text`.
+4. Ако съдържанието ще бъде записано в преведен целеви път, извикайте `rewrite_markdown_paths`.
 
-За бележници:
+За тетрадки:
 
-1. Извикайте `start_notebook_agent_translation` с JSON на бележника и `language_code`.
-2. Превеждайте всяко върнато парче в хост агента.
-3. Извикайте `finish_notebook_agent_translation` с оригиналния `job` и преведените парчета.
-4. Извикайте `rewrite_notebook_paths` ако преведените връзки в бележника трябва да бъдат коригирани за целев път.
+1. Извикайте `start_notebook_agent_translation` с JSON на тетрадката и `language_code`.
+2. Преведете всеки върнат фрагмент в хост агента.
+3. Извикайте `finish_notebook_agent_translation` с оригиналната `job` и преведените фрагменти.
+4. Извикайте `rewrite_notebook_paths`, ако преведените връзки в тетрадката трябва да бъдат коригирани за целевия път.
 
-Agent-assisted инструментите не извикват Azure OpenAI или OpenAI от Co-op Translator. Хост агентът е отговорен за превода на върнатите парчета. Co-op Translator се занимава с chunking на Markdown, запазване на плейсхолдери, реконструкция на frontmatter, замяна на клетки в бележника и нормализиране след превода.
+Инструментите с помощта на агент не извикват конфигурирания LLM доставчик от Co-op Translator. Хост агентът е отговорен за превода на върнатите фрагменти. Co-op Translator обработва разделянето на Markdown на фрагменти, запазването на заместители, реконструкцията на frontmatter, замяната на клетки в тетрадки и нормализацията след превод.
 
-### Превод на цял репозиторий
+### Превеждане на цял репозиториум
 
-Използвайте `run_translation`, когато потребителят иска Co-op Translator да се държи като `translate` CLI.
+Използвайте `run_translation`, когато потребителят иска Co-op Translator да се държи като CLI командата `translate`.
 
-Преводът на репозитория по подразбиране е с `dry_run=true`, така че агентът да може да инспектира обхвата преди промени във файловете:
+Преводът на репозиториум по подразбиране използва `dry_run=true`, за да може агентът да прегледа обхвата преди промени във файловете:
 
 ```json
 {
@@ -207,7 +216,13 @@ Agent-assisted инструментите не извикват Azure OpenAI и�
 }
 ```
 
-За да разрешите запис, извикващият трябва да зададе както `dry_run=false`, така и `confirm_write=true`:
+Резултатът от `run_translation` включва масив `events` с версионирани
+`co-op.translation.event.v1` събития за напредък. MCP клиентите трябва да използват полета като
+`type`, `stage_key`, `completed`, `total` и `current_path` вместо
+да парсират улавян текст от конзолата. Подайте `json_events_path`, за да запишете тези събития
+в NDJSON файл.
+
+За да разрешите записите, извикващият трябва да зададе както `dry_run=false`, така и `confirm_write=true`:
 
 ```json
 {
@@ -219,14 +234,14 @@ Agent-assisted инструментите не извикват Azure OpenAI и�
 }
 ```
 
-`translate_project` е изложен като съвместим alias за `run_translation`.
+`translate_project` е изложен като съвместимостен псевдоним за `run_translation`.
 
 ### Преглед на преведеното съдържание
 
-Използвайте `run_review` за детерминирани проверки, които не изискват LLM или Vision креденшъли:
+Използвайте `run_review` за детерминирани проверки, които не изискват LLM или Vision удостоверителни данни:
 
 !!! note "Beta"
-    MCP излага бета API `run_review`. Той е безопасен за read-only review работни потоци, но проверките за преглед и схемите на проблемите могат да се развиват.
+    MCP излага бета API-то `run_review`. То е безопасно за само-четене (read-only) работни потоци за преглед, но проверките и схемите за проблеми може да се променят.
 
 ```json
 {
@@ -237,72 +252,72 @@ Agent-assisted инструментите не извикват Azure OpenAI и�
 }
 ```
 
-Резултатът включва засечен текстов изход и структурирано обобщение на прегледа, когато е налично.
+Резултатът включва улавян текстов изход и структурирано резюме на прегледа, когато е налично.
 
 ## Ръчни стартирания на сървъра
 
-Ръчните стартирания са предимно за отстраняване на грешки или за транспортни механизми, които се държат като дълго работещи сървъри.
+Ръчните стартирания са основно за отстраняване на грешки или за транспорти, които се държат като дългоживотни сървъри.
 
-Отстраняване на грешки в стандартния stdio сървър:
+Отстраняване на грешки на подразбиращия се stdio сървър:
 
 ```bash
 co-op-translator-mcp
 ```
 
-Стартиране от източников checkout:
+Стартирайте от source checkout:
 
 ```bash
 python -m co_op_translator.mcp.server
 ```
 
-Стартиране на дълго живеещ HTTP или SSE сървър:
+Стартирайте дългоживотен HTTP или SSE сървър:
 
 ```bash
 co-op-translator-mcp --transport streamable-http
 co-op-translator-mcp --transport sse
 ```
 
-За локални интеграции с редактори и агенти, предпочитайте client-managed `stdio` конфигурацията от Стъпка 2.
+За локална интеграция с редактор и агенти предпочитайте конфигурацията, управлявана от клиента `stdio` в Стъпка 2.
 
 ## Инструменти
 
-| Tool | Purpose | Writes files |
+| Инструмент | Цел | Записва файлове |
 | --- | --- | --- |
-| `translate_markdown_content` | Translate a Markdown string. | No |
-| `translate_notebook_content` | Translate Markdown cells in notebook JSON. | No |
-| `translate_image_content` | Translate text in one image and return base64 image data. | Optional, only when `output_path` is provided |
-| `start_markdown_agent_translation` | Prepare Markdown chunks for the host agent to translate without Co-op Translator LLM credentials. | No |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from host-agent translated chunks. | No |
-| `start_notebook_agent_translation` | Prepare notebook Markdown-cell chunks for the host agent to translate. | No |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON from host-agent translated chunks. | No |
-| `rewrite_markdown_paths` | Rewrite Markdown body and frontmatter paths for a translated target. | No |
-| `rewrite_notebook_paths` | Rewrite paths inside notebook Markdown cells. | No |
-| `run_translation` | Run project-level translation like the CLI. | Yes when `dry_run=false` and `confirm_write=true` |
-| `translate_project` | Compatibility alias for `run_translation`. | Yes when `dry_run=false` and `confirm_write=true` |
-| `run_review` | Run deterministic review checks. | No |
-| `get_configuration_status` | Report configured LLM and Vision providers without exposing secrets. | No |
-| `list_supported_languages` | List supported target language codes. | No |
-| `get_api_overview` | Describe available MCP workflows and tools. | No |
+| `translate_markdown_content` | Превежда Markdown низ. | Не |
+| `translate_notebook_content` | Превежда Markdown клетки в JSON на тетрадката. | Не |
+| `translate_image_content` | Превежда текст в едно изображение и връща base64 данни за изображението. | По избор, само когато е предоставен `output_path` |
+| `start_markdown_agent_translation` | Подготвя фрагменти от Markdown за превод от хост агента без удостоверителни данни за LLM доставчик на Co-op Translator. | Не |
+| `finish_markdown_agent_translation` | Реконструира Markdown от фрагменти преведени от хост агента. | Не |
+| `start_notebook_agent_translation` | Подготвя фрагменти от Markdown клетки в тетрадки за превод от хост агента. | Не |
+| `finish_notebook_agent_translation` | Реконструира JSON на тетрадката от фрагменти преведени от хост агента. | Не |
+| `rewrite_markdown_paths` | Пренаписва пътища в тялото на Markdown и frontmatter за преведен целеви път. | Не |
+| `rewrite_notebook_paths` | Пренаписва пътища вътре в Markdown клетки на тетрадката. | Не |
+| `run_translation` | Извършва превод на ниво проект като CLI. | Да, когато `dry_run=false` и `confirm_write=true` |
+| `translate_project` | Съвместимостен псевдоним за `run_translation`. | Да, когато `dry_run=false` и `confirm_write=true` |
+| `run_review` | Извършва детерминирани проверки за преглед. | Не |
+| `get_configuration_status` | Докладва конфигурираните LLM и Vision доставчици без разкриване на секрети. | Не |
+| `list_supported_languages` | Изброява поддържаните кодове на целевите езици. | Не |
+| `get_api_overview` | Описва наличните MCP работни потоци и инструменти. | Не |
 
 ## Ресурси
 
-| Resource URI | Purpose |
+| Ресурс URI | Цел |
 | --- | --- |
-| `co-op://api` | JSON overview of workflows and tools. |
-| `co-op://supported-languages` | JSON list of supported language codes. |
-| `co-op://configuration` | JSON provider availability summary without secrets. |
+| `co-op://api` | JSON преглед на работните потоци и инструментите. |
+| `co-op://supported-languages` | JSON списък с поддържани езикови кодове. |
+| `co-op://configuration` | JSON обобщение на наличността на доставчиците без секрети. |
 
 ## Подсказки
 
-| Prompt | Purpose |
+| Подсказка | Цел |
 | --- | --- |
-| `translate_markdown_document_prompt` | Guide an MCP client through content translation plus optional path rewriting. |
-| `agent_assisted_markdown_translation_prompt` | Guide an MCP client through host-agent Markdown translation without Co-op Translator LLM provider credentials. |
-| `translate_repository_prompt` | Guide an MCP client through dry-run-first repository translation. |
+| `translate_markdown_document_prompt` | Напътства MCP клиента през превода на съдържанието плюс опционално пренаписване на пътища. |
+| `agent_assisted_markdown_translation_prompt` | Напътства MCP клиента през превода на Markdown от хост-агент без удостоверителни данни за LLM доставчик на Co-op Translator. |
+| `translate_repository_prompt` | Напътства MCP клиента през превод на репозиториум, започващ първо с dry-run. |
 
 ## Примери за копиране и поставяне
 
-Превод на Markdown съдържание:
+Превеждане на Markdown съдържание:
 
 ```json
 {
@@ -315,13 +330,13 @@ co-op-translator-mcp --transport sse
 }
 ```
 
-Пренаписване на преведени Markdown връзки:
+Пренаписване на преведени връзки в Markdown:
 
 ```json
 {
   "tool": "rewrite_markdown_paths",
   "arguments": {
-    "content": "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+    "content": "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
     "source_path": "docs/guide.md",
     "target_path": "translations/ko/docs/guide.md",
     "policy": {
@@ -335,7 +350,7 @@ co-op-translator-mcp --transport sse
 }
 ```
 
-Превод на Markdown с хост агентния модел:
+Превеждане на Markdown с модела на хост агента:
 
 ```json
 {
@@ -348,7 +363,7 @@ co-op-translator-mcp --transport sse
 }
 ```
 
-След като хост агентът преведе всяко върнато парче, завършете задачата с пълния `job` обект, върнат от `start_markdown_agent_translation`:
+След като хост агентът преведе всеки върнат фрагмент, завършете задачата с пълния обект `job`, върнат от `start_markdown_agent_translation`:
 
 ```text
 tool: finish_markdown_agent_translation
@@ -359,7 +374,7 @@ arguments:
       translated_text: "# 안녕하세요\n\n시작하려면 `pip install`을 사용하세요."
 ```
 
-Преглед на превод на репозитория:
+Преглед на превод на репозиториум:
 
 ```json
 {
@@ -373,21 +388,21 @@ arguments:
 }
 ```
 
-## Отстраняване на неизправности
+## Отстраняване на проблеми
 
-| Problem | What to try |
+| Проблем | Какво да опитате |
 | --- | --- |
-| The MCP client cannot find `co-op-translator-mcp`. | Use the absolute Python executable path and `["-m", "co_op_translator.mcp.server"]` source checkout configuration. |
-| The server is listed but translation fails. | Call `get_configuration_status` and confirm an LLM provider is available. |
-| You want Markdown or notebook translation without Azure OpenAI/OpenAI keys. | Use `start_markdown_agent_translation` / `finish_markdown_agent_translation` or the notebook equivalents so the host agent translates the chunks. |
-| Image translation fails. | Confirm Azure AI Vision variables are set and call `get_configuration_status`. |
-| Repository translation does not write files. | Set `dry_run=false` and `confirm_write=true` only after explicit user approval. |
-| Changes to client config do not appear. | Restart or reload the MCP client. |
+| MCP клиентът не може да намери `co-op-translator-mcp`. | Използвайте абсолютния път до изпълнимия Python и конфигурация за source checkout `["-m", "co_op_translator.mcp.server"]`. |
+| Сървърът е изброен, но преводът се проваля. | Извикайте `get_configuration_status` и потвърдете, че има наличен LLM доставчик. |
+| Искате превод на Markdown или тетрадка без удостоверителни данни на доставчик. | Използвайте `start_markdown_agent_translation` / `finish_markdown_agent_translation` или еквивалентните за тетрадки, за да оставите хост агента да превежда фрагментите. |
+| Преводът на изображения се проваля. | Потвърдете, че променливите за Azure AI Vision са зададени и извикайте `get_configuration_status`. |
+| Преводът на репозиториум не записва файлове. | Задайте `dry_run=false` и `confirm_write=true` само след изрично одобрение от потребителя. |
+| Промените в конфигурацията на клиента не се появяват. | Рестартирайте или презаредете MCP клиента. |
 
-## Забележки за безопасност
+## Бележки за безопасност
 
-- MCP повикванията на инструменти се контролират от модела на хост приложението, затова преводът на репозитории е по подразбиране dry-run.
-- Пълният превод на репозитории може да създаде, актуализира или премахне много файлове. Изисквайте изрично одобрение от потребителя преди задаване на `confirm_write=true`.
-- Инструментът за състоянието на конфигурацията никога не връща API ключове, endpoints или други секретни стойности.
-- Преводът на изображения връща base64 данни за изображение. Големите изображения могат да произведат големи отговори от инструмента.
-- Agent-assisted инструментите връщат изходни парчета и подсказки на MCP хоста. Използвайте ги само със съдържание, с което потребителят се чувства удобно да бъде изпратено към този хост агентен модел.
+- Повикванията на MCP инструментите се контролират от модела в хост приложението, затова преводът на репозиториум е по подразбиране в dry-run.
+- Пълният превод на репозиториум може да създаде, актуализира или премахне много файлове. Изисквайте изрично одобрение от потребителя, преди да зададете `confirm_write=true`.
+- Инструментът за статус на конфигурацията никога не връща API ключове, крайни точки или други секретни стойности.
+- Преводът на изображения връща base64 данни за изображението. Големите изображения могат да произведат големи отговори от инструментите.
+- Инструментите с помощта на агент връщат изходни фрагменти и подсказки на хост MCP. Използвайте ги само със съдържание, с което потребителят се чувства комфортно да изпраща към този хост агент модел.

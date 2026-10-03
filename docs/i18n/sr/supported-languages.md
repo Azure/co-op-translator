@@ -1,10 +1,10 @@
 # Подржани језици
 
-Co-op Translator подржава следеће кодове језика за текст, бележнице и излазе превода слика.
+Co-op Translator подржава следеће кодове језика за излаз превода текста, бележница и слика.
 
-If you want to add a new language, update the language and font mappings under `src/co_op_translator/fonts/` and test the language before opening a pull request.
+Ако желите да додате нови језик, ажурирајте мапирање језика и фонтова у `src/co_op_translator/fonts/` и тестирајте језик пре него што отворите pull request.
 
-| Language Code | Назив језика | Font | Подршка за RTL | Познати проблеми |
+| Код језика | Назив језика | Фонт | Подршка за RTL | Познати проблеми |
 | --- | --- | --- | --- | --- |
 | en | Енглески | NotoSans-Medium.ttf | Не | Не |
 | fr | Француски | NotoSans-Medium.ttf | Не | Не |
@@ -32,7 +32,7 @@ If you want to add a new language, update the language and font mappings under `
 | pl | Пољски | NotoSans-Medium.ttf | Не | Не |
 | tr | Турски | NotoSans-Medium.ttf | Не | Не |
 | el | Грчки | NotoSans-Medium.ttf | Не | Не |
-| th | Тајски | NotoSansThai-Medium.ttf | Не | Не |
+| th | Тајландски | NotoSansThai-Medium.ttf | Не | Не |
 | sv | Шведски | NotoSans-Medium.ttf | Не | Не |
 | da | Дански | NotoSans-Medium.ttf | Не | Не |
 | no | Норвешки | NotoSans-Medium.ttf | Не | Не |
@@ -53,20 +53,21 @@ If you want to add a new language, update the language and font mappings under `
 | hr | Хрватски | NotoSans-Medium.ttf | Не | Не |
 | sl | Словеначки | NotoSans-Medium.ttf | Не | Не |
 | uk | Украјински | NotoSans-Medium.ttf | Не | Не |
-| my | Бирмански (Мјанмар) | NotoSansMyanmar-Medium.ttf | Не | Не |
+| my | Бурмански (Мјанмар) | NotoSansMyanmar-Medium.ttf | Не | Не |
 | ta | Тамилски | NotoSansTamil-Medium.ttf | Не | Не |
 | et | Естонски | NotoSans-Medium.ttf | Не | Не |
-| pcm | Нигеријски пидгин | NotoSans-Medium.ttf | Не | Не |
+| pcm | Нигеријски пиџин | NotoSans-Medium.ttf | Не | Не |
 | te | Телугу | NotoSans-Medium.ttf | Не | Не |
-| ml | Малајаламски | NotoSans-Medium.ttf | Не | Не |
+| ml | Малајалам | NotoSans-Medium.ttf | Не | Не |
 | kn | Каннада | NotoSans-Medium.ttf | Не | Не |
 | km | Кмерски | NotoSansKhmer-Medium.ttf | Не | Не |
+| mni | Манипури (Меитеи Мајек) | NotoSansMeeteiMayek-Medium.ttf | Не | Не |
 
-## Додавање језика
+## Додајте језик
 
-To add support for a new language:
+Да бисте додали подршку за нови језик:
 
-1. Додајте код језика и приказани назив у алатке за језике.
-2. Додајте или мапирајте фонт у `src/co_op_translator/fonts/font_language_mappings.yml`.
-3. Тестирајте излаз превода Markdown-а и слика.
-4. Отворите pull request са мапирањем и напоменама о валидацији.
+1. Додајте код језика и приказни назив у језичне алатке.
+2. Додајте или повежите фонт у `src/co_op_translator/fonts/font_language_mappings.yml`.
+3. Тестирајте излаз превода за Markdown и слике.
+4. Отворите pull request са мапирањем и белешкама о валидацији.

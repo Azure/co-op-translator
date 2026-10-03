@@ -39,7 +39,7 @@ Record:
 - Azure AI Service endpoint
 - Azure AI Service API key
 
-## Environment Variables
+## पर्यावरण चल
 
 आपली प्रमाणपत्रे आपल्या `.env` फाइलमध्ये किंवा CI secrets मध्ये जोडा.
 

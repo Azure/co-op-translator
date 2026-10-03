@@ -1,60 +1,66 @@
 # GitHub Actions
 
-원문이 변경되면 자동으로 문서를 번역하고 결과를 풀 리퀘스트(PR)로 검토하려면 GitHub Actions를 사용하세요.
+저장소가 변경된 문서를 자동으로 번역하고 생성된 결과물로 풀 리퀘스트를 열도록 하려면 GitHub Actions를 사용하세요.
 
-조직 정책에서 허용한다면 조직 저장소도 기본 `GITHUB_TOKEN`으로 시작할 수 있습니다. 조직에서 앱 ID를 요구하거나 후속 CI를 자동 실행해야 한다면 [GitHub App 설정](#github-app-setup)을 참고하세요.
+표준 `GITHUB_TOKEN` 설정으로 시작하세요(정책이 허용되는 조직 저장소의 경우도 포함). 조직에서 App 식별이 필요하거나 자동 하위 워크플로 실행이 필요한 경우 [GitHub App Setup](#github-app-setup)를 참조하세요.
 
-**사람이 수정한 번역문:** 이 워크플로는 원문이 변경된 파일 전체를 다시 번역하므로 직접 다듬은 문장이 덮어써질 수 있습니다. PR을 병합하기 전에 변경 내용을 검토하세요. 변경되지 않은 Markdown 블록의 수정 사항을 보존하려면 [Python API의 번역 상태 제공자(영문)](../../api.md#preserve-accepted-human-edits-with-a-translation-state-provider)를 연결한 별도 통합이 필요합니다.
+**수동 편집:** 이 워크플로는 변경된 원본 파일을 전체 재번역하므로 번역에서 사람이 편집한 문구를 덮어쓸 수 있습니다. 병합 전에 각 PR을 검토하세요. 수락된 편집의 Markdown 블록 수준 보존은 [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider)와의 맞춤 통합이 필요합니다.
 
-<a id="your-first-readme-translation-pr"></a>
+## 첫 README 번역 PR
 
-## 첫 README 번역 PR 만들기
+루트 `README.md` 하나와 대상 언어 하나로 시작하세요. 이 워크플로는 Markdown만 번역하므로 Azure AI Vision은 필요하지 않습니다.
 
-루트의 `README.md` 하나와 대상 언어 하나로 시작하세요. Markdown만 번역하므로 Azure AI Vision은 필요하지 않습니다.
+1. 번역하려는 저장소의 `.github/workflows/translate-readme.yml`에 [translate-readme.yml](../../assets/workflows/translate-readme.yml) ([템플릿을 GitHub에서 보기](https://github.com/Azure/co-op-translator/blob/main/docs/assets/workflows/translate-readme.yml))을 복사하고 해당 저장소의 기본 브랜치에 커밋하세요. 템플릿은 `Azure/co-op-translator@main`의 루트 Action을 사용하며, 동일한 소스 ref에서 CLI를 설치합니다. 재현 가능한 실행을 위해 검토된 커밋을 고정하세요.
+2. <strong>Actions > Translate README > Run workflow</strong>를 열고 언어를 선택한 다음 <strong>Preview only</strong>를 체크된 상태로 두세요. 미리 보기 단계에서 토큰 추정치를 검토하세요. 미리보기는 모델 제공자를 호출하지 않으며 번역을 기록하거나 PR을 생성하지 않습니다.
+3. 하나의 [텍스트 제공자](#prerequisites)에 대한 시크릿을 추가하고 <strong>설정 > 작업 > 일반</strong>에서 <strong>GitHub Actions가 풀 리퀘스트를 생성하고 승인하도록 허용</strong>을 활성화하세요. 템플릿은 작업에 대해 `contents: write` 및 `pull-requests: write`를 요청하며, 모든 워크플로의 기본 권한을 변경할 필요는 없습니다. 조직 정책이 이러한 권한이나 설정을 차단하는 경우 승인된 [GitHub 앱](#github-app-setup)에 대해 관리자에게 문의하세요.
+4. <strong>Preview only</strong>의 체크를 해제하고 워크플로를 다시 실행하세요. 그러면 미리보기, 번역, `co-op-review --readme-only` 실행을 거쳐 번역 및 검토가 성공한 경우에만 번역 PR을 생성하거나 업데이트합니다. 워크플로 요약에는 PR 링크가 포함됩니다.
+5. PR에서 문구와 파일 변경 사항을 검토한 후 준비되면 병합하세요. 이 워크플로는 자동으로 병합하지 않습니다.
 
-1. [translate-readme.yml](../../assets/workflows/translate-readme.yml)을 번역할 저장소의 `.github/workflows/translate-readme.yml`에 복사하고 기본 브랜치에 커밋하세요. 다운로드가 어려우면 [GitHub에서 템플릿 보기](https://github.com/Azure/co-op-translator/blob/main/docs/assets/workflows/translate-readme.yml)를 사용하세요. 템플릿은 `Azure/co-op-translator@main`의 루트 Action을 사용하고 같은 소스 ref에서 CLI를 설치합니다. 재현 가능한 실행에는 검토한 커밋을 고정하세요.
-2. **Actions > Translate README > Run workflow**에서 언어를 선택하고 **Preview only**를 체크한 상태로 실행하세요. 미리보기 단계에서 토큰 추정치를 확인합니다. 이 단계는 제공자를 호출하거나 번역 파일과 PR을 만들지 않습니다.
-3. [텍스트 제공자 하나의 시크릿](#prerequisites)을 추가하고, **Settings > Actions > General**에서 **Allow GitHub Actions to create and approve pull requests**를 켜세요. 템플릿은 작업에 `contents: write`, `pull-requests: write`를 명시하므로 저장소 전체의 기본 워크플로 권한을 바꿀 필요는 없습니다. 조직 정책에서 막혀 있다면 관리자에게 승인된 [GitHub App](#github-app-setup)을 문의하세요.
-4. **Preview only**를 해제하고 다시 실행하세요. 미리보기, 번역, `co-op-review --readme-only` 검사를 진행하고, 번역과 검토가 성공한 경우에만 PR을 만들거나 갱신합니다. 실행 요약에서 PR 링크를 확인할 수 있습니다.
-5. PR의 문장과 파일 변경을 검토한 뒤 준비되면 병합하세요. 자동 병합은 하지 않습니다.
+PR에는 `translations/<language>/README.md`와 해당 언어 메타데이터 파일만 포함됩니다. 원본 README는 변경되지 않으며 다른 문서로의 링크는 계속 원본 문서를 가리킵니다. PR 본문에는 변경된 파일과 구조적 검토 결과가 나열됩니다. 번역이나 검토가 실패하면 워크플로 요약과 실패한 단계의 로그를 확인하세요; PR은 생성되지 않습니다. 변경 사항이 없으면 새 PR이 필요하지 않습니다.
 
-PR에는 `translations/<language>/README.md`와 해당 언어의 메타데이터 파일만 포함됩니다. 원본 README는 유지되며 다른 문서의 링크는 원본 문서를 가리킵니다. PR 본문에서 변경 파일과 구조 검사 결과를 확인하세요. 번역이나 검토가 실패하면 PR을 만들지 않으므로 실행 요약과 실패한 단계의 로그를 확인하세요. 변경 내용이 없다면 새 PR은 필요하지 않습니다.
+**Organization and CI note:** GitHub App은 선택 사항이며 조직 소유의 필수 조건이 아닙니다. `GITHUB_TOKEN`을 사용하는 경우 PR을 열거나 업데이트하거나 다시 열기 위한 풀 리퀘스트 워크플로는 쓰기 권한이 있는 사용자가 <strong>Approve workflows to run</strong>를 선택해야 합니다. 푸시 워크플로는 이 토큰으로 트리거되지 않습니다. 무인 하위 CI에 대해서는 [GitHub App Setup](#github-app-setup) 및 GitHub의 [workflow triggering rules](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow)을 참조하세요.
 
-**조직과 CI:** 조직 소유 저장소라는 이유만으로 GitHub App이 필요한 것은 아닙니다. `GITHUB_TOKEN`으로 생성·갱신·재개한 PR의 워크플로는 쓰기 권한이 있는 사용자가 **Approve workflows to run**을 선택해야 실행됩니다. 이 토큰의 push는 push 워크플로를 실행하지 않습니다. 무인 후속 CI가 필요하다면 [GitHub App 설정](#github-app-setup)과 GitHub의 [워크플로 실행 규칙](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow)을 참고하세요.
+## Prerequisites
 
-<a id="prerequisites"></a>
+워크플로를 생성하기 전에 번역 실행에 필요한 AI 서비스 시크릿을 구성하세요.
 
-## 준비 사항
-
-텍스트 번역에는 아래 제공자 중 하나의 시크릿이 필요합니다.
+텍스트 번역에는 하나의 언어 모델 공급자가 필요합니다:
 
 - Azure OpenAI: `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_MODEL_NAME`, `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`, `AZURE_OPENAI_API_VERSION`
-- OpenAI: `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL_ID`. `OPENAI_ORG_ID`, `OPENAI_BASE_URL`은 필요한 경우에만 추가합니다.
-- Anthropic: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`. `ANTHROPIC_BASE_URL`은 필요한 경우에만 추가합니다.
+- OpenAI: `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL_ID`, plus optional `OPENAI_ORG_ID` and `OPENAI_BASE_URL`
+- Anthropic: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, plus optional `ANTHROPIC_BASE_URL`
 
-이미지 번역을 추가할 때만 `AZURE_AI_SERVICE_API_KEY`, `AZURE_AI_SERVICE_ENDPOINT`가 필요합니다. 자세한 설정은 [설정 안내](configuration.md)와 [Azure AI 설정](azure-ai-setup.md)을 참고하세요.
+이미지 번역에는 추가로 Azure AI Vision이 필요합니다:
 
-<a id="standard-setup"></a>
+- `AZURE_AI_SERVICE_API_KEY`
+- `AZURE_AI_SERVICE_ENDPOINT`
+
+로컬 구성 세부정보는 [Configuration](configuration.md) 및 [Azure AI Setup](azure-ai-setup.md)을 참조하세요.
 
 ## 표준 설정
 
-README 워크플로를 시도한 뒤 저장소의 Markdown 파일을 여러 언어로 번역할 때 사용하세요. PR 생성 전에 Markdown 검토를 실행하며 Azure AI Vision은 필요하지 않습니다.
+README 워크플로를 시도한 후, 이 설정을 사용하여 저장소의 Markdown 파일을 여러 언어로 번역하세요. PR을 열기 전에 Markdown 검토를 실행하며 Azure AI Vision은 필요하지 않습니다.
 
-### 1. 저장소 시크릿 추가
+### 1단계: 리포지토리 시크릿 추가
 
-대상 저장소의 **Settings > Secrets and variables > Actions**에서 사용할 제공자의 시크릿을 추가하세요.
+대상 저장소에서 **Settings** > **Secrets and variables** > <strong>Actions</strong>를 열고 워크플로가 사용할 제공자 시크릿을 추가하세요.
 
 ![Actions 시크릿 선택](../../assets/github-actions/select-setting-action.png)
 
-### 2. PR 생성 허용
+### 2단계: 워크플로 권한 활성화
 
-**Settings > Actions > General**의 **Workflow permissions**에서 **Allow GitHub Actions to create and approve pull requests**를 켜고 저장하세요.
+**Settings** > **Actions** > <strong>General</strong>를 여세요.
 
-아래 작업은 `contents: write`, `pull-requests: write`를 명시합니다. 저장소의 기본 워크플로 권한은 그대로 두세요. 조직 정책으로 PR 생성이 제한되어 있다면 관리자에게 승인된 [GitHub App](#github-app-setup)을 문의하세요.
+Under **Workflow permissions**:
 
-### 3. 워크플로 추가
+1. <strong>GitHub Actions가 풀 리퀘스트를 생성하고 승인하도록 허용</strong>을 활성화하세요.
+2. 설정을 저장하세요.
 
-`.github/workflows/co-op-translator.yml`을 만드세요.
+아래 작업은 `contents: write` 및 `pull-requests: write`를 명시적으로 요청합니다. 저장소의 기본 워크플로 권한은 변경하지 마세요. 조직 정책이 PR 생성을 차단하면 승인된 [GitHub App](#github-app-setup)에 대해 관리자에게 문의하세요.
+
+### 3단계: 워크플로 추가
+
+Create `.github/workflows/co-op-translator.yml`:
 
 ```yaml
 name: Co-op Translator
@@ -142,25 +148,33 @@ jobs:
             translations/
 ```
 
-`TARGET_LANGUAGES`를 원하는 언어로 바꾸세요. 검토 단계는 번역 범위에 맞춰 Python API로 Markdown만 검사합니다. 번역이나 검토에 오류가 있으면 PR 생성 전에 작업이 중단됩니다. PR은 자동 병합되지 않습니다. 큰 저장소는 `on.push` 아래에 `paths:` 필터를 추가해 문서 변경 시에만 실행되도록 설정할 수 있습니다.
+프로젝트에 필요한 언어로 `TARGET_LANGUAGES`를 변경하세요. 검토는 번역 단계와 일치하게 Markdown만 확인하도록 Python API를 사용합니다. 번역 또는 검토 오류는 PR 생성 전에 작업을 중단합니다. 이 워크플로는 PR을 자동으로 병합하지 않습니다. 대규모 저장소의 경우 `on.push` 아래에 `paths:` 필터를 추가하여 문서가 변경될 때만 워크플로가 실행되도록 하세요.
 
-### 선택 사항: 노트북과 이미지
+### 선택 사항: 노트북 및 이미지
 
-노트북은 번역 명령에 `-nb`를 추가하고 검토 단계에 `notebook=True`를 설정하세요. 이미지 안의 텍스트는 [Azure AI Vision 시크릿](#prerequisites) 두 개를 설정하고 번역 단계의 `env`에 전달한 뒤, 명령에 `-img`, PR의 `add-paths`에 `translated_images/`를 추가하세요. 이미지와 문장 품질은 사람이 직접 확인해야 합니다. 결정적 검사는 번역의 언어적 정확성을 보장하지 않습니다.
+노트북의 경우 번역 명령에 `-nb`를 추가하고 검토 단계에서 `notebook=True`로 설정하세요. 이미지 텍스트의 경우 두 개의 [Azure AI Vision 시크릿](#prerequisites)을 구성하고 번역 단계의 `env`에 전달하며 명령에 `-img`를 추가하고 PR 단계의 `add-paths`에 `translated_images/`를 추가하세요. 번역된 이미지는 시각적으로 검토하세요; 결정론적 리뷰는 이미지 텍스트나 언어적 정확성을 보증하지 않습니다.
 
-<a id="github-app-setup"></a>
+## GitHub 앱 설정
 
-## GitHub App 설정
+조직에서 App 식별이 필요하거나 생성된 PR이 `GITHUB_TOKEN` 승인 단계 없이 하위 CI를 트리거해야 하는 경우 승인된 GitHub App을 사용하세요. App이 조직 정책을 우회하지는 않으며 설치 및 권한은 여전히 관리자에 의해 제어됩니다.
 
-조직에서 앱 ID를 요구하거나 생성한 PR의 후속 CI를 `GITHUB_TOKEN` 승인 단계 없이 실행해야 할 때 승인된 GitHub App을 사용하세요. 앱 설치와 권한은 조직 관리자의 정책을 따릅니다.
+### 1단계: GitHub 앱 생성 또는 설치
 
-### 1. 앱 생성 또는 설치
+가능하면 기존 조직에서 제공한 App을 사용하거나 <strong>Contents</strong>와 <strong>Pull requests</strong>에 대한 읽기/쓰기 액세스 권한을 가진 App을 생성하세요. 필요한 조직 승인을 받아 대상 저장소에 설치하세요.
 
-가능하면 조직에서 제공하는 앱을 사용하세요. 새 앱은 **Contents**와 **Pull requests**의 읽기/쓰기 권한이 필요합니다. 대상 저장소에 앱을 설치하고 필요한 조직 승인을 받으세요. 앱 ID와 개인 키 내용을 각각 `GH_APP_ID`, `GH_APP_PRIVATE_KEY` 저장소 시크릿에 저장합니다.
+Record:
 
-### 2. 앱 토큰 생성
+- 앱 ID
+- 개인 키 내용
 
-기존 PR 생성 단계 바로 앞에 다음 단계를 추가하세요. README 템플릿에서는 같은 성공 조건을 적용해 미리보기나 실패한 실행에서 앱 토큰을 요청하지 않도록 합니다.
+이를 저장소 시크릿으로 저장하세요:
+
+- `GH_APP_ID`
+- `GH_APP_PRIVATE_KEY`
+
+### 2단계: 앱 토큰 생성
+
+기존 풀 리퀘스트 단계 바로 전에 이 단계를 추가하세요. README 템플릿의 경우 동일한 성공 조건을 사용하여 미리보기와 실패한 번역이 App 토큰을 요청하지 않도록 하세요:
 
 ```yaml
       - name: Authenticate GitHub App
@@ -174,21 +188,23 @@ jobs:
           permission-pull-requests: write
 ```
 
-기존 PR 생성 단계의 `token`만 `${{ steps.generate_token.outputs.token }}`으로 바꾸세요. 성공 조건, 브랜치, PR 본문, `add-paths`는 유지합니다. 토큰은 기본적으로 현재 저장소에 한정됩니다. 표준 설정에 적용할 때는 위의 `if`를 생략하세요. 표준 설정은 기본 성공 조건으로 동작하므로 번역과 검토가 성공한 뒤에만 토큰과 PR을 생성합니다.
+그런 다음 기존 풀 리퀘스트 단계의 `token` 입력만 `${{ steps.generate_token.outputs.token }}`로 변경하세요. 성공 조건, 브랜치, PR 본문 및 `add-paths`는 변경하지 마세요. 토큰은 기본적으로 현재 저장소로 범위가 지정됩니다. README 템플릿 대신 표준 설정을 적용할 때는 위의 `if`를 생략하세요: 해당 워크플로는 기본 성공 조건을 사용하므로 토큰 생성과 PR 생성은 번역 및 검토가 성공한 후에만 실행됩니다.
 
-자세한 권한은 [create-github-app-token Action](https://github.com/actions/create-github-app-token/tree/v2)을 참고하세요.
+설치 및 토큰 권한에 대해서는 공식 [create-github-app-token Action](https://github.com/actions/create-github-app-token/tree/v2)을 참조하세요.
 
-## 실행 시간 제한
+## 러너 제한
 
-GitHub 호스팅 실행기에는 최대 작업 시간이 있습니다. 큰 저장소나 많은 언어를 처리하면 제한을 넘을 수 있습니다.
+GitHub 호스팅 러너에는 작업 최대 실행 시간이 있습니다. 대규모 저장소나 대상 언어가 많으면 해당 한도를 초과할 수 있습니다.
 
-- 실행당 언어 수를 줄이세요.
-- `-md`, `-nb`, `-img`로 콘텐츠 유형을 지정하세요.
-- 저장소 크기나 모델 응답 시간 때문에 작업이 자주 중단된다면 자체 실행기를 고려하세요.
+For large translation workloads:
+
+- 한 실행당 번역하는 언어 수를 줄이세요.
+- `-md`, `-nb`, 또는 `-img`와 같은 콘텐츠 플래그를 사용하세요.
+- 저장소 크기나 모델 지연으로 호스팅 러너가 신뢰할 수 없는 경우 self-hosted 러너를 사용하세요.
 
 ## CI에서 검토
 
-제공자 호출 없이 PR의 번역 결과를 검사하려면 `co-op-review`를 사용하세요.
+풀 리퀘스트가 LLM 또는 Vision 제공자를 호출하지 않고 생성된 번역을 검증해야 할 때 `co-op-review`를 사용하세요.
 
 ```yaml
       - name: Review translated outputs
@@ -196,4 +212,4 @@ GitHub 호스팅 실행기에는 최대 작업 시간이 있습니다. 큰 저�
           co-op-review --changed-from "origin/${{ github.base_ref }}" --format github
 ```
 
-`co-op-review`는 베타 단계의 결정적 검사 명령입니다. 검사 항목과 출력 형식은 변경될 수 있지만 파일을 쓰거나 LLM·Vision 제공자를 호출하지 않습니다.
+`co-op-review`는 베타 결정론적 검토 명령입니다. 그 검사와 출력 스키마는 변경될 수 있지만, 파일을 쓰거나 모델 제공자를 호출하지 않기 때문에 CI에 안전하도록 설계되었습니다.

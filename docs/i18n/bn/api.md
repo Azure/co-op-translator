@@ -1,49 +1,49 @@
 # পাইথন API
 
-স্থায়ী পাবলিক পাইথন API `co_op_translator.api` থেকে রপ্তানি করা হয়। বেশিরভাগ ইন্টিগ্রেশন নিম্নলিখিত ওয়ার্কফ্লোগুলোর একটি ব্যবহার করে:
+স্থিতিশীল পাবলিক পাইথন API `co_op_translator.api` থেকে রফতানি করা হয়। বেশিরভাগ ইন্টিগ্রেশন নিম্নলিখিত ওয়ার্কফ্লোগুলির একটি ব্যবহার করে:
 
-| Scenario | Use this when | Main APIs |
+| পরিস্থিতি | কখন এটি ব্যবহার করবেন | প্রধান API গুলি |
 | --- | --- | --- |
-| Translate individual files or documents | আপনার অ্যাপ্লিকেশন উৎস সামগ্রী পড়ে, অনুবাদের জন্য Co-op Translator কল করে, এবং সিদ্ধান্ত নেয় ফলাফল কোথায় সংরক্ষণ করা হবে। | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | আপনার MCP হোস্ট বা অ্যাপ্লিকেশন মডেল চাঙ্কগুলো অনুবাদ করবে, যখন Co-op Translator চাঙ্কিং এবং পুনর্নির্মাণ পরিচালনা করবে। | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | আপনি চান পাইথন API CLI-এর মতো আচরণ করুক এবং ডিসকভারি, আউটপুট পাথ, মেটাডাটা, ক্লিনআপ এবং লেখাগুলো পরিচালনা করুক। | `run_translation` |
+| একক ফাইল বা ডকুমেন্ট অনুবাদ করুন | আপনার অ্যাপ্লিকেশন উৎস বিষয়বস্তু পড়ে, Co-op Translator-কে অনুবাদের জন্য কল করে, এবং ফলাফল কোথায় সংরক্ষণ করবেন তা নির্ধারণ করে। | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| হোস্ট-এজেন্ট অনুবাদের জন্য বিষয়বস্তু প্রস্তুত করুন | আপনার MCP হোস্ট বা অ্যাপ্লিকেশন মডেল চাঙ্কগুলো অনুবাদ করবে, আর Co-op Translator চাঙ্কিং এবং পুনর্গঠন পরিচালনা করবে। | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| একটি সম্পূর্ণ রেপো অনুবাদ করুন | আপনি চাইলে পাইথন API CLI-এর মতো আচরণ করবে এবং ডিসকভারি, আউটপুট পাথ, মেটাডেটা, ক্লিনআপ এবং লেখাগুলি পরিচালনা করবে। | `run_translation` |
 
-`core`, `config`, `review`, এবং `utils` এর অধীনের বেশিরভাগ নিম্ন-স্তরের মডিউলগুলো এই API এন্ট্রি পয়েন্টগুলোর দ্বারা ব্যবহৃত বাস্তবায়ন বিবরণ।
+অধিকাংশ নিম্নস্তরের মডিউল যেমন `core`, `config`, `review`, এবং `utils` এগুলির API এন্ট্রি পয়েন্টগুলিতে ব্যবহৃত বাস্তবায়ন বিবরণ।
 
-MCP ক্লায়েন্ট একই পাবলিক API [MCP Server](mcp.md) এর মাধ্যমে ব্যবহার করে। পাইটন সরাসরি কল করার সময় এই পেজটি ব্যবহার করুন, এবং Co-op Translator একটি এজেন্ট বা এডিটরের কাছে প্রকাশ করার সময় MCP গাইডটি ব্যবহার করুন। যদি আপনি CLI, পাইথন API, এবং MCP এর মধ্যে সিদ্ধান্ত নিতে চান, তাহলে [Choose Your Workflow](workflows.md) থেকে শুরু করুন।
+MCP ক্লায়েন্টরা একই পাবলিক API [MCP Server](mcp.md) -এর মাধ্যমে ব্যবহার করে। সরাসরি পাইথন কল করার সময় এই পৃষ্ঠা ব্যবহার করুন, এবং যদি আপনি Co-op Translator কে কোনো এজেন্ট বা এডিটরে উন্মুক্ত করেন তাহলে MCP গাইডটি দেখুন। CLI, পাইথন API, এবং MCP এর মধ্যে সিদ্ধান্ত নেওয়ার সময় [Choose Your Workflow](workflows.md) থেকে শুরু করুন।
 
-## প্রথমবারের জন্য API প্রবাহ
+## প্রথমবারের API প্রবাহ
 
-এখান থেকে শুরু করুন যদি আপনি পাইথন কোড থেকে Co-op Translator কল করছেন:
+যদি আপনি পাইথন কোড থেকে Co-op Translator কল করেন তাহলে এখান থেকেই শুরু করুন:
 
-1. যদি আপনি শুধু Markdown বা নোটবুক চাঙ্কগুলো হোস্ট-এজেন্ট অনুবাদের জন্য প্রস্তুত না করে থাকেন, তাহলে [Configuration](configuration.md) এ বর্ণিতভাবে একটি LLM প্রদানকারী কনফিগার করুন।
-2. সিদ্ধান্ত নিন যে আপনার অ্যাপ্লিকেশন ফাইল I/O এর মালিক কি না।
-3. যখন আপনার অ্যাপ্লিকেশন পৃথক ফাইল পড়ে এবং লিখে, তখন কনটেন্ট API ব্যবহার করুন।
-4. যখন Co-op Translator CLI-এর মতো একটি রিপোজিটরিটি প্রক্রিয়া করবে তখন `run_translation` ব্যবহার করুন।
-5. যদি আপনি অটোমেশন এ নির্দিষ্ট চেক দরকার হয়, অনুবাদের পরে `run_review` ব্যবহার করুন।
+1. [Configuration](configuration.md) এ বর্ণিত হিসাবে একটি LLM প্রদানকারী কনফিগার করুন, যদি না আপনি কেবল Markdown বা নোটবুক চাঙ্কগুলো হোস্ট-এজেন্ট অনুবাদের জন্য প্রস্তুত করছেন।
+2. সিদ্ধান্ত করুন আপনার অ্যাপ্লিকেশন কি ফাইল I/O পরিচালনা করবে।
+3. যখন আপনার অ্যাপ্লিকেশন আলাদা ফাইল পড়ে এবং লেখে তখন কন্টেন্ট API ব্যবহার করুন।
+4. যখন Co-op Translator-কে CLI-এর মতো একটি রেপো প্রসেস করতে দেবেন তখন `run_translation` ব্যবহার করুন।
+5. স্বয়ংক্রিয়তায় নির্ধারিত যাচাই প্রয়োজন হলে অনুবাদের পরে `run_review` ব্যবহার করুন।
 
-| Goal | API to start with |
+| লক্ষ্য | শুরু করার API |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
-| Translate one notebook payload | `translate_notebook_content` |
-| Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
-| Translate a full repository | `run_translation` |
-| Review translated output | `run_review` |
+| এক Markdown স্ট্রিং বা ফাইল অনুবাদ করুন | `translate_markdown_content` |
+| একটি নোটবুক পে-লোড অনুবাদ করুন | `translate_notebook_content` |
+| একটি ইমেজ অনুবাদ করুন | `translate_image_content` |
+| হোস্ট এজেন্টকে Markdown বা নোটবুক চাঙ্ক অনুবাদ করতে দিন | `start_markdown_agent_translation` বা `start_notebook_agent_translation` |
+| আউটপুট পাথ নির্ধারণের পরে অনুবাদ করা লিংকগুলো পুনরলিখন করুন | `rewrite_markdown_paths` বা `rewrite_notebook_paths` |
+| একটি সম্পূর্ণ রেপো অনুবাদ করুন | `run_translation` |
+| অনুবাদকৃত আউটপুট পর্যালোচনা করুন | `run_review` |
 
-## দৃশ্য 1: পৃথক ফাইল বা ডকুমেন্ট অনুবাদ করুন
+## পরিস্থিতি ১: পৃথক ফাইল বা ডকুমেন্ট অনুবাদ
 
-এটি ব্যবহার করুন যখন আপনার কাছে ইতিমধ্যেই একটি ফাইল, এডিটর বাফার, নোটবুক পে-লোড, MCP অনুরোধ, বা কাস্টম পাইপলাইন ইনপুট থাকে। আপনার কোড ফাইল I/O এর মালিক:
+এই ওয়ার্কফ্লোটি ব্যবহার করুন যখন আপনার কাছে ইতিমধ্যে একটি ফাইল, এডিটর বাফার, নোটবুক পে-লোড, MCP রিকোয়েস্ট, বা কাস্টম পাইপলাইন ইনপুট রয়েছে। আপনার কোড ফাইল I/O এর দায়িত্ব নেয়:
 
-1. উৎস সামগ্রী পড়ুন।
-2. একটি কনটেন্ট অনুবাদ API কল করুন।
-3. যদি অনুবাদ করা সামগ্রী প্রজেক্ট অনুবাদ ফোল্ডারে লেখা হবে তবে অপশনালি একটি পাথ রিরাইটিং API কল করুন।
-4. আপনার অ্যাপ্লিকেশন থেকে ফলাফল সংরক্ষণ করুন বা ফেরত দিন।
+1. উৎস বিষয়বস্তু পড়ুন।
+2. একটি কন্টেন্ট অনুবাদ API কল করুন।
+3. যদি অনুবাদকৃত বিষয়বস্তু প্রকল্প অনুবাদ ফোল্ডারে লেখা হবে, তবে ঐচ্ছিকভাবে একটি পাথ পুনরলিখন API কল করুন।
+4. আপনার অ্যাপ্লিকেশন থেকে ফলাফল সংরক্ষণ বা রিটার্ন করুন।
 
-কনটেন্ট অনুবাদ API গুলো প্রজেক্ট ডিসকভরি চালায় না, মেটাডাটা লিখে না, ডিসক্লেইমার যোগ করে না, এবং লিঙ্কগুলো স্বয়ংক্রিয়ভাবে রিরাইট করে না।
+কন্টেন্ট অনুবাদ API গুলো প্রকল্প ডিসকভারি চালায় না, মেটাডেটা লিখে না, ডিসক্লেমার সংযুক্ত করে না, এবং স্বয়ংক্রিয়ভাবে লিংক পুনরলিখন করে না।
 
-### মার্কডাউন ফাইল
+### Markdown ফাইল
 
 ```python
 import asyncio
@@ -85,7 +85,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-যদি অনূদিত Markdown একটি Co-op Translator প্রজেক্ট লেআউটে অবস্থান করবে না, তাহলে `rewrite_markdown_paths` ছেড়ে দিয়ে অনূদিত স্ট্রিং সরাসরি সংরক্ষণ করুন।
+যদি অনুবাদকৃত Markdown Co-op Translator প্রকল্প লেআউটে না থাকে, তাহলে `rewrite_markdown_paths` এড়িয়ে সরাসরি অনুবাদকৃত স্ট্রিং সেভ করুন।
 
 ### নোটবুক ফাইল
 
@@ -129,7 +129,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` Markdown সেলগুলো অনুবাদ করে এবং নন-Markdown সেলগুলো সংরক্ষণ করে। পাথ রিরাইটিং শুধুমাত্র Markdown সেলগুলোর উপর প্রয়োগ করা হয়।
+`translate_notebook_content` Markdown সেলগুলো অনুবাদ করে এবং নন-Markdown সেলগুলো অক্ষুণ্ণ রাখে। পাথ পুনরলিখন কেবল Markdown সেলগুলিতেই প্রয়োগ করা হয়।
 
 ### ইমেজ ফাইল
 
@@ -154,15 +154,15 @@ target_path.parent.mkdir(parents=True, exist_ok=True)
 translated_image.save(target_path)
 ```
 
-`translate_image_content` উৎস ইমেজ পড়ে এবং একটি রেন্ডার করা `PIL.Image.Image` ফেরত দেয়। এটি অনূদিত ইমেজ মেটাডাটা লিখে না।
+`translate_image_content` উৎস ইমেজ পড়ে এবং একটি রেন্ডার করা `PIL.Image.Image` রিটার্ন করে। এটি অনুবাদকৃত ইমেজ মেটাডেটা লিখে না।
 
-## দৃশ্য 2: একটি সম্পূর্ণ রিপোজিটরি অনুবাদ করুন
+## পরিস্থিতি ২: একটি সম্পূর্ণ রেপোসিটরি অনুবাদ করা
 
-এই ওয়ার্কফ্লো ব্যবহার করুন যখন আপনি চান পাইথন API `translate` CLI-এর মতো আচরণ করুক। `run_translation` সমর্থিত ফাইলগুলো খুঁজে পাওয়া, নির্বাচিত কনটেন্ট টাইপ অনুবাদ, পাথ রিরাইট, আউটপুট ফাইল লেখালেখি, মেটাডাটা আপডেট, এবং ক্লিনআপের মতো অনুবাদ মেইনটেন্যান্স টাস্কগুলো করে।
+এই ওয়ার্কফ্লোটি ব্যবহার করুন যখন আপনি চাইবেন পাইথন API `translate` CLI-এর মতো আচরণ করুক। `run_translation` সমর্থিত ফাইলগুলো আবিষ্কার করে, নির্বাচিত কন্টেন্ট টাইপগুলো অনুবাদ করে, পাথ পুনরলিখন করে, আউটপুট ফাইলগুলো লেখে, মেটাডেটা আপডেট করে, এবং ক্লিনআপের মত অনুবাদ রক্ষণাবেক্ষণের কাজগুলি করে।
 
-`run_translation` প্রজেক্ট অর্কেস্ট্রেশনের পছন্দসই এন্ট্রি পয়েন্ট। `translate_project` একই আচরণের সাথে সমতা রক্ষা করার জন্য একটি সংগতিসাধক আলিয়া হিসেবে রপ্তানি করা হয়েছে।
+`run_translation` প্রজেক্ট অর্কেস্ট্রেশনের পছন্দসই এন্ট্রি পয়েন্ট। একই আচরণ সহ কম্প্যাটেবল এলিয়াস হিসাবে `translate_project` রফতানি করা হয়েছে।
 
-বর্তমান রিপোজিটরির Markdown ফাইলগুলো কোরিয়ান ও জাপানি-তে অনুবাদ করুন:
+বর্তমান রেপোতে Markdown ফাইলগুলো কোরিয়ান এবং জাপানি ভাষায় অনুবাদ করুন:
 
 ```python
 from co_op_translator.api import run_translation
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-নির্দিষ্ট একটি প্রজেক্ট রুট থেকে শুধুমাত্র নোটবুক অনুবাদ করুন:
+নির্দিষ্ট প্রজেক্ট রুট থেকে কেবল নোটবুকগুলো অনুবাদ করুন:
 
 ```python
 from co_op_translator.api import run_translation
@@ -185,7 +185,7 @@ run_translation(
 )
 ```
 
-ফাইল লেখা ছাড়া অনুবাদের পরিমাণ প্রিভিউ করুন:
+ফাইল না লিখে অনুবাদের পরিমাণ পূর্বদর্শন করুন:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-একটি কলেই একাধিক কনটেন্ট রুট অনুবাদ করুন:
+একটি ইন্টিগ্রেশনের জন্য কাঠামোবদ্ধ প্রগ্রেস ইভেন্ট রেকর্ড করুন:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # পে-লোডটি আপনার জব-ইভেন্ট টেবিলে সংরক্ষণ করুন বা এটি আপনার UI-তে স্ট্রিম করুন।
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+ইভেন্টগুলো ভার্সন-কৃত স্কিমা `co-op.translation.event.v1` ব্যবহার করে। ইন্টিগ্রেশনগুলোকে কনসোল টেক্সট বা `stage_label` নয়, বরং `type` এবং `stage_key` এর মত স্থিতিশীল ফিল্ডগুলোর উপর নির্ভর করতে বলা হয়।
+depend on stable fields such as `type` and `stage_key`, not on human-facing
+console text or `stage_label`.
+
+এক কলেই একাধিক কন্টেন্ট রুট অনুবাদ করুন:
 
 ```python
 from co_op_translator.api import run_translation
@@ -210,7 +234,7 @@ run_translation(
 )
 ```
 
-স্পষ্ট আউটপুট গ্রুপগুলিতে অনুবাদ লিখুন:
+অনুবাদগুলো স্পষ্ট আউটপুট গ্রুপে লিখুন:
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-প্রতিটি ভাষার নিচে একটি নেস্টেড সাবডাইর থাকা উচিত হলে প্রতিটি ভাষার জন্য একটি প্লেসহোল্ডার ব্যবহার করুন:
+প্রতিটি ভাষার জন্য একটি সাবডাইরেক্টরি থাকা উচিত হলে per-language প্লেসহোল্ডার ব্যবহার করুন:
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-`markdown`, `notebook`, বা `images` এর কোনোটাই সেট না করা থাকলে, API সব সমর্থিত টাইপ অনুবাদ করে: Markdown, নোটবুক, এবং ইমেজ।
+যদি `markdown`, `notebook`, বা `images` এর কোনোটিই সেট না করা থাকে, তাহলে API সব সমর্থিত টাইপ অনুবাদ করে: Markdown, নোটবুক, এবং ইমেজ।
 
-## অনূদিত আউটপুট পর্যালোচনা
+### একটি অনুবাদ স্টেট প্রদানকারীর মাধ্যমে গৃহীত মানব সম্পাদনা সংরক্ষণ করুন
 
-`run_review` LLM বা Vision ক্রেডেনশিয়াল ছাড়া নির্ধারিত অনুবাদ চেক চালায়।
+ডিফল্টভাবে, Co-op Translator তার বিদ্যমান ফাইল-স্তরের আচরণ বজায় রাখে: যখন একটি Markdown উৎস স্টেইল হয়, সম্পূর্ণ অনুবাদকৃত ফাইলটি পুনরায় তৈরি করা হয়। হোস্টেড ইন্টিগ্রেশন ঐচ্ছিকভাবে একটি `TranslationStateProvider` পাস করতে পারে যাতে পরিবর্তন না হওয়া সোর্স ব্লকগুলোর মানব সম্পাদনা সংরক্ষিত থাকে।
+Markdown উৎস যদি পুরনো থাকে, সম্পূর্ণ অনূদিত ফাইলটি পুনরায় তৈরি করা হয়। হোস্টেড
+ইন্টিগ্রেশনগুলো ঐচ্ছিকভাবে একটি `TranslationStateProvider` পাস করতে পারে যাতে মানব
+পরিবর্তিত নয় এমন সোর্স ব্লকগুলোর সম্পাদনা সংরক্ষিত থাকে।
+
+প্রদানকারী শেষ গৃহীত সোর্স/টার্গেট জোড়া সরবরাহ করে এবং প্রতিটি নতুন প্রার্থী রেকর্ড করে।
+গ্রহণ আরেকটি ইন্টিগ্রেশনের দায়িত্বেই থাকে—উদাহরণস্বরূপ,
+অনুবাদ পুল রিকোয়েস্ট মার্জ হওয়ার পরে:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+যেসব Markdown ফাইলের একটি বৈধ অনুমোদিত বেসলাইন আছে, Co-op Translator সমন্বয় করে
+শীর্ষ-স্তরের Markdown ব্লকগুলিকে। অপরিবর্তিত সোর্স ব্লকগুলি বর্তমান অনূদিত
+ব্লকগুলো, মানুষের করা সম্পাদনাসহ; পরিবর্তিত বা যোগ করা সোর্স ব্লকগুলো অনুবাদের জন্য পাঠানো হয়
+অনুবাদের জন্য; মুছে ফেলা সোর্স ব্লকগুলো মুছে ফেলা হয়। যদি সামঞ্জস্য অস্পষ্ট হয়,
+টার্গেট কাঠামো পরিবর্তিত হয়েছে, কোনো ব্লক অনুবাদ অবৈধ, অথবা কোনো বেসলাইন
+উপলব্ধ না থাকে, Co-op Translator নিরাপদভাবে বিদ্যমান সম্পূর্ণ-ফাইল
+অনুবাদ পথ।
+
+এই API ডকুমেন্ট অনুবাদের অবস্থা সংরক্ষণ করে, ক্রস-ডকুমেন্ট ফ্রেজ বা
+সেগমেন্ট অনুবাদ মেমরি। এটি বর্তমানে Markdown প্রকল্প
+অনুবাদ। নোটবুক এবং চিত্রের আচরণ অপরিবর্তিত আছে। পাস করলে `update=True`
+এখনও সম্পূর্ণ পুনরায় তৈরি করার অনুরোধ করে।
+
+যদি এক বা একাধিক ফাইল অনুবাদ করা না যায়, `run_translation` একটি
+`RuntimeError` উত্থাপন করে প্রকল্পের ওয়ার্কফ্লো শেষ হওয়ার পরে, রিপোর্ট করার পরিবর্তে একটি
+সফল রান যেখানে আউটপুট অনুপস্থিত। ইন্টিগ্রেশনগুলোকে এটিকে একটি ব্যর্থ
+কাজ হিসেবে গণ্য করতে হবে এবং পূর্বে গৃহীত অনুবাদ অবস্থা বজায় রাখতে হবে।
+
+## অনুবাদকৃত আউটপুট পর্যালোচনা
+
+`run_review` LLM বা Vision ক্রেডেনশিয়াল ছাড়াই নির্ধারিত অনুবাদ চেক চালায়।
 
 !!! note "বেটা"
-    `run_review` একটি বেটা নির্ধারিত রিভিউ API। এটি মডেল প্রদানকারীদের কল করে না বা ফাইল লেখে না, কিন্তু চেক এবং ইস্যু স্কিমা পরিবর্তিত হতে পারে।
+    `run_review` একটি বেটা নির্ধারিত রিভিউ API। এটি মডেল প্রদানকারীদের কল করে না বা ফাইল লেখে না, তবে চেক এবং ইস্যু স্কিমাগুলো পরিবর্তিত হতে পারে।
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-বেস রেফের বিরুদ্ধে পরিবর্তিত শুধু ফাইলগুলো পর্যালোচনা করুন এবং GitHub-ফ্লেভার্ড আউটপুট প্রিন্ট করুন:
+README-কে কেবল অনুবাদ করার পরে, পর্যালোচনার জন্য একই স্কোপ ব্যবহার করুন:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` কনফিগার করা प्रत्येक সোর্স রুটের অধীনে কেবল `README.md` রিভিউ করে, কাস্টম `groups` এবং আউটপুট ডিরেক্টরিগুলো সহ। অন্যান্য ডকুমেন্ট এবং নেস্টেড README-গুলো বাদ দেয়া হয়। একটি অনুপস্থিত সোর্স README `ValueError` উত্থাপন করে; ব্যর্থ অনুবাদ চেকগুলো `RuntimeError` উত্থাপন করে।
+including custom `groups` and output directories. Other documents and nested
+READMEs are excluded. A missing source README raises `ValueError`; failed
+translation checks raise `RuntimeError`.
+
+শুধুমাত্র সেই ফাইলগুলো পর্যালোচনা করুন যেগুলো একটি বেস রেফের বিরুদ্ধে পরিবর্তিত হয়েছে এবং GitHub-শৈলীর আউটপুট প্রিন্ট করুন:
 
 ```python
 from co_op_translator.api import run_review
@@ -276,7 +400,7 @@ run_review(
 
 ## কপি-পেস্ট API উদাহরণ
 
-ফাইল লেখা ছাড়া Markdown কনটেন্ট অনুবাদ করুন:
+ফাইল লেখা ছাড়া Markdown কন্টেন্ট অনুবাদ করুন:
 
 ```python
 import asyncio
@@ -295,7 +419,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Markdown লিঙ্ক অনুবাদ এবং রিরাইট করুন:
+Markdown লিংক অনুবাদ এবং পুনরলিখন করুন:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -327,7 +451,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-পাইথন থেকে একটি রিপোজিটরি অনুবাদ করুন:
+পাইথন থেকে একটি রেপো অনুবাদ করুন:
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-গ্লোসারি টার্মগুলো সংরক্ষণ করুন:
+গ্লসারি টার্ম সংরক্ষণ করুন:
 
 ```python
 from co_op_translator.api import run_translation
@@ -371,13 +495,16 @@ run_translation(
 )
 ```
 
-## পাবলিক এন্ট্রি পয়েন্টসমূহ
+## পাবলিক এন্ট্রি পয়েন্ট
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## কনটেন্ট অনুবাদ API গুলো
+## কন্টেন্ট অনুবাদ API গুলি
 
-কনটেন্ট অনুবাদ API গুলো তাদের জন্য উপযুক্ত যারা ইতিমধ্যেই মেমরিতে কনটেন্ট আছে, যেমন একটি এডিটর এক্সটেনশন, MCP টুল, নোটবুক প্রসেসর, বা কাস্টম পাইপলাইন।
+কন্টেন্ট অনুবাদ API গুলো সেই ইন্টিগ্রেশনগুলোর জন্য উদ্দেশ্যভিত্তিক যা ইতিমধ্যে মেমরিতে কন্টেন্ট রাখে, যেমন একটি এডিটর এক্সটেনশন, MCP টুল, নোটবুক প্রসেসর, বা কাস্টম পাইপলাইন।
 
 | Function | Input | Output | File I/O | Notes |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. শুধুমাত্র Markdown কনটেন্ট অনুবাদ করে। এটি লিঙ্ক রিরাইট করে না, মেটাডাটা লিখে না, বা ডিসক্লেইমার যোগ করে না। |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Markdown সেলগুলো অনুবাদ করে এবং নন-Markdown সেলগুলো সংরক্ষণ করে। এটি লিঙ্ক রিরাইট করে না, মেটাডাটা লিখে না, বা ডিসক্লেইমার যোগ করে না। |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. ইমেজ থেকে টেক্সট বের করে অনুবাদ করে, তারপর একটি রেন্ডার করা ইমেজ ফেরত দেয়। এটি অনূদিত ইমেজ মেটাডাটা সংরক্ষণ করে না। |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Markdown কন্টেন্টই অনুবাদ করে। এটি লিংক পুনরলিখন করে না, মেটাডেটা লিখে না, বা ডিসক্লেমার যুক্ত করে না। |
+| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Markdown সেলগুলো অনুবাদ করে এবং নন-Markdown সেলগুলো অক্ষুণ্ণ রাখে। এটি লিংক পুনরলিখন করে না, মেটাডেটা লিখে না, বা ডিসক্লেমার যুক্ত করে না। |
+| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. ইমেজ টেক্সট বের করে অনুবাদ করে, তারপর একটি রেন্ডার করা ইমেজ রিটার্ন করে। এটি অনুবাদকৃত ইমেজ মেটাডেটা সেভ করে না। |
 
-`translate_markdown_content` এবং `translate_notebook_content` তাদের অপশনগুলোর মাধ্যমে একটি ঐচ্ছিক `source_path` গ্রহন করে। পাথটি অনুবাদকের কাছে কনটেক্সট হিসেবে প্রেরিত হয়; কলাররা অনুবাদ শেষে যে কোনো প্রজেক্ট-নির্দিষ্ট পাথ রিরাইটিংয়ের জন্য দায়ী থাকেন।
+`translate_markdown_content` এবং `translate_notebook_content` তাদের অপশনগুলোর মাধ্যমে ঐচ্ছিক `source_path` গ্রহণ করে। পাথটি অনুবাদককে প্রসঙ্গ হিসেবে পাঠানো হয়; কলকারীরা অনুবাদের পরে প্রকল্প-নির্দিষ্ট পাথ পুনরলিখনের জন্য দায়ী থাকে।
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-একই অপশনগুলো ডিকশনারি হিসেবে পাঠানো যেতে পারে:
+একই অপশনগুলো ডিকশনারি হিসেবে দেওয়া যেতে পারে:
 
 ```python
 translated = await translate_markdown_content(
@@ -455,94 +588,96 @@ translated = await translate_markdown_content(
 )
 ```
 
-## এজেন্ট-সহায়ক অনুবাদ API গুলো
+## এজেন্ট-সহায়ক অনুবাদ API গুলি
 
-এজেন্ট-সহায়ক API গুলো Co-op Translator থেকে Azure OpenAI বা OpenAI কল করে না। এইগুলো Markdown বা নোটবুক চাঙ্কগুলো হোস্ট এজেন্ট অনুবাদের জন্য প্রস্তুত করে, তারপর অনূদিত চাঙ্কগুলো থেকে চূড়ান্ত কনটেন্ট পুনর্নির্মাণ করে।
+এজেন্ট-সহায়ক API গুলো Co-op Translator থেকে কনফিগারকৃত LLM প্রদানকারীকে কল করে না। এগুলো হোস্ট এজেন্টকে অনুবাদ করার জন্য Markdown বা নোটবুক চাঙ্কগুলো প্রস্তুত করে, তারপর অনুবাদ করা চাঙ্কগুলো থেকে চূড়ান্ত কন্টেন্ট পুনর্গঠন করে।
 
 | Function | Purpose |
 | --- | --- |
-| `start_markdown_agent_translation` | চাঙ্ক, প্রম্পট, এবং পুনর্নির্মাণ স্টেটসহ একটি স্ব-সম্পূর্ণ Markdown জব ফেরত দেয়। |
-| `finish_markdown_agent_translation` | একটি জব এবং হোস্ট-এজেন্ট অনূদিত চাঙ্কগুলো থেকে Markdown পুনর্নির্মাণ করে। |
-| `start_notebook_agent_translation` | হোস্ট-এজেন্ট অনুবাদের জন্য Markdown-সেল চাঙ্কসমূহসহ একটি নোটবুক জব ফেরত দেয়। |
-| `finish_notebook_agent_translation` | কোড সেল, আউটপুট, এবং মেটাডাটা সংরক্ষণ করে নোটবুক JSON পুনর্নির্মাণ করে। |
+| `start_markdown_agent_translation` | চাঙ্ক, প্রম্পট, এবং পুনর্গঠন স্টেট সহ একটি স্ব-স্বতন্ত্র Markdown জব রিটার্ন করে। |
+| `finish_markdown_agent_translation` | একটি জব এবং হোস্ট-এজেন্ট অনুবাদ করা চাঙ্ক থেকে Markdown পুনর্গঠন করে। |
+| `start_notebook_agent_translation` | হোস্ট-এজেন্ট অনুবাদের জন্য Markdown-সেল চাঙ্ক সহ একটি নোটবুক জব রিটার্ন করে। |
+| `finish_notebook_agent_translation` | কোড সেল, আউটপুট, এবং মেটাডেটা অক্ষুণ্ণ রেখে নোটবুক JSON পুনর্গঠন করে। |
 
-এই ওয়ার্কফ্লো প্রধানত MCP হোস্টদের জন্য উদ্দেশ্যপ্রণোদিত। যদি আপনি প্রোডাকশন রিপোজিটরি অনুবাদ চান যেখানে Co-op Translator প্রদানকারী কলগুলো পরিচালনা করে, তাহলে `translate_markdown_content`, `translate_notebook_content`, বা `run_translation` ব্যবহার করুন।
+এই ওয়ার্কফ্লোটি মূলত MCP হোস্টগুলোর জন্য উদ্দেশ্যভিত্তিক। যদি আপনি Co-op Translator পরিচালিত প্রদানকারী কল সহ প্রোডাকশন রেপো অনুবাদ চান, তাহলে `translate_markdown_content`, `translate_notebook_content`, বা `run_translation` ব্যবহার করুন।
 
-## পাথ রিরাইটিং API গুলো
+## পাথ পুনরলিখন API গুলি
 
-পাথ রিরাইটিং API গুলো কোনও অনুবাদ করে না। এগুলো কলাররা উৎস পাথ, অনূদিত লক্ষ্য পাথ, এবং প্রজেক্ট লেআউট জানার পরে লিঙ্ক এবং ফ্রন্টম্যাটার পাথ আপডেট করে।
+পাথ পুনরলিখন API গুলো কোনো অনুবাদ করে না। কলকারীরা যখন সোর্স পাথ, অনুবাদকৃত টার্গেট পাথ, এবং প্রকল্প লেআউট জানে তখন এগুলো লিংক এবং frontmatter পাথ আপডেট করে।
 
 | Function | Scope | Notes |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | অনূদিত লক্ষ্য জন্য Markdown লিঙ্ক এবং সমর্থিত ফ্রন্টম্যাটার পাথ ফিল্ডগুলো রিরাইট করে। |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | প্রতিটি Markdown সেলে Markdown পাথ রিরাইটিং প্রয়োগ করে এবং নন-Markdown সেলগুলো অপরিবর্তিত রেখে দেয়। |
+| `rewrite_markdown_paths` | Markdown বডি এবং frontmatter | অনুবাদকৃত টার্গেটের জন্য Markdown লিংক এবং সমর্থিত frontmatter পাথ ফিল্ডগুলো পুনরলিখন করে। |
+| `rewrite_notebook_paths` | নোটবুক JSON-এ Markdown সেলগুলো | প্রতিটি Markdown সেলে Markdown পাথ পুনরলিখন প্রয়োগ করে এবং নন-Markdown সেলগুলো অপরিবর্তিত রাখে। |
 
-`policy` আর্গুমেন্টটি একটি ডিকশনারি হতে পারে যার এই ফিল্ডসমূহ আছে:
+`policy` আর্গুমেন্টটি একটি ডিকশনারি হতে পারে যা এই ফিল্ডগুলো রয়েছে:
 
 | Field | Required | Purpose |
 | --- | --- | --- |
-| `language_code` | Yes | লক্ষ্য ভাষার কোড, যেমন `"ko"` বা `"pt-BR"`। |
-| `root_dir` | No | উৎস প্রজেক্ট রুট। ডিফল্ট `"."`। |
-| `translations_dir` | No | টেক্সট অনুবাদ আউটপুট ডিরেক্টরি। ডিফল্ট `root_dir` এর অধীনে `translations`। |
-| `translated_images_dir` | No | অনূদিত ইমেজ আউটপুট ডিরেক্টরি। ডিফল্ট `root_dir` এর অধীনে `translated_images`। |
-| `translation_types` | No | সক্রিয় অনুবাদ টাইপসমূহ। ডিফল্ট Markdown, নোটবুক, এবং ইমেজ। |
-| `lang_subdir` | No | প্রতিটি ভাষা ফোল্ডারের অধীনে ঐচ্ছিক সাবডাইর। |
+| `language_code` | হ্যাঁ | টার্গেট ভাষার কোড, যেমন `"ko"` বা `"pt-BR"`। |
+| `root_dir` | না | সোর্স প্রকল্প রুট। ডিফল্ট `"."`। |
+| `translations_dir` | না | টেক্সট অনুবাদ আউটপুট ডিরেক্টরি। ডিফল্ট `root_dir`-এর অধীনে `translations`। |
+| `translated_images_dir` | না | অনুবাদকৃত ইমেজ আউটপুট ডিরেক্টরি। ডিফল্ট `root_dir`-এর অধীনে `translated_images`। |
+| `translation_types` | না | সক্রিয় অনুবাদ টাইপগুলো। ডিফল্ট হলে Markdown, নোটবুক, এবং ইমেজ। |
+| `lang_subdir` | না | প্রতিটি ভাষা ফোল্ডারের অধীনে ঐচ্ছিক সাবডাইরেক্টরি। |
 
-## প্রজেক্ট অনুবাদ প্যারামিটারসমূহ
+## প্রজেক্ট অনুবাদ প্যারামিটার
 
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | স্পেস-সেপারেটেড লক্ষ্য ভাষার কোডসমূহ, যেমন `"ko ja fr"` বা `"all"`। এলিয়াস কোডগুলো ক্যানোনিকাল BCP 47 মানে নরমালাইজ করা হয়। |
-| `root_dir` | `str` | `"."` | একক অনুবাদ টার্গেটের জন্য প্রজেক্ট রুট। যখন `root_dirs` বা `groups` সরবরাহ করা হয় তখন উপেক্ষা করা হয়। |
-| `update` | `bool` | `False` | নির্বাচিত ভাষার জন্য বিদ্যমান অনুবাদ মুছে দিয়ে পুনরায় তৈরি করুন। |
+| `language_codes` | `str` | Required | স্পেস-বিভক্ত টার্গেট ভাষা কোড, যেমন `"ko ja fr"`, বা `"all"`। এলিয়াস কোডগুলো ক্যানোনিকাল BCP 47 মানে নর্মালাইজ করা হয়। |
+| `root_dir` | `str` | `"."` | একক অনুবাদ টার্গেটের জন্য প্রজেক্ট রুট। `root_dirs` বা `groups` সরবরাহ করলে উপেক্ষা করা হয়। |
+| `update` | `bool` | `False` | নির্বাচিত ভাষাগুলোর বিদ্যমান অনুবাদগুলি মুছে ফেলে এবং পুনরায় তৈরি করে। |
 | `images` | `bool` | `False` | ইমেজ অনুবাদ অন্তর্ভুক্ত করুন। Azure AI Vision কনফিগারেশন প্রয়োজন। |
 | `markdown` | `bool` | `False` | Markdown অনুবাদ অন্তর্ভুক্ত করুন। |
 | `notebook` | `bool` | `False` | Jupyter নোটবুক অনুবাদ অন্তর্ভুক্ত করুন। |
-| `debug` | `bool` | `False` | ডিবাগ লগিং সক্ষম করুন। |
-| `save_logs` | `bool` | `False` | রুট `logs/` ডিরেক্টরির অধীনে DEBUG-লেভেলের লগ ফাইল সংরক্ষণ করুন। |
-| `yes` | `bool` | `True` | প্রোগ্রাম্যাটিক এবং CI ব্যবহারের জন্য প্রম্পটগুলো অটো-কনফার্ম করুন। |
-| `add_disclaimer` | `bool` | `False` | অনূদিত Markdown এবং নোটবুকগুলিতে মেশিন অনুবাদ ডিসক্লেইমার যোগ করুন। |
-| `translations_dir` | `str \| None` | `None` | কাস্টম টেক্সট অনুবাদ আউটপুট ডিরেক্টরি। রিলেটিভ পাথগুলো প্রতিটি রুটের বিরুদ্ধে রেজল্ভ করে। |
-| `image_dir` | `str \| None` | `None` | কাস্টম অনূদিত ইমেজ আউটপুট ডিরেক্টরি। রিলেটিভ পাথগুলো প্রতিটি রুটের বিরুদ্ধে রেজল্ভ করে। |
-| `root_dirs` | `Iterable[str] \| None` | `None` | একরকম আউটপুট সেটিংস শেয়ার করা একাধিক রুট। |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | স্পষ্ট `(root_dir, translations_dir)` জোড়া। `root_dirs` এর উপরে অগ্রাধিকার গ্রহণ করে। |
-| `repo_url` | `str \| None` | `None` | README ভাষা টেবিল নির্দেশনা রেন্ডার করার সময় ব্যবহৃত রিপোজিটরি URL। |
-| `glossaries` | `Iterable[str] \| None` | `None` | অনুবাদের সময় সংরক্ষণ করার জন্য গ্লোসারি টার্মসমূহ। ডুপ্লিকেট এবং ফাঁকা টার্মগুলো নরমালাইজ করা হয়। |
-| `dry_run` | `bool` | `False` | ফাইল না লিখে অনুবাদের পরিমাণ অনুমান করুন এবং মাইগ্রেশন আচরণ প্রিভিউ করুন। |
+| `debug` | `bool` | `False` | ডিবাগ লগিং সক্রিয় করুন। |
+| `save_logs` | `bool` | `False` | রুট `logs/` ডিরেক্টরির অধীনে DEBUG-লেভেলের লগ ফাইল সেভ করুন। |
+| `yes` | `bool` | `True` | প্রোগ্রাম্যাটিক এবং CI ব্যবহারের ক্ষেত্রে প্রম্পটগুলো স্বয়ংক্রিয়ভাবে নিশ্চিত করে। |
+| `add_disclaimer` | `bool` | `False` | অনুবাদকৃত Markdown এবং নোটবুকগুলিতে মেশিন অনুবাদ ডিসক্লেইমার যোগ করুন। |
+| `translations_dir` | `str \| None` | `None` | কাস্টম টেক্সট অনুবাদ আউটপুট ডিরেক্টরি। আপেক্ষিক পথগুলো প্রতিটি root-এর বিরুদ্ধে সমাধান করা হয়। |
+| `image_dir` | `str \| None` | `None` | কাস্টম অনূদীত ইমেজ আউটপুট ডিরেক্টরি। আপেক্ষিক পথগুলো প্রতিটি root-এর বিরুদ্ধে সমাধান করা হয়। |
+| `root_dirs` | `Iterable[str] \| None` | `None` | একাধিক root যা একই আউটপুট সেটিংস শেয়ার করে। |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | স্পষ্ট `(root_dir, translations_dir)` জোড়া। এটি `root_dirs`-এর উপর অগ্রাধিকার পায়। |
+| `repo_url` | `str \| None` | `None` | README ভাষা টেবিল নির্দেশনা রেন্ডার করার সময় ব্যবহৃত Repository URL। |
+| `glossaries` | `Iterable[str] \| None` | `None` | অনুবাদের সময় অপরিবর্তিত রাখার জন্য গ্লসারি টার্ম। পুনরাবৃত্তি এবং খালি টার্মগুলো স্বাভাবিকীকরণ করা হয়। |
+| `dry_run` | `bool` | `False` | ফাইল লেখার ছাড়াই অনুবাদ পরিমাণ অনুমান করে এবং মাইগ্রেশন আচরণ প্রিভিউ করে। |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | ইনক্রিমেন্টাল Markdown আপডেটগুলোর জন্য ঐচ্ছিক accepted-baseline এবং candidate persistence অ্যাডাপ্টার। এটিকে বাদ দিলে বিদ্যমান সম্পূর্ণ-ফাইল আচরণ বজায় থাকে। |
 
-## রিভিউ প্যারামিটারসমূহ
+## পর্যালোচনা পরামিতি
 
-`run_review` ইচ্ছাকৃতভাবে যেখানে সম্ভব `run_translation` সিগন্যেচারের অনুকরণ করে যাতে অটোমেশন অনুবাদ এবং রিভিউ ওয়ার্কফ্লোগুলোর মধ্যে ন্যূনতম শাখন করা ছাড়াই স্যুইচ করতে পারে।
+`run_review` যেখানে সম্ভব `run_translation` সিগনেচারের অনুকরণ করে, যাতে অটোমেশন সামান্য শাখা-বিভাগে অনুবাদ এবং পর্যালোচনা ওয়ার্কফ্লোর মধ্যে স্যুইচ করতে পারে।
 
-| Parameter | Type | Default | Purpose |
+| প্যারামিটার | টাইপ | ডিফল্ট | উদ্দেশ্য |
 | --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | রিভিউ করার লক্ষ্য ভাষা ফোল্ডারগুলো। স্পেস-সেপারেটেড স্ট্রিং এবং ইটারেবলগুলো গ্রহণযোগ্য। `"all"` প্রত্যেক আবিষ্কৃত অনুবাদ ভাষা রিভিউ করে। |
-| `root_dir` | `str` | `"."` | একক রিভিউ টার্গেটের জন্য প্রজেক্ট রুট। যখন `root_dirs` বা `groups` সরবরাহ করা হয় তখন উপেক্ষা করা হয়। |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | পর্যালোচনার লক্ষ্য ভাষা ফোল্ডারসমূহ। স্পেস-দ্বারা আলাদা করা স্ট্রিং এবং iterable গ্রহণ করা হয়। `"all"` সন্ধানকৃত প্রতিটি অনুবাদ ভাষা পর্যালোচনা করে। |
+| `root_dir` | `str` | `"."` | একক পর্যালোচনা টার্গেটের জন্য প্রজেক্ট root। `root_dirs` বা `groups` সরবরাহ করা হলে উপেক্ষা করা হয়। |
 | `markdown` | `bool` | `False` | Markdown এবং MDX সোর্স ফাইলগুলো অন্তর্ভুক্ত করুন। |
 | `notebook` | `bool` | `False` | Jupyter নোটবুক সোর্স ফাইলগুলো অন্তর্ভুক্ত করুন। |
-| `images` | `bool` | `False` | অনুবাদ অপশনগুলোর সঙ্গে প্যারিটি রক্ষার জন্য সংরক্ষিত। Markdown থেকে ইমেজের লিঙ্ক রেফারেন্সগুলো চেক করা হয়। |
-| `translations_dir` | `str \| None` | `None` | কাস্টম টেক্সট অনুবাদ আউটপুট ডিরেক্টরি। আপেক্ষিক পথগুলি প্রতিটি রুটের ভিত্তিতে সমাধান করা হবে। |
-| `root_dirs` | `Iterable[str] \| None` | `None` | একাধিক রুট যা একই আউটপুট সেটিংস ভাগ করে। |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | স্পষ্ট (root_dir, translations_dir) জোড়া। এটি `root_dirs`-এর উপর অগ্রাধিকার দেয়। |
-| `changed_from` | `str \| None` | `None` | Git ref যা পরিবর্তিত উৎস ফাইলগুলির জন্য পর্যালোচনা সীমাবদ্ধ করতে ব্যবহৃত হয়। |
-| `output_format` | `str` | `"text"` | রিভিউ আউটপুট ফরম্যাট। সমর্থিত মানগুলো হলো `"text"` এবং `"github"`। |
-| `fail_on_warnings` | `bool` | `False` | সতর্কতাগুলিকে ত্রুটির পাশাপাশি ব্যর্থতা হিসেবে বিবেচনা করুন। |
-| `debug` | `bool` | `False` | ডিবাগ লগিং সক্ষম করুন। |
-| `save_logs` | `bool` | `False` | রুট `logs/` ডিরেক্টরির অধীনে DEBUG-স্তরের লগ ফাইল সংরক্ষণ করুন। |
+| `images` | `bool` | `False` | অনুবাদ অপশনগুলোর সমতা বজায় রাখার জন্য সংরক্ষিত। ছবির লিংক রেফারেন্সগুলো Markdown থেকে পরীক্ষা করা হয়। |
+| `translations_dir` | `str \| None` | `None` | কাস্টম টেক্সট অনুবাদ আউটপুট ডিরেক্টরি। আপেক্ষিক পথগুলো প্রতিটি root-এর বিরুদ্ধে সমাধান করা হয়। |
+| `root_dirs` | `Iterable[str] \| None` | `None` | একাধিক root যা একই আউটপুট সেটিংস শেয়ার করে। |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | স্পষ্ট `(root_dir, translations_dir)` জোড়া। এটি `root_dirs`-এর উপর অগ্রাধিকার পায়। |
+| `changed_from` | `str \| None` | `None` | পর্যালোচনা সীমাবদ্ধ করার জন্য ব্যবহার করা Git ref, যা কেবল পরিবর্তিত সোর্স ফাইলগুলোকে পর্যালোচনা করে। |
+| `readme_only` | `bool` | `False` | প্রতিটি সোর্স root-এর অধীনে শুধু `README.md` পর্যালোচনা করুন। একটি অনুপস্থিত সোর্স README হলে `ValueError` উত্থাপিত হয়। |
+| `output_format` | `str` | `"text"` | পর্যালোচনা আউটপুট ফরম্যাট। সমর্থিত মানগুলো হল `"text"` এবং `"github"`। |
+| `fail_on_warnings` | `bool` | `False` | সতর্কতাগুলোকেও ত্রুটির সাথে মিলিয়ে ব্যর্থতা হিসেবে গণ্য করুন। |
+| `debug` | `bool` | `False` | ডিবাগ লগিং সক্রিয় করুন। |
+| `save_logs` | `bool` | `False` | রুট `logs/` ডিরেক্টরির অধীনে DEBUG-স্তরের লগ ফাইলগুলো সংরক্ষণ করুন। |
 
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+`markdown`, `notebook`, বা `images` যেগুলোর কোনোটিই সেট না থাকলে, API যেখানে প্রযোজ্য সেখানে Markdown, নোটবুক এবং ইমেজ লিংক রেফারেন্সগুলো পর্যালোচনা করে। পর্যালোচনা কোনো LLM প্রদানকারীকে কল করে না এবং API কী প্রয়োজন পড়ে না।
 
 ## কনফিগারেশন প্রয়োজনীয়তা
 
-প্রোভাইডার-সমর্থিত অনুবাদ API-গুলোকে অনুবাদ শুরু করার আগে প্রোভাইডার কনফিগারেশন প্রয়োজন:
+প্রোভাইডার-সমর্থিত অনুবাদ API-গুলিকে অনুবাদ শুরু করার আগে প্রোভাইডার কনফিগারেশন প্রয়োজন:
 
-- Markdown এবং নোটবুক অনুবাদের জন্য একটি LLM প্রদানকারী প্রয়োজন। Azure OpenAI বা OpenAI কোন একটিকে কনফিগার করুন।
+- Markdown এবং নোটবুক অনুবাদের জন্য একটি LLM প্রদানকারী প্রয়োজন। Azure OpenAI, OpenAI, বা Anthropic কনফিগার করুন।
 - ইমেজ অনুবাদের জন্য LLM প্রদানকারীর পাশাপাশি Azure AI Vision প্রয়োজন।
-- `run_translation` প্রকল্প অনুবাদ শুরু হওয়ার আগে হালকা সংযোগ পরীক্ষা চালায়।
-- এজেন্ট-সহায়িত `start_*_agent_translation` এবং `finish_*_agent_translation` API-গুলো Co-op Translator LLM প্রদানকারীদের কল করে না। হোস্ট অ্যাপ্লিকেশন বা MCP এজেন্ট প্রস্তুত করা চাঙ্কগুলো অনুবাদ করে।
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, এবং `run_review` নির্ধারিত আচরণ এবং এগুলোর জন্য প্রদানকারী ক্রিডেনশিয়াল প্রয়োজন নেই।
+- `run_translation` প্রজেক্ট অনুবাদ শুরু হওয়ার আগে হালকা-ওজনের কানেক্টিভিটি চেক চালায়।
+- এজেন্ট-সহায়িত `start_*_agent_translation` এবং `finish_*_agent_translation` API গুলো Co-op Translator LLM প্রদানকারীদের কল করে না। হোস্ট অ্যাপলিকেশন বা MCP এজেন্ট প্রস্তুত করা চাঙ্কগুলো অনুবাদ করে।
+- `rewrite_markdown_paths`, `rewrite_notebook_paths`, এবং `run_review` নির্ণায়ক এবং প্রদানকারী ক্রেডেনশিয়াল প্রয়োজন হয় না।
 
-Required Azure OpenAI variables:
+প্রয়োজনীয় Azure OpenAI ভ্যারিয়েবলসমূহ:
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -552,69 +687,78 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Required OpenAI variables:
+প্রয়োজনীয় OpenAI ভ্যারিয়েবলসমূহ:
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+প্রয়োজনীয় Anthropic ভ্যারিয়েবলসমূহ:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` এবং `ANTHROPIC_MAX_TOKENS` ঐচ্ছিক। Co-op Translator 0.22.0 থেকে শুরু করে সব প্রোভাইডারের জন্য ডিফল্ট মডেল ক্লায়েন্ট হল Microsoft Agent Framework। Semantic Kernel সাময়িকভাবে `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"` দিয়ে এখনও নির্বাচন করা যায়, কিন্তু তা করলে একটি ডিপ্রিকেশন সতর্কবার্তা প্রদর্শিত হয়; পর্যায়ক্রমিক অপসারণ পরিকল্পনার জন্য [configuration](configuration.md#model-client-backend) দেখুন।
+
+ইমেজ অনুবাদের জন্য প্রয়োজনীয় Azure AI Vision ভ্যারিয়েবলসমূহ:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` নির্ধারিত আচরণ এবং এর জন্য Azure OpenAI, OpenAI, বা Azure AI Vision কনফিগারেশন প্রয়োজন নেই।
+`run_review` নির্ণায়ক এবং LLM বা Azure AI Vision কনফিগারেশন প্রয়োজন হয় না।
 
-## আচরণ নোট
+## আচরণ সম্পর্কিত নোট
 
-- কনটেন্ট অনুবাদ API-গুলো অনুবাদকে প্রকল্প পাথ পুনঃলিখন থেকে আলাদা রাখে। যখন অনুবাদিত কনটেন্টে প্রকল্প-সাপেক্ষ লিঙ্কগুলো লক্ষ্য অবস্থানের জন্য সামঞ্জস্য করা প্রয়োজন, তখন স্পষ্টভাবে `rewrite_markdown_paths` বা `rewrite_notebook_paths` কল করুন।
-- প্রকল্প অর্কেস্ট্রেশন API-গুলো কনটেন্ট অনুবাদের চারপাশে প্রকল্পের আচরণ যোগ করে, যার মধ্যে রয়েছে ফাইল সনাক্তকরণ, লিখন, পথ পুনঃলিখন, মেটাডেটা, ক্লিনআপ, এবং ঐচ্ছিক ডিসক্লেইমার।
-- `run_translation` Click মারফত অগ্রগতি ও অনুমান সারসংক্ষেপ প্রিন্ট করে, CLI ব্যবহারকারীর অভিজ্ঞতার সাথে মেলে।
+- কনটেন্ট অনুবাদ API গুলো অনুবাদকে প্রকল্প পাথ পুনঃলিখন থেকে আলাদা রাখে। অনুবাদকৃত কনটেন্টে লক্ষ্য স্থানের জন্য প্রকল্প-সংক্রান্ত লিঙ্ক সমন্বয় করতে হলে স্পষ্টভাবে `rewrite_markdown_paths` বা `rewrite_notebook_paths` কল করুন।
+- প্রজেক্ট অর্কেস্ট্রেশন API গুলো কনটেন্ট অনুবাদের চারপাশে প্রজেক্ট আচরণ যোগ করে, যার মধ্যে ফাইল আবিষ্কার, লেখার কাজ, পাথ পুনঃলিখন, মেটাডেটা, ক্লিনআপ এবং ঐচ্ছিক ডিসক্লেইমার অন্তর্ভুক্ত।
+- `run_translation` CLI দ্বারা ব্যবহৃত একই Rich-backed রিপোর্টার দিয়ে অগ্রগতি এবং অনুমান সংক্ষিপ্তসার প্রিন্ট করে। নন-ইন্টারঅ্যাকটিভ আউটপুট প্লেইন টেক্সটে ফিরে আসে।
 - `dry_run=True` ভার্চুয়াল README আপডেট ব্যবহার করে অনুমান গণনা করে, কিন্তু README বা অনুবাদ ফাইলগুলো লেখে না।
-- `groups` ধারাবাহিকভাবে প্রক্রিয়াজাত করা হয়। কাজ শুরু হওয়ার আগে একটি একক সমষ্টিগত অনুমান প্রিন্ট করা হয়।
-- ইমেজ অনুবাদ নির্বাচিত হলে, Vision কনফিগারেশন অনুপস্থিত থাকলে অনুবাদ শুরু হওয়ার আগে একটি ত্রুটি সৃষ্টি হয়।
-- বিদ্যমান অ্যালিয়াস-ভিত্তিক ভাষা ফোল্ডারগুলি সনাক্ত করা হয় এবং রানটির অংশ হিসেবে এগুলো ক্যানোনিকাল ভাষা ফোল্ডার নামগুলিতে মাইগ্রেট করা যেতে পারে।
-- `run_review` অনুবাদিত ফাইল অনুপস্থিত, অনুবাদ মেটাডেটা অনুপস্থিত বা স্টেল, ত্রুটিপূর্ণ Markdown frontmatter/code fences, এবং অবৈধ অনুবাদিত নোটবুক JSON-এর ক্ষেত্রে ব্যর্থ হয়।
-- `run_review` ডিফল্টভাবে স্থানীয় Markdown এবং ইমেজ লিংক টার্গেট অনুপস্থিতিকে সতর্কতা হিসেবে রিপোর্ট করে।
+- `groups` ক্রমান্বয়ে প্রক্রিয়াকৃত হয়। কাজ শুরু হওয়ার আগে একটি একক সমষ্টিগত অনুমান প্রিন্ট করা হয়।
+- ইমেজ অনুবাদ নির্বাচিত হলে, Vision কনফিগারেশন অনুপস্থিত থাকলে অনুবাদ শুরু হওয়ার আগে একটি ত্রুটি উত্তোলিত হয়।
+- বিদ্যমান অ্যালিয়াস-ভিত্তিক ভাষা ফোল্ডারগুলো সনাক্ত করা হয় এবং রান চক্রের অংশ হিসেবে ক্যাননিক্যাল ভাষা ফোল্ডার নামগুলিতে মাইগ্রেট করা যেতে পারে।
+- `run_review` অনুবাদিত ফাইল অনুপস্থিত, অনুবাদ মেটাডেটা অনুপস্থিত বা পুরনো, বিকৃত Markdown frontmatter/code fences, এবং অবৈধ অনূদীত নোটবুক JSON এর ক্ষেত্রে ব্যর্থ হয়।
+- `run_review` ডিফল্টরূপে লোকাল Markdown এবং ইমেজ লিংক টার্গেটগুলোর অনুপস্থিতি সতর্কতা হিসেবে রিপোর্ট করে।
 
 ## অভ্যন্তরীণ কল পথ
 
-The API delegates to the same core implementation used by the CLI:
+API CLI দ্বারা ব্যবহৃত একই কোর ইমপ্লিমেন্টেশনের কাছে ডেলিগেট করে:
 
 অনুবাদ:
 
-1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` ইন-মেমরি অনুবাদের জন্য।
-2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` স্পষ্ট পথ পোস্ট-প্রসেসিংয়ের জন্য।
-3. `co_op_translator.api.translation.run_translation` পূর্ণ প্রকল্প অর্কেস্ট্রেশনের জন্য।
-4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
-5. `co_op_translator.core.project.ProjectTranslator`.
-6. `co_op_translator.core.project.TranslationManager`.
-7. ফোকাসড প্রকল্প অনুবাদ মিক্সইনগুলো Markdown, নোটবুক, এবং ইমেজের জন্য।
-8. Markdown, নোটবুক, টেক্সট, এবং ইমেজ অনুবাদকরা `co_op_translator.core`-এর অধীনে।
+1. মেমরিতে অনুবাদের জন্য `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, অথবা `translate_image_content`।
+2. স্পষ্ট পাথ পোস্ট-প্রসেসিং-এর জন্য `co_op_translator.api.translation.rewrite_markdown_paths` বা `rewrite_notebook_paths`।
+3. সম্পূর্ণ প্রজেক্ট অর্কেস্ট্রেশনের জন্য `co_op_translator.api.translation.run_translation`।
+4. `co_op_translator.config.Config`, `LLMConfig`, এবং `VisionConfig`।
+5. `co_op_translator.core.project.ProjectTranslator`।
+6. `co_op_translator.core.project.TranslationManager`।
+7. Markdown, নোটবুক, এবং ইমেজগুলোর জন্য ফোকাসড প্রজেক্ট অনুবাদ মিক্সিন।
+8. `co_op_translator.core`-এর অধীনে Markdown, নোটবুক, টেক্সট, এবং ইমেজ ট্রান্সলেটর।
 
-রিভিউ:
+পর্যালোচনা:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. ডিটারমিনিস্টিক চেকগুলো `co_op_translator.review.checks`-এর অধীনে
+4. `co_op_translator.review.checks`-এর অধীনে নির্ণায়ক চেক।
 
-নীচের ক্লাসগুলো রক্ষণাবেক্ষকদের জন্য উপযোগী, তবে প্যাকেজ-স্তরের স্থিতিশীল API হিসেবে এক্সপোর্ট করা হয় না।
+নিচের ক্লাসগুলো রক্ষণাবেক্ষণের জন্য উপযোগী, কিন্তু প্যাকেজ-স্তরের স্থিতিশীল API হিসেবে রপ্তানি করা হয় না।
 
 | ক্লাস | মডিউল | দায়িত্ব |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | প্রকল্প-স্তরের অনুবাদ, ডিরেক্টরি ব্যবস্থাপনা, প্রতি-ভাষার মেটাডেটা স্বাভাবিককরণ, এবং Markdown, নোটবুক, ও ইমেজ অনুবাদকদের কাছে কর্ম হস্তান্তর করে। |
-| `TranslationManager` | `co_op_translator.core.project.translation` | Markdown, নোটবুক, ইমেজ, স্টেল সনাক্তকরণ, এবং অনুবাদ মেটাডেটা আপডেটগুলোর জন্য অ্যাসিঙ্ক ফাইল প্রক্রিয়াকরণ কাজগুলো করে। |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Markdown ফাইল পড়া, কনটেন্ট অনুবাদ, পথ পুনঃলিখন, মেটাডেটা, ডিসক্লেইমার, এবং লিখন সমন্বয় করে। |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | নোটবুক ফাইল পড়া, Markdown-সেল অনুবাদ, পথ পুনঃলিখন, মেটাডেটা, ডিসক্লেইমার, এবং লিখন সমন্বয় করে। |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | সোর্স ইমেজ আবিষ্কার, ইমেজ অনুবাদ, আউটপুট পথ, মেটাডেটা, এবং লিখন সমন্বয় করে। |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | অনুবাদকৃত Markdown জোড়া খুঁজে বের করে, অনুবাদের গুণমান মূল্যায়ন করে, এবং কম-কনফিডেন্স মেরামত ওয়ার্কফ্লোর জন্য কনফিডেন্স মেটাডেটা পড়ে। |
-| `ReviewRunner` | `co_op_translator.review.runner` | সোর্স ফাইল, লক্ষ্য ভাষা, এবং কনফিগারকৃত অনুবাদ রুটগুলোর জুড়ে নির্ধারিত পর্যালোচনা চেকগুলো সমন্বয় করে। |
-| `ReviewTarget` | `co_op_translator.review.targets` | একটি সোর্স রুট এবং সেই রুটের জন্য পর্যালোচিত অনুবাদ আউটপুট ডিরেক্টরির বর্ণনা দেয়। |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | লিগ্যাসি অ্যালিয়াস ভাষা ফোল্ডার সনাক্ত করে এবং ক্যানোনিকাল BCP 47 ফোল্ডার মাইগ্রেশন পরিকল্পনা প্রস্তুত করে। |
-| `Config` | `co_op_translator.config.base_config` | `.env` ফাইল লোড করে এবং প্রয়োজনীয় LLM এবং ঐচ্ছিক Vision প্রদানকারীরা কনফিগার করা আছে কিনা যাচাই করে। |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Azure OpenAI বা OpenAI স্বয়ংক্রিয়ভাবে সনাক্ত করে, প্রয়োজনীয় পরিবেশ পরিবর্তনশীলগুলি যাচাই করে, এবং প্রদানকারী সংযোগ পরীক্ষাগুলো চালায়। |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | Azure AI Vision কনফিগারেশন সনাক্ত করে এবং ইমেজ অনুবাদের জন্য সংযোগ পরীক্ষা চালায়। |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | প্রজেক্ট-স্তরের অনুবাদ, ডিরেক্টরি ব্যবস্থাপনা, প্রতিটি-ভাষার মেটাডেটা স্বাভাবিকীকরণ, এবং Markdown, নোটবুক, এবং ইমেজ ট্রান্সলেটরদের কাছে দায়িত্ব ভাগ করে। |
+| `TranslationManager` | `co_op_translator.core.project.translation` | Markdown, নোটবুক, ইমেজ, স্টেল ডিটেকশন, এবং অনুবাদ মেটাডেটা আপডেটগুলির জন্য অ্যাসিঙ্ক ফাইল প্রসেসিং কাজ সম্পাদন করে। |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Markdown ফাইল রিড, কনটেন্ট অনুবাদ, পাথ পুনঃলিখন, মেটাডেটা, ডিসক্লেইমার, এবং লেখাগুলো সমন্বয় করে। |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | নোটবুক ফাইল রিড, Markdown-সেল অনুবাদ, পাথ পুনঃলিখন, মেটাডেটা, ডিসক্লেইমার, এবং লেখাগুলো সমন্বয় করে। |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | সোর্স ইমেজ আবিষ্কার, ইমেজ অনুবাদ, আউটপুট পাথ, মেটাডেটা, এবং লেখাগুলো সমন্বয় করে। |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | অনুবাদকৃত Markdown জোড়া খুঁজে বের করে, অনুবাদের গুণমান মূল্যায়ন করে, এবং কম-বিশ্বাসযোগ্যতা রিপেয়ার ওয়ার্কফ্লো জন্য confidence মেটাডেটা পড়ে। |
+| `ReviewRunner` | `co_op_translator.review.runner` | উৎস ফাইল, লক্ষ্য ভাষা, এবং কনফিগার করা অনুবাদ root-গুলোর মধ্যে নির্ণায়ক পর্যালোচনা চেক সমন্বয় করে। |
+| `ReviewTarget` | `co_op_translator.review.targets` | একটি সোর্স root এবং ঐ root-এর জন্য পর্যালোচনা করা অনুবাদ আউটপুট ডিরেক্টরি বর্ণনা করে। |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | লিগ্যাসি অ্যালিয়াস ভাষা ফোল্ডার সনাক্ত করে এবং ক্যাননিক্যাল BCP 47 ফোল্ডার মাইগ্রেশন পরিকল্পনা প্রস্তুত করে। |
+| `Config` | `co_op_translator.config.base_config` | `.env` ফাইল লোড করে এবং পরীক্ষা করে যে প্রয়োজনীয় LLM এবং ঐচ্ছিক Vision প্রদানকারীরা কনফিগার করা আছে কি না। |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Azure OpenAI, OpenAI, বা Anthropic স্বয়ংক্রিয়ভাবে সনাক্ত করে, প্রয়োজনীয় এনভায়রনমেন্ট ভ্যারিয়েবল বৈধতা করে, এবং প্রদানকারী কানেক্টিভিটি চেক চালায়। |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | Azure AI Vision কনফিগারেশন সনাক্ত করে এবং ইমেজ অনুবাদের জন্য কানেক্টিভিটি চেক চালায়। |

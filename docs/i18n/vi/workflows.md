@@ -1,46 +1,50 @@
-# Chọn quy trình làm việc của bạn
+# Chọn Luồng Công Việc Của Bạn
 
-Co-op Translator có thể được sử dụng theo ba cách: CLI, API Python và Máy chủ MCP. Chúng chia sẻ cùng khả năng dịch, nhưng mỗi cách phù hợp với một quy trình làm việc khác nhau.
+Co-op Translator có thể được sử dụng theo ba cách: CLI, Python API, và MCP server. Chúng chia sẻ cùng khả năng dịch, nhưng mỗi cách phù hợp với một quy trình làm việc khác nhau.
 
 Sử dụng trang này khi bạn đang quyết định bắt đầu từ đâu.
 
-## Quyết định nhanh
+**Nếu bạn chỉnh sửa bản dịch bằng tay:** các workflow mặc định của CLI và Actions sẽ dịch lại toàn bộ các tệp nguồn đã thay đổi, vì vậy cách diễn đạt của bạn trong những tệp đó có thể bị ghi đè. Xem xét diff trước khi chấp nhận cập nhật. Để bảo toàn cấp khối Markdown của các chỉnh sửa đã được chấp nhận, hãy sử dụng [nhà cung cấp trạng thái dịch thuật Python tùy chọn](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
 
-| Nếu bạn muốn... | Sử dụng | Bắt đầu ở đây |
+## Quyết Định Nhanh
+
+| Nếu bạn muốn... | Sử dụng | Bắt đầu tại đây |
 | --- | --- | --- |
-| Dịch hoặc xem xét một kho lưu trữ từ một terminal | CLI | [Tham khảo CLI](cli.md) |
-| Thêm bản dịch vào một script Python, dịch vụ, notebook, hoặc công việc CI | API Python | [API Python](api.md) |
-| Cho phép một agent, trình soạn thảo, hoặc client tương thích MCP dịch nội dung cho bạn | Máy chủ MCP | [Máy chủ MCP](mcp.md) |
-| Dịch một tài liệu Markdown, notebook, hoặc hình ảnh mà ứng dụng của bạn đã tải | API Python hoặc Máy chủ MCP | [API Python](api.md) hoặc [Máy chủ MCP](mcp.md) |
-| Dịch toàn bộ kho lưu trữ với các thư mục đầu ra tiêu chuẩn và siêu dữ liệu | CLI hoặc `run_translation` | [Tham khảo CLI](cli.md) hoặc [API Python](api.md) |
+| Dịch hoặc xem lại một kho lưu trữ từ terminal | CLI | [Tham khảo CLI](cli.md) |
+| Thêm việc dịch vào một script Python, dịch vụ, notebook, hoặc job CI | Python API | [Python API](api.md) |
+| Cho phép một agent, trình soạn thảo, hoặc client tương thích MCP dịch nội dung cho bạn | MCP Server | [MCP Server](mcp.md) |
+| Dịch một tài liệu Markdown, notebook, hoặc hình ảnh mà ứng dụng của bạn đã tải | Python API hoặc MCP Server | [Python API](api.md) hoặc [MCP Server](mcp.md) |
+| Dịch toàn bộ kho lưu trữ với các thư mục đầu ra và metadata chuẩn | CLI hoặc `run_translation` | [CLI Reference](cli.md) or [Python API](api.md) |
 
 ## Sử dụng CLI khi
 
-Chọn CLI khi một người hoặc một công việc CI điều khiển việc dịch kho lưu trữ từ một shell.
+Chọn CLI khi một người hoặc job CI điều khiển việc dịch kho lưu trữ từ shell.
 
-CLI là con đường trực tiếp nhất khi bạn muốn Co-op Translator tự động phát hiện các tệp dự án, tạo đầu ra đã dịch, giữ nguyên bố cục dự án, cập nhật siêu dữ liệu và chạy các lệnh xem xét.
+CLI là con đường trực tiếp nhất khi bạn muốn Co-op Translator phát hiện các tệp dự án, tạo đầu ra đã dịch, giữ nguyên bố cục dự án, cập nhật metadata và chạy các lệnh xem xét.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
+Ví dụ này dịch Markdown và notebook. Thêm `-img` chỉ sau khi cấu hình [Azure AI Vision](configuration.md#azure-ai-vision). Đối với lần chạy đầu chỉ với Markdown, làm theo [Bản dịch đầu tiên của bạn](first-translation.md).
+
 Phù hợp:
 
-- Bạn đang dịch một kho lưu trữ từ terminal.
-- Bạn muốn một lệnh có thể lặp lại cho quy trình CI hoặc phát hành.
-- Bạn muốn tính năng phát hiện dự án tích hợp sẵn, đường dẫn đầu ra, siêu dữ liệu, dọn dẹp và xem xét.
-- Bạn thích giao diện lệnh hơn việc viết mã Python.
+- Bạn đang dịch một kho lưu trữ từ terminal của mình.
+- Bạn muốn một lệnh có thể lặp lại cho các quy trình CI hoặc phát hành.
+- Bạn muốn tính năng phát hiện dự án tích hợp, đường dẫn đầu ra, metadata, dọn dẹp và xem xét.
+- Bạn thích giao diện lệnh hơn là viết mã Python.
 
-## Sử dụng API Python khi
+## Sử dụng Python API khi
 
-Chọn API Python khi mã của bạn nên kiểm soát quy trình làm việc.
+Chọn Python API khi mã của bạn cần kiểm soát quy trình làm việc.
 
-API hữu ích cho các ứng dụng, script tự động hóa, notebook, dịch vụ và đường ống tùy chỉnh. Nó cho phép bạn gọi các API dịch nội dung cấp thấp cho từng tệp, hoặc chạy cùng cơ chế điều phối ở cấp kho lưu trữ được CLI sử dụng.
+API hữu ích cho các ứng dụng, script tự động hóa, notebook, dịch vụ và pipeline tùy chỉnh. Nó cho phép bạn gọi các API dịch nội dung cấp thấp cho từng tệp, hoặc chạy cùng orchestration ở cấp kho lưu trữ mà CLI sử dụng.
 
-Dịch một tài liệu Markdown và quyết định nơi lưu nó:
+Dịch một tài liệu Markdown và quyết định lưu nó ở đâu:
 
 ```python
 import asyncio
@@ -72,57 +76,50 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Chạy dịch một kho lưu trữ từ Python:
+Chạy việc dịch một kho lưu trữ từ Python:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
 Phù hợp:
 
-- Ứng dụng của bạn đã đọc các tệp, bộ đệm, notebook hoặc byte hình ảnh.
-- Bạn cần xác thực tùy chỉnh, lưu trữ, ghi nhật ký, thử lại hoặc luồng phê duyệt.
-- Bạn muốn dịch một tài liệu, notebook hoặc hình ảnh mà không xử lý toàn bộ kho lưu trữ.
-- Bạn muốn dịch kho lưu trữ, nhưng từ tự động hóa Python thay vì một lệnh shell.
+- Ứng dụng của bạn đã đọc tệp, bộ đệm, notebook, hoặc byte hình ảnh.
+- Bạn cần xác thực tùy chỉnh, lưu trữ, ghi nhật ký, thử lại, hoặc luồng phê duyệt.
+- Bạn muốn dịch một tài liệu, notebook, hoặc hình ảnh mà không xử lý toàn bộ kho lưu trữ.
+- Bạn muốn dịch kho lưu trữ, nhưng từ tự động hóa Python thay vì lệnh shell.
 
-## Sử dụng Máy chủ MCP khi
+## Sử dụng MCP Server khi
 
-Chọn máy chủ MCP khi một agent, trình soạn thảo, hoặc client tương thích MCP cần gọi các công cụ Co-op Translator.
+Chọn MCP server khi một agent, trình soạn thảo, hoặc client tương thích MCP nên gọi các công cụ của Co-op Translator.
 
-Trong thiết lập cục bộ thông thường, người dùng không giữ một server chạy thủ công. MCP client khởi chạy `co-op-translator-mcp` qua `stdio` khi cần các công cụ.
+Trong cấu hình cục bộ thông thường, người dùng không giữ một server chạy thủ công. MCP client khởi động `co-op-translator-mcp` qua `stdio` khi nó cần các công cụ.
 
 Ví dụ các yêu cầu người dùng mà một agent có thể xử lý:
 
-- "Dịch tệp Markdown này sang tiếng Hàn và giữ các liên kết cho đúng."
-- "Dịch tệp Markdown này sang tiếng Hàn bằng quy trình MCP có hỗ trợ agent, sử dụng mô hình của bạn cho các đoạn được dịch."
+- "Dịch tệp Markdown này sang tiếng Hàn và giữ các liên kết chính xác."
+- "Dịch tệp Markdown này sang tiếng Hàn bằng quy trình MCP hỗ trợ agent, sử dụng mô hình của bạn cho các đoạn được dịch."
 - "Dịch notebook này sang tiếng Hàn, giữ nguyên các ô mã, và sử dụng Co-op Translator MCP để tái tạo notebook."
 - "Dịch văn bản trong hình này sang tiếng Nhật và lưu kết quả."
-- "Chạy thử (dry-run) dịch kho lưu trữ sang tiếng Tây Ban Nha và cho tôi biết những gì sẽ thay đổi."
-- "Xem xét xem đầu ra dịch tiếng Hàn có phải là phiên bản mới nhất hay không."
+- "Chạy thử dịch kho lưu trữ sang tiếng Tây Ban Nha và cho tôi biết sẽ thay đổi gì."
+- "Xem xét liệu đầu ra bản dịch tiếng Hàn có được cập nhật hay không."
 
 Đối với Markdown và notebook, MCP có thể hoạt động ở hai chế độ:
 
 | Chế độ | Sử dụng khi | Công cụ chính |
 | --- | --- | --- |
-| Có trợ giúp của agent | Agent chủ MCP nên dịch các đoạn với mô hình của nó, mà không cần thông tin đăng nhập nhà cung cấp LLM của Co-op Translator. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Được nhà cung cấp hỗ trợ | Co-op Translator sẽ gọi trực tiếp Azure OpenAI hoặc OpenAI. | `translate_markdown_content`, `translate_notebook_content` |
+| Agent-assisted | Máy chủ agent MCP nên dịch các đoạn bằng mô hình riêng của nó, không cần thông tin xác thực nhà cung cấp LLM của Co-op Translator. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Provider-backed | Co-op Translator nên gọi trực tiếp Azure OpenAI, OpenAI, hoặc Anthropic. | `translate_markdown_content`, `translate_notebook_content` |
 
-Cấu trúc lời gọi công cụ Markdown khi MCP được nhà cung cấp hỗ trợ:
+Cấu trúc cuộc gọi công cụ Markdown khi MCP hỗ trợ bởi nhà cung cấp:
 
 ```json
 {
@@ -137,7 +134,7 @@ Cấu trúc lời gọi công cụ Markdown khi MCP được nhà cung cấp h�
 }
 ```
 
-Cấu trúc lời gọi công cụ hình ảnh MCP:
+Cấu trúc cuộc gọi công cụ hình ảnh MCP:
 
 ```json
 {
@@ -150,7 +147,7 @@ Cấu trúc lời gọi công cụ hình ảnh MCP:
 }
 ```
 
-Dịch kho lưu trữ mặc định là chạy thử (dry-run) qua MCP:
+Việc dịch kho lưu trữ mặc định là chạy thử (dry-run) qua MCP:
 
 ```json
 {
@@ -167,14 +164,14 @@ Dịch kho lưu trữ mặc định là chạy thử (dry-run) qua MCP:
 
 Phù hợp:
 
-- Bạn muốn các quy trình dịch bằng ngôn ngữ tự nhiên bên trong một agent hoặc trình soạn thảo.
-- Bạn muốn dịch Markdown hoặc notebook nơi mô hình agent chủ dịch các đoạn đã được chuẩn bị.
-- Bạn muốn agent dịch nội dung được chọn thay vì toàn bộ kho lưu trữ.
-- Bạn muốn có bước phê duyệt trước khi ghi thay đổi trên toàn bộ kho lưu trữ.
+- Bạn muốn các quy trình dịch bằng ngôn ngữ tự nhiên bên trong agent hoặc trình soạn thảo.
+- Bạn muốn dịch Markdown hoặc notebook mà mô hình agent chủ dịch các đoạn đã được chuẩn bị.
+- Bạn muốn agent dịch các nội dung được chọn thay vì toàn bộ kho lưu trữ.
+- Bạn muốn một bước phê duyệt trước khi ghi trên toàn kho lưu trữ.
 - Bạn muốn một giao diện duy nhất cung cấp các công cụ cho Markdown, notebook, hình ảnh, xem xét và viết lại đường dẫn.
 
-## Cách chúng kết hợp
+## Cách Chúng Phù Hợp Với Nhau
 
-CLI là lựa chọn mặc định tốt nhất cho con người dịch kho lưu trữ. API Python là tốt nhất khi mã của bạn sở hữu quy trình làm việc. Máy chủ MCP là tốt nhất khi một agent hoặc trình soạn thảo sở hữu quy trình làm việc.
+CLI là lựa chọn mặc định tốt nhất cho con người khi dịch kho lưu trữ. Python API là tốt nhất khi mã của bạn sở hữu quy trình làm việc. MCP server là tốt nhất khi một agent hoặc trình soạn thảo sở hữu quy trình làm việc.
 
-Cả ba con đường đều sử dụng cùng một API công khai của Co-op Translator, vì vậy bạn có thể bắt đầu với CLI, tự động hóa bằng Python sau, và phơi bày cùng các khả năng đó cho các client MCP khi bạn cần các quy trình do agent điều khiển.
+Cả ba con đường đều sử dụng cùng một API công khai của Co-op Translator, vì vậy bạn có thể bắt đầu với CLI, tự động hóa bằng Python sau, và phơi bày cùng khả năng đó cho các client MCP khi bạn cần các quy trình làm việc do agent điều khiển.

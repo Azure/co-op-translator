@@ -1,6 +1,6 @@
-# CLI Reference
+# Referencia CLI
 
-Co-op Translator inštaluje tieto príkazové vstupné body:
+Co-op Translator nainštaluje tieto príkazové vstupné body:
 
 - `translate`
 - `evaluate`
@@ -8,39 +8,51 @@ Co-op Translator inštaluje tieto príkazové vstupné body:
 - `co-op-review`
 - `co-op-translator-mcp`
 
-Príkazy `translate`, `evaluate`, `migrate-links` a `co-op-review` sa odosielajú cez `co_op_translator.__main__`, ktorý vyberie implementáciu príkazu na základe názvu spusteného skriptu. MCP server používa priamo `co_op_translator.mcp.server`.
+Príkazy `translate`, `evaluate`, `migrate-links` a `co-op-review` sú smerované cez `co_op_translator.__main__`, ktorý vyberá implementáciu príkazu na základe názvu spusteného skriptu. MCP server používa priamo `co_op_translator.mcp.server`.
 
-Ak sa rozhodujete medzi CLI, Python API a MCP, začnite s [Vyberte si pracovný postup](workflows.md).
+Ak sa rozhodujete medzi CLI, Python API a MCP, začnite s [Vyberte si pracovný tok](workflows.md).
 
-## First-Time CLI Flow
+## Konzolový výstup
+
+Interaktívne terminály používajú formátovanie Rich pre hlavičku príkazu, priebeh a súhrny. CI a neinteraktívny výstup sa automaticky prepne na obyčajný text.
+
+Nastavte `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` pre vynútenie obyčajného výstupu, alebo `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` pre vynútenie Rich výstupu. Nastavte `CO_OP_TRANSLATOR_NO_PROGRESS=1` pre zachovanie súhrnov pri potlačení živých priebehových pruhov.
+
+Použite `translate --json-events progress.ndjson` keď iný systém potrebuje
+strojovo čitateľný priebeh. CLI pokračuje vo vykresľovaní výstupu pre používateľov, zatiaľ čo
+súbor NDJSON prijíma verzované `co-op.translation.event.v1` udalosti so
+stabilnými poľami ako `type`, `stage_key`, `completed`, `total` a
+`current_path`.
+
+## Postup pri prvom použití CLI
 
 Začnite tu, ak používate Co-op Translator z terminálu:
 
-1. Nakonfigurujte poskytovateľa LLM podľa pokynov v [Configuration](configuration.md).
-2. Vyberte typ obsahu, ktorý chcete preložiť.
-3. Najprv spustite zameraný príkaz, napríklad preklad iba Markdown.
-4. Pred rozsiahlymi zmenami v repozitári použite `--dry-run`.
-5. Po preklade použite `co-op-review` na skontrolovanie štruktúry a aktuálnosti.
+1. Nakonfigurujte poskytovateľa LLM podľa pokynov v [Konfigurácia](configuration.md).
+2. Vyberte typ obsahu, ktorý chcete prekladať.
+3. Najprv spustite zameraný príkaz, napríklad preklad iba Markdownu.
+4. Použite `--dry-run` pred rozsiahlymi zmenami v repozitári.
+5. Použite `co-op-review` po preklade na kontrolu štruktúry a aktuálnosti.
 
-| Goal | Command to start with |
+| Cieľ | Príkaz na začatie |
 | --- | --- |
-| Translate Markdown documents | `translate -l "ko" -md` |
-| Translate notebooks | `translate -l "ko" -nb` |
-| Translate image text | `translate -l "ko" -img` |
-| Preview work without writing files | `translate -l "ko" -md --dry-run` |
-| Review existing translations | `co-op-review -l "ko"` |
-| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
-| Expose tools to an MCP client | Configure the [MCP Server](mcp.md) instead of running CLI commands directly. |
+| Preložiť Markdown dokumenty | `translate -l "ko" -md` |
+| Preložiť notebooky | `translate -l "ko" -nb` |
+| Preložiť text na obrázkoch | `translate -l "ko" -img` |
+| Náhľad práce bez zapisovania súborov | `translate -l "ko" -md --dry-run` |
+| Skontrolovať existujúce preklady | `co-op-review -l "ko"` |
+| Aktualizovať odkazy v notebookoch a Markdown súboroch | `migrate-links -l "ko" --dry-run` |
+| Sprístupniť nástroje klientovi MCP | Nakonfigurujte [MCP Server](mcp.md) namiesto priameho spúšťania CLI príkazov. |
 
 ## translate
 
-Prekladajte súbory Markdown, notebooky a text na obrázkoch do jedného alebo viacerých cieľových jazykov.
+Prekladajte Markdown súbory, notebooky a texty na obrázkoch do jedného alebo viacerých cieľových jazykov.
 
 ```bash
 translate -l "ko ja fr"
 ```
 
-### Common examples
+### Bežné príklady
 
 Preložiť iba Markdown:
 
@@ -60,7 +72,7 @@ Preložiť Markdown a obrázky:
 translate -l "pt-BR" -md -img
 ```
 
-Aktualizovať existujúce preklady ich odstránením a obnovením:
+Aktualizovať existujúce preklady odstránením a opätovným vytvorením:
 
 ```bash
 translate -l "ko" -u
@@ -78,41 +90,48 @@ Uložiť logy:
 translate -l "ko" -s
 ```
 
-### Options
+Zapisovať štruktúrované udalosti priebehu:
 
-| Option | Required | Description |
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
+### Možnosti
+
+| Možnosť | Povinné | Popis |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Medzerou oddelené kódy jazykov, napríklad `"es fr de"`, alebo `"all"`. |
-| `-r`, `--root-dir` | No | Koreň projektu. Predvolené je aktuálny adresár. |
-| `-u`, `--update` | No | Odstrániť existujúce preklady pre vybrané jazyky a znovu ich vytvoriť. |
-| `-img`, `--images` | No | Preložiť iba súbory s obrázkami. |
-| `-md`, `--markdown` | No | Preložiť iba súbory Markdown. |
-| `-nb`, `--notebook` | No | Preložiť iba Jupyter notebook súbory. |
-| `-d`, `--debug` | No | Zapnúť debug logging v konzole. |
-| `-s`, `--save-logs` | No | Uložiť DEBUG-úrovňové logy do `<root-dir>/logs/`. |
-| `-x`, `--fix` | No | Preložiť znovu Markdown súbory s nízkou dôverou na základe predchádzajúcich výsledkov hodnotenia. |
-| `-c`, `--min-confidence` | No | Prah dôvery pre `--fix`. Predvolené je `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | No | Pridať alebo potlačiť upozornenia o strojovom preklade. V CLI je predvolene povolené. |
-| `-f`, `--fast` | No | Zastaralý režim rýchleho spracovania obrázkov. |
-| `-y`, `--yes` | No | Automaticky potvrdiť výzvy, užitočné v CI. |
-| `--repo-url` | No | URL repozitára používané v odporúčaní sparse-checkout tabuľky jazykov v README. |
-| `--migrate-language-folders` | No | Premenovať staršie alias priečinky, ako `cn` alebo `tw`, na kanonické BCP 47 priečinky. |
-| `--dry-run` | No | Náhľad migrácie priečinkov jazykov a odhadov prekladu bez zápisu súborov. |
+| `-l`, `--language-codes` | Áno | Kódy jazykov oddelené medzerou, napríklad `"es fr de"`, alebo `"all"`. |
+| `-r`, `--root-dir` | Nie | Projektový koreň. Predvolene aktuálny adresár. |
+| `-u`, `--update` | Nie | Odstrániť existujúce preklady pre vybrané jazyky a znovu ich vytvoriť. |
+| `-img`, `--images` | Nie | Prekladať len súbory s obrázkami. |
+| `-md`, `--markdown` | Nie | Prekladať len Markdown súbory. |
+| `-nb`, `--notebook` | Nie | Prekladať len Jupyter notebook súbory. |
+| `-d`, `--debug` | Nie | Povoliť debug logovanie v konzole. |
+| `-s`, `--save-logs` | Nie | Uložiť logy úrovne DEBUG do `<root-dir>/logs/`. |
+| `--json-events` | Nie | Zapisovať strojovo čitateľné udalosti priebehu prekladu ako NDJSON. |
+| `-x`, `--fix` | Nie | Preložiť znovu Markdown súbory s nízkou dôverou na základe predchádzajúcich výsledkov hodnotenia. |
+| `-c`, `--min-confidence` | Nie | Prahová hodnota dôvery pre `--fix`. Predvolene `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | Nie | Pridať alebo potlačiť upozornenie o strojovom preklade. V CLI sú predvolene povolené. |
+| `-f`, `--fast` | Nie | Zastaraný rýchly režim pre obrázky. |
+| `-y`, `--yes` | Nie | Automaticky potvrdzovať výzvy, užitočné v CI. |
+| `--repo-url` | Nie | URL repozitára používaná v oznámení sparse-checkout tabuľky jazykov v README. |
+| `--migrate-language-folders` | Nie | Premenovať staršie aliasové priečinky, napr. `cn` alebo `tw`, na kanonické priečinky podľa BCP 47. |
+| `--dry-run` | Nie | Náhľad migrácie priečinkov jazykov a odhadov prekladu bez zápisu súborov. |
 
-Ak nie je zadaný žiadny typový parameter, `translate` spracuje Markdown, notebooky a obrázky. Preklad obrázkov vyžaduje konfiguráciu Azure AI Vision.
+Ak nie je zadaný žiadny typový prepínač, `translate` spracuje Markdown, notebooky a obrázky. Preklad obrázkov vyžaduje konfiguráciu Azure AI Vision.
 
 ## evaluate
 
-Vyhodnoťte kvalitu preloženého Markdownu pre jeden jazyk.
+Ohodnoťte kvalitu prekladu Markdownu pre jeden jazyk.
 
 !!! warning "Experimentálne"
-    `evaluate` je experimentálne. Môže používať pravidlové a LLM-založené kontroly kvality, zapisuje výsledky hodnotenia do metadát prekladu a jeho model hodnotenia a správanie s metadátami sa môžu meniť.
+    `evaluate` je experimentálny. Môže používať pravidlové a LLM-poháňané kontroly kvality, zapisuje výsledky hodnotenia do metadát prekladu a jeho hodnotiaci model a správanie metadát sa môžu zmeniť.
 
 ```bash
 evaluate -l "ko"
 ```
 
-### Common examples
+### Bežné príklady
 
 Použiť prísnejší prah pre nízku dôveru:
 
@@ -120,44 +139,44 @@ Použiť prísnejší prah pre nízku dôveru:
 evaluate -l "es" -c 0.8
 ```
 
-Spustiť len pravidlové kontroly:
+Spustiť len kontroly založené na pravidlách:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-Spustiť len LLM-založené kontroly:
+Spustiť len LLM-poháňané kontroly:
 
 ```bash
 evaluate -l "ja" -D
 ```
 
-### Options
+### Možnosti
 
-| Option | Required | Description |
+| Možnosť | Povinné | Popis |
 | --- | --- | --- |
-| `-l`, `--language-code` | Yes | Jediný kód jazyka na vyhodnotenie. Alias kódy sú normalizované. |
-| `-r`, `--root-dir` | No | Koreň projektu. Predvolené je aktuálny adresár. |
-| `-c`, `--min-confidence` | No | Prah používaný pri vypisovaní prekladov s nízkou dôverou. Predvolené je `0.7`. |
-| `-d`, `--debug` | No | Zapnúť debug logging. |
-| `-s`, `--save-logs` | No | Uložiť DEBUG-úrovňové logy do `<root-dir>/logs/`. |
-| `-f`, `--fast` | No | Iba pravidlové hodnotenie. |
-| `-D`, `--deep` | No | Iba LLM-založené hodnotenie. |
+| `-l`, `--language-code` | Áno | Jediný kód jazyka na vyhodnotenie. Aliasové kódy sú normalizované. |
+| `-r`, `--root-dir` | Nie | Projektový koreň. Predvolene aktuálny adresár. |
+| `-c`, `--min-confidence` | Nie | Prahová hodnota použitá pri vypisovaní prekladov s nízkou dôverou. Predvolene `0.7`. |
+| `-d`, `--debug` | Nie | Povoliť debug logovanie. |
+| `-s`, `--save-logs` | Nie | Uložiť logy úrovne DEBUG do `<root-dir>/logs/`. |
+| `-f`, `--fast` | Nie | Len hodnotenie založené na pravidlách. |
+| `-D`, `--deep` | Nie | Len LLM-poháňané hodnotenie. |
 
-Predvolene `evaluate` používa oba prístupy: pravidlové aj LLM-založené hodnotenie. Výsledky sa zapisujú do metadát prekladu a sumarizujú v konzole.
+Predvolene `evaluate` využíva obe – pravidlové aj LLM-poháňané hodnotenie. Výsledky sa zapíšu do metadát prekladu a zhrnú v konzole.
 
 ## co-op-review
 
-Spustite deterministické kontroly údržby prekladov bez prihlasovacích údajov API.
+Spustiť deterministické kontroly údržby prekladov bez API poverení.
 
 !!! note "Beta"
-    `co-op-review` je beta deterministický príkaz na revíziu. Neposkytuje volania poskytovateľov modelov ani nezapisuje súbory, avšak jeho kontroly a schéma výstupu problémov sa môžu vyvíjať.
+    `co-op-review` je beta deterministický kontrolný príkaz. Nevolá poskytovateľov modelov ani nezapisuje súbory, ale jeho kontroly a schéma výstupu problémov sa môžu vyvíjať.
 
 ```bash
 co-op-review -l "ko"
 ```
 
-### Common examples
+### Bežné príklady
 
 Skontrolovať kórejské a japonské preklady z aktuálneho adresára:
 
@@ -171,32 +190,45 @@ Skontrolovať konkrétny koreň projektu:
 co-op-review -l "fr" -r ./my-course
 ```
 
-Skontrolovať iba zdrojové súbory zmenené oproti základnému refu:
+Skontrolovať iba README po preklade, ktorý zahŕňal len README:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` ignoruje ostatné dokumenty a vnorené README. Zlyhá, ak chýba koreňový
+`README.md`. V kombinácii s `--changed-from` kontroluje README len
+keď sa daný zdrojový súbor zmenil. Preklad zameraný len na README ponecháva zdrojové README
+nezmenené, vrátane akýchkoľvek značiek spoločných sekcií.
+
+Skontrolovať len zdrojové súbory zmenené oproti základnému ref:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-Vytlačiť výstup vo formáte GitHub-flavored Markdown pre súhrny CI:
+Vypísať výstup v GitHub-flavored Markdown pre CI súhrny:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
 ```
 
-### Options
+### Možnosti
 
-| Option | Required | Description |
+| Možnosť | Povinné | Popis |
 | --- | --- | --- |
-| `-l`, `--language-code` | No | Kód jazyka na kontrolu. Môže byť zadaný viackrát alebo ako medzerou oddelená hodnota. Predvolene všetky zistené jazyky prekladov. |
-| `-r`, `--root-dir` | No | Koreň projektu. Predvolené je aktuálny adresár. |
-| `--changed-from` | No | Git ref používaný na obmedzenie revízie na zmenené zdrojové súbory. |
-| `--format` | No | Formát výstupu: `text` alebo `github`. Predvolené je `text`. |
+| `-l`, `--language-code` | Nie | Kód jazyka na kontrolu. Dá sa zadať viackrát alebo ako hodnota oddelená medzerou. Predvolene všetky zistené jazyky prekladu. |
+| `-r`, `--root-dir` | Nie | Projektový koreň. Predvolene aktuálny adresár. |
+| `--changed-from` | Nie | Git ref používaný na obmedzenie kontroly na zmenené zdrojové súbory. |
+| `--readme-only` | Nie | Skontrolovať len koreňový `README.md` preklad. |
+| `--format` | Nie | Formát výstupu: `text` alebo `github`. Predvolene `text`. |
 
-`co-op-review` momentálne kontroluje chýbajúce preložené súbory, chýbajúce alebo zastarané metadáta prekladu, integritu frontmatteru v Markdown a ohraničení kódu, neplatný preložený notebook JSON a chýbajúce miestne cieľové odkazy v Markdown alebo obrázkoch. Chýbajúce odkazy sú predvolene varovania; štrukturálne a aktuálne problémy ukončia príkaz s chybou.
+`co-op-review` v súčasnosti kontroluje chýbajúce preložené súbory, chýbajúce alebo zastarané metadáta prekladu, frontmatter v Markdown a integritu ohraničení kódu, neplatný preložený JSON notebooku a chýbajúce lokálne ciele odkazov v Markdown alebo obrázkoch. Chýbajúce odkazy sú predvolene varovania; štrukturálne problémy a problémy s aktuálnosťou spôsobia zlyhanie príkazu.
 
 ## co-op-translator-mcp
 
-Spustite MCP server Co-op Translator pre agentov, editorov a klientov kompatibilných s MCP.
+Spustiť MCP server Co-op Translator pre agentov, editory a MCP-kompatibilných klientov.
 
 ```bash
 co-op-translator-mcp
@@ -204,21 +236,21 @@ co-op-translator-mcp
 
 Predvolený transport je `stdio`. Pozrite si príručku [MCP Server](mcp.md) pre konfiguráciu klienta, nástroje, zdroje a bezpečnostné poznámky.
 
-### Options
+### Možnosti
 
-| Option | Required | Description |
+| Možnosť | Povinné | Popis |
 | --- | --- | --- |
-| `--transport` | No | MCP transport: `stdio`, `streamable-http`, alebo `sse`. Predvolené je `stdio`. |
+| `--transport` | Nie | MCP transport: `stdio`, `streamable-http`, alebo `sse`. Predvolene `stdio`. |
 
 ## migrate-links
 
-Znovu spracovať preložené súbory Markdown a aktualizovať odkazy v notebookoch tak, aby smerovali na preložené notebooky, ak sú dostupné.
+Znovu spracovať preložené Markdown súbory a aktualizovať odkazy v notebookoch tak, aby smerovali na preložené notebooky, keď sú k dispozícii.
 
 ```bash
 migrate-links -l "ko ja"
 ```
 
-### Common examples
+### Bežné príklady
 
 Náhľad aktualizácií odkazov:
 
@@ -232,28 +264,28 @@ Spracovať všetky podporované jazyky bez potvrdenia:
 migrate-links -l "all" -y
 ```
 
-Prepísať odkazy iba keď existujú preložené notebooky:
+Prepisovať odkazy len v prípade, že existujú preložené notebooky:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
 ```
 
-### Options
+### Možnosti
 
-| Option | Required | Description |
+| Možnosť | Povinné | Popis |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Medzerou oddelené kódy jazykov, alebo `"all"`. |
-| `-r`, `--root-dir` | No | Koreň projektu. Predvolené je aktuálny adresár. |
-| `--image-dir` | No | Adresár preložených obrázkov relatívny ku koreňu. Predvolené je `translated_images`. |
-| `--dry-run` | No | Zobraziť súbory, ktoré by sa zmenili, bez zápisu aktualizácií. |
-| `--fallback-to-original`, `--no-fallback-to-original` | No | Použiť pôvodné odkazy na notebooky, keď chýbajú preložené notebooky. Predvolené je povolené. |
-| `-d`, `--debug` | No | Zapnúť debug logging. |
-| `-s`, `--save-logs` | No | Uložiť DEBUG-úrovňové logy do `<root-dir>/logs/`. |
-| `-y`, `--yes` | No | Automaticky potvrdiť výzvy pri spracovaní všetkých jazykov. |
+| `-l`, `--language-codes` | Áno | Kódy jazykov oddelené medzerou, alebo `"all"`. |
+| `-r`, `--root-dir` | Nie | Projektový koreň. Predvolene aktuálny adresár. |
+| `--image-dir` | Nie | Adresár pre preložené obrázky vzhľadom na koreň. Predvolene `translated_images`. |
+| `--dry-run` | Nie | Zobraziť súbory, ktoré by sa zmenili, bez zápisu aktualizácií. |
+| `--fallback-to-original`, `--no-fallback-to-original` | Nie | Použiť pôvodné odkazy na notebook, keď chýbajú preložené notebooky. Predvolene povolené. |
+| `-d`, `--debug` | Nie | Povoliť debug logovanie. |
+| `-s`, `--save-logs` | Nie | Uložiť logy úrovne DEBUG do `<root-dir>/logs/`. |
+| `-y`, `--yes` | Nie | Automaticky potvrdiť výzvy pri spracovaní všetkých jazykov. |
 
-## Environment
+## Prostredie
 
-Všetky príkazy vyžadujú aspoň jedného nakonfigurovaného poskytovateľa LLM:
+Keď príkaz vyžaduje poverenia poskytovateľa, nakonfigurujte jednu z týchto sád poskytovateľov. `translate --dry-run` a `co-op-review` nevyžadujú poverenia poskytovateľa:
 
 ```bash
 # Azure OpenAI
@@ -266,6 +298,10 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Alebo OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Alebo Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
 Preklad obrázkov navyše vyžaduje Azure AI Vision:
@@ -275,7 +311,7 @@ AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## Output layout
+## Rozloženie výstupu
 
 Textové preklady sa zapisujú do:
 
@@ -289,14 +325,14 @@ Výstup preložených obrázkov sa zapisuje do:
 translated_images/<language-code>/<original-path>
 ```
 
-Napríklad, preložením `README.md` a `docs/setup.md` do kórejčiny vznikne:
+Napríklad preklad `README.md` a `docs/setup.md` do kórejčiny vytvorí:
 
 ```text
 translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## Copy-Paste CLI Examples
+## Príklady CLI na kopírovanie
 
 Preložiť Markdown do troch jazykov:
 
@@ -316,20 +352,20 @@ Preložiť len obrázky:
 translate -l "pt-BR" -img
 ```
 
-Náhľad prekladu Markdown bez zápisu súborov:
+Náhľad prekladu Markdownu bez zápisu súborov:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-Opraviť preklady Markdown s nízkou dôverou:
+Opraviť preklady Markdownu s nízkou dôverou:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-Spustiť CI-friendly preklad Markdown:
+Spustiť preklad Markdownu priateľný k CI:
 
 ```bash
 translate -l "ko ja" -md -y -s

@@ -1,12 +1,12 @@
-# Troubleshooting
+# Pagsasaayos ng Problema
 
-Gamitin ang pahinang ito kapag ang isang pagtakbo ng pagsasalin ay nagtagumpay nang hindi inaasahan, nabigo sa panahon ng konfigurasyon, o gumawa ng output na kailangan ng pagsusuri.
+Gamitin ang pahinang ito kapag ang pagsasalin ay nagtapos nang hindi inaasahan, nabigo sa panahon ng konfigurasyon, o naglabas ng output na kailangan ng pagsusuri.
 
-## Start Here
+## Magsimula Dito
 
-1. Patakbuhin muna ang isang tinukoy na utos, tulad ng `translate -l "ko" -md`.
-2. Idagdag `-d` para sa console debug logs.
-3. Idagdag `-s` para i-save ang mga debug log sa ilalim ng `<root-dir>/logs/`.
+1. Patakbuhin muna ang isang nakatuong utos, tulad ng `translate -l "ko" -md`.
+2. Idagdag ang `-d` para sa mga log ng debug sa console.
+3. Idagdag ang `-s` upang i-save ang mga log ng debug sa `<root-dir>/logs/`.
 4. Patakbuhin ang `co-op-review` pagkatapos ng pagsasalin upang suriin ang pagiging bago, istruktura, at mga lokal na link.
 
 ```bash
@@ -14,9 +14,9 @@ translate -l "ko" -md -d -s
 co-op-review -l "ko"
 ```
 
-## Configuration Errors
+## Mga Error sa Konfigurasyon
 
-### No Language Model Provider
+### Walang Tagapagbigay ng Language Model
 
 Error:
 
@@ -24,15 +24,15 @@ Error:
 No language model configuration found.
 ```
 
-Fix:
+Ayusin:
 
-- I-configure ang Azure OpenAI o OpenAI.
-- Suriin na ang mga variable ay nasa kapaligiran kung saan tumatakbo ang utos.
+- I-configure ang Azure OpenAI, OpenAI, o Anthropic.
+- Tiyakin na ang mga variable ay nasa environment kung saan pinapatakbo ang utos.
 - Para sa lokal na paggamit, ilagay ang mga ito sa `.env` sa root ng proyekto.
 
 Tingnan ang [Konfigurasyon](configuration.md).
 
-### Image Translation Without Azure AI Vision
+### Pagsasalin ng Imahe Nang Walang Azure AI Vision
 
 Error:
 
@@ -40,33 +40,33 @@ Error:
 Image translation requested but Azure AI Service is not configured.
 ```
 
-Fix:
+Ayusin:
 
-- Magdagdag ng `AZURE_AI_SERVICE_API_KEY`.
-- Magdagdag ng `AZURE_AI_SERVICE_ENDPOINT`.
-- O magpatakbo ng utos na text-only tulad ng `translate -l "ko" -md`.
+- Idagdag ang `AZURE_AI_SERVICE_API_KEY`.
+- Idagdag ang `AZURE_AI_SERVICE_ENDPOINT`.
+- O patakbuhin ang utos para sa text lamang tulad ng `translate -l "ko" -md`.
 
-### Invalid Key or Endpoint
+### Di-wastong Key o Endpoint
 
-Maaaring kabilang sa mga sintomas ang `401`, naka-redact na mga error sa permiso, o mga error sa pag-access ng endpoint.
+Maaaring kabilang sa mga sintomas ang `401`, na-redact na mga error sa permiso, o mga error sa pag-access ng endpoint.
 
-Fix:
+Ayusin:
 
-- Kumpirmahin na ang key ay kabilang sa parehong Azure resource gaya ng endpoint.
+- Kumpirmahin na ang key ay kabilang sa parehong Azure resource tulad ng endpoint.
 - Kumpirmahin na sinusuportahan ng resource ang Vision kapag gumagamit ng `-img`.
-- Kumpirmahin na tumutugma ang pangalan ng Azure OpenAI deployment at bersyon ng API sa iyong deployment.
-- Patakbuhin na may debug logs: `translate -l "ko" -md -d -s`.
+- Kumpirmahin na ang pangalan ng Azure OpenAI deployment at ang API version ay tumutugma sa iyong deployment.
+- Patakbuhin na may mga log ng debug: `translate -l "ko" -md -d -s`.
 
-## No Files Were Translated
+## Walang Mga File na Naisalin
 
-Common causes:
+Mga karaniwang sanhi:
 
 - Ang mga napiling flag ay hindi tumutugma sa iyong mga file.
-- May mga umiiral nang naisaling file.
-- Ang mga source file ay nasa loob ng mga direktoryong hindi kasama.
+- May umiiral na mga naisaling file.
+- Ang mga source file ay nasa ilalim ng mga direktoryong hindi kasama.
 - Ang utos ay pinapatakbo mula sa maling root ng proyekto.
 
-Checks:
+Mga tseke:
 
 ```bash
 translate -l "ko" -md --dry-run
@@ -76,55 +76,55 @@ translate -l "ko" -img --dry-run
 
 Gamitin ang `--root-dir` kapag ang utos ay pinapatakbo sa labas ng root ng proyekto.
 
-## Unexpected Link Behavior
+## Hindi Inaasahang Pag-uugali ng Link
 
-Ang pagrerewrite ng link ay nakadepende sa mga napiling uri ng nilalaman:
+Ang pag-rewrite ng mga link ay nakadepende sa mga napiling uri ng nilalaman:
 
-- `-nb` included: ang mga link ng notebook ay maaaring tumuro sa naisaling notebook.
-- `-nb` excluded: ang mga link ng notebook ay maaaring manatiling tumutukoy sa mga source notebook.
-- `-img` included: ang mga link ng imahe ay maaaring tumuro sa naisaling mga imahe.
-- `-img` excluded: ang mga link ng imahe ay maaaring manatiling tumutukoy sa mga source na imahe.
+- `-nb` kasama: ang mga link ng notebook ay maaaring tumuro sa mga naisaling notebook.
+- `-nb` hindi kasama: ang mga link ng notebook ay maaaring manatiling nakaturo sa mga orihinal na notebook.
+- `-img` kasama: ang mga link ng imahe ay maaaring tumuro sa mga naisaling imahe.
+- `-img` hindi kasama: ang mga link ng imahe ay maaaring manatiling nakaturo sa mga orihinal na imahe.
 
-Magsagawa ng buong pagsasalin ng nilalaman kapag lahat ng internal na link ay dapat mas piliin ang mga naisaling output:
+Isagawa ang buong pagsasalin ng nilalaman kapag dapat na mas pinipili ng lahat ng internal na link ang mga naisaling output:
 
 ```bash
 translate -l "ko" -md -nb -img
 ```
 
-Patakbuhin ang pag-review ng mga link pagkatapos ng pagsasalin:
+Patakbuhin ang pagsusuri ng mga link pagkatapos ng pagsasalin:
 
 ```bash
 co-op-review -l "ko"
 ```
 
-## Markdown Rendering Issues
+## Mga Isyu sa Pag-render ng Markdown
 
-Kung mali ang pag-render ng naisaling Markdown:
+Kung ang naisaling Markdown ay nagre-render nang mali:
 
-- Suriin na nagsisimula at nagtatapos ang frontmatter sa `---`.
-- Suriin na tumutugma ang bilang ng code fence sa pagitan ng source at naisaling mga file.
-- Patakbuhin ang `co-op-review` upang masalo ang mga karaniwang isyu sa istruktura.
+- Suriin na ang frontmatter ay nagsisimula at nagtatapos sa `---`.
+- Suriin na ang bilang ng code fence ay tumutugma sa pagitan ng source at naisaling mga file.
+- Patakbuhin ang `co-op-review` upang mahuli ang mga karaniwang isyu sa istruktura.
 - Isalin muli ang partikular na file kung ang output ay nasira.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action Ran but No Pull Request Was Created
+## Tumakbo ang GitHub Action ngunit Walang Pull Request na Nalikha
 
-Kung nag-uulat ang `peter-evans/create-pull-request` na ang branch ay hindi nangunguna sa base, hindi nakakita ang workflow ng mga file na iko-commit.
+Kung iniulat ng `peter-evans/create-pull-request` na ang branch ay hindi nauuna sa base, walang nahanap na mga file na ia-commit ng workflow.
 
 Mga posibleng sanhi:
 
-- Ang pagsasalin ay hindi nagresulta ng mga pagbabago.
-- Ang `.gitignore` ay naka-exclude ng `translations/`, `translated_images/`, o mga naisaling notebook.
-- `add-paths` ay hindi tumutugma sa mga generated output directory.
-- Maagang nagtapos ang hakbang ng pagsasalin.
+- Ang pagtakbo ng pagsasalin ay hindi nakabuo ng mga pagbabago.
+- Nilalaktawan ng `.gitignore` ang `translations/`, `translated_images/`, o mga naisaling notebook.
+- Ang `add-paths` ay hindi tumutugma sa mga direktoryo ng nalikhang output.
+- Maagang tumigil ang hakbang ng pagsasalin.
 
-Fixes:
+Mga Pag-aayos:
 
-1. Kumpirmahin na umiiral ang mga generated na file sa `translations/` o `translated_images/`.
-2. Kumpirmahin na ang `.gitignore` ay hindi nag-i-ignore ng mga generated output.
+1. Kumpirmahin na umiiral ang mga nalikhang file sa `translations/` o `translated_images/`.
+2. Kumpirmahin na hindi ini-ignore ng `.gitignore` ang mga nalikhang output.
 3. Gumamit ng tumutugmang `add-paths`:
 
    ```yaml
@@ -140,7 +140,7 @@ Fixes:
    translate -l "ko" -md -d -s
    ```
 
-5. Kumpirmahin na kasama sa workflow permissions ang:
+5. Kumpirmahin na kasama sa mga permiso ng workflow ang:
 
    ```yaml
    permissions:
@@ -148,11 +148,11 @@ Fixes:
      pull-requests: write
    ```
 
-## Translation Quality
+## Kalidad ng Pagsasalin
 
-Maaaring kailanganin ng mga machine translation ang pagsusuri ng tao. Gamitin ang `evaluate` lamang kapag gusto mong magkaroon ng experimental na pagskor ng kalidad at mga workflow para sa pag-aayos ng mababang kumpiyansang output.
+Maaaring kailanganin ng mga machine translation ang pagsusuri ng tao. Gamitin ang `evaluate` lamang kapag gusto mo ng experimental na pagmamarka ng kalidad at mga workflow ng pag-aayos para sa mababang kumpiyansa.
 
-!!! warning "Experimental"
-    `evaluate` can use rule-based and LLM-based checks, and its scoring model and metadata behavior may change. Keep it out of required CI gates unless your workflow is prepared for changes.
+!!! warning "Eksperimental"
+    `evaluate` ay maaaring gumamit ng mga rule-based at LLM-based na pagsusuri, at ang modelo ng pagmamarka at pag-uugali ng metadata nito ay maaaring magbago. Huwag isama ito sa mga kinakailangang CI gate maliban kung handa ang iyong workflow sa mga pagbabago.
 
-Para sa deterministic na pagsusuri sa CI, gamitin sa halip ang `co-op-review`.
+Para sa deterministic na tseke ng CI, gamitin na lamang ang `co-op-review`.

@@ -1,8 +1,8 @@
 # Stödda språk
 
-Co-op Translator stöder följande språkkoder för text-, notebook- och bildöversättningsutdata.
+Co-op Translator stöder följande språkkoder för text-, anteckningsbok- och bildöversättningsutdata.
 
-Om du vill lägga till ett nytt språk, uppdatera språk- och fontmappningarna under `src/co_op_translator/fonts/` och testa språket innan du öppnar en pull request.
+Om du vill lägga till ett nytt språk, uppdatera språk- och teckensnittskartläggningarna under `src/co_op_translator/fonts/` och testa språket innan du öppnar en pull request.
 
 | Language Code | Language Name | Font | RTL Support | Known Issues |
 | --- | --- | --- | --- | --- |
@@ -12,11 +12,11 @@ Om du vill lägga till ett nytt språk, uppdatera språk- och fontmappningarna u
 | de | Tyska | NotoSans-Medium.ttf | Nej | Nej |
 | ru | Ryska | NotoSans-Medium.ttf | Nej | Nej |
 | ar | Arabiska | NotoSansArabic-Medium.ttf | Ja | Nej |
-| fa | Persiska (Farsi) | NotoSansArabic-Medium.ttf | Ja | Nej |
+| fa | Persiska (farsi) | NotoSansArabic-Medium.ttf | Ja | Nej |
 | ur | Urdu | NotoSansArabic-Medium.ttf | Ja | Nej |
 | zh-CN | Kinesiska (förenklad) | NotoSansCJK-Medium.ttc | Nej | Nej |
 | zh-MO | Kinesiska (traditionell, Macau) | NotoSansCJK-Medium.ttc | Nej | Nej |
-| zh-HK | Kinesiska (traditionell, Hong Kong) | NotoSansCJK-Medium.ttc | Nej | Nej |
+| zh-HK | Kinesiska (traditionell, Hongkong) | NotoSansCJK-Medium.ttc | Nej | Nej |
 | zh-TW | Kinesiska (traditionell, Taiwan) | NotoSansCJK-Medium.ttc | Nej | Nej |
 | ja | Japanska | NotoSansCJK-Medium.ttc | Nej | Nej |
 | ko | Koreanska | NotoSansCJK-Medium.ttc | Nej | Nej |
@@ -41,8 +41,8 @@ Om du vill lägga till ett nytt språk, uppdatera språk- och fontmappningarna u
 | he | Hebreiska | NotoSansHebrew-Medium.ttf | Ja | Nej |
 | vi | Vietnamesiska | NotoSans-Medium.ttf | Nej | Nej |
 | id | Indonesiska | NotoSans-Medium.ttf | Nej | Nej |
-| ms | Malaysiska | NotoSans-Medium.ttf | Nej | Nej |
-| tl | Tagalog (Filippinska) | NotoSans-Medium.ttf | Nej | Nej |
+| ms | Malayiska | NotoSans-Medium.ttf | Nej | Nej |
+| tl | Tagalog (filippinska) | NotoSans-Medium.ttf | Nej | Nej |
 | sw | Swahili | NotoSans-Medium.ttf | Nej | Nej |
 | hu | Ungerska | NotoSans-Medium.ttf | Nej | Nej |
 | cs | Tjeckiska | NotoSans-Medium.ttf | Nej | Nej |
@@ -56,17 +56,18 @@ Om du vill lägga till ett nytt språk, uppdatera språk- och fontmappningarna u
 | my | Burmesiska (Myanmar) | NotoSansMyanmar-Medium.ttf | Nej | Nej |
 | ta | Tamil | NotoSansTamil-Medium.ttf | Nej | Nej |
 | et | Estniska | NotoSans-Medium.ttf | Nej | Nej |
-| pcm | Nigeriansk Pidgin | NotoSans-Medium.ttf | Nej | Nej |
+| pcm | Nigeriansk pidgin | NotoSans-Medium.ttf | Nej | Nej |
 | te | Telugu | NotoSans-Medium.ttf | Nej | Nej |
 | ml | Malayalam | NotoSans-Medium.ttf | Nej | Nej |
 | kn | Kannada | NotoSans-Medium.ttf | Nej | Nej |
 | km | Khmer | NotoSansKhmer-Medium.ttf | Nej | Nej |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Nej | Nej |
 
 ## Lägg till ett språk
 
 För att lägga till stöd för ett nytt språk:
 
 1. Lägg till språkkoden och visningsnamnet i språkverktygen.
-2. Lägg till eller mappa en font i `src/co_op_translator/fonts/font_language_mappings.yml`.
-3. Testa Markdown- och bildöversättningsutdata.
-4. Öppna en pull request med mappningen och valideringsanteckningarna.
+2. Lägg till eller mappa ett teckensnitt i `src/co_op_translator/fonts/font_language_mappings.yml`.
+3. Testa Markdown- och bildöversättningens resultat.
+4. Öppna en pull request med kartläggningen och valideringsanteckningarna.

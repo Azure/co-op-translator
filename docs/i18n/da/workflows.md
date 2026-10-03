@@ -1,46 +1,50 @@
-# Choose Your Workflow
+# Vælg din arbejdsgang
 
-Co-op Translator can be used in three ways: the CLI, the Python API, and the MCP server. They share the same translation capabilities, but each one fits a different workflow.
+Co-op Translator kan bruges på tre måder: CLI'en, Python-API'en og MCP-serveren. De deler de samme oversættelsesmuligheder, men hver passer til en forskellig arbejdsgang.
 
-Use this page when you are deciding where to start.
+Brug denne side, når du skal beslutte, hvor du skal starte.
 
-## Quick Decision
+**Hvis du redigerer oversættelser manuelt:** de standardmæssige CLI- og Actions-arbejdsgange oversætter ændrede kildefiler fuldstændigt igen, så dine formuleringer i disse filer kan blive overskrevet. Gennemgå diff'en før du accepterer en opdatering. For bevaring på blokniveau af accepterede redigeringer i Markdown, brug den valgfrie [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
 
-| If you want to... | Use | Start here |
+## Hurtigt valg
+
+| Hvis du vil... | Brug | Start her |
 | --- | --- | --- |
-| Oversæt eller gennemgå et repository fra en terminal | CLI | [CLI-reference](cli.md) |
-| Tilføj oversættelse til et Python-script, en service, en notebook eller et CI-job | Python API | [Python API](api.md) |
-| Lad en agent, editor eller en MCP-kompatibel klient oversætte indhold for dig | MCP Server | [MCP-server](mcp.md) |
-| Oversæt ét Markdown-dokument, en notebook eller et billede, som din app allerede har indlæst | Python API or MCP Server | [Python API](api.md) or [MCP-server](mcp.md) |
-| Oversæt et helt repository med standard output-mapper og metadata | CLI or `run_translation` | [CLI-reference](cli.md) or [Python API](api.md) |
+| Oversætte eller gennemgå et repository fra en terminal | CLI | [CLI Reference](cli.md) |
+| Tilføj oversættelse til et Python-script, en tjeneste, en notebook eller et CI-job | Python API | [Python API](api.md) |
+| Lad en agent, editor eller MCP-kompatibel klient oversætte indhold for dig | MCP Server | [MCP Server](mcp.md) |
+| Oversæt et enkelt Markdown-dokument, en notebook eller et billede, som din app allerede har indlæst | Python API eller MCP Server | [Python API](api.md) eller [MCP Server](mcp.md) |
+| Oversæt et helt repository med standard output-mapper og metadata | CLI eller `run_translation` | [CLI Reference](cli.md) eller [Python API](api.md) |
 
-## Use the CLI when
+## Brug CLI'en når
 
-Choose the CLI when a person or CI job is driving repository translation from a shell.
+Vælg CLI'en, når en person eller et CI-job styrer repository-oversættelsen fra en shell.
 
-The CLI is the most direct path when you want Co-op Translator to discover project files, create translated outputs, preserve the project layout, update metadata, and run review commands.
+CLI'en er den mest direkte vej, når du vil have Co-op Translator til at finde projektfiler, oprette oversatte output, bevare projektlayoutet, opdatere metadata og køre review-kommandoer.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
+
+Dette eksempel oversætter Markdown og notebooks. Tilføj `-img` først efter at have konfigureret [Azure AI Vision](configuration.md#azure-ai-vision). For et førstekørsel kun for Markdown, følg [Your first translation](first-translation.md).
 
 Passer godt til:
 
 - Du oversætter et repository fra din terminal.
-- Du ønsker en gentagelig kommando til CI- eller release-workflows.
-- Du ønsker indbygget projekt-opdagelse, output-stier, metadata, oprydning og review.
-- Du foretrækker et kommandogrænseflade frem for at skrive Python-kode.
+- Du ønsker en gentagelig kommando til CI- eller release-arbejdsgange.
+- Du vil have indbygget projektopdagelse, output-stier, metadata, oprydning og review.
+- Du foretrækker en kommandolinjegrænseflade frem for at skrive Python-kode.
 
-## Use the Python API when
+## Brug Python API'en når
 
-Choose the Python API when your own code should control the workflow.
+Vælg Python API'en, når din egen kode skal kontrollere arbejdsgangen.
 
-The API is useful for applications, automation scripts, notebooks, services, and custom pipelines. It lets you call low-level content translation APIs for individual files, or run the same repository-level orchestration used by the CLI.
+API'en er nyttig til applikationer, automatiseringsscripts, notebooks, tjenester og tilpassede pipelines. Den giver dig mulighed for at kalde lavniveau-API'er til indholdsoversættelse for enkelte filer eller køre den samme repository-niveau orkestrering, som CLI'en bruger.
 
-Translate one Markdown document and decide where to save it:
+Oversæt ét Markdown-dokument og beslut hvor det skal gemmes:
 
 ```python
 import asyncio
@@ -72,57 +76,50 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Run a repository translation from Python:
+Kør en repository-oversættelse fra Python:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
 Passer godt til:
 
 - Din applikation læser allerede filer, buffere, notebooks eller billedbytes.
-- Du har brug for brugerdefineret validering, lagring, logging, retries eller godkendelsesflows.
-- Du ønsker at oversætte ét dokument, en notebook eller et billede uden at behandle et helt repository.
-- Du ønsker repository-oversættelse, men via Python-automatisering i stedet for en shell-kommando.
+- Du har brug for tilpasset validering, lagring, logging, genforsøg eller godkendelsesflow.
+- Du vil oversætte et enkelt dokument, notebook eller billede uden at behandle et helt repository.
+- Du vil have repository-oversættelse, men fra Python-automatisering i stedet for en shell-kommando.
 
-## Use the MCP Server when
+## Brug MCP-serveren når
 
-Choose the MCP server when an agent, editor, or MCP-compatible client should call Co-op Translator tools.
+Vælg MCP-serveren, når en agent, editor eller MCP-kompatibel klient skal kalde Co-op Translator-værktøjer.
 
-In the normal local setup, the user does not manually keep a server running. The MCP client starts `co-op-translator-mcp` over `stdio` when it needs the tools.
+I den normale lokale opsætning holder brugeren ikke manuelt en server kørende. MCP-klienten starter `co-op-translator-mcp` over `stdio`, når den har brug for værktøjerne.
 
-Example user requests an agent could handle:
+Eksempler på brugerforespørgsler, en agent kunne håndtere:
 
 - "Oversæt denne Markdown-fil til koreansk og behold linkene korrekte."
-- "Oversæt denne Markdown-fil til koreansk med agent-assisteret MCP-workflow, ved at bruge din egen model til de oversatte bidder."
-- "Oversæt denne notebook til koreansk, behold kodeceller, og brug Co-op Translator MCP til at rekonstruere notebooken."
+- "Oversæt denne Markdown-fil til koreansk med den agent-assisterede MCP-arbejdsgang, og brug din egen model til de oversatte dele."
+- "Oversæt denne notebook til koreansk, bevar kodeceller og brug Co-op Translator MCP til at rekonstruere notebook'en."
 - "Oversæt teksten i dette billede til japansk og gem resultatet."
 - "Kør en dry-run af en repository-oversættelse til spansk og fortæl mig, hvad der ville ændre sig."
-- "Gennemse om den koreanske oversættelses-output er ajour."
+- "Gennemgå, om den koreanske oversættelse er opdateret."
 
-For Markdown and notebooks, MCP can work in two modes:
+For Markdown og notebooks kan MCP arbejde i to tilstande:
 
-| Mode | Use when | Main tools |
+| Tilstand | Brug når | Hovedværktøjer |
 | --- | --- | --- |
-| Agent-assisted | The MCP host agent should translate chunks with its own model, without Co-op Translator LLM provider credentials. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Provider-backed | Co-op Translator should call Azure OpenAI or OpenAI directly. | `translate_markdown_content`, `translate_notebook_content` |
+| Agent-assisteret | MCP-værtsagenten bør oversætte chunks med sin egen model, uden Co-op Translator LLM-udbyder-legitimationsoplysninger. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Udbyder-understøttet | Co-op Translator bør kalde Azure OpenAI, OpenAI eller Anthropic direkte. | `translate_markdown_content`, `translate_notebook_content` |
 
-MCP provider-backed Markdown tool call shape:
+MCP udbyder-understøttet Markdown-værktøjskaldsform:
 
 ```json
 {
@@ -137,7 +134,7 @@ MCP provider-backed Markdown tool call shape:
 }
 ```
 
-MCP image tool call shape:
+MCP billedeværktøjskaldsform:
 
 ```json
 {
@@ -150,7 +147,7 @@ MCP image tool call shape:
 }
 ```
 
-Repository-oversættelse er som standard en dry-run gennem MCP:
+Repository-oversættelse er som standard dry-run via MCP:
 
 ```json
 {
@@ -167,14 +164,14 @@ Repository-oversættelse er som standard en dry-run gennem MCP:
 
 Passer godt til:
 
-- Du ønsker naturligt-sprog-oversættelsesworkflows inde i en agent eller editor.
-- Du ønsker Markdown- eller notebook-oversættelse, hvor host-agentens model oversætter forberedte bidder.
+- Du ønsker oversættelsesarbejdsgange i naturligt sprog inde i en agent eller editor.
+- Du ønsker Markdown- eller notebook-oversættelse, hvor værtsagentens model oversætter forberedte chunks.
 - Du ønsker, at agenten oversætter udvalgt indhold i stedet for et helt repository.
-- Du ønsker et godkendelsestrin før repository-omfattende skrivninger.
-- Du ønsker en enkelt grænseflade, der eksponerer Markdown-, notebook-, billede-, review- og sti-omskrivningsværktøjer.
+- Du ønsker et godkendelsestrin før skrivning på tværs af repository'et.
+- Du ønsker en enkelt grænseflade, der eksponerer værktøjer til Markdown, notebook, billede, review og sti-omskrivning.
 
-## How They Fit Together
+## Hvordan de passer sammen
 
-The CLI is the best default for humans translating repositories. The Python API is best when your code owns the workflow. The MCP server is best when an agent or editor owns the workflow.
+CLI'en er det bedste standardvalg for mennesker, der oversætter repositories. Python API'en er bedst, når din kode ejer arbejdsgangen. MCP-serveren er bedst, når en agent eller editor ejer arbejdsgangen.
 
-All three paths use the same public Co-op Translator API, so you can start with the CLI, automate with Python later, and expose the same capabilities to MCP clients when you need agent-driven workflows.
+Alle tre veje bruger den samme offentlige Co-op Translator API, så du kan starte med CLI'en, automatisere med Python senere, og eksponere de samme muligheder til MCP-klienter, når du har brug for agent-drevne arbejdsgange.

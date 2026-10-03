@@ -2,118 +2,125 @@
   <p class="home-eyebrow">Aloittaminen</p>
   <h1>Co-op Translator -dokumentaatio</h1>
   <p class="home-lede">
-    Määritä LLM-palveluntarjoaja, valitse kohdekielet ja käytä Co-op
-    Translator CLI:n, Python-API:n tai MCP-palvelimen kautta kääntämään ja tarkistamaan
-    projektin sisältöä lähdeaineiston muuttuessa.
+    Pidä repositoriosi käännökset ajan tasalla. Käännä Markdownia ja
+    notebookit Azure OpenAI:lla, OpenAI:lla tai Anthropicilla, ja tarkista sen jälkeen ajantasaisuus,
+    rakenne ja paikalliset linkit. Azure on valinnainen tekstikäännöksiin.
   </p>
-  <a class="home-link" href="workflows/">Valitse työnkulkusi -></a>
+  <a class="home-link" href="first-translation/">Kokeile pientä käännösesimerkkiä -></a>
 </section>
 
-## Kielet
+Kuvatekstien kääntäminen vaatii lisäksi Azure AI Visionin.
+Tiedätkö jo asetuksesi? [Valitse työnkulku](workflows.md).
 
-<div class="language-picker">
-  <div class="language-picker__bar">
-    <span class="language-picker__badge">55 translations</span>
-  </div>
+Katso Co-op Translator käytössä teoksessa **AI Agents for Beginners**: sama README-osio englanniksi ja koreaksi.
 
-  <ul class="language-grid language-grid--featured" aria-label="Common documentation languages">
-    <li><a class="language-button" href="/co-op-translator/" hreflang="en"><span class="language-button__text"><span class="language-button__name" lang="en">English</span><span class="language-button__native" lang="en">English</span></span><code>en</code></a></li>
-    <li><a class="language-button" href="/co-op-translator/i18n/ko/" hreflang="ko"><span class="language-button__text"><span class="language-button__name" lang="en">Korean</span><span class="language-button__native" lang="ko">한국어</span></span><code>ko</code></a></li>
-    <li><a class="language-button" href="/co-op-translator/i18n/ja/" hreflang="ja"><span class="language-button__text"><span class="language-button__name" lang="en">Japanese</span><span class="language-button__native" lang="ja">日本語</span></span><code>ja</code></a></li>
-    <li><a class="language-button" href="/co-op-translator/i18n/zh-CN/" hreflang="zh-CN"><span class="language-button__text"><span class="language-button__name" lang="en">Chinese (Simplified)</span><span class="language-button__native" lang="zh-CN">简体中文</span></span><code>zh-CN</code></a></li>
-    <li><a class="language-button" href="/co-op-translator/i18n/es/" hreflang="es"><span class="language-button__text"><span class="language-button__name" lang="en">Spanish</span><span class="language-button__native" lang="es">Español</span></span><code>es</code></a></li>
-    <li><a class="language-button" href="/co-op-translator/i18n/fr/" hreflang="fr"><span class="language-button__text"><span class="language-button__name" lang="en">French</span><span class="language-button__native" lang="fr">Français</span></span><code>fr</code></a></li>
-    <li><a class="language-button" href="/co-op-translator/i18n/de/" hreflang="de"><span class="language-button__text"><span class="language-button__name" lang="en">German</span><span class="language-button__native" lang="de">Deutsch</span></span><code>de</code></a></li>
-    <li><a class="language-button" href="/co-op-translator/i18n/pt-BR/" hreflang="pt-BR"><span class="language-button__text"><span class="language-button__name" lang="en">Portuguese (Brazil)</span><span class="language-button__native" lang="pt-BR">Português (Brasil)</span></span><code>pt-BR</code></a></li>
-  </ul>
+| Englanti | Korea |
+| --- | --- |
+| [![Englanninkielinen README: Aloittaminen](../../assets/demo/ai-agents-english.jpg)](https://github.com/microsoft/ai-agents-for-beginners/blob/main/README.md#-getting-started) | [![Koreankielinen README: Aloittaminen](../../assets/demo/ai-agents-korean.jpg)](https://github.com/microsoft/ai-agents-for-beginners/blob/main/translations/ko/README.md#-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0) |
 
-  <details class="language-more">
-    <summary>
-      <span>Show all languages</span>
-      <code>47 more</code>
-    </summary>
-    <ul class="language-grid language-grid--more" aria-label="Additional documentation languages">
-      <li><a class="language-button" href="/co-op-translator/i18n/ru/" hreflang="ru"><span class="language-button__text"><span class="language-button__name" lang="en">Russian</span><span class="language-button__native" lang="ru">Русский</span></span><code>ru</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/ar/" hreflang="ar"><span class="language-button__text"><span class="language-button__name" lang="en">Arabic</span><span class="language-button__native" lang="ar" dir="rtl">العربية</span></span><code>ar</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/fa/" hreflang="fa"><span class="language-button__text"><span class="language-button__name" lang="en">Persian (Farsi)</span><span class="language-button__native" lang="fa" dir="rtl">فارسی</span></span><code>fa</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/ur/" hreflang="ur"><span class="language-button__text"><span class="language-button__name" lang="en">Urdu</span><span class="language-button__native" lang="ur" dir="rtl">اردو</span></span><code>ur</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/zh-MO/" hreflang="zh-MO"><span class="language-button__text"><span class="language-button__name" lang="en">Chinese (Traditional, Macau)</span><span class="language-button__native" lang="zh-MO">繁體中文（澳門）</span></span><code>zh-MO</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/zh-HK/" hreflang="zh-HK"><span class="language-button__text"><span class="language-button__name" lang="en">Chinese (Traditional, Hong Kong)</span><span class="language-button__native" lang="zh-HK">繁體中文（香港）</span></span><code>zh-HK</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/zh-TW/" hreflang="zh-TW"><span class="language-button__text"><span class="language-button__name" lang="en">Chinese (Traditional, Taiwan)</span><span class="language-button__native" lang="zh-TW">繁體中文（台灣）</span></span><code>zh-TW</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/hi/" hreflang="hi"><span class="language-button__text"><span class="language-button__name" lang="en">Hindi</span><span class="language-button__native" lang="hi">हिन्दी</span></span><code>hi</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/bn/" hreflang="bn"><span class="language-button__text"><span class="language-button__name" lang="en">Bengali</span><span class="language-button__native" lang="bn">বাংলা</span></span><code>bn</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/mr/" hreflang="mr"><span class="language-button__text"><span class="language-button__name" lang="en">Marathi</span><span class="language-button__native" lang="mr">मराठी</span></span><code>mr</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/ne/" hreflang="ne"><span class="language-button__text"><span class="language-button__name" lang="en">Nepali</span><span class="language-button__native" lang="ne">नेपाली</span></span><code>ne</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/pa/" hreflang="pa"><span class="language-button__text"><span class="language-button__name" lang="en">Punjabi (Gurmukhi)</span><span class="language-button__native" lang="pa">ਪੰਜਾਬੀ</span></span><code>pa</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/pt-PT/" hreflang="pt-PT"><span class="language-button__text"><span class="language-button__name" lang="en">Portuguese (Portugal)</span><span class="language-button__native" lang="pt-PT">Português (Portugal)</span></span><code>pt-PT</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/it/" hreflang="it"><span class="language-button__text"><span class="language-button__name" lang="en">Italian</span><span class="language-button__native" lang="it">Italiano</span></span><code>it</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/pl/" hreflang="pl"><span class="language-button__text"><span class="language-button__name" lang="en">Polish</span><span class="language-button__native" lang="pl">Polski</span></span><code>pl</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/tr/" hreflang="tr"><span class="language-button__text"><span class="language-button__name" lang="en">Turkish</span><span class="language-button__native" lang="tr">Türkçe</span></span><code>tr</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/el/" hreflang="el"><span class="language-button__text"><span class="language-button__name" lang="en">Greek</span><span class="language-button__native" lang="el">Ελληνικά</span></span><code>el</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/th/" hreflang="th"><span class="language-button__text"><span class="language-button__name" lang="en">Thai</span><span class="language-button__native" lang="th">ไทย</span></span><code>th</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/sv/" hreflang="sv"><span class="language-button__text"><span class="language-button__name" lang="en">Swedish</span><span class="language-button__native" lang="sv">Svenska</span></span><code>sv</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/da/" hreflang="da"><span class="language-button__text"><span class="language-button__name" lang="en">Danish</span><span class="language-button__native" lang="da">Dansk</span></span><code>da</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/no/" hreflang="no"><span class="language-button__text"><span class="language-button__name" lang="en">Norwegian</span><span class="language-button__native" lang="no">Norsk</span></span><code>no</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/fi/" hreflang="fi"><span class="language-button__text"><span class="language-button__name" lang="en">Finnish</span><span class="language-button__native" lang="fi">Suomi</span></span><code>fi</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/nl/" hreflang="nl"><span class="language-button__text"><span class="language-button__name" lang="en">Dutch</span><span class="language-button__native" lang="nl">Nederlands</span></span><code>nl</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/he/" hreflang="he"><span class="language-button__text"><span class="language-button__name" lang="en">Hebrew</span><span class="language-button__native" lang="he" dir="rtl">עברית</span></span><code>he</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/vi/" hreflang="vi"><span class="language-button__text"><span class="language-button__name" lang="en">Vietnamese</span><span class="language-button__native" lang="vi">Tiếng Việt</span></span><code>vi</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/id/" hreflang="id"><span class="language-button__text"><span class="language-button__name" lang="en">Indonesian</span><span class="language-button__native" lang="id">Bahasa Indonesia</span></span><code>id</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/ms/" hreflang="ms"><span class="language-button__text"><span class="language-button__name" lang="en">Malay</span><span class="language-button__native" lang="ms">Bahasa Melayu</span></span><code>ms</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/tl/" hreflang="tl"><span class="language-button__text"><span class="language-button__name" lang="en">Tagalog (Filipino)</span><span class="language-button__native" lang="tl">Filipino</span></span><code>tl</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/sw/" hreflang="sw"><span class="language-button__text"><span class="language-button__name" lang="en">Swahili</span><span class="language-button__native" lang="sw">Kiswahili</span></span><code>sw</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/hu/" hreflang="hu"><span class="language-button__text"><span class="language-button__name" lang="en">Hungarian</span><span class="language-button__native" lang="hu">Magyar</span></span><code>hu</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/cs/" hreflang="cs"><span class="language-button__text"><span class="language-button__name" lang="en">Czech</span><span class="language-button__native" lang="cs">Čeština</span></span><code>cs</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/sk/" hreflang="sk"><span class="language-button__text"><span class="language-button__name" lang="en">Slovak</span><span class="language-button__native" lang="sk">Slovenčina</span></span><code>sk</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/ro/" hreflang="ro"><span class="language-button__text"><span class="language-button__name" lang="en">Romanian</span><span class="language-button__native" lang="ro">Română</span></span><code>ro</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/bg/" hreflang="bg"><span class="language-button__text"><span class="language-button__name" lang="en">Bulgarian</span><span class="language-button__native" lang="bg">Български</span></span><code>bg</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/sr/" hreflang="sr"><span class="language-button__text"><span class="language-button__name" lang="en">Serbian (Cyrillic)</span><span class="language-button__native" lang="sr">Српски</span></span><code>sr</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/hr/" hreflang="hr"><span class="language-button__text"><span class="language-button__name" lang="en">Croatian</span><span class="language-button__native" lang="hr">Hrvatski</span></span><code>hr</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/sl/" hreflang="sl"><span class="language-button__text"><span class="language-button__name" lang="en">Slovenian</span><span class="language-button__native" lang="sl">Slovenščina</span></span><code>sl</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/my/" hreflang="my"><span class="language-button__text"><span class="language-button__name" lang="en">Burmese (Myanmar)</span><span class="language-button__native" lang="my">မြန်မာ</span></span><code>my</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/uk/" hreflang="uk"><span class="language-button__text"><span class="language-button__name" lang="en">Ukrainian</span><span class="language-button__native" lang="uk">Українська</span></span><code>uk</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/lt/" hreflang="lt"><span class="language-button__text"><span class="language-button__name" lang="en">Lithuanian</span><span class="language-button__native" lang="lt">Lietuvių</span></span><code>lt</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/ta/" hreflang="ta"><span class="language-button__text"><span class="language-button__name" lang="en">Tamil</span><span class="language-button__native" lang="ta">தமிழ்</span></span><code>ta</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/et/" hreflang="et"><span class="language-button__text"><span class="language-button__name" lang="en">Estonian</span><span class="language-button__native" lang="et">Eesti</span></span><code>et</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/pcm/" hreflang="pcm"><span class="language-button__text"><span class="language-button__name" lang="en">Nigerian Pidgin</span><span class="language-button__native" lang="pcm">Naijá</span></span><code>pcm</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/te/" hreflang="te"><span class="language-button__text"><span class="language-button__name" lang="en">Telugu</span><span class="language-button__native" lang="te">తెలుగు</span></span><code>te</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/ml/" hreflang="ml"><span class="language-button__text"><span class="language-button__name" lang="en">Malayalam</span><span class="language-button__native" lang="ml">മലയാളം</span></span><code>ml</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/kn/" hreflang="kn"><span class="language-button__text"><span class="language-button__name" lang="en">Kannada</span><span class="language-button__native" lang="kn">ಕನ್ನಡ</span></span><code>kn</code></a></li>
-      <li><a class="language-button" href="/co-op-translator/i18n/km/" hreflang="km"><span class="language-button__text"><span class="language-button__name" lang="en">Khmer</span><span class="language-button__native" lang="km">ភាសាខ្មែរ</span></span><code>km</code></a></li>
-    </ul>
-  </details>
+[Englanninkielinen lähde](https://github.com/microsoft/ai-agents-for-beginners/blob/main/README.md#-getting-started) · [Koreankielinen käännös](https://github.com/microsoft/ai-agents-for-beginners/blob/main/translations/ko/README.md#-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0)
+
+[Kokeile pientä käännösprojektia](first-translation.md): lähdetiedostot, todelliset tulosteet ja käännösdiffi, jonka voit tarkastella.
+
+## Lue dokumentaatio omalla kielelläsi
+
+<div class="language-grid language-grid--featured">
+  <a class="language-button" href="/co-op-translator/" hreflang="en"><span>Englanti</span><code>en</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/ko/" hreflang="ko"><span>Korea</span><code>ko</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/ja/" hreflang="ja"><span>Japani</span><code>ja</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/zh-CN/" hreflang="zh-CN"><span>Kiina (yksinkertaistettu)</span><code>zh-CN</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/es/" hreflang="es"><span>Espanja</span><code>es</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/fr/" hreflang="fr"><span>Ranska</span><code>fr</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/de/" hreflang="de"><span>Saksa</span><code>de</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/pt-BR/" hreflang="pt-BR"><span>Portugali (Brasilia)</span><code>pt-BR</code></a>
 </div>
 
-## Pikaopas
+<details class="language-more">
+  <summary>
+    <span>Näytä kaikki kielet</span>
+    <code>47 lisää</code>
+  </summary>
+  <div class="language-grid language-grid--more">
+  <a class="language-button" href="/co-op-translator/i18n/ru/" hreflang="ru"><span>Venäjä</span><code>ru</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/ar/" hreflang="ar"><span>Arabia</span><code>ar</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/fa/" hreflang="fa"><span>Persian (farsi)</span><code>fa</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/ur/" hreflang="ur"><span>Urdu</span><code>ur</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/zh-MO/" hreflang="zh-MO"><span>Kiina (perinteinen, Macao)</span><code>zh-MO</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/zh-HK/" hreflang="zh-HK"><span>Kiina (perinteinen, Hongkong)</span><code>zh-HK</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/zh-TW/" hreflang="zh-TW"><span>Kiina (perinteinen, Taiwan)</span><code>zh-TW</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/hi/" hreflang="hi"><span>Hindi</span><code>hi</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/bn/" hreflang="bn"><span>Bengali</span><code>bn</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/mr/" hreflang="mr"><span>Marathi</span><code>mr</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/ne/" hreflang="ne"><span>Nepali</span><code>ne</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/pa/" hreflang="pa"><span>Punjabi (Gurmukhi)</span><code>pa</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/pt-PT/" hreflang="pt-PT"><span>Portugali (Portugal)</span><code>pt-PT</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/it/" hreflang="it"><span>Italia</span><code>it</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/pl/" hreflang="pl"><span>Puola</span><code>pl</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/tr/" hreflang="tr"><span>Turkki</span><code>tr</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/el/" hreflang="el"><span>Kreikka</span><code>el</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/th/" hreflang="th"><span>Thai</span><code>th</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/sv/" hreflang="sv"><span>Ruotsi</span><code>sv</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/da/" hreflang="da"><span>Tanska</span><code>da</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/no/" hreflang="no"><span>Norja</span><code>no</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/fi/" hreflang="fi"><span>Suomi</span><code>fi</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/nl/" hreflang="nl"><span>Hollanti</span><code>nl</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/he/" hreflang="he"><span>Heprea</span><code>he</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/vi/" hreflang="vi"><span>Vietnam</span><code>vi</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/id/" hreflang="id"><span>Indonesia</span><code>id</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/ms/" hreflang="ms"><span>Malaiji</span><code>ms</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/tl/" hreflang="tl"><span>Tagalog (Filipino)</span><code>tl</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/sw/" hreflang="sw"><span>Swahili</span><code>sw</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/hu/" hreflang="hu"><span>Unkari</span><code>hu</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/cs/" hreflang="cs"><span>Tšekki</span><code>cs</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/sk/" hreflang="sk"><span>Slovakki</span><code>sk</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/ro/" hreflang="ro"><span>Romania</span><code>ro</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/bg/" hreflang="bg"><span>Bulgaria</span><code>bg</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/sr/" hreflang="sr"><span>Serbia (kyrillinen)</span><code>sr</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/hr/" hreflang="hr"><span>Kroatia</span><code>hr</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/sl/" hreflang="sl"><span>Sloveeni</span><code>sl</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/my/" hreflang="my"><span>Burma (Myanmar)</span><code>my</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/uk/" hreflang="uk"><span>Ukraina</span><code>uk</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/lt/" hreflang="lt"><span>Liettua</span><code>lt</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/ta/" hreflang="ta"><span>Tamil</span><code>ta</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/et/" hreflang="et"><span>Viro</span><code>et</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/pcm/" hreflang="pcm"><span>Nigerian Pidgin</span><code>pcm</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/te/" hreflang="te"><span>Telugu</span><code>te</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/ml/" hreflang="ml"><span>Malayalam</span><code>ml</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/kn/" hreflang="kn"><span>Kannada</span><code>kn</code></a>
+  <a class="language-button" href="/co-op-translator/i18n/km/" hreflang="km"><span>Khmer</span><code>km</code></a>
+  </div>
+</details>
 
-Nämä `docs/` sivut ovat virallinen Co-op Translator -dokumentaatio. Vanhemmat asennusohjeet on yhdistetty tähän, jotta CLI-, API-, MCP-, CI- ja vianmääritysopastus säilyvät yhdessä paikassa.
+## Nopea aloitus
+
+Määritä yksi tarjoaja, sitten valitse käyttöliittymä, joka sopii työsi tarpeisiin. CLI, Python API ja MCP ovat vaihtoehtoja; sinun ei tarvitse käyttää kaikkia kolmea.
 
 <div class="quickstart-grid">
   <a class="quickstart-card" href="configuration/">
-    <span class="quickstart-step">Vaihe 1</span>
+    <span class="quickstart-step">Asetukset</span>
     <strong>Määritä projektisi</strong>
-    <span>Määritä palveluntarjoajat, tunnistetiedot, kohdekielet ja tuloskansiot.</span>
+    <span>Määritä palveluntarjoajat, tunnistetiedot, kohdekielet ja tulostuskansiot.</span>
     <em>Lue opas -></em>
   </a>
 
   <a class="quickstart-card" href="cli/">
-    <span class="quickstart-step">Vaihe 2</span>
+    <span class="quickstart-step">Komentorivi</span>
     <strong>Käännä CLI:llä</strong>
-    <span>Suorita käännös-, arviointi-, tarkistus- ja linkkisiirtokomennot.</span>
+    <span>Suorita käännös-, arviointi-, tarkastus- ja linkkisiirtokomentoja.</span>
     <em>Lue opas -></em>
   </a>
 
   <a class="quickstart-card" href="api/">
-    <span class="quickstart-step">Vaihe 3</span>
+    <span class="quickstart-step">Python</span>
     <strong>Automatisoi Python-API:lla</strong>
     <span>Käytä Co-op Translatoria skripteissä ja automaatiotyönkuluissa.</span>
     <em>Lue opas -></em>
   </a>
 
   <a class="quickstart-card" href="mcp/">
-    <span class="quickstart-step">Vaihe 4</span>
+    <span class="quickstart-step">Agentti tai editori</span>
     <strong>Yhdistä MCP-palvelimeen</strong>
-    <span>Tarjoa Co-op Translatorin työkaluja agenteille, muokkaajille ja MCP-yhteensopiville asiakkaille.</span>
+    <span>Tarjoa Co-op Translator -työkaluja agenteille, editoreille ja MCP-yhteensopiville asiakkaille.</span>
     <em>Lue opas -></em>
   </a>
 </div>

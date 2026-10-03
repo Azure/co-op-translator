@@ -4,49 +4,64 @@ Co-op Translator 需要一個語言模型提供者。圖像翻譯另外需要 Az
 
 設定會從環境變數讀取。對於本地專案，請將它們放在專案根目錄的 `.env` 檔案中。
 
-如需 Azure 資源設定，請參閱 [Azure AI 設定](azure-ai-setup.md)。
+有關 Azure 資源設定，請參閱 [Azure AI 設定](azure-ai-setup.md)。
 
-## 本地執行環境設定
+## 本機執行環境設定
 
-在本地執行 CLI 之前，請先使用虛擬環境。Co-op Translator 支援 Python 3.10 到 3.12。
+在本機執行 CLI 之前，請先使用虛擬環境。Co-op Translator 支援 Python 3.11 到 3.14。
 
-若為一般 CLI 使用，請在虛擬環境內安裝已發佈的套件：
+對於一般的 CLI 使用，請在虛擬環境內安裝已發佈的套件：
 
-=== "Windows"
+### Windows (PowerShell)
 
-    ```powershell
-    python -m venv .venv
-    .venv\Scripts\activate
-    pip install co-op-translator
-    translate --help
-    ```
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install co-op-translator
+translate --help
+```
 
-=== "macOS / Linux"
+### macOS / Linux
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install co-op-translator
-    translate --help
-    ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install co-op-translator
+translate --help
+```
 
-For repository development, install dependencies from the project root instead:
+### 儲存庫開發
+
+對於儲存庫開發，請改從專案根目錄安裝相依套件：
 
 ```bash
 poetry install
 poetry run translate --help
 ```
 
-在 CLI 可用之後，請在 `.env` 中設定一個語言模型提供者。
+當 CLI 可用後，請在 `.env` 中設定一個語言模型提供者。
 
-## Provider selection
+## 提供者選擇
 
-工具會以以下順序自動偵測提供者：
+工具會依照下列順序自動偵測提供者：
 
 1. Azure OpenAI
 2. OpenAI
+3. Anthropic
 
-如果兩者皆未設定，`translate`、`evaluate`、`migrate-links` 與 `run_translation` 將在設定檢查期間失敗。`co-op-review` 與 `run_review` 為確定性維護檢查，不需要提供者憑證。
+翻譯需要提供者憑證，但預覽情況（例如 `translate -l "ko" -md --dry-run`）除外。`migrate-links`、`co-op-review` 和 `run_review` 是決定性維護操作，不需要提供者憑證。
+
+## 模型用戶端後端
+
+從 Co-op Translator 0.22.0 開始，Azure OpenAI、OpenAI 和 Anthropic 預設使用 Microsoft Agent Framework。一般使用不需要設定後端。
+
+Semantic Kernel 仍暫時保留以維持相容性。若要明確選擇它，請設定：
+
+```bash
+CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"
+```
+
+使用 Semantic Kernel 會發出棄用警告。計劃在 0.23.0 將 Semantic Kernel 移為可選相依套件，並在 0.24.0 移除該整合，具體取決於相容性結果與使用者回饋。Anthropic 需要 `agent-framework`；在 Anthropic 上明確選擇 `semantic-kernel` 會導致設定錯誤。無效的值會在有提供者支援的翻譯器初始化期間失敗，而不是靜默回退。請在 [GitHub issue #543](https://github.com/Azure/co-op-translator/issues/543) 追蹤部署情況並回報阻礙因素。
 
 ## Azure OpenAI
 
@@ -60,7 +75,7 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-連線性檢查會在翻譯開始前使用端點、API 金鑰、API 版本與部署名稱進行驗證。
+在開始翻譯之前，連線檢查會使用 endpoint、API key、API version 與 deployment 名稱。
 
 ## OpenAI
 
@@ -69,26 +84,41 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
-OPENAI_ORG_ID="..."          # 可選的
-OPENAI_BASE_URL="..."        # 可選的
 ```
 
-`OPENAI_CHAT_MODEL_ID` 為必要欄位，因為翻譯器需要一個明確的 chat model 來進行 API 呼叫。
+`OPENAI_CHAT_MODEL_ID` 為必填，因為翻譯器在進行 API 呼叫時需要明確的 chat 模型。
+
+對於預設設定，請不要設定 `OPENAI_ORG_ID` 與 `OPENAI_BASE_URL`。只有在您的帳戶需要時才新增組織 ID，只有在使用自訂端點時才設定 base URL。不要為可選設定複製範例或佔位值。
+
+## Anthropic Claude
+
+當直接呼叫 Claude API 時，請使用 Anthropic。建立一個 [Anthropic API 金鑰](https://platform.claude.com/docs/en/get-started)，並選擇受支援的 [Claude 模型 ID](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions)。
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_API_KEY` 和 `ANTHROPIC_MODEL` 為必填。您不需要設定 `CO_OP_TRANSLATOR_MODEL_CLIENT`；Agent Framework 是預設後端。
+
+對於 Anthropic API，請不要設定 `ANTHROPIC_BASE_URL`。只有在使用自訂端點時才設定它。
+
+`ANTHROPIC_MAX_TOKENS` 預設為 `8192`，足以容納像 Meitei Mayek 這類高 token 密度的腳本。如果您的模型或相容 Anthropic 的端點將輸出限制在此以下，請將其調低。
 
 ## Azure AI Vision
 
-圖像翻譯需要 Azure AI Vision，工具才能在翻譯前從圖像中擷取文字。
+圖像翻譯需要 Azure AI Vision，使工具能在設定的語言模型翻譯之前從圖像中擷取文字。Anthropic 可以像 Azure OpenAI 或 OpenAI 一樣翻譯擷取出來的文字。
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-如果使用 `-img`、`images=True` 或未指定內容類型過濾器而選擇圖像翻譯，工具會在翻譯開始前驗證 Vision 的設定。
+如果以 `-img`、`images=True` 或沒有內容類型過濾器選擇圖像翻譯，工具會在開始翻譯前驗證 Vision 的設定。
 
-## Multiple credential sets
+## 多組憑證
 
-設定層支援透過在變數後加上相同索引來使用多組憑證：
+設定層支援透過在變數後加相同索引來使用多組憑證：
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -104,35 +134,37 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_2="<deployment-2>"
 AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 ```
 
-每一組必須完整。健康檢查會在翻譯繼續之前選擇一組可用的憑證。
+每一組必須完整。健康檢查會在翻譯繼續之前選擇一組可用的組合。
 
-## Command requirements
+OpenAI 與 Anthropic 支援相同的後綴慣例。請在同一後綴中保留憑證組的所有變數，包括像 `OPENAI_BASE_URL_1` 或 `ANTHROPIC_BASE_URL_1` 這樣的可選值。
 
-| 命令或 API | 是否需要 LLM | 是否需要 Vision | 備註 |
+## 指令需求
+
+| 指令或 API | 需要 LLM | 需要 Vision | 說明 |
 | --- | --- | --- | --- |
 | `translate -md` | 是 | 否 | 僅翻譯 Markdown。 |
 | `translate -nb` | 是 | 否 | 僅翻譯筆記本。 |
-| `translate -img` | 是 | 是 | 僅翻譯圖片。 |
-| `translate` with no type flags | 是 | 是 | 預設模式包含 Markdown、筆記本與圖片。 |
-| `evaluate` | 是 | 否 | 使用 LLM 評估，除非選取 `--fast`。 |
-| `migrate-links` | 是 | 否 | 執行連結遷移，但仍會執行共用的設定檢查。 |
-| `co-op-review` | 否 | 否 | 執行確定性的翻譯結構、時效性、Markdown、筆記本與本地連結檢查。 |
-| `run_translation(markdown=True)` | 是 | 否 | 以程式方式進行 Markdown 翻譯。 |
-| `run_translation(images=True)` | 是 | 是 | 以程式方式進行圖片翻譯。 |
-| `run_review(...)` | 否 | 否 | 以程式方式執行確定性檢查。 |
+| `translate -img` | 是 | 是 | 僅翻譯圖像。 |
+| `translate` 在未指定類型旗標時 | 是 | 是 | 預設模式包含 Markdown、筆記本和圖像。 |
+| `evaluate` | 是 | 否 | 使用 LLM 評估，除非選擇 `--fast`。 |
+| `migrate-links` | 否 | 否 | 執行本機連結遷移，不會呼叫提供者。 |
+| `co-op-review` | 否 | 否 | 執行決定性的翻譯結構、新鮮度、Markdown、筆記本與本機連結檢查。 |
+| `run_translation(markdown=True)` | 是 | 否 | 程式化的 Markdown 翻譯。 |
+| `run_translation(images=True)` | 是 | 是 | 程式化的圖像翻譯。 |
+| `run_review(...)` | 否 | 否 | 程式化的決定性審查。 |
 
-## Output directories
+## 輸出目錄
 
-Default text translation output:
+預設文字翻譯輸出：
 
 ```text
 translations/<language-code>/<source-relative-path>
 ```
 
-Default translated image output:
+預設翻譯後的圖像輸出：
 
 ```text
 translated_images/<language-code>/<source-relative-path>
 ```
 
-The Python API can override these directories with `translations_dir` and `image_dir`.
+Python API 可以用 `translations_dir` 和 `image_dir` 覆寫這些目錄。

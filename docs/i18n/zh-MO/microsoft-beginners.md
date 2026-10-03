@@ -14,7 +14,7 @@
 <!-- CO-OP TRANSLATOR OTHER COURSES END -->
 ```
 
-Each time Co-op Translator runs through the CLI or GitHub Actions, it replaces the content between the markers with the packaged template.
+每次 Co-op Translator 透過 CLI 或 GitHub Actions 執行時，會將標記之間的內容替換為已封裝的範本。
 
 ## 更新共用範本
 

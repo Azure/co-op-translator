@@ -4,7 +4,7 @@
 
 Більшість користувачів Co-op Translator не потребують цієї сторінки.
 
-## Auto-Sync the Other Courses Section
+## Автосинхронізація секції «Інші курси»
 
 Додайте ці маркери навколо розділу "Other Courses" у вашому README:
 
@@ -16,7 +16,7 @@
 
 Кожного разу, коли Co-op Translator запускається через CLI або GitHub Actions, він замінює вміст між маркерами на упакований шаблон.
 
-## Update the Shared Template
+## Оновіть спільний шаблон
 
 The template source lives at:
 
@@ -30,7 +30,7 @@ src/co_op_translator/templates/other_courses.md
 2. Відкрийте pull request у Co-op Translator.
 3. Після випуску зміни запустіть Co-op Translator у цільовому репозиторії.
 
-## Sparse Checkout Advisory
+## Рекомендації щодо Sparse Checkout
 
 Великі репозиторії курсів можуть стати дорогими для клонування, якщо вони містять багато перекладених результатів. Ви можете додати цю рекомендацію в згенеровані мовні розділи:
 

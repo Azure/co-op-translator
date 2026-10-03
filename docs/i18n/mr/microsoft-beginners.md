@@ -1,12 +1,12 @@
-# Microsoft Beginners Repositories
+# Microsoft सुरुवातीसाठी रिपॉझिटरीज
 
-This page is for maintainers of Microsoft "For Beginners" repositories that use the shared "Other Courses" README section.
+ही पृष्ठ Microsoft "For Beginners" रिपॉझिटरीजच्या देखभाल करणाऱ्यांसाठी आहे जे सामायिक "Other Courses" README विभाग वापरतात.
 
-Most Co-op Translator users do not need this page.
+बहुतेक Co-op Translator वापरकर्त्यांना या पानाची आवश्यकता नाही.
 
-## Auto-Sync the Other Courses Section
+## Other Courses विभागाचे आपोआप समक्रमण
 
-Add these markers around the "Other Courses" section in your README:
+आपल्या README मध्ये "Other Courses" विभागाच्या आसपास हे मार्कर जोडा:
 
 ```markdown
 <!-- CO-OP TRANSLATOR OTHER COURSES START -->
@@ -14,9 +14,9 @@ Add these markers around the "Other Courses" section in your README:
 <!-- CO-OP TRANSLATOR OTHER COURSES END -->
 ```
 
-Each time Co-op Translator runs through the CLI or GitHub Actions, it replaces the content between the markers with the packaged template.
+प्रत्येक वेळी Co-op Translator CLI किंवा GitHub Actions द्वारे चालवल्यावर, तो मार्करदरम्यानचा मजकूर पॅक केलेल्या टेम्पलेटने बदलतो.
 
-## Update the Shared Template
+## सामायिक टेम्पलेट अपडेट करा
 
 The template source lives at:
 
@@ -27,12 +27,12 @@ src/co_op_translator/templates/other_courses.md
 To update the shared content:
 
 1. Edit the template.
-2. Open a pull request to Co-op Translator.
-3. After the change is released, run Co-op Translator in the target repository.
+2. Co-op Translator कडे एक pull request उघडा.
+3. बदल रिलीज केल्यानंतर, लक्ष्य रिपॉझिटरीमध्ये Co-op Translator चालवा.
 
-## Sparse Checkout Advisory
+## Sparse Checkout सल्ला
 
-Large course repositories can become expensive to clone when they include many translated outputs. You can include this advisory in generated language sections:
+बरीच अनुवादित आउटपुट्स असतील तर मोठ्या कोर्स रिपॉझिटरीज क्लोन करण्यासाठी महाग होऊ शकतात. आपण तयार करण्यात आलेल्या भाषा विभागांमध्ये हा सल्ला समाविष्ट करू शकता:
 
 ```markdown
 > **Prefer to Clone Locally?**

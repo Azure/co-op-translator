@@ -1,49 +1,49 @@
-# Python API
+# Python-API
 
-Die stabile öffentliche Python-API wird aus `co_op_translator.api` exportiert. Die meisten Integrationen verwenden einen der folgenden Workflows:
+Die stabile öffentliche Python-API wird aus `co_op_translator.api` exportiert. Die meisten Integrationen verwenden einen der folgenden Arbeitsabläufe:
 
-| Scenario | Use this when | Main APIs |
+| Szenario | Verwenden Sie dies, wenn | Haupt-APIs |
 | --- | --- | --- |
-| Translate individual files or documents | Your application reads source content, calls Co-op Translator for translation, and decides where to save the result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | Your MCP host or application model will translate chunks, while Co-op Translator handles chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | You want the Python API to behave like the CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
+| Einzelne Dateien oder Dokumente übersetzen | Ihre Anwendung liest die Quelldaten, ruft Co-op Translator zur Übersetzung auf und entscheidet, wo das Ergebnis gespeichert wird. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Inhalte für die Übersetzung durch einen Host-Agenten vorbereiten | Ihr MCP-Host oder Anwendungsmodell übersetzt die Chunks, während Co-op Translator das Chunking und die Rekonstruktion übernimmt. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Ein gesamtes Repository übersetzen | Sie möchten, dass die Python-API sich wie das CLI verhält und Erkennung, Ausgabe-Pfade, Metadaten, Bereinigung und Schreibvorgänge übernimmt. | `run_translation` |
 
-Die meisten niedrigeren Module unter `core`, `config`, `review` und `utils` sind Implementierungsdetails, die von diesen API-Einstiegspunkten verwendet werden.
+Die meisten tiefer gelegenen Module unter `core`, `config`, `review` und `utils` sind Implementierungsdetails, die von diesen API-Einstiegspunkten verwendet werden.
 
-MCP-Clients verwenden dieselbe öffentliche API über den [MCP Server](mcp.md). Verwenden Sie diese Seite, wenn Sie Python direkt aufrufen, und den MCP-Leitfaden, wenn Sie Co-op Translator einem Agenten oder Editor bereitstellen. Wenn Sie zwischen CLI, Python-API und MCP entscheiden, beginnen Sie mit [Wählen Sie Ihren Workflow](workflows.md).
+MCP-Clients verwenden die gleiche öffentliche API über den [MCP-Server](mcp.md). Verwenden Sie diese Seite, wenn Sie Python direkt aufrufen, und den MCP-Leitfaden, wenn Sie Co-op Translator einem Agenten oder Editor zur Verfügung stellen. Wenn Sie sich zwischen CLI, Python-API und MCP entscheiden, beginnen Sie mit [Wählen Sie Ihren Arbeitsablauf](workflows.md).
 
-## First-Time API Flow
+## Erster API-Ablauf
 
 Beginnen Sie hier, wenn Sie Co-op Translator aus Python-Code aufrufen:
 
 1. Konfigurieren Sie einen LLM-Anbieter wie in [Configuration](configuration.md) beschrieben, es sei denn, Sie bereiten nur Markdown- oder Notebook-Chunks für die Übersetzung durch einen Host-Agenten vor.
-2. Entscheiden Sie, ob Ihre Anwendung die Datei-Ein-/Ausgabe übernimmt.
+2. Entscheiden Sie, ob Ihre Anwendung die Datei-Ein-/Ausgabe verwaltet.
 3. Verwenden Sie Content-APIs, wenn Ihre Anwendung einzelne Dateien liest und schreibt.
-4. Verwenden Sie `run_translation`, wenn Co-op Translator ein Repository wie die CLI verarbeiten soll.
+4. Verwenden Sie `run_translation`, wenn Co-op Translator ein Repository wie das CLI verarbeiten soll.
 5. Verwenden Sie `run_review` nach der Übersetzung, wenn Sie deterministische Prüfungen in der Automatisierung benötigen.
 
-| Goal | API to start with |
+| Ziel | API zum Starten |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
-| Translate one notebook payload | `translate_notebook_content` |
-| Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
-| Translate a full repository | `run_translation` |
-| Review translated output | `run_review` |
+| Eine Markdown-Zeichenfolge oder -Datei übersetzen | `translate_markdown_content` |
+| Eine Notebook-Nutzlast übersetzen | `translate_notebook_content` |
+| Ein Bild übersetzen | `translate_image_content` |
+| Einem Host-Agenten die Übersetzung von Markdown- oder Notebook-Chunks überlassen | `start_markdown_agent_translation` oder `start_notebook_agent_translation` |
+| Übersetzte Links nach Auswahl eines Ausgabe-Pfads umschreiben | `rewrite_markdown_paths` oder `rewrite_notebook_paths` |
+| Ein komplettes Repository übersetzen | `run_translation` |
+| Übersetzte Ausgabe überprüfen | `run_review` |
 
-## Scenario 1: Translate Individual Files or Documents
+## Szenario 1: Einzelne Dateien oder Dokumente übersetzen
 
-Verwenden Sie diesen Workflow, wenn Sie bereits eine Datei, einen Editor-Puffer, eine Notebook-Nutzlast, eine MCP-Anfrage oder eine benutzerdefinierte Pipeline-Eingabe haben. Ihr Code übernimmt die Datei-Ein-/Ausgabe:
+Verwenden Sie diesen Ablauf, wenn Sie bereits eine Datei, einen Editor-Puffer, eine Notebook-Nutzlast, eine MCP-Anfrage oder eine benutzerdefinierte Pipeline-Eingabe haben. Ihr Code ist für die Datei-Ein-/Ausgabe verantwortlich:
 
 1. Lesen Sie den Quellinhalt.
 2. Rufen Sie eine Content-Übersetzungs-API auf.
-3. Rufen Sie optional eine Pfad-Umschreibungs-API auf, wenn der übersetzte Inhalt in einen Projekt-Übersetzungsordner geschrieben werden soll.
+3. Optional: Rufen Sie eine Pfad-Umschreibungs-API auf, wenn der übersetzte Inhalt in einen Projekt-Übersetzungsordner geschrieben wird.
 4. Speichern oder geben Sie das Ergebnis aus Ihrer Anwendung zurück.
 
 Die Content-Übersetzungs-APIs führen keine Projekterkennung durch, schreiben keine Metadaten, fügen keine Haftungsausschlüsse hinzu und schreiben Links nicht automatisch um.
 
-### Markdown File
+### Markdown-Datei
 
 ```python
 import asyncio
@@ -85,9 +85,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Wenn das übersetzte Markdown nicht in einem Co-op Translator Projektlayout liegen wird, überspringen Sie `rewrite_markdown_paths` und speichern Sie die übersetzte Zeichenkette direkt.
+Wenn das übersetzte Markdown nicht in einem Co-op Translator-Projektlayout enthalten sein wird, überspringen Sie `rewrite_markdown_paths` und speichern Sie die übersetzte Zeichenfolge direkt.
 
-### Notebook File
+### Notebook-Datei
 
 ```python
 import asyncio
@@ -129,9 +129,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` übersetzt Markdown-Zellen und erhält Nicht-Markdown-Zellen. Die Pfadumschreibung wird nur auf Markdown-Zellen angewendet.
+`translate_notebook_content` übersetzt Markdown-Zellen und bewahrt Nicht-Markdown-Zellen. Pfadumschreibungen werden nur auf Markdown-Zellen angewendet.
 
-### Image File
+### Bilddatei
 
 ```python
 from pathlib import Path
@@ -156,11 +156,11 @@ translated_image.save(target_path)
 
 `translate_image_content` liest das Quellbild und gibt ein gerendertes `PIL.Image.Image` zurück. Es schreibt keine übersetzten Bildmetadaten.
 
-## Scenario 2: Translate an Entire Repository
+## Szenario 2: Ein gesamtes Repository übersetzen
 
-Verwenden Sie diesen Workflow, wenn Sie möchten, dass die Python-API sich wie das `translate`-CLI verhält. `run_translation` entdeckt unterstützte Dateien, übersetzt ausgewählte Inhaltstypen, schreibt Pfade um, schreibt Ausgabedateien, aktualisiert Metadaten und führt Übersetzungs-Wartungsaufgaben wie Bereinigung durch.
+Verwenden Sie diesen Ablauf, wenn die Python-API wie das `translate`-CLI agieren soll. `run_translation` entdeckt unterstützte Dateien, übersetzt ausgewählte Inhaltstypen, schreibt Pfade um, schreibt Ausgabedateien, aktualisiert Metadaten und führt Übersetzungswartungsaufgaben wie Bereinigung durch.
 
-`run_translation` ist der bevorzugte Einstiegspunkt zur Projektorchestrierung. `translate_project` wird als Kompatibilitäts-Alias mit demselben Verhalten exportiert.
+`run_translation` ist der bevorzugte Einstiegspunkt zur Projektorchestrierung. `translate_project` wird als Kompatibilitätsalias mit dem gleichen Verhalten exportiert.
 
 Übersetzen Sie Markdown-Dateien im aktuellen Repository ins Koreanische und Japanische:
 
@@ -185,7 +185,7 @@ run_translation(
 )
 ```
 
-Vorschau des Übersetzungsvolumens ohne Dateien zu schreiben:
+Vorschau des Übersetzungsumfangs ohne Dateien zu schreiben:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-Übersetzen Sie mehrere Inhaltsstämme in einem Aufruf:
+Zeichnen Sie strukturierte Fortschrittsereignisse für eine Integration auf:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Speichere die Nutzlast in deiner Job-Event-Tabelle oder sende sie an deine UI.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Ereignisse verwenden das versionierte Schema `co-op.translation.event.v1`. Integrationen sollten
+sich auf stabile Felder wie `type` und `stage_key` stützen und nicht auf benutzerorientierte
+Konsolentext oder `stage_label`.
+
+Mehrere Inhaltsstämme in einem Aufruf übersetzen:
 
 ```python
 from co_op_translator.api import run_translation
@@ -241,12 +265,101 @@ run_translation(
 
 Wenn keines von `markdown`, `notebook` oder `images` gesetzt ist, übersetzt die API alle unterstützten Typen: Markdown, Notebooks und Bilder.
 
-## Review Translated Output
+### Akzeptierte menschliche Bearbeitungen mit einem TranslationStateProvider beibehalten
 
-`run_review` führt deterministische Übersetzungsprüfungen ohne LLM- oder Vision-Zugangsdaten aus.
+Standardmäßig behält Co-op Translator sein bestehendes Verhalten auf Datei-Ebene bei: wenn eine
+Markdown-Quelle veraltet ist, wird die gesamte übersetzte Datei neu generiert. Gehostete
+Integrationen können optional einen `TranslationStateProvider` übergeben, um menschliche
+Bearbeitungen in Quellblöcken zu bewahren, die sich nicht geändert haben.
+
+Der Provider liefert das zuletzt akzeptierte Quell-/Ziel-Paar und protokolliert jeden neuen
+Kandidaten. Die Annahme bleibt in der Verantwortung der Integration – zum Beispiel,
+nachdem ein Übersetzungs-Pull-Request gemerged wurde:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+Für Markdown-Dateien mit einer gültigen akzeptierten Baseline stimmt Co-op Translator
+top-level Markdown-Blöcke ab. Unveränderte Quellblöcke verwenden wieder die aktuellen übersetzten
+Blöcke, einschließlich von Personen vorgenommener Bearbeitungen; geänderte oder hinzugefügte Quellblöcke werden zur Übersetzung gesendet
+zur Übersetzung; gelöschte Quellblöcke werden entfernt. Wenn die Zuordnung mehrdeutig ist,
+die Zielstruktur sich geändert hat, eine Blockübersetzung ungültig ist oder keine Baseline
+verfügbar ist, fällt Co-op Translator sicher auf den bestehenden vollständigen Datei-
+Übersetzungspfad zurück.
+
+Diese API speichert den Übersetzungszustand von Dokumenten, nicht eine dokumentübergreifende Phrase- oder
+Segment-Übersetzungs-Memory. Derzeit gilt sie für Markdown-Projektübersetzungen.
+Verhalten für Notebooks und Bilder bleibt unverändert. Das Setzen von `update=True`
+fordert weiterhin eine vollständige Neugenerierung an.
+
+Wenn eine oder mehrere Dateien nicht übersetzt werden können, löst `run_translation` einen
+`RuntimeError` aus, nachdem der Projektworkflow abgeschlossen ist, anstatt einen
+erfolgreichen Lauf mit fehlender Ausgabe zu melden. Integrationen sollten dies als fehlgeschlagene
+Aufgabe behandeln und den zuvor akzeptierten Übersetzungszustand beibehalten.
+
+## Übersetzte Ausgabe überprüfen
+
+`run_review` führt deterministische Übersetzungsprüfungen ohne LLM- oder Vision-Anmeldeinformationen durch.
 
 !!! note "Beta"
-    `run_review` ist eine Beta-API für deterministische Reviews. Sie ruft keine Modellanbieter auf und schreibt keine Dateien, aber Prüfungen und Issue-Schemata können sich weiterentwickeln.
+    `run_review` ist eine Beta-Version einer deterministischen Review-API. Sie ruft keine Modellanbieter auf und schreibt keine Dateien, aber Prüfungen und Issue-Schemata können sich weiterentwickeln.
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-Überprüfen Sie nur Dateien, die gegenüber einem Basis-Ref geändert wurden, und drucken Sie GitHub-kompatible Ausgabe:
+Nach einer reinen README-Übersetzung verwenden Sie denselben Umfang für die Prüfung:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` überprüft nur `README.md` unter jedem konfigurierten Quell-Stamm,
+einschließlich benutzerdefinierter `groups` und Ausgabeordner. Andere Dokumente und verschachtelte
+READMEs sind ausgeschlossen. Ein fehlendes Quell-README löst `ValueError` aus; fehlgeschlagene
+Übersetzungsprüfungen lösen `RuntimeError` aus.
+
+Überprüfen Sie nur Dateien, die gegenüber einem Basis-Ref geändert wurden, und geben Sie GitHub-flavored-Ausgabe aus:
 
 ```python
 from co_op_translator.api import run_review
@@ -274,9 +398,9 @@ run_review(
 )
 ```
 
-## Copy-Paste API Examples
+## Copy-Paste API-Beispiele
 
-Übersetzen Sie Markdown-Inhalt ohne Datei-Schreibvorgänge:
+Markdown-Inhalte übersetzen ohne Dateischreibvorgänge:
 
 ```python
 import asyncio
@@ -295,7 +419,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Übersetzen und überschreiben Sie Markdown-Links:
+Markdown-Links übersetzen und umschreiben:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -327,7 +451,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Übersetzen Sie ein Repository aus Python:
+Ein Repository mit Python übersetzen:
 
 ```python
 from co_op_translator.api import run_translation
@@ -340,7 +464,7 @@ run_translation(
 )
 ```
 
-Übersetzen Sie mehrere Stämme:
+Mehrere Stämme übersetzen:
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-Behalten Sie Glossarbegriffe bei:
+Glossarbegriffe bewahren:
 
 ```python
 from co_op_translator.api import run_translation
@@ -371,13 +495,16 @@ run_translation(
 )
 ```
 
-## Public Entry Points
+## Öffentliche Einstiegspunkte
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## Content Translation APIs
+## Content-Übersetzungs-APIs
 
-Content-Übersetzungs-APIs sind für Integrationen gedacht, die Inhalte bereits im Speicher haben, wie eine Editor-Erweiterung, ein MCP-Tool, ein Notebook-Prozessor oder eine benutzerdefinierte Pipeline.
+Content-Übersetzungs-APIs sind für Integrationen gedacht, die Inhalte bereits im Speicher haben, wie z. B. eine Editor-Erweiterung, ein MCP-Tool, ein Notebook-Prozessor oder eine benutzerdefinierte Pipeline.
 
-| Function | Input | Output | File I/O | Notes |
+| Funktion | Eingabe | Ausgabe | Datei-E/A | Hinweise |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Translates Markdown content only. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Translates Markdown cells and preserves non-Markdown cells. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Extracts and translates image text, then returns a rendered image. It does not save translated image metadata. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | Nein | Asynchron. Übersetzt nur Markdown-Inhalte. Es schreibt keine Links um, schreibt keine Metadaten und fügt keine Haftungsausschlüsse hinzu. |
+| `translate_notebook_content` | Notebook JSON `str` oder `dict` | Notebook JSON `str` | Nein | Asynchron. Übersetzt Markdown-Zellen und bewahrt Nicht-Markdown-Zellen. Es schreibt keine Links um, schreibt keine Metadaten und fügt keine Haftungsausschlüsse hinzu. |
+| `translate_image_content` | Bildpfad | `PIL.Image.Image` | Liest nur das Quellbild | Synchron. Extrahiert und übersetzt Bildtext und gibt dann ein gerendertes Bild zurück. Es speichert keine übersetzten Bildmetadaten. |
 
-`translate_markdown_content` und `translate_notebook_content` akzeptieren einen optionalen `source_path` über ihre Optionen. Der Pfad wird als Kontext an den Übersetzer übergeben; Aufrufer sind weiterhin für projektspezifische Pfadumschreibungen nach der Übersetzung verantwortlich.
+`translate_markdown_content` und `translate_notebook_content` akzeptieren optional über ihre Optionen einen `source_path`. Der Pfad wird dem Translator als Kontext übergeben; die Aufrufer sind weiterhin verantwortlich für projektspezifische Pfadumschreibungen nach der Übersetzung.
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-Die gleichen Optionen können als Dictionaries übergeben werden:
+Die gleichen Optionen können auch als Dictionaries übergeben werden:
 
 ```python
 translated = await translate_markdown_content(
@@ -455,94 +588,96 @@ translated = await translate_markdown_content(
 )
 ```
 
-## Agent-Assisted Translation APIs
+## Agent-Unterstützte Übersetzungs-APIs
 
-Agent-unterstützte APIs rufen Azure OpenAI oder OpenAI nicht aus Co-op Translator auf. Sie bereiten Markdown- oder Notebook-Chunks für einen Host-Agenten zur Übersetzung vor und rekonstruieren dann den finalen Inhalt aus den übersetzten Chunks.
+Agent-unterstützte APIs rufen den konfigurierten LLM-Anbieter von Co-op Translator nicht auf. Sie bereiten Markdown- oder Notebook-Chunks für einen Host-Agenten zur Übersetzung vor und rekonstruieren dann den finalen Inhalt aus den übersetzten Chunks.
 
-| Function | Purpose |
+| Funktion | Zweck |
 | --- | --- |
-| `start_markdown_agent_translation` | Return a self-contained Markdown job with chunks, prompts, and reconstruction state. |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from a job and host-agent translated chunks. |
-| `start_notebook_agent_translation` | Return a notebook job with Markdown-cell chunks for host-agent translation. |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON while preserving code cells, outputs, and metadata. |
+| `start_markdown_agent_translation` | Gibt einen eigenständigen Markdown-Job mit Chunks, Prompts und Rekonstruktionszustand zurück. |
+| `finish_markdown_agent_translation` | Rekonstruiert Markdown aus einem Job und vom Host-Agenten übersetzten Chunks. |
+| `start_notebook_agent_translation` | Gibt einen Notebook-Job mit Markdown-Zellen-Chunks für die Übersetzung durch einen Host-Agenten zurück. |
+| `finish_notebook_agent_translation` | Rekonstruiert Notebook-JSON und bewahrt dabei Code-Zellen, Outputs und Metadaten. |
 
-Dieser Workflow ist hauptsächlich für MCP-Hosts vorgesehen. Wenn Sie eine Produktions-Repository-Übersetzung benötigen, bei der Co-op Translator die Anbieteraufrufe verwaltet, verwenden Sie `translate_markdown_content`, `translate_notebook_content` oder `run_translation`.
+Dieser Ablauf ist hauptsächlich für MCP-Hosts vorgesehen. Wenn Sie Produktions-Repository-Übersetzungen benötigen, bei denen Co-op Translator die Provideraufrufe verwaltet, verwenden Sie `translate_markdown_content`, `translate_notebook_content` oder `run_translation`.
 
-## Path Rewriting APIs
+## Pfad-Umschreibungs-APIs
 
-Pfad-Umschreibungs-APIs führen keine Übersetzung durch. Sie aktualisieren Links und Frontmatter-Pfade, nachdem Aufrufer den Quellpfad, den übersetzten Zielpfad und das Projektlayout kennen.
+Pfad-Umschreibungs-APIs führen keine Übersetzung durch. Sie aktualisieren Links und Frontmatter-Pfade, nachdem die Aufrufer den Quellpfad, den übersetzten Zielpfad und das Projektlayout kennen.
 
-| Function | Scope | Notes |
+| Funktion | Geltungsbereich | Hinweise |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | Rewrites Markdown links and supported frontmatter path fields for a translated target. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Applies Markdown path rewriting to each Markdown cell and leaves non-Markdown cells unchanged. |
+| `rewrite_markdown_paths` | Markdown-Inhalt und Frontmatter | Schreibt Markdown-Links und unterstützte Frontmatter-Pfadfelder für ein übersetztes Ziel um. |
+| `rewrite_notebook_paths` | Markdown-Zellen im Notebook-JSON | Wendet die Markdown-Pfadumschreibung auf jede Markdown-Zelle an und lässt Nicht-Markdown-Zellen unverändert. |
 
 Das `policy`-Argument kann ein Dictionary mit diesen Feldern sein:
 
-| Field | Required | Purpose |
+| Feld | Erforderlich | Zweck |
 | --- | --- | --- |
-| `language_code` | Yes | Target language code, such as `"ko"` or `"pt-BR"`. |
-| `root_dir` | No | Source project root. Defaults to `"."`. |
-| `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
-| `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
-| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
-| `lang_subdir` | No | Optional subdirectory under each language folder. |
+| `language_code` | Ja | Ziel-Sprachcode, z. B. `"ko"` oder `"pt-BR"`. |
+| `root_dir` | Nein | Projektstamm des Quells. Standard ist `"."`. |
+| `translations_dir` | Nein | Ausgabeverzeichnis für Textübersetzungen. Standardmäßig `translations` unter `root_dir`. |
+| `translated_images_dir` | Nein | Ausgabeverzeichnis für übersetzte Bilder. Standardmäßig `translated_images` unter `root_dir`. |
+| `translation_types` | Nein | Aktivierte Übersetzungstypen. Standardmäßig Markdown, Notebooks und Bilder. |
+| `lang_subdir` | Nein | Optionales Unterverzeichnis unter jedem Sprachordner. |
 
-## Project Translation Parameters
+## Projekt-Übersetzungs-Parameter
 
-| Parameter | Type | Default | Purpose |
+| Parameter | Typ | Standard | Zweck |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Space-separated target language codes, such as `"ko ja fr"`, or `"all"`. Alias codes are normalized to canonical BCP 47 values. |
-| `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` are supplied. |
-| `update` | `bool` | `False` | Delete and recreate existing translations for the selected languages. |
-| `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
-| `markdown` | `bool` | `False` | Include Markdown translation. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
-| `debug` | `bool` | `False` | Enable debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
-| `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
-| `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
-| `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
-| `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
-
-## Review Parameters
-
-`run_review` spiegelt absichtlich das `run_translation`-Signaturbild, wo möglich, damit die Automatisierung mit minimalen Verzweigungen zwischen Übersetzungs- und Review-Workflows wechseln kann.
-
-| Parameter | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders to review. Space-separated strings and iterables are accepted. `"all"` reviews every discovered translation language. |
-| `root_dir` | `str` | `"."` | Project root for a single review target. Ignored when `root_dirs` or `groups` are supplied. |
-| `markdown` | `bool` | `False` | Include Markdown and MDX source files. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
-| `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images are checked from Markdown. |
-| `translations_dir` | `str \| None` | `None` | Benutzerdefiniertes Ausgabeverzeichnis für Textübersetzungen. Relative Pfade werden gegenüber jedem Stammverzeichnis aufgelöst. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Mehrere Stammverzeichnisse, die dieselben Ausgabeeinstellungen teilen. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explizite `(root_dir, translations_dir)`-Paare. Haben Vorrang vor `root_dirs`. |
-| `changed_from` | `str \| None` | `None` | Git-Ref, die verwendet wird, um die Prüfung auf geänderte Quelldateien zu beschränken. |
-| `output_format` | `str` | `"text"` | Ausgabeformat der Überprüfung. Unterstützte Werte sind `"text"` und `"github"`. |
-| `fail_on_warnings` | `bool` | `False` | Behandle Warnungen zusätzlich zu Fehlern als Fehlschläge. |
+| `language_codes` | `str` | Erforderlich | durch Leerzeichen getrennte Zielsprachen-Codes, z. B. `"ko ja fr"`, oder `"all"`. Alias-Codes werden auf kanonische BCP 47-Werte normalisiert. |
+| `root_dir` | `str` | `"."` | Projektstamm für ein einzelnes Übersetzungsziel. Wird ignoriert, wenn `root_dirs` oder `groups` angegeben sind. |
+| `update` | `bool` | `False` | Bestehende Übersetzungen für die ausgewählten Sprachen löschen und neu erstellen. |
+| `images` | `bool` | `False` | Bildübersetzung einschließen. Erfordert Azure AI Vision-Konfiguration. |
+| `markdown` | `bool` | `False` | Markdown-Übersetzung einschließen. |
+| `notebook` | `bool` | `False` | Jupyter-Notebook-Übersetzung einschließen. |
 | `debug` | `bool` | `False` | Debug-Logging aktivieren. |
-| `save_logs` | `bool` | `False` | Speichert Protokolldateien auf DEBUG-Ebene im Stammverzeichnis `logs/`. |
+| `save_logs` | `bool` | `False` | DEBUG-Level-Protokolldateien im Stammverzeichnis `logs/` speichern. |
+| `yes` | `bool` | `True` | Eingabeaufforderungen für programmgesteuerte und CI-Nutzung automatisch bestätigen. |
+| `add_disclaimer` | `bool` | `False` | Maschinenübersetzungs-Hinweise zu übersetzten Markdown-Dateien und Notebooks hinzufügen. |
+| `translations_dir` | `str \| None` | `None` | Benutzerdefiniertes Ausgabeverzeichnis für Textübersetzungen. Relative Pfade werden relativ zu jedem Stammverzeichnis aufgelöst. |
+| `image_dir` | `str \| None` | `None` | Benutzerdefiniertes Ausgabeverzeichnis für übersetzte Bilder. Relative Pfade werden relativ zu jedem Stammverzeichnis aufgelöst. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Mehrere Stammverzeichnisse, die dieselben Ausgabeeinstellungen teilen. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explizite `(root_dir, translations_dir)`-Paare. Hat Vorrang vor `root_dirs`. |
+| `repo_url` | `str \| None` | `None` | Repository-URL, die beim Erstellen der README-Sprachentabelle verwendet wird. |
+| `glossaries` | `Iterable[str] \| None` | `None` | Glossarbegriffe, die während der Übersetzung erhalten bleiben sollen. Duplikate und leere Begriffe werden normalisiert. |
+| `dry_run` | `bool` | `False` | Schätzt das Übersetzungsvolumen und zeigt das Migrationsverhalten an, ohne Dateien zu schreiben. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Optionaler Adapter zur Persistenz von akzeptierter Basis und Kandidaten für inkrementelle Markdown-Aktualisierungen. Wenn weggelassen, bleibt das bestehende Verhalten mit vollständigen Dateien erhalten. |
 
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+## Überprüfungsparameter
+
+`run_review` spiegelt absichtlich die Signatur von `run_translation` so weit wie möglich wider, damit Automatisierungen mit minimalen Verzweigungen zwischen Übersetzungs- und Prüf-Workflows wechseln können.
+
+| Parameter | Typ | Standard | Zweck |
+| --- | --- | --- | --- |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | Zu überprüfende Zielsprachordner. Leerzeichen-getrennte Strings und Iterables werden akzeptiert. `"all"` überprüft jede entdeckte Übersetzungssprache. |
+| `root_dir` | `str` | `"."` | Projekt-Stammverzeichnis für ein einzelnes Prüfungsziel. Wird ignoriert, wenn `root_dirs` oder `groups` angegeben sind. |
+| `markdown` | `bool` | `False` | Markdown- und MDX-Quelldateien einschließen. |
+| `notebook` | `bool` | `False` | Jupyter-Notebook-Quelldateien einschließen. |
+| `images` | `bool` | `False` | Reserviert zur Parität mit den Übersetzungsoptionen. Link-Referenzen zu Bildern werden aus Markdown geprüft. |
+| `translations_dir` | `str \| None` | `None` | Benutzerdefiniertes Ausgabeverzeichnis für Textübersetzungen. Relative Pfade werden relativ zu jedem Stammverzeichnis aufgelöst. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Mehrere Stammverzeichnisse, die dieselben Ausgabeeinstellungen teilen. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explizite `(root_dir, translations_dir)`-Paare. Hat Vorrang vor `root_dirs`. |
+| `changed_from` | `str \| None` | `None` | Git-Ref, der verwendet wird, um die Überprüfung auf geänderte Quelldateien zu beschränken. |
+| `readme_only` | `bool` | `False` | Prüft nur `README.md` unter jedem Quell-Stammverzeichnis. Ein fehlendes Quell-README löst `ValueError` aus. |
+| `output_format` | `str` | `"text"` | Ausgabeformat der Überprüfung. Unterstützte Werte sind `"text"` und `"github"`. |
+| `fail_on_warnings` | `bool` | `False` | Warnungen zusätzlich zu Fehlern als Fehler behandeln. |
+| `debug` | `bool` | `False` | Debug-Logging aktivieren. |
+| `save_logs` | `bool` | `False` | DEBUG-Level-Protokolldateien im `logs/`-Verzeichnis des Stammverzeichnisses speichern. |
+
+Wenn weder `markdown`, `notebook` noch `images` gesetzt sind, überprüft die API Markdown, Notebooks und Bildlink-Verweise, sofern zutreffend. Die Überprüfung ruft keinen LLM-Provider auf und erfordert keine API-Schlüssel.
 
 ## Konfigurationsanforderungen
 
-Von Providern unterstützte Übersetzungs‑APIs erfordern vor der Übersetzung eine Provider‑Konfiguration:
+Anbieterbasierte Übersetzungs-APIs erfordern eine Anbieter-Konfiguration vor der Übersetzung:
 
-- Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
-- Image translation requires Azure AI Vision in addition to the LLM provider.
-- `run_translation` runs lightweight connectivity checks before project translation begins.
-- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` are deterministic and do not require provider credentials.
+- Für Markdown- und Notebook-Übersetzungen ist ein LLM-Anbieter erforderlich. Konfigurieren Sie Azure OpenAI, OpenAI oder Anthropic.
+- Bildübersetzung erfordert zusätzlich zum LLM-Anbieter Azure AI Vision.
+- `run_translation` führt vor Beginn der Projektübersetzung leichte Konnektivitätsprüfungen durch.
+- Agent-unterstützte `start_*_agent_translation`- und `finish_*_agent_translation`-APIs rufen keine Co-op Translator LLM-Provider auf. Die Host-Anwendung oder der MCP-Agent übersetzt die vorbereiteten Chunks.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths` und `run_review` sind deterministisch und benötigen keine Anbieter-Zugangsdaten.
 
-Required Azure OpenAI variables:
+Erforderliche Azure OpenAI-Variablen:
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -552,69 +687,78 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Required OpenAI variables:
+Erforderliche OpenAI-Variablen:
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+Erforderliche Anthropic-Variablen:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` und `ANTHROPIC_MAX_TOKENS` sind optional. Microsoft Agent Framework ist ab Co-op Translator 0.22.0 der Standardmodell-Client für alle Anbieter. Semantic Kernel kann weiterhin vorübergehend mit `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"` ausgewählt werden, aber dies gibt eine Deprecation-Warnung aus; siehe [Konfiguration](configuration.md#model-client-backend) für den gestaffelten Entfernungsplan.
+
+Erforderliche Azure AI Vision-Variablen für die Bildübersetzung:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` ist deterministisch und erfordert keine LLM- oder Azure AI Vision-Konfiguration.
 
 ## Verhaltenshinweise
 
-- Die Content-Übersetzungs-APIs trennen Übersetzung und Pfadumschreibung im Projekt. Rufen Sie `rewrite_markdown_paths` oder `rewrite_notebook_paths` explizit auf, wenn übersetzter Inhalt projektrelative Links an einen Zielort anpassen muss.
-- Projektorchestrierungs-APIs fügen rund um die Inhaltsübersetzung projektbezogenes Verhalten hinzu, einschließlich Dateierkennung, Schreibvorgängen, Pfadumschreibung, Metadaten, Bereinigung und optionalen Haftungsausschlüssen.
-- `run_translation` gibt Fortschritt und Schätzungszusammenfassungen über Click aus und entspricht so der CLI-Nutzererfahrung.
-- `dry_run=True` berechnet Schätzungen mithilfe virtueller README-Aktualisierungen, schreibt aber weder das README noch die Übersetzungsdateien.
-- `groups` werden nacheinander verarbeitet. Eine einzige aggregierte Schätzung wird ausgegeben, bevor die Arbeit beginnt.
-- Wenn die Bildübersetzung ausgewählt ist, führt fehlende Vision-Konfiguration vor Übersetzungsbeginn zu einem Fehler.
+- Inhaltsübersetzungs-APIs trennen Übersetzung vom Umschreiben von Projektpfaden. Rufen Sie `rewrite_markdown_paths` oder `rewrite_notebook_paths` explizit auf, wenn übersetzter Inhalt projekt-relative Links für ein Ziel anpassen muss.
+- Projektorchestrierungs-APIs fügen Projektverhalten rund um die Inhaltsübersetzung hinzu, einschließlich Dateierkennung, Schreibvorgängen, Pfadumschreibung, Metadaten, Bereinigung und optionalen Haftungsausschlüssen.
+- `run_translation` gibt Fortschritts- und Schätzungszusammenfassungen über denselben Rich-basierten Reporter aus, der auch vom CLI verwendet wird. Nicht-interaktive Ausgaben fallen auf einfachen Text zurück.
+- `dry_run=True` berechnet Schätzungen mithilfe virtueller README-Aktualisierungen, schreibt jedoch weder die README noch Übersetzungsdateien.
+- `groups` werden nacheinander verarbeitet. Eine einzige aggregierte Schätzung wird vor Arbeitsbeginn ausgegeben.
+- Wenn die Bildübersetzung ausgewählt ist, führt eine fehlende Vision-Konfiguration vor Beginn der Übersetzung zu einem Fehler.
 - Bestehende aliasbasierte Sprachordner werden erkannt und können im Rahmen des Laufs auf kanonische Sprachordnernamen migriert werden.
 - `run_review` schlägt fehl bei fehlenden übersetzten Dateien, fehlenden oder veralteten Übersetzungsmetadaten, fehlerhaftem Markdown-Frontmatter/Code-Fences und ungültigem übersetztem Notebook-JSON.
-- `run_review` meldet standardmäßig fehlende lokale Markdown- und Bild-Link-Ziele als Warnungen.
+- `run_review` meldet fehlende lokale Markdown- und Bild-Link-Ziele standardmäßig als Warnungen.
 
 ## Interner Aufrufpfad
 
-Die API delegiert an dieselbe Kernimplementierung, die auch von der CLI verwendet wird:
+Die API delegiert an dieselbe Kernimplementierung, die vom CLI verwendet wird:
 
-Translation:
+Übersetzung:
 
-1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.
-2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.
-3. `co_op_translator.api.translation.run_translation` for full project orchestration.
+1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` für In-Memory-Übersetzung.
+2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` für explizite Nachbearbeitung von Pfaden.
+3. `co_op_translator.api.translation.run_translation` für vollständige Projektorchestrierung.
 4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
 5. `co_op_translator.core.project.ProjectTranslator`.
 6. `co_op_translator.core.project.TranslationManager`.
-7. Focused project translation mixins for Markdown, notebooks, and images.
-8. Markdown, notebook, text, and image translators under `co_op_translator.core`.
+7. Fokussierte Projekt-Übersetzungs-Mixins für Markdown, Notebooks und Bilder.
+8. Markdown-, Notebook-, Text- und Bildübersetzer unter `co_op_translator.core`.
 
-Review:
+Überprüfung:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. Deterministic checks under `co_op_translator.review.checks`
+4. Deterministische Prüfungen unter `co_op_translator.review.checks`
 
-The following classes are useful for maintainers, but are not exported as the package-level stable API.
+Die folgenden Klassen sind für Maintainer nützlich, werden jedoch nicht als paketweite stabile API exportiert.
 
-| Klasse | Modul | Aufgabe |
+| Klasse | Modul | Verantwortung |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Koordiniert Übersetzungen auf Projektebene, Verzeichnisverwaltung, sprachspezifische Metadaten-Normalisierung und Delegation an Markdown-, Notebook- und Bildübersetzer. |
-| `TranslationManager` | `co_op_translator.core.project.translation` | Führt die asynchrone Dateiverarbeitung für Markdown, Notebooks, Bilder, Stalerkennung und Aktualisierungen der Übersetzungsmetadaten durch. |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Koordiniert Übersetzungen auf Projektebene, Verzeichnisverwaltung, sprachbezogene Metadaten-Normalisierung und die Delegation an Markdown-, Notebook- und Bildübersetzer. |
+| `TranslationManager` | `co_op_translator.core.project.translation` | Führt die asynchronen Datei-Verarbeitungsarbeiten für Markdown, Notebooks, Bilder, Erkennung veralteter Dateien und Aktualisierungen der Übersetzungsmetadaten durch. |
 | `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Orchestriert das Lesen von Markdown-Dateien, Inhaltsübersetzung, Pfadumschreibung, Metadaten, Haftungsausschlüsse und Schreibvorgänge. |
 | `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Orchestriert das Lesen von Notebook-Dateien, Übersetzung von Markdown-Zellen, Pfadumschreibung, Metadaten, Haftungsausschlüsse und Schreibvorgänge. |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Orchestriert die Ermittlung von Quellbildern, Bildübersetzung, Ausgabepfade, Metadaten und Schreibvorgänge. |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Findet übersetzte Markdown-Paare, bewertet die Übersetzungsqualität und liest Konfidenzmetadaten für Reparatur-Workflows bei niedriger Konfidenz. |
-| `ReviewRunner` | `co_op_translator.review.runner` | Koordiniert deterministische Überprüfungen über Quelldateien, Zielsprachen und konfigurierte Übersetzungsstammverzeichnisse. |
-| `ReviewTarget` | `co_op_translator.review.targets` | Beschreibt ein Quell-Stammverzeichnis und das für dieses Stammverzeichnis geprüfte Übersetzungs-Ausgabeverzeichnis. |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Erkennt veraltete Alias-Sprachordner und bereitet Migrationspläne zu kanonischen BCP 47-Ordnern vor. |
-| `Config` | `co_op_translator.config.base_config` | Lädt `.env`-Dateien und prüft, ob die erforderlichen LLM- und optionalen Vision-Anbieter konfiguriert sind. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Erkennt automatisch Azure OpenAI oder OpenAI, validiert erforderliche Umgebungsvariablen und führt Konnektivitätsprüfungen für Provider durch. |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | Erkennt die Azure AI Vision-Konfiguration und führt Konnektivitätsprüfungen für die Bildübersetzung durch. |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Orchestriert die Erkennung von Quellbildern, Bildübersetzung, Ausgabepfade, Metadaten und Schreibvorgänge. |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Findet übersetzte Markdown-Paare, bewertet die Übersetzungsqualität und liest Konfidenz-Metadaten für Reparatur-Workflows bei geringer Konfidenz. |
+| `ReviewRunner` | `co_op_translator.review.runner` | Koordiniert deterministische Prüfungen über Quelldateien, Zielsprachen und konfigurierte Übersetzungs-Stammverzeichnisse. |
+| `ReviewTarget` | `co_op_translator.review.targets` | Beschreibt ein Quell-Stammverzeichnis und das Übersetzungs-Ausgabeverzeichnis, das für dieses Stammverzeichnis geprüft wird. |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Erkennt alte Alias-Sprachordner und bereitet Migrationspläne zu kanonischen BCP 47-Ordnernamen vor. |
+| `Config` | `co_op_translator.config.base_config` | Lädt `.env`-Dateien und prüft, ob erforderliche LLM- und optionale Vision-Anbieter konfiguriert sind. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Erkennt automatisch Azure OpenAI, OpenAI oder Anthropic, validiert erforderliche Umgebungsvariablen und führt Konnektivitätsprüfungen für Anbieter durch. |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | Erkennt Azure AI Vision-Konfiguration und führt Konnektivitätsprüfungen für die Bildübersetzung durch. |

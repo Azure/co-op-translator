@@ -4,43 +4,47 @@ Co-op Translatoria voi käyttää kolmella tavalla: CLI, Python API ja MCP-palve
 
 Käytä tätä sivua, kun päätät, mistä aloittaa.
 
+**If you edit translations by hand:** oletuksena CLI- ja Actions-työnkulut uudelleenkääntävät muutetut lähdetiedostot kokonaan, joten tekstisi näissä tiedostoissa voi ylikirjoittua. Tarkista diff ennen päivityksen hyväksymistä. Hyväksyttyjen muokkausten Markdown-lohkotason säilyttämiseen käytä valinnaista [Python API:n käännystilan tarjoaja](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
+
 ## Nopea päätös
 
-| Jos haluat... | Käytä | Start here |
+| Jos haluat... | Käytä | Aloita tästä |
 | --- | --- | --- |
-| Kääntää tai tarkistaa repositorion terminaalista | CLI | [CLI Reference](cli.md) |
-| Lisätä käännöksen Python-skriptiin, palveluun, muistioon tai CI-tehtävään | Python API | [Python API](api.md) |
+| Käännä tai tarkista repositorio terminaalista | CLI | [CLI Reference](cli.md) |
+| Lisää käännös Python-skriptiin, palveluun, notebookiin tai CI-tehtävään | Python API | [Python API](api.md) |
 | Anna agentin, editorin tai MCP-yhteensopivan asiakkaan kääntää sisältö puolestasi | MCP Server | [MCP Server](mcp.md) |
-| Kääntää yhden Markdown-asiakirjan, muistion tai kuvan, jonka sovelluksesi on jo ladannut | Python API tai MCP Server | [Python API](api.md) or [MCP Server](mcp.md) |
-| Kääntää koko repositorion käyttäen standardeja tulostuskansioita ja metatietoja | CLI tai `run_translation` | [CLI Reference](cli.md) or [Python API](api.md) |
+| Käännä yksi Markdown-dokumentti, notebook tai kuva, jonka sovelluksesi on jo ladannut | Python API or MCP Server | [Python API](api.md) or [MCP Server](mcp.md) |
+| Käännä koko repositorio standardeilla tulostuskansioilla ja metatiedoilla | CLI or `run_translation` | [CLI Reference](cli.md) or [Python API](api.md) |
 
 ## Käytä CLI:tä, kun
 
-Valitse CLI, kun henkilö tai CI-tehtävä käynnistää repositorion käännöksen kuoresta.
+Valitse CLI, kun henkilö tai CI-tehtävä suorittaa repositorion käännöksen komentoriviltä.
 
-CLI on suorin tapa, kun haluat, että Co-op Translator löytää projektitiedostot, luo käännetyt tulosteet, säilyttää projektin rakenteen, päivittää metatiedot ja suorittaa tarkistuskomennot.
+CLI on suorin reitti, kun haluat Co-op Translatorin löytävän projektitiedostot, luovan käännetyt tulosteet, säilyttävän projektin rakenteen, päivittävän metatiedot ja suorittavan tarkastuskäskyt.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
+Tämä esimerkki kääntää Markdownin ja notebookit. Lisää `-img` vasta kun olet määrittänyt [Azure AI Vision](configuration.md#azure-ai-vision). Markdownia koskevaa ensimmäistä ajoa varten seuraa ohjetta [Ensimmäinen käännöksesi](first-translation.md).
+
 Sopii hyvin:
 
-- Käännät repositorion terminaalista.
-- Haluat toistettavan komennon CI- tai julkaisuputkiin.
-- Haluat sisäänrakennetun projektin etsinnän, tulostuspolut, metatiedot, siivouksen ja tarkistustoiminnot.
-- Haluat komentorajapinnan mieluummin kuin kirjoittaa Python-koodia.
+- Käännät repositoriota komentoriviltä.
+- Haluat toistettavan komennon CI- tai julkaisutyönkulkuihin.
+- Haluat sisäänrakennetun projektin etsinnän, tulostuspolut, metatiedot, siivouksen ja tarkastuksen.
+- Suosit komentoriviä Python-koodin kirjoittamisen sijaan.
 
-## Käytä Python-APIa, kun
+## Käytä Python API:ta, kun
 
-Valitse Python-API, kun oma koodisi hallitsee työnkulkua.
+Valitse Python API, kun oma koodisi hallinnoi työnkulkua.
 
-API on hyödyllinen sovelluksille, automaatioskripeille, muistioille, palveluille ja mukautetuille putkille. Sen avulla voit kutsua matalan tason sisältökäännös-API:a yksittäisille tiedostoille tai suorittaa saman repositoriotason orkestroinnin, jota CLI käyttää.
+API on hyödyllinen sovelluksille, automaatioskripteille, notebookeille, palveluille ja räätälöidyille putkistoille. Sen avulla voit kutsua alhaisen tason sisältökäännös-APIt yksittäisille tiedostoille tai suorittaa saman repositoriotason orkestroinnin, jota CLI käyttää.
 
-Käännä yksi Markdown-asiakirja ja päätä, mihin tallennat sen:
+Käännä yksi Markdown-dokumentti ja päätä, mihin tallennat sen:
 
 ```python
 import asyncio
@@ -75,54 +79,47 @@ asyncio.run(main())
 Suorita repositorion käännös Pythonista:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
 Sopii hyvin:
 
-- Sovelluksesi lukee jo tiedostoja, puskureita, muistioita tai kuvan tavuja.
-- Tarvitset mukautettua validointia, tallennusta, lokitusta, uudelleentyrityksiä tai hyväksyntäprosesseja.
-- Haluat kääntää yhden asiakirjan, muistion tai kuvan käsittelemättä koko repositoriota.
-- Haluat repositorion käännöksen, mutta Python-automaatioista sen sijaan että käyttäisit kuorikomentoa.
+- Sovelluksesi lukee jo tiedostoja, puskureita, notebookeja tai kuvadataa.
+- Tarvitset mukautettua validointia, tallennusta, lokitusta, uudelleenyrityksiä tai hyväksyntäprosesseja.
+- Haluat kääntää yhden dokumentin, notebookin tai kuvan käsittelemättä koko repositiota.
+- Haluat repositorion käännöksen, mutta Python-automaatiossa komentorivin sijaan.
 
 ## Käytä MCP-palvelinta, kun
 
-Valitse MCP-palvelin, kun agentin, editorin tai MCP-yhteensopivan asiakkaan tulisi kutsua Co-op Translatorin työkaluja.
+Valitse MCP-palvelin, kun agentin, editorin tai MCP-yhteensopivan asiakkaan pitäisi kutsua Co-op Translator -työkaluja.
 
-Normaalissa paikallisessa asetuksessa käyttäjä ei pidä palvelinta käynnissä manuaalisesti. MCP-asiakas käynnistää `co-op-translator-mcp` `stdio`n yli, kun se tarvitsee työkaluja.
+Tavallisessa paikallisessa asetuksessa käyttäjä ei pidä palvelinta jatkuvasti käynnissä manuaalisesti. MCP-asiakas käynnistää `co-op-translator-mcp` `stdio`-yhteyden kautta tarvittaessa.
 
-Esimerkkejä käyttäjän pyynnöistä, joita agentti voisi käsitellä:
+Esimerkkejä käyttäjäpyynnöistä, joita agentti voisi käsitellä:
 
 - "Käännä tämä Markdown-tiedosto koreaksi ja pidä linkit oikein."
-- "Käännä tämä Markdown-tiedosto koreaksi agentin avustamassa MCP-työnkulussa, käyttäen omaa malliasi käännetyille osioille."
-- "Käännä tämä muistio koreaksi, säilytä koodisolut ja käytä Co-op Translator MCP:tä kootaksesi muistion uudelleen."
+- "Käännä tämä Markdown-tiedosto koreaksi agentin avustamassa MCP-työnkulussa, käyttäen omaa malliasi käännetyille lohkoille."
+- "Käännä tämä notebook koreaksi, säilytä koodisolut ja käytä Co-op Translator MCP:tä notebookin uudelleenrakentamiseen."
 - "Käännä tämän kuvan teksti japaniksi ja tallenna tulos."
-- "Suorita kuiva-ajona repositorion käännös espanjaksi ja kerro, mitä muuttuisi."
-- "Tarkista, onko koreankielinen käännös ajantasainen."
+- "Tee kuiva-ajo repositorion käännöksestä espanjaksi ja kerro, mitä muuttuisi."
+- "Tarkista, onko koreankielinen käännöstulos ajan tasalla."
 
-Markdownin ja muistioiden osalta MCP voi toimia kahdessa tilassa:
+Markdownien ja notebookien osalta MCP voi toimia kahdessa tilassa:
 
 | Tila | Käytä kun | Päätyökalut |
 | --- | --- | --- |
-| Agentin avustama | MCP-isäntäagentin tulisi kääntää osiot omalla mallillaan ilman Co-op Translatorin LLM-palveluntarjoajan tunnuksia. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Palveluntarjoajan tukema | Co-op Translatorin tulisi kutsua Azure OpenAI:ta tai OpenAI:ta suoraan. | `translate_markdown_content`, `translate_notebook_content` |
+| Agentin avustama | MCP-isäntäagentin pitäisi kääntää lohkoja omalla mallillaan ilman Co-op Translatorin LLM-palveluntarjoajan tunnuksia. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Palveluntarjoajan tukema | Co-op Translatorin pitäisi kutsua Azure OpenAI:ta, OpenAI:ta tai Anthropicia suoraan. | `translate_markdown_content`, `translate_notebook_content` |
 
-MCP:n palveluntarjoajan tukema Markdown-työkalukutsu:
+MCP:n tarjoajapohjaisen Markdown-työkalukutsun muoto:
 
 ```json
 {
@@ -137,7 +134,7 @@ MCP:n palveluntarjoajan tukema Markdown-työkalukutsu:
 }
 ```
 
-MCP-kuvatyökalukutsun muoto:
+MCP:n kuvatyökalukutsun muoto:
 
 ```json
 {
@@ -150,7 +147,7 @@ MCP-kuvatyökalukutsun muoto:
 }
 ```
 
-Repositorion käännös ajetaan oletuksena kuiva-ajona MCP:n kautta:
+Repositorion käännös ajetaan oletusarvoisesti kuiva-ajona MCP:n kautta:
 
 ```json
 {
@@ -167,14 +164,14 @@ Repositorion käännös ajetaan oletuksena kuiva-ajona MCP:n kautta:
 
 Sopii hyvin:
 
-- Haluat luonnollisen kielen käännöstyönkulkuja agentin tai editorin sisällä.
-- Haluat Markdown- tai muistion käännöksen, jossa isäntäagentin malli kääntää valmiit osiot.
+- Haluat luonnolliskielisiä käännöstyönkulkuja agentin tai editorin sisään.
+- Haluat Markdown- tai notebook-käännöksiä, joissa isäntäagentin malli kääntää esivalmistellut lohkot.
 - Haluat agentin kääntävän valitun sisällön koko repositorion sijaan.
-- Haluat hyväksyntävaiheen ennen koko repositorion laajuisten kirjoitusten tekemistä.
-- Haluat yhden rajapinnan, joka tarjoaa Markdown-, muistio-, kuva-, tarkistus- ja polun uudelleenkirjoitustyökaluja.
+- Haluat hyväksyntävaiheen ennen koko repositorion kattavia kirjoituksia.
+- Haluat yhden käyttöliittymän, joka tarjoaa Markdown-, notebook-, kuva-, tarkastus- ja polkujen uudelleenkirjoitus-työkalut.
 
 ## Miten ne sopivat yhteen
 
-CLI on paras oletus ihmisille, jotka kääntävät repositorioita. Python-API on paras, kun koodisi hallinnoi työnkulkua. MCP-palvelin on paras, kun agentti tai editori hallitsee työnkulkua.
+CLI on paras oletus ihmisille, jotka kääntävät repositorioita. Python API on paras, kun koodisi hallitsee työnkulkua. MCP-palvelin on paras, kun agentti tai editori hallinnoi työnkulkua.
 
-Kaikki kolme polkua käyttävät samaa julkista Co-op Translator -API:a, joten voit aloittaa CLI:llä, automatisoida myöhemmin Pythonilla ja tarjota samat ominaisuudet MCP-asiakkaille, kun tarvitset agenttiohjattuja työnkulkuja.
+Kaikki kolme reittiä käyttävät samaa julkista Co-op Translator API:a, joten voit aloittaa CLI:llä, automatisoida myöhemmin Pythonilla ja tarjota samat mahdollisuudet MCP-asiakkaille, kun tarvitset agenttiohjattuja työnkulkuja.

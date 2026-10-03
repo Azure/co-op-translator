@@ -1,8 +1,8 @@
-# Languages Wey We Dey Support
+# Languages Wey Dem Dey Support
 
 Co-op Translator dey support di following language codes for text, notebook, and image translation outputs.
 
-If you wan add new language, update the language and font mappings under `src/co_op_translator/fonts/` and test the language before you open a pull request.
+If you wan add a new language, update di language and font mappings under `src/co_op_translator/fonts/` and test di language before you open a pull request.
 
 | Language Code | Language Name | Font | RTL Support | Known Issues |
 | --- | --- | --- | --- | --- |
@@ -61,12 +61,13 @@ If you wan add new language, update the language and font mappings under `src/co
 | ml | Malayalam | NotoSans-Medium.ttf | No | No |
 | kn | Kannada | NotoSans-Medium.ttf | No | No |
 | km | Khmer | NotoSansKhmer-Medium.ttf | No | No |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | No | No |
 
-## How You Go Add Language
+## How to Add Language
 
 To add support for a new language:
 
-1. Add di language code and di display name to di language utilities.
+1. Add di language code and display name to di language utilities.
 2. Add or map a font in `src/co_op_translator/fonts/font_language_mappings.yml`.
 3. Test di Markdown and image translation output.
-4. Open a pull request wey get di mapping and validation notes.
+4. Open a pull request with di mapping and validation notes.

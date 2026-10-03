@@ -1,6 +1,6 @@
 # Idiomas Suportados
 
-Co-op Translator suporta os seguintes códigos de idioma para as saídas de tradução de texto, notebooks e imagens.
+O Co-op Translator suporta os seguintes códigos de idioma para saídas de tradução de texto, notebooks e imagens.
 
 Se você quiser adicionar um novo idioma, atualize os mapeamentos de idioma e fonte em `src/co_op_translator/fonts/` e teste o idioma antes de abrir um pull request.
 
@@ -61,12 +61,13 @@ Se você quiser adicionar um novo idioma, atualize os mapeamentos de idioma e fo
 | ml | Malayalam | NotoSans-Medium.ttf | Não | Não |
 | kn | Canarês | NotoSans-Medium.ttf | Não | Não |
 | km | Khmer | NotoSansKhmer-Medium.ttf | Não | Não |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Não | Não |
 
-## Adicionar um idioma
+## Adicionar um Idioma
 
 Para adicionar suporte a um novo idioma:
 
 1. Adicione o código do idioma e o nome de exibição às utilidades de idioma.
 2. Adicione ou mapeie uma fonte em `src/co_op_translator/fonts/font_language_mappings.yml`.
-3. Teste a saída de tradução de Markdown e imagens.
-4. Abra um pull request com o mapeamento e notas de validação.
+3. Teste a saída de tradução de Markdown e de imagens.
+4. Abra um pull request com o mapeamento e as notas de validação.

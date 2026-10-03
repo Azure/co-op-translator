@@ -1,10 +1,10 @@
 # समर्थित भाषा
 
-Co-op Translator खालील भाषा कोड्स मजकूर, नोटबुक, आणि प्रतिमा भाषांतर आउटपुटसाठी समर्थित करतो.
+Co-op Translator मजकूर, नोटबुक आणि प्रतिमा अनुवाद आउटपुटसाठी खालील भाषा कोड्सना समर्थन करते.
 
-जर तुम्हाला नवीन भाषा जोडायची असेल, तर भाषा आणि फॉन्ट मॅपिंग `src/co_op_translator/fonts/` अंतर्गत अद्यतन करा आणि पुल रिक्वेस्ट उघडण्यापूर्वी भाषा चाचणी करा.
+जर तुम्हाला नवीन भाषा जोडायची असेल, तर `src/co_op_translator/fonts/` खाली भाषा व फॉन्ट मॅपिंग अद्यतनित करा आणि पुल रिक्वेस्ट उघडण्यापूर्वी भाषेची चाचणी करा.
 
-| Language Code | Language Name | Font | RTL Support | Known Issues |
+| Language Code | भाषेचे नाव | Font | RTL समर्थन | ओळखलेल्या समस्या |
 | --- | --- | --- | --- | --- |
 | en | इंग्रजी | NotoSans-Medium.ttf | नाही | नाही |
 | fr | फ्रेंच | NotoSans-Medium.ttf | नाही | नाही |
@@ -12,12 +12,12 @@ Co-op Translator खालील भाषा कोड्स मजकूर, �
 | de | जर्मन | NotoSans-Medium.ttf | नाही | नाही |
 | ru | रशियन | NotoSans-Medium.ttf | नाही | नाही |
 | ar | अरबी | NotoSansArabic-Medium.ttf | होय | नाही |
-| fa | फारसी (फारसी) | NotoSansArabic-Medium.ttf | होय | नाही |
+| fa | पर्शियन (फारसी) | NotoSansArabic-Medium.ttf | होय | नाही |
 | ur | उर्दू | NotoSansArabic-Medium.ttf | होय | नाही |
-| zh-CN | चीनी (सरलीकृत) | NotoSansCJK-Medium.ttc | नाही | नाही |
-| zh-MO | चीनी (पारंपरिक, मकाऊ) | NotoSansCJK-Medium.ttc | नाही | नाही |
-| zh-HK | चीनी (पारंपरिक, हाँगकाँग) | NotoSansCJK-Medium.ttc | नाही | नाही |
-| zh-TW | चीनी (पारंपरिक, तैवान) | NotoSansCJK-Medium.ttc | नाही | नाही |
+| zh-CN | चिनी (सरलीकृत) | NotoSansCJK-Medium.ttc | नाही | नाही |
+| zh-MO | चिनी (परंपरागत, मकाऊ) | NotoSansCJK-Medium.ttc | नाही | नाही |
+| zh-HK | चिनी (परंपरागत, हाँगकाँग) | NotoSansCJK-Medium.ttc | नाही | नाही |
+| zh-TW | चिनी (परंपरागत, तैवान) | NotoSansCJK-Medium.ttc | नाही | नाही |
 | ja | जपानी | NotoSansCJK-Medium.ttc | नाही | नाही |
 | ko | कोरियन | NotoSansCJK-Medium.ttc | नाही | नाही |
 | hi | हिंदी | NotoSansDevanagari-Medium.ttf | नाही | नाही |
@@ -41,32 +41,33 @@ Co-op Translator खालील भाषा कोड्स मजकूर, �
 | he | हिब्रू | NotoSansHebrew-Medium.ttf | होय | नाही |
 | vi | व्हिएतनामी | NotoSans-Medium.ttf | नाही | नाही |
 | id | इंडोनेशियन | NotoSans-Medium.ttf | नाही | नाही |
-| ms | मलय | NotoSans-Medium.ttf | नाही | नाही |
-| tl | टागालोग (फिलिपिनो) | NotoSans-Medium.ttf | नाही | नाही |
+| ms | मलये | NotoSans-Medium.ttf | नाही | नाही |
+| tl | टागालॉग (फिलिपिनो) | NotoSans-Medium.ttf | नाही | नाही |
 | sw | स्वाहिली | NotoSans-Medium.ttf | नाही | नाही |
-| hu | हंगेरियन | NotoSans-Medium.ttf | नाही | नाही |
-| cs | झेक | NotoSans-Medium.ttf | नाही | नाही |
-| sk | स्लोवाक | NotoSans-Medium.ttf | नाही | नाही |
+| hu | हंगेरीयन | NotoSans-Medium.ttf | नाही | नाही |
+| cs | चेक | NotoSans-Medium.ttf | नाही | नाही |
+| sk | स्लोव्हाक | NotoSans-Medium.ttf | नाही | नाही |
 | ro | रोमानियन | NotoSans-Medium.ttf | नाही | नाही |
-| bg | बुल्गेरियन | NotoSans-Medium.ttf | नाही | नाही |
+| bg | बल्गेरियन | NotoSans-Medium.ttf | नाही | नाही |
 | sr | सर्बियन (सिरिलिक) | NotoSans-Medium.ttf | नाही | नाही |
 | hr | क्रोएशियन | NotoSans-Medium.ttf | नाही | नाही |
 | sl | स्लोव्हेनियन | NotoSans-Medium.ttf | नाही | नाही |
-| uk | युक्रेनियन | NotoSans-Medium.ttf | नाही | नाही |
-| my | बर्मीस (म्यानमार) | NotoSansMyanmar-Medium.ttf | नाही | नाही |
+| uk | युक्रेनी | NotoSans-Medium.ttf | नाही | नाही |
+| my | बर्मी (म्यानमार) | NotoSansMyanmar-Medium.ttf | नाही | नाही |
 | ta | तमिळ | NotoSansTamil-Medium.ttf | नाही | नाही |
 | et | एस्टोनियन | NotoSans-Medium.ttf | नाही | नाही |
-| pcm | नायजीरियन पिजिन | NotoSans-Medium.ttf | नाही | नाही |
+| pcm | नायजेरियन पिजिन | NotoSans-Medium.ttf | नाही | नाही |
 | te | तेलुगू | NotoSans-Medium.ttf | नाही | नाही |
 | ml | मलयाळम | NotoSans-Medium.ttf | नाही | नाही |
 | kn | कन्नड | NotoSans-Medium.ttf | नाही | नाही |
-| km | खमेर | NotoSansKhmer-Medium.ttf | नाही | नाही |
+| km | ख्मेर | NotoSansKhmer-Medium.ttf | नाही | नाही |
+| mni | मणिपुरी (मेतेई मायेक) | NotoSansMeeteiMayek-Medium.ttf | नाही | नाही |
 
 ## भाषा जोडा
 
-To add support for a new language:
+नवीन भाषेसाठी समर्थन जोडण्यासाठी:
 
-1. भाषा कोड आणि प्रदर्शन नाव language utilities मध्ये जोडा.
-2. `src/co_op_translator/fonts/font_language_mappings.yml` मध्ये फॉन्ट जोडा किंवा मॅप करा.
-3. Markdown आणि प्रतिमा भाषांतर आउटपुटची चाचणी करा.
-4. मॅपिंग आणि पडताळणी नोट्ससह एक पुल रिक्वेस्ट उघडा.
+1. भाषा युटिलिटीजमध्ये भाषा कोड आणि प्रदर्शित नाव जोडा.
+2. `src/co_op_translator/fonts/font_language_mappings.yml` मध्ये फॉन्ट जोडा किंवा नकाशित करा.
+3. Markdown आणि प्रतिमा अनुवाद आउटपुटची चाचणी करा.
+4. नकाशा आणि पडताळणी टीपांसह एक पुल रिक्वेस्ट उघडा.

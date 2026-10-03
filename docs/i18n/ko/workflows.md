@@ -4,6 +4,8 @@ Co-op Translator는 CLI, Python API, MCP 서버의 세 가지 방식으로 사�
 
 어디서 시작할지 결정할 때 이 페이지를 사용하세요.
 
+**번역문을 직접 수정한다면:** 기본 CLI와 Actions 워크플로는 원문이 변경된 파일 전체를 다시 번역하므로 직접 다듬은 문장이 덮어써질 수 있습니다. 업데이트를 반영하기 전에 diff를 검토하세요. 변경되지 않은 Markdown 블록의 수정 사항을 보존하려면 [Python API의 번역 상태 제공자(영문)](../../api.md#preserve-accepted-human-edits-with-a-translation-state-provider)를 별도로 연결해야 합니다.
+
 ## 빠른 결정
 
 | If you want to... | Use | Start here |
@@ -22,10 +24,12 @@ Co-op Translator가 프로젝트 파일을 검색하고, 번역된 출력을 생
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
+
+이 예제는 Markdown과 노트북을 번역합니다. 이미지 번역은 [Azure AI Vision](configuration.md#azure-ai-vision)을 설정한 뒤 `-img`를 추가하세요. Markdown만 사용하는 첫 실행은 [첫 번역 실습](first-translation.md)을 참고하세요.
 
 적합한 경우:
 
@@ -75,22 +79,15 @@ asyncio.run(main())
 Python에서 리포지토리 번역을 실행하려면:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
 적합한 경우:
@@ -120,7 +117,7 @@ Markdown과 노트북의 경우, MCP는 두 가지 모드로 동작할 수 있�
 | Mode | Use when | Main tools |
 | --- | --- | --- |
 | Agent-assisted | MCP 호스트 에이전트가 Co-op Translator LLM 제공자 자격 증명 없이 자체 모델로 청크를 번역해야 할 때. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Provider-backed | Co-op Translator가 Azure OpenAI 또는 OpenAI를 직접 호출해야 할 때. | `translate_markdown_content`, `translate_notebook_content` |
+| Provider-backed | Co-op Translator가 Azure OpenAI, OpenAI 또는 Anthropic을 직접 호출해야 할 때. | `translate_markdown_content`, `translate_notebook_content` |
 
 MCP provider-backed Markdown 도구 호출 형식:
 

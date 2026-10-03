@@ -7,12 +7,16 @@ on:
       - "docs/**"
       - "mkdocs.yml"
       - "requirements-docs.txt"
+      - "hooks/docs_i18n.py"
+      - "tests/docs/**"
       - ".github/workflows/docs.yml"
   pull_request:
     paths:
       - "docs/**"
       - "mkdocs.yml"
       - "requirements-docs.txt"
+      - "hooks/docs_i18n.py"
+      - "tests/docs/**"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
@@ -42,8 +46,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-docs.txt
 
+      - name: Test documentation navigation
+        run: |
+          python -m unittest discover -s tests/docs -p "test_*.py"
+          node --test tests/docs/i18n-navigation.test.cjs
+
       - name: Build documentation
         run: mkdocs build --strict
+
+      - name: Check GitHub Pages static artifact
+        run: python tests/docs/check_pages_artifact.py site
 
       - name: Upload Pages artifact
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'

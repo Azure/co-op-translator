@@ -1,56 +1,69 @@
 # 설정
 
-Co-op Translator는 하나의 언어 모델 제공자를 필요로 합니다. 이미지 번역은 추가로 Azure AI Vision을 필요로 합니다.
+Co-op Translator는 텍스트 번역에 언어 모델 제공자 하나를 사용합니다. 이미지 안의 텍스트를 번역하려면 Azure AI Vision이 추가로 필요합니다.
 
-구성은 환경 변수에서 읽습니다. 로컬 프로젝트의 경우 프로젝트 루트에 `.env` 파일로 배치하세요.
+설정은 환경 변수에서 읽습니다. 로컬에서는 프로젝트 루트의 `.env` 파일에 저장하고, `.gitignore`에 `.env`를 추가하세요. Azure 리소스 생성 방법은 [Azure AI 설정](azure-ai-setup.md)을 참고하세요.
 
-Azure 리소스 설정에 대해서는 [Azure AI Setup](azure-ai-setup.md)를 참조하세요.
+<a id="local-runtime-setup"></a>
 
-## 로컬 런타임 설정
+## 로컬 실행 환경
 
-로컬에서 CLI를 실행하기 전에 가상 환경을 사용하세요. Co-op Translator는 Python 3.10에서 3.12를 지원합니다.
+Python 3.11–3.14를 사용하세요. 가상 환경을 만든 뒤 배포된 패키지를 설치합니다.
 
-일반적인 CLI 사용의 경우, 가상 환경 안에 게시된 패키지를 설치하세요:
+### Windows (PowerShell)
 
-=== "Windows"
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install co-op-translator
+translate --help
+```
 
-    ```powershell
-    python -m venv .venv
-    .venv\Scripts\activate
-    pip install co-op-translator
-    translate --help
-    ```
+### macOS / Linux
 
-=== "macOS / Linux"
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install co-op-translator
+translate --help
+```
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install co-op-translator
-    translate --help
-    ```
+### 저장소 개발
 
-레포지토리 개발의 경우, 대신 프로젝트 루트에서 의존성을 설치하세요:
+개발 환경은 프로젝트 루트에서 설치하세요.
 
 ```bash
 poetry install
 poetry run translate --help
 ```
 
-CLI를 사용할 수 있게 되면, `.env`에 하나의 언어 모델 제공자를 구성하세요.
-
 ## 제공자 선택
 
-도구는 다음 순서로 제공자를 자동 감지합니다:
+제공자를 자동으로 감지하는 순서는 다음과 같습니다.
 
 1. Azure OpenAI
 2. OpenAI
+3. Anthropic
 
-어떤 제공자도 구성되어 있지 않으면, `translate`, `evaluate`, `migrate-links`, 및 `run_translation`은 구성 검사 중에 실패합니다. `co-op-review`와 `run_review`는 결정적 유지보수 검사로 제공자 자격증명을 필요로 하지 않습니다.
+텍스트 번역에는 이 중 하나만 설정하면 됩니다. OpenAI나 Anthropic을 사용한다면 Azure 계정이 필요하지 않습니다.
+
+`translate -l "ko" -md --dry-run`은 자격 증명 없이 작업량을 미리 확인합니다. `migrate-links`, `co-op-review`, `run_review`도 제공자 호출 없이 실행됩니다. 실제 번역에는 제공자 자격 증명이 필요합니다.
+
+## 모델 클라이언트 백엔드
+
+0.22.0부터 Azure OpenAI, OpenAI, Anthropic은 Microsoft Agent Framework를 기본으로 사용합니다. 일반적인 사용에는 별도 백엔드 설정이 필요하지 않습니다.
+
+기존 통합과의 호환성을 위해 Semantic Kernel을 선택할 수 있습니다.
+
+```bash
+CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"
+```
+
+Semantic Kernel을 사용하면 지원 중단 예고 경고가 표시됩니다. 호환성 검증과 피드백에 따라 0.23.0에서 선택적 의존성으로 전환하고 0.24.0에서 통합을 제거할 계획입니다. Anthropic은 `agent-framework`가 필요하며 `semantic-kernel`과 함께 설정하면 오류가 발생합니다. 잘못된 백엔드 값도 번역기 초기화 중 오류로 처리됩니다. 진행 상황은 [이슈 #543](https://github.com/Azure/co-op-translator/issues/543)을 참고하세요.
 
 ## Azure OpenAI
 
-모델이 Azure AI Foundry 또는 Azure OpenAI Service에 배포된 경우 Azure OpenAI를 사용하세요.
+Azure AI Foundry 또는 Azure OpenAI Service에 배포한 모델을 사용할 때 설정합니다.
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -60,35 +73,48 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-연결성 검사는 번역이 시작되기 전에 엔드포인트, API 키, API 버전, 배포 이름을 사용합니다.
+번역 전에 엔드포인트, API 키, API 버전, 배포 이름으로 연결을 확인합니다.
 
 ## OpenAI
 
-OpenAI API를 직접 호출할 때 OpenAI를 사용하세요.
+OpenAI API를 직접 사용할 때 설정합니다.
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
-OPENAI_ORG_ID="..."          # 선택 사항
-OPENAI_BASE_URL="..."        # 선택 사항
 ```
 
-`OPENAI_CHAT_MODEL_ID`는 번역기가 API 호출을 위해 명시적인 채팅 모델을 필요로 하기 때문에 필수입니다.
+`OPENAI_CHAT_MODEL_ID`는 필수입니다. 기본 설정에서는 `OPENAI_ORG_ID`와 `OPENAI_BASE_URL`을 입력하지 마세요. 계정에 조직 ID가 필요하거나 별도의 엔드포인트를 사용할 때만 추가합니다. 선택 항목에 `"..."` 같은 자리표시자를 넣지 마세요.
+
+## Anthropic Claude
+
+Claude API를 직접 사용할 때 [API 키](https://platform.claude.com/docs/en/get-started)를 만들고 지원되는 [모델 ID](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions)를 선택하세요.
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+두 항목 모두 필수입니다. 기본 백엔드가 Agent Framework이므로 `CO_OP_TRANSLATOR_MODEL_CLIENT`를 추가로 설정할 필요는 없습니다.
+
+Anthropic API를 사용할 때는 `ANTHROPIC_BASE_URL`을 입력하지 마세요. 별도의 엔드포인트에 연결할 때만 설정합니다.
+
+요청당 출력 토큰 한도인 `ANTHROPIC_MAX_TOKENS`의 기본값은 `8192`입니다. 사용하는 모델이나 엔드포인트의 출력 한도가 더 낮으면 값을 줄이세요.
 
 ## Azure AI Vision
 
-이미지 번역은 도구가 번역하기 전에 이미지에서 텍스트를 추출할 수 있도록 Azure AI Vision을 필요로 합니다.
+이미지 번역은 Azure AI Vision으로 텍스트를 추출한 다음 선택한 언어 모델로 번역합니다. Anthropic도 추출된 텍스트를 번역할 수 있습니다.
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-이미지 번역이 `-img`, `images=True`로 선택되었거나 콘텐츠 유형 필터가 없을 경우, 도구는 번역 시작 전에 Vision 구성을 검증합니다.
+`-img`, `images=True` 또는 콘텐츠 유형을 지정하지 않은 기본 모드는 Vision 설정을 검사합니다. Markdown만 번역하려면 `-md`를 지정하세요.
 
 ## 여러 자격 증명 세트
 
-구성 계층은 변수에 동일한 인덱스를 접미사로 추가하여 여러 자격 증명 세트를 지원합니다:
+변수 이름 뒤에 같은 번호를 붙여 여러 세트를 구성할 수 있습니다.
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -104,35 +130,36 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_2="<deployment-2>"
 AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 ```
 
-각 세트는 완전해야 합니다. 헬스 체크는 번역이 진행되기 전에 작동하는 세트를 선택합니다.
+각 세트의 필수 항목을 모두 입력하세요. 연결 검사에서 사용할 수 있는 세트를 선택합니다. OpenAI와 Anthropic도 같은 접미사 규칙을 지원합니다. `OPENAI_BASE_URL_1`, `ANTHROPIC_BASE_URL_1` 같은 선택 항목도 같은 번호를 사용해야 합니다.
 
-## 명령 요구 사항
+## 명령별 요구 사항
 
-| Command or API | LLM required | Vision required | Notes |
+| 명령 또는 API | LLM 필요 | Vision 필요 | 설명 |
 | --- | --- | --- | --- |
 | `translate -md` | 예 | 아니요 | Markdown만 번역합니다. |
 | `translate -nb` | 예 | 아니요 | 노트북만 번역합니다. |
 | `translate -img` | 예 | 예 | 이미지만 번역합니다. |
-| `translate` with no type flags | 예 | 예 | 기본 모드는 Markdown, 노트북 및 이미지를 포함합니다. |
-| `evaluate` | 예 | 아니요 | `--fast`가 선택되지 않는 한 LLM 평가를 사용합니다. |
-| `migrate-links` | 예 | 아니요 | 링크 마이그레이션을 수행하지만 여전히 공유 구성 검사를 실행합니다. |
-| `co-op-review` | 아니요 | 아니요 | 결정론적 번역 구조, 최신성, Markdown, 노트북, 로컬 링크 검사를 실행합니다. |
-| `run_translation(markdown=True)` | 예 | 아니요 | 프로그래밍 방식의 Markdown 번역입니다. |
-| `run_translation(images=True)` | 예 | 예 | 프로그래밍 방식의 이미지 번역입니다. |
-| `run_review(...)` | 아니요 | 아니요 | 프로그래밍 방식의 결정론적 리뷰입니다. |
+| 유형 플래그 없는 `translate` | 예 | 예 | Markdown, 노트북, 이미지를 모두 포함합니다. |
+| `translate -l "ko" -md --dry-run` | 아니요 | 아니요 | 번역 호출이나 파일 쓰기 없이 작업량을 확인합니다. |
+| `evaluate` | 예 | 아니요 | `--fast`를 제외하면 LLM 평가를 사용합니다. |
+| `migrate-links` | 아니요 | 아니요 | 제공자 호출 없이 로컬 링크를 마이그레이션합니다. |
+| `co-op-review` | 아니요 | 아니요 | 구조, 원문 변경 여부, Markdown, 노트북, 로컬 링크를 검사합니다. |
+| `run_translation(markdown=True)` | 예 | 아니요 | Python에서 Markdown을 번역합니다. |
+| `run_translation(images=True)` | 예 | 예 | Python에서 이미지를 번역합니다. |
+| `run_review(...)` | 아니요 | 아니요 | Python에서 결정적 검사를 실행합니다. |
 
 ## 출력 디렉터리
 
-기본 텍스트 번역 출력:
+텍스트 번역의 기본 경로:
 
 ```text
 translations/<language-code>/<source-relative-path>
 ```
 
-기본 번역된 이미지 출력:
+이미지 번역의 기본 경로:
 
 ```text
 translated_images/<language-code>/<source-relative-path>
 ```
 
-Python API는 `translations_dir` 및 `image_dir`로 이러한 디렉터리를 재정의할 수 있습니다.
+Python API의 `translations_dir`, `image_dir`로 경로를 바꿀 수 있습니다.

@@ -28,6 +28,8 @@ See Co-op Translator in use in **AI Agents for Beginners**: the same README sect
 
 The CLI updates changed files and skips unchanged translations.
 
+**Editing translations by hand?** When the source changes, the default CLI and Actions workflows retranslate the whole affected file and can overwrite your wording. Review each update before merging. Preserving accepted human edits at Markdown block level requires an optional [Python API translation state provider](./docs/api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
+
 ## Why Co-op Translator?
 
 Translation is not finished when a model returns text. Repository-scale documentation needs to stay complete, navigable, and synchronized after every source change.

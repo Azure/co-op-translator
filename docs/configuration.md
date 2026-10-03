@@ -12,23 +12,25 @@ Use a virtual environment before running the CLI locally. Co-op Translator suppo
 
 For normal CLI usage, install the published package inside a virtual environment:
 
-=== "Windows"
+### Windows (PowerShell)
 
-    ```powershell
-    python -m venv .venv
-    .venv\Scripts\activate
-    pip install co-op-translator
-    translate --help
-    ```
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install co-op-translator
+translate --help
+```
 
-=== "macOS / Linux"
+### macOS / Linux
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install co-op-translator
-    translate --help
-    ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install co-op-translator
+translate --help
+```
+
+### Repository development
 
 For repository development, install dependencies from the project root instead:
 
@@ -47,7 +49,7 @@ The tool auto-detects providers in this order:
 2. OpenAI
 3. Anthropic
 
-If no provider is configured, `translate`, `evaluate`, and `run_translation` fail during configuration checks. `migrate-links`, `co-op-review`, and `run_review` are deterministic maintenance operations and do not require provider credentials.
+Translation requires provider credentials, except for previews such as `translate -l "ko" -md --dry-run`. `migrate-links`, `co-op-review`, and `run_review` are deterministic maintenance operations and do not require provider credentials.
 
 ## Model client backend
 
@@ -82,11 +84,11 @@ Use OpenAI when calling the OpenAI API directly.
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
-OPENAI_ORG_ID="..."          # optional
-OPENAI_BASE_URL="..."        # optional
 ```
 
 `OPENAI_CHAT_MODEL_ID` is required because the translator needs an explicit chat model for API calls.
+
+Leave `OPENAI_ORG_ID` and `OPENAI_BASE_URL` unset for the default setup. Add an organization ID only if your account needs one, or a base URL only when using a custom endpoint. Do not copy placeholder values for optional settings.
 
 ## Anthropic Claude
 
@@ -95,11 +97,11 @@ Use Anthropic when calling the Claude API directly. Create an [Anthropic API key
 ```bash
 ANTHROPIC_API_KEY="..."
 ANTHROPIC_MODEL="claude-..."
-ANTHROPIC_BASE_URL="..."      # optional; omit for the Anthropic API
-ANTHROPIC_MAX_TOKENS="8192"   # optional; output token limit per request
 ```
 
 `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` are required. You do not need to set `CO_OP_TRANSLATOR_MODEL_CLIENT`; Agent Framework is the default backend.
+
+Leave `ANTHROPIC_BASE_URL` unset for the Anthropic API. Set it only when using a custom endpoint.
 
 `ANTHROPIC_MAX_TOKENS` defaults to `8192`, which leaves room for token-dense scripts such as Meitei Mayek. Lower it if your model or Anthropic-compatible endpoint caps output below that.
 

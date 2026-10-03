@@ -6,6 +6,8 @@ repo_name: Azure/co-op-translator
 
 docs_dir: docs
 site_dir: site
+hooks:
+  - hooks/docs_i18n.py
 not_in_nav: |
   i18n/**
 
@@ -44,6 +46,7 @@ extra_css:
 
 extra_javascript:
   - javascripts/tailwind-config.js
+  - javascripts/i18n-pages.js
   - javascripts/i18n-navigation.js
   - https://cdn.tailwindcss.com
 

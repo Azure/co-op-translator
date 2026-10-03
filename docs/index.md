@@ -93,32 +93,32 @@ See Co-op Translator in use in **AI Agents for Beginners**: the same README sect
 
 ## Quick start
 
-These `docs/` pages are the canonical Co-op Translator documentation. Older setup guides have been consolidated here so CLI, API, MCP, CI, and troubleshooting guidance stay in one place.
+Configure one provider, then choose the interface that fits your work. CLI, Python API, and MCP are alternatives; you do not need to complete all three.
 
 <div class="quickstart-grid">
   <a class="quickstart-card" href="configuration/">
-    <span class="quickstart-step">Step 1</span>
+    <span class="quickstart-step">Setup</span>
     <strong>Configure your project</strong>
     <span>Set up providers, credentials, target languages, and output directories.</span>
     <em>Read the guide -></em>
   </a>
 
   <a class="quickstart-card" href="cli/">
-    <span class="quickstart-step">Step 2</span>
+    <span class="quickstart-step">Terminal</span>
     <strong>Translate with CLI</strong>
     <span>Run translation, evaluation, review, and link migration commands.</span>
     <em>Read the guide -></em>
   </a>
 
   <a class="quickstart-card" href="api/">
-    <span class="quickstart-step">Step 3</span>
+    <span class="quickstart-step">Python</span>
     <strong>Automate with the Python API</strong>
     <span>Use Co-op Translator from scripts and automation workflows.</span>
     <em>Read the guide -></em>
   </a>
 
   <a class="quickstart-card" href="mcp/">
-    <span class="quickstart-step">Step 4</span>
+    <span class="quickstart-step">Agent or editor</span>
     <strong>Connect with the MCP Server</strong>
     <span>Expose Co-op Translator tools to agents, editors, and MCP-compatible clients.</span>
     <em>Read the guide -></em>

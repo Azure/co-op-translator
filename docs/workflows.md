@@ -4,6 +4,8 @@ Co-op Translator can be used in three ways: the CLI, the Python API, and the MCP
 
 Use this page when you are deciding where to start.
 
+**If you edit translations by hand:** the default CLI and Actions workflows retranslate changed source files in full, so your wording in those files can be overwritten. Review the diff before accepting an update. For Markdown block-level preservation of accepted edits, use the optional [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
+
 ## Quick Decision
 
 | If you want to... | Use | Start here |
@@ -22,10 +24,12 @@ The CLI is the most direct path when you want Co-op Translator to discover proje
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
+
+This example translates Markdown and notebooks. Add `-img` only after configuring [Azure AI Vision](configuration.md#azure-ai-vision). For a Markdown-only first run, follow [Your first translation](first-translation.md).
 
 Good fits:
 
@@ -75,22 +79,15 @@ asyncio.run(main())
 Run a repository translation from Python:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
 Good fits:

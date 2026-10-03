@@ -4,11 +4,13 @@ Use GitHub Actions when you want a repository to translate changed documentation
 
 Start with the standard `GITHUB_TOKEN` setup, including for organization repositories where policy allows it. See [GitHub App Setup](#github-app-setup) when your organization requires an App identity or you need automatic downstream workflow runs.
 
+**Human edits:** these workflows retranslate changed source files in full and can overwrite wording edited in their translations. Review each PR before merging. Markdown block-level preservation of accepted edits requires a custom integration with the [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
+
 ## Your first README translation PR
 
 Start with one root `README.md` and one target language. This workflow translates Markdown only, so Azure AI Vision is not required.
 
-1. Copy [translate-readme.yml](assets/workflows/translate-readme.yml) to `.github/workflows/translate-readme.yml` in the repository you want to translate, and commit it to that repository's default branch. The template uses the root Action in `Azure/co-op-translator@main`, which installs the CLI from the same source ref. Pin a reviewed commit for reproducible runs. When testing this feature before it is merged, use the fork and branch containing both the Action and `co-op-review --readme-only`.
+1. Copy [translate-readme.yml](assets/workflows/translate-readme.yml) ([view the template on GitHub](https://github.com/Azure/co-op-translator/blob/main/docs/assets/workflows/translate-readme.yml)) to `.github/workflows/translate-readme.yml` in the repository you want to translate, and commit it to that repository's default branch. The template uses the root Action in `Azure/co-op-translator@main`, which installs the CLI from the same source ref. Pin a reviewed commit for reproducible runs.
 2. Open **Actions > Translate README > Run workflow**, choose a language, and leave **Preview only** checked. Review the token estimate in the preview step. Preview does not call model providers, write translations, or create a PR.
 3. Add the secrets for one [text provider](#prerequisites), and enable **Allow GitHub Actions to create and approve pull requests** under **Settings > Actions > General**. The template requests `contents: write` and `pull-requests: write` for its job; you do not need to change the default permissions for every workflow. If organization policy blocks these permissions or this setting, ask an administrator about an approved [GitHub App](#github-app-setup).
 4. Run the workflow again with **Preview only** unchecked. It previews, translates, runs `co-op-review --readme-only`, and creates or updates a translation PR only after translation and review succeed. The workflow summary links to the PR.
@@ -37,7 +39,7 @@ See [Configuration](configuration.md) and [Azure AI Setup](azure-ai-setup.md) fo
 
 ## Standard Setup
 
-Use this setup for most public and private repositories.
+After trying the README workflow, use this setup to translate a repository's Markdown files into several languages. It runs a Markdown review before opening a PR and does not require Azure AI Vision.
 
 ### Step 1: Add Repository Secrets
 
@@ -51,11 +53,10 @@ Open **Settings** > **Actions** > **General**.
 
 Under **Workflow permissions**:
 
-1. Select **Read and write permissions**.
-2. Enable **Allow GitHub Actions to create and approve pull requests**.
-3. Save the setting.
+1. Enable **Allow GitHub Actions to create and approve pull requests**.
+2. Save the setting.
 
-![Workflow permission setting](assets/github-actions/permission-setting.png)
+The job below requests `contents: write` and `pull-requests: write` explicitly. Keep the repository's default workflow permissions unchanged. If organization policy blocks PR creation, ask an administrator about an approved [GitHub App](#github-app-setup).
 
 ### Step 3: Add the Workflow
 
@@ -72,6 +73,8 @@ on:
 jobs:
   co-op-translator:
     runs-on: ubuntu-latest
+    env:
+      TARGET_LANGUAGES: "es fr de"
 
     permissions:
       contents: write
@@ -96,8 +99,6 @@ jobs:
       - name: Run Co-op Translator
         env:
           PYTHONIOENCODING: utf-8
-          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
-          AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_MODEL_NAME: ${{ secrets.AZURE_OPENAI_MODEL_NAME }}
@@ -111,7 +112,21 @@ jobs:
           ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
           ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
         run: |
-          translate -l "es fr de" -y
+          translate -l "$TARGET_LANGUAGES" -md -y
+
+      - name: Review Markdown translations
+        run: |
+          python - <<'PY'
+          import os
+          from co_op_translator.api import run_review
+
+          run_review(
+              language_codes=os.environ["TARGET_LANGUAGES"].split(),
+              markdown=True,
+              notebook=False,
+              output_format="github",
+          )
+          PY
 
       - name: Create Pull Request with translations
         uses: peter-evans/create-pull-request@v5
@@ -121,6 +136,8 @@ jobs:
           title: "Update translations via Co-op Translator"
           body: |
             This PR updates translations for recent changes to the main branch.
+            Markdown structure, freshness, and local links were reviewed.
+            Review translation wording before merging.
 
             Generated by Co-op Translator.
           branch: update-translations
@@ -129,10 +146,13 @@ jobs:
           delete-branch: true
           add-paths: |
             translations/
-            translated_images/
 ```
 
-Change `translate -l "es fr de" -y` to the target languages and content flags your project needs. For large repositories, add a `paths:` filter under `on:` so the workflow only runs when documentation changes.
+Change `TARGET_LANGUAGES` to the languages your project needs. The review uses the Python API to check only Markdown, matching the translation step. A translation or review error stops the job before PR creation. The workflow does not merge the PR automatically. For large repositories, add a `paths:` filter under `on.push` so the workflow only runs when documentation changes.
+
+### Optional: notebooks and images
+
+For notebooks, add `-nb` to the translation command and set `notebook=True` in the review step. For image text, configure the two [Azure AI Vision secrets](#prerequisites), pass them in the translation step's `env`, add `-img` to the command, and add `translated_images/` to the PR step's `add-paths`. Review translated images visually; the deterministic review does not certify image text or linguistic accuracy.
 
 ## GitHub App Setup
 
@@ -168,7 +188,7 @@ Add this step immediately before the existing pull request step. For the README 
           permission-pull-requests: write
 ```
 
-Then change only the existing pull request step's `token` input to `${{ steps.generate_token.outputs.token }}`. Keep its success condition, branch, PR body, and `add-paths` unchanged. The token is scoped to the current repository by default. When adapting the standard setup instead of the README template, omit the `if` above because that workflow has no preview or review step IDs.
+Then change only the existing pull request step's `token` input to `${{ steps.generate_token.outputs.token }}`. Keep its success condition, branch, PR body, and `add-paths` unchanged. The token is scoped to the current repository by default. When adapting the standard setup instead of the README template, omit the `if` above: that workflow uses the default success condition, so token creation and PR creation run only after translation and review succeed.
 
 See the official [create-github-app-token Action](https://github.com/actions/create-github-app-token/tree/v2) for installation and token permissions.
 

@@ -2,11 +2,15 @@
   <p class="home-eyebrow">시작하기</p>
   <h1>Co-op Translator 문서</h1>
   <p class="home-lede">
-    LLM 공급자를 구성하고, 대상 언어를 선택한 다음, CLI, Python API, 또는 MCP 서버에서 Co-op
-    Translator를 사용하여 소스가 변경될 때 프로젝트 내용을 번역하고 검토하세요.
+    Azure OpenAI, OpenAI 또는 Anthropic으로 Markdown과 노트북을 번역하고,
+    원문 변경 여부와 문서 구조, 로컬 링크를 검토하세요. 텍스트 번역에는 Azure가 필수가 아닙니다.
   </p>
-  <a class="home-link" href="workflows/">워크플로우 선택 -></a>
+  <a class="home-link" href="first-translation/">작은 프로젝트로 번역 시작하기 -></a>
 </section>
+
+이미지 안의 텍스트를 번역하려면 Azure AI Vision이 추가로 필요합니다.
+
+[첫 번역 실습](first-translation.md)에서 실제 출력과 변경 내역을 확인하거나, [README 번역 PR](github-actions.md#your-first-readme-translation-pr)부터 만들어 보세요.
 
 ## 언어
 
@@ -85,32 +89,32 @@
 
 ## 빠른 시작
 
-이 `docs/` 페이지들은 Co-op Translator의 공식 문서입니다. 예전의 설치 가이드는 여기로 통합되어 CLI, API, MCP, CI 및 문제해결 안내를 한 곳에서 확인할 수 있습니다.
+제공자 하나를 설정한 다음 작업에 맞는 인터페이스를 선택하세요. CLI, Python API, MCP는 서로 다른 선택지이며 모두 설정할 필요는 없습니다.
 
 <div class="quickstart-grid">
   <a class="quickstart-card" href="configuration/">
-    <span class="quickstart-step">1단계</span>
+    <span class="quickstart-step">설정</span>
     <strong>프로젝트 구성</strong>
     <span>공급자, 자격 증명, 대상 언어, 및 출력 디렉터리를 설정하세요.</span>
     <em>가이드 읽기 -></em>
   </a>
 
   <a class="quickstart-card" href="cli/">
-    <span class="quickstart-step">2단계</span>
+    <span class="quickstart-step">터미널</span>
     <strong>CLI로 번역</strong>
     <span>번역, 평가, 검토 및 링크 마이그레이션 명령을 실행하세요.</span>
     <em>가이드 읽기 -></em>
   </a>
 
   <a class="quickstart-card" href="api/">
-    <span class="quickstart-step">3단계</span>
+    <span class="quickstart-step">Python</span>
     <strong>Python API로 자동화</strong>
     <span>스크립트 및 자동화 워크플로에서 Co-op Translator를 사용하세요.</span>
     <em>가이드 읽기 -></em>
   </a>
 
   <a class="quickstart-card" href="mcp/">
-    <span class="quickstart-step">4단계</span>
+    <span class="quickstart-step">에이전트 또는 편집기</span>
     <strong>MCP 서버와 연결</strong>
     <span>에이전트, 편집자 및 MCP 호환 클라이언트에 Co-op Translator 도구를 노출하세요.</span>
     <em>가이드 읽기 -></em>

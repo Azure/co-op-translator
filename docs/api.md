@@ -198,6 +198,27 @@ run_translation(
 )
 ```
 
+Use explicit source, output, discovery, and context settings for an agent run:
+
+```python
+run_translation(
+    language_codes="ko ja",
+    source="docs",
+    output="docs/i18n",
+    include=["guides/**/*.md"],
+    exclude=["archive/**"],
+    markdown=True,
+    context_file="translation-context.md",
+    dry_run=True,
+    plan_json_path="artifacts/translation-plan.json",
+)
+```
+
+`source` and `output` are aliases for `root_dir` and `translations_dir`.
+The shared path resolver automatically excludes an output directory nested
+inside the source. A context string or UTF-8 context file is inserted after
+mandatory syntax-preservation rules and before source content.
+
 Translate text files concurrently within each translation stage:
 
 ```python
@@ -239,7 +260,17 @@ run_translation(
 
 Events use the versioned schema `co-op.translation.event.v1`. Integrations should
 depend on stable fields such as `type` and `stage_key`, not on human-facing
-console text or `stage_label`.
+console text or `stage_label`. Every event includes `schema`, `type`,
+`run_id`, and `timestamp`; type-specific fields include file and language,
+retry block and attempt, stage progress, estimates, and final translated and
+failed counts. Events do not contain provider credentials, prompts, or
+translated document contents.
+
+When `plan_json_path` is set, the plan uses
+`co-op.translation.plan.v1`. It records resolved paths, include and exclude
+patterns, languages, new/outdated/current file-language pairs, estimates, and
+whether provider access is required. A multi-root plan contains a `plans`
+array of per-root records.
 
 Translate multiple content roots in one call:
 
@@ -286,8 +317,10 @@ If none of `markdown`, `notebook`, or `images` are set, the API translates all s
 
 ### Preserve accepted human edits with a translation state provider
 
-By default, Co-op Translator keeps its existing file-level behavior: when a
-Markdown source is stale, the entire translated file is regenerated. Hosted
+By default, Co-op Translator resumes at file granularity. Completed files with
+matching source hashes are skipped, and failed files are retried on the next
+run. When a Markdown source is stale, the entire translated file is regenerated.
+Persisted block-level resume state is not currently available. Hosted
 integrations can optionally pass a `TranslationStateProvider` to preserve human
 edits in source blocks that have not changed.
 
@@ -369,9 +402,10 @@ translation. Notebook and image behavior is unchanged. Passing `update=True`
 still requests full regeneration.
 
 If one or more files cannot be translated, `run_translation` raises a
-`RuntimeError` after the project workflow finishes instead of reporting a
-successful run with missing output. Integrations should treat this as a failed
-job and retain the previous accepted translation state.
+`PartialTranslationError` after the project workflow finishes instead of
+reporting a successful run with missing output. Its `translated`, `failed`,
+and `errors` fields describe the partial result. Integrations should retain the
+previous accepted translation state for failed files.
 
 ## Review Translated Output
 
@@ -437,6 +471,14 @@ async def main() -> None:
 
 asyncio.run(main())
 ```
+
+Markdown translation protects fenced, indented, and inline code, HTTP(S) URLs,
+GitHub fragment destinations, Markdown link and image destinations, and
+`href`/`src` HTML attributes before sending text to the model. Visible link
+labels, HTML text, and surrounding prose remain translatable. Put environment
+variable names, shell commands, file paths, and programming identifiers in code
+spans, or provide explicit preservation guidance through `context` or
+`context_file`.
 
 Translate and rewrite Markdown links:
 
@@ -646,6 +688,7 @@ The `policy` argument may be a dictionary with these fields:
 | --- | --- | --- | --- |
 | `language_codes` | `str` | Required | Space-separated target language codes, such as `"ko ja fr"`, or `"all"`. Alias codes are normalized to canonical BCP 47 values. |
 | `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` are supplied. |
+| `source` | `str \| Path \| None` | `None` | Alias for `root_dir` for a single translation target. |
 | `update` | `bool` | `False` | Delete and recreate existing translations for the selected languages. |
 | `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
 | `markdown` | `bool` | `False` | Include Markdown translation. |
@@ -655,6 +698,7 @@ The `policy` argument may be a dictionary with these fields:
 | `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
 | `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
 | `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
+| `output` | `str \| Path \| None` | `None` | Alias for `translations_dir`. |
 | `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths resolve against each root. |
 | `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
 | `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
@@ -662,6 +706,13 @@ The `policy` argument may be a dictionary with these fields:
 | `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
 | `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
 | `concurrency` | `int` | `1` | Maximum simultaneous text file/language translations within each stage. Must be a positive integer; does not change image concurrency. |
+| `include` | `Iterable[str] \| None` | `None` | Include source paths matching any supplied glob. |
+| `exclude` | `Iterable[str] \| None` | `None` | Exclude source paths matching any supplied glob. The resolved output tree is always excluded when nested under the source. |
+| `context` | `str \| None` | `None` | Terminology and style guidance applied after mandatory syntax rules. |
+| `context_file` | `str \| Path \| None` | `None` | UTF-8 file containing translation context. When `context` is also set, the file content is appended after it. |
+| `progress_callback` | `Callable \| None` | `None` | Receives `co-op.translation.event.v1` objects. |
+| `json_events_path` | `str \| Path \| None` | `None` | Writes progress events as NDJSON. Disabled during a dry run. |
+| `plan_json_path` | `str \| Path \| None` | `None` | Writes a `co-op.translation.plan.v1` plan, including during a dry run. |
 | `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Optional accepted-baseline and candidate persistence adapter for incremental Markdown updates. Omitting it preserves existing full-file behavior. |
 
 ## Review Parameters
@@ -676,16 +727,26 @@ The `policy` argument may be a dictionary with these fields:
 | `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
 | `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images are checked from Markdown. |
 | `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
+| `include` | `Iterable[str] \| None` | `None` | Include source paths matching any supplied glob. |
+| `exclude` | `Iterable[str] \| None` | `None` | Exclude source paths matching any supplied glob. The nested output tree is automatically excluded. |
 | `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
 | `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
 | `changed_from` | `str \| None` | `None` | Git ref used to limit review to changed source files. |
 | `readme_only` | `bool` | `False` | Review only `README.md` under each source root. A missing source README raises `ValueError`. |
-| `output_format` | `str` | `"text"` | Review output format. Supported values are `"text"` and `"github"`. |
+| `output_format` | `str` | `"text"` | Review output format. Supported values are `"text"`, `"github"`, and `"json"`. |
 | `fail_on_warnings` | `bool` | `False` | Treat warnings as failures in addition to errors. |
 | `debug` | `bool` | `False` | Enable debug logging. |
 | `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
 
 If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+
+JSON review output uses `co-op.translation.verification.v1`. It reports
+resolved source files and languages, status and issue counts, booleans for
+source freshness, Markdown structure, apparent completeness, protected
+literals, and links, followed by structured issue records. Missing-block,
+duplicate-block, and suspicious-untranslated-prose detection uses deterministic
+heuristics. These checks flag likely damage or omissions; they do not measure
+linguistic correctness or style quality.
 
 ## Configuration Requirements
 

@@ -9,7 +9,6 @@ from PIL import Image
 
 from co_op_translator.utils.common.file_utils import (
     delete_translated_images_by_language_code,
-    filter_files,
     generate_translated_filename,
     get_filename_and_extension,
 )
@@ -141,7 +140,7 @@ class ProjectImageTranslationMixin:
                     f"Deleted all translated images for language: {language_code}"
                 )
 
-        image_files = filter_files(self.root_dir, self.excluded_dirs)
+        image_files = self._filter_source_files()
         tasks = []
         task_info = []
 

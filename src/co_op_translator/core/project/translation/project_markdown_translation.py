@@ -14,14 +14,12 @@ from co_op_translator.core.project.translation.incremental_markdown import (
 )
 from co_op_translator.core.project.translation.memory import TranslationUpdate
 from co_op_translator.utils.common.file_utils import (
-    filter_files,
     handle_empty_document,
     read_input_file,
 )
 from co_op_translator.utils.common.metadata_utils import (
     save_text_failure_metadata_for_source,
     save_text_metadata_for_source,
-    should_retry_text_failure_for_source,
 )
 from co_op_translator.utils.markdown.path_rewriter import (
     MarkdownPathRewritePolicy,
@@ -380,7 +378,7 @@ class ProjectMarkdownTranslationMixin:
         modified_count = 0
         errors = []
 
-        markdown_files = filter_files(self.root_dir, self.excluded_dirs)
+        markdown_files = self._filter_source_files()
         tasks = []
         task_info = []
 
@@ -395,18 +393,6 @@ class ProjectMarkdownTranslationMixin:
                 translated_md_path = (
                     self._get_language_root(language_code) / relative_path
                 )
-
-                if not update and not should_retry_text_failure_for_source(
-                    self._get_language_root(language_code),
-                    md_file_path,
-                    language_code,
-                ):
-                    logger.info(
-                        "Skipping previously failed markdown file until source or "
-                        "translator changes: %s",
-                        md_file_path,
-                    )
-                    continue
 
                 if not update and translated_md_path.exists():
                     logger.info(

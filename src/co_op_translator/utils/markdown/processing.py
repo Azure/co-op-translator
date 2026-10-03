@@ -7,6 +7,10 @@ import tiktoken
 from markdown_it import MarkdownIt
 
 from co_op_translator.config.constants import LINE_BREAK_MARGIN
+from co_op_translator.utils.markdown.spans import (
+    replace_markdown_code,
+    restore_markdown_code,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -287,7 +291,7 @@ def _parse_markdown_text_and_code_parts(content: str) -> list[tuple[str, str]]:
 
     code_spans = []  # (start_char, end_char)
     for tok in tokens:
-        if tok.type == "fence" and tok.map:
+        if tok.type in {"fence", "code_block"} and tok.map:
             start_line, end_line = tok.map  # end is exclusive
             start_char = offsets[start_line]
             end_char = offsets[end_line]
@@ -373,8 +377,7 @@ def count_links_in_markdown(content: str) -> int:
 
 def replace_code_blocks(document: str):
     """
-    Replace code blocks in the document with placeholders.
-    Inline code is left as-is for the LLM to handle naturally.
+    Replace fenced blocks, indented blocks, and inline code with placeholders.
 
     Args:
         document (str): The markdown document to process.
@@ -384,22 +387,7 @@ def replace_code_blocks(document: str):
             - The document with placeholders.
             - A dictionary mapping placeholders to their original code.
     """
-    placeholder_map = {}
-
-    parts = _parse_markdown_text_and_code_parts(document)
-
-    output_segments = []
-    code_index = 0
-    for segment, seg_type in parts:
-        if seg_type == "code":
-            placeholder = f"@@CODE_BLOCK_{code_index}@@"
-            output_segments.append(placeholder)
-            placeholder_map[placeholder] = segment
-            code_index += 1
-        else:
-            output_segments.append(segment)
-
-    return "".join(output_segments), placeholder_map
+    return replace_markdown_code(document)
 
 
 def restore_code_blocks(translated_document: str, placeholder_map: dict) -> str:
@@ -413,7 +401,4 @@ def restore_code_blocks(translated_document: str, placeholder_map: dict) -> str:
     Returns:
         str: The translated document with the original code blocks restored.
     """
-    for placeholder, code in placeholder_map.items():
-        translated_document = translated_document.replace(placeholder, code)
-
-    return translated_document
+    return restore_markdown_code(translated_document, placeholder_map)

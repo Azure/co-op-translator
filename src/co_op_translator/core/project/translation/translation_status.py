@@ -6,7 +6,6 @@ from typing import List
 
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.utils.common.file_utils import (
-    filter_files,
     generate_translated_filename,
     get_filename_and_extension,
 )
@@ -155,7 +154,7 @@ class TranslationStatusMixin:
         outdated_images = []
 
         # Discover original image files
-        image_files = filter_files(self.root_dir, self.excluded_dirs)
+        image_files = self._filter_source_files()
         original_images = [
             f.resolve()
             for f in image_files

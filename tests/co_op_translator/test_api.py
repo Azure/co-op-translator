@@ -6,6 +6,7 @@ from PIL import Image
 
 from co_op_translator.api import translation as api
 from co_op_translator.glossary import get_glossary_terms, set_glossary_terms
+from co_op_translator.utils.common.exit_codes import PartialTranslationError
 
 
 @pytest.mark.asyncio
@@ -173,6 +174,59 @@ async def test_run_translation_with_groups(tmp_path):
         for call in project_translator_class.call_args_list
     }
     assert called == {(str(root1), str(out1)), (str(root2), str(out2))}
+
+
+def test_run_translation_aggregates_completed_groups_before_partial_failure(
+    monkeypatch, tmp_path
+):
+    root1 = tmp_path / "content1"
+    root2 = tmp_path / "content2"
+    root1.mkdir()
+    root2.mkdir()
+
+    monkeypatch.setattr(api.Config, "check_configuration", MagicMock())
+    monkeypatch.setattr(api.LLMConfig, "validate_connectivity", MagicMock())
+    monkeypatch.setattr(api, "setup_logging", MagicMock(return_value=None))
+    monkeypatch.setattr(
+        api,
+        "estimate_translation_tokens",
+        MagicMock(return_value={"total": 0}),
+    )
+    monkeypatch.setattr(
+        api,
+        "estimate_translation_words",
+        MagicMock(return_value={"total": 0}),
+    )
+
+    estimators = [MagicMock(), MagicMock()]
+    first_run = MagicMock()
+    first_run.translate_project.return_value = (3, [])
+    second_run = MagicMock()
+    second_run.translate_project.side_effect = PartialTranslationError(
+        2, ["guide.md failed"], failed=1
+    )
+    monkeypatch.setattr(
+        api,
+        "ProjectTranslator",
+        MagicMock(side_effect=[*estimators, first_run, second_run]),
+    )
+    events = []
+
+    with pytest.raises(PartialTranslationError) as error_info:
+        api.run_translation(
+            language_codes="ko",
+            markdown=True,
+            groups=[(str(root1), None), (str(root2), None)],
+            progress_callback=events.append,
+        )
+
+    assert error_info.value.translated == 5
+    assert error_info.value.failed == 1
+    final_event = events[-1].to_dict()
+    assert final_event["type"] == "run_completed"
+    assert final_event["translated"] == 5
+    assert final_event["failed"] == 1
+    assert final_event["metadata"]["partial"] is True
 
 
 @pytest.mark.asyncio
@@ -357,6 +411,8 @@ def test_run_translation_progress_callback_receives_structured_events(
     assert payloads[0]["command"] == "run_translation"
     assert payloads[0]["languages"] == ["ko"]
     assert payloads[event_types.index("estimate_ready")]["total_tokens"] == 10
+    assert payloads[-1]["translated"] == 0
+    assert payloads[-1]["failed"] == 0
 
 
 @pytest.mark.asyncio
@@ -603,6 +659,40 @@ async def test_translate_markdown_content_uses_content_only_translator(monkeypat
             },
         )
     ]
+
+
+@pytest.mark.asyncio
+async def test_content_translation_factories_receive_context(monkeypatch, tmp_path):
+    class FakeMarkdownTranslator:
+        async def translate_markdown(self, document, language_code, **kwargs):
+            return document
+
+    class FakeNotebookTranslator:
+        async def translate_notebook(self, notebook, language_code, **kwargs):
+            return notebook
+
+    markdown_create = MagicMock(return_value=FakeMarkdownTranslator())
+    notebook_create = MagicMock(return_value=FakeNotebookTranslator())
+    monkeypatch.setattr(api.MarkdownTranslator, "create", markdown_create)
+    monkeypatch.setattr(api.JupyterNotebookTranslator, "create", notebook_create)
+    context_file = tmp_path / "translation-context.md"
+    context_file.write_text("Keep Co-op Translator unchanged.", encoding="utf-8")
+
+    await api.translate_markdown_content(
+        "# Hello",
+        "ko",
+        {"context": "Use formal Korean.", "context_file": context_file},
+    )
+    await api.translate_notebook_content(
+        '{"cells": [], "metadata": {}, "nbformat": 4, "nbformat_minor": 5}',
+        "ko",
+        {"context_file": context_file},
+    )
+
+    markdown_create.assert_called_once_with(
+        context="Use formal Korean.\n\nKeep Co-op Translator unchanged."
+    )
+    notebook_create.assert_called_once_with(context="Keep Co-op Translator unchanged.")
 
 
 @pytest.mark.asyncio

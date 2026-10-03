@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
 from urllib.parse import unquote
 
 from co_op_translator.review.models import ReviewIssue, ReviewSeverity
 from co_op_translator.review.targets import ReviewTarget
-
-MARKDOWN_LINK_PATTERN = re.compile(r"(!?)\[[^\]]*]\(([^)]+)\)")
+from co_op_translator.utils.markdown.link_placeholders import (
+    markdown_link_destinations,
+)
 
 
 def _is_external_link(target: str) -> bool:
@@ -48,12 +48,13 @@ def check_local_links(
             if not translated_path.exists():
                 continue
             content = translated_path.read_text(encoding="utf-8")
-            for is_image, link_target in MARKDOWN_LINK_PATTERN.findall(content):
+            for link in markdown_link_destinations(content):
+                link_target = link.destination
                 if _is_external_link(link_target) or _target_exists(
                     translated_path, link_target
                 ):
                     continue
-                check_name = "image-link" if is_image else "local-link"
+                check_name = "image-link" if link.kind == "image" else "local-link"
                 issues.append(
                     ReviewIssue(
                         check=check_name,

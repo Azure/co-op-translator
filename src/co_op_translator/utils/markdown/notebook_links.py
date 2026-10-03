@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import os
-import re
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -10,6 +9,10 @@ from co_op_translator.config.constants import SUPPORTED_NOTEBOOK_EXTENSIONS
 from co_op_translator.utils.common.file_utils import (
     get_filename_and_extension,
     map_original_to_translated,
+)
+from co_op_translator.utils.markdown.link_placeholders import (
+    MarkdownLinkDestination,
+    rewrite_markdown_link_destinations,
 )
 
 logger = logging.getLogger(__name__)
@@ -20,6 +23,7 @@ def migrate_notebook_links(
     md_file_path: Path,
     language_code: str,
     root_dir: Path,
+    translations_dir: Path | None = None,
 ) -> str:
     """
     Migration-only notebook link updater.
@@ -31,10 +35,12 @@ def migrate_notebook_links(
     - Preserves query strings and fragments.
     - Skips web/email links.
     """
-    link_pattern = r"\[(.*?)\]\((.*?)\)"
-    matches = re.findall(link_pattern, markdown_string)
+    translations_dir = (translations_dir or root_dir / "translations").resolve()
 
-    for alt_text, link in matches:
+    def _rewrite(link_info: MarkdownLinkDestination) -> str | None:
+        if link_info.kind not in {"link", "reference"}:
+            return None
+        link = link_info.destination
         parsed = urlparse(link)
         # Skip web/email links
         if (
@@ -43,13 +49,13 @@ def migrate_notebook_links(
             or link.endswith((".com", ".org", ".net"))
         ):
             logger.debug(f"Skipping web/email link: {link}")
-            continue
+            return None
 
         path = parsed.path
         _, ext = get_filename_and_extension(path)
         if ext.lower() not in SUPPORTED_NOTEBOOK_EXTENSIONS:
             logger.debug(f"Skipping non-notebook link: {link}")
-            continue
+            return None
 
         try:
             # Resolve absolute original linked notebook path
@@ -62,15 +68,14 @@ def migrate_notebook_links(
                     _ = original_linked_abs.relative_to(root_dir)
                 except ValueError:
                     translated_md_dir = (
-                        root_dir
-                        / "translations"
+                        translations_dir
                         / language_code
                         / md_file_path.relative_to(root_dir).parent
                     )
                     alt_abs = (translated_md_dir / path).resolve()
                     try:
                         rel_to_lang = alt_abs.relative_to(
-                            (root_dir / "translations") / language_code
+                            translations_dir / language_code
                         )
                         original_linked_abs = (root_dir / rel_to_lang).resolve()
                         _ = original_linked_abs.relative_to(root_dir)
@@ -84,27 +89,27 @@ def migrate_notebook_links(
                             logger.debug(
                                 f"Link outside root after alt resolution: {link}"
                             )
-                            continue
+                            return None
 
             # Map to translated counterpart if it exists
             candidate_translated = map_original_to_translated(
                 original_abs=original_linked_abs,
                 language_code=language_code,
                 root_dir=root_dir,
+                translations_dir=translations_dir,
             )
             if not candidate_translated:
                 logger.debug(
                     f"No translated notebook found for: {original_linked_abs} (lang={language_code})"
                 )
                 # No translated notebook -> leave link unchanged
-                continue
+                return None
 
             if not candidate_translated.exists():
                 # No translated notebook -> leave link unchanged
-                continue
+                return None
 
             # Translated markdown directory (for relative link computation)
-            translations_dir = root_dir / "translations"
             translated_md_dir = (
                 translations_dir
                 / language_code
@@ -122,19 +127,17 @@ def migrate_notebook_links(
             if parsed.fragment:
                 updated_link += f"#{parsed.fragment}"
 
-            old_markup = f"[{alt_text}]({link})"
-            new_markup = f"[{alt_text}]({updated_link})"
-            if old_markup == new_markup:
-                logger.debug(f"Already correct, no change: {old_markup}")
-            else:
-                markdown_string = markdown_string.replace(old_markup, new_markup)
-                logger.debug(f"Updated notebook link: {old_markup} -> {new_markup}")
+            if link == updated_link:
+                logger.debug(f"Already correct, no change: {link}")
+                return None
+            logger.debug(f"Updated notebook link: {link} -> {updated_link}")
+            return updated_link
 
         except Exception as e:
             logger.error(f"Error processing migration notebook link {link}: {e}")
-            continue
+            return None
 
-    return markdown_string
+    return rewrite_markdown_link_destinations(markdown_string, _rewrite)
 
 
 def update_notebook_links(
@@ -164,10 +167,11 @@ def update_notebook_links(
     Returns:
         str: Updated markdown content with modified notebook links
     """
-    link_pattern = r"\[(.*?)\]\((.*?)\)"
-    matches = re.findall(link_pattern, markdown_string)
 
-    for alt_text, link in matches:
+    def _rewrite(link_info: MarkdownLinkDestination) -> str | None:
+        if link_info.kind not in {"link", "reference"}:
+            return None
+        link = link_info.destination
         parsed = urlparse(link)
         # Skip web/email links
         if (
@@ -176,13 +180,13 @@ def update_notebook_links(
             or link.endswith((".com", ".org", ".net"))
         ):
             logger.debug(f"Skipped {link} as it is an email or web URL")
-            continue
+            return None
 
         path = parsed.path
         _, ext = get_filename_and_extension(path)
         if ext.lower() not in SUPPORTED_NOTEBOOK_EXTENSIONS:
             # Only handle notebook links here
-            continue
+            return None
 
         try:
             # Determine directory of the translated markdown (target doc location)
@@ -221,7 +225,7 @@ def update_notebook_links(
                             logger.debug(
                                 f"Link outside root after alt resolution: {link}"
                             )
-                            continue
+                            return None
 
             # Compute the candidate translated notebook path
             original_rel_from_root = original_linked_abs.relative_to(root_dir)
@@ -250,13 +254,11 @@ def update_notebook_links(
             if parsed.fragment:
                 updated_link += f"#{parsed.fragment}"
 
-            old_markup = f"[{alt_text}]({link})"
-            new_markup = f"[{alt_text}]({updated_link})"
-            markdown_string = markdown_string.replace(old_markup, new_markup)
-            logger.debug(f"Updated notebook link: {new_markup}")
+            logger.debug(f"Updated notebook link: {link} -> {updated_link}")
+            return updated_link
 
         except Exception as e:
             logger.error(f"Error processing notebook link {link}: {e}")
-            continue
+            return None
 
-    return markdown_string
+    return rewrite_markdown_link_destinations(markdown_string, _rewrite)

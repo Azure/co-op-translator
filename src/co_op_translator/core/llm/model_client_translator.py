@@ -27,12 +27,14 @@ class ModelClientMarkdownTranslator(MarkdownTranslator):
         image_dir: Path | None = None,
         lang_subdir: Path | None = None,
         model_client: TranslationModelClient | None = None,
+        context: str | None = None,
     ):
         super().__init__(
             root_dir,
             translations_dir=translations_dir,
             image_dir=image_dir,
             lang_subdir=lang_subdir,
+            context=context,
         )
         if provider is None and model_client is None:
             raise ValueError("A provider or injected model client is required.")

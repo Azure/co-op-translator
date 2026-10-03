@@ -433,6 +433,7 @@ class ProgressTask:
             stage_label=self.description,
             language=language,
             current_path=str(current_path),
+            file=str(current_path),
         )
 
     def file_completed(
@@ -446,6 +447,7 @@ class ProgressTask:
             stage_label=self.description,
             language=language,
             current_path=str(current_path),
+            file=str(current_path),
         )
 
     def file_failed(
@@ -460,6 +462,7 @@ class ProgressTask:
             stage_label=self.description,
             language=language,
             current_path=str(current_path),
+            file=str(current_path),
             message=message,
             level="error",
         )

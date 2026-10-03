@@ -37,7 +37,11 @@ def _read_language_prompt_template(language_code: str) -> str:
 
 
 def generate_prompt_template(
-    language_code: str, language_name: str, document_chunk: str, is_rtl: bool
+    language_code: str,
+    language_name: str,
+    document_chunk: str,
+    is_rtl: bool,
+    context: str | None = None,
 ) -> str:
     """
     Generate a safe and stable translation prompt that enforces strict
@@ -124,6 +128,14 @@ STRICT RULES (NO EXCEPTIONS):
     language_template = _read_language_prompt_template(language_code)
     if language_template:
         prompt += f"\n{language_template}\n"
+
+    if context and context.strip():
+        prompt += (
+            "\nADDITIONAL TRANSLATION CONTEXT\n"
+            "Apply the following terminology and style guidance only when it does "
+            "not conflict with the strict preservation rules above.\n\n"
+            f"{context.strip()}\n"
+        )
 
     # Explicit delimiter between system rules and user content
     prompt += SPLIT_DELIMITER

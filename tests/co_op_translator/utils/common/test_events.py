@@ -33,6 +33,43 @@ def test_translation_event_serializes_stable_contract_fields():
     assert payload["progress"] == 30
 
 
+def test_translation_event_serializes_agent_progress_fields_and_legacy_path():
+    event = TranslationEvent(
+        type="block_retry",
+        run_id="run-2",
+        language="ko",
+        current_path="docs/guide.md",
+        file="docs/guide.md",
+        block=18,
+        attempt=2,
+    )
+
+    payload = event.to_dict()
+
+    assert payload["current_path"] == "docs/guide.md"
+    assert payload["file"] == "docs/guide.md"
+    assert payload["block"] == 18
+    assert payload["attempt"] == 2
+    assert not {
+        "source",
+        "prompt",
+        "credentials",
+        "endpoint",
+        "translated_content",
+    }.intersection(payload)
+
+
+def test_run_completed_event_contains_counts():
+    event = TranslationEvent(
+        type="run_completed", run_id="run-3", translated=10, failed=1
+    )
+
+    payload = event.to_dict()
+
+    assert payload["translated"] == 10
+    assert payload["failed"] == 1
+
+
 def test_stage_key_prefers_stable_mapping_over_label_slug():
     assert (
         stage_key_for_label("Retranslating outdated markdown files")

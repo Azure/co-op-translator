@@ -1,9 +1,25 @@
 from __future__ import annotations
 
+import fnmatch
 from pathlib import Path
 
 
-def filter_files(directory: str | Path, excluded_dirs, extension: str = None) -> list:
+def _matches_pattern(relative_path: Path, pattern: str) -> bool:
+    normalized = relative_path.as_posix()
+    pattern = pattern.replace("\\", "/").lstrip("./")
+    return fnmatch.fnmatchcase(normalized, pattern) or (
+        pattern.startswith("**/") and fnmatch.fnmatchcase(normalized, pattern[3:])
+    )
+
+
+def filter_files(
+    directory: str | Path,
+    excluded_dirs,
+    extension: str = None,
+    *,
+    include_patterns=(),
+    exclude_patterns=(),
+) -> list:
     """
     Filter and return only the files in the given directory, excluding specified directories.
     Optionally filter by file extension.
@@ -38,6 +54,16 @@ def filter_files(directory: str | Path, excluded_dirs, extension: str = None) ->
         if not path.is_file():
             continue
         if extension is not None and path.suffix.lower() != extension.lower():
+            continue
+
+        relative_path = path.relative_to(directory)
+        if include_patterns and not any(
+            _matches_pattern(relative_path, pattern) for pattern in include_patterns
+        ):
+            continue
+        if any(
+            _matches_pattern(relative_path, pattern) for pattern in exclude_patterns
+        ):
             continue
 
         # Exclude by absolute path ancestry

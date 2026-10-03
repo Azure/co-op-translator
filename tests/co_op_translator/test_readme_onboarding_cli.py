@@ -74,7 +74,7 @@ def test_readme_cli_rejects_missing_source_before_provider_checks(
 
     result = CliRunner().invoke(translate_command, args)
 
-    assert result.exit_code == 1
+    assert result.exit_code == 3
     assert "README.md not found" in result.output
     config_check.assert_not_called()
     assert not (tmp_path / "translations").exists()

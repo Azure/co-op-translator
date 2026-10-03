@@ -49,6 +49,14 @@ from co_op_translator.utils.common.metadata_utils import (
 from co_op_translator.utils.common.progress import get_progress_reporter
 from co_op_translator.utils.common.token_estimation import estimate_translation_tokens
 from co_op_translator.utils.common.word_estimation import estimate_translation_words
+from co_op_translator.utils.common.context import resolve_translation_context
+from co_op_translator.utils.common.exit_codes import PartialTranslationError
+from co_op_translator.utils.common.files.project_paths import ProjectPathConfig
+from co_op_translator.utils.common.planning import (
+    PLAN_SCHEMA,
+    build_translation_plan,
+    write_translation_plan,
+)
 from co_op_translator.utils.markdown.path_rewriter import (
     MarkdownPathRewritePolicy,
     rewrite_markdown_paths as rewrite_markdown_paths_for_project,
@@ -65,6 +73,8 @@ class MarkdownTranslationOptions:
     """Options for content-only markdown translation."""
 
     source_path: str | Path | None = None
+    context: str | None = None
+    context_file: str | Path | None = None
 
 
 @dataclass(frozen=True)
@@ -80,6 +90,8 @@ class NotebookTranslationOptions:
     """Options for content-only notebook translation."""
 
     source_path: str | Path | None = None
+    context: str | None = None
+    context_file: str | Path | None = None
 
 
 def _coerce_markdown_translation_options(
@@ -120,7 +132,15 @@ async def translate_markdown_content(
     """Translate markdown content without project path rewriting or file I/O."""
 
     resolved_options = _coerce_markdown_translation_options(options)
-    translator = MarkdownTranslator.create()
+    context = resolve_translation_context(
+        resolved_options.context,
+        resolved_options.context_file,
+    )
+    translator = (
+        MarkdownTranslator.create(context=context)
+        if context is not None
+        else MarkdownTranslator.create()
+    )
     return await translator.translate_markdown(
         document,
         language_code,
@@ -136,7 +156,15 @@ async def translate_notebook_content(
     """Translate notebook markdown cells without project path rewriting or file I/O."""
 
     resolved_options = _coerce_notebook_translation_options(options)
-    translator = JupyterNotebookTranslator.create()
+    context = resolve_translation_context(
+        resolved_options.context,
+        resolved_options.context_file,
+    )
+    translator = (
+        JupyterNotebookTranslator.create(context=context)
+        if context is not None
+        else JupyterNotebookTranslator.create()
+    )
     return await translator.translate_notebook(
         notebook,
         language_code,
@@ -282,7 +310,12 @@ def _run_translation_impl(
     dry_run: bool = False,
     translation_state_provider=None,
     concurrency: int = 1,
-) -> None:
+    include: Iterable[str] | None = None,
+    exclude: Iterable[str] | None = None,
+    context: str | None = None,
+    context_file: str | Path | None = None,
+    plan_json_path: str | Path | None = None,
+) -> tuple[int, int]:
     """Implementation for the programmatic translation entrypoint.
 
     Set ``readme_only`` to translate only the root README while keeping
@@ -290,6 +323,7 @@ def _run_translation_impl(
     """
     configure_safe_console_output()
     reporter = get_progress_reporter()
+    translation_context = resolve_translation_context(context, context_file)
 
     def _split_lang_placeholder(path: str) -> tuple[str, str | None]:
         placeholder = "<lang>"
@@ -322,7 +356,10 @@ def _run_translation_impl(
         dry_run: bool,
         output_prepared: bool = False,
         translation_state_provider=None,
-    ) -> None:
+        include_patterns: Iterable[str] | None = None,
+        exclude_patterns: Iterable[str] | None = None,
+        context: str | None = None,
+    ) -> tuple[int, int]:
         translation_types = list(
             resolve_translation_types(
                 markdown=markdown,
@@ -345,11 +382,13 @@ def _run_translation_impl(
                     "See the .env.template file for required variables."
                 )
 
-        root_path = Path(root_dir).resolve()
-        if not root_path.exists():
-            raise ValueError(f"Root directory does not exist: {root_dir}")
-        if not root_path.is_dir():
-            raise ValueError(f"Root path is not a directory: {root_dir}")
+        path_config = ProjectPathConfig.resolve(
+            source=root_dir,
+            output=translations_dir,
+            include=include_patterns,
+            exclude=exclude_patterns,
+        )
+        root_path = path_config.source_root
 
         if not output_prepared:
             log_file_path = setup_logging(
@@ -418,16 +457,7 @@ def _run_translation_impl(
                 )
 
         try:
-            effective_translations_dir = (
-                (root_path / translations_dir).resolve()
-                if translations_dir is not None
-                and not Path(translations_dir).is_absolute()
-                else (
-                    Path(translations_dir).resolve()
-                    if translations_dir is not None
-                    else (root_path / "translations")
-                )
-            )
+            effective_translations_dir = path_config.output_root
             effective_image_dir = (
                 (root_path / image_dir).resolve()
                 if image_dir is not None and not Path(image_dir).is_absolute()
@@ -514,21 +544,26 @@ def _run_translation_impl(
 
         if dry_run:
             reporter.success("Dry run complete: no changes made.")
-            return
+            return 0, 0
 
         if request.mode == TranslationMode.README:
+            readme_kwargs = {
+                "translations_dir": translations_dir,
+                "image_dir": image_dir,
+                "add_disclaimer": add_disclaimer,
+                "lang_subdir": lang_subdir,
+                "concurrency": concurrency,
+            }
+            if context is not None:
+                readme_kwargs["context"] = context
             translator = ReadmeTranslator(
                 language_codes,
                 root_dir,
-                translations_dir=translations_dir,
-                image_dir=image_dir,
-                add_disclaimer=add_disclaimer,
-                lang_subdir=lang_subdir,
-                concurrency=concurrency,
+                **readme_kwargs,
             )
-            translator.translate(update=update)
+            results = translator.translate(update=update)
             logger.info(f"README translation completed for languages: {language_codes}")
-            return
+            return sum(not result.skipped for result in results), 0
 
         translator_kwargs = {
             "translation_types": translation_types,
@@ -538,6 +573,12 @@ def _run_translation_impl(
             "lang_subdir": lang_subdir,
             "concurrency": concurrency,
         }
+        if include_patterns:
+            translator_kwargs["include_patterns"] = include_patterns
+        if exclude_patterns:
+            translator_kwargs["exclude_patterns"] = exclude_patterns
+        if context is not None:
+            translator_kwargs["context"] = context
         if translation_state_provider is not None:
             translator_kwargs["translation_state_provider"] = translation_state_provider
 
@@ -547,11 +588,15 @@ def _run_translation_impl(
             **translator_kwargs,
         )
 
-        translator.translate_project(
+        result = translator.translate_project(
             update=update,
         )
 
         logger.info(f"Project translation completed for languages: {language_codes}")
+        if isinstance(result, tuple) and len(result) == 2:
+            modified_count, errors = result
+            return int(modified_count), len(errors)
+        return 0, 0
 
     def _merge_estimates(
         current: dict[str, int],
@@ -641,6 +686,8 @@ def _run_translation_impl(
         lang_subdir: str | None,
         repo_url: str | None,
         readme_only: bool,
+        include_patterns: Iterable[str] | None,
+        exclude_patterns: Iterable[str] | None,
     ) -> dict[str, int]:
         request = build_translation_request(
             language_codes=language_codes,
@@ -704,6 +751,8 @@ def _run_translation_impl(
             image_dir=image_dir,
             lang_subdir=lang_subdir,
             initialize_translators=False,
+            include_patterns=include_patterns,
+            exclude_patterns=exclude_patterns,
         )
         est = estimate_translation_tokens(
             translator.translation_manager,
@@ -799,6 +848,7 @@ def _run_translation_impl(
             output_prepared = True
 
         aggregated_estimate = dict(aggregate_template)
+        group_estimates: list[dict[str, int]] = []
         for per_root, per_translations_dir, per_lang_subdir in execution_targets:
             group_estimate = _compute_estimate_for_group(
                 language_codes=language_codes,
@@ -813,32 +863,86 @@ def _run_translation_impl(
                 lang_subdir=per_lang_subdir,
                 repo_url=repo_url,
                 readme_only=readme_only,
+                include_patterns=include,
+                exclude_patterns=exclude,
             )
+            group_estimates.append(group_estimate)
             aggregated_estimate = _merge_estimates(aggregated_estimate, group_estimate)
 
         _echo_estimate_summary(aggregated_estimate, translation_types_for_summary)
+        if plan_json_path is not None:
+            plans = []
+            for (per_root, per_translations_dir, _), estimate in zip(
+                execution_targets, group_estimates
+            ):
+                request = build_translation_request(
+                    language_codes=language_codes,
+                    root_dir=per_root,
+                    markdown=markdown,
+                    images=images,
+                    notebook=notebook,
+                    readme_only=readme_only,
+                )
+                path_config = ProjectPathConfig.resolve(
+                    source=per_root,
+                    output=per_translations_dir,
+                    include=include,
+                    exclude=exclude,
+                )
+                plans.append(
+                    build_translation_plan(
+                        paths=path_config,
+                        languages=request.language_list_values(),
+                        translation_types=request.translation_types_list(),
+                        estimates=estimate,
+                        update=update,
+                        readme_only=readme_only,
+                    )
+                )
+            plan_payload: dict[str, object]
+            if len(plans) == 1:
+                plan_payload = plans[0]
+            else:
+                plan_payload = {"schema": PLAN_SCHEMA, "plans": plans}
+            write_translation_plan(plan_json_path, plan_payload)
+            reporter.info(f"Translation plan written to: {plan_json_path}")
 
+        total_translated = 0
+        total_failed = 0
         for per_root, per_translations_dir, per_lang_subdir in execution_targets:
-            _run_single_group(
-                language_codes=language_codes,
-                root_dir=per_root,
-                update=update,
-                images=images,
-                markdown=markdown,
-                notebook=notebook,
-                debug=debug,
-                save_logs=save_logs,
-                yes=yes,
-                add_disclaimer=add_disclaimer,
-                translations_dir=per_translations_dir,
-                image_dir=image_dir,
-                lang_subdir=per_lang_subdir,
-                repo_url=repo_url,
-                readme_only=readme_only,
-                dry_run=dry_run,
-                output_prepared=output_prepared,
-                translation_state_provider=translation_state_provider,
-            )
+            try:
+                translated, failed = _run_single_group(
+                    language_codes=language_codes,
+                    root_dir=per_root,
+                    update=update,
+                    images=images,
+                    markdown=markdown,
+                    notebook=notebook,
+                    debug=debug,
+                    save_logs=save_logs,
+                    yes=yes,
+                    add_disclaimer=add_disclaimer,
+                    translations_dir=per_translations_dir,
+                    image_dir=image_dir,
+                    lang_subdir=per_lang_subdir,
+                    repo_url=repo_url,
+                    readme_only=readme_only,
+                    dry_run=dry_run,
+                    output_prepared=output_prepared,
+                    translation_state_provider=translation_state_provider,
+                    include_patterns=include,
+                    exclude_patterns=exclude,
+                    context=translation_context,
+                )
+            except PartialTranslationError as exc:
+                raise PartialTranslationError(
+                    total_translated + exc.translated,
+                    exc.errors,
+                    failed=total_failed + exc.failed,
+                ) from exc
+            total_translated += translated
+            total_failed += failed
+        return total_translated, total_failed
 
 
 def run_translation(
@@ -864,12 +968,20 @@ def run_translation(
     json_events_path: str | Path | None = None,
     translation_state_provider: TranslationStateProvider | None = None,
     concurrency: int = 1,
-) -> None:
+    source: str | Path | None = None,
+    output: str | Path | None = None,
+    include: Iterable[str] | None = None,
+    exclude: Iterable[str] | None = None,
+    context: str | None = None,
+    context_file: str | Path | None = None,
+    plan_json_path: str | Path | None = None,
+) -> tuple[int, int]:
     """Programmatic translation entrypoint mirroring the translate CLI options.
 
     ``progress_callback`` receives versioned ``TranslationEvent`` objects for
     integration code. ``json_events_path`` writes the same events as NDJSON except
     during a dry run, when file output is disabled.
+    ``plan_json_path`` writes a versioned plan and remains enabled during dry runs.
     A dry run performs local discovery and estimation without provider credentials,
     connectivity checks, or translation output writes.
     ``translation_state_provider`` lets hosted integrations supply accepted
@@ -881,6 +993,10 @@ def run_translation(
     from co_op_translator.utils.common.task_utils import validate_concurrency
 
     validate_concurrency(concurrency)
+    if source is not None:
+        root_dir = str(source)
+    if output is not None:
+        translations_dir = str(output)
 
     with translation_event_context(
         callback=progress_callback,
@@ -908,13 +1024,28 @@ def run_translation(
                 dry_run=dry_run,
                 translation_state_provider=translation_state_provider,
                 concurrency=concurrency,
+                include=include,
+                exclude=exclude,
+                context=context,
+                context_file=context_file,
+                plan_json_path=plan_json_path,
             )
+        except PartialTranslationError as exc:
+            emit_translation_event(
+                "run_completed",
+                translated=exc.translated,
+                failed=exc.failed,
+                metadata={"dry_run": dry_run, "partial": True},
+            )
+            raise
         except Exception as exc:
             emit_translation_event("run_failed", message=str(exc), level="error")
             raise
 
         emit_translation_event(
             "run_completed",
+            translated=result[0],
+            failed=result[1],
             metadata={
                 "dry_run": dry_run,
             },
@@ -922,7 +1053,7 @@ def run_translation(
         return result
 
 
-def translate_project(*args, **kwargs) -> None:
+def translate_project(*args, **kwargs) -> tuple[int, int]:
     """Programmatic project translation entrypoint."""
 
     return run_translation(*args, **kwargs)

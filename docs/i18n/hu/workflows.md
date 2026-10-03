@@ -1,46 +1,50 @@
-# Válassza ki a munkafolyamatát
+# Válassza ki a munkafolyamatot
 
-Co-op Translator háromféleképpen használható: CLI, Python API és MCP szerver. Ugyanazokat a fordítási képességeket kínálják, de mindegyik más munkafolyamathoz illik.
+A Co-op Translator három módon használható: CLI, Python API és az MCP szerver. Ugyanazokat a fordítási képességeket kínálják, de mindegyik egy másik munkafolyamathoz illik.
 
-Használja ezt az oldalt, amikor dönt arról, hogy hol kezdje.
+Használja ezt az oldalt, amikor dönt arról, hol kezdjen.
+
+**Ha kézzel szerkeszti a fordításokat:** az alapértelmezett CLI és Actions munkafolyamatok a módosított forrásfájlokat teljes egészében újrafordítják, így a megfogalmazásai felülíródhatnak. Tekintse át a differenciát, mielőtt elfogad egy frissítést. A Markdown blokk-szintű megtartásához az elfogadott szerkesztésekhez használja az opcionális [Python API fordítási állapot-kezelőt](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
 
 ## Gyors döntés
 
-| If you want to... | Use | Start here |
+| Ha azt szeretné, hogy... | Használja | Kezdje itt |
 | --- | --- | --- |
-| Fordítson vagy ellenőrizzen egy tárolót terminálból | CLI | [CLI referencia](cli.md) |
-| Adjon fordítást egy Python szkriptbe, szolgáltatásba, jegyzetfüzetbe vagy CI munkába | Python API | [Python API](api.md) |
-| Hagyja, hogy egy ügynök, szerkesztő vagy MCP-kompatibilis kliens fordítsa le a tartalmat | MCP Server | [MCP szerver](mcp.md) |
-| Fordítson le egy Markdown dokumentumot, jegyzetfüzetet vagy képet, amelyet az alkalmazása már betöltött | Python API or MCP Server | [Python API](api.md) or [MCP szerver](mcp.md) |
-| Fordítson le egy teljes tárolót szabványos kimeneti mappákkal és metaadatokkal | CLI or `run_translation` | [CLI referencia](cli.md) or [Python API](api.md) |
+| Egy tároló fordítása vagy felülvizsgálata terminálról | CLI | [CLI referencia](cli.md) |
+| Fordítás hozzáadása egy Python szkriptbe, szolgáltatásba, jegyzetfüzetbe (notebook) vagy CI feladatba | Python API | [Python API](api.md) |
+| Hagyja, hogy egy agent, szerkesztő vagy MCP-kompatibilis kliens fordítsa le a tartalmat Ön helyett | MCP Server | [MCP Server](mcp.md) |
+| Fordítson le egy Markdown dokumentumot, jegyzetfüzetet vagy képet, amelyet az alkalmazása már betöltött | Python API vagy MCP Server | [Python API](api.md) vagy [MCP Server](mcp.md) |
+| Egy teljes tároló lefordítása szabványos kimeneti mappákkal és metaadatokkal | CLI vagy `run_translation` | [CLI referencia](cli.md) vagy [Python API](api.md) |
 
-## Használja a CLI-t, ha
+## Használja a CLI-t, amikor
 
-Válassza a CLI-t, ha egy személy vagy CI feladat a shellből vezérli a tároló fordítását.
+Válassza a CLI-t, amikor egy személy vagy CI feladat shellből vezényli a tároló fordítását.
 
-A CLI a legegyszerűbb út, ha azt szeretné, hogy a Co-op Translator felfedezze a projektfájlokat, létrehozza a lefordított kimeneteket, megőrizze a projekt felépítését, frissítse a metaadatokat és lefuttassa az áttekintési parancsokat.
+A CLI a legegyszerűbb út, ha azt szeretné, hogy a Co-op Translator megtalálja a projektfájlokat, létrehozza a lefordított kimeneteket, megőrizze a projekt felépítését, frissítse a metaadatokat és lefuttassa a felülvizsgálati parancsokat.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
-Jól illik:
+Ez a példa Markdown-t és jegyzetfüzeteket fordít. Az `-img` kapcsolót csak az [Azure AI Vision](configuration.md#azure-ai-vision) konfigurálása után adja hozzá. Ha az első futtatáskor csak Markdown-t szeretne, kövesse a [Első fordítás](first-translation.md).
 
-- Terminálról fordít egy tárolót.
+Mikor illik jól:
+
+- Egy tárolót fordít a terminálról.
 - Ismételhető parancsra van szüksége CI vagy kiadási munkafolyamatokhoz.
-- Szüksége van beépített projektfelismerésre, kimeneti útvonalakra, metaadatokra, takarításra és áttekintésre.
-- A parancssori felületet részesíti előnyben a Python-kód írásával szemben.
+- Szüksége van beépített projektfelismerésre, kimeneti utakra, metaadatokra, takarításra és felülvizsgálatra.
+- A parancssoros felületet részesíti előnyben a Python-kód írásával szemben.
 
-## Használja a Python API-t, ha
+## Használja a Python API-t, amikor
 
-Válassza a Python API-t, ha az Ön kódjának kell irányítania a munkafolyamatot.
+Válassza a Python API-t, amikor az Ön saját kódjának kell irányítania a munkafolyamatot.
 
-Az API hasznos alkalmazásokhoz, automatizált szkriptekhez, jegyzetfüzetekhez, szolgáltatásokhoz és egyedi csővezetékekhez. Lehetővé teszi alacsony szintű tartalomfordítási API-k meghívását egyes fájlokhoz, vagy ugyanazon a társzintű koordinációnak a futtatását, amelyet a CLI is használ.
+Az API hasznos alkalmazásokhoz, automatizálási szkriptekhez, jegyzetfüzetekhez, szolgáltatásokhoz és egyedi csővezetékekhez. Lehetővé teszi alacsony szintű tartalomfordítási API-k hívását egyedi fájlokhoz, vagy futtathatja ugyanazt a tároló-szintű szervezést, amelyet a CLI is használ.
 
-Fordítson le egy Markdown dokumentumot és döntse el, hova mentse:
+Fordítson le egy Markdown dokumentumot, és döntsön arról, hová mentse:
 
 ```python
 import asyncio
@@ -72,57 +76,50 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Futtasson egy tárolófordítást Pythonból:
+Futtasson tárolófordítást Pythonból:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
 Jól illik:
 
-- Az alkalmazása már olvassa a fájlokat, puffereket, jegyzetfüzeteket vagy képbájtokat.
-- Szüksége van egyedi érvényesítésre, tárolásra, naplózásra, újrapróbálkozásra vagy jóváhagyási folyamatokra.
-- Egy dokumentumot, jegyzetfüzetet vagy képet szeretne lefordítani anélkül, hogy az egész tárolót feldolgozná.
-- Tárolófordítást szeretne, de Python automatizációból a shell parancs helyett.
+- Az alkalmazása már olvas fájlokat, pufferelt tartalmakat, jegyzetfüzeteket vagy képbájtokat.
+- Egyedi érvényesítésre, tárolásra, naplózásra, újrapróbálásokra vagy jóváhagyási folyamatokra van szüksége.
+- Egyetlen dokumentumot, jegyzetfüzetet vagy képet szeretne fordítani anélkül, hogy az egész tárolót feldolgozná.
+- Tároló-fordítást szeretne, de Python automatizálásból a shell parancs helyett.
 
-## Használja az MCP szervert, ha
+## Használja az MCP szervert, amikor
 
-Válassza az MCP szervert, ha egy ügynök, szerkesztő vagy MCP-kompatibilis kliens kell, hogy meghívja a Co-op Translator eszközeit.
+Válassza az MCP szervert, amikor egy agent, szerkesztő vagy MCP-kompatibilis kliensnek kell a Co-op Translator eszközeit hívnia.
 
-A normál helyi beállításban a felhasználó nem tartja kézzel folyamatosan futó szerverként. Az MCP kliens elindítja a `co-op-translator-mcp`-t a `stdio` felett, amikor szüksége van az eszközökre.
+A normál helyi beállításban a felhasználó nem tartja kézzel futva a szervert. Az MCP kliens elindítja a `co-op-translator-mcp`-t `stdio` felett, amikor szüksége van az eszközökre.
 
-Példák a felhasználói kérésekre, amelyeket egy ügynök kezelhet:
+Példa felhasználói kérések, amelyeket egy agent kezelhet:
 
-- "Fordítsa le ezt a Markdown fájlt koreaira, és tartsa helyesnek a linkeket."
-- "Fordítsa le ezt a Markdown fájlt koreaira az ügynök által támogatott MCP munkafolyamattal, a fordított részekhez a saját modelljét használva."
+- "Fordítsa le ezt a Markdown fájlt koreaira, és tartsa helyesnek a hivatkozásokat."
+- "Fordítsa le ezt a Markdown fájlt koreaira az agent által segített MCP munkafolyamattal, a saját modelljét használva a lefordított darabokhoz."
 - "Fordítsa le ezt a jegyzetfüzetet koreaira, őrizze meg a kódcellákat, és használja a Co-op Translator MCP-t a jegyzetfüzet rekonstruálásához."
-- "Fordítsa le ezen kép szövegét japánra és mentse el az eredményt."
-- "Végezzen dry-run jellegű tárolófordítást spanyolra, és mondja meg, mi változna."
+- "Fordítsa le ennek a képnek a szövegét japánra, és mentse el az eredményt."
+- "Próbafuttasson egy tároló-fordítást spanyolra, és mondja el, mi változna."
 - "Ellenőrizze, hogy a koreai fordítás kimenete naprakész-e."
 
-Markdown és jegyzetfüzetek esetében az MCP két módban működhet:
+Markdown és jegyzetfüzetek esetén az MCP két módban működhet:
 
-| Mode | Use when | Main tools |
+| Mód | Használja, amikor | Fő eszközök |
 | --- | --- | --- |
-| Agent-assisted | Az MCP host ügynöknek saját modelljével kell lefordítania a részeket, Co-op Translator LLM szolgáltatói hitelesítő adatok nélkül. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Provider-backed | A Co-op Translator hívja meg közvetlenül az Azure OpenAI-t vagy az OpenAI-t. | `translate_markdown_content`, `translate_notebook_content` |
+| Agent által segített | Az MCP host agent a saját modelljével fordítson darabokat, a Co-op Translator LLM szolgáltatói hitelesítő adatok nélkül. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Szolgáltató által támogatott | A Co-op Translator közvetlenül hívja az Azure OpenAI-t, az OpenAI-t vagy az Anthropic-ot. | `translate_markdown_content`, `translate_notebook_content` |
 
-MCP szolgáltató-támogatott Markdown eszköz hívás alakja:
+MCP szolgáltató által támogatott Markdown eszközhívás formátuma:
 
 ```json
 {
@@ -137,7 +134,7 @@ MCP szolgáltató-támogatott Markdown eszköz hívás alakja:
 }
 ```
 
-MCP kép eszköz hívás alakja:
+MCP kép eszközhívás formátuma:
 
 ```json
 {
@@ -150,7 +147,7 @@ MCP kép eszköz hívás alakja:
 }
 ```
 
-A tárolófordítás alapértelmezés szerint dry-run módban történik az MCP-n keresztül:
+A tároló fordítása alapértelmezés szerint próbafuttatás (dry-run) az MCP-n keresztül:
 
 ```json
 {
@@ -167,14 +164,14 @@ A tárolófordítás alapértelmezés szerint dry-run módban történik az MCP-
 
 Jól illik:
 
-- Természetes nyelvű fordítási munkafolyamatokat szeretne egy ügynökön vagy szerkesztőn belül.
-- Markdown vagy jegyzetfüzet fordítást szeretne, ahol a host ügynök modellje fordítja le az előkészített részeket.
-- Azt szeretné, hogy az ügynök a kiválasztott tartalmat fordítsa, ahelyett, hogy az egész tárolót fordítaná.
-- Jóváhagyási lépést szeretne a tárolóra kiterjedő írások előtt.
-- Egyetlen felületet szeretne, amely elérhetővé teszi a Markdown-, jegyzetfüzet-, kép-, ellenőrzési és útvonal-átírási eszközöket.
+- Természetes nyelvű fordítási munkafolyamatokat szeretne egy agentben vagy szerkesztőben.
+- Markdown vagy jegyzetfüzet fordítást szeretne, ahol a host agent modell fordítja az előkészített darabokat.
+- Azt szeretné, hogy az agent a kiválasztott tartalmat fordítsa le az egész tároló helyett.
+- Jóváhagyási lépést szeretne a tároló-szintű írások előtt.
+- Egy olyan felületet szeretne, amely a Markdown, jegyzetfüzet, kép, felülvizsgálat és útvonal-átírás eszközöket kínálja.
 
 ## Hogyan illeszkednek egymáshoz
 
-A CLI a legjobb alapértelmezett választás emberek számára, akik tárolókat fordítanak. A Python API akkor a legjobb, ha az Ön kódja birtokolja a munkafolyamatot. Az MCP szerver pedig akkor a legjobb, ha egy ügynök vagy szerkesztő birtokolja a munkafolyamatot.
+Az CLI a legjobb alapértelmezett választás emberek számára, akik tárolókat fordítanak. A Python API akkor a legjobb, ha az ön kódja irányítja a munkafolyamatot. Az MCP szerver akkor a legjobb, ha egy agent vagy szerkesztő birtokolja a munkafolyamatot.
 
-Mindhárom út ugyanazt a nyilvános Co-op Translator API-t használja, így elkezdheti a CLI-vel, később automatizálhat Pythonnal, és ugyanezeket a képességeket teheti elérhetővé MCP kliens számára, amikor ügynökalapú munkafolyamatokra van szüksége.
+Mindhárom út ugyanazt a nyilvános Co-op Translator API-t használja, így elkezdheti a CLI-vel, később automatizálhat Python-nal, és ugyanazokat a képességeket teheti elérhetővé MCP kliens számára, amikor agent-vezérelt munkafolyamatokra van szüksége.

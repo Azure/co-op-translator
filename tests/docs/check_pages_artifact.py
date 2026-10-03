@@ -1,9 +1,11 @@
 """Validate the built Pages artifact without a server or URL rewrite fallback."""
 
+from collections import Counter
 import gzip
 from html.parser import HTMLParser
 import json
 from pathlib import Path
+import re
 import sys
 from urllib.parse import unquote, urljoin, urlsplit
 import xml.etree.ElementTree as ET
@@ -11,6 +13,7 @@ import xml.etree.ElementTree as ET
 BASE = "https://azure.github.io/co-op-translator/"
 SITEMAP_NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 XHTML_NS = "http://www.w3.org/1999/xhtml"
+CODE_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 
 
 class PageAssets(HTMLParser):
@@ -19,9 +22,22 @@ class PageAssets(HTMLParser):
         self.assets = []
         self.scripts = []
         self.language_metadata = []
+        self.ids = set()
+        self.article_links = []
+        self.code_examples = []
+        self._code_parts = None
+        self.in_article = False
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if attrs.get("id"):
+            self.ids.add(attrs["id"])
+        if tag == "article":
+            self.in_article = True
+        if self.in_article and tag == "code":
+            self._code_parts = []
+        if self.in_article and tag == "a" and attrs.get("href"):
+            self.article_links.append(attrs["href"])
         if tag in {"script", "img"} and attrs.get("src"):
             self.assets.append(attrs["src"])
             if tag == "script":
@@ -31,6 +47,24 @@ class PageAssets(HTMLParser):
                 self.assets.append(attrs["href"])
             if attrs.get("rel") == "alternate" and "hreflang" in attrs:
                 self.language_metadata.append(attrs["href"])
+
+    def handle_data(self, data):
+        if self._code_parts is not None:
+            self._code_parts.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == "code" and self._code_parts is not None:
+            self.code_examples.append("".join(self._code_parts))
+            self._code_parts = None
+        if tag == "article":
+            self.in_article = False
+
+    def literal_link_destinations(self):
+        return Counter(
+            target
+            for example in self.code_examples
+            for target in CODE_LINK.findall(example)
+        )
 
 
 def check(site):
@@ -65,23 +99,22 @@ def check(site):
             routes += 1
             local_file(urljoin(BASE, route))
 
-    # Exercise the assets and script ordering on both shallow and deep guides.
-    guides = [
-        "index.md",
-        "configuration.md",
-        "first-translation.md",
-        "github-actions.md",
-    ]
+    # Every published language needs valid assets and article links. A successful
+    # MkDocs build alone does not reject missing fragment targets by default.
     inspected = 0
-    for source in guides:
-        for language in ["en", "ko"]:
-            url = urljoin(BASE, pages[source][language])
+    rendered = {}
+    page_urls = {}
+    for translations in pages.values():
+        for route in translations.values():
+            url = urljoin(BASE, route)
             page = local_file(url)
             if page is None:
                 continue
             inspected += 1
             parser = PageAssets()
             parser.feed(page.read_text(encoding="utf-8"))
+            rendered[page] = parser
+            page_urls[page] = url
             for asset in parser.assets:
                 local_file(urljoin(url, asset))
             scripts = [urljoin(url, script) for script in parser.scripts]
@@ -97,6 +130,42 @@ def check(site):
                 )
             if parser.language_metadata:
                 errors.append(f"Theme would request separate language sitemaps: {url}")
+
+    # Code samples are copied by readers. They must keep the source example's
+    # destinations, rather than acquire the translated page's relative paths.
+    for translations in pages.values():
+        if "en" not in translations:
+            continue
+        source = local_file(urljoin(BASE, translations["en"]))
+        if source not in rendered:
+            continue
+        expected = rendered[source].literal_link_destinations()
+        for language, route in translations.items():
+            if language == "en":
+                continue
+            page = local_file(urljoin(BASE, route))
+            if (
+                page in rendered
+                and rendered[page].literal_link_destinations() != expected
+            ):
+                errors.append(
+                    f"Changed link destinations inside code examples: {page_urls[page]}"
+                )
+
+    article_links = 0
+    for page, parser in rendered.items():
+        for href in parser.article_links:
+            target = urljoin(page_urls[page], href)
+            destination = local_file(target)
+            if destination is None:
+                continue
+            article_links += 1
+            fragment = unquote(urlsplit(target).fragment)
+            target_page = rendered.get(destination)
+            if fragment and target_page is not None and fragment not in target_page.ids:
+                errors.append(
+                    f"Missing article fragment: {page_urls[page]} -> {target}"
+                )
 
     sitemap = (site / "sitemap.xml").read_bytes()
     if gzip.decompress((site / "sitemap.xml.gz").read_bytes()) != sitemap:
@@ -117,7 +186,8 @@ def check(site):
     if errors:
         raise SystemExit("\n".join(errors))
     print(
-        f"Pages artifact passed: {routes} routes, {inspected} guide asset checks, "
+        f"Pages artifact passed: {routes} routes, {inspected} page asset checks, "
+        f"{article_links} local article links, "
         f"{len(sitemap_urls)} sitemap entries under /co-op-translator/."
     )
 

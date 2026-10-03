@@ -1,16 +1,20 @@
-# README ഭാഷകൾ ടെംപ്ലേറ്റ്
+# README ഭാഷകൾക്കുള്ള ടെംപ്ലേറ്റ്
 
-Co-op Translator പരിഭാഷചെയ്ത ഉള്ളടക്കം പ്രസിദ്ധീകരിക്കുന്ന റിപോസിറ്ററികളെക്കായുള്ള README ഭാഷാപട്ടിക പരിപാലിക്കാവുന്നതാണ്.
+Co-op Translator വിവർത്തനം ചെയ്ത ഉള്ളടക്കം പ്രസിദ്ധീകരിക്കുന്ന റിപ്പോസിറ്ററികളായുള്ള README ഭാഷാ പട്ടിക പരിപാലിക്കാൻ കഴിയും.
 
-ഓരോ പരിഭാഷ റൺ സമയത്തും മുഴുവൻ വിഭാഗം Co-op Translator മാറ്റാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുവെങ്കിൽ താഴെയുള്ള മാർക്കറുകൾ ഉപയോഗിക്കുക. നിങ്ങൾ ഒരു ഇഷ്ടാനുസൃത സബ്സെറ്റ് മാനുവലായി പരിപാലിക്കാൻ ഇഷ്ടപ്പെടുന്നുവെങ്കിൽ മാർക്കറുകൾ നീക്കംചെയ്യുക.
+ഓരോ വിവർത്തന ഓട്ടത്തിലും Co-op Translator മുഴുവൻ സെക്ഷൻ പകരംവെക്കണമെന്ന് നിങ്ങൾ ആഗ്രഹിക്കുന്നുവെങ്കിൽ താഴെ കാണുന്ന മാർക്കറുകൾ ഉപയോഗിക്കുക. നിങ്ങൾക്ക് ഒരു കസ്റ്റം ഉപസെറ്റ് കൈയോടെ കൈമാറി പരിപാലിക്കേണ്ടതുണ്ടെങ്കിൽ മാർക്കറുകൾ നീക്കം ചെയ്യുക.
+
+മാർക്കറുകളുടെ മുകളിൽ ഉള്ള അറ്റ്ട്രിബ്യൂഷവും 'ആരംഭിക്കാൻ' ലിങ്കും اخت്യൻ എന്നായിരിക്കും. അവ വായকদের വിവർത്തനങ്ങൾ എങ്ങനെ പരിപാലിക്കുന്നു എന്നും അവരുടെ സ്വന്തം റിപ്പോസിറ്ററികൾ എങ്ങനെ വിവർത്തനം ചെയ്യാമെന്നും കണ്ടെത്താൻ സഹായിക്കുന്നു. ഭാഷാ പട്ടിക അപ്‌ഡേറ്റുകൾ അവ സംരക്ഷിക്കേണ്ടതിനാൽ ഇവയെ മാർക്കറുകൾക്കപ്പുറം വയ്ക്കുക. മറ്റൊരു റിപ്പോസിറ്ററി അപ്‌ഡേറ്റ് ചെയ്യുമ്പോൾ അതിന്റെ സംഭാവനാ മാർഗനിർദ്ദേശങ്ങൾ പിന്തുടരുക, പരിപാലകർക്ക് ഈ വാചകം ഉൾപ്പെടുത്തിയാലോ ഇല്ലയാലോ തീരുമാനിക്കാൻ അവകാശം നൽകുക.
 
 ````markdown
 ### Multi-Language Support
 
 #### Supported by [Co-op Translator](https://github.com/Azure/co-op-translator)
 
+Maintain your own documentation? [Start with one README and one language](https://github.com/Azure/co-op-translator/blob/main/docs/github-actions.md#your-first-readme-translation-pr).
+
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
-[Arabic](../ar/README.md) | [Bengali](../bn/README.md) | [Bulgarian](../bg/README.md) | [Burmese (Myanmar)](../my/README.md) | [Chinese (Simplified)](../zh-CN/README.md) | [Chinese (Traditional, Hong Kong)](../zh-HK/README.md) | [Chinese (Traditional, Macau)](../zh-MO/README.md) | [Chinese (Traditional, Taiwan)](../zh-TW/README.md) | [Croatian](../hr/README.md) | [Czech](../cs/README.md) | [Danish](../da/README.md) | [Dutch](../nl/README.md) | [Estonian](../et/README.md) | [Finnish](../fi/README.md) | [French](../fr/README.md) | [German](../de/README.md) | [Greek](../el/README.md) | [Hebrew](../he/README.md) | [Hindi](../hi/README.md) | [Hungarian](../hu/README.md) | [Indonesian](../id/README.md) | [Italian](../it/README.md) | [Japanese](../ja/README.md) | [Kannada](../kn/README.md) | [Khmer](../km/README.md) | [Korean](../ko/README.md) | [Lithuanian](../lt/README.md) | [Malay](../ms/README.md) | [Malayalam](./README.md) | [Marathi](../mr/README.md) | [Nepali](../ne/README.md) | [Nigerian Pidgin](../pcm/README.md) | [Norwegian](../no/README.md) | [Persian (Farsi)](../fa/README.md) | [Polish](../pl/README.md) | [Portuguese (Brazil)](../pt-BR/README.md) | [Portuguese (Portugal)](../pt-PT/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Romanian](../ro/README.md) | [Russian](../ru/README.md) | [Serbian (Cyrillic)](../sr/README.md) | [Slovak](../sk/README.md) | [Slovenian](../sl/README.md) | [Spanish](../es/README.md) | [Swahili](../sw/README.md) | [Swedish](../sv/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Tamil](../ta/README.md) | [Telugu](../te/README.md) | [Thai](../th/README.md) | [Turkish](../tr/README.md) | [Ukrainian](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnamese](../vi/README.md)
+[Arabic](./translations/ar/README.md) | [Bengali](./translations/bn/README.md) | [Bulgarian](./translations/bg/README.md) | [Burmese (Myanmar)](./translations/my/README.md) | [Chinese (Simplified)](./translations/zh-CN/README.md) | [Chinese (Traditional, Hong Kong)](./translations/zh-HK/README.md) | [Chinese (Traditional, Macau)](./translations/zh-MO/README.md) | [Chinese (Traditional, Taiwan)](./translations/zh-TW/README.md) | [Croatian](./translations/hr/README.md) | [Czech](./translations/cs/README.md) | [Danish](./translations/da/README.md) | [Dutch](./translations/nl/README.md) | [Estonian](./translations/et/README.md) | [Finnish](./translations/fi/README.md) | [French](./translations/fr/README.md) | [German](./translations/de/README.md) | [Greek](./translations/el/README.md) | [Hebrew](./translations/he/README.md) | [Hindi](./translations/hi/README.md) | [Hungarian](./translations/hu/README.md) | [Indonesian](./translations/id/README.md) | [Italian](./translations/it/README.md) | [Japanese](./translations/ja/README.md) | [Kannada](./translations/kn/README.md) | [Khmer](./translations/km/README.md) | [Korean](./translations/ko/README.md) | [Lithuanian](./translations/lt/README.md) | [Malay](./translations/ms/README.md) | [Malayalam](./translations/ml/README.md) | [Manipuri (Meitei Mayek)](./translations/mni/README.md) | [Marathi](./translations/mr/README.md) | [Nepali](./translations/ne/README.md) | [Nigerian Pidgin](./translations/pcm/README.md) | [Norwegian](./translations/no/README.md) | [Persian (Farsi)](./translations/fa/README.md) | [Polish](./translations/pl/README.md) | [Portuguese (Brazil)](./translations/pt-BR/README.md) | [Portuguese (Portugal)](./translations/pt-PT/README.md) | [Punjabi (Gurmukhi)](./translations/pa/README.md) | [Romanian](./translations/ro/README.md) | [Russian](./translations/ru/README.md) | [Serbian (Cyrillic)](./translations/sr/README.md) | [Slovak](./translations/sk/README.md) | [Slovenian](./translations/sl/README.md) | [Spanish](./translations/es/README.md) | [Swahili](./translations/sw/README.md) | [Swedish](./translations/sv/README.md) | [Tagalog (Filipino)](./translations/tl/README.md) | [Tamil](./translations/ta/README.md) | [Telugu](./translations/te/README.md) | [Thai](./translations/th/README.md) | [Turkish](./translations/tr/README.md) | [Ukrainian](./translations/uk/README.md) | [Urdu](./translations/ur/README.md) | [Vietnamese](./translations/vi/README.md)
 
 > **Prefer to Clone Locally?**
 >
@@ -25,10 +29,12 @@ Co-op Translator പരിഭാഷചെയ്ത ഉള്ളടക്കം �
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 ````
 
-പരിഭാഷ ചെയ്യുമ്പോൾ sparse-checkout റിപോസിറ്ററി URL വ്യക്തിഗതമാക്കുക:
+വിവർത്തനത്തിനിടെ sparse-checkout റിപ്പോസിറ്ററി URL വ്യക്തിഗതമാക്കുക:
 
 ```bash
 translate -l "ko" --repo-url "https://github.com/org/repo.git"
 ```
 
-മാർക്കറുകൾ ഉണ്ടായിരുന്നാൽ, ഭാഷകൾ ചേർക്കുകയോ മാറ്റുകയോ ചെയ്യുന്നപ്പോൾ Co-op Translator സൃഷ്ടിച്ച പട്ടിക പുതുക്കാൻ കഴിയും.
+മാർക്കറുകൾ നിലവിലുള്ള പക്ഷം, ഭാഷകൾ ചേർക്കുകയോ മാറ്റം വരുത്തുകയോ ചെയ്യുമ്പോൾ Co-op Translator സൃഷ്ടിച്ച പട്ടിക അപ്‌ഡേറ്റ് ചെയ്യാൻ കഴിയും.
+
+നിലവിലുള്ള README-ലേക്ക്, അതിന്റെ ഭാഷാ-പട്ടിക മാർക്കറുകളുടെ മുകളിൽ ഓപ്ഷണൽ അറ്റ Trib്‌ ഡ്യൂഷനും 'ആരംഭിക്കാനുള്ള' ലിങ്കും അതിന്റെ ഭാഷാ ലിങ്കുകളും മറ്റ് ഉള്ളടക്കവും മാറ്റാതെ ചേർക്കാവുന്നതാണ്. പിന്തുണയുള്ള ഭാഷാ ലിങ്കുകൾ [നിലവിലെ ഭാഷാ ഗൈഡ്](https://github.com/Azure/co-op-translator/blob/main/docs/supported-languages.md) എന്നതിലേക്കു സൂചിപ്പിക്കൂ.

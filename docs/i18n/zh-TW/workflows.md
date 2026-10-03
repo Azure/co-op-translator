@@ -1,44 +1,48 @@
-# 選擇您的工作流程
+# 選擇你的工作流程
 
-Co-op Translator 可以用三種方式操作：CLI、Python API 和 MCP server。它們共享相同的翻譯功能，但各自適合不同的工作流程。
+Co-op Translator 可透過三種方式使用：CLI、Python API 和 MCP 伺服器。它們共享相同的翻譯功能，但各自適合不同的工作流程。
 
-在決定從哪裡開始時請使用此頁面。
+當你在決定從哪裡開始時，請使用此頁面。
 
-## 快速決策
+**如果你手動編輯翻譯：** 預設的 CLI 和 Actions 工作流程會完整地重新翻譯已變更的原始檔案，因此你在那些檔案中的文字可能會被覆寫。接受更新前請檢視差異。若要在 Markdown 區塊層級保留已接受的編輯，請使用可選的 [Python API 翻譯狀態提供者](api.md#preserve-accepted-human-edits-with-a-translation-state-provider)。
 
-| 如果您想要... | 使用 | 從此開始 |
+## 快速決定
+
+| 如果你想要... | 使用 | 從這裡開始 |
 | --- | --- | --- |
-| 從終端機翻譯或審閱儲存庫 | CLI | [CLI 參考](cli.md) |
-| 將翻譯加入 Python 腳本、服務、筆記本或 CI 工作 | Python API | [Python API](api.md) |
-| 讓 agent、編輯器或 MCP 相容的客戶端為您翻譯內容 | MCP Server | [MCP Server](mcp.md) |
-| 翻譯您的應用程式已載入的單一 Markdown 文件、筆記本或影像 | Python API 或 MCP Server | [Python API](api.md) 或 [MCP Server](mcp.md) |
-| 翻譯整個儲存庫並建立標準輸出資料夾與 metadata | CLI 或 `run_translation` | [CLI 參考](cli.md) 或 [Python API](api.md) |
+| 從終端機翻譯或審查一個倉庫 | CLI | [CLI 參考](cli.md) |
+| 將翻譯新增到 Python 腳本、服務、筆記本或 CI 工作 | Python API | [Python API](api.md) |
+| 讓代理、編輯器或 MCP 相容的用戶端為你翻譯內容 | MCP Server | [MCP Server](mcp.md) |
+| 翻譯你的應用程式已載入的一個 Markdown 文件、筆記本或影像 | Python API 或 MCP Server | [Python API](api.md) 或 [MCP Server](mcp.md) |
+| 使用標準輸出資料夾與 metadata 翻譯整個倉庫 | CLI 或 `run_translation` | [CLI 參考](cli.md) 或 [Python API](api.md) |
 
 ## 何時使用 CLI
 
-當由人或 CI 工作從 shell 操控儲存庫翻譯時，選擇 CLI。
+當有人或 CI 工作從 shell 操作倉庫翻譯時，選擇 CLI。
 
-當您希望 Co-op Translator 探索專案檔案、建立翻譯輸出、保留專案結構、更新 metadata，以及執行審閱指令時，CLI 是最直接的方式。
+當你希望 Co-op Translator 自動發現專案檔案、建立翻譯輸出、保留專案佈局、更新 metadata，並執行檢閱指令時，CLI 是最直接的方式。
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
-適合的情況：
+此範例會翻譯 Markdown 和筆記本。只有在設定 [Azure AI Vision](configuration.md#azure-ai-vision) 之後才加入 `-img`。若只想首次執行 Markdown，請參考 [你的首次翻譯](first-translation.md)。
 
-- 您正在從終端機翻譯一個儲存庫。
-- 您想要一個可在 CI 或發行工作流程中重複使用的指令。
-- 您想要內建的專案探索、輸出路徑、metadata、清理與審閱功能。
-- 您偏好命令介面而非撰寫 Python 程式碼。
+適合的情境：
+
+- 你正在從終端機翻譯一個倉庫。
+- 你想要一個可在 CI 或發佈工作流程中重複使用的指令。
+- 你想要內建的專案偵測、輸出路徑、metadata、清理與檢閱。
+- 你偏好使用指令介面而不是撰寫 Python 程式碼。
 
 ## 何時使用 Python API
 
-當您的程式應該掌控工作流程時，選擇 Python API。
+當你的程式碼需要控制工作流程時，選擇 Python API。
 
-API 對應用程式、自動化腳本、筆記本、服務與自訂流程都很有用。它讓您能呼叫針對單一檔案的低階內容翻譯 API，或執行 CLI 使用的相同儲存庫層級協調。
+API 對於應用程式、自動化腳本、筆記本、服務和自訂管線很有用。它讓你可以對單一檔案呼叫低階的內容翻譯 API，或執行與 CLI 相同的倉庫層級協調程序。
 
 翻譯單一 Markdown 文件並決定儲存位置：
 
@@ -72,57 +76,50 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-從 Python 執行儲存庫翻譯：
+從 Python 執行倉庫翻譯：
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
-適合的情況：
+適合的情境：
 
-- 您的應用程式已經讀取檔案、緩衝區、筆記本或影像位元組。
-- 您需要自訂的驗證、儲存、日誌、重試或審核流程。
-- 您想要翻譯單一文件、筆記本或影像，而不處理整個儲存庫。
-- 您想要儲存庫翻譯，但從 Python 自動化而非 shell 指令執行。
+- 你的應用程式已經讀取檔案、緩衝區、筆記本或影像位元組。
+- 你需要自訂的驗證、儲存、記錄、重試或核准流程。
+- 你想要翻譯單一文件、筆記本或影像，而不處理整個倉庫。
+- 你想要倉庫翻譯，但由 Python 自動化而非 shell 指令執行。
 
-## 何時使用 MCP Server
+## 何時使用 MCP 伺服器
 
-當 agent、編輯器或 MCP 相容客戶端應呼叫 Co-op Translator 工具時，選擇 MCP server。
+當代理、編輯器或 MCP 相容的用戶端應呼叫 Co-op Translator 工具時，選擇 MCP 伺服器。
 
-在一般的本機設定中，使用者不會手動持續執行伺服器。當需要工具時，MCP client 會透過 `stdio` 啟動 `co-op-translator-mcp`。
+在一般的本機設定中，使用者不需手動保持伺服器執行。當需要工具時，MCP 用戶端會透過 `stdio` 啟動 `co-op-translator-mcp`。
 
-範例使用者請求（agent 可處理）：
+代理可以處理的使用者請求範例:
 
-- 「將此 Markdown 檔案翻譯為韓文，並保持連結正確。」
-- 「使用 agent 協助的 MCP 工作流程將此 Markdown 檔案翻譯成韓文，並對已翻譯的區塊使用您自己的模型。」
-- 「將此筆記本翻譯成韓文，保留程式碼儲存格，並使用 Co-op Translator MCP 重建筆記本。」
-- 「將此影像中的文字翻譯成日文並儲存結果。」
-- 「對儲存庫翻譯執行模擬執行（dry-run）至西班牙文，並告訴我會有哪些變更。」
-- 「檢查韓文翻譯輸出是否為最新。」
+- "將此 Markdown 檔案翻譯成韓文並保持連結正確。"
+- "將此 Markdown 檔案翻譯成韓文，使用代理協助的 MCP 工作流程，並對翻譯的段落使用您自己的模型。"
+- "將此筆記本翻譯成韓文，保留程式碼儲存格，並使用 Co-op Translator MCP 來重建筆記本。"
+- "將此圖像中的文字翻譯成日文並儲存結果。"
+- "對儲存庫的翻譯進行模擬執行成西班牙文，並告訴我會有哪些變更。"
+- "檢查韓文翻譯輸出是否為最新。"
 
 對於 Markdown 和筆記本，MCP 可以以兩種模式運作：
 
 | 模式 | 使用時機 | 主要工具 |
 | --- | --- | --- |
-| Agent 輔助 | 當 MCP 主機 agent 應使用其自己的模型翻譯區塊，而不使用 Co-op Translator 的 LLM 提供者憑證時。 | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Provider 支援 | Co-op Translator 應直接呼叫 Azure OpenAI 或 OpenAI。 | `translate_markdown_content`, `translate_notebook_content` |
+| 代理協助 | MCP 主機代理應使用其自身模型翻譯區塊，無需 Co-op Translator LLM 提供者的憑證。 | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| 由提供者支援 | Co-op Translator 應直接呼叫 Azure OpenAI、OpenAI 或 Anthropic。 | `translate_markdown_content`, `translate_notebook_content` |
 
-MCP 提供者支援的 Markdown 工具呼叫格式：
+由 MCP 提供者支援的 Markdown 工具呼叫格式:
 
 ```json
 {
@@ -137,7 +134,7 @@ MCP 提供者支援的 Markdown 工具呼叫格式：
 }
 ```
 
-MCP 影像工具呼叫格式：
+MCP image tool call shape:
 
 ```json
 {
@@ -150,7 +147,7 @@ MCP 影像工具呼叫格式：
 }
 ```
 
-透過 MCP 執行儲存庫翻譯預設為模擬執行（dry-run）：
+透過 MCP，倉庫翻譯預設為模擬執行：
 
 ```json
 {
@@ -165,16 +162,16 @@ MCP 影像工具呼叫格式：
 }
 ```
 
-適合的情況：
+適合的情境：
 
-- 您想在 agent 或編輯器內使用自然語言的翻譯工作流程。
-- 您想要由主機 agent 模型翻譯已準備的 Markdown 或筆記本區塊。
-- 您希望 agent 翻譯選取的內容，而非整個儲存庫。
-- 您希望在寫入整個儲存庫之前有一個核可步驟。
-- 您想要一個介面，提供 Markdown、筆記本、影像、審閱與路徑重寫工具。
+- 你想要在代理或編輯器內使用自然語言的翻譯工作流程。
+- 你想要由主機代理模型翻譯已準備的 Markdown 或筆記本區塊。
+- 你希望代理翻譯選取的內容，而不是整個倉庫。
+- 你想在對整個倉庫寫入之前加入核准步驟。
+- 你想要一個介面，提供 Markdown、筆記本、影像、檢閱與路徑重寫等工具。
 
-## 它們如何整合
+## 它們如何互相搭配
 
-CLI 是人類翻譯儲存庫時的最佳預設選擇。當您的程式掌控工作流程時，Python API 最適合。當 agent 或編輯器掌控工作流程時，MCP server 最合適。
+CLI 是人類翻譯倉庫時最合適的預設選擇。當你的程式碼掌控工作流程時，Python API 最適合。當代理或編輯器掌控工作流程時，MCP 伺服器最合適。
 
-這三種方式都使用相同的公開 Co-op Translator API，因此您可以先從 CLI 開始，之後用 Python 自動化，並在需要 agent 驅動的工作流程時向 MCP 用戶端暴露相同的功能。
+這三種方式都使用相同的公開 Co-op Translator API，因此你可以先從 CLI 開始，之後用 Python 自動化，並在需要代理驅動的工作流程時將相同功能提供給 MCP 用戶端。

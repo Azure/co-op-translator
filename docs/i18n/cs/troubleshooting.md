@@ -1,13 +1,13 @@
-# Řešení problémů
+# Odstraňování problémů
 
-Použijte tuto stránku, když běh překladu nečekaně uspěje, selže během konfigurace nebo vygeneruje výstup, který je třeba zkontrolovat.
+Použijte tuto stránku, když běh překladu nečekaně uspěje, selže během konfigurace nebo vytvoří výstup, který je třeba zkontrolovat.
 
 ## Začněte zde
 
-1. Spusťte nejprve zaměřený příkaz, například `translate -l "ko" -md`.
-2. Přidejte `-d` pro ladicí logy v konzoli.
-3. Přidejte `-s` pro uložení ladicích logů do `<root-dir>/logs/`.
-4. Spusťte `co-op-review` po překladu pro kontrolu aktuálnosti, struktury a lokálních odkazů.
+1. Nejprve spusťte zaměřený příkaz, například `translate -l "ko" -md`.
+2. Přidejte `-d` pro ladicí záznamy v konzoli.
+3. Přidejte `-s` pro uložení ladicích záznamů do `<root-dir>/logs/`.
+4. Po překladu spusťte `co-op-review` pro kontrolu aktuálnosti, struktury a místních odkazů.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -26,9 +26,9 @@ No language model configuration found.
 
 Oprava:
 
-- Nakonfigurujte Azure OpenAI nebo OpenAI.
-- Ověřte, že jsou proměnné v prostředí, kde se příkaz spouští.
-- Pro lokální použití je umístěte do `.env` v kořenovém adresáři projektu.
+- Nakonfigurujte Azure OpenAI, OpenAI nebo Anthropic.
+- Ověřte, že proměnné jsou v prostředí, kde se příkaz spouští.
+- Pro lokální použití umístěte je do `.env` v kořenovém adresáři projektu.
 
 Viz [Konfigurace](configuration.md).
 
@@ -46,24 +46,24 @@ Oprava:
 - Přidejte `AZURE_AI_SERVICE_ENDPOINT`.
 - Nebo spusťte příkaz pouze pro text, například `translate -l "ko" -md`.
 
-### Neplatný klíč nebo endpoint
+### Neplatný klíč nebo koncový bod
 
-Příznaky mohou zahrnovat `401`, redigované chyby oprávnění nebo chyby přístupu k endpointu.
+Příznaky mohou zahrnovat `401`, skryté chyby oprávnění nebo chyby přístupu ke koncovému bodu.
 
 Oprava:
 
-- Potvrďte, že klíč patří ke zdroji Azure odpovídajícímu endpointu.
-- Potvrďte, že zdroj podporuje Vision při použití `-img`.
+- Potvrďte, že klíč patří ke stejnému prostředku Azure jako koncový bod.
+- Potvrďte, že prostředek podporuje Vision při použití `-img`.
 - Potvrďte, že název nasazení Azure OpenAI a verze API odpovídají vašemu nasazení.
-- Spusťte s ladicími logy: `translate -l "ko" -md -d -s`.
+- Spusťte s ladicími záznamy: `translate -l "ko" -md -d -s`.
 
-## Žádné soubory nebyly přeloženy
+## Nebyly přeloženy žádné soubory
 
 Běžné příčiny:
 
 - Vybrané přepínače neodpovídají vašim souborům.
-- Přeložené soubory již existují.
-- Zdrojové soubory jsou v vyloučených adresářích.
+- Již existují přeložené soubory.
+- Zdrojové soubory jsou ve vyloučených adresářích.
 - Příkaz se spouští z nesprávného kořenového adresáře projektu.
 
 Kontroly:
@@ -74,24 +74,24 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-Použijte `--root-dir`, když je příkaz spuštěn mimo kořenový adresář projektu.
+Použijte `--root-dir`, když je příkaz spuštěn mimo kořen projektu.
 
 ## Neočekávané chování odkazů
 
 Přepisování odkazů závisí na vybraných typech obsahu:
 
 - `-nb` zahrnuto: odkazy na notebooky mohou směřovat na přeložené notebooky.
-- `-nb` vyloučeno: odkazy na notebooky mohou zůstat ukazovat na zdrojové notebooky.
+- `-nb` vyloučeno: odkazy na notebooky mohou zůstat nasměrovány na zdrojové notebooky.
 - `-img` zahrnuto: odkazy na obrázky mohou směřovat na přeložené obrázky.
-- `-img` vyloučeno: odkazy na obrázky mohou zůstat směřovat na zdrojové obrázky.
+- `-img` vyloučeno: odkazy na obrázky mohou zůstat nasměrovány na zdrojové obrázky.
 
-Proveďte úplný překlad obsahu, když by měly všechny interní odkazy preferovat přeložené výstupy:
+Proveďte úplný překlad obsahu, když by všechny vnitřní odkazy měly upřednostňovat přeložené výstupy:
 
 ```bash
 translate -l "ko" -md -nb -img
 ```
 
-Po překladu spusťte kontrolu odkazů:
+Proveďte kontrolu odkazů po překladu:
 
 ```bash
 co-op-review -l "ko"
@@ -102,26 +102,26 @@ co-op-review -l "ko"
 Pokud se přeložený Markdown vykresluje nesprávně:
 
 - Zkontrolujte, že frontmatter začíná a končí `---`.
-- Zkontrolujte, že počet ohraničení kódu odpovídá mezi zdrojovými a přeloženými soubory.
-- Spusťte `co-op-review` pro odhalení běžných strukturálních problémů.
-- Přeložte znovu konkrétní soubor, pokud byl výstup poškozen.
+- Zkontrolujte, že počty code fence odpovídají mezi zdrojovými a přeloženými soubory.
+- Spusťte `co-op-review` pro zachycení běžných strukturálních problémů.
+- Přeložte daný soubor znovu, pokud byl výstup poškozen.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action běžela, ale žádný Pull Request nebyl vytvořen
+## GitHub Action se spustil, ale nebyl vytvořen žádný pull request
 
-Pokud `peter-evans/create-pull-request` uvádí, že větev není vpředu oproti základní větvi (base), workflow nenašel žádné soubory ke commitnutí.
+Pokud `peter-evans/create-pull-request` hlásí, že větev není před základní větví, workflow nenašel žádné soubory ke commitnutí.
 
-Možné příčiny:
+Pravděpodobné příčiny:
 
 - Běh překladu nevygeneroval žádné změny.
 - `.gitignore` vylučuje `translations/`, `translated_images/` nebo přeložené notebooky.
 - `add-paths` neodpovídá vygenerovaným výstupním adresářům.
-- Krok překladu skončil předčasně.
+- Krok překladu skončil dříve.
 
-Opravy:
+Řešení:
 
 1. Potvrďte, že vygenerované soubory existují v `translations/` nebo `translated_images/`.
 2. Potvrďte, že `.gitignore` neignoruje vygenerované výstupy.
@@ -140,7 +140,7 @@ Opravy:
    translate -l "ko" -md -d -s
    ```
 
-5. Potvrďte, že workflow má následující oprávnění:
+5. Potvrďte, že oprávnění workflow zahrnují:
 
    ```yaml
    permissions:
@@ -150,9 +150,9 @@ Opravy:
 
 ## Kvalita překladu
 
-Strojové překlady mohou potřebovat lidskou kontrolu. Používejte `evaluate` pouze, když chcete experimentální skórování kvality a workflow oprav s nízkou jistotou.
+Strojové překlady mohou vyžadovat lidskou revizi. Používejte `evaluate` pouze tehdy, když chcete experimentální hodnocení kvality a workflow pro opravy s nízkou důvěrou.
 
 !!! warning "Experimental"
-    `evaluate` může používat kontrolní mechanismy založené na pravidlech i na LLM, a jeho hodnotící model a chování metadat se mohou změnit. Nepřidávejte jej do povinných CI bran, pokud váš workflow není připraven na změny.
+    `evaluate` může používat kontroly založené na pravidlech i na LLM, a jeho model skórování a chování metadat se mohou změnit. Nezařazujte jej do povinných CI bran, pokud váš pracovní postup není připraven na změny.
 
-Pro deterministické CI kontroly použijte místo toho `co-op-review`.
+Pro deterministické CI kontroly místo toho použijte `co-op-review`.

@@ -1,49 +1,49 @@
 # Python API
 
-穩定的公共 Python API 由 `co_op_translator.api` 匯出。大多數整合會使用下列其中一種工作流程：
+穩定的公開 Python API 是從 `co_op_translator.api` 匯出。大多數整合使用以下其中一種工作流程：
 
-| Scenario | Use this when | Main APIs |
+| 情境 | 在何種情況使用 | 主要 API |
 | --- | --- | --- |
-| Translate individual files or documents | Your application reads source content, calls Co-op Translator for translation, and decides where to save the result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | Your MCP host or application model will translate chunks, while Co-op Translator handles chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | You want the Python API to behave like the CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
+| 翻譯單一檔案或文件 | 您的應用程式讀取來源內容，呼叫 Co-op Translator 進行翻譯，並決定儲存結果的位置。 | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| 準備給主機代理翻譯的內容 | 您的 MCP 主機或應用模型會翻譯分塊，而 Co-op Translator 負責分割與重組。 | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| 翻譯整個程式庫 | 您希望 Python API 的行為像 CLI，一併處理偵測、輸出路徑、元資料、清理與寫入。 | `run_translation` |
 
-大多數位於 `core`、`config`、`review` 和 `utils` 底下的低階模組是由這些 API 入口點使用的實作細節。
+位於 `core`、`config`、`review` 與 `utils` 底下的大多數較低階模組，是這些 API 入口點所使用的實作細節。
 
-MCP 用戶端透過 [MCP Server](mcp.md) 使用相同的公共 API。若直接從 Python 呼叫請使用這一頁，而若要向代理或編輯器暴露 Co-op Translator，請參閱 MCP 指南。若您在 CLI、Python API 與 MCP 之間選擇，請先參考 [選擇您的工作流程](workflows.md)。
+MCP 用戶端可透過 [MCP Server](mcp.md) 使用相同的公開 API。直接從 Python 呼叫時請使用本頁，當要向代理或編輯器公開 Co-op Translator 時請參考 MCP 指南。如果您在 CLI、Python API 與 MCP 之間抉擇，請從 [選擇您的工作流程](workflows.md) 開始。
 
-## First-Time API Flow
+## 首次使用 API 流程
 
 如果您從 Python 程式碼呼叫 Co-op Translator，請從這裡開始：
 
-1. 如非僅準備送給 host-agent 翻譯的 Markdown 或 notebook 分段，請依照 [Configuration](configuration.md) 中的說明設定 LLM 提供者。
-2. 決定您的應用程式是否負責檔案 I/O。
+1. 如 [Configuration](configuration.md) 所述設定 LLM 提供者，除非您只是在為 host-agent 翻譯準備 Markdown 或 notebook 的分塊。
+2. 決定您的應用程式是否負責檔案的輸入/輸出。
 3. 當您的應用程式讀寫單一檔案時，使用內容 API。
-4. 當 Co-op Translator 應像 CLI 一樣處理整個倉庫時，使用 `run_translation`。
-5. 如需在自動化中進行確定性的檢查，翻譯後使用 `run_review`。
+4. 若希望 Co-op Translator 像 CLI 一樣處理整個程式庫，請使用 `run_translation`。
+5. 若在自動化中需要確定性的檢查，翻譯後請使用 `run_review`。
 
-| Goal | API to start with |
+| 目標 | 建議使用的 API |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
-| Translate one notebook payload | `translate_notebook_content` |
-| Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
-| Translate a full repository | `run_translation` |
-| Review translated output | `run_review` |
+| 翻譯一個 Markdown 字串或檔案 | `translate_markdown_content` |
+| 翻譯一個 notebook 內容 | `translate_notebook_content` |
+| 翻譯一張圖片 | `translate_image_content` |
+| 讓主機代理翻譯 Markdown 或 notebook 的分塊 | `start_markdown_agent_translation` 或 `start_notebook_agent_translation` |
+| 選擇輸出路徑後重寫已翻譯的連結 | `rewrite_markdown_paths` 或 `rewrite_notebook_paths` |
+| 翻譯整個程式庫 | `run_translation` |
+| 審查已翻譯的輸出 | `run_review` |
 
-## Scenario 1: Translate Individual Files or Documents
+## 情境 1：翻譯單一檔案或文件
 
-當您已經有檔案、編輯器緩衝區、notebook 載荷、MCP 請求或自訂管線輸入，且您的程式負責檔案 I/O，請使用此工作流程：
+當您已經有檔案、編輯器緩衝、notebook 內容、MCP 請求或自訂流程輸入時，請使用這個工作流程。您的程式負責檔案 I/O：
 
 1. 讀取來源內容。
-2. 呼叫內容翻譯 API。
-3. 若翻譯後的內容將寫入專案翻譯資料夾，則可選地呼叫路徑重寫 API。
-4. 將結果儲存或回傳給您的應用程式。
+2. 呼叫內容翻譯的 API。
+3. 若翻譯後的內容會寫入專案的翻譯資料夾，則可選擇呼叫路徑重寫 API。
+4. 由您的應用程式儲存或回傳結果。
 
-內容翻譯 API 不會執行專案探索、不會寫入 metadata、不會附加免責聲明，且不會自動重寫連結。
+內容翻譯的 API 不會執行專案偵測、不會寫入元資料、不會附加免責聲明，且不會自動重寫連結。
 
-### Markdown File
+### Markdown 檔案
 
 ```python
 import asyncio
@@ -87,7 +87,7 @@ asyncio.run(main())
 
 如果翻譯後的 Markdown 不會放在 Co-op Translator 的專案結構中，請跳過 `rewrite_markdown_paths`，直接儲存翻譯後的字串。
 
-### Notebook File
+### 筆記本檔案
 
 ```python
 import asyncio
@@ -131,7 +131,7 @@ asyncio.run(main())
 
 `translate_notebook_content` 會翻譯 Markdown 儲存格並保留非 Markdown 儲存格。路徑重寫僅套用於 Markdown 儲存格。
 
-### Image File
+### 圖像檔案
 
 ```python
 from pathlib import Path
@@ -154,15 +154,15 @@ target_path.parent.mkdir(parents=True, exist_ok=True)
 translated_image.save(target_path)
 ```
 
-`translate_image_content` 讀取來源影像並回傳已渲染的 `PIL.Image.Image`。它不會寫入已翻譯影像的 metadata。
+`translate_image_content` 會讀取原始影像並回傳一個已渲染的 `PIL.Image.Image`。它不會寫入已翻譯的影像元資料。
 
-## Scenario 2: Translate an Entire Repository
+## 情境 2：翻譯整個儲存庫
 
-當您希望 Python API 的行為像 `translate` CLI 一樣時，使用此工作流程。`run_translation` 會發現支援的檔案、翻譯選定的內容類型、重寫路徑、寫出輸出檔案、更新 metadata，並執行翻譯維護工作（例如清理）。
+當您希望 Python API 的行為類似 `translate` CLI 時，請使用此工作流程。`run_translation` 會偵測受支援的檔案、翻譯所選的內容類型、重寫路徑、寫出輸出檔案、更新元資料，並執行翻譯維護工作，例如清理。
 
-`run_translation` 是首選的專案協調入口。`translate_project` 作為相容性別名匯出，其行為相同。
+`run_translation` 是建議的專案協調進入點。`translate_project` 以相同行為匯出為相容別名。
 
-將當前倉庫中的 Markdown 檔案翻譯成韓文與日文：
+將目前儲存庫中的 Markdown 檔案翻譯為韓語和日語：
 
 ```python
 from co_op_translator.api import run_translation
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-只翻譯特定專案根目錄中的 notebooks：
+只翻譯來自特定專案根目錄的筆記本：
 
 ```python
 from co_op_translator.api import run_translation
@@ -185,7 +185,7 @@ run_translation(
 )
 ```
 
-預覽翻譯量而不寫入檔案：
+在不寫入檔案的情況下預覽翻譯量：
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-一次呼叫翻譯多個內容根目錄：
+為整合記錄結構化進度事件：
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # 將有效載荷儲存到你的 job-event 資料表，或串流到你的使用者介面。
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+事件使用版本化的 schema `co-op.translation.event.v1`。整合應該
+依賴像 `type` 與 `stage_key` 這類穩定欄位，而不是依賴面向使用者的
+主控台文字或 `stage_label`。
+
+在一次呼叫中翻譯多個內容根目錄：
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-當每個語言都應包含巢狀子目錄時，使用 per-language 的佔位符：
+當每個語言應包含巢狀子目錄時，使用每語言的佔位符：
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-如果未設定 `markdown`、`notebook` 或 `images`，API 將翻譯所有支援類型：Markdown、notebooks 和 images。
+如果沒有設定 `markdown`、`notebook` 或 `images`，API 將翻譯所有受支援的類型：Markdown、筆記本，以及影像。
 
-## Review Translated Output
+### 使用翻譯狀態提供者來保留已接受的人為編輯
+
+預設情況下，Co-op Translator 保持其現有的檔案層級行為：當一個
+Markdown 原始內容陳舊時，整個已翻譯檔案會被重新產生。託管的
+整合可以選擇傳入 `TranslationStateProvider` 來保留人為
+在未變動的來源區塊中的編輯。
+
+該提供者會提供最後一組已接受的來源/目標配對，並記錄每一個新的
+候選。接受仍然是整合方的責任——例如，
+在翻譯的 pull request 被合併後：
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+對於具有有效已接受基線的 Markdown 檔案，Co-op Translator 會對齊
+頂層的 Markdown 區塊。未變動的來源區塊會重用目前的已翻譯
+區塊，包括人為所做的編輯；已變更或新增的來源區塊會被送出
+以供翻譯；被刪除的來源區塊則會移除。如果對齊不明確，
+目標結構已變更、區塊翻譯無效，或沒有可用的基線，
+Co-op Translator 會安全地退回到現有的整檔
+翻譯流程。
+
+此 API 儲存的是文件的翻譯狀態，而不是跨文件的片語或
+段落翻譯記憶。它目前適用於 Markdown 專案
+翻譯。Notebook 和影像的行為不變。傳入 `update=True`
+仍然會要求完全重新產生。
+
+如果一個或多個檔案無法翻譯，`run_translation` 會在專案工作流程完成後拋出一個
+`RuntimeError`，而不是回報一個有缺少輸出的成功執行。
+整合應將此視為失敗的
+工作並保留先前已接受的翻譯狀態。
+
+## 審閱已翻譯的輸出
 
 `run_review` 在沒有 LLM 或 Vision 憑證的情況下執行確定性的翻譯檢查。
 
-!!! note "Beta"
-    `run_review` 是一個測試階段的確定性審查 API。它不會呼叫模型提供者或寫入檔案，但檢查與問題的 schema 可能會演進。
+!!! note "測試版"
+    `run_review` 是一個 beta 的確定性審查 API。它不會呼叫模型提供者或寫入檔案，但檢查和議題架構可能會演變。
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-只檢查相對於基底 ref 有變更的檔案，並輸出 GitHub 風格的格式：
+在僅翻譯 README 後，對審查使用相同的範圍：
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` 僅會審查每個已配置來源根目錄下的 `README.md`，
+包括自訂的 `groups` 及輸出目錄。其他文件與巢狀
+README 則會被排除。缺少來源 README 會引發 `ValueError`；失敗的
+翻譯檢查會引發 `RuntimeError`。
+
+只審查相對於 base ref 有變更的檔案，並輸出 GitHub 風格的結果：
 
 ```python
 from co_op_translator.api import run_review
@@ -274,9 +398,9 @@ run_review(
 )
 ```
 
-## Copy-Paste API Examples
+## 複製貼上 API 範例
 
-翻譯 Markdown 內容而不寫檔：
+翻譯 Markdown 內容但不寫入檔案：
 
 ```python
 import asyncio
@@ -295,7 +419,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-翻譯並重寫 Markdown 連結：
+翻譯並改寫 Markdown 連結：
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -327,7 +451,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-從 Python 翻譯一個倉庫：
+用 Python 翻譯儲存庫：
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-保留詞彙表術語：
+保留詞彙表用語：
 
 ```python
 from co_op_translator.api import run_translation
@@ -371,13 +495,16 @@ run_translation(
 )
 ```
 
-## Public Entry Points
+## 公開入口點
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## Content Translation APIs
+## 內容翻譯 API
 
-內容翻譯 API 適用於那些內容已在記憶中（例如編輯器外掛、MCP 工具、notebook 處理器或自訂管線）的整合。
+內容翻譯 API 適用於已將內容載入記憶體的整合情境，例如編輯器擴充、MCP 工具、筆記本處理器或自訂管線。
 
-| Function | Input | Output | File I/O | Notes |
+| 函式 | 輸入 | 輸出 | 檔案 I/O | 備註 |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Translates Markdown content only. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Translates Markdown cells and preserves non-Markdown cells. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Extracts and translates image text, then returns a rendered image. It does not save translated image metadata. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | 否 | 非同步。僅翻譯 Markdown 內容。不會改寫連結、寫入元資料，或附加免責聲明。 |
+| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | 否 | 非同步。翻譯 Markdown 儲存格並保留非 Markdown 儲存格。不會改寫連結、寫入元資料，或附加免責聲明。 |
+| `translate_image_content` | Image path | `PIL.Image.Image` | 僅讀取來源影像 | 同步。擷取並翻譯影像文字，然後回傳呈現後的影像。它不會儲存翻譯後的影像元資料。 |
 
-`translate_markdown_content` 和 `translate_notebook_content` 可透過它們的選項接受可選的 `source_path`。該路徑會作為上下文傳遞給翻譯器；呼叫方仍需在翻譯後負責任何專案特定的路徑重寫。
+`translate_markdown_content` 和 `translate_notebook_content` 可透過其選項接收一個可選的 `source_path`。該路徑會作為上下文傳遞給翻譯器；呼叫端仍需在翻譯後負責任何專案特定的路徑重寫。
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-相同的選項也可以以字典形式傳遞：
+相同的選項也可以以字典傳遞：
 
 ```python
 translated = await translate_markdown_content(
@@ -455,94 +588,96 @@ translated = await translate_markdown_content(
 )
 ```
 
-## Agent-Assisted Translation APIs
+## 代理輔助翻譯 API
 
-Agent-assisted API 不會由 Co-op Translator 呼叫 Azure OpenAI 或 OpenAI。它們會準備 Markdown 或 notebook 分段供 host agent 翻譯，然後從已翻譯的分段重建最終內容。
+代理協助的 API 不會由 Co-op Translator 呼叫已配置的 LLM 提供者。它們會準備供主機代理翻譯的 Markdown 或 notebook 區塊，然後從已翻譯的區塊重建最終內容。
 
-| Function | Purpose |
+| 函式 | 用途 |
 | --- | --- |
-| `start_markdown_agent_translation` | Return a self-contained Markdown job with chunks, prompts, and reconstruction state. |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from a job and host-agent translated chunks. |
-| `start_notebook_agent_translation` | Return a notebook job with Markdown-cell chunks for host-agent translation. |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON while preserving code cells, outputs, and metadata. |
+| `start_markdown_agent_translation` | 回傳一個自包含的 Markdown 工作，包含區塊、提示，以及重建狀態。 |
+| `finish_markdown_agent_translation` | 從工作與主機代理翻譯的區塊重建 Markdown。 |
+| `start_notebook_agent_translation` | 回傳一個筆記本工作，含供主機代理翻譯的 Markdown 儲存格區塊。 |
+| `finish_notebook_agent_translation` | 在保留程式碼儲存格、輸出與元資料的同時重建筆記本 JSON。 |
 
-此工作流程主要針對 MCP 主機。如果您需要由 Co-op Translator 管理提供者呼叫的生產環境倉庫翻譯，請使用 `translate_markdown_content`、`translate_notebook_content` 或 `run_translation`。
+此工作流程主要適用於 MCP hosts。如果你需要在生產環境翻譯儲存庫，並由 Co-op Translator 管理提供者呼叫，請使用 `translate_markdown_content`、`translate_notebook_content`，或 `run_translation`。
 
-## Path Rewriting APIs
+## 路徑重寫 API
 
-路徑重寫 API 不執行任何翻譯。它們在呼叫方知道來源路徑、翻譯後的目標路徑與專案佈局後，更新連結與 frontmatter 路徑。
+路徑重寫 API 不會執行任何翻譯。它們會在呼叫端知道來源路徑、已翻譯的目標路徑和專案佈局之後更新連結和 frontmatter 路徑。
 
-| Function | Scope | Notes |
+| 函式 | 範圍 | 備註 |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | Rewrites Markdown links and supported frontmatter path fields for a translated target. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Applies Markdown path rewriting to each Markdown cell and leaves non-Markdown cells unchanged. |
+| `rewrite_markdown_paths` | Markdown 內文與 frontmatter | 為已翻譯的目標改寫 Markdown 連結與受支援的 frontmatter 路徑欄位。 |
+| `rewrite_notebook_paths` | Notebook JSON 中的 Markdown 儲存格 | 將 Markdown 路徑改寫套用到每個 Markdown 儲存格，並保持非 Markdown 儲存格不變。 |
 
-`policy` 參數可以是一個包含下列欄位的字典：
+`policy` 參數可以是一個包含以下欄位的字典：
 
-| Field | Required | Purpose |
+| 欄位 | 必要 | 用途 |
 | --- | --- | --- |
-| `language_code` | Yes | Target language code, such as `"ko"` or `"pt-BR"`. |
-| `root_dir` | No | Source project root. Defaults to `"."`. |
-| `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
-| `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
-| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
-| `lang_subdir` | No | Optional subdirectory under each language folder. |
+| `language_code` | 是 | 目標語言代碼，例如 `"ko"` 或 `"pt-BR"`。 |
+| `root_dir` | 否 | 來源專案根目錄。預設為 `"."`。 |
+| `translations_dir` | 否 | 文字翻譯輸出目錄。預設為 `root_dir` 下的 `translations`。 |
+| `translated_images_dir` | 否 | 翻譯後影像輸出目錄。預設為 `root_dir` 下的 `translated_images`。 |
+| `translation_types` | 否 | 啟用的翻譯類型。預設為 Markdown、筆記本與影像。 |
+| `lang_subdir` | 否 | 在每個語言資料夾下的可選子目錄。 |
 
-## Project Translation Parameters
+## 專案翻譯參數
 
-| Parameter | Type | Default | Purpose |
+| 參數 | 型別 | 預設 | 用途 |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Space-separated target language codes, such as `"ko ja fr"`, or `"all"`. Alias codes are normalized to canonical BCP 47 values. |
-| `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` are supplied. |
-| `update` | `bool` | `False` | Delete and recreate existing translations for the selected languages. |
-| `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
-| `markdown` | `bool` | `False` | Include Markdown translation. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
-| `debug` | `bool` | `False` | Enable debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
-| `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
-| `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
-| `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
-| `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
-
-## Review Parameters
-
-`run_review` 有意在可能的情況下模仿 `run_translation` 的簽名，以便自動化可以在翻譯與審查工作流程之間以最小分支切換。
-
-| Parameter | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders to review. Space-separated strings and iterables are accepted. `"all"` reviews every discovered translation language. |
-| `root_dir` | `str` | `"."` | Project root for a single review target. Ignored when `root_dirs` or `groups` are supplied. |
-| `markdown` | `bool` | `False` | Include Markdown and MDX source files. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
-| `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images are checked from Markdown. |
-| `translations_dir` | `str \| None` | `None` | 自訂文字翻譯輸出目錄。相對路徑會相對每個根目錄解析。 |
+| `language_codes` | `str` | 必填 | 以空格分隔的目標語言代碼，例如 `"ko ja fr"` 或 `"all"`。別名代碼會規範化為標準 BCP 47 值。 |
+| `root_dir` | `str` | `"."` | 單一翻譯目標的專案根目錄。當提供 `root_dirs` 或 `groups` 時會被忽略。 |
+| `update` | `bool` | `False` | 刪除並重新建立所選語言的現有翻譯。 |
+| `images` | `bool` | `False` | 包含影像翻譯。需要 Azure AI Vision 設定。 |
+| `markdown` | `bool` | `False` | 包含 Markdown 翻譯。 |
+| `notebook` | `bool` | `False` | 包含 Jupyter 筆記本翻譯。 |
+| `debug` | `bool` | `False` | 啟用除錯日誌。 |
+| `save_logs` | `bool` | `False` | 將 DEBUG 級別的日誌檔儲存在根目錄下的 `logs/` 目錄。 |
+| `yes` | `bool` | `True` | 於程式化及 CI 使用時自動確認提示。 |
+| `add_disclaimer` | `bool` | `False` | 在翻譯後的 Markdown 與筆記本中加入機器翻譯免責聲明。 |
+| `translations_dir` | `str \| None` | `None` | 自訂文字翻譯輸出目錄。相對路徑依每個根目錄解析。 |
+| `image_dir` | `str \| None` | `None` | 自訂翻譯後圖片輸出目錄。相對路徑依每個根目錄解析。 |
 | `root_dirs` | `Iterable[str] \| None` | `None` | 共用相同輸出設定的多個根目錄。 |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | 顯式的 `(root_dir, translations_dir)` 配對。優先於 `root_dirs`。 |
-| `changed_from` | `str \| None` | `None` | 用於限制審查至已更改來源檔案的 Git ref。 |
-| `output_format` | `str` | `"text"` | 審查輸出格式。支援的值為 `"text"` 和 `"github"`。 |
-| `fail_on_warnings` | `bool` | `False` | 將警告視為與錯誤一樣的失敗。 |
-| `debug` | `bool` | `False` | 啟用偵錯日誌紀錄。 |
-| `save_logs` | `bool` | `False` | 將 DEBUG 級別的日誌檔案儲存於根目錄下的 `logs/` 目錄。 |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | 明確的 `(root_dir, translations_dir)` 配對。優先於 `root_dirs`。 |
+| `repo_url` | `str \| None` | `None` | 用於繪製 README 語言表格說明的儲存庫 URL。 |
+| `glossaries` | `Iterable[str] \| None` | `None` | 翻譯時要保留的詞彙表條目。重複和空白條目會被標準化。 |
+| `dry_run` | `bool` | `False` | 在不寫入檔案的情況下估算翻譯量並預覽遷移行為。 |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | 用於增量 Markdown 更新的選擇性已接受基線與候選項持久化適配器。省略時保留現有的整檔行為。 |
 
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+## 審查參數
 
-## 配置要求
+`run_review` 在可能情況下有意地模仿 `run_translation` 的簽名，這樣自動化可以僅需最少分支就能在翻譯與審查工作流程之間切換。
 
-需要由提供者支援的翻譯 API 在翻譯前先進行提供者設定：
+| 參數 | 類型 | 預設值 | 用途 |
+| --- | --- | --- | --- |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | 要檢閱的目標語言資料夾。接受以空格分隔的字串與可疊代物。`"all"` 將檢閱所有偵測到的翻譯語言。 |
+| `root_dir` | `str` | `"."` | 單一檢閱目標的專案根目錄。當提供 `root_dirs` 或 `groups` 時會被忽略。 |
+| `markdown` | `bool` | `False` | 包含 Markdown 與 MDX 原始檔案。 |
+| `notebook` | `bool` | `False` | 包含 Jupyter 筆記本原始檔案。 |
+| `images` | `bool` | `False` | 為與翻譯選項保持對稱而保留。會從 Markdown 檢查圖片連結參考。 |
+| `translations_dir` | `str \| None` | `None` | 自訂文字翻譯輸出目錄。相對路徑依每個根目錄解析。 |
+| `root_dirs` | `Iterable[str] \| None` | `None` | 共用相同輸出設定的多個根目錄。 |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | 明確的 `(root_dir, translations_dir)` 配對。優先於 `root_dirs`。 |
+| `changed_from` | `str \| None` | `None` | 用來限制檢閱至變更過的原始檔案的 Git 參考。 |
+| `readme_only` | `bool` | `False` | 僅檢閱每個來源根目錄下的 `README.md`。若來源 README 缺失會拋出 `ValueError`。 |
+| `output_format` | `str` | `"text"` | 檢閱輸出格式。支援的值為 `"text"` 與 `"github"`。 |
+| `fail_on_warnings` | `bool` | `False` | 除了錯誤外也將警告視為失敗。 |
+| `debug` | `bool` | `False` | 啟用偵錯日誌。 |
+| `save_logs` | `bool` | `False` | 將 DEBUG 級別的日誌檔儲存於根目錄的 `logs/` 目錄下。 |
 
-- Markdown 和筆記本翻譯需要 LLM 提供者。請設定 Azure OpenAI 或 OpenAI 其中之一。
-- 影像翻譯除了需要 LLM 提供者外，還需要 Azure AI Vision。
-- `run_translation` 在專案翻譯開始前執行輕量的連線檢查。
-- 受代理協助的 `start_*_agent_translation` 與 `finish_*_agent_translation` API 不會呼叫 Co-op Translator LLM 提供者。主機應用程式或 MCP 代理會翻譯已準備好的區塊。
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, 與 `run_review` 為決定性（deterministic）操作，且不需要提供者憑證。
+若未設定 `markdown`、`notebook` 或 `images`，API 將在適用情況下檢閱 Markdown、筆記本與圖片連結參考。檢閱不會呼叫 LLM 提供者，也不需要 API 金鑰。
 
-Required Azure OpenAI variables:
+## 設定需求
+
+有提供者支援的翻譯 API 在翻譯前需要提供者的設定：
+
+- Markdown 與筆記本翻譯需要 LLM 提供者。請設定 Azure OpenAI、OpenAI，或 Anthropic。
+- 除了 LLM 提供者外，圖片翻譯還需要 Azure AI Vision。
+- `run_translation` 在專案翻譯開始前會執行輕量連線檢查。
+- 代理協助的 `start_*_agent_translation` 與 `finish_*_agent_translation` API 不會呼叫 Co-op Translator 的 LLM 提供者。由主機應用程式或 MCP 代理翻譯已準備好的區塊。
+- `rewrite_markdown_paths`, `rewrite_notebook_paths`, 與 `run_review` 是確定性的，且不需要提供者憑證。
+
+必要的 Azure OpenAI 變數：
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -552,69 +687,78 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Required OpenAI variables:
+必要的 OpenAI 變數：
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+必要的 Anthropic 變數：
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` 和 `ANTHROPIC_MAX_TOKENS` 為選用。自 Co-op Translator 0.22.0 起，Microsoft Agent Framework 為所有提供者的預設模型客戶端。仍可暫時以 `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"` 選擇 Semantic Kernel，但這會產生棄用警告；請參閱 [設定](configuration.md#model-client-backend) 以了解分階段移除計畫。
+
+圖片翻譯所需的 Azure AI Vision 變數：
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` 是確定性的，且不需要 LLM 或 Azure AI Vision 的設定。
 
 ## 行為說明
 
-- 內容翻譯的 API 將翻譯與專案路徑重寫分開。當翻譯後的內容需要為目標位置調整專案相對連結時，請明確呼叫 `rewrite_markdown_paths` 或 `rewrite_notebook_paths`。
-- 專案協調（orchestration）API 在內容翻譯周圍加入專案行為，包含檔案發現、寫入、路徑重寫、metadata、清理，以及可選的免責聲明。
-- `run_translation` 透過 Click 列印進度與估算摘要，以符合 CLI 的使用者體驗。
-- `dry_run=True` 使用虛擬的 README 更新來計算估算，但不會寫入 README 或翻譯檔案。
-- `groups` 將依序處理。工作開始前會列印單一的總估算。
-- 選擇影像翻譯時，若缺少 Vision 設定，會在翻譯開始前引發錯誤。
-- 會偵測現有以別名為基礎的語言資料夾，並可在執行期間將其遷移至規範的語言資料夾名稱。
-- `run_review` 會在翻譯檔案遺失、翻譯 metadata 遺失或過時、Markdown frontmatter/程式碼區塊（code fences）格式錯誤，或翻譯後的 notebook JSON 無效時失敗。
-- `run_review` 預設會將本地 Markdown 與影像連結目標缺失報告為警告。
+- 內容翻譯 API 將翻譯與專案路徑重寫分開。當翻譯後的內容需要為目標位置調整以專案為相對的連結時，請明確呼叫 `rewrite_markdown_paths` 或 `rewrite_notebook_paths`。
+- 專案編排 API 在內容翻譯周圍加入專案行為，包括檔案偵測、寫入、路徑重寫、元資料、清理，以及選用的免責聲明。
+- `run_translation` 透過與 CLI 相同、由 Rich 支援的報告器列印進度與估算摘要。非互動輸出會退回為純文字。
+- 設為 `dry_run=True` 時會使用虛擬的 README 更新來計算估算，但不會寫入 README 或翻譯檔案。
+- `groups` 會依序處理。工作開始前會列印單一的總體估算。
+- 當選擇圖片翻譯時，若 Vision 設定缺失會在翻譯開始前引發錯誤。
+- 系統會偵測現有基於別名的語言資料夾，並可在執行期間將其遷移為規範語言資料夾名稱。
+- `run_review` 於以下情況會失敗：翻譯後的檔案遺失、翻譯元資料遺失或陳舊、Markdown frontmatter/程式碼區塊語法不良，以及翻譯後的筆記本 JSON 無效。
+- `run_review` 預設將遺失的本地 Markdown 與圖片連結目標報告為警告。
 
 ## 內部呼叫路徑
 
-The API delegates to the same core implementation used by the CLI:
+API 會委派給與 CLI 相同的核心實作：
 
 翻譯：
 
-1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` 用於記憶體內翻譯。
-2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` 用於明確的路徑後處理。
-3. `co_op_translator.api.translation.run_translation` 用於完整的專案協調。
-4. `co_op_translator.config.Config`, `LLMConfig` 與 `VisionConfig`。
-5. `co_op_translator.core.project.ProjectTranslator`。
-6. `co_op_translator.core.project.TranslationManager`。
-7. 專注於專案翻譯的 mixin，用於 Markdown、筆記本與影像。
-8. 位於 `co_op_translator.core` 下的 Markdown、筆記本、文字與影像翻譯器。
+1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.
+2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.
+3. `co_op_translator.api.translation.run_translation` for full project orchestration.
+4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
+5. `co_op_translator.core.project.ProjectTranslator`.
+6. `co_op_translator.core.project.TranslationManager`.
+7. 專注於 Markdown、筆記本與圖片之專案翻譯 mixin。
+8. 位於 `co_op_translator.core` 下的 Markdown、筆記本、文字與圖片翻譯器。
 
 審查：
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. 位於 `co_op_translator.review.checks` 下的決定性檢查
+4. 位於 `co_op_translator.review.checks` 下的確定性檢查
 
-下列類別對維護者有用，但並未作為套件等級的穩定 API 匯出。
+下列類別對維護者有用，但不作為套件層級的穩定 API 匯出。
 
-| 類別 | 模組 | 責任 |
+| 類別 | 模組 | 職責 |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | 協調專案層級的翻譯、目錄管理、每語言 metadata 正規化，並委派給 Markdown、筆記本與影像翻譯器。 |
-| `TranslationManager` | `co_op_translator.core.project.translation` | 執行 Markdown、筆記本、影像、過時檢測，以及翻譯 metadata 更新的非同步檔案處理工作。 |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | 協調 Markdown 檔案讀取、內容翻譯、路徑重寫、metadata、免責聲明，以及寫入。 |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | 協調筆記本檔案讀取、Markdown 儲存格翻譯、路徑重寫、metadata、免責聲明，以及寫入。 |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | 協調來源影像發現、影像翻譯、輸出路徑、metadata，以及寫入。 |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | 尋找已翻譯的 Markdown 配對、評估翻譯品質，並讀取信心（confidence）metadata，用於低信心修復流程。 |
-| `ReviewRunner` | `co_op_translator.review.runner` | 協調跨來源檔案、目標語言與已配置的翻譯根目錄的決定性審查檢查。 |
-| `ReviewTarget` | `co_op_translator.review.targets` | 描述來源根目錄以及該根目錄所審查的翻譯輸出目錄。 |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | 偵測舊有別名的語言資料夾，並準備遷移至規範 BCP 47 資料夾的計畫。 |
-| `Config` | `co_op_translator.config.base_config` | 載入 `.env` 檔案並檢查是否已設定必要的 LLM 與選用的 Vision 提供者。 |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | 自動偵測 Azure OpenAI 或 OpenAI、驗證必要的環境變數，並執行提供者連線檢查。 |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | 偵測 Azure AI Vision 設定並執行影像翻譯的連線檢查。 |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | 協調專案層級的翻譯、目錄管理、每語言的元資料標準化，以及委派給 Markdown、筆記本與圖片翻譯器。 |
+| `TranslationManager` | `co_op_translator.core.project.translation` | 執行 Markdown、筆記本、圖片的非同步檔案處理工作、陳舊偵測，以及翻譯元資料更新。 |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | 協調 Markdown 檔案讀取、內容翻譯、路徑重寫、元資料、免責聲明與寫入。 |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | 協調筆記本檔案讀取、Markdown 儲存格翻譯、路徑重寫、元資料、免責聲明與寫入。 |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | 協調來源圖片的發現、圖片翻譯、輸出路徑、元資料與寫入。 |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | 尋找翻譯後的 Markdown 配對、評估翻譯品質，並讀取低信心修復工作流程所需的信心元資料。 |
+| `ReviewRunner` | `co_op_translator.review.runner` | 協調跨原始檔案、目標語言與已設定翻譯根目錄的確定性檢查。 |
+| `ReviewTarget` | `co_op_translator.review.targets` | 描述一個來源根目錄以及為該根目錄檢閱的翻譯輸出目錄。 |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | 偵測舊有的別名語言資料夾，並準備遷移至規範 BCP 47 資料夾的計畫。 |
+| `Config` | `co_op_translator.config.base_config` | 載入 `.env` 檔並檢查是否已設定必要的 LLM 與選用的 Vision 提供者。 |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | 自動偵測 Azure OpenAI、OpenAI 或 Anthropic，驗證必要的環境變數，並執行提供者連線檢查。 |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | 偵測 Azure AI Vision 的設定，並為圖片翻譯執行連線檢查。 |

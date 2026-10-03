@@ -1,20 +1,20 @@
 # Odpravljanje težav
 
-Uporabite to stran, ko prevodno izvajanje nepričakovano uspe, se med konfiguracijo zruši ali ustvari izhod, ki potrebuje pregled.
+Uporabite to stran, kadar prevod teče nepričakovano uspešno, med konfiguracijo ne uspe ali ustvari izhod, ki potrebuje pregled.
 
-## Začni tukaj
+## Začnite tukaj
 
 1. Najprej zaženite osredotočen ukaz, na primer `translate -l "ko" -md`.
-2. Dodajte `-d` za debug izpis v konzoli.
+2. Dodajte `-d` za izpis debug sporočil v konzoli.
 3. Dodajte `-s` za shranjevanje debug zapisov v `<root-dir>/logs/`.
-4. Po prevodu zaženite `co-op-review`, da preverite svežino, strukturo in lokalne povezave.
+4. Po prevodu zaženite `co-op-review`, da preverite ažurnost, strukturo in lokalne povezave.
 
 ```bash
 translate -l "ko" -md -d -s
 co-op-review -l "ko"
 ```
 
-## Napake konfiguracije
+## Konfiguracijske napake
 
 ### Ni ponudnika jezikovnega modela
 
@@ -26,13 +26,13 @@ No language model configuration found.
 
 Rešitev:
 
-- Konfigurirajte Azure OpenAI ali OpenAI.
+- Konfigurirajte Azure OpenAI, OpenAI ali Anthropic.
 - Preverite, da so spremenljivke v okolju, kjer se ukaz izvaja.
-- Za lokalno uporabo jih shranite v `.env` v korenu projekta.
+- Za lokalno uporabo jih postavite v `.env` v korenu projekta.
 
 Oglejte si [Konfiguracija](configuration.md).
 
-### Prevodi slik brez Azure AI Vision
+### Prevajanje slik brez Azure AI Vision
 
 Napaka:
 
@@ -52,17 +52,17 @@ Simptomi lahko vključujejo `401`, napake dovoljenj z zamegljenimi podatki ali n
 
 Rešitev:
 
-- Potrdite, da ključ pripada isti Azure storitvi kot končna točka.
-- Potrdite, da storitev podpira Vision, ko uporabljate `-img`.
-- Potrdite, da ime nameščenja Azure OpenAI in različica API ustrezata vaši nameščeni instanci.
+- Potrdite, da ključ pripada istemu Azure viru kot končna točka.
+- Potrdite, da vir podpira Vision, če uporabljate `-img`.
+- Potrdite, da se ime namestitve Azure OpenAI in različica API ujemata z vašo namestitvijo.
 - Zaženite z debug zapisi: `translate -l "ko" -md -d -s`.
 
 ## Nobene datoteke niso bile prevedene
 
 Pogosti vzroki:
 
-- Izbrane zastavice (flags) ne ustrezajo vašim datotekam.
-- Prevedene datoteke že obstajajo.
+- Izbrani parametri ne ustrezajo vašim datotekam.
+- Obstajajo že prevedene datoteke.
 - Izvorne datoteke so v izključenih imenikih.
 - Ukaz se izvaja iz napačnega korena projekta.
 
@@ -74,18 +74,18 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-Uporabite `--root-dir`, ko je ukaz zagnan zunaj korena projekta.
+Uporabite `--root-dir`, kadar se ukaz izvaja zunaj korena projekta.
 
 ## Nepričakovano vedenje povezav
 
-Prepisovanje povezav je odvisno od izbranih vrst vsebin:
+Prepisovanje povezav je odvisno od izbranih vrst vsebine:
 
-- `-nb` vključeno: povezave do zvezkov (notebook) lahko kažejo na prevedene zvezke.
-- `-nb` izključeno: povezave do zvezkov lahko ostanejo usmerjene na izvorne zvezke.
-- `-img` vključeno: povezave do slik lahko kažejo na prevedene slike.
-- `-img` izključeno: povezave do slik lahko ostanejo usmerjene na izvorne slike.
+- `-nb` vključen: povezave do zvezkov lahko kažejo na prevedene zvezke.
+- `-nb` izključen: povezave do zvezkov lahko ostanejo usmerjene na izvorne zvezke.
+- `-img` vključen: povezave do slik lahko kažejo na prevedene slike.
+- `-img` izključen: povezave do slik lahko ostanejo usmerjene na izvorne slike.
 
-Zaženite popoln prevod vsebine, kadar naj vse notranje povezave raje kažejo na prevedene izhodne vsebine:
+Zaženite celovit prevod vsebine, kadar naj vse notranje povezave dajejo prednost prevedenim izhodom:
 
 ```bash
 translate -l "ko" -md -nb -img
@@ -99,32 +99,32 @@ co-op-review -l "ko"
 
 ## Težave pri upodabljanju Markdowna
 
-Če prevedeni Markdown ni pravilno upodobljen:
+Če se prevedeni Markdown prikaže nepravilno:
 
 - Preverite, da frontmatter začne in konča z `---`.
-- Preverite, da se število ograj za kodo (code fences) ujema med izvorno in prevedeno datoteko.
-- Zaženite `co-op-review`, da zajamete pogoste strukturne težave.
-- Ponovno prevedite določeno datoteko, če je bil izhod poškodovan.
+- Preverite, da se število ograj za kodo ujema med izvorno in prevedeno datoteko.
+- Zaženite `co-op-review`, da odkrijete pogoste strukturne težave.
+- Ponovno prevedite specifično datoteko, če je bil izhod poškodovan.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action se je zagnal, vendar ni bila ustvarjena pull request
+## GitHub Action se je zagnal, vendar ni bil ustvarjen Pull Request
 
-Če `peter-evans/create-pull-request` poroča, da veja ni pred osnovno, to pomeni, da delovni tok ni našel nobenih datotek za commit.
+Če `peter-evans/create-pull-request` poroča, da veja ni pred osnovno vejo, delovni tok ni našel nobenih datotek za potrditev.
 
 Verjetni vzroki:
 
-- Prevodno izvajanje ni ustvarilo nobenih sprememb.
+- Prevajanje ni ustvarilo sprememb.
 - `.gitignore` izključuje `translations/`, `translated_images/` ali prevedene zvezke.
-- `add-paths` se ne ujema z ustvarjenimi izhodnimi imeniki.
-- Korak prevajanja se je predčasno zaključil.
+- `add-paths` se ne ujema z generiranimi izhodnimi imeniki.
+- Korak prevajanja je končal prezgodaj.
 
 Rešitve:
 
-1. Potrdite, da ustvarjene datoteke obstajajo v `translations/` ali `translated_images/`.
-2. Potrdite, da `.gitignore` ne ignorira ustvarjenih izhodov.
+1. Potrdite, da generirane datoteke obstajajo v `translations/` ali `translated_images/`.
+2. Preverite, da `.gitignore` ne ignorira generiranih izhodov.
 3. Uporabite ujemajoče se `add-paths`:
 
    ```yaml
@@ -134,7 +134,7 @@ Rešitve:
        translated_images/
    ```
 
-4. Zaradi testiranja začasno dodajte debug zastavice (flags) ukazu translate:
+4. Začasno dodajte debug zastavice ukazu `translate`:
 
    ```bash
    translate -l "ko" -md -d -s
@@ -150,9 +150,9 @@ Rešitve:
 
 ## Kakovost prevoda
 
-Strojni prevodi lahko potrebujejo človeški pregled. Uporabite `evaluate` le, ko želite eksperimentalno ocenjevanje kakovosti in delovne tokove popravil z nizko zanesljivostjo.
+Strojni prevodi lahko potrebujejo človeški pregled. `evaluate` uporabljajte le, kadar želite eksperimentalno ocenjevanje kakovosti in delovne tokove popravil za nizko zaupanje.
 
-!!! warning "Experimental"
-    `evaluate` lahko uporablja preverjanja na osnovi pravil in LLM, njegovo modeliranje ocenjevanja in vedenje metapodatkov pa se lahko spremenita. Ne vključujte ga v obvezne CI-preverke, razen če je vaš delovni tok pripravljen na spremembe.
+!!! warning "Eksperimentalno"
+    `evaluate` lahko uporablja preverjanja, temelječa na pravilih in LLM, njegovo ocenjevalno modeliranje in obnašanje metapodatkov pa se lahko spremenita. Ne vključujte ga v obvezne CI prehode, razen če je vaš delovni tok pripravljen na spremembe.
 
-Za deterministične CI-preverjanja namesto tega uporabite `co-op-review`.
+Za deterministične CI preverjanja raje uporabite `co-op-review`.

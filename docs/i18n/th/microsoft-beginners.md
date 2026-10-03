@@ -1,4 +1,4 @@
-# Microsoft Beginners Repositories
+# ที่เก็บสำหรับผู้เริ่มต้นของ Microsoft
 
 หน้านี้มีไว้สำหรับผู้ดูแลของที่เก็บ "For Beginners" ของ Microsoft ที่ใช้ส่วน README ร่วม "Other Courses"
 

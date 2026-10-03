@@ -2,9 +2,9 @@
 
 Co-op Translator admite los siguientes códigos de idioma para las salidas de traducción de texto, cuadernos e imágenes.
 
-Si desea agregar un nuevo idioma, actualice las asignaciones de idioma y fuente en `src/co_op_translator/fonts/` y pruebe el idioma antes de abrir una pull request.
+Si desea agregar un nuevo idioma, actualice los mapeos de idioma y fuente en `src/co_op_translator/fonts/` y pruebe el idioma antes de abrir una solicitud de extracción.
 
-| Language Code | Nombre del idioma | Font | Soporte RTL | Problemas conocidos |
+| Código de idioma | Nombre del idioma | Fuente | Soporte RTL | Problemas conocidos |
 | --- | --- | --- | --- | --- |
 | en | Inglés | NotoSans-Medium.ttf | No | No |
 | fr | Francés | NotoSans-Medium.ttf | No | No |
@@ -13,7 +13,7 @@ Si desea agregar un nuevo idioma, actualice las asignaciones de idioma y fuente 
 | ru | Ruso | NotoSans-Medium.ttf | No | No |
 | ar | Árabe | NotoSansArabic-Medium.ttf | Sí | No |
 | fa | Persa (Farsi) | NotoSansArabic-Medium.ttf | Sí | No |
-| ur | Urdu | NotoSansArabic-Medium.ttf | Sí | No |
+| ur | Urdú | NotoSansArabic-Medium.ttf | Sí | No |
 | zh-CN | Chino (Simplificado) | NotoSansCJK-Medium.ttc | No | No |
 | zh-MO | Chino (Tradicional, Macao) | NotoSansCJK-Medium.ttc | No | No |
 | zh-HK | Chino (Tradicional, Hong Kong) | NotoSansCJK-Medium.ttc | No | No |
@@ -22,7 +22,7 @@ Si desea agregar un nuevo idioma, actualice las asignaciones de idioma y fuente 
 | ko | Coreano | NotoSansCJK-Medium.ttc | No | No |
 | hi | Hindi | NotoSansDevanagari-Medium.ttf | No | No |
 | bn | Bengalí | NotoSansBengali-Medium.ttf | No | No |
-| mr | Marathi | NotoSansDevanagari-Medium.ttf | No | No |
+| mr | Maratí | NotoSansDevanagari-Medium.ttf | No | No |
 | ne | Nepalí | NotoSansDevanagari-Medium.ttf | No | No |
 | pa | Punjabi (Gurmukhi) | NotoSansGurmukhi-Medium.ttf | No | No |
 | pt-PT | Portugués (Portugal) | NotoSans-Medium.ttf | No | No |
@@ -59,14 +59,15 @@ Si desea agregar un nuevo idioma, actualice las asignaciones de idioma y fuente 
 | pcm | Pidgin nigeriano | NotoSans-Medium.ttf | No | No |
 | te | Telugu | NotoSans-Medium.ttf | No | No |
 | ml | Malayalam | NotoSans-Medium.ttf | No | No |
-| kn | Canarés | NotoSans-Medium.ttf | No | No |
+| kn | Kannada | NotoSans-Medium.ttf | No | No |
 | km | Jemer | NotoSansKhmer-Medium.ttf | No | No |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | No | No |
 
 ## Añadir un idioma
 
-Para agregar soporte para un nuevo idioma:
+Para añadir soporte para un nuevo idioma:
 
 1. Añada el código de idioma y el nombre para mostrar a las utilidades de idioma.
-2. Agregue o asigne una fuente en `src/co_op_translator/fonts/font_language_mappings.yml`.
+2. Añada o asocie una fuente en `src/co_op_translator/fonts/font_language_mappings.yml`.
 3. Pruebe la salida de traducción de Markdown e imágenes.
-4. Abra una pull request con el mapeo y las notas de validación.
+4. Abra una solicitud de extracción con el mapeo y las notas de validación.

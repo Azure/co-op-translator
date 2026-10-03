@@ -1,6 +1,6 @@
-# CLI Reference
+# CLI viide
 
-Co-op Translator installib need käsurea algpunktid:
+Co-op Translator paigaldab järgmised käsurea käivituspunktid:
 
 - `translate`
 - `evaluate`
@@ -8,39 +8,51 @@ Co-op Translator installib need käsurea algpunktid:
 - `co-op-review`
 - `co-op-translator-mcp`
 
-Käsud `translate`, `evaluate`, `migrate-links` ja `co-op-review` väljastavad juhtimise läbi `co_op_translator.__main__`, mis valib käsu teostuse lähtudes käivitatud skripti nimest. MCP server kasutab otse `co_op_translator.mcp.server`.
+The `translate`, `evaluate`, `migrate-links`, and `co-op-review` käsud kutsutakse läbi `co_op_translator.__main__`, mis valib käsu implementeerimise vastavalt käivitatud skripti nimele. MCP server kasutab `co_op_translator.mcp.server` otse.
 
-Kui otsustate CLI, Python API ja MCP vahel, alustage lehega [Choose Your Workflow](workflows.md).
+Kui otsustate CLI, Python API ja MCP vahel, alustage [Vali töövoog](workflows.md).
 
-## First-Time CLI Flow
+## Konsooli väljund
 
-Alustage siit, kui kasutate Co-op Translatorit terminalist:
+Interaktiivsed terminalid kasutavad Rich-vormindust käsu päise, edenemise ja kokkuvõtete jaoks. CI ja mitte-interaktiivne väljund langevad automaatselt tagasi tavalisele tekstile.
 
-1. Konfigureerige LLM-teenuse pakkuja vastavalt juhisele lehel [Configuration](configuration.md).
-2. Valige sisu tüüp, mida soovite tõlkida.
-3. Käivitage esmalt fookustatud käsk, näiteks ainult Markdowni tõlge.
-4. Kasutage suurte repositooriumi muutuste puhul enne kirjutamist `--dry-run`.
-5. Kasutage tõlke järel struktuuri ja värskuse kontrollimiseks `co-op-review`.
+Määrake `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` tavalise väljundi sundimiseks või `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` Rich-väljundi sundimiseks. Määrake `CO_OP_TRANSLATOR_NO_PROGRESS=1`, et säilitada kokkuvõtted, kuid peita elavaid edenemisribasid.
 
-| Goal | Command to start with |
+Kasutage `translate --json-events progress.ndjson`, kui mõni teine süsteem vajab
+masinloetavat edenemist. CLI jätkab inimeste jaoks mõeldud väljundi kuvamist, samal ajal
+kui NDJSON-fail saab versioonitud sündmusi `co-op.translation.event.v1`, mis sisaldavad
+stabiilseid välju nagu `type`, `stage_key`, `completed`, `total` ja
+`current_path`.
+
+## Esmakordne CLI-töövoog
+
+Alustage siit, kui kasutate Co-op Translatort terminalist:
+
+1. Seadistage LLM-teenuse pakkuja nagu on kirjeldatud [Konfiguratsioonis](configuration.md).
+2. Valige sisutüüp, mida soovite tõlkida.
+3. Käivitage esmalt fokuseeritud käsk, näiteks ainult Markdowni tõlge.
+4. Kasutage enne suuri repositooriumi muudatusi `--dry-run`.
+5. Pärast tõlkimist kasutage `co-op-review` struktuuri ja ajakohasuse kontrollimiseks.
+
+| Eesmärk | Käsk alustamiseks |
 | --- | --- |
-| Translate Markdown documents | `translate -l "ko" -md` |
-| Translate notebooks | `translate -l "ko" -nb` |
-| Translate image text | `translate -l "ko" -img` |
-| Preview work without writing files | `translate -l "ko" -md --dry-run` |
-| Review existing translations | `co-op-review -l "ko"` |
-| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
-| Expose tools to an MCP client | Configure the [MCP Server](mcp.md) instead of running CLI commands directly. |
+| Markdowni dokumentide tõlkimine | `translate -l "ko" -md` |
+| Märkmike tõlkimine | `translate -l "ko" -nb` |
+| Pilditeksti tõlkimine | `translate -l "ko" -img` |
+| Töö eelvaade ilma failide salvestamiseta | `translate -l "ko" -md --dry-run` |
+| Olemasolevate tõlgete ülevaatus | `co-op-review -l "ko"` |
+| Märkmike ja Markdowni linkide uuendamine | `migrate-links -l "ko" --dry-run` |
+| Tööriistade pakkumine MCP kliendile | Konfigureerige [MCP-server](mcp.md) selle asemel, et CLI käske otse käivitada. |
 
 ## translate
 
-Tõlgib Markdown-faile, märkmikke ja pilditeksti ühte või mitmesse sihtkeelde.
+Tõlgib Markdowni faile, märkmikke ja pilditeksti ühte või mitmesse sihtkeelde.
 
 ```bash
 translate -l "ko ja fr"
 ```
 
-### Common examples
+### Tüüpilised näited
 
 Tõlgi ainult Markdown:
 
@@ -48,25 +60,25 @@ Tõlgi ainult Markdown:
 translate -l "de" -md
 ```
 
-Tõlgi ainult märkmikud:
+Tõlgi ainult märkmikke:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Tõlgi Markdown ja pildid:
+Tõlgi Markdowni ja pilte:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-Uuenda olemasolevaid tõlkeid, kustutades ja uuesti luues need:
+Uuenda olemasolevaid tõlkeid, kustutades ja luues need uuesti:
 
 ```bash
 translate -l "ko" -u
 ```
 
-Käivita ilma interaktiivsete küsimusteta:
+Käivita ilma interaktiivsete kinnituseta:
 
 ```bash
 translate -l "ko ja" -md -y
@@ -78,49 +90,56 @@ Salvesta logid:
 translate -l "ko" -s
 ```
 
-### Options
+Kirjuta struktureeritud edenemissündmusi:
 
-| Option | Required | Description |
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
+### Valikud
+
+| Valik | Nõutav | Kirjeldus |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Tühikuga eraldatud keeltsüklid, näiteks `"es fr de"`, või `"all"`. |
-| `-r`, `--root-dir` | No | Projekti juurkataloog. Vaikeväärtus on jooksva kataloog. |
-| `-u`, `--update` | No | Kustuta valitud keelte olemasolevad tõlked ja loo need uuesti. |
-| `-img`, `--images` | No | Tõlgi ainult pildifailid. |
-| `-md`, `--markdown` | No | Tõlgi ainult Markdown-failid. |
-| `-nb`, `--notebook` | No | Tõlgi ainult Jupyter märkmikufailid. |
-| `-d`, `--debug` | No | Lülita konsoolis sisse silumise logimine. |
-| `-s`, `--save-logs` | No | Salvesta DEBUG-taseme logid kataloogi `<root-dir>/logs/`. |
-| `-x`, `--fix` | No | Tõlgi madala usaldusvõimalusega Markdown-failid ümber eelnevate hindamistulemuste põhjal. |
-| `-c`, `--min-confidence` | No | Usalduskünnis `--fix` jaoks. Vaikeväärtus on `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | No | Lisa või peata masina tõlketeatisi. CLI puhul vaikimisi lubatud. |
-| `-f`, `--fast` | No | Aegunud kiire pildirežiim. |
-| `-y`, `--yes` | No | Kinnita automaatselt promptid, kasulik CI puhul. |
-| `--repo-url` | No | Repositooriumi URL, mida kasutatakse README keelte tabeli harva-sõelumisalas. |
-| `--migrate-language-folders` | No | Nimeta ümber vananenud alias-kaustad, näiteks `cn` või `tw`, kanoniliste BCP 47 kaustadeks. |
-| `--dry-run` | No | Eelvaade keelekaustade migratsioonist ja tõlkehinnangutest ilma failide kirjutamiseta. |
+| `-l`, `--language-codes` | Jah | Tühikuga eraldatud keelekoodid, näiteks "es fr de", või "all". |
+| `-r`, `--root-dir` | Ei | Projekti juur. Vaikeväärtus on praegune kataloog. |
+| `-u`, `--update` | Ei | Kustutab valitud keelte olemasolevad tõlked ja loob need uuesti. |
+| `-img`, `--images` | Ei | Tõlgi ainult pildifaile. |
+| `-md`, `--markdown` | Ei | Tõlgi ainult Markdown-faile. |
+| `-nb`, `--notebook` | Ei | Tõlgi ainult Jupyteri märkmikke. |
+| `-d`, `--debug` | Ei | Luba debug-tasemel logimine konsoolis. |
+| `-s`, `--save-logs` | Ei | Salvesta DEBUG-taseme logid asukohta `<root-dir>/logs/`. |
+| `--json-events` | Ei | Kirjuta masinloetavad tõlke edenemissündmused NDJSON-ina. |
+| `-x`, `--fix` | Ei | Uuesti tõlgi madala usaldusega Markdown-failid varasemate hindamistulemite põhjal. |
+| `-c`, `--min-confidence` | Ei | Usalduse lävi `--fix` jaoks. Vaikeväärtus on `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | Ei | Lisa või peida masintõlke vastutusest teatamist. CLI-s on see vaikimisi lubatud. |
+| `-f`, `--fast` | Ei | Aegunud kiire pildirežiim. |
+| `-y`, `--yes` | Ei | Automaatne kinnitamine, kasulik CI puhul. |
+| `--repo-url` | Ei | Repositooriumi URL, mida kasutatakse README keelte tabeli sparse-checkout soovituses. |
+| `--migrate-language-folders` | Ei | Nimeta ümber pärandalias kaustad, nagu `cn` või `tw`, kanonilisteks BCP 47 kaustadeks. |
+| `--dry-run` | Ei | Eelvaade keelekaustade migratsioonist ja tõlkemahust ilma failide kirjutamiseta. |
 
-Kui tüübivlippi ei anta, töötleb `translate` Markdowni, märkmikke ja pilte. Piltide tõlge nõuab Azure AI Vision konfigureerimist.
+Kui tüübi lipik pole antud, töötleb `translate` Markdowni, märkmikke ja pilte. Pildi tõlkimine nõuab Azure AI Vision konfiguratsiooni.
 
 ## evaluate
 
-Hindab tõlgitud Markdowni kvaliteeti ühe keele jaoks.
+Hinda tõlgitud Markdowni kvaliteeti ühe keele jaoks.
 
 !!! warning "Eksperimentaalne"
-    `evaluate` on eksperimentaalne. See võib kasutada reeglil põhinevaid ja LLM-põhiseid kvaliteedikontrolle, kirjutab hindamistulemused tõlke metaandmetesse ning selle skoorimudel ja metaandmete käitumine võivad muutuda.
+    `evaluate` on eksperimentaalne. See võib kasutada reeglitel põhinevaid ja LLM-põhiseid kvaliteedikontrolle, kirjutab hindamistulemused tõlke metaandmetesse ning selle skoorimismudel ja metaandmete käitumine võivad muutuda.
 
 ```bash
 evaluate -l "ko"
 ```
 
-### Common examples
+### Näited
 
-Kasuta rangemat madala usaldusväärtuse läve:
+Kasuta rangemat madala usalduse läve:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-Käivita ainult reeglil põhinevad kontrollid:
+Käivita ainult reeglitel põhinevad kontrollid:
 
 ```bash
 evaluate -l "fr" -f
@@ -132,128 +151,141 @@ Käivita ainult LLM-põhised kontrollid:
 evaluate -l "ja" -D
 ```
 
-### Options
+### Valikud
 
-| Option | Required | Description |
+| Valik | Nõutav | Kirjeldus |
 | --- | --- | --- |
-| `-l`, `--language-code` | Yes | Üksikulise keele kood, mida hinnata. Alias-koodid normaliseeritakse. |
-| `-r`, `--root-dir` | No | Projekti juurkataloog. Vaikeväärtus on jooksva kataloog. |
-| `-c`, `--min-confidence` | No | Künnis, mida kasutatakse madala usaldusväärtusega tõlgete loetlemisel. Vaikeväärtus on `0.7`. |
-| `-d`, `--debug` | No | Lülita sisse silumislogimine. |
-| `-s`, `--save-logs` | No | Salvesta DEBUG-taseme logid kataloogi `<root-dir>/logs/`. |
-| `-f`, `--fast` | No | Ainult reeglil põhinev hindamine. |
-| `-D`, `--deep` | No | Ainult LLM-põhine hindamine. |
+| `-l`, `--language-code` | Jah | Üksik keelekood hindamiseks. Aliase koodid normaliseeritakse. |
+| `-r`, `--root-dir` | Ei | Projekti juur. Vaikeväärtus on praegune kataloog. |
+| `-c`, `--min-confidence` | Ei | Lävi, mida kasutatakse madala usalduse tõlgete loetlemisel. Vaikeväärtus on `0.7`. |
+| `-d`, `--debug` | Ei | Luba debug-logimine. |
+| `-s`, `--save-logs` | Ei | Salvesta DEBUG-taseme logid asukohta `<root-dir>/logs/`. |
+| `-f`, `--fast` | Ei | Ainult reeglitel põhinev hindamine. |
+| `-D`, `--deep` | Ei | Ainult LLM-põhine hindamine. |
 
-Vaikimisi kasutab `evaluate` nii reeglipõhist kui ka LLM-põhist hindamist. Tulemused kirjutatakse tõlke metaandmetesse ja koondatakse konsoolis.
+Vaikimisi kasutab `evaluate` nii reeglitel põhinevat kui ka LLM-põhist hindamist. Tulemused kirjutatakse tõlke metaandmetesse ja kokku võetakse konsoolis.
 
 ## co-op-review
 
-Käivita deterministlikke tõlke hoolduskontrolle ilma API mandaatideta.
+Käivita deterministlikud tõlke hoolduse kontrollid ilma API volitusteta.
 
 !!! note "Beeta"
-    `co-op-review` on beetafaasis deterministlik ülevaatekäsk. See ei kutsu mudeleid ega kirjuta faile, kuid selle kontrollid ja leitud probleemide väljundiskeem võivad areneda.
+    `co-op-review` on beeta deterministlik ülevaatekäsk. See ei kutsu mudelite pakkujaid ega kirjuta faile, kuid selle kontrollid ja probleemide väljundi skeem võivad areneda.
 
 ```bash
 co-op-review -l "ko"
 ```
 
-### Common examples
+### Näited
 
-Vaata üle korea ja jaapani tõlked jooksvast kataloogist:
+Kontrolli Korea ja Jaapani tõlkeid praegusest kataloogist:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Vaata üle konkreetne projekti juur:
+Kontrolli konkreetset projekti juurt:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-Vaata üle ainult lähtefaile, mis on muutunud võrreldes alusrefiga:
+Kontrolli vaid README-d pärast ainult README tõlget:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` jätab muud dokumendid ja pesastatud README-d tähelepanuta. See ebaõnnestub, kui juurkataloogi
+`README.md` puudub. Koos `--changed-from`-iga vaatleb see README-d ainult
+siis, kui see lähtefail on muutunud. Ainult README tõlge jätab lähte-README
+muutumatuks, kaasa arvatud kõik jagatud-sektsiooni märgendid.
+
+Kontrolli ainult lähtefaile, mis on muutunud võrreldes baas-refiga:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-Trüki CI kokkuvõtete jaoks GitHub-vorminguline Markdown:
+Prindi GitHub-i stiilis Markdown-väljund CI kokkuvõtete jaoks:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
 ```
 
-### Options
+### Valikud
 
-| Option | Required | Description |
+| Valik | Nõutav | Kirjeldus |
 | --- | --- | --- |
-| `-l`, `--language-code` | No | Keel, mida üle vaadata. Võib esitada mitu korda või tühikuga eraldatuna. Vaikimisi kõik avastatud tõlke keeled. |
-| `-r`, `--root-dir` | No | Projekti juurkataloog. Vaikeväärtus on jooksva kataloog. |
-| `--changed-from` | No | Git-ref, mida kasutatakse ülevaate piiramiseks muutunud lähtefailidele. |
-| `--format` | No | Väljundi formaat: `text` või `github`. Vaikeväärtus on `text`. |
+| `-l`, `--language-code` | Ei | Keelekood, mida üle vaadata. Võib edastada mitu korda või tühikuga eraldatud väärtusena. Vaikimisi kõik leitud tõlkekeeled. |
+| `-r`, `--root-dir` | Ei | Projekti juur. Vaikeväärtus on praegune kataloog. |
+| `--changed-from` | Ei | Git ref, mida kasutatakse ülevaate piiramiseks muudetud lähtefailidele. |
+| `--readme-only` | Ei | Vaata ainult juurkataloogi `README.md` tõlget. |
+| `--format` | Ei | Väljundi formaat: `text` või `github`. Vaikeväärtus on `text`. |
 
-`co-op-review` kontrollib hetkel puuduvaid tõlgitud faile, puuduvat või aegunud tõlke metaandmeid, Markdowni frontmatteri ja koodifensi terviklikkust, vigast tõlgitud märkmiku JSON-i ning puuduvaid kohalikke Markdown- või pildilingi sihtpunkte. Puuduvad lingid on vaikimisi hoiatused; struktuuri- ja värskusprobleemid peatavad käsu ebaõnnestununa.
+`co-op-review` kontrollib praegu puuduvate tõlgitud failide, puuduvate või aegunut tõlke metaandmete, Markdowni frontmatteri ja koodiaia terviklikkuse, vigase tõlgitud märkmiku JSON-i ning puuduvaid kohalikke Markdowni või pildilinke. Puuduvad lingid on vaikimisi hoiatused; struktuuri- ja ajakohasuse probleemid põhjustavad käsu nurjumise.
 
 ## co-op-translator-mcp
 
-Käivita Co-op Translatori MCP server agentide, redigeerijate ja MCP-ühilduvate klientide jaoks.
+Käivitage Co-op Translator MCP-server agentidele, redaktoritele ja MCP-ühilduvatele klientidele.
 
 ```bash
 co-op-translator-mcp
 ```
 
-Vaiketransport on `stdio`. Vaata kliendi konfigureerimise, tööriistade, ressursside ja ohutusmärkuste kohta juhendit [MCP Server](mcp.md).
+Vaiketransport on `stdio`. Kliendi konfiguratsiooni, tööriistade, ressursside ja turvanõuete kohta vaadake juhendit [MCP-server](mcp.md).
 
-### Options
+### Valikud
 
-| Option | Required | Description |
+| Valik | Nõutav | Kirjeldus |
 | --- | --- | --- |
-| `--transport` | No | MCP transport: `stdio`, `streamable-http`, või `sse`. Vaikeväärtus on `stdio`. |
+| `--transport` | Ei | MCP-transport: `stdio`, `streamable-http`, or `sse`. Vaikeväärtus on `stdio`. |
 
 ## migrate-links
 
-Töötle tõlgitud Markdown-faile uuesti ja uuenda märkmike linke nii, et need osutaksid tõlgitud märkmikele, kui need on saadaval.
+Töödelda uuesti tõlgitud Markdown-faile ja uuendada märkmike linke nii, et need osutaksid tõlgitud märkmikele, kui need on olemas.
 
 ```bash
 migrate-links -l "ko ja"
 ```
 
-### Common examples
+### Näited
 
-Eelvaata lingi uuendusi:
+Eelvaade lingi uuendustest:
 
 ```bash
 migrate-links -l "ko" --dry-run
 ```
 
-Töötle kõiki toetatud keeli ilma kinnitusteta:
+Töötle kõiki toetatud keeli ilma kinnitamiseta:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-Kirjuta lingid ümber ainult siis, kui tõlgitud märkmikud olemas:
+Kirjuta lingid ümber ainult siis, kui tõlgitud märkmikud on olemas:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
 ```
 
-### Options
+### Valikud
 
-| Option | Required | Description |
+| Valik | Nõutav | Kirjeldus |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Tühikuga eraldatud keeltsüklid või `"all"`. |
-| `-r`, `--root-dir` | No | Projekti juurkataloog. Vaikeväärtus on jooksva kataloog. |
-| `--image-dir` | No | Tõlgitud piltide kataloog juure suhtes. Vaikeväärtus on `translated_images`. |
-| `--dry-run` | No | Näita faile, mida muudetakse, kirjutamata muudatusi. |
-| `--fallback-to-original`, `--no-fallback-to-original` | No | Kasuta algset märkmiku linki, kui tõlgitud märkmikuid pole. Vaikimisi lubatud. |
-| `-d`, `--debug` | No | Lülita sisse silumislogimine. |
-| `-s`, `--save-logs` | No | Salvesta DEBUG-taseme logid kataloogi `<root-dir>/logs/`. |
-| `-y`, `--yes` | No | Kinnita automaatselt promptid, kui töödeldakse kõiki keeli. |
+| `-l`, `--language-codes` | Jah | Tühikuga eraldatud keelekoodid või "all". |
+| `-r`, `--root-dir` | Ei | Projekti juur. Vaikeväärtus on praegune kataloog. |
+| `--image-dir` | Ei | Tõlgitud piltide kaust suhtelise tee suhtes juurest. Vaikeväärtus `translated_images`. |
+| `--dry-run` | Ei | Näita faile, mida muudetaks, ilma et muudatusi kirjutataks. |
+| `--fallback-to-original`, `--no-fallback-to-original` | Ei | Kasuta originaalseid märkmiku linke, kui tõlgitud märkmikud puuduvad. Vaikimisi lubatud. |
+| `-d`, `--debug` | Ei | Luba debug-logimine. |
+| `-s`, `--save-logs` | Ei | Salvesta DEBUG-taseme logid asukohta `<root-dir>/logs/`. |
+| `-y`, `--yes` | Ei | Automaatne kinnitamine, kui töödeldakse kõiki keeli. |
 
-## Environment
+## Keskkond
 
-Kõik käsud nõuavad ühe konfigureeritud LLM-teenuse pakkuja:
+Kui käsu käivitamiseks on vaja pakkuja volitusi, seadistage üks neist pakkujakomplektidest. `translate --dry-run` ja `co-op-review` ei vaja pakkuja volitusi:
 
 ```bash
 # Azure OpenAI
@@ -266,51 +298,55 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Või OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Või Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Piltide tõlge nõuab lisaks Azure AI Vision:
+Pilditõlkimiseks on lisaks vaja Azure AI Vision'i:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## Output layout
+## Väljundi paigutus
 
-Tekstide tõlked kirjutatakse kataloogi:
+Tekstilised tõlked kirjutatakse siia:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Tõlgitud pildiväljund kirjutatakse kataloogi:
+Tõlgitud piltide väljund kirjutatakse siia:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-Näiteks, kui tõlkida `README.md` ja `docs/setup.md` korea keelde, tekib:
+Näiteks `README.md` ja `docs/setup.md` koreakeelde tõlkimine toodab:
 
 ```text
 translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## Copy-Paste CLI Examples
+## Kopeeri-kleebi CLI näited
 
-Tõlgi Markdown kolmeks keeleks:
+Tõlgi Markdown kolmele keelele:
 
 ```bash
 translate -l "ko ja fr" -md
 ```
 
-Tõlgi ainult märkmikud:
+Tõlgi ainult märkmikke:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Tõlgi ainult pildid:
+Tõlgi ainult pilte:
 
 ```bash
 translate -l "pt-BR" -img
@@ -322,7 +358,7 @@ Eelvaata Markdowni tõlget ilma failide kirjutamiseta:
 translate -l "de es" -md --dry-run
 ```
 
-Paranda madala usaldusväärtusega Markdown-tõlkeid:
+Paranda madala usaldusega Markdowni tõlkeid:
 
 ```bash
 evaluate -l "ko" -c 0.8
@@ -335,13 +371,13 @@ Käivita CI-sõbralik Markdowni tõlge:
 translate -l "ko ja" -md -y -s
 ```
 
-Vaata üle tõlgitud väljund:
+Kontrolli tõlgitud väljundit:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Eelvaata lingi migratsiooni:
+Eelvaata linkide migratsiooni:
 
 ```bash
 migrate-links -l "ko" --dry-run

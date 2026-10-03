@@ -1,52 +1,67 @@
-# Configuration
+# Mipangilio
 
-Co-op Translator inahitaji mtoaji mmoja wa modeli ya lugha. Tafsiri ya picha kwa ziada inahitaji Azure AI Vision.
+Co-op Translator inahitaji msambazaji mmoja wa modeli ya lugha. Kutafsiri picha pia kunahitaji Azure AI Vision.
 
-Usanidi unasomwa kutoka kwa vigezo vya mazingira. Kwa miradi ya ndani, weka ndani ya faili `.env` katika mizizi ya mradi.
+Mipangilio husomwa kutoka kwa vigezo vya mazingira. Kwa miradi ya ndani, waiweke katika faili `.env` kwenye mzizi wa mradi.
 
-Kwa usanidi wa rasilimali za Azure, angalia [Usanidi wa Azure AI](azure-ai-setup.md).
+Kwa usanidi wa rasilimali za Azure, angalia [Azure AI Setup](azure-ai-setup.md).
 
-## Local runtime setup
+## Usanidi wa wakati wa kukimbia kwa ndani
 
-Tumia mazingira pepe kabla ya kuendesha CLI kwa ndani. Co-op Translator inasaidia Python 3.10 hadi 3.12.
+Tumia mazingira pepe kabla ya kuendesha CLI kwa ndani. Co-op Translator inaunga mkono Python 3.11 hadi 3.14.
 
 Kwa matumizi ya kawaida ya CLI, weka kifurushi kilichochapishwa ndani ya mazingira pepe:
 
-=== "Windows"
+### Windows (PowerShell)
 
-    ```powershell
-    python -m venv .venv
-    .venv\Scripts\activate
-    pip install co-op-translator
-    translate --help
-    ```
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install co-op-translator
+translate --help
+```
 
-=== "macOS / Linux"
+### macOS / Linux
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install co-op-translator
-    translate --help
-    ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install co-op-translator
+translate --help
+```
 
-Kwa ukuzaji wa hazina, weka utegemezi kutoka kwenye mizizi ya mradi badala yake:
+### Maendeleo ya hazina
+
+Kwa maendeleo ya hazina, badala yake weka utegemezi kutoka kwa mzizi wa mradi:
 
 ```bash
 poetry install
 poetry run translate --help
 ```
 
-Baada ya CLI kupatikana, sanidi mtoaji mmoja wa modeli ya lugha katika `.env`.
+Baada ya CLI kupatikana, sanidi msambazaji mmoja wa modeli ya lugha katika `.env`.
 
-## Provider selection
+## Uchaguzi wa msambazaji
 
-Chombo hugitambua watoaji moja kwa moja kwa mpangilio huu:
+Chombo kinatambua wasambazaji kiotomatiki kwa mpangilio huu:
 
 1. Azure OpenAI
 2. OpenAI
+3. Anthropic
 
-Kama hakuna mtoa huduma aliyesanidiwa, `translate`, `evaluate`, `migrate-links`, na `run_translation` zitashindwa wakati wa ukaguzi wa usanidi. `co-op-review` na `run_review` ni ukaguzi wa matengenezo unaotabirika na hazihitaji nyaraka za mtoa huduma.
+Tafsiri inahitaji cheti za msambazaji, isipokuwa kwa mapitio kama `translate -l "ko" -md --dry-run`. `migrate-links`, `co-op-review`, na `run_review` ni shughuli za matengenezo zinazoamuliwa na hazihitaji cheti za msambazaji.
+
+## Sehemu ya nyuma ya mteja wa modeli
+
+Kuanzia Co-op Translator 0.22.0, Azure OpenAI, OpenAI, na Anthropic zinatumia Microsoft Agent Framework kwa chaguo-msingi. Hakuna usanidi wa backend unaohitajika kwa matumizi ya kawaida.
+
+Semantic Kernel bado inapatikana kwa muda kwa ajili ya ulinganishaji. Ili kuichagua waziwazi, weka:
+
+```bash
+CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"
+```
+
+Kutumia Semantic Kernel kunatoa onyo la kuachwa. Kifurushi kinapangwa kuhamisha Semantic Kernel kuwa utegemezi wa hiari katika 0.23.0 na kuondoa muunganisho katika 0.24.0, kulingana na matokeo ya ulinganifu na maoni ya watumiaji. Anthropic inahitaji `agent-framework`; kuchagua waziwazi `semantic-kernel` na Anthropic husababisha kosa la usanidi. Thamani zisizo halali zitashindwa wakati wa uanzishaji wa mtafsiri unaotegemea msambazaji badala ya kushuka kimya. Fuata utangazaji na ripoti vikwazo katika [GitHub issue #543](https://github.com/Azure/co-op-translator/issues/543).
 
 ## Azure OpenAI
 
@@ -60,35 +75,50 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Ukaguzi wa muunganisho unatumia endpoint, API key, API version, na deployment name kabla ya kuanza kwa tafsiri.
+Ukaguzi wa muunganisho unatumia endpoint, API key, API version, na deployment name kabla ya kutafsiri kuanza.
 
 ## OpenAI
 
-Tumia OpenAI unapoitisha OpenAI API moja kwa moja.
+Tumia OpenAI unapopiga API ya OpenAI moja kwa moja.
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
-OPENAI_ORG_ID="..."          # hiari
-OPENAI_BASE_URL="..."        # hiari
 ```
 
 `OPENAI_CHAT_MODEL_ID` inahitajika kwa sababu mtafsiri anahitaji modeli maalum ya mazungumzo kwa wito za API.
 
+Acha `OPENAI_ORG_ID` na `OPENAI_BASE_URL` zisiwe zimewekwa kwa usanidi wa chaguo-msingi. Ongeza kitambulisho cha shirika tu ikiwa akaunti yako inahitaji, au base URL tu unapokitumia endpoint maalum. Usinakili thamani za kielelezo kwa mipangilio ya hiari.
+
+## Anthropic Claude
+
+Tumia Anthropic unapopiga API ya Claude moja kwa moja. Tengeneza [funguo la API la Anthropic](https://platform.claude.com/docs/en/get-started) na chagua [Kitambulisho cha modeli ya Claude](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions) inayotumika.
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_API_KEY` na `ANTHROPIC_MODEL` zinahitajika. Huna haja ya kuweka `CO_OP_TRANSLATOR_MODEL_CLIENT`; Agent Framework ni backend ya chaguo-msingi.
+
+Acha `ANTHROPIC_BASE_URL` isiyowekwa kwa API ya Anthropic. Iweke tu unapotumia endpoint maalum.
+
+`ANTHROPIC_MAX_TOKENS` kwa kawaida ni `8192`, ambayo inatoa nafasi kwa maandishi yenye wingi wa token kama Meitei Mayek. Punguza ikiwa modeli yako au endpoint inayolingana na Anthropic inapunguza matokeo chini ya hapo.
+
 ## Azure AI Vision
 
-Tafsiri ya picha inahitaji Azure AI Vision ili chombo kiweze kutoa maandishi kutoka kwa picha kabla ya kuyatafsiri.
+Kutafsiri picha kunahitaji Azure AI Vision ili chombo kiweze kutoa maandishi kutoka kwa picha kabla modeli ya lugha iliyosanidiwa kuziatafsiri. Anthropic inaweza kutafsiri maandishi yaliyotolewa kama vile Azure OpenAI au OpenAI.
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-Ikiwa tafsiri ya picha imechaguliwa kwa `-img`, `images=True`, au hakuna kichujio cha content-type, chombo kinathibitisha usanidi wa Vision kabla ya kuanza kwa tafsiri.
+Ikiwa kutafsiri picha kumechaguliwa kwa `-img`, `images=True`, au bila kichujio cha aina ya maudhui, chombo kinathibitisha usanidi wa Vision kabla ya kutafsiri kuanza.
 
-## Multiple credential sets
+## Seti nyingi za vyeti
 
-Tabaka la usanidi linaunga mkono seti nyingi za nyaraka kwa kuongeza nambari ya mwisho kwa vigezo vyenye kiashiria sawa:
+Tabaka la usanidi linaunga mkono seti nyingi za vyeti kwa kuongeza nambari ya mwisho (suffix) kwa vigezo vyenye index sawa:
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -104,35 +134,37 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_2="<deployment-2>"
 AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 ```
 
-Kila seti lazima iwe kamili. Ukaguzi wa afya huchagua seti inayofanya kazi kabla ya kuendelea na tafsiri.
+Kila seti lazima iwe kamili. Ukaguzi wa afya huchagua seti inayofanya kazi kabla ya kutafsiri kuendelea.
 
-## Command requirements
+OpenAI na Anthropic zinaunga mkono desturi ile ile ya suffix. Weka kila kigezo katika seti ya vyeti kwenye suffix ile ile, ikiwa ni pamoja na thamani za hiari kama `OPENAI_BASE_URL_1` au `ANTHROPIC_BASE_URL_1`.
 
-| Amri au API | Inahitaji LLM | Inahitaji Vision | Maelezo |
+## Mahitaji ya amri
+
+| Amri au API | LLM inahitajika | Vision inahitajika | Maelezo |
 | --- | --- | --- | --- |
-| `translate -md` | Ndio | Hapana | Inatafsiri Markdown tu. |
-| `translate -nb` | Ndio | Hapana | Inatafsiri notibuki tu. |
-| `translate -img` | Ndio | Ndio | Inatafsiri picha tu. |
-| `translate` with no type flags | Ndio | Ndio | Hali ya chaguo-msingi inajumuisha Markdown, notebooks, na picha. |
-| `evaluate` | Ndio | Hapana | Inatumia tathmini ya LLM isipokuwa `--fast` ikichaguliwa. |
-| `migrate-links` | Ndio | Hapana | Hufanya uhamishaji wa viungo, lakini bado hufanya ukaguzi wa usanidi ulioshirikiwa. |
-| `co-op-review` | Hapana | Hapana | Inafanya ukaguzi wa muundo wa tafsiri unaotabirika, upya, Markdown, notebook, na ukaguzi wa viungo vya ndani. |
-| `run_translation(markdown=True)` | Ndio | Hapana | Tafsiri ya Markdown kwa programu. |
-| `run_translation(images=True)` | Ndio | Ndio | Tafsiri ya picha kwa programu. |
-| `run_review(...)` | Hapana | Hapana | Mapitio unaotabirika wa programu. |
+| `translate -md` | Ndiyo | Hapana | Inatafsiri Markdown tu. |
+| `translate -nb` | Ndiyo | Hapana | Inatafsiri daftari tu. |
+| `translate -img` | Ndiyo | Ndiyo | Inatafsiri picha tu. |
+| `translate` bila vigezo vya aina | Ndiyo | Ndiyo | Hali ya chaguo-msingi inajumuisha Markdown, notebooks, na picha. |
+| `evaluate` | Ndiyo | Hapana | Inatumia tathmini ya LLM isipokuwa `--fast` imechaguliwa. |
+| `migrate-links` | Hapana | Hapana | Inafanya uhamishaji wa viungo vya ndani bila wito kwa wasambazaji. |
+| `co-op-review` | Hapana | Hapana | Inaendesha ukaguzi wa muundo wa tafsiri unaoamuliwa, upya wa maudhui (freshness), Markdown, daftari, na ukaguzi wa viungo vya ndani. |
+| `run_translation(markdown=True)` | Ndiyo | Hapana | Kutafsiri Markdown kwa programu. |
+| `run_translation(images=True)` | Ndiyo | Ndiyo | Kutafsiri picha kwa programu. |
+| `run_review(...)` | Hapana | Hapana | Ukaguzi unaoamuliwa kwa programu. |
 
-## Output directories
+## Saraka za pato
 
-Default text translation output:
+Pato la tafsiri ya maandishi (chaguo-msingi):
 
 ```text
 translations/<language-code>/<source-relative-path>
 ```
 
-Default translated image output:
+Pato la picha zilizotafsiriwa (chaguo-msingi):
 
 ```text
 translated_images/<language-code>/<source-relative-path>
 ```
 
-API ya Python inaweza kubadilisha folda hizi kwa kutumia `translations_dir` na `image_dir`.
+API ya Python inaweza kubadilisha saraka hizi kwa `translations_dir` na `image_dir`.

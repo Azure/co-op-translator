@@ -1,4 +1,4 @@
-# Azure AI Setup
+# Azure AI-installatie
 
 Use deze gids wanneer je Azure OpenAI wilt configureren voor tekstvertaling en Azure AI Vision voor het extraheren van tekst uit afbeeldingen.
 
@@ -8,14 +8,14 @@ Use deze gids wanneer je Azure OpenAI wilt configureren voor tekstvertaling en A
 - Machtiging om Azure AI-resources en modelimplementaties te maken of te gebruiken.
 - Een project in Azure AI Foundry of gelijkwaardige toegang tot Azure OpenAI- en Azure AI Vision-resources.
 
-## Create an Azure AI Project
+## Maak een Azure AI-project
 
 1. Open [Azure AI Foundry](https://ai.azure.com).
 2. Maak of selecteer een project.
 3. Maak of selecteer een AI-hub voor het project.
 4. Open het projectoverzicht na aanmaak.
 
-## Deploy an Azure OpenAI Model
+## Implementeer een Azure OpenAI-model
 
 1. In het project, open **Models + endpoints**.
 2. Selecteer **Deploy model**.
@@ -26,7 +26,7 @@ Use deze gids wanneer je Azure OpenAI wilt configureren voor tekstvertaling en A
 !!! note
     De Azure OpenAI API-versie is losstaand van de modelversie die wordt weergegeven in Azure AI Foundry. Kies een ondersteunde API-versie voor je implementatie.
 
-## Configure Azure AI Vision
+## Configureer Azure AI Vision
 
 Beeldvertaling gebruikt Azure AI Vision om tekst uit bronafbeeldingen te extraheren voordat de tekst wordt vertaald.
 
@@ -39,7 +39,7 @@ Noteer:
 - Azure AI Service-endpoint
 - Azure AI Service API-sleutel
 
-## Environment Variables
+## Omgevingsvariabelen
 
 Voeg de referenties toe aan je `.env`-bestand of CI-secrets.
 
@@ -66,7 +66,7 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_1="<deployment-1>"
 AZURE_OPENAI_API_VERSION_1="2024-12-01-preview"
 ```
 
-## Next Steps
+## Volgende stappen
 
 - Ga terug naar [Configuratie](configuration.md) om lokale of CI-omgevingsvariabelen in te stellen.
 - Gebruik de [CLI-referentie](cli.md) voor vertaalopdrachten.

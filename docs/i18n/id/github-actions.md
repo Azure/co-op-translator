@@ -2,27 +2,44 @@
 
 Gunakan GitHub Actions ketika Anda ingin sebuah repositori menerjemahkan dokumentasi yang diubah secara otomatis dan membuka pull request dengan keluaran yang dihasilkan.
 
-Sebagian besar repositori sebaiknya menggunakan pengaturan standar `GITHUB_TOKEN`. Gunakan pengaturan GitHub App hanya jika organisasi Anda membatasi izin token default atau memerlukan autentikasi berbasis aplikasi.
+Mulailah dengan pengaturan standar `GITHUB_TOKEN`, termasuk untuk repositori organisasi jika kebijakan mengizinkannya. Lihat [GitHub App Setup](#github-app-setup) jika organisasi Anda mengharuskan identitas App atau Anda membutuhkan jalannya workflow downstream otomatis.
+
+**Suntingan manusia:** workflow ini menerjemahkan ulang file sumber yang diubah secara penuh dan dapat menimpa redaksi yang telah disunting dalam terjemahannya. Tinjau setiap PR sebelum digabung. Pelestarian tingkat-blok Markdown untuk suntingan yang diterima memerlukan integrasi khusus dengan [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
+
+## PR terjemahan README pertama Anda
+
+Mulailah dengan satu berkas root `README.md` dan satu bahasa target. Workflow ini menerjemahkan hanya Markdown, jadi Azure AI Vision tidak diperlukan.
+
+1. Salin [translate-readme.yml](../../assets/workflows/translate-readme.yml) ([lihat template di GitHub](https://github.com/Azure/co-op-translator/blob/main/docs/assets/workflows/translate-readme.yml)) ke `.github/workflows/translate-readme.yml` di repositori yang ingin Anda terjemahkan, lalu commit ke cabang default repositori tersebut. Template menggunakan root Action di `Azure/co-op-translator@main`, yang menginstal CLI dari referensi sumber yang sama. Pin commit yang telah ditinjau untuk menjalankan yang dapat direproduksi.
+2. Buka **Actions > Translate README > Run workflow**, pilih bahasa, dan biarkan **Preview only** tercentang. Tinjau estimasi token pada langkah pratinjau. Pratinjau tidak memanggil penyedia model, menulis terjemahan, atau membuat PR.
+3. Tambahkan secret untuk satu [penyedia teks](#prerequisites), dan aktifkan **Izinkan GitHub Actions untuk membuat dan menyetujui pull request** di bawah **Pengaturan > Actions > Umum**. Template meminta `contents: write` dan `pull-requests: write` untuk job-nya; Anda tidak perlu mengubah izin default untuk setiap alur kerja. Jika kebijakan organisasi memblokir izin atau pengaturan ini, tanyakan kepada administrator tentang [Aplikasi GitHub](#github-app-setup) yang disetujui.
+4. Jalankan workflow lagi dengan **Preview only** tidak dicentang. Workflow menampilkan pratinjau, menerjemahkan, menjalankan `co-op-review --readme-only`, dan membuat atau memperbarui PR terjemahan hanya setelah terjemahan dan peninjauan berhasil. Ringkasan workflow menautkan ke PR.
+5. Tinjau redaksi dan perubahan berkas dalam PR, lalu merge ketika siap. Workflow tidak menggabungkan secara otomatis.
+
+PR hanya berisi `translations/<language>/README.md` dan berkas metadata bahasanya. README sumber tetap tidak berubah, dan tautan ke dokumen lain tetap menunjuk pada dokumen sumber. Isi PR mencantumkan berkas yang berubah dan hasil peninjauan struktural. Jika terjemahan atau peninjauan gagal, periksa ringkasan workflow dan log langkah yang gagal; tidak ada PR yang dibuat. Jika tidak ada perubahan, tidak diperlukan PR baru.
+
+**Catatan Organisasi dan CI:** GitHub App bersifat opsional, bukan persyaratan kepemilikan organisasi. Dengan `GITHUB_TOKEN`, workflow pull-request untuk membuka, memperbarui, atau membuka kembali PR memerlukan pengguna dengan akses tulis untuk memilih **Approve workflows to run**. Workflow push tidak dipicu oleh token ini. Untuk CI downstream tanpa pengawasan, lihat [GitHub App Setup](#github-app-setup) dan GitHub's [workflow triggering rules](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow).
 
 ## Prasyarat
 
 Sebelum membuat workflow, konfigurasikan secret layanan AI yang diperlukan oleh proses terjemahan Anda.
 
-Terjemahan teks memerlukan satu penyedia model bahasa:
+Terjemahan teks membutuhkan satu penyedia model bahasa:
 
 - Azure OpenAI: `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_MODEL_NAME`, `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`, `AZURE_OPENAI_API_VERSION`
 - OpenAI: `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL_ID`, plus optional `OPENAI_ORG_ID` and `OPENAI_BASE_URL`
+- Anthropic: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, plus optional `ANTHROPIC_BASE_URL`
 
 Terjemahan gambar juga memerlukan Azure AI Vision:
 
 - `AZURE_AI_SERVICE_API_KEY`
 - `AZURE_AI_SERVICE_ENDPOINT`
 
-Lihat [Konfigurasi](configuration.md) dan [Penyiapan Azure AI](azure-ai-setup.md) untuk rincian konfigurasi lokal.
+Lihat [Configuration](configuration.md) dan [Azure AI Setup](azure-ai-setup.md) untuk detail konfigurasi lokal.
 
 ## Pengaturan Standar
 
-Gunakan pengaturan ini untuk sebagian besar repositori publik dan pribadi.
+Setelah mencoba workflow README, gunakan pengaturan ini untuk menerjemahkan berkas Markdown repositori ke beberapa bahasa. Ia menjalankan peninjauan Markdown sebelum membuka PR dan tidak memerlukan Azure AI Vision.
 
 ### Langkah 1: Tambahkan Secret Repositori
 
@@ -36,15 +53,14 @@ Buka **Settings** > **Actions** > **General**.
 
 Di bawah **Workflow permissions**:
 
-1. Pilih **Read and write permissions**.
-2. Aktifkan **Allow GitHub Actions to create and approve pull requests**.
-3. Simpan pengaturan.
+1. Aktifkan **Izinkan GitHub Actions untuk membuat dan menyetujui pull request**.
+2. Simpan pengaturan.
 
-![Pengaturan izin workflow](../../assets/github-actions/permission-setting.png)
+Job di bawah meminta `contents: write` dan `pull-requests: write` secara eksplisit. Biarkan permission workflow default repositori tidak berubah. Jika kebijakan organisasi memblokir pembuatan PR, tanyakan kepada administrator tentang sebuah [GitHub App](#github-app-setup) yang disetujui.
 
 ### Langkah 3: Tambahkan Workflow
 
-Create `.github/workflows/co-op-translator.yml`:
+Buat `.github/workflows/co-op-translator.yml`:
 
 ```yaml
 name: Co-op Translator
@@ -57,6 +73,8 @@ on:
 jobs:
   co-op-translator:
     runs-on: ubuntu-latest
+    env:
+      TARGET_LANGUAGES: "es fr de"
 
     permissions:
       contents: write
@@ -69,9 +87,9 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v7
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install Co-op Translator
         run: |
@@ -81,8 +99,6 @@ jobs:
       - name: Run Co-op Translator
         env:
           PYTHONIOENCODING: utf-8
-          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
-          AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_MODEL_NAME: ${{ secrets.AZURE_OPENAI_MODEL_NAME }}
@@ -92,8 +108,25 @@ jobs:
           OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
           OPENAI_CHAT_MODEL_ID: ${{ secrets.OPENAI_CHAT_MODEL_ID }}
           OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
+          ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
         run: |
-          translate -l "es fr de" -y
+          translate -l "$TARGET_LANGUAGES" -md -y
+
+      - name: Review Markdown translations
+        run: |
+          python - <<'PY'
+          import os
+          from co_op_translator.api import run_review
+
+          run_review(
+              language_codes=os.environ["TARGET_LANGUAGES"].split(),
+              markdown=True,
+              notebook=False,
+              output_format="github",
+          )
+          PY
 
       - name: Create Pull Request with translations
         uses: peter-evans/create-pull-request@v5
@@ -103,6 +136,8 @@ jobs:
           title: "Update translations via Co-op Translator"
           body: |
             This PR updates translations for recent changes to the main branch.
+            Markdown structure, freshness, and local links were reviewed.
+            Review translation wording before merging.
 
             Generated by Co-op Translator.
           branch: update-translations
@@ -111,66 +146,63 @@ jobs:
           delete-branch: true
           add-paths: |
             translations/
-            translated_images/
 ```
 
-Ubah `translate -l "es fr de" -y` ke bahasa target dan flag konten yang dibutuhkan proyek Anda. Untuk repositori besar, tambahkan filter `paths:` di bawah `on:` agar workflow hanya berjalan saat dokumentasi berubah.
+Ubah `TARGET_LANGUAGES` ke bahasa yang dibutuhkan proyek Anda. Peninjauan menggunakan Python API untuk memeriksa hanya Markdown, sesuai dengan langkah terjemahan. Kesalahan terjemahan atau peninjauan menghentikan job sebelum pembuatan PR. Workflow tidak menggabungkan PR secara otomatis. Untuk repositori besar, tambahkan filter `paths:` di bawah `on.push` sehingga workflow hanya berjalan saat dokumentasi berubah.
+
+### Opsional: notebook dan gambar
+
+Untuk notebook, tambahkan `-nb` ke perintah terjemahan dan set `notebook=True` pada langkah peninjauan. Untuk teks gambar, konfigurasikan dua [Azure AI Vision secrets](#prerequisites), teruskan keduanya di `env` langkah terjemahan, tambahkan `-img` ke perintah, dan tambahkan `translated_images/` ke `add-paths` langkah PR. Tinjau gambar terjemahan secara visual; peninjauan deterministik tidak menjamin teks gambar atau akurasi linguistik.
 
 ## Pengaturan GitHub App
 
-Gunakan pengaturan ini ketika `GITHUB_TOKEN` tidak dapat membuat commit atau pull request dalam organisasi Anda.
+Gunakan GitHub App yang disetujui ketika organisasi Anda mengharuskan identitas App, atau ketika PR yang dihasilkan perlu memicu CI downstream tanpa langkah persetujuan `GITHUB_TOKEN`. Sebuah App tidak mem-bypass kebijakan organisasi; administrator tetap mengendalikan instalasi dan izinnya.
 
 ### Langkah 1: Buat atau Pasang GitHub App
 
-Buat sebuah GitHub App dengan akses baca/tulis ke **Contents** dan **Pull requests**, atau pasang aplikasi yang disediakan organisasi jika organisasi Anda sudah memilikinya.
+Gunakan App yang disediakan organisasi jika tersedia, atau buat satu dengan akses baca/tulis ke **Contents** dan **Pull requests**. Pasang di repositori target dengan persetujuan organisasi jika diperlukan.
 
 Catat:
 
 - App ID
-- Private key contents
+- Isi private key
 
 Simpan sebagai secret repositori:
 
 - `GH_APP_ID`
 - `GH_APP_PRIVATE_KEY`
 
-### Langkah 2: Hasilkan Token Aplikasi
+### Langkah 2: Hasilkan Token App
 
-Gunakan workflow yang sama seperti pengaturan standar, tetapi tambahkan langkah app-token sebelum langkah pull request:
+Tambahkan langkah ini tepat sebelum langkah pull request yang sudah ada. Untuk template README, gunakan kondisi sukses yang sama sehingga pratinjau dan terjemahan yang gagal tidak meminta token App:
 
 ```yaml
       - name: Authenticate GitHub App
         id: generate_token
-        uses: tibdex/github-app-token@v1
+        if: ${{ !inputs.preview && steps.translate.outcome == 'success' && steps.review.outcome == 'success' }}
+        uses: actions/create-github-app-token@v2
         with:
-          app_id: ${{ secrets.GH_APP_ID }}
-          private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-
-      - name: Create Pull Request with translations
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ steps.generate_token.outputs.token }}
-          commit-message: "Update translations via Co-op Translator"
-          title: "Update translations via Co-op Translator"
-          branch: update-translations
-          base: main
-          delete-branch: true
-          add-paths: |
-            translations/
-            translated_images/
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 ```
+
+Lalu ubah hanya input `token` pada langkah pull request yang ada menjadi `${{ steps.generate_token.outputs.token }}`. Biarkan kondisi sukses, branch, isi PR, dan `add-paths` tidak berubah. Token ini secara default dibatasi ke repositori saat ini. Saat menyesuaikan pengaturan standar alih-alih template README, hilangkan `if` di atas: workflow tersebut menggunakan kondisi sukses default, jadi pembuatan token dan pembuatan PR berjalan hanya setelah terjemahan dan peninjauan berhasil.
+
+Lihat [create-github-app-token Action](https://github.com/actions/create-github-app-token/tree/v2) resmi untuk instalasi dan izin token.
 
 ## Batasan Runner
 
-Runner yang di-host oleh GitHub memiliki durasi pekerjaan maksimum. Repositori besar atau banyak bahasa target dapat melebihi batas tersebut.
+Runner yang di-host GitHub memiliki durasi job maksimum. Repositori besar atau banyak bahasa target dapat melebihi batas tersebut.
 
-Untuk beban kerja terjemahan yang besar:
+Untuk beban kerja terjemahan besar:
 
-- Terjemahkan lebih sedikit bahasa setiap kali dijalankan.
+- Terjemahkan lebih sedikit bahasa per run.
 - Gunakan flag konten seperti `-md`, `-nb`, atau `-img`.
-- Gunakan runner self-hosted ketika ukuran repositori atau latensi model membuat runner yang di-host menjadi tidak andal.
+- Gunakan runner self-hosted ketika ukuran repositori atau latensi model membuat runner yang di-host tidak dapat diandalkan.
 
-## Review di CI
+## Peninjauan di CI
 
 Gunakan `co-op-review` ketika sebuah pull request harus memvalidasi terjemahan yang dihasilkan tanpa memanggil penyedia LLM atau Vision.
 
@@ -180,4 +212,4 @@ Gunakan `co-op-review` ketika sebuah pull request harus memvalidasi terjemahan y
           co-op-review --changed-from "origin/${{ github.base_ref }}" --format github
 ```
 
-`co-op-review` adalah perintah review deterministik versi beta. Pemeriksaan dan skema outputnya mungkin akan berkembang, tetapi perintah ini dirancang aman untuk CI karena tidak menulis file atau memanggil penyedia model.
+`co-op-review` adalah perintah peninjauan deterministik beta. Pemeriksaan dan skema keluaran dapat berkembang, tetapi dirancang aman untuk CI karena tidak menulis berkas atau memanggil penyedia model.

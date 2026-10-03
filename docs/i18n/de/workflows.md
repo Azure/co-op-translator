@@ -1,44 +1,48 @@
 # Wählen Sie Ihren Workflow
 
-Co-op Translator kann auf drei Arten verwendet werden: die CLI, die Python-API und der MCP-Server. Sie haben die gleichen Übersetzungsfunktionen, aber jede passt zu einem anderen Workflow.
+Co-op Translator kann auf drei Arten verwendet werden: die CLI, die Python-API und der MCP-Server. Sie teilen sich dieselben Übersetzungsfunktionen, aber jede passt zu einem anderen Workflow.
 
 Verwenden Sie diese Seite, wenn Sie entscheiden, wo Sie anfangen sollen.
+
+**Wenn Sie Übersetzungen per Hand bearbeiten:** Die standardmäßigen CLI- und Actions-Workflows übersetzen geänderte Quelldateien vollständig neu, sodass Ihre Formulierungen in diesen Dateien überschrieben werden können. Prüfen Sie den Diff, bevor Sie ein Update annehmen. Zur Bewahrung der Blockstruktur akzeptierter Markdown-Änderungen verwenden Sie den optionalen [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
 
 ## Schnelle Entscheidung
 
 | Wenn Sie ... | Verwenden | Hier starten |
 | --- | --- | --- |
-| Ein Repository vom Terminal aus übersetzen oder überprüfen | CLI | [CLI-Referenz](cli.md) |
-| Übersetzung zu einem Python-Skript, -Dienst, -Notebook oder CI-Job hinzufügen | Python-API | [Python-API](api.md) |
-| Einen Agenten, Editor oder MCP-kompatiblen Client Inhalte für Sie übersetzen lassen | MCP-Server | [MCP-Server](mcp.md) |
-| Ein Markdown-Dokument, Notebook oder Bild übersetzen, das Ihre App bereits geladen hat | Python-API oder MCP-Server | [Python-API](api.md) oder [MCP-Server](mcp.md) |
-| Ein komplettes Repository mit standardmäßigen Ausgabeordnern und Metadaten übersetzen | CLI oder `run_translation` | [CLI-Referenz](cli.md) oder [Python-API](api.md) |
+| Ein Repository vom Terminal aus übersetzen oder überprüfen | CLI | [CLI Reference](cli.md) |
+| Übersetzung zu einem Python-Skript, Service, Notebook oder CI-Job hinzufügen | Python API | [Python API](api.md) |
+| Lassen Sie einen Agenten, Editor oder MCP-kompatiblen Client Inhalte für Sie übersetzen | MCP Server | [MCP Server](mcp.md) |
+| Ein Markdown-Dokument, Notebook oder Bild übersetzen, das Ihre Anwendung bereits geladen hat | Python API oder MCP Server | [Python API](api.md) oder [MCP Server](mcp.md) |
+| Ein ganzes Repository mit standardmäßigen Ausgabeordnern und Metadaten übersetzen | CLI oder `run_translation` | [CLI Reference](cli.md) oder [Python API](api.md) |
 
 ## Verwenden Sie die CLI, wenn
 
-Wählen Sie die CLI, wenn eine Person oder ein CI-Job die Repository-Übersetzung über eine Shell steuert.
+Wählen Sie die CLI, wenn eine Person oder ein CI-Job die Repository-Übersetzung von einer Shell aus steuert.
 
-Die CLI ist der direkteste Weg, wenn Sie möchten, dass Co-op Translator Projektdateien erkennt, übersetzte Ausgaben erstellt, das Projektlayout beibehält, Metadaten aktualisiert und Review-Befehle ausführt.
+Die CLI ist der direkteste Weg, wenn Sie möchten, dass Co-op Translator Projektdateien entdeckt, übersetzte Ausgaben erstellt, das Projektlayout beibehält, Metadaten aktualisiert und Review-Befehle ausführt.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
 
-Passt gut für:
+Dieses Beispiel übersetzt Markdown und Notebooks. Fügen Sie `-img` nur hinzu, nachdem Sie [Azure AI Vision](configuration.md#azure-ai-vision) konfiguriert haben. Für einen ersten Lauf nur mit Markdown folgen Sie [Your first translation](first-translation.md).
+
+Gute Anwendungsfälle:
 
 - Sie übersetzen ein Repository von Ihrem Terminal aus.
 - Sie möchten einen wiederholbaren Befehl für CI- oder Release-Workflows.
-- Sie möchten eingebaute Projekterkennung, Ausgabewege, Metadaten, Bereinigung und Review.
+- Sie möchten integrierte Projekterkennung, Ausgabepfade, Metadaten, Bereinigung und Review.
 - Sie bevorzugen eine Befehlsoberfläche gegenüber dem Schreiben von Python-Code.
 
 ## Verwenden Sie die Python-API, wenn
 
 Wählen Sie die Python-API, wenn Ihr eigener Code den Workflow steuern soll.
 
-Die API ist nützlich für Anwendungen, Automatisierungsskripte, Notebooks, Dienste und benutzerdefinierte Pipelines. Sie ermöglicht das Aufrufen von Low-Level-Inhaltsübersetzungs-APIs für einzelne Dateien oder das Ausführen derselben Repository-orchestrierung, die von der CLI verwendet wird.
+Die API ist nützlich für Anwendungen, Automatisierungsskripte, Notebooks, Services und benutzerdefinierte Pipelines. Sie erlaubt es, niedrigstufige Inhaltsübersetzungs-APIs für einzelne Dateien aufzurufen oder dieselbe repositoryweite Orchestrierung auszuführen, die auch die CLI verwendet.
 
 Ein Markdown-Dokument übersetzen und entscheiden, wo es gespeichert werden soll:
 
@@ -75,54 +79,47 @@ asyncio.run(main())
 Führen Sie eine Repository-Übersetzung aus Python aus:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
-Passt gut für:
+Gute Anwendungsfälle:
 
-- Ihre Anwendung liest bereits Dateien, Buffer, Notebooks oder Bildbytes.
-- Sie benötigen benutzerdefinierte Validierung, Speicherung, Protokollierung, Wiederholungen oder Genehmigungsabläufe.
+- Ihre Anwendung liest bereits Dateien, Puffer, Notebooks oder Bildbytes.
+- Sie benötigen benutzerdefinierte Validierung, Speicherung, Logging, Wiederholungen oder Genehmigungsabläufe.
 - Sie möchten ein Dokument, Notebook oder Bild übersetzen, ohne ein ganzes Repository zu verarbeiten.
-- Sie möchten Repository-Übersetzung, aber aus Python-Automation statt eines Shell-Befehls.
+- Sie möchten eine Repository-Übersetzung, aber über Python-Automation statt über einen Shell-Befehl.
 
 ## Verwenden Sie den MCP-Server, wenn
 
-Wählen Sie den MCP-Server, wenn ein Agent, Editor oder MCP-kompatibler Client die Co-op Translator-Tools aufrufen soll.
+Wählen Sie den MCP-Server, wenn ein Agent, Editor oder ein MCP-kompatibler Client Co-op Translator-Tools aufrufen soll.
 
 In der normalen lokalen Konfiguration hält der Benutzer den Server nicht manuell am Laufen. Der MCP-Client startet `co-op-translator-mcp` über `stdio`, wenn er die Tools benötigt.
 
-Beispiele für Benutzeranfragen, die ein Agent bearbeiten könnte:
+Beispielhafte Benutzeranfragen, die ein Agent bearbeiten könnte:
 
 - "Übersetze diese Markdown-Datei ins Koreanische und behalte die Links korrekt bei."
-- "Übersetze diese Markdown-Datei ins Koreanische mit dem agentenunterstützten MCP-Workflow, unter Verwendung eines eigenen Modells für die übersetzten Abschnitte."
-- "Übersetze dieses Notebook ins Koreanische, bewahre Codezellen und verwende Co-op Translator MCP, um das Notebook zu rekonstruieren."
-- "Übersetze den Text in diesem Bild ins Japanische und speichere das Ergebnis."
-- "Führe eine Trockenausführung einer Repository-Übersetzung ins Spanische durch und sag mir, was sich ändern würde."
-- "Prüfe, ob die koreanische Übersetzung auf dem neuesten Stand ist."
+- "Übersetzen Sie diese Markdown-Datei ins Koreanische mit dem agentenunterstützten MCP-Workflow und verwenden Sie dabei Ihr eigenes Modell für die übersetzten Abschnitte."
+- "Übersetzen Sie dieses Notebook ins Koreanische, bewahren Sie die Codezellen und verwenden Sie Co-op Translator MCP, um das Notebook zu rekonstruieren."
+- "Übersetzen Sie den Text in diesem Bild ins Japanische und speichern Sie das Ergebnis."
+- "Führen Sie eine Trockenübersetzung eines Repositories ins Spanische durch und sagen Sie mir, was sich ändern würde."
+- "Prüfen Sie, ob die koreanische Übersetzung aktuell ist."
 
 Für Markdown und Notebooks kann MCP in zwei Modi arbeiten:
 
-| Modus | Verwenden, wenn | Hauptwerkzeuge |
+| Modus | Verwenden wenn | Hauptwerkzeuge |
 | --- | --- | --- |
-| Agent-unterstützt | Der MCP-Host-Agent sollte Abschnitte mit seinem eigenen Modell übersetzen, ohne Zugangsdaten für einen LLM-Anbieter von Co-op Translator. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Provider-gestützt | Co-op Translator sollte Azure OpenAI oder OpenAI direkt aufrufen. | `translate_markdown_content`, `translate_notebook_content` |
+| Agent-unterstützt | Der MCP-Host-Agent sollte Abschnitte mit seinem eigenen Modell übersetzen, ohne Zugangsdaten für den LLM-Anbieter von Co-op Translator. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Provider-gestützt | Co-op Translator sollte Azure OpenAI, OpenAI oder Anthropic direkt aufrufen. | `translate_markdown_content`, `translate_notebook_content` |
 
-MCP provider-gestützter Markdown-Toolaufruf-Shape:
+MCP provider-gestützte Markdown-Tool-Aufrufform:
 
 ```json
 {
@@ -137,7 +134,7 @@ MCP provider-gestützter Markdown-Toolaufruf-Shape:
 }
 ```
 
-MCP Bild-Toolaufruf-Shape:
+MCP Image-Tool-Aufrufform:
 
 ```json
 {
@@ -150,7 +147,7 @@ MCP Bild-Toolaufruf-Shape:
 }
 ```
 
-Repository-Übersetzung wird standardmäßig über MCP als Trockendurchlauf ausgeführt:
+Repository-Übersetzung wird standardmäßig über MCP als Trockenlauf ausgeführt:
 
 ```json
 {
@@ -165,16 +162,16 @@ Repository-Übersetzung wird standardmäßig über MCP als Trockendurchlauf ausg
 }
 ```
 
-Passt gut für:
+Gute Anwendungsfälle:
 
-- Sie möchten natürlichsprachige Übersetzungsworkflows in einem Agenten oder Editor.
-- Sie möchten Markdown- oder Notebook-Übersetzung, bei der das Host-Agent-Modell vorbereitete Abschnitte übersetzt.
-- Sie möchten, dass der Agent ausgewählte Inhalte statt eines gesamten Repositories übersetzt.
+- Sie möchten Workflows für Übersetzungen in natürlicher Sprache innerhalb eines Agents oder Editors.
+- Sie möchten Markdown- oder Notebook-Übersetzungen, bei denen das Host-Agent-Modell vorbereitete Abschnitte übersetzt.
+- Sie möchten, dass der Agent ausgewählte Inhalte übersetzt, anstatt ein ganzes Repository.
 - Sie möchten einen Genehmigungsschritt vor repositoryweiten Schreibvorgängen.
-- Sie möchten eine Schnittstelle, die Markdown-, Notebook-, Bild-, Review- und Pfad-Umschreibungswerkzeuge bereitstellt.
+- Sie möchten eine Schnittstelle, die Werkzeuge für Markdown, Notebooks, Bilder, Review und Pfadumschreibung bereitstellt.
 
 ## Wie sie zusammenpassen
 
-Die CLI ist die beste Standardeinstellung für Menschen, die Repositories übersetzen. Die Python-API ist am besten, wenn Ihr Code den Workflow besitzt. Der MCP-Server ist am besten, wenn ein Agent oder Editor den Workflow besitzt.
+Die CLI ist die beste Voreinstellung für Menschen, die Repositories übersetzen. Die Python-API ist am besten, wenn Ihr Code den Workflow steuert. Der MCP-Server ist am besten, wenn ein Agent oder Editor den Workflow steuert.
 
-Alle drei Pfade verwenden die gleiche öffentliche Co-op Translator-API, sodass Sie mit der CLI beginnen, später mit Python automatisieren und dieselben Funktionen für MCP-Clients bereitstellen können, wenn Sie agentengesteuerte Workflows benötigen.
+Alle drei Wege verwenden dieselbe öffentliche Co-op Translator-API, sodass Sie mit der CLI beginnen, später mit Python automatisieren und dieselben Fähigkeiten für MCP-Clients bereitstellen können, wenn Sie agentengesteuerte Workflows benötigen.

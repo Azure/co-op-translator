@@ -1,6 +1,6 @@
 # CLI リファレンス
 
-Co-op Translator は以下のコマンドラインエントリポイントをインストールします:
+Co-op Translator は次のコマンドラインエントリポイントをインストールします:
 
 - `translate`
 - `evaluate`
@@ -8,33 +8,45 @@ Co-op Translator は以下のコマンドラインエントリポイントをイ
 - `co-op-review`
 - `co-op-translator-mcp`
 
-`translate`、`evaluate`、`migrate-links`、および `co-op-review` コマンドは `co_op_translator.__main__` を経由してディスパッチされ、呼び出されたスクリプト名に基づいてコマンド実装を選択します。MCP サーバーは `co_op_translator.mcp.server` を直接使用します。
+`translate`、`evaluate`、`migrate-links`、および `co-op-review` コマンドは `co_op_translator.__main__` を経由してディスパッチされ、起動されたスクリプト名に基づいてコマンド実装を選択します。MCP サーバーは `co_op_translator.mcp.server` を直接使用します。
 
-CLI、Python API、MCP の間で迷っている場合は、まず [ワークフローを選択](workflows.md) を参照してください。
+CLI、Python API、MCP のどれを選ぶか迷っている場合は、[ワークフローの選択](workflows.md) から始めてください。
 
-## First-Time CLI Flow
+## コンソール出力
+
+対話型ターミナルはコマンドヘッダー、進行状況、サマリに Rich フォーマットを使用します。CI や非対話的な出力は自動的にプレーンテキストにフォールバックします。
+
+プレーン出力を強制するには `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` を設定し、Rich 出力を強制するには `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` を設定します。ライブのプログレスバーを抑制しつつサマリを保持するには `CO_OP_TRANSLATOR_NO_PROGRESS=1` を設定してください。
+
+別のシステムが機械可読の進行状況を必要とする場合は、`translate --json-events progress.ndjson` を使用してください。
+CLI は引き続き人間向けの出力をレンダリングし、
+NDJSON ファイルにはバージョン付きの `co-op.translation.event.v1` イベントが記録され、
+`type`、`stage_key`、`completed`、`total` といった安定したフィールドや
+`current_path` が含まれます。
+
+## 初めての CLI フロー
 
 ターミナルから Co-op Translator を使用する場合はここから始めてください:
 
-1. [設定](configuration.md) に記載されているように、LLM プロバイダーを構成します。
-2. 翻訳したいコンテンツの種類を選択します。
-3. まずは Markdown のみの翻訳など、限定されたコマンドを実行します。
-4. 大規模なリポジトリ変更の前に `--dry-run` を使用します。
-5. 翻訳後に `co-op-review` を使って構造と最新性を確認します。
+1. [構成](configuration.md) に記載のとおり、LLM プロバイダーを設定します。
+2. 翻訳するコンテンツの種類を選択します。
+3. まずは Markdown のみの翻訳など、対象を絞ったコマンドを実行します。
+4. 大規模なリポジトリ変更の前には `--dry-run` を使用してください。
+5. 翻訳後は `co-op-review` を使って構造や鮮度をチェックしてください。
 
 | 目的 | 開始に使うコマンド |
 | --- | --- |
-| Markdown ドキュメントを翻訳する | `translate -l "ko" -md` |
+| Markdown 文書を翻訳する | `translate -l "ko" -md` |
 | ノートブックを翻訳する | `translate -l "ko" -nb` |
-| 画像のテキストを翻訳する | `translate -l "ko" -img` |
+| 画像内テキストを翻訳する | `translate -l "ko" -img` |
 | ファイルを書き込まずに作業をプレビューする | `translate -l "ko" -md --dry-run` |
 | 既存の翻訳をレビューする | `co-op-review -l "ko"` |
-| ノートブックと Markdown のリンクを更新する | `migrate-links -l "ko" --dry-run` |
-| MCP クライアントにツールを公開する | CLI コマンドを直接実行する代わりに [MCP サーバー](mcp.md) を構成します。 |
+| ノートブックとMarkdownのリンクを更新する | `migrate-links -l "ko" --dry-run` |
+| ツールをMCPクライアントに公開する | CLI コマンドを直接実行する代わりに [MCP サーバー](mcp.md) を設定します。 |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+Markdown ファイル、ノートブック、画像内テキストを1つ以上のターゲット言語に翻訳します。
 
 ```bash
 translate -l "ko ja fr"
@@ -42,71 +54,78 @@ translate -l "ko ja fr"
 
 ### よくある例
 
-Markdown のみを翻訳:
+Markdown のみを翻訳する:
 
 ```bash
 translate -l "de" -md
 ```
 
-ノートブックのみを翻訳:
+ノートブックのみを翻訳する:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Markdown と画像を翻訳:
+Markdown と画像を翻訳する:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-既存の翻訳を削除して再作成して更新:
+既存の翻訳を削除して再作成して更新する:
 
 ```bash
 translate -l "ko" -u
 ```
 
-対話型プロンプトなしで実行:
+対話プロンプトなしで実行する:
 
 ```bash
 translate -l "ko ja" -md -y
 ```
 
-ログを保存:
+ログを保存する:
 
 ```bash
 translate -l "ko" -s
+```
+
+構造化された進行イベントを書き出す:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
 ```
 
 ### オプション
 
 | オプション | 必須 | 説明 |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | スペース区切りの言語コード（例: "es fr de"）、または `"all"`。 |
-| `-r`, `--root-dir` | No | プロジェクトのルート。デフォルトはカレントディレクトリです。 |
-| `-u`, `--update` | No | 選択した言語の既存の翻訳を削除して再作成します。 |
-| `-img`, `--images` | No | 画像ファイルのみを翻訳します。 |
-| `-md`, `--markdown` | No | Markdown ファイルのみを翻訳します。 |
-| `-nb`, `--notebook` | No | Jupyter ノートブックファイルのみを翻訳します。 |
-| `-d`, `--debug` | No | コンソールでデバッグログを有効にします。 |
-| `-s`, `--save-logs` | No | DEBUG レベルのログを `<root-dir>/logs/` に保存します。 |
-| `-x`, `--fix` | No | 以前の評価結果に基づいて低信頼度の Markdown ファイルを再翻訳します。 |
-| `-c`, `--min-confidence` | No | `--fix` のための信頼度閾値。デフォルトは `0.7`。 |
-| `--add-disclaimer`, `--no-disclaimer` | No | 機械翻訳の免責事項を追加または抑制します。CLI ではデフォルトで有効です。 |
-| `-f`, `--fast` | No | 非推奨の高速画像モードです。 |
-| `-y`, `--yes` | No | プロンプトを自動確認します。CIで有用です。 |
-| `--repo-url` | No | README の言語テーブルの sparse-checkout アドバイスで使用されるリポジトリ URL。 |
-| `--migrate-language-folders` | No | `cn` や `tw` のような旧式のエイリアスフォルダーを正規の BCP 47 フォルダー名にリネームします。 |
-| `--dry-run` | No | ファイルを書き込まずに言語フォルダの移行と翻訳見積をプレビューします。 |
+| `-l`, `--language-codes` | はい | スペース区切りの言語コード（例: "es fr de"）、または "all"。 |
+| `-r`, `--root-dir` | いいえ | プロジェクトのルート。デフォルトは現在のディレクトリです。 |
+| `-u`, `--update` | いいえ | 選択した言語の既存の翻訳を削除して再作成します。 |
+| `-img`, `--images` | いいえ | 画像ファイルのみを翻訳します。 |
+| `-md`, `--markdown` | いいえ | Markdown ファイルのみを翻訳します。 |
+| `-nb`, `--notebook` | いいえ | Jupyter ノートブックファイルのみを翻訳します。 |
+| `-d`, `--debug` | いいえ | コンソールでデバッグログを有効にします。 |
+| `-s`, `--save-logs` | いいえ | DEBUG レベルのログを `<root-dir>/logs/` に保存します。 |
+| `--json-events` | いいえ | 翻訳進行イベントを NDJSON として機械可読で書き出します。 |
+| `-x`, `--fix` | いいえ | 以前の評価結果に基づいて低信頼度の Markdown ファイルを再翻訳します。 |
+| `-c`, `--min-confidence` | いいえ | `--fix` に使用する信頼度しきい値。デフォルトは `0.7` です。 |
+| `--add-disclaimer`, `--no-disclaimer` | いいえ | 機械翻訳の免責事項を追加または抑制します。CLI ではデフォルトで有効です。 |
+| `-f`, `--fast` | いいえ | 廃止予定の高速画像モード。 |
+| `-y`, `--yes` | いいえ | プロンプトを自動確認します。CI で便利です。 |
+| `--repo-url` | いいえ | README の言語テーブルの sparse-checkout アドバイスで使用するリポジトリ URL。 |
+| `--migrate-language-folders` | いいえ | `cn` や `tw` のような旧エイリアスフォルダを正規の BCP 47 フォルダ名にリネームします。 |
+| `--dry-run` | いいえ | ファイルを書き込まずに言語フォルダの移行と翻訳見積もりをプレビューします。 |
 
 タイプフラグが指定されない場合、`translate` は Markdown、ノートブック、画像を処理します。画像翻訳には Azure AI Vision の設定が必要です。
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+1 言語の翻訳された Markdown の品質を評価します。
 
 !!! warning "実験的"
-    `evaluate` は実験的です。ルールベースおよび LLM ベースの品質チェックを使用することができ、評価結果を翻訳メタデータに書き込みます。スコアリングモデルとメタデータの挙動は変更される可能性があります。
+    `evaluate` は実験的です。ルールベースおよび LLM ベースの品質チェックを使用することがあり、評価結果を翻訳メタデータに書き込みます。スコアリングモデルやメタデータの挙動は変更される可能性があります。
 
 ```bash
 evaluate -l "ko"
@@ -114,19 +133,19 @@ evaluate -l "ko"
 
 ### よくある例
 
-厳しめの低信頼度閾値を使用:
+より厳しい低信頼度のしきい値を使用する:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-ルールベースのチェックのみ実行:
+ルールベースのチェックのみを実行する:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-LLM ベースのチェックのみ実行:
+LLM ベースのチェックのみを実行する:
 
 ```bash
 evaluate -l "ja" -D
@@ -136,22 +155,22 @@ evaluate -l "ja" -D
 
 | オプション | 必須 | 説明 |
 | --- | --- | --- |
-| `-l`, `--language-code` | Yes | 評価する単一の言語コード。エイリアスコードは正規化されます。 |
-| `-r`, `--root-dir` | No | プロジェクトのルート。デフォルトはカレントディレクトリです。 |
-| `-c`, `--min-confidence` | No | 低信頼度翻訳を列挙する際に使う閾値。デフォルトは `0.7`。 |
-| `-d`, `--debug` | No | デバッグログを有効にします。 |
-| `-s`, `--save-logs` | No | DEBUG レベルのログを `<root-dir>/logs/` に保存します。 |
-| `-f`, `--fast` | No | ルールベースの評価のみ。 |
-| `-D`, `--deep` | No | LLM ベースの評価のみ。 |
+| `-l`, `--language-code` | はい | 評価する単一の言語コード。エイリアスコードは正規化されます。 |
+| `-r`, `--root-dir` | いいえ | プロジェクトのルート。デフォルトは現在のディレクトリです。 |
+| `-c`, `--min-confidence` | いいえ | 低信頼度の翻訳を一覧表示する際に使用するしきい値。デフォルトは `0.7` です。 |
+| `-d`, `--debug` | いいえ | デバッグログを有効にします。 |
+| `-s`, `--save-logs` | いいえ | DEBUG レベルのログを `<root-dir>/logs/` に保存します。 |
+| `-f`, `--fast` | いいえ | ルールベース評価のみ。 |
+| `-D`, `--deep` | いいえ | LLM ベースの評価のみ。 |
 
-デフォルトでは、`evaluate` はルールベースと LLM ベースの評価の両方を使用します。結果は翻訳メタデータに書き込まれ、コンソールに要約されます。
+デフォルトでは、`evaluate` はルールベースと LLM ベースの両方の評価を使用します。結果は翻訳メタデータに書き込まれ、コンソールに要約が表示されます。
 
 ## co-op-review
 
-Run deterministic translation maintenance checks without API credentials.
+API 資格情報なしで決定論的な翻訳メンテナンスチェックを実行します。
 
 !!! note "ベータ"
-    `co-op-review` はベータの決定論的レビューコマンドです。モデルプロバイダーを呼び出したりファイルを書き込んだりはしませんが、そのチェックや問題出力スキーマは変化する可能性があります。
+    `co-op-review` はベータの決定論的レビューコマンドです。モデルプロバイダーを呼び出したりファイルを書き込んだりすることはありませんが、チェックや問題出力のスキーマは変更される可能性があります。
 
 ```bash
 co-op-review -l "ko"
@@ -159,7 +178,7 @@ co-op-review -l "ko"
 
 ### よくある例
 
-カレントディレクトリから韓国語と日本語の翻訳をレビューする:
+現在のディレクトリから韓国語と日本語の翻訳をレビューする:
 
 ```bash
 co-op-review -l "ko ja"
@@ -171,13 +190,25 @@ co-op-review -l "ko ja"
 co-op-review -l "fr" -r ./my-course
 ```
 
-ベースリファレンスと比較して変更されたソースファイルのみをレビューする:
+README のみの翻訳後に README のみをレビューする:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` は他のドキュメントやネストされた README を無視します。
+ルートの `README.md` が存在しない場合は失敗します。
+`--changed-from` と組み合わせると、そのソースファイルが変更された場合に README のみをレビューします。
+README のみの翻訳では、共有セクションマーカーを含め、ソース README は変更されません。
+
+ベースリファレンスに対して変更されたソースファイルのみをレビューする:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-CI 用のサマリーとして GitHub-Flavored Markdown 出力を印刷する:
+CI 用サマリのために GitHub 互換の Markdown 出力を生成する:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -187,32 +218,33 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 | オプション | 必須 | 説明 |
 | --- | --- | --- |
-| `-l`, `--language-code` | No | レビューする言語コード。複数回渡すか、スペース区切りで指定できます。デフォルトは発見されたすべての翻訳言語です。 |
-| `-r`, `--root-dir` | No | プロジェクトのルート。デフォルトはカレントディレクトリです。 |
-| `--changed-from` | No | レビューを変更されたソースファイルに限定するのに使用する Git リファレンス。 |
-| `--format` | No | 出力フォーマット：`text` または `github`。デフォルトは `text`。 |
+| `-l`, `--language-code` | いいえ | レビューする言語コード。複数回指定するか、スペース区切りで渡せます。デフォルトは発見された全ての翻訳言語です。 |
+| `-r`, `--root-dir` | いいえ | プロジェクトのルート。デフォルトは現在のディレクトリです。 |
+| `--changed-from` | いいえ | レビューを変更されたソースファイルに限定するために使用する Git リファレンス。 |
+| `--readme-only` | いいえ | ルートの `README.md` 翻訳のみをレビューします。 |
+| `--format` | いいえ | 出力形式: `text` または `github`。デフォルトは `text` です。 |
 
-`co-op-review` は現在、翻訳済みファイルの欠落、翻訳メタデータの欠落または陳腐化、Markdown の frontmatter とコードフェンスの整合性、無効な翻訳済みノートブックの JSON、ローカルの Markdown または画像リンクターゲットの欠落をチェックします。リンクの欠落はデフォルトで警告とみなされます。構造や最新性の問題はコマンドの失敗となります。
+`co-op-review` は現在、翻訳済みファイルの欠如、翻訳メタデータの欠落や陳腐化、Markdown のフロントマターやコードフェンスの整合性、無効な翻訳済みノートブックの JSON、ローカルの Markdown や画像リンクターゲットの欠如をチェックします。リンクの欠落はデフォルトで警告ですが、構造上の問題や鮮度に関する問題はコマンドを失敗させます。
 
 ## co-op-translator-mcp
 
-Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+エージェント、エディタ、および MCP 互換クライアント向けに Co-op Translator MCP サーバーを実行します。
 
 ```bash
 co-op-translator-mcp
 ```
 
-デフォルトのトランスポートは `stdio` です。クライアントの構成、ツール、リソース、安全上の注意については [MCP サーバー](mcp.md) ガイドを参照してください。
+デフォルトのトランスポートは `stdio` です。クライアント構成、ツール、リソース、および安全に関する注意点については [MCP サーバー](mcp.md) ガイドを参照してください。
 
 ### オプション
 
 | オプション | 必須 | 説明 |
 | --- | --- | --- |
-| `--transport` | No | MCP トランスポート：`stdio`、`streamable-http`、または `sse`。デフォルトは `stdio`。 |
+| `--transport` | いいえ | MCP トランスポート: `stdio`, `streamable-http`, または `sse`。デフォルトは `stdio`。 |
 
 ## migrate-links
 
-Reprocess translated Markdown files and update notebook links so they point to translated notebooks when available.
+翻訳済みの Markdown ファイルを再処理し、翻訳済みノートブックが利用可能な場合にノートブックリンクを翻訳版に更新します。
 
 ```bash
 migrate-links -l "ko ja"
@@ -220,13 +252,13 @@ migrate-links -l "ko ja"
 
 ### よくある例
 
-リンク更新をプレビュー:
+リンク更新をプレビューする:
 
 ```bash
 migrate-links -l "ko" --dry-run
 ```
 
-すべての対応言語を確認なしで処理する:
+確認なしでサポートされている全言語を処理する:
 
 ```bash
 migrate-links -l "all" -y
@@ -242,21 +274,21 @@ migrate-links -l "ko" --no-fallback-to-original
 
 | オプション | 必須 | 説明 |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | スペース区切りの言語コード、または `"all"`。 |
-| `-r`, `--root-dir` | No | プロジェクトのルート。デフォルトはカレントディレクトリです。 |
-| `--image-dir` | No | ルートからの相対パスでの翻訳済み画像ディレクトリ。デフォルトは `translated_images`。 |
-| `--dry-run` | No | 変更されるファイルを表示し、更新を書き込まない。 |
-| `--fallback-to-original`, `--no-fallback-to-original` | No | 翻訳済みノートブックがない場合に元のノートブックリンクを使用します。デフォルトで有効です。 |
-| `-d`, `--debug` | No | デバッグログを有効にします。 |
-| `-s`, `--save-logs` | No | DEBUG レベルのログを `<root-dir>/logs/` に保存します。 |
-| `-y`, `--yes` | No | すべての言語を処理する際にプロンプトを自動確認します。 |
+| `-l`, `--language-codes` | はい | スペース区切りの言語コード、または "all"。 |
+| `-r`, `--root-dir` | いいえ | プロジェクトのルート。デフォルトは現在のディレクトリです。 |
+| `--image-dir` | いいえ | ルートからの相対の翻訳済み画像ディレクトリ。デフォルトは `translated_images`。 |
+| `--dry-run` | いいえ | 変更されるファイルを表示し、更新を書き込まないようにします。 |
+| `--fallback-to-original`, `--no-fallback-to-original` | いいえ | 翻訳済みノートブックがない場合に元のノートブックリンクを使用します。デフォルトで有効です。 |
+| `-d`, `--debug` | いいえ | デバッグログを有効にします。 |
+| `-s`, `--save-logs` | いいえ | DEBUG レベルのログを `<root-dir>/logs/` に保存します。 |
+| `-y`, `--yes` | いいえ | 全言語を処理する際のプロンプトを自動確認します。 |
 
-## Environment
+## 環境
 
-All commands require one configured LLM provider:
+コマンドがプロバイダの資格情報を必要とする場合は、次のいずれかのプロバイダセットを構成してください。`translate --dry-run` と `co-op-review` はプロバイダ資格情報を必要としません:
 
 ```bash
-# Azure の OpenAI
+# Azure OpenAI
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
@@ -266,39 +298,43 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # または OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# または Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Image translation additionally requires Azure AI Vision:
+画像翻訳にはさらに Azure AI Vision が必要です:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## Output layout
+## 出力レイアウト
 
-Text translations are written under:
+テキスト翻訳は次の場所に書き込まれます:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Translated image output is written under:
+翻訳された画像の出力は次の場所に書き込まれます:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-For example, translating `README.md` and `docs/setup.md` into Korean produces:
+例えば、`README.md` と `docs/setup.md` を韓国語に翻訳すると次のようになります:
 
 ```text
 translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## コピー＆ペースト用 CLI 例
+## コピペ用 CLI 例
 
-Markdown を3つの言語に翻訳する:
+Markdown を 3 つの言語に翻訳する:
 
 ```bash
 translate -l "ko ja fr" -md
@@ -329,13 +365,13 @@ evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-CI 対応の Markdown 翻訳を実行する:
+CI に適した Markdown 翻訳を実行する:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-翻訳結果をレビューする:
+翻訳された出力をレビューする:
 
 ```bash
 co-op-review -l "ko ja"

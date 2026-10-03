@@ -1,6 +1,6 @@
 # Azure AI セットアップ
 
-Use this guide when you want to configure Azure OpenAI for text translation and Azure AI Vision for image text extraction.
+テキスト翻訳のために Azure OpenAI を、画像中のテキスト抽出のために Azure AI Vision を構成したい場合は、このガイドを使用してください。
 
 ## Prerequisites
 
@@ -8,14 +8,14 @@ Use this guide when you want to configure Azure OpenAI for text translation and 
 - Azure AI リソースおよびモデルのデプロイを作成または使用する権限。
 - Azure AI Foundry のプロジェクト、または Azure OpenAI と Azure AI Vision リソースへの同等のアクセス。
 
-## Create an Azure AI Project
+## Azure AI プロジェクトを作成する
 
 1. [Azure AI Foundry](https://ai.azure.com) を開きます。
 2. プロジェクトを作成するか選択します。
 3. プロジェクトのための AI ハブを作成するか選択します。
 4. 作成後にプロジェクトの概要を開きます。
 
-## Deploy an Azure OpenAI Model
+## Azure OpenAI モデルをデプロイする
 
 1. プロジェクト内で **Models + endpoints** を開きます。
 2. **Deploy model** を選択します。
@@ -26,7 +26,7 @@ Use this guide when you want to configure Azure OpenAI for text translation and 
 !!! note
     Azure OpenAI の API バージョンは Azure AI Foundry に表示されるモデルのバージョンとは別物です。デプロイに対してサポートされている API バージョンを選択してください。
 
-## Configure Azure AI Vision
+## Azure AI Vision を構成する
 
 画像翻訳では、翻訳する前にソース画像からテキストを抽出するために Azure AI Vision を使用します。
 
@@ -39,7 +39,7 @@ Record:
 - Azure AI Service のエンドポイント
 - Azure AI Service の API キー
 
-## Environment Variables
+## 環境変数
 
 資格情報を `.env` ファイルまたは CI シークレットに追加します。
 
@@ -56,7 +56,7 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Co-op Translator also supports optional fallback credential sets. Duplicate a complete provider set with suffixes such as `_1` or `_2`; all variables in a fallback set must share the same suffix.
+Co-op Translator はオプションのフォールバック認証情報セットにも対応しています。完全なプロバイダーセットを `_1` や `_2` のようなサフィックスで複製してください。フォールバックセット内のすべての変数は同じサフィックスを共有する必要があります。
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -66,7 +66,7 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_1="<deployment-1>"
 AZURE_OPENAI_API_VERSION_1="2024-12-01-preview"
 ```
 
-## Next Steps
+## 次のステップ
 
 - ローカルまたは CI の環境変数を設定するには [Configuration](configuration.md) に戻ってください。
 - 翻訳コマンドについては [CLI Reference](cli.md) を使用してください。

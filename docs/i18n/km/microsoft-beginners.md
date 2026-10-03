@@ -2,11 +2,11 @@
 
 ទំព័រនេះសម្រាប់អ្នកថែទាំនៃឃ្លាំងកូដ Microsoft "For Beginners" ដែលប្រើផ្នែក README រួម "Other Courses"។
 
-Most Co-op Translator users do not need this page.
+អ្នកប្រើប្រាស់ Co-op Translator ភាគច្រើនមិនត្រូវការទំព័រនេះទេ.
 
 ## សមកតស្វ័យប្រវត្តិសម្រាប់ផ្នែក 'Other Courses'
 
-Add these markers around the "Other Courses" section in your README:
+បន្ថែមម៉ាក័រទាំងនេះនៅជុំវិញផ្នែក "វគ្គផ្សេងទៀត" ក្នុង README របស់អ្នក:
 
 ```markdown
 <!-- CO-OP TRANSLATOR OTHER COURSES START -->
@@ -14,7 +14,7 @@ Add these markers around the "Other Courses" section in your README:
 <!-- CO-OP TRANSLATOR OTHER COURSES END -->
 ```
 
-Each time Co-op Translator runs through the CLI or GitHub Actions, it replaces the content between the markers with the packaged template.
+រាល់ពេលដែល Co-op Translator រត់តាម CLI ឬ GitHub Actions វានឹងជំនួសមាតិកាដែលនៅចន្លោះម៉ាក័រដោយពុម្ពដែលបានចងក្រង.
 
 ## ធ្វើបច្ចុប្បន្នភាពពុម្ពរួម
 
@@ -27,8 +27,8 @@ src/co_op_translator/templates/other_courses.md
 To update the shared content:
 
 1. Edit the template.
-2. Open a pull request to Co-op Translator.
-3. After the change is released, run Co-op Translator in the target repository.
+2. បើក pull request ទៅកាន់ Co-op Translator.
+3. បន្ទាប់ពីការផ្លាស់ប្តូរត្រូវបានចេញផ្សាយ សូមរត់ Co-op Translator នៅក្នុង repository គោលដៅ.
 
 ## ការព្រមានសម្រាប់ Sparse Checkout
 

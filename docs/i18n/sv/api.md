@@ -1,49 +1,49 @@
 # Python-API
 
-Den stabila publika Python-API:n exporteras från `co_op_translator.api`. De flesta integrationer använder ett av dessa arbetsflöden:
+Den stabila offentliga Python-API:n exporteras från `co_op_translator.api`. De flesta integrationer använder ett av dessa arbetsflöden:
 
-| Scenario | Använd när | Huvudsakliga API:er |
+| Scenario | Använd detta när | Huvud-API:er |
 | --- | --- | --- |
-| Translate individual files or documents | Din applikation läser källinnehållet, anropar Co-op Translator för översättning, och bestämmer var resultatet ska sparas. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | Din MCP-värd eller applikationsmodell kommer att översätta bitar, medan Co-op Translator hanterar uppdelning och återuppbyggnad. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | Du vill att Python-API:t ska bete sig som CLI:n och hantera upptäckt, utdata-sökvägar, metadata, städning och skrivningar. | `run_translation` |
+| Översätt enskilda filer eller dokument | Din applikation läser källinnehållet, anropar Co-op Translator för översättning och bestämmer var resultatet ska sparas. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Förbered innehåll för värdagent-översättning | Din MCP-värd eller applikationsmodell kommer att översätta bitar, medan Co-op Translator hanterar uppdelning och rekonstruktion. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Översätt ett helt repository | Du vill att Python-API:t ska bete sig som CLI:t och hantera filupptäckt, utdata-sökvägar, metadata, städning och filskrivningar. | `run_translation` |
 
-De flesta lågnivåmoduler under `core`, `config`, `review` och `utils` är implementationdetaljer som används av dessa API-ingångspunkter.
+De flesta lägre nivåmoduler under `core`, `config`, `review` och `utils` är implementeringsdetaljer som används av dessa API-ingångspunkter.
 
-MCP-klienter använder samma publika API via [MCP Server](mcp.md). Använd den här sidan när du anropar Python direkt, och MCP-guiden när du exponerar Co-op Translator för en agent eller en editor. Om du väljer mellan CLI, Python-API och MCP, börja med [Choose Your Workflow](workflows.md).
+MCP-klienter använder samma publika API via [MCP-servern](mcp.md). Använd den här sidan när du anropar Python direkt, och MCP-guiden när du exponerar Co-op Translator för en agent eller redigerare. Om du ska välja mellan CLI, Python-API och MCP, börja med [Välj ditt arbetsflöde](workflows.md).
 
 ## Förstagångsflöde för API
 
 Börja här om du anropar Co-op Translator från Python-kod:
 
-1. Konfigurera en LLM-leverantör enligt [Configuration](configuration.md), om du inte bara förbereder Markdown- eller notebook-bitar för host-agent-översättning.
-2. Bestäm om din applikation ansvarar för fil-I/O.
-3. Använd innehålls-API:er när din applikation läser och skriver enstaka filer.
-4. Använd `run_translation` när Co-op Translator ska bearbeta ett repository som CLI:n.
-5. Använd `run_review` efter översättning om du behöver deterministiska kontroller i automation.
+1. Konfigurera en LLM-leverantör enligt beskrivningen i [Configuration](configuration.md), om du inte bara förbereder Markdown- eller notebook-delar för värdagentöversättning.
+2. Avgör om din applikation ansvarar för fil-I/O.
+3. Använd innehålls-API:er när din applikation läser och skriver enskilda filer.
+4. Använd `run_translation` när Co-op Translator ska bearbeta ett repository som CLI:t.
+5. Använd `run_review` efter översättning om du behöver deterministiska kontroller i automatisering.
 
-| Goal | API to start with |
+| Mål | API att börja med |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
-| Translate one notebook payload | `translate_notebook_content` |
-| Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
-| Translate a full repository | `run_translation` |
-| Review translated output | `run_review` |
+| Översätt en Markdown-sträng eller fil | `translate_markdown_content` |
+| Översätt en notebook-payload | `translate_notebook_content` |
+| Översätt en bild | `translate_image_content` |
+| Låt en värdagent översätta Markdown- eller notebook-delar | `start_markdown_agent_translation` eller `start_notebook_agent_translation` |
+| Skriv om översatta länkar efter att ha valt en utdata-sökväg | `rewrite_markdown_paths` eller `rewrite_notebook_paths` |
+| Översätt ett helt repository | `run_translation` |
+| Granska översatt utdata | `run_review` |
 
-## Scenario 1: Translate Individual Files or Documents
+## Scenario 1: Översätt enskilda filer eller dokument
 
-Använd det här arbetsflödet när du redan har en fil, editorbuffert, notebook-payload, MCP-förfrågan eller egen pipeline-input. Din kod ansvarar för fil-I/O:
+Använd detta arbetsflöde när du redan har en fil, en editor-buffer, en notebook-payload, en MCP-förfrågan eller en egen pipelineingång. Din kod ansvarar för fil-I/O:
 
 1. Läs källinnehållet.
 2. Anropa ett innehållsöversättnings-API.
-3. Valfritt: anropa ett sökvägs-omskrivnings-API om det översatta innehållet ska skrivas i en projektöversättningsmapp.
+3. Valfritt: anropa ett sökvägsskrivnings-API om det översatta innehållet ska skrivas till en projektöversättningsmapp.
 4. Spara eller returnera resultatet från din applikation.
 
-Innehållsöversättnings-API:erna kör inte projektupptäckt, skriver inte metadata, lägger inte till disclaimers och skriver inte om länkar automatiskt.
+Innehållsöversättnings-API:erna kör inte projektdetektering, skriver inte metadata, lägger inte till ansvarsfriskrivningar och skriver inte om länkar automatiskt.
 
-### Markdown File
+### Markdown-fil
 
 ```python
 import asyncio
@@ -85,9 +85,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Om den översatta Markdown inte ska ligga i ett Co-op Translator-projekt, hoppa över `rewrite_markdown_paths` och spara den översatta strängen direkt.
+Om den översatta Markdown-filen inte kommer att ligga i ett Co-op Translator-projektupplägg, hoppa över `rewrite_markdown_paths` och spara den översatta strängen direkt.
 
-### Notebook File
+### Notebook-fil
 
 ```python
 import asyncio
@@ -129,9 +129,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` översätter Markdown-celler och bevarar icke-Markdown-celler. Sökvägsomskrivning tillämpas endast på Markdown-celler.
+`translate_notebook_content` översätter Markdown-celler och bevarar icke-Markdown-celler. Sökvägsskrivning tillämpas endast på Markdown-celler.
 
-### Image File
+### Bildfil
 
 ```python
 from pathlib import Path
@@ -156,13 +156,13 @@ translated_image.save(target_path)
 
 `translate_image_content` läser källbilden och returnerar en renderad `PIL.Image.Image`. Den skriver inte översatt bildmetadata.
 
-## Scenario 2: Translate an Entire Repository
+## Scenario 2: Översätt ett helt repository
 
-Använd det här arbetsflödet när du vill att Python-API:t ska bete sig som `translate` CLI:n. `run_translation` upptäcker stödjade filer, översätter valda innehållstyper, skriver om sökvägar, skriver utdatafiler, uppdaterar metadata och utför underhållsuppgifter som städning.
+Använd detta arbetsflöde när du vill att Python-API:et ska bete sig som `translate`-CLI:t. `run_translation` upptäcker stödjade filer, översätter valda innehållstyper, skriver om sökvägar, skriver ut filer, uppdaterar metadata och utför översättningsunderhållsåtgärder såsom städning.
 
-`run_translation` är den föredragna ingångspunkten för projektorkestrering. `translate_project` exporteras som en kompatibilitetsalias med samma beteende.
+`run_translation` är den föredragna ingångspunkten för projekthantering. `translate_project` exporteras som ett kompatibilitetsalias med samma beteende.
 
-Translate Markdown files in the current repository into Korean and Japanese:
+Översätt Markdown-filer i det aktuella repositoryt till koreanska och japanska:
 
 ```python
 from co_op_translator.api import run_translation
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-Translate only notebooks from a specific project root:
+Översätt endast notebooks från ett specifikt projektrot:
 
 ```python
 from co_op_translator.api import run_translation
@@ -185,7 +185,7 @@ run_translation(
 )
 ```
 
-Preview translation volume without writing files:
+Förhandsgranska översättningsvolymen utan att skriva filer:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-Translate multiple content roots in one call:
+Spela in strukturerade framstegshändelser för en integration:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Spara nyttolasten i din jobbhändelsetabell eller strömma den till ditt användargränssnitt.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Händelser använder det versionsstyrda schemat `co-op.translation.event.v1`. Integrationer bör
+bero på stabila fält som `type` och `stage_key`, inte på användarvänlig
+konsoltext eller `stage_label`.
+
+Översätt flera källrötter i ett anrop:
 
 ```python
 from co_op_translator.api import run_translation
@@ -210,7 +234,7 @@ run_translation(
 )
 ```
 
-Write translations into explicit output groups:
+Skriv översättningar till explicita utdata-grupper:
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-Use a per-language placeholder when each language should contain a nested subdirectory:
+Använd en språkvis platshållare när varje språk ska innehålla en inbäddad undermapp:
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-If none of `markdown`, `notebook`, or `images` are set, the API translates all supported types: Markdown, notebooks, and images.
+Om ingen av `markdown`, `notebook` eller `images` är aktiverad, översätter API:et alla stödjade typer: Markdown, notebooks och bilder.
 
-## Review Translated Output
+### Bevara accepterade mänskliga redigeringar med en översättningsstatusleverantör
+
+Som standard bevarar Co-op Translator sitt befintliga filnivåbeteende: när en
+Markdown-källa är föråldrad genereras hela den översatta filen på nytt. Hostade
+integrationer kan valfritt skicka en `TranslationStateProvider` för att bevara mänskliga
+redigeringar i källblock som inte har ändrats.
+
+Leverantören tillhandahåller det senaste accepterade källa/mål-paret och registrerar varje ny
+kandidat. Godkännande förblir integrationens ansvar—till exempel,
+efter att en översättnings-pull request har mergats:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+För Markdown-filer med en giltig accepterad baslinje, justerar Co-op Translator
+toppnivå Markdown-block. Oförändrade källblock återanvänder de nuvarande översatta
+blocken, inklusive ändringar gjorda av människor; ändrade eller tillagda källblock skickas
+för översättning; borttagna källblock tas bort. Om justeringen är tvetydig,
+målstrukturen ändrats, en blocköversättning är ogiltig, eller ingen baslinje är
+tillgänglig, faller Co-op Translator säkert tillbaka till den befintliga helfilen
+översättningsvägen.
+
+Detta API lagrar dokumentöversättningsstatus, inte ett tvärdokumentellt fras-
+segment-översättningsminne. Det gäller för närvarande Markdown-projekt
+översättning. Notebook- och bildbeteende är oförändrat. Att skicka `update=True`
+begär fortfarande full återgenerering.
+
+Om en eller flera filer inte kan översättas, kastar `run_translation` ett
+`RuntimeError` efter att projektarbetsflödet avslutats istället för att rapportera en
+lyckad körning med saknat utdata. Integrationer bör behandla detta som ett misslyckat
+jobb och behålla den tidigare accepterade översättningsstatusen.
+
+## Granska översatt utdata
 
 `run_review` kör deterministiska översättningskontroller utan LLM- eller Vision-behörigheter.
 
 !!! note "Beta"
-    `run_review` är ett beta-deterministiskt gransknings-API. Det anropar inte modellleverantörer eller skriver filer, men kontroll- och issu-scheman kan förändras.
+    `run_review` är ett beta deterministiskt gransknings-API. Det anropar inte modellleverantörer eller skriver filer, men kontroller och issue-scheman kan komma att förändras.
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-Review only files changed against a base ref and print GitHub-flavored output:
+Efter en README-endast-översättning, använd samma omfattning för granskning:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` granskar endast `README.md` under varje konfigurerad källrot,
+inklusive anpassade `groups` och utdata-kataloger. Andra dokument och inbäddade
+README-filer utesluts. En saknad käll-README ger `ValueError`; misslyckade
+översättningskontroller kastar `RuntimeError`.
+
+Granska endast filer som ändrats mot en basref och skriv ut GitHub-stil utdata:
 
 ```python
 from co_op_translator.api import run_review
@@ -274,9 +398,9 @@ run_review(
 )
 ```
 
-## Copy-Paste API Examples
+## API-exempel att kopiera/klistra in
 
-Translate Markdown content without file writes:
+Översätt Markdown-innehåll utan filskrivningar:
 
 ```python
 import asyncio
@@ -295,7 +419,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Translate and rewrite Markdown links:
+Översätt och skriv om Markdown-länkar:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -327,7 +451,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Translate a repository from Python:
+Översätt ett repository från Python:
 
 ```python
 from co_op_translator.api import run_translation
@@ -340,7 +464,7 @@ run_translation(
 )
 ```
 
-Translate multiple roots:
+Översätt flera rötter:
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-Preserve glossary terms:
+Bevara ordlistetermer:
 
 ```python
 from co_op_translator.api import run_translation
@@ -371,13 +495,16 @@ run_translation(
 )
 ```
 
-## Public Entry Points
+## Publika ingångspunkter
 
 ```python
 from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## Content Translation APIs
+## Innehållsöversättnings-API:er
 
-Innehållsöversättnings-API:er är avsedda för integrationer som redan har innehåll i minnet, såsom en editor-tillägg, MCP-verktyg, notebook-processor eller egen pipeline.
+Innehållsöversättnings-API:er är avsedda för integrationer som redan har innehåll i minnet, såsom ett editor-tillägg, MCP-verktyg, notebook-processor eller en egen pipeline.
 
-| Function | Input | Output | File I/O | Notes |
+| Funktion | Inmatning | Utmatning | Fil-I/O | Noteringar |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Översätter endast Markdown-innehåll. Den skriver inte om länkar, sparar metadata eller lägger till disclaimers. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Översätter Markdown-celler och bevarar icke-Markdown-celler. Den skriver inte om länkar, sparar metadata eller lägger till disclaimers. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Extraherar och översätter bildtext, och returnerar sedan en renderad bild. Den sparar inte översatt bildmetadata. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | Nej | Asynkront. Översätter endast Markdown-innehåll. Den skriver inte om länkar, skriver inte metadata eller lägger till ansvarsfriskrivningar. |
+| `translate_notebook_content` | Notebook JSON `str` eller `dict` | Notebook JSON `str` | Nej | Asynkront. Översätter Markdown-celler och bevarar icke-Markdown-celler. Den skriver inte om länkar, skriver inte metadata eller lägger till ansvarsfriskrivningar. |
+| `translate_image_content` | Bildsökväg | `PIL.Image.Image` | Läser endast källbilden | Synkront. Extraherar och översätter bildtext, sedan returnerar en renderad bild. Den sparar inte översatt bildmetadata. |
 
-`translate_markdown_content` and `translate_notebook_content` accept an optional `source_path` through their options. The path is passed as context to the translator; callers remain responsible for any project-specific path rewriting after translation.
+`translate_markdown_content` och `translate_notebook_content` accepterar en valfri `source_path` via sina options. Sökvägen skickas som kontext till översättaren; anroparna är fortfarande ansvariga för eventuell projektspecifik sökvägsskrivning efter översättning.
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-The same options can be passed as dictionaries:
+Samma options kan skickas som ordböcker:
 
 ```python
 translated = await translate_markdown_content(
@@ -455,94 +588,96 @@ translated = await translate_markdown_content(
 )
 ```
 
-## Agent-Assisted Translation APIs
+## Agentassisterade översättnings-API:er
 
-Agent-assisterade API:er anropar inte Azure OpenAI eller OpenAI från Co-op Translator. De förbereder Markdown- eller notebook-bitar för att en värdagent ska översätta, och rekonstruerar sedan det slutgiltiga innehållet från de översatta bitarna.
+Agentassisterade API:er anropar inte den konfigurerade LLM-leverantören från Co-op Translator. De förbereder Markdown- eller notebook-delar för att en värdagent ska översätta, och rekonstruerar sedan det slutliga innehållet från de översatta delarna.
 
-| Function | Purpose |
+| Funktion | Syfte |
 | --- | --- |
-| `start_markdown_agent_translation` | Returnerar ett fristående Markdown-jobb med bitar, prompts och återuppbyggnadsstatus. |
-| `finish_markdown_agent_translation` | Återuppbygger Markdown från ett jobb och värdagentens översatta bitar. |
-| `start_notebook_agent_translation` | Returnerar ett notebook-jobb med Markdown-cellbitar för värdagent-översättning. |
-| `finish_notebook_agent_translation` | Återuppbygger notebook JSON samtidigt som kodceller, outputs och metadata bevaras. |
+| `start_markdown_agent_translation` | Returnerar ett fristående Markdown-jobb med delar, prompts och rekonstruktionsstatus. |
+| `finish_markdown_agent_translation` | Rekonstruerar Markdown från ett jobb och de av värdagenten översatta delarna. |
+| `start_notebook_agent_translation` | Returnerar ett notebook-jobb med Markdown-cell-delar för värdagent-översättning. |
+| `finish_notebook_agent_translation` | Rekonstruerar notebook-JSON samtidigt som kodceller, output och metadata bevaras. |
 
-Detta arbetsflöde är främst avsett för MCP-värdar. Om du behöver produktionsöversättning av repositories med Co-op Translator som hanterar anrop till leverantörer, använd `translate_markdown_content`, `translate_notebook_content` eller `run_translation`.
+Detta arbetsflöde är huvudsakligen avsett för MCP-värdar. Om du behöver produktionens repository-översättning med Co-op Translator som hanterar leverantörsanrop, använd `translate_markdown_content`, `translate_notebook_content` eller `run_translation`.
 
-## Path Rewriting APIs
+## API:er för sökvägsskrivning
 
-Sökvägsomskrivnings-API:er utför ingen översättning. De uppdaterar länkar och frontmatter-sökvägar efter att anropare känner till källvägen, den översatta målvägen och projektlayouten.
+API:er för sökvägsskrivning utför ingen översättning. De uppdaterar länkar och frontmatter-sökvägar efter att anroparna känner till källsökvägen, den översatta målsökvägen och projektlayouten.
 
-| Function | Scope | Notes |
+| Funktion | Område | Noteringar |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | Skriver om Markdown-länkar och stödda frontmatter-fält för en översatt mål. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Tillämpa Markdown-sökvägsomskrivning på varje Markdown-cell och lämnar icke-Markdown-celler oförändrade. |
+| `rewrite_markdown_paths` | Markdown-body och frontmatter | Skriver om Markdown-länkar och stödda frontmatter-sökvägsfält för ett översatt mål. |
+| `rewrite_notebook_paths` | Markdown-celler i notebook-JSON | Tillämpa Markdown-sökvägsskrivning på varje Markdown-cell och lämnar icke-Markdown-celler oförändrade. |
 
-The `policy` argument may be a dictionary with these fields:
+Argumentet `policy` kan vara en ordbok med följande fält:
 
-| Field | Required | Purpose |
+| Fält | Obligatoriskt | Syfte |
 | --- | --- | --- |
-| `language_code` | Yes | Target language code, such as `"ko"` or `"pt-BR"`. |
-| `root_dir` | No | Source project root. Defaults to `"."`. |
-| `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
-| `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
-| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
-| `lang_subdir` | No | Optional subdirectory under each language folder. |
+| `language_code` | Ja | Målspråkskod, till exempel `"ko"` eller `"pt-BR"`. |
+| `root_dir` | Nej | Projektrot för källan. Standard är `"."`. |
+| `translations_dir` | Nej | Utgångskatalog för textöversättningar. Standard är `translations` under `root_dir`. |
+| `translated_images_dir` | Nej | Utgångskatalog för översatta bilder. Standard är `translated_images` under `root_dir`. |
+| `translation_types` | Nej | Aktiverade översättningstyper. Standard är Markdown, notebooks och bilder. |
+| `lang_subdir` | Nej | Valfri undermapp under varje språk-mapp. |
 
-## Project Translation Parameters
+## Parametrar för projektöversättning
 
-| Parameter | Type | Default | Purpose |
+| Parameter | Typ | Standard | Syfte |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Space-separated target language codes, such as `"ko ja fr"`, or `"all"`. Alias codes are normalized to canonical BCP 47 values. |
-| `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` are supplied. |
-| `update` | `bool` | `False` | Delete and recreate existing translations for the selected languages. |
-| `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
-| `markdown` | `bool` | `False` | Include Markdown translation. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
-| `debug` | `bool` | `False` | Enable debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
-| `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
-| `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
-| `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
-| `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
+| `language_codes` | `str` | Obligatoriskt | Målspråkskoder separerade med mellanslag, till exempel `"ko ja fr"`, eller `"all"`. Alias-koder normaliseras till kanoniska BCP 47-värden. |
+| `root_dir` | `str` | `"."` | Projektrot för ett enskilt översättningsmål. Ignoreras när `root_dirs` eller `groups` anges. |
+| `update` | `bool` | `False` | Ta bort och återskapa befintliga översättningar för de valda språken. |
+| `images` | `bool` | `False` | Inkludera bildöversättning. Kräver Azure AI Vision-konfiguration. |
+| `markdown` | `bool` | `False` | Inkludera Markdown-översättning. |
+| `notebook` | `bool` | `False` | Inkludera Jupyter-notebook-översättning. |
+| `debug` | `bool` | `False` | Aktivera debug-loggning. |
+| `save_logs` | `bool` | `False` | Spara loggfiler på DEBUG-nivå i roten `logs/`-katalogen. |
+| `yes` | `bool` | `True` | Bekräftar automatiskt uppmaningar för programmatisk användning och CI. |
+| `add_disclaimer` | `bool` | `False` | Lägg till maskinöversättningsansvarsfriskrivningar i översatt Markdown och anteckningsböcker. |
+| `translations_dir` | `str \| None` | `None` | Anpassad utmatningskatalog för textöversättningar. Relativa sökvägar löses i förhållande till varje rot. |
+| `image_dir` | `str \| None` | `None` | Anpassad översatt bildutmatningskatalog. Relativa sökvägar löses i förhållande till varje rot. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Flera root-kataloger som delar samma utmatningsinställningar. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit angivna `(root_dir, translations_dir)`-par. Har företräde framför `root_dirs`. |
+| `repo_url` | `str \| None` | `None` | Repository-URL som används när README:s språktabell visas. |
+| `glossaries` | `Iterable[str] \| None` | `None` | Termer i ordlista som ska bevaras under översättning. Dubbletter och tomma termer normaliseras. |
+| `dry_run` | `bool` | `False` | Uppskatta översättningsvolym och förhandsgranska migreringsbeteende utan att skriva filer. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Valfri adapter för persistens av accepted-baseline och kandidater för inkrementella Markdown-uppdateringar. Om den utelämnas bevaras det befintliga beteendet med uppdateringar av hela filer. |
 
-## Review Parameters
+## Granskningsparametrar
 
-`run_review` avsiktligt speglar `run_translation`-signaturen där det är möjligt så att automation kan växla mellan översättnings- och granskningsarbetsflöden med minimala skillnader.
+`run_review` speglar avsiktligt `run_translation`-signaturen där det är möjligt så att automatisering kan byta mellan översättnings- och granskningsarbetsflöden med minimal villkorsförgrening.
 
-| Parameter | Type | Default | Purpose |
+| Parameter | Typ | Standard | Syfte |
 | --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders to review. Space-separated strings and iterables are accepted. `"all"` reviews every discovered translation language. |
-| `root_dir` | `str` | `"."` | Project root for a single review target. Ignored when `root_dirs` or `groups` are supplied. |
-| `markdown` | `bool` | `False` | Include Markdown and MDX source files. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
-| `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images are checked from Markdown. |
-| `translations_dir` | `str \| None` | `None` | Anpassad katalog för textöversättningsutdata. Relativa sökvägar tolkas i förhållande till respektive rot. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Flera rotkataloger som delar samma utdatainställningar. |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | Mål-språkmappar att granska. Mellanrum-separerade strängar och itererbara accepteras. `"all"` granskar alla upptäckta översättningsspråk. |
+| `root_dir` | `str` | `"."` | Projektets rot för ett enda granskningsmål. Ignoreras när `root_dirs` eller `groups` anges. |
+| `markdown` | `bool` | `False` | Inkludera Markdown- och MDX-källfiler. |
+| `notebook` | `bool` | `False` | Inkludera Jupyter-notebookkällfiler. |
+| `images` | `bool` | `False` | Reserverat för paritet med översättningsalternativ. Länkreferenser till bilder kontrolleras från Markdown. |
+| `translations_dir` | `str \| None` | `None` | Anpassad utmatningskatalog för textöversättningar. Relativa sökvägar löses i förhållande till varje rot. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Flera root-kataloger som delar samma utmatningsinställningar. |
 | `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit angivna `(root_dir, translations_dir)`-par. Har företräde framför `root_dirs`. |
 | `changed_from` | `str \| None` | `None` | Git-ref som används för att begränsa granskningen till ändrade källfiler. |
-| `output_format` | `str` | `"text"` | Granskningsutdataformat. Stödda värden är "text" och "github". |
-| `fail_on_warnings` | `bool` | `False` | Behandla varningar som fel i tillägg till befintliga fel. |
+| `readme_only` | `bool` | `False` | Granska endast `README.md` under varje källrot. Ett saknat käll-README utlöser `ValueError`. |
+| `output_format` | `str` | `"text"` | Utdataformat för granskning. Stödda värden är `"text"` och `"github"`. |
+| `fail_on_warnings` | `bool` | `False` | Behandla varningar som fel, i tillägg till redan förekommande fel. |
 | `debug` | `bool` | `False` | Aktivera debug-loggning. |
-| `save_logs` | `bool` | `False` | Spara loggfiler på DEBUG-nivå i rotkatalogen `logs/`. |
+| `save_logs` | `bool` | `False` | Spara DEBUG-nivå loggfiler under rotkatalogen `logs/`. |
 
-If none of `markdown`, `notebook`, or `images` are set, the API reviews Markdown, notebooks, and image link references where applicable. Review does not call an LLM provider and does not require API keys.
+Om ingen av `markdown`, `notebook` eller `images` är angiven, granskar API:et Markdown, notebooks och bildlänkreferenser där det är tillämpligt. Granskning anropar inte en LLM-leverantör och kräver inga API-nycklar.
 
 ## Konfigurationskrav
 
-Översättnings-API:er som stöds av leverantörer kräver leverantörskonfiguration innan översättning:
+Provider-stödda översättnings-API:er kräver leverantörskonfiguration innan översättning:
 
-- Markdown and notebook translation require an LLM provider. Configure either Azure OpenAI or OpenAI.
-- Image translation requires Azure AI Vision in addition to the LLM provider.
-- `run_translation` runs lightweight connectivity checks before project translation begins.
-- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` are deterministic and do not require provider credentials.
+- Markdown- och notebook-översättning kräver en LLM-leverantör. Konfigurera Azure OpenAI, OpenAI eller Anthropic.
+- Bildöversättning kräver Azure AI Vision utöver LLM-leverantören.
+- `run_translation` kör lätta anslutningskontroller innan projektöversättningen börjar.
+- Agent-assisterade `start_*_agent_translation` och `finish_*_agent_translation` API:er anropar inte Co-op Translator LLM-leverantörer. Värdapplikationen eller MCP-agenten översätter de förberedda chunkarna.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths`, och `run_review` är deterministiska och kräver inga leverantörsbehörigheter.
 
-Required Azure OpenAI variables:
+Nödvändiga Azure OpenAI-variabler:
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -552,69 +687,78 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Required OpenAI variables:
+Nödvändiga OpenAI-variabler:
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+Nödvändiga Anthropic-variabler:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` och `ANTHROPIC_MAX_TOKENS` är valfria. Microsoft Agent Framework är standardmodellklienten för alla leverantörer från och med Co-op Translator 0.22.0. Semantic Kernel kan fortfarande väljas tillfälligt med `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, men att göra det utlöser en avvecklingsvarning; se [konfiguration](configuration.md#model-client-backend) för den etapperade borttagningsplanen.
+
+Nödvändiga Azure AI Vision-variabler för bildöversättning:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` is deterministic and does not require Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` är deterministisk och kräver ingen LLM- eller Azure AI Vision-konfiguration.
 
-## Beteendeanteckningar
+## Anmärkningar om beteende
 
-- Content translation APIs keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content needs project-relative links adjusted for a target location.
-- Project orchestration APIs add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
-- `run_translation` prints progress and estimate summaries through Click, matching the CLI user experience.
-- `dry_run=True` computes estimates using virtual README updates, but does not write the README or translation files.
-- `groups` are processed sequentially. A single aggregate estimate is printed before work begins.
-- When image translation is selected, missing Vision configuration raises an error before translation starts.
-- Existing alias-based language folders are detected and can be migrated to canonical language folder names as part of the run.
-- `run_review` fails on missing translated files, missing or stale translation metadata, malformed Markdown frontmatter/code fences, and invalid translated notebook JSON.
-- `run_review` reports missing local Markdown and image link targets as warnings by default.
+- Innehållsöversättnings-API:er håller översättning åtskild från projektvägsomskrivning. Anropa `rewrite_markdown_paths` eller `rewrite_notebook_paths` uttryckligen när översatt innehåll behöver projektrelativa länkar justerade för en målplats.
+- Projektorkestrerings-API:er lägger till projektbeteende kring innehållsöversättning, inklusive filupptäckt, skrivningar, väg-omskrivning, metadata, städning och valfria ansvarsfriskrivningar.
+- `run_translation` skriver ut status- och uppskattningssammanfattningar via samma Rich-baserade rapportör som används av CLI:n. I icke-interaktivt läge faller utdata tillbaka till ren text.
+- `dry_run=True` beräknar uppskattningar med virtuella README-uppdateringar, men skriver inte README eller översättningsfilerna.
+- `groups` behandlas sekventiellt. En enda aggregerad uppskattning skrivs ut innan arbetet börjar.
+- När bildöversättning väljs, ger saknad Vision-konfiguration ett fel innan översättningen startar.
+- Befintliga alias-baserade språkmappar upptäcks och kan migreras till kanoniska språkmappnamn som en del av körningen.
+- `run_review` misslyckas vid saknade översatta filer, saknad eller föråldrad översättningsmetadata, felaktig Markdown-frontmatter/code-fences och ogiltig översatt notebook-JSON.
+- `run_review` rapporterar saknade lokala Markdown- och bildlänkmål som varningar som standard.
 
 ## Intern anropsväg
 
-The API delegates to the same core implementation used by the CLI:
+API:et delegerar till samma kärnimplementering som används av CLI:n:
 
-Translation:
+Översättning:
 
-1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` for in-memory translation.
-2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` for explicit path post-processing.
-3. `co_op_translator.api.translation.run_translation` for full project orchestration.
-4. `co_op_translator.config.Config`, `LLMConfig` och `VisionConfig`.
+1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, eller `translate_image_content` för översättning i minnet.
+2. `co_op_translator.api.translation.rewrite_markdown_paths` eller `rewrite_notebook_paths` för explicit efterbearbetning av sökvägar.
+3. `co_op_translator.api.translation.run_translation` för fullständig projektorkestrering.
+4. `co_op_translator.config.Config`, `LLMConfig`, och `VisionConfig`.
 5. `co_op_translator.core.project.ProjectTranslator`.
 6. `co_op_translator.core.project.TranslationManager`.
-7. Focused project translation mixins for Markdown, notebooks, and images.
-8. Markdown, notebook, text, and image translators under `co_op_translator.core`.
+7. Fokuserade projektöversättnings-mixins för Markdown, notebooks och bilder.
+8. Markdown-, notebook-, text- och bildöversättare under `co_op_translator.core`.
 
-Review:
+Granskning:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. Deterministic checks under `co_op_translator.review.checks`
+4. Deterministiska kontroller under `co_op_translator.review.checks`
 
-The following classes are useful for maintainers, but are not exported as the package-level stable API.
+Följande klasser är användbara för underhållare, men exporteras inte som paketnivåns stabila API.
 
 | Klass | Modul | Ansvar |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Koordinerar projektnivåöversättning, kataloghantering, normalisering av metadata per språk och delegering till Markdown-, notebook- och bildöversättare. |
-| `TranslationManager` | `co_op_translator.core.project.translation` | Utför det asynkrona filbearbetningsarbetet för Markdown, notebooks, bilder, upptäckt av föråldrade filer och uppdateringar av översättningsmetadata. |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Orkestrerar läsning av Markdown-filer, innehållsöversättning, sökvägsomskrivning, metadata, ansvarsfriskrivningar och skrivningar. |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Orkestrerar läsning av notebook-filer, översättning av Markdown-celler, sökvägsomskrivning, metadata, ansvarsfriskrivningar och skrivningar. |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Koordinerar översättning på projektnivå, kataloghantering, språkvis metadata-normalisering och delegering till Markdown-, notebook- och bildöversättare. |
+| `TranslationManager` | `co_op_translator.core.project.translation` | Utför det asynkrona filbearbetningsarbetet för Markdown, notebooks, bilder, detektion av åldrade filer och uppdateringar av översättningsmetadata. |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Orkestrerar läsning av Markdown-filer, innehållsöversättning, väg-omskrivning, metadata, ansvarsfriskrivningar och skrivningar. |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Orkestrerar läsning av notebook-filer, översättning av Markdown-celler, väg-omskrivning, metadata, ansvarsfriskrivningar och skrivningar. |
 | `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Orkestrerar upptäckt av källbilder, bildöversättning, utdata-sökvägar, metadata och skrivningar. |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Hittar översatta Markdown-par, utvärderar översättningskvalitet och läser konfidensmetadata för arbetsflöden för reparation vid låg konfidens. |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Hittar översatta Markdown-par, utvärderar översättningskvalitet och läser förtroendemetadata för reparationsarbetsflöden med låg förtroendegrad. |
 | `ReviewRunner` | `co_op_translator.review.runner` | Koordinerar deterministiska granskningskontroller över källfiler, målspråk och konfigurerade översättningsrötter. |
-| `ReviewTarget` | `co_op_translator.review.targets` | Beskriver en källrot och den översättningsutdata-katalog som granskas för den roten. |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Upptäcker äldre alias-språkmappar och förbereder kanoniska BCP 47-mappmigrationsplaner. |
-| `Config` | `co_op_translator.config.base_config` | Läser in `.env`-filer och kontrollerar om nödvändiga LLM- och valfria Vision-leverantörer är konfigurerade. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Autodetekterar Azure OpenAI eller OpenAI, validerar nödvändiga miljövariabler och kör anslutningskontroller mot leverantören. |
+| `ReviewTarget` | `co_op_translator.review.targets` | Beskriver en källrot och översättningsutmatningskatalogen som granskas för den roten. |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Upptäcker gamla aliasbaserade språkmappar och förbereder migrationsplaner för kanoniska BCP 47-mappar. |
+| `Config` | `co_op_translator.config.base_config` | Laddar `.env`-filer och kontrollerar om erforderliga LLM- och valfria Vision-leverantörer är konfigurerade. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Autodetekterar Azure OpenAI, OpenAI eller Anthropic, validerar nödvändiga miljövariabler och kör anslutningskontroller för leverantören. |
 | `VisionConfig` | `co_op_translator.config.vision_config.config` | Upptäcker Azure AI Vision-konfiguration och kör anslutningskontroller för bildöversättning. |

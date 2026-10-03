@@ -1,6 +1,6 @@
 # CLI-viite
 
-Co-op Translator asentaa nämä komentorivipäätepisteet:
+Co-op Translator asentaa nämä komentorivitoiminnot:
 
 - `translate`
 - `evaluate`
@@ -8,33 +8,45 @@ Co-op Translator asentaa nämä komentorivipäätepisteet:
 - `co-op-review`
 - `co-op-translator-mcp`
 
-Komennot `translate`, `evaluate`, `migrate-links` ja `co-op-review` välitetään `co_op_translator.__main__`in kautta, joka valitsee komennon toteutuksen kutsutun skriptin nimen perusteella. MCP-palvelin käyttää `co_op_translator.mcp.server`ia suoraan.
+Komennot `translate`, `evaluate`, `migrate-links` ja `co-op-review` välitetään `co_op_translator.__main__`-moduulin kautta, joka valitsee komennon toteutuksen kutsutun skriptin nimen perusteella. MCP-palvelin käyttää suoraan `co_op_translator.mcp.server`-moduulia.
 
-Jos valitset CLI:n, Python-API:n ja MCP:n välillä, aloita [Valitse työnkulku](workflows.md).
+Jos valitset CLI:n, Python-API:n ja MCP:n välillä, aloita luvusta [Valitse työnkulku](workflows.md).
 
-## Ensimmäinen CLI-käyttökerta
+## Konsoliulostus
 
-Aloita täältä, jos käytät Co-op Translatoria terminaalista:
+Interaktiiviset päätelaitteet käyttävät Rich-muotoilua komennon otsikkoon, edistymiseen ja yhteenvetoihin. CI ja ei-interaktiivinen tulostus palautuvat automaattisesti tavalliseen tekstiin.
 
-1. Määritä LLM-palveluntarjoaja kuten kuvattu [Konfigurointi](configuration.md).
-2. Valitse sisällön tyyppi, jonka haluat kääntää.
-3. Suorita ensin tarkennettu komento, esimerkiksi vain Markdownin käännös.
-4. Käytä `--dry-run` ennen suuria arkistomuutoksia.
-5. Käytä `co-op-review` käännösten jälkeen rakenteen ja ajantasaisuuden tarkistamiseen.
+Aseta `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` pakottaaksesi tavallisen tulostuksen, tai `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` pakottaaksesi Rich-tulostuksen. Aseta `CO_OP_TRANSLATOR_NO_PROGRESS=1` pitääksesi yhteenvedot mutta estääksesi live-tilapalkit.
 
-| Tavoite | Komento aloitukseen |
+Käytä `translate --json-events progress.ndjson`, kun toinen järjestelmä tarvitsee koneellisesti luettavaa edistymistä. CLI jatkaa ihmiskäyttäjälle tarkoitetun tulostuksen renderöintiä, kun taas NDJSON-tiedosto vastaanottaa versioituja `co-op.translation.event.v1`-tapahtumia, joissa on vakaita kenttiä kuten `type`, `stage_key`, `completed`, `total` ja `current_path`.
+
+
+
+
+
+## Ensimmäinen CLI-käyttö
+
+Aloita tästä, jos käytät Co-op Translatoria päätelaitteesta:
+
+1. Määritä LLM-palveluntarjoaja kuten kuvataan kohdassa [Asetukset](configuration.md).
+2. Valitse sisältötyyppi, jonka haluat kääntää.
+3. Suorita ensin kohdennettu komento, esimerkiksi vain Markdownin käännös.
+4. Käytä `--dry-run` ennen suuren repoon tehtäviä muutoksia.
+5. Käytä `co-op-review` käännöksen jälkeen rakenteen ja ajantasaisuuden tarkistukseen.
+
+| Goal | Command to start with |
 | --- | --- |
-| Käännä Markdown-dokumentteja | `translate -l "ko" -md` |
-| Käännä muistikirjoja | `translate -l "ko" -nb` |
+| Käännä Markdown-dokumentit | `translate -l "ko" -md` |
+| Käännä muistikirjat | `translate -l "ko" -nb` |
 | Käännä kuvan teksti | `translate -l "ko" -img` |
 | Esikatsele muutoksia ilman tiedostojen kirjoittamista | `translate -l "ko" -md --dry-run` |
 | Tarkista olemassa olevat käännökset | `co-op-review -l "ko"` |
 | Päivitä muistikirja- ja Markdown-linkit | `migrate-links -l "ko" --dry-run` |
-| Avaa työkalut MCP-asiakkaalle | Määritä [MCP-palvelin](mcp.md) sen sijaan, että suoritat CLI-komentoja suoraan. |
+| Tarjoa työkalut MCP-asiakkaalle | Konfiguroi [MCP-palvelin](mcp.md) sen sijaan, että suoritat CLI-komentoja suoraan. |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+Käännä Markdown-tiedostoja, muistikirjoja ja kuvien tekstiä yhteen tai useampaan kohdekieleen.
 
 ```bash
 translate -l "ko ja fr"
@@ -66,7 +78,7 @@ Päivitä olemassa olevat käännökset poistamalla ja luomalla ne uudelleen:
 translate -l "ko" -u
 ```
 
-Suorita ilman interaktiivisia kehotteita:
+Suorita ilman vuorovaikutteisia kehotteita:
 
 ```bash
 translate -l "ko ja" -md -y
@@ -78,35 +90,42 @@ Tallenna lokit:
 translate -l "ko" -s
 ```
 
+Kirjoita jäsenneltyjä edistymistapahtumia:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
 ### Asetukset
 
-| Valinta | Pakollinen | Kuvaus |
+| Vaihtoehto | Pakollinen | Kuvaus |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Kyllä | Välilyönnillä erotetut kielikoodit, esimerkiksi `"es fr de"`, tai `"all"`. |
+| `-l`, `--language-codes` | Kyllä | Välilyönnillä erotetut kielikoodit, kuten `"es fr de"`, tai `"all"`. |
 | `-r`, `--root-dir` | Ei | Projektin juurihakemisto. Oletuksena nykyinen hakemisto. |
-| `-u`, `--update` | Ei | Poista valittujen kielten olemassa olevat käännökset ja luo ne uudelleen. |
-| `-img`, `--images` | Ei | Käännä vain kuvatiedostoja. |
+| `-u`, `--update` | Ei | Poista olemassa olevat käännökset valituille kielille ja luo ne uudelleen. |
+| `-img`, `--images` | Ei | Käännä vain kuvatiedostot. |
 | `-md`, `--markdown` | Ei | Käännä vain Markdown-tiedostoja. |
-| `-nb`, `--notebook` | Ei | Käännä vain Jupyter-muistikirjoja. |
-| `-d`, `--debug` | Ei | Ota debug-lokin tulostus konsoliin käyttöön. |
+| `-nb`, `--notebook` | Ei | Käännä vain Jupyter-muistikirjatiedostoja. |
+| `-d`, `--debug` | Ei | Ota debug-lokin tulostus käyttöön konsolissa. |
 | `-s`, `--save-logs` | Ei | Tallenna DEBUG-tason lokit polkuun `<root-dir>/logs/`. |
-| `-x`, `--fix` | Ei | Käännä uudelleen alhaisen luottamuksen Markdown-tiedostot aiempien arviointitulosten perusteella. |
-| `-c`, `--min-confidence` | Ei | Luottamuskynnys `--fix`-vaihtoehdolle. Oletuksena `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | Ei | Lisää tai poista konekäännöksiä koskevat vastuuvapauslausekkeet. Oletuksena käytössä CLI:ssä. |
-| `-f`, `--fast` | Ei | Poistettu käytöstä oleva nopea kuvatila. |
-| `-y`, `--yes` | Ei | Hyväksy kehotteet automaattisesti, hyödyllinen CI:ssä. |
-| `--repo-url` | Ei | Arkiston URL, jota käytetään README:n kielitaulukon sparse-checkout-ohjeessa. |
-| `--migrate-language-folders` | Ei | Nimeä uudelleen perinteiset alias-kansiot, kuten `cn` tai `tw`, kanonisiin BCP 47 -kansioihin. |
-| `--dry-run` | Ei | Esikatsele kielikansioiden uudelleennimeämiset ja käännösarviot ilman tiedostojen kirjoittamista. |
+| `--json-events` | Ei | Kirjoita koneellisesti luettavat käännöksen edistymistapahtumat NDJSON-muotoon. |
+| `-x`, `--fix` | Ei | Uudelleenkäännä matalan luottamuksen Markdown-tiedostot aiempien arviointitulosten perusteella. |
+| `-c`, `--min-confidence` | Ei | Luottamuskynnys `--fix`-optiolle. Oletus `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | Ei | Lisää tai poista konekäännösvaroitukset. Oletuksena CLI:ssä käytössä. |
+| `-f`, `--fast` | Ei | Vanhentunut nopea kuva-tila. |
+| `-y`, `--yes` | Ei | Vahvista kehotteet automaattisesti, hyödyllinen CI:ssä. |
+| `--repo-url` | Ei | Arkiston URL, jota käytetään README-kielten taulukon sparse-checkout-ohjeessa. |
+| `--migrate-language-folders` | Ei | Nimeä vanhat alias-kansiot, kuten `cn` tai `tw`, uudelleen kanonisiin BCP 47 -kansioihin. |
+| `--dry-run` | Ei | Esikatsele kielikansioiden migraatiota ja käännösarvioita ilman tiedostojen kirjoittamista. |
 
-If no type flag is provided, `translate` processes Markdown, notebooks, and images. Image translation requires Azure AI Vision configuration.
+Jos tyyppilippua ei anneta, `translate` käsittelee Markdown-tiedostot, muistikirjat ja kuvat. Kuvien kääntäminen vaatii Azure AI Vision -määrityksen.
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+Arvioi käännettyjen Markdown-tiedostojen laatu yhdelle kielelle.
 
 !!! warning "Kokeellinen"
-    `evaluate` on kokeellinen. Se voi käyttää sääntöperusteisia ja LLM-pohjaisia laatutarkistuksia, kirjoittaa arviointitulokset käännösmetatietoihin, ja sen pisteytysmalli sekä metatietojen käyttäytyminen voivat muuttua.
+    `evaluate` on kokeellinen. Se voi käyttää sääntöpohjaisia ja LLM-pohjaisia laatutarkistuksia, kirjoittaa arviointitulokset käännösmetatietoihin, ja sen pisteytysmalli sekä metatietokäytös saattavat muuttua.
 
 ```bash
 evaluate -l "ko"
@@ -114,19 +133,19 @@ evaluate -l "ko"
 
 ### Yleisiä esimerkkejä
 
-Käytä tiukempaa alhaisen luottamuksen kynnystä:
+Käytä tiukempaa matalan luottamuksen kynnystä:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-Suorita vain sääntöperusteiset tarkistukset:
+Suorita vain sääntöpohjaiset tarkistukset:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-Suorita vain LLM-perusteiset tarkistukset:
+Suorita vain LLM-pohjaiset tarkistukset:
 
 ```bash
 evaluate -l "ja" -D
@@ -134,24 +153,24 @@ evaluate -l "ja" -D
 
 ### Asetukset
 
-| Valinta | Pakollinen | Kuvaus |
+| Vaihtoehto | Pakollinen | Kuvaus |
 | --- | --- | --- |
-| `-l`, `--language-code` | Kyllä | Yksi kielikoodi arvioitavaksi. Alias-koodit normalisoidaan. |
+| `-l`, `--language-code` | Kyllä | Arvioitava yksittäinen kielikoodi. Alias-koodit normalisoidaan. |
 | `-r`, `--root-dir` | Ei | Projektin juurihakemisto. Oletuksena nykyinen hakemisto. |
-| `-c`, `--min-confidence` | Ei | Kynnys, jota käytetään luetteloitaessa alhaisen luottamuksen käännöksiä. Oletuksena `0.7`. |
+| `-c`, `--min-confidence` | Ei | Kynnys käytettäväksi listattaessa matalan luottamuksen käännöksiä. Oletus `0.7`. |
 | `-d`, `--debug` | Ei | Ota debug-lokin tulostus käyttöön. |
 | `-s`, `--save-logs` | Ei | Tallenna DEBUG-tason lokit polkuun `<root-dir>/logs/`. |
-| `-f`, `--fast` | Ei | Vain sääntöperusteinen arviointi. |
+| `-f`, `--fast` | Ei | Vain sääntöpohjainen arviointi. |
 | `-D`, `--deep` | Ei | Vain LLM-pohjainen arviointi. |
 
-Oletuksena `evaluate` käyttää sekä sääntöperusteista että LLM-pohjaista arviointia. Tulokset kirjoitetaan käännösmetatietoihin ja esitetään yhteenvedossa konsolissa.
+Oletuksena `evaluate` käyttää sekä sääntöpohjaista että LLM-pohjaista arviointia. Tulokset kirjoitetaan käännösmetatietoihin ja tiivistetään konsoliin.
 
 ## co-op-review
 
-Run deterministic translation maintenance checks without API credentials.
+Suorita deterministisiä käännösten ylläpitotarkistuksia ilman API-tunnuksia.
 
-!!! note "Beta"
-    `co-op-review` on beta-vaiheessa oleva deterministinen tarkistuskomento. Se ei kutsu mallipalveluntarjoajia eikä kirjoita tiedostoja, mutta sen tarkistukset ja ongelmaulostulon skeema saattavat kehittyä.
+!!! note "Beeta"
+    `co-op-review` on beeta-vaiheessa oleva deterministinen tarkistuskomento. Se ei kutsu malli­palveluntarjoajia eikä kirjoita tiedostoja, mutta sen tarkistukset ja virheilmoitusten tulostemuoto voivat kehittyä.
 
 ```bash
 co-op-review -l "ko"
@@ -159,25 +178,37 @@ co-op-review -l "ko"
 
 ### Yleisiä esimerkkejä
 
-Tarkista korea- ja japani-käännökset nykyisestä hakemistosta:
+Tarkista korealaiset ja japanilaiset käännökset nykyisestä hakemistosta:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Tarkista tietty projektin juuri:
+Tarkista tietty projektin juurihakemisto:
 
 ```bash
 co-op-review -l "fr" -r ./my-course
 ```
 
-Tarkista vain lähdetiedostot, jotka ovat muuttuneet verrattuna base-refiin:
+Tarkista vain README, README:lle tehdyn käännöksen jälkeen:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` ohittaa muut asiakirjat ja sisäkkäiset READMEt. Se epäonnistuu, jos juurihakemiston
+`README.md` puuttuu. Yhdistettynä `--changed-from`-valintaan se tarkistaa README:n vain
+kun kyseinen lähdetiedosto on muuttunut. README-ainoa käännös jättää alkuperäisen README:n
+muuttumattomaksi, mukaan lukien kaikki jaetut osiomerkinnät.
+
+Tarkista vain lähdetiedostot, jotka ovat muuttuneet verrattuna perusrefiin:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-Tulosta GitHub-tyyppinen Markdown-ulostulo CI-yhteenvedoille:
+Tulosta GitHub-tyylinen Markdown-tulostus CI-yhteenvetoja varten:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -185,34 +216,35 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 ### Asetukset
 
-| Valinta | Pakollinen | Kuvaus |
+| Vaihtoehto | Pakollinen | Kuvaus |
 | --- | --- | --- |
-| `-l`, `--language-code` | Ei | Tarkistettava kielikoodi. Voidaan antaa useita kertoja tai välilyönnillä eroteltuna. Oletuksena kaikki löydetyt käännöskielet. |
+| `-l`, `--language-code` | Ei | Tarkistettava kielikoodi. Voidaan antaa useita kertoja tai välilyönnillä erotettuna arvona. Oletuksena kaikki löydetyt käännöskielet. |
 | `-r`, `--root-dir` | Ei | Projektin juurihakemisto. Oletuksena nykyinen hakemisto. |
-| `--changed-from` | Ei | Git-ref, jota käytetään rajoittamaan tarkistus muutettuihin lähdetiedostoihin. |
-| `--format` | Ei | Tulosteen muoto: `text` tai `github`. Oletuksena `text`. |
+| `--changed-from` | Ei | Git-ref, jota käytetään rajaamaan tarkistus muuttuneisiin lähdetiedostoihin. |
+| `--readme-only` | Ei | Tarkista vain juuren `README.md`-käännös. |
+| `--format` | Ei | Tulostusmuoto: `text` tai `github`. Oletus `text`. |
 
-`co-op-review` tarkistaa tällä hetkellä puuttuvat käännetyt tiedostot, puuttuvat tai vanhentuneet käännösmetatiedot, Markdown-frontmatterin ja koodiaitausten eheystarkistuksen, virheellisen käännetyn notebook JSONin sekä puuttuvat paikalliset Markdown- tai kuvalinkkien kohteet. Puuttuvat linkit ovat oletuksena varoituksia; rakenteelliset ja ajantasaisuuteen liittyvät ongelmat aiheuttavat komennon epäonnistumisen.
+`co-op-review` tarkistaa tällä hetkellä puuttuvat käännetyt tiedostot, puuttuvat tai vanhentuneet käännösmetatiedot, Markdownin frontmatterin ja koodilohkojen eheyden, virheellisen käännetyn muistikirjan JSONin sekä puuttuvat paikalliset Markdown- tai kuva-linkkien kohteet. Puuttuvat linkit ovat oletuksena varoituksia; rakenne- ja ajantasaisuusongelmat johtavat komennon epäonnistumiseen.
 
 ## co-op-translator-mcp
 
-Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+Aja Co-op Translator MCP -palvelin agenteille, muokkaajille ja MCP-yhteensopiville asiakkaille.
 
 ```bash
 co-op-translator-mcp
 ```
 
-The default transport is `stdio`. See the [MCP-palvelin](mcp.md) guide for client configuration, tools, resources, and safety notes.
+Oletussiirto on `stdio`. Katso [MCP-palvelin](mcp.md) -opas asiakasasetuksista, työkaluista, resursseista ja turvallisuusmuistiinpanoista.
 
 ### Asetukset
 
-| Valinta | Pakollinen | Kuvaus |
+| Vaihtoehto | Pakollinen | Kuvaus |
 | --- | --- | --- |
-| `--transport` | Ei | MCP-yhteys: `stdio`, `streamable-http` tai `sse`. Oletuksena `stdio`. |
+| `--transport` | Ei | MCP-siirto: `stdio`, `streamable-http`, tai `sse`. Oletus `stdio`. |
 
 ## migrate-links
 
-Reprocess translated Markdown files and update notebook links so they point to translated notebooks when available.
+Käsittele käännetyt Markdown-tiedostot uudelleen ja päivitä muistikirjalinkit niin, että ne osoittavat käännettyihin muistikirjoihin, kun niitä on saatavilla.
 
 ```bash
 migrate-links -l "ko ja"
@@ -220,7 +252,7 @@ migrate-links -l "ko ja"
 
 ### Yleisiä esimerkkejä
 
-Esikatsele linkkimuutokset:
+Esikatsele linkkipäivitykset:
 
 ```bash
 migrate-links -l "ko" --dry-run
@@ -232,7 +264,7 @@ Käsittele kaikki tuetut kielet ilman vahvistusta:
 migrate-links -l "all" -y
 ```
 
-Kirjoita linkkejä uudelleen vain, kun käännettyjä muistikirjoja on olemassa:
+Kirjoita linkit uudelleen vain, kun käännettyjä muistikirjoja on olemassa:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
@@ -240,20 +272,20 @@ migrate-links -l "ko" --no-fallback-to-original
 
 ### Asetukset
 
-| Valinta | Pakollinen | Kuvaus |
+| Vaihtoehto | Pakollinen | Kuvaus |
 | --- | --- | --- |
 | `-l`, `--language-codes` | Kyllä | Välilyönnillä erotetut kielikoodit, tai `"all"`. |
 | `-r`, `--root-dir` | Ei | Projektin juurihakemisto. Oletuksena nykyinen hakemisto. |
-| `--image-dir` | Ei | Käännettyjen kuvien hakemisto suhteessa juureen. Oletuksena `translated_images`. |
-| `--dry-run` | Ei | Näytä tiedostot, jotka muuttuivat ilman kirjoitusta. |
-| `--fallback-to-original`, `--no-fallback-to-original` | Ei | Käytä alkuperäisiä muistikirjalinkkejä, kun käännettyjä muistikirjoja puuttuu. Oletuksena käytössä. |
+| `--image-dir` | Ei | Käännettyjen kuvien hakemisto suhteessa juureen. Oletus `translated_images`. |
+| `--dry-run` | Ei | Näytä tiedostot, jotka muuttuisivat ilman päivitysten kirjoittamista. |
+| `--fallback-to-original`, `--no-fallback-to-original` | Ei | Käytä alkuperäisiä muistikirjalinkkejä, kun käännetty muistikirja puuttuu. Oletuksena käytössä. |
 | `-d`, `--debug` | Ei | Ota debug-lokin tulostus käyttöön. |
 | `-s`, `--save-logs` | Ei | Tallenna DEBUG-tason lokit polkuun `<root-dir>/logs/`. |
-| `-y`, `--yes` | Ei | Hyväksy kehotteet automaattisesti käsiteltäessä kaikkia kieliä. |
+| `-y`, `--yes` | Ei | Vahvista kehotteet automaattisesti käsiteltäessä kaikkia kieliä. |
 
 ## Ympäristö
 
-Kaikki komennot vaativat yhden määritetyn LLM-palveluntarjoajan:
+Kun komento vaatii palveluntarjoajan tunnuksia, konfiguroi jokin näistä palveluntarjoajaryhmistä. `translate --dry-run` ja `co-op-review` eivät vaadi palveluntarjoajatunnuksia:
 
 ```bash
 # Azure OpenAI
@@ -266,9 +298,13 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # Tai OpenAI
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# Tai Anthropic
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Kuvien käännös vaatii lisäksi Azure AI Visionin:
+Kuvien kääntäminen vaatii lisäksi Azure AI Visionin:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -277,13 +313,13 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 
 ## Tulosteiden rakenne
 
-Tekstikäännökset kirjoitetaan sijainteihin:
+Tekstikäännökset kirjoitetaan hakemistoon:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Käännetyt kuvat kirjoitetaan sijainteihin:
+Käännettyjen kuvien tulosteet kirjoitetaan hakemistoon:
 
 ```text
 translated_images/<language-code>/<original-path>
@@ -322,7 +358,7 @@ Esikatsele Markdown-käännös ilman tiedostojen kirjoittamista:
 translate -l "de es" -md --dry-run
 ```
 
-Korjaa alhaisen luottamuksen Markdown-käännökset:
+Korjaa matalan luottamuksen Markdown-käännökset:
 
 ```bash
 evaluate -l "ko" -c 0.8
@@ -341,7 +377,7 @@ Tarkista käännetty tulos:
 co-op-review -l "ko ja"
 ```
 
-Esikatsele linkkisiirto:
+Esikatsele linkkimigraatio:
 
 ```bash
 migrate-links -l "ko" --dry-run

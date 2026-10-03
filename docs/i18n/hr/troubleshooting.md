@@ -1,13 +1,13 @@
 # Rješavanje problema
 
-Koristite ovu stranicu kada pokretanje prijevoda neočekivano uspije, ne uspije tijekom konfiguracije ili proizvede izlaz koji treba pregledati.
+Upotrijebite ovu stranicu kada pokušaj prevođenja neočekivano uspije, zakaže tijekom konfiguracije ili proizvede izlaz koji treba pregledati.
 
 ## Počnite ovdje
 
-1. Prvo pokrenite fokusiranu naredbu, na primjer `translate -l "ko" -md`.
-2. Dodajte `-d` za debug zapisnike konzole.
-3. Dodajte `-s` da biste spremili debug zapisnike u `<root-dir>/logs/`.
-4. Pokrenite `co-op-review` nakon prijevoda kako biste provjerili ažurnost, strukturu i lokalne poveznice.
+1. Pokrenite prvo fokusiranu naredbu, kao što je `translate -l "ko" -md`.
+2. Dodajte `-d` za debug zapise u konzoli.
+3. Dodajte `-s` za spremanje debug zapisa u `<root-dir>/logs/`.
+4. Pokrenite `co-op-review` nakon prevođenja kako biste provjerili svježinu, strukturu i lokalne veze.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -16,7 +16,7 @@ co-op-review -l "ko"
 
 ## Pogreške konfiguracije
 
-### Nema pružatelja modela jezika
+### Nema pružatelja jezičnog modela
 
 Pogreška:
 
@@ -26,11 +26,11 @@ No language model configuration found.
 
 Rješenje:
 
-- Konfigurirajte Azure OpenAI ili OpenAI.
-- Provjerite jesu li varijable u okruženju u kojem se naredba pokreće.
-- Za lokalnu upotrebu stavite ih u `.env` u korijenu projekta.
+- Konfigurirajte Azure OpenAI, OpenAI ili Anthropic.
+- Provjerite jesu li varijable u okruženju u kojem se naredba izvršava.
+- Za lokalno korištenje, stavite ih u `.env` u korijenu projekta.
 
-Pogledajte [Konfiguracija](configuration.md).
+Vidi [Konfiguracija](configuration.md).
 
 ### Prevođenje slika bez Azure AI Vision
 
@@ -44,26 +44,26 @@ Rješenje:
 
 - Dodajte `AZURE_AI_SERVICE_API_KEY`.
 - Dodajte `AZURE_AI_SERVICE_ENDPOINT`.
-- Ili pokrenite naredbu samo za tekst, kao `translate -l "ko" -md`.
+- Ili pokrenite naredbu samo za tekst, kao što je `translate -l "ko" -md`.
 
-### Nevažeći ključ ili krajnja točka
+### Neispravan ključ ili endpoint
 
-Simptomi mogu uključivati `401`, prikrivene pogreške dopuštenja ili pogreške pristupa krajnjoj točki.
+Simptomi mogu uključivati `401`, pogreške dopuštenja s prikrivenim podacima ili pogreške pristupa endpointu.
 
 Rješenje:
 
-- Potvrdite da ključ pripada istom Azure resursu kao i krajnja točka.
-- Potvrdite da resurs podržava Vision pri korištenju `-img`.
-- Potvrdite da ime Azure OpenAI deploymenta i verzija API-ja odgovaraju vašem deploymentu.
-- Pokrenite s debug zapisnicima: `translate -l "ko" -md -d -s`.
+- Potvrdite da ključ pripada istom Azure resursu kao i endpointu.
+- Potvrdite da resurs podržava Vision kada koristite `-img`.
+- Potvrdite da naziv Azure OpenAI deploymenta i verzija API-ja odgovaraju vašoj implementaciji.
+- Pokrenite s debug zapisima: `translate -l "ko" -md -d -s`.
 
-## Nijedna datoteka nije prevedena
+## Niti jedna datoteka nije prevedena
 
 Uobičajeni uzroci:
 
-- Odabrani parametri (flags) ne odgovaraju vašim datotekama.
+- Odabrane opcije ne odgovaraju vašim datotekama.
 - Već postoje prevedene datoteke.
-- Izvorne datoteke nalaze se u izuzetim direktorijima.
+- Izvorne datoteke su u isključenim direktorijima.
 - Naredba se pokreće iz pogrešnog korijena projekta.
 
 Provjere:
@@ -80,18 +80,18 @@ Upotrijebite `--root-dir` kada se naredba pokreće izvan korijena projekta.
 
 Prepisivanje poveznica ovisi o odabranim vrstama sadržaja:
 
-- `-nb` uključen: poveznice na bilježnice mogu upućivati na prevedene bilježnice.
+- `-nb` uključen: poveznice na bilježnice mogu voditi na prevedene bilježnice.
 - `-nb` isključen: poveznice na bilježnice mogu ostati usmjerene na izvorne bilježnice.
-- `-img` uključen: poveznice na slike mogu pokazivati na prevedene slike.
+- `-img` uključen: poveznice na slike mogu voditi na prevedene slike.
 - `-img` isključen: poveznice na slike mogu ostati usmjerene na izvorne slike.
 
-Pokrenite potpuni prijevod sadržaja kada sve interne poveznice trebaju preferirati prevedene rezultate:
+Pokrenite potpuno prevođenje sadržaja kada sve interne poveznice trebaju preferirati prevedene izlaze:
 
 ```bash
 translate -l "ko" -md -nb -img
 ```
 
-Pokrenite pregled poveznica nakon prijevoda:
+Pokrenite pregled poveznica nakon prevođenja:
 
 ```bash
 co-op-review -l "ko"
@@ -99,11 +99,11 @@ co-op-review -l "ko"
 
 ## Problemi s prikazom Markdowna
 
-Ako prevedeni Markdown nije ispravno prikazan:
+Ako se prevedeni Markdown ne prikazuje ispravno:
 
-- Provjerite počinje li i završava li frontmatter s `---`.
-- Provjerite odgovaraju li brojevi ograda koda (code fences) između izvornih i prevedenih datoteka.
-- Pokrenite `co-op-review` kako biste uhvatili uobičajene strukturne pogreške.
+- Provjerite da frontmatter počinje i završava s `---`.
+- Provjerite da se brojevi code fence oznaka podudaraju između izvornika i prevedenih datoteka.
+- Pokrenite `co-op-review` kako biste uočili uobičajene probleme sa strukturom.
 - Ponovno prevedite određenu datoteku ako je izlaz oštećen.
 
 ```bash
@@ -112,19 +112,19 @@ co-op-review -l "ko" --format github
 
 ## GitHub Action je pokrenut, ali nije stvoren Pull Request
 
-Ako `peter-evans/create-pull-request` prijavi da grana nije ispred baze, workflow nije pronašao datoteke za commit.
+Ako `peter-evans/create-pull-request` prijavi da grana nije ispred baze, radni tijek nije pronašao datoteke za commit.
 
 Vjerojatni uzroci:
 
-- Pokretanje prijevoda nije proizvelo promjene.
+- Pokušaj prevođenja nije proizveo promjene.
 - `.gitignore` isključuje `translations/`, `translated_images/` ili prevedene bilježnice.
 - `add-paths` ne odgovara generiranim izlaznim direktorijima.
-- Korak prijevoda je prerano završio.
+- Korak prevođenja je prerano završio.
 
 Rješenja:
 
 1. Potvrdite da generirane datoteke postoje u `translations/` ili `translated_images/`.
-2. Potvrdite da `.gitignore` ne ignorira generirane izlaze.
+2. Potvrdite da `.gitignore` ne isključuje generirane izlaze.
 3. Koristite odgovarajući `add-paths`:
 
    ```yaml
@@ -134,13 +134,13 @@ Rješenja:
        translated_images/
    ```
 
-4. Privremeno dodajte debug zastavice u naredbu za prijevod:
+4. Privremeno dodajte debug zastavice naredbi za prevođenje:
 
    ```bash
    translate -l "ko" -md -d -s
    ```
 
-5. Potvrdite da dozvole workflowa uključuju:
+5. Potvrdite da dopuštenja workflowa uključuju:
 
    ```yaml
    permissions:
@@ -150,9 +150,9 @@ Rješenja:
 
 ## Kvaliteta prijevoda
 
-Strojni prijevodi mogu zahtijevati ljudski pregled. Koristite `evaluate` samo kada želite eksperimentalno ocjenjivanje kvalitete i postupke popravka za nisku pouzdanost.
+Strojni prijevodi mogu zahtijevati ljudski pregled. Upotrijebite `evaluate` samo kada želite eksperimentalno ocjenjivanje kvalitete i radne tokove za popravak niske pouzdanosti.
 
-!!! warning "Eksperimentalno"
-    `evaluate` može koristiti provjere temeljene na pravilima i provjere temeljene na LLM-u, a njegov model bodovanja i ponašanje metapodataka mogu se promijeniti. Ne uključujte ga u obvezne CI provjere osim ako vaš workflow nije pripremljen na promjene.
+!!! warning "Experimental"
+    `evaluate` može koristiti provjeru baziranu na pravilima i LLM-u, a njegov model ocjenjivanja i ponašanje metapodataka mogu se promijeniti. Izbjegavajte ga u obveznim CI provjerama osim ako je vaš radni tijek pripremljen na promjene.
 
-Za determinističke CI provjere umjesto toga koristite `co-op-review`.
+Za determinističke CI provjere, umjesto toga upotrijebite `co-op-review`.

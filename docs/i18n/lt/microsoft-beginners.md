@@ -1,10 +1,10 @@
-# Microsoft Beginners Repositories
+# Microsoft pradedantiesiems skirtos saugyklos
 
 Šis puslapis skirtas Microsoft "For Beginners" saugyklų prižiūrėtojams, kurie naudoja bendrą "Other Courses" README skiltį.
 
 Daugumai Co-op Translator naudotojų šis puslapis nereikalingas.
 
-## Auto-Sync the Other Courses Section
+## Automatinis kitų kursų skyriaus sinchronizavimas
 
 Pridėkite šiuos žymeklius aplink "Other Courses" skiltį jūsų README:
 
@@ -16,7 +16,7 @@ Pridėkite šiuos žymeklius aplink "Other Courses" skiltį jūsų README:
 
 Kiekvieną kartą, kai Co-op Translator paleidžiamas per CLI arba GitHub Actions, jis pakeičia turinį tarp žymeklių supakuotu šablonu.
 
-## Update the Shared Template
+## Bendro šablono atnaujinimas
 
 Šablono šaltinis yra:
 
@@ -30,7 +30,7 @@ Norėdami atnaujinti bendrą turinį:
 2. Atidarykite pull request į Co-op Translator.
 3. Po pakeitimo išleidimo, paleiskite Co-op Translator tikslinėje saugykloje.
 
-## Sparse Checkout Advisory
+## Patarimas dėl Sparse Checkout
 
 Didelės kursų saugyklos gali tapti brangios klonuoti, jei jose yra daug išverstų rezultatų. Galite įtraukti šį įspėjimą sugeneruotose kalbų skiltyse:
 

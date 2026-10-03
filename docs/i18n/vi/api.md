@@ -1,49 +1,49 @@
-# API cho Python
+# API Python
 
-API công khai ổn định cho Python được xuất khẩu từ `co_op_translator.api`. Hầu hết tích hợp sử dụng một trong các quy trình sau:
+API Python công khai ổn định được xuất từ `co_op_translator.api`. Hầu hết các tích hợp sử dụng một trong các quy trình làm việc sau:
 
-| Scenario | Use this when | Main APIs |
+| Kịch bản | Sử dụng khi | API chính |
 | --- | --- | --- |
-| Translate individual files or documents | Your application reads source content, calls Co-op Translator for translation, and decides where to save the result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | Your MCP host or application model will translate chunks, while Co-op Translator handles chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | You want the Python API to behave like the CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
+| Dịch các tệp hoặc tài liệu riêng lẻ | Ứng dụng của bạn đọc nội dung nguồn, gọi Co-op Translator để dịch, và quyết định nơi lưu kết quả. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Chuẩn bị nội dung cho dịch bởi host-agent | Máy chủ MCP hoặc mô hình ứng dụng của bạn sẽ dịch các đoạn, trong khi Co-op Translator xử lý phân đoạn và tái tạo. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Dịch toàn bộ một kho lưu trữ | Bạn muốn API Python hoạt động giống CLI và xử lý việc khám phá, đường dẫn đầu ra, metadata, dọn dẹp và ghi tệp. | `run_translation` |
 
-Hầu hết các module cấp thấp hơn dưới `core`, `config`, `review`, và `utils` là chi tiết triển khai được các điểm vào API này sử dụng.
+Hầu hết các mô-đun cấp thấp hơn dưới `core`, `config`, `review`, và `utils` là chi tiết triển khai được các điểm nhập API này sử dụng.
 
-Khách hàng MCP sử dụng cùng API công khai thông qua [MCP Server](mcp.md). Sử dụng trang này khi gọi Python trực tiếp, và hướng dẫn MCP khi mở Co-op Translator cho một agent hoặc trình soạn thảo. Nếu bạn đang quyết định giữa CLI, API Python, và MCP, hãy bắt đầu với [Choose Your Workflow](workflows.md).
+Các client MCP sử dụng cùng API công khai thông qua [Máy chủ MCP](mcp.md). Sử dụng trang này khi gọi Python trực tiếp, và hướng dẫn MCP khi mở Co-op Translator cho một agent hoặc trình soạn thảo. Nếu bạn đang quyết định giữa CLI, API Python và MCP, hãy bắt đầu với [Chọn Quy trình làm việc](workflows.md).
 
 ## Luồng API lần đầu
 
 Bắt đầu ở đây nếu bạn gọi Co-op Translator từ mã Python:
 
-1. Cấu hình nhà cung cấp LLM như mô tả trong [Configuration](configuration.md), trừ khi bạn chỉ chuẩn bị các đoạn Markdown hoặc notebook cho dịch bởi host-agent.
-2. Quyết định liệu ứng dụng của bạn có tự quản lý I/O file hay không.
-3. Sử dụng các API nội dung khi ứng dụng của bạn đọc và ghi các file riêng lẻ.
-4. Sử dụng `run_translation` khi Co-op Translator nên xử lý một repository giống như CLI.
-5. Sử dụng `run_review` sau khi dịch nếu bạn cần kiểm tra xác định trong tự động hóa.
+1. Cấu hình nhà cung cấp LLM như mô tả trong [Cấu hình](configuration.md), trừ khi bạn chỉ đang chuẩn bị các đoạn Markdown hoặc notebook cho dịch bởi host-agent.
+2. Quyết định xem ứng dụng của bạn có quản lý I/O tệp hay không.
+3. Sử dụng các API nội dung khi ứng dụng của bạn đọc và ghi các tệp riêng lẻ.
+4. Sử dụng `run_translation` khi Co-op Translator nên xử lý một kho giống như CLI.
+5. Sử dụng `run_review` sau khi dịch nếu bạn cần các kiểm tra xác định trong tự động hóa.
 
-| Goal | API to start with |
+| Mục tiêu | API để bắt đầu |
 | --- | --- |
-| Translate one Markdown string or file | `translate_markdown_content` |
-| Translate one notebook payload | `translate_notebook_content` |
-| Translate one image | `translate_image_content` |
-| Let a host agent translate Markdown or notebook chunks | `start_markdown_agent_translation` or `start_notebook_agent_translation` |
-| Rewrite translated links after choosing an output path | `rewrite_markdown_paths` or `rewrite_notebook_paths` |
-| Translate a full repository | `run_translation` |
-| Review translated output | `run_review` |
+| Dịch một chuỗi hoặc tệp Markdown | `translate_markdown_content` |
+| Dịch một payload notebook | `translate_notebook_content` |
+| Dịch một hình ảnh | `translate_image_content` |
+| Để host agent dịch các đoạn Markdown hoặc notebook | `start_markdown_agent_translation` hoặc `start_notebook_agent_translation` |
+| Viết lại liên kết đã dịch sau khi chọn đường dẫn đầu ra | `rewrite_markdown_paths` hoặc `rewrite_notebook_paths` |
+| Dịch một kho đầy đủ | `run_translation` |
+| Kiểm duyệt kết quả dịch | `run_review` |
 
-## Scenario 1: Translate Individual Files or Documents
+## Kịch bản 1: Dịch tệp hoặc tài liệu riêng lẻ
 
-Sử dụng quy trình này khi bạn đã có một file, buffer trình soạn thảo, payload notebook, yêu cầu MCP, hoặc input pipeline tùy chỉnh. Mã của bạn tự quản lý I/O file:
+Sử dụng quy trình này khi bạn đã có một tệp, bộ đệm trình soạn thảo, payload notebook, yêu cầu MCP, hoặc đầu vào pipeline tùy chỉnh. Mã của bạn chịu trách nhiệm I/O tệp:
 
 1. Đọc nội dung nguồn.
-2. Gọi một API dịch nội dung.
+2. Gọi API dịch nội dung.
 3. Tùy chọn gọi API viết lại đường dẫn nếu nội dung đã dịch sẽ được ghi vào thư mục dịch của dự án.
-4. Lưu hoặc trả về kết quả từ ứng dụng của bạn.
+4. Lưu hoặc trả kết quả từ ứng dụng của bạn.
 
-Các API dịch nội dung không chạy khám phá dự án, không ghi metadata, không thêm tuyên bố từ chối trách nhiệm, và không tự động viết lại liên kết.
+Các API dịch nội dung không chạy khám phá dự án, không ghi metadata, không thêm tuyên bố miễn trừ, và không tự động viết lại liên kết.
 
-### Markdown File
+### Tệp Markdown
 
 ```python
 import asyncio
@@ -85,9 +85,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Nếu Markdown đã dịch sẽ không nằm trong bố cục dự án của Co-op Translator, bỏ qua `rewrite_markdown_paths` và lưu chuỗi đã dịch trực tiếp.
+Nếu Markdown đã dịch sẽ không nằm trong cấu trúc dự án của Co-op Translator, hãy bỏ qua `rewrite_markdown_paths` và lưu chuỗi đã dịch trực tiếp.
 
-### Notebook File
+### Tệp Notebook
 
 ```python
 import asyncio
@@ -131,7 +131,7 @@ asyncio.run(main())
 
 `translate_notebook_content` dịch các ô Markdown và giữ nguyên các ô không phải Markdown. Việc viết lại đường dẫn chỉ áp dụng cho các ô Markdown.
 
-### Image File
+### Tệp hình ảnh
 
 ```python
 from pathlib import Path
@@ -154,15 +154,15 @@ target_path.parent.mkdir(parents=True, exist_ok=True)
 translated_image.save(target_path)
 ```
 
-`translate_image_content` đọc hình ảnh nguồn và trả về một `PIL.Image.Image` đã render. Nó không ghi metadata hình ảnh đã dịch.
+`translate_image_content` đọc ảnh nguồn và trả về một `PIL.Image.Image` đã được render. Nó không ghi metadata hình ảnh đã dịch.
 
-## Scenario 2: Translate an Entire Repository
+## Kịch bản 2: Dịch toàn bộ kho lưu trữ
 
-Sử dụng quy trình này khi bạn muốn API Python hoạt động giống lệnh `translate` của CLI. `run_translation` khám phá các file được hỗ trợ, dịch các loại nội dung được chọn, viết lại đường dẫn, ghi các file đầu ra, cập nhật metadata, và thực hiện các tác vụ bảo trì dịch như dọn dẹp.
+Sử dụng quy trình này khi bạn muốn API Python hoạt động giống lệnh `translate` của CLI. `run_translation` khám phá các tệp được hỗ trợ, dịch các loại nội dung được chọn, viết lại đường dẫn, ghi tệp đầu ra, cập nhật metadata và thực hiện các tác vụ bảo trì dịch như dọn dẹp.
 
-`run_translation` là điểm vào điều phối dự án được ưa thích. `translate_project` được xuất khẩu làm bí danh tương thích với cùng hành vi.
+`run_translation` là điểm vào điều phối dự án được ưa thích. `translate_project` được xuất dưới dạng bí danh tương thích với cùng hành vi.
 
-Dịch các file Markdown trong repository hiện tại sang tiếng Hàn và tiếng Nhật:
+Dịch các tệp Markdown trong kho hiện tại sang tiếng Hàn và tiếng Nhật:
 
 ```python
 from co_op_translator.api import run_translation
@@ -173,7 +173,7 @@ run_translation(
 )
 ```
 
-Chỉ dịch các notebook từ một root dự án cụ thể:
+Chỉ dịch notebook từ một thư mục gốc dự án cụ thể:
 
 ```python
 from co_op_translator.api import run_translation
@@ -185,7 +185,7 @@ run_translation(
 )
 ```
 
-Xem trước khối lượng dịch mà không ghi file:
+Xem trước khối lượng dịch mà không ghi tệp:
 
 ```python
 from co_op_translator.api import run_translation
@@ -198,7 +198,31 @@ run_translation(
 )
 ```
 
-Dịch nhiều root nội dung trong một lần gọi:
+Ghi lại các sự kiện tiến trình có cấu trúc cho một tích hợp:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Lưu payload vào bảng job-event của bạn hoặc truyền trực tiếp nó đến giao diện người dùng của bạn.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Events use the versioned schema `co-op.translation.event.v1`. Integrations should
+depend on stable fields such as `type` and `stage_key`, not on human-facing
+console text or `stage_label`.
+
+Dịch nhiều thư mục nội dung trong một lần gọi:
 
 ```python
 from co_op_translator.api import run_translation
@@ -210,7 +234,7 @@ run_translation(
 )
 ```
 
-Ghi các bản dịch vào các nhóm đầu ra cụ thể:
+Ghi bản dịch vào các nhóm đầu ra cụ thể:
 
 ```python
 from co_op_translator.api import run_translation
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-Sử dụng placeholder theo ngôn ngữ khi mỗi ngôn ngữ nên chứa một thư mục con lồng nhau:
+Sử dụng một ký hiệu thay thế cho mỗi ngôn ngữ khi mỗi ngôn ngữ nên chứa một thư mục con lồng nhau:
 
 ```python
 from co_op_translator.api import run_translation
@@ -239,14 +263,103 @@ run_translation(
 )
 ```
 
-Nếu không có `markdown`, `notebook`, hoặc `images` được đặt, API sẽ dịch tất cả các loại được hỗ trợ: Markdown, notebook, và hình ảnh.
+Nếu không có `markdown`, `notebook`, hoặc `images` nào được đặt, API sẽ dịch tất cả các loại được hỗ trợ: Markdown, notebooks và images.
 
-## Review Translated Output
+### Giữ lại các chỉnh sửa do con người chấp nhận với một TranslationStateProvider
 
-`run_review` chạy các kiểm tra dịch xác định mà không cần thông tin đăng nhập LLM hoặc Vision.
+Theo mặc định, Co-op Translator giữ hành vi ở cấp tệp hiện tại của nó: khi một
+nguồn Markdown đã lỗi thời, toàn bộ tệp dịch được tạo lại. Các tích hợp được lưu trữ
+có thể tùy chọn truyền một `TranslationStateProvider` để bảo tồn các chỉnh sửa do con người
+thực hiện trong các khối nguồn chưa thay đổi.
+
+Nhà cung cấp cung cấp cặp nguồn/đích đã được chấp nhận lần cuối và ghi lại mỗi ứng viên mới.
+Việc chấp nhận vẫn là trách nhiệm của tích hợp—for example,
+sau khi một pull request dịch được hợp nhất:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+Đối với các tệp Markdown có một baseline đã chấp nhận hợp lệ, Co-op Translator căn chỉnh
+các khối Markdown cấp cao. Các khối nguồn không thay đổi tái sử dụng các
+khối đã dịch hiện tại, bao gồm các chỉnh sửa do con người thực hiện; các khối nguồn bị thay đổi hoặc thêm mới sẽ được gửi
+để dịch; các khối nguồn bị xóa sẽ bị loại bỏ. Nếu việc căn chỉnh không rõ ràng,
+cấu trúc đích thay đổi, một bản dịch khối không hợp lệ, hoặc không có cơ sở
+sẵn có, Co-op Translator sẽ an toàn quay về
+đường dẫn dịch toàn bộ tệp hiện có.
+
+API này lưu trạng thái dịch tài liệu, không phải bộ nhớ dịch cụm từ/phân đoạn xuyên tài liệu.
+Nó hiện áp dụng cho dịch dự án Markdown.
+Notebook và hành vi hình ảnh không thay đổi. Truyền `update=True`
+vẫn yêu cầu tái tạo toàn bộ.
+
+Nếu một hoặc nhiều tệp không thể dịch được, `run_translation` sẽ ném ra một
+`RuntimeError` sau khi luồng dự án kết thúc thay vì báo cáo một
+chạy thành công nhưng thiếu đầu ra. Các tích hợp nên xem đây là một công việc thất bại
+và giữ lại trạng thái dịch đã được chấp nhận trước đó.
+
+## Kiểm duyệt kết quả dịch
+
+`run_review` thực hiện các kiểm tra dịch xác định mà không cần thông tin xác thực LLM hoặc Vision.
 
 !!! note "Beta"
-    `run_review` là một API đánh giá xác định ở giai đoạn beta. Nó không gọi nhà cung cấp mô hình hay ghi file, nhưng các schema kiểm tra và issue có thể thay đổi.
+    `run_review` là một API đánh giá xác định bản beta. Nó không gọi nhà cung cấp mô hình hoặc ghi tệp, nhưng các kiểm tra và lược đồ vấn đề có thể thay đổi.
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-Chỉ xem xét các file thay đổi so với một ref cơ sở và in đầu ra theo định dạng GitHub-flavored:
+Sau khi chỉ dịch README, sử dụng cùng phạm vi để kiểm duyệt:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` chỉ kiểm duyệt `README.md` dưới mỗi thư mục nguồn đã được cấu hình,
+bao gồm `groups` tùy chỉnh và các thư mục đầu ra. Các tài liệu khác và README lồng nhau
+bị loại trừ. Thiếu README nguồn sẽ gây ra `ValueError`; các kiểm tra dịch không thành công
+gây ra `RuntimeError`.
+
+Chỉ kiểm duyệt các tệp thay đổi so với base ref và in đầu ra theo định dạng GitHub:
 
 ```python
 from co_op_translator.api import run_review
@@ -274,9 +398,9 @@ run_review(
 )
 ```
 
-## Ví dụ Copy-Paste API
+## Ví dụ API để sao chép-dán
 
-Dịch nội dung Markdown mà không ghi file:
+Dịch nội dung Markdown mà không ghi tệp:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -327,7 +451,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Dịch một repository từ Python:
+Dịch một kho từ Python:
 
 ```python
 from co_op_translator.api import run_translation
@@ -340,7 +464,7 @@ run_translation(
 )
 ```
 
-Dịch nhiều root:
+Dịch nhiều thư mục gốc:
 
 ```python
 from co_op_translator.api import run_translation
@@ -355,7 +479,7 @@ run_translation(
 )
 ```
 
-Bảo toàn các thuật ngữ trong glossary:
+Giữ nguyên thuật ngữ trong bảng thuật ngữ:
 
 ```python
 from co_op_translator.api import run_translation
@@ -378,6 +502,9 @@ from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,23 +544,29 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
 
 ::: co_op_translator.api.run_review
 
-## Content Translation APIs
+## API Dịch Nội dung
 
-Các API dịch nội dung được thiết kế cho các tích hợp đã có nội dung trong bộ nhớ, chẳng hạn như mở rộng trình soạn thảo, công cụ MCP, bộ xử lý notebook, hoặc pipeline tùy chỉnh.
+Các API dịch nội dung dành cho các tích hợp đã có nội dung trong bộ nhớ, chẳng hạn như tiện ích mở rộng trình soạn thảo, công cụ MCP, bộ xử lý notebook, hoặc pipeline tùy chỉnh.
 
-| Function | Input | Output | File I/O | Notes |
+| Hàm | Đầu vào | Đầu ra | I/O tệp | Ghi chú |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Translates Markdown content only. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Translates Markdown cells and preserves non-Markdown cells. It does not rewrite links, write metadata, or append disclaimers. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Extracts and translates image text, then returns a rendered image. It does not save translated image metadata. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Không đồng bộ. Dịch nội dung Markdown thôi. Nó không viết lại liên kết, không ghi metadata, và không thêm tuyên bố miễn trừ. |
+| `translate_notebook_content` | Notebook JSON `str` hoặc `dict` | Notebook JSON `str` | No | Không đồng bộ. Dịch các ô Markdown và giữ nguyên các ô không phải Markdown. Nó không viết lại liên kết, không ghi metadata, và không thêm tuyên bố miễn trừ. |
+| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Đồng bộ. Trích xuất và dịch văn bản trong ảnh, sau đó trả về một ảnh đã render. Nó không lưu metadata ảnh đã dịch. |
 
-`translate_markdown_content` và `translate_notebook_content` chấp nhận một `source_path` tùy chọn thông qua các tùy chọn của chúng. Đường dẫn được truyền làm ngữ cảnh cho bộ dịch; các caller vẫn chịu trách nhiệm cho bất kỳ việc viết lại đường dẫn đặc thù dự án nào sau khi dịch.
+`translate_markdown_content` và `translate_notebook_content` chấp nhận một `source_path` tùy chọn thông qua các tùy chọn của chúng. Đường dẫn được truyền làm ngữ cảnh cho bộ dịch; người gọi vẫn chịu trách nhiệm cho bất kỳ việc viết lại đường dẫn đặc thù dự án sau khi dịch.
 
 ```python
 from co_op_translator.api import MarkdownTranslationOptions, translate_markdown_content
@@ -445,7 +578,7 @@ translated = await translate_markdown_content(
 )
 ```
 
-Cùng các tùy chọn có thể được truyền dưới dạng dictionary:
+Các tùy chọn giống nhau có thể được truyền dưới dạng từ điển:
 
 ```python
 translated = await translate_markdown_content(
@@ -455,94 +588,96 @@ translated = await translate_markdown_content(
 )
 ```
 
-## Agent-Assisted Translation APIs
+## API Dịch được Hỗ trợ bởi Agent
 
-Các API hỗ trợ agent không gọi Azure OpenAI hoặc OpenAI từ Co-op Translator. Chúng chuẩn bị các đoạn Markdown hoặc notebook để một host agent dịch, sau đó tái tạo nội dung cuối cùng từ các đoạn đã dịch.
+Các API hỗ trợ bởi agent không gọi nhà cung cấp LLM đã cấu hình từ Co-op Translator. Chúng chuẩn bị các đoạn Markdown hoặc notebook để host agent dịch, sau đó tái tạo nội dung cuối cùng từ các đoạn đã dịch.
 
-| Function | Purpose |
+| Hàm | Mục đích |
 | --- | --- |
-| `start_markdown_agent_translation` | Return a self-contained Markdown job with chunks, prompts, and reconstruction state. |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from a job and host-agent translated chunks. |
-| `start_notebook_agent_translation` | Return a notebook job with Markdown-cell chunks for host-agent translation. |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON while preserving code cells, outputs, and metadata. |
+| `start_markdown_agent_translation` | Trả về một công việc Markdown tự chứa với các đoạn, lời nhắc, và trạng thái tái tạo. |
+| `finish_markdown_agent_translation` | Tái tạo Markdown từ một công việc và các đoạn đã được host-agent dịch. |
+| `start_notebook_agent_translation` | Trả về một công việc notebook với các đoạn ô Markdown cho host-agent dịch. |
+| `finish_notebook_agent_translation` | Tái tạo JSON notebook trong khi giữ nguyên các ô mã, output và metadata. |
 
-Quy trình này chủ yếu dành cho các host MCP. Nếu bạn cần dịch repository trong môi trường production với Co-op Translator quản lý các cuộc gọi nhà cung cấp, sử dụng `translate_markdown_content`, `translate_notebook_content`, hoặc `run_translation`.
+Quy trình này chủ yếu dành cho các host MCP. Nếu bạn cần dịch kho ở môi trường production với Co-op Translator quản lý các cuộc gọi tới nhà cung cấp, hãy sử dụng `translate_markdown_content`, `translate_notebook_content`, hoặc `run_translation`.
 
-## Path Rewriting APIs
+## API Viết lại Đường dẫn
 
-Các API viết lại đường dẫn không thực hiện dịch nào. Chúng cập nhật liên kết và các đường dẫn frontmatter sau khi caller biết đường dẫn nguồn, đường dẫn mục tiêu đã dịch, và bố cục dự án.
+Các API viết lại đường dẫn không thực hiện dịch. Chúng cập nhật liên kết và các đường dẫn frontmatter sau khi người gọi biết đường dẫn nguồn, đường dẫn đích đã dịch, và cấu trúc dự án.
 
-| Function | Scope | Notes |
+| Hàm | Phạm vi | Ghi chú |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | Rewrites Markdown links and supported frontmatter path fields for a translated target. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Applies Markdown path rewriting to each Markdown cell and leaves non-Markdown cells unchanged. |
+| `rewrite_markdown_paths` | Thân Markdown và frontmatter | Viết lại liên kết Markdown và các trường frontmatter đường dẫn được hỗ trợ cho một đích đã dịch. |
+| `rewrite_notebook_paths` | Các ô Markdown trong JSON notebook | Áp dụng viết lại đường dẫn Markdown cho mỗi ô Markdown và giữ nguyên các ô không phải Markdown. |
 
-Đối số `policy` có thể là một dictionary với các trường sau:
+Đối số `policy` có thể là một từ điển với các trường sau:
 
-| Field | Required | Purpose |
+| Trường | Bắt buộc | Mục đích |
 | --- | --- | --- |
-| `language_code` | Yes | Target language code, such as `"ko"` or `"pt-BR"`. |
-| `root_dir` | No | Source project root. Defaults to `"."`. |
-| `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
-| `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
-| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
-| `lang_subdir` | No | Optional subdirectory under each language folder. |
+| `language_code` | Yes | Mã ngôn ngữ đích, chẳng hạn như `"ko"` hoặc `"pt-BR"`. |
+| `root_dir` | No | Thư mục gốc dự án nguồn. Mặc định là `"."`. |
+| `translations_dir` | No | Thư mục đầu ra dịch văn bản. Mặc định là `translations` dưới `root_dir`. |
+| `translated_images_dir` | No | Thư mục đầu ra ảnh đã dịch. Mặc định là `translated_images` dưới `root_dir`. |
+| `translation_types` | No | Các loại dịch được bật. Mặc định là Markdown, notebooks, và images. |
+| `lang_subdir` | No | Thư mục con tùy chọn dưới mỗi thư mục ngôn ngữ. |
 
-## Project Translation Parameters
+## Tham số Dịch Dự án
 
-| Parameter | Type | Default | Purpose |
+| Tham số | Kiểu | Mặc định | Mục đích |
 | --- | --- | --- | --- |
-| `language_codes` | `str` | Required | Space-separated target language codes, such as `"ko ja fr"`, or `"all"`. Alias codes are normalized to canonical BCP 47 values. |
-| `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` are supplied. |
-| `update` | `bool` | `False` | Delete and recreate existing translations for the selected languages. |
-| `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
-| `markdown` | `bool` | `False` | Include Markdown translation. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
-| `debug` | `bool` | `False` | Enable debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
-| `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
-| `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
-| `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths resolve against each root. |
-| `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots that share the same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. Takes precedence over `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
-
-## Tham số Review
-
-`run_review` cố tình mô phỏng chữ ký của `run_translation` ở mức có thể để tự động hóa có thể chuyển đổi giữa quy trình dịch và đánh giá với ít nhánh mã nhất.
-
-| Parameter | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders to review. Space-separated strings and iterables are accepted. `"all"` reviews every discovered translation language. |
-| `root_dir` | `str` | `"."` | Project root for a single review target. Ignored when `root_dirs` or `groups` are supplied. |
-| `markdown` | `bool` | `False` | Include Markdown and MDX source files. |
-| `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
-| `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images are checked from Markdown. |
-| `translations_dir` | `str \| None` | `None` | Thư mục đầu ra tùy chỉnh cho bản dịch văn bản. Các đường dẫn tương đối được giải quyết theo từng thư mục gốc. |
+| `language_codes` | `str` | Required | Mã ngôn ngữ đích cách nhau bằng dấu cách, chẳng hạn `"ko ja fr"`, hoặc `"all"`. Các mã bí danh được chuẩn hóa về giá trị BCP 47 chuẩn. |
+| `root_dir` | `str` | `"."` | Thư mục gốc dự án cho một mục tiêu dịch duy nhất. Bị bỏ qua khi `root_dirs` hoặc `groups` được cung cấp. |
+| `update` | `bool` | `False` | Xóa và tạo lại các bản dịch hiện có cho các ngôn ngữ được chọn. |
+| `images` | `bool` | `False` | Bao gồm dịch hình ảnh. Yêu cầu cấu hình Azure AI Vision. |
+| `markdown` | `bool` | `False` | Bao gồm dịch Markdown. |
+| `notebook` | `bool` | `False` | Bao gồm dịch Jupyter notebook. |
+| `debug` | `bool` | `False` | Bật ghi log ở chế độ debug. |
+| `save_logs` | `bool` | `False` | Lưu các tệp log cấp DEBUG dưới thư mục gốc `logs/`. |
+| `yes` | `bool` | `True` | Tự động xác nhận các lời nhắc cho việc sử dụng theo chương trình và CI. |
+| `add_disclaimer` | `bool` | `False` | Thêm tuyên bố từ chối trách nhiệm cho bản dịch máy vào Markdown và notebook. |
+| `translations_dir` | `str \| None` | `None` | Thư mục đầu ra tùy chỉnh cho bản dịch văn bản. Các đường dẫn tương đối được giải quyết dựa trên mỗi thư mục gốc. |
+| `image_dir` | `str \| None` | `None` | Thư mục đầu ra tùy chỉnh cho ảnh đã dịch. Các đường dẫn tương đối được giải quyết dựa trên mỗi thư mục gốc. |
 | `root_dirs` | `Iterable[str] \| None` | `None` | Nhiều thư mục gốc chia sẻ cùng cài đặt đầu ra. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Cặp rõ ràng `(root_dir, translations_dir)`. Ưu tiên hơn `root_dirs`. |
-| `changed_from` | `str \| None` | `None` | Tham chiếu Git dùng để giới hạn việc kiểm tra với các tệp nguồn đã thay đổi. |
-| `output_format` | `str` | `"text"` | Định dạng đầu ra của kiểm tra. Các giá trị được hỗ trợ là `"text"` và `"github"`. |
-| `fail_on_warnings` | `bool` | `False` | Xem cảnh báo là thất bại bên cạnh các lỗi. |
-| `debug` | `bool` | `False` | Bật ghi nhật ký debug. |
-| `save_logs` | `bool` | `False` | Lưu các tệp nhật ký ở mức DEBUG dưới thư mục gốc `logs/`. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Các cặp rõ ràng `(root_dir, translations_dir)`. Ưu tiên hơn `root_dirs`. |
+| `repo_url` | `str \| None` | `None` | URL kho lưu trữ được sử dụng khi hiển thị hướng dẫn bảng ngôn ngữ trong README. |
+| `glossaries` | `Iterable[str] \| None` | `None` | Các thuật ngữ trong bảng chú giải cần được giữ nguyên khi dịch. Các mục trùng lặp và trống sẽ được chuẩn hóa. |
+| `dry_run` | `bool` | `False` | Ước tính khối lượng dịch và xem trước hành vi di chuyển mà không ghi tệp. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Bộ điều hợp lưu trữ tùy chọn cho accepted-baseline và candidate để cập nhật Markdown theo từng bước. Nếu bỏ qua, sẽ giữ hành vi hiện tại là cập nhật toàn file. |
 
-Nếu không có `markdown`, `notebook`, hoặc `images` nào được đặt, API sẽ kiểm tra Markdown, notebook, và các tham chiếu liên kết hình ảnh khi có thể. Việc kiểm tra không gọi nhà cung cấp LLM và không yêu cầu khóa API.
+## Tham số đánh giá
+
+`run_review` cố ý phản chiếu chữ ký của `run_translation` khi có thể để tự động hóa có thể chuyển giữa các luồng công việc dịch và đánh giá với sự phân nhánh tối thiểu.
+
+| Tham số | Kiểu | Mặc định | Mục đích |
+| --- | --- | --- | --- |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | Các thư mục ngôn ngữ mục tiêu để đánh giá. Chấp nhận chuỗi phân tách bằng dấu cách và iterable. `"all"` đánh giá mọi ngôn ngữ dịch được tìm thấy. |
+| `root_dir` | `str` | `"."` | Thư mục gốc dự án cho một mục tiêu đánh giá duy nhất. Bị bỏ qua khi `root_dirs` hoặc `groups` được cung cấp. |
+| `markdown` | `bool` | `False` | Bao gồm các tệp nguồn Markdown và MDX. |
+| `notebook` | `bool` | `False` | Bao gồm các tệp nguồn Jupyter notebook. |
+| `images` | `bool` | `False` | Dự trữ để tương ứng với các tuỳ chọn dịch. Tham chiếu liên kết đến hình ảnh được kiểm tra từ Markdown. |
+| `translations_dir` | `str \| None` | `None` | Thư mục đầu ra tùy chỉnh cho bản dịch văn bản. Các đường dẫn tương đối được giải quyết dựa trên mỗi thư mục gốc. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Nhiều thư mục gốc chia sẻ cùng cài đặt đầu ra. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Các cặp rõ ràng `(root_dir, translations_dir)`. Ưu tiên hơn `root_dirs`. |
+| `changed_from` | `str \| None` | `None` | Tham chiếu Git được sử dụng để giới hạn đánh giá chỉ những tệp nguồn đã thay đổi. |
+| `readme_only` | `bool` | `False` | Chỉ đánh giá `README.md` dưới mỗi thư mục nguồn. Thiếu README nguồn sẽ gây ra `ValueError`. |
+| `output_format` | `str` | `"text"` | Định dạng đầu ra của đánh giá. Các giá trị hỗ trợ là `"text"` và `"github"`. |
+| `fail_on_warnings` | `bool` | `False` | Xem cảnh báo là thất bại ngoài các lỗi. |
+| `debug` | `bool` | `False` | Bật ghi nhật ký debug. |
+| `save_logs` | `bool` | `False` | Lưu các tệp nhật ký mức DEBUG dưới thư mục gốc `logs/`. |
+
+Nếu không có tùy chọn `markdown`, `notebook`, hoặc `images` nào được bật, API sẽ đánh giá Markdown, notebook và các tham chiếu liên kết hình ảnh khi có thể. Đánh giá không gọi nhà cung cấp LLM và không yêu cầu khóa API.
 
 ## Yêu cầu cấu hình
 
-Các API dịch được hỗ trợ bởi nhà cung cấp yêu cầu cấu hình nhà cung cấp trước khi dịch:
+Các API dịch dựa trên nhà cung cấp yêu cầu cấu hình nhà cung cấp trước khi dịch:
 
-- Dịch Markdown và notebook yêu cầu một nhà cung cấp LLM. Cấu hình Azure OpenAI hoặc OpenAI.
-- Dịch hình ảnh yêu cầu Azure AI Vision bên cạnh nhà cung cấp LLM.
-- `run_translation` thực hiện các kiểm tra kết nối nhẹ trước khi bắt đầu dịch dự án.
-- Các API hỗ trợ bởi agent `start_*_agent_translation` và `finish_*_agent_translation` không gọi nhà cung cấp LLM của Co-op Translator. Ứng dụng chủ hoặc agent MCP dịch các đoạn đã chuẩn bị.
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, và `run_review` mang tính quyết định và không yêu cầu thông tin đăng nhập nhà cung cấp.
+- Dịch Markdown và notebook yêu cầu một nhà cung cấp LLM. Cấu hình Azure OpenAI, OpenAI, hoặc Anthropic.
+- Dịch ảnh yêu cầu Azure AI Vision bên cạnh nhà cung cấp LLM.
+- `run_translation` chạy các kiểm tra kết nối nhẹ trước khi bắt đầu dịch dự án.
+- Các API hỗ trợ bởi agent `start_*_agent_translation` và `finish_*_agent_translation` không gọi các nhà cung cấp LLM của Co-op Translator. Ứng dụng chủ hoặc agent MCP sẽ dịch các đoạn đã chuẩn bị.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths`, và `run_review` có hành vi xác định và không yêu cầu thông tin xác thực nhà cung cấp.
 
-Required Azure OpenAI variables:
+Các biến bắt buộc cho Azure OpenAI:
 
 ```bash
 AZURE_OPENAI_API_KEY="..."
@@ -552,33 +687,42 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Required OpenAI variables:
+Các biến bắt buộc cho OpenAI:
 
 ```bash
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
-Required Azure AI Vision variables for image translation:
+Các biến bắt buộc cho Anthropic:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` và `ANTHROPIC_MAX_TOKENS` là tùy chọn. Microsoft Agent Framework là client mô hình mặc định cho tất cả nhà cung cấp bắt đầu từ Co-op Translator 0.22.0. Semantic Kernel vẫn có thể được chọn tạm thời với `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, nhưng làm vậy sẽ phát ra cảnh báo ngưng hỗ trợ; xem [configuration](configuration.md#model-client-backend) để biết kế hoạch loại bỏ theo giai đoạn.
+
+Các biến bắt buộc của Azure AI Vision cho việc dịch ảnh:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` là thao tác có tính xác định và không yêu cầu cấu hình Azure OpenAI, OpenAI, hoặc Azure AI Vision.
+`run_review` có hành vi xác định và không yêu cầu cấu hình LLM hay Azure AI Vision.
 
-## Ghi chú hành vi
+## Ghi chú về hành vi
 
-- Các API dịch nội dung giữ việc dịch tách biệt với việc viết lại đường dẫn dự án. Gọi `rewrite_markdown_paths` hoặc `rewrite_notebook_paths` một cách rõ ràng khi nội dung đã dịch cần điều chỉnh các liên kết theo vị trí tương đối của dự án cho vị trí đích.
-- Các API điều phối dự án thêm các hành vi dự án xung quanh việc dịch nội dung, bao gồm phát hiện tệp, ghi tệp, viết lại đường dẫn, siêu dữ liệu, dọn dẹp và tuyên bố miễn trừ tùy chọn.
-- `run_translation` hiển thị tiến độ và tóm tắt ước lượng thông qua Click, khớp với trải nghiệm người dùng CLI.
+- Các API dịch nội dung giữ việc dịch tách biệt khỏi việc viết lại đường dẫn dự án. Gọi `rewrite_markdown_paths` hoặc `rewrite_notebook_paths` một cách rõ ràng khi nội dung đã dịch cần điều chỉnh các liên kết theo đường dẫn tương đối của dự án cho vị trí mục tiêu.
+- Các API điều phối dự án thêm hành vi ở mức dự án xung quanh việc dịch nội dung, bao gồm tìm tệp, ghi tệp, viết lại đường dẫn, metadata, dọn dẹp, và các tuyên bố miễn trừ tùy chọn.
+- `run_translation` in ra tiến trình và tóm tắt ước tính thông qua cùng bộ báo cáo dựa trên Rich được CLI sử dụng. Đầu ra không tương tác sẽ quay về dạng văn bản thuần.
 - `dry_run=True` tính toán ước lượng bằng cách sử dụng cập nhật README ảo, nhưng không ghi README hoặc các tệp dịch.
-- `groups` được xử lý tuần tự. Một ước lượng tổng hợp duy nhất được in trước khi công việc bắt đầu.
-- Khi chọn dịch hình ảnh, việc thiếu cấu hình Vision sẽ gây lỗi trước khi bắt đầu dịch.
-- Các thư mục ngôn ngữ dựa trên bí danh hiện có được phát hiện và có thể được di chuyển sang tên thư mục ngôn ngữ chuẩn như một phần của quá trình chạy.
-- `run_review` thất bại khi thiếu các tệp đã dịch, thiếu hoặc siêu dữ liệu dịch lỗi thời, frontmatter/khung mã Markdown bị sai định dạng, và JSON notebook đã dịch không hợp lệ.
-- `run_review` báo cáo các mục tiêu liên kết Markdown và hình ảnh cục bộ bị thiếu như cảnh báo theo mặc định.
+- `groups` được xử lý theo trình tự. Một ước lượng tổng hợp duy nhất được in trước khi công việc bắt đầu.
+- Khi chọn dịch ảnh, thiếu cấu hình Vision sẽ gây lỗi trước khi bắt đầu dịch.
+- Các thư mục ngôn ngữ hiện có dựa trên bí danh được phát hiện và có thể được di chuyển sang tên thư mục ngôn ngữ chuẩn như một phần của lần chạy.
+- `run_review` sẽ thất bại khi thiếu các tệp đã dịch, metadata dịch bị thiếu hoặc lỗi thời, frontmatter/fence code Markdown bị hỏng, và JSON notebook đã dịch không hợp lệ.
+- `run_review` báo cáo các mục tiêu liên kết Markdown và hình ảnh địa phương bị thiếu như cảnh báo theo mặc định.
 
 ## Đường dẫn gọi nội bộ
 
@@ -586,35 +730,35 @@ API ủy quyền cho cùng một triển khai lõi được CLI sử dụng:
 
 Dịch:
 
-1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` cho việc dịch trong bộ nhớ.
-2. `co_op_translator.api.translation.rewrite_markdown_paths` hoặc `rewrite_notebook_paths` cho xử lý hậu kỳ đường dẫn rõ ràng.
+1. `co_op_translator.api.translation.translate_markdown_content`, `translate_notebook_content`, or `translate_image_content` cho dịch trong bộ nhớ.
+2. `co_op_translator.api.translation.rewrite_markdown_paths` or `rewrite_notebook_paths` cho xử lý hậu kỳ đường dẫn rõ ràng.
 3. `co_op_translator.api.translation.run_translation` cho điều phối dự án toàn diện.
 4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
 5. `co_op_translator.core.project.ProjectTranslator`.
 6. `co_op_translator.core.project.TranslationManager`.
 7. Các mixin dịch dự án tập trung cho Markdown, notebook, và hình ảnh.
-8. Các bộ dịch Markdown, notebook, văn bản và hình ảnh nằm dưới `co_op_translator.core`.
+8. Các bộ dịch Markdown, notebook, văn bản và hình ảnh dưới `co_op_translator.core`.
 
-Kiểm tra:
+Đánh giá:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. Các kiểm tra có tính xác định dưới `co_op_translator.review.checks`
+4. Kiểm tra có hành vi xác định dưới `co_op_translator.review.checks`
 
-Các lớp sau hữu ích cho người bảo trì, nhưng không được xuất khẩu như API ổn định cấp gói.
+Các lớp sau hữu ích cho người duy trì, nhưng không được xuất ra như API ổn định ở cấp gói.
 
 | Lớp | Mô-đun | Trách nhiệm |
 | --- | --- | --- |
-| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Phối hợp dịch cấp dự án, quản lý thư mục, chuẩn hóa siêu dữ liệu theo ngôn ngữ, và ủy quyền cho các bộ dịch Markdown, notebook, và hình ảnh. |
-| `TranslationManager` | `co_op_translator.core.project.translation` | Thực hiện công việc xử lý tệp bất đồng bộ cho Markdown, notebook, hình ảnh, phát hiện lỗi thời, và cập nhật siêu dữ liệu dịch. |
-| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Điều phối việc đọc tệp Markdown, dịch nội dung, viết lại đường dẫn, siêu dữ liệu, tuyên bố miễn trừ, và ghi tệp. |
-| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Điều phối việc đọc tệp notebook, dịch ô Markdown, viết lại đường dẫn, siêu dữ liệu, tuyên bố miễn trừ, và ghi tệp. |
-| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Điều phối việc phát hiện hình ảnh nguồn, dịch hình ảnh, đường dẫn đầu ra, siêu dữ liệu, và ghi tệp. |
-| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Tìm các cặp Markdown đã dịch, đánh giá chất lượng bản dịch, và đọc siêu dữ liệu độ tin cậy cho quy trình sửa chữa khi độ tin cậy thấp. |
-| `ReviewRunner` | `co_op_translator.review.runner` | Phối hợp các kiểm tra đánh giá có tính xác định trên các tệp nguồn, ngôn ngữ đích, và các thư mục gốc dịch đã cấu hình. |
-| `ReviewTarget` | `co_op_translator.review.targets` | Mô tả một thư mục nguồn và thư mục đầu ra bản dịch được đánh giá cho thư mục đó. |
-| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Phát hiện các thư mục ngôn ngữ bí danh cũ và chuẩn bị kế hoạch di chuyển sang thư mục BCP 47 chính thức. |
-| `Config` | `co_op_translator.config.base_config` | Tải các tệp `.env` và kiểm tra xem các nhà cung cấp LLM bắt buộc và Vision tùy chọn đã được cấu hình hay chưa. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Tự động phát hiện Azure OpenAI hoặc OpenAI, xác thực các biến môi trường bắt buộc, và chạy các kiểm tra kết nối nhà cung cấp. |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | Phát hiện cấu hình Azure AI Vision và chạy các kiểm tra kết nối cho dịch hình ảnh. |
+| `ProjectTranslator` | `co_op_translator.core.project.project_translator` | Điều phối dịch ở mức dự án, quản lý thư mục, chuẩn hóa metadata theo ngôn ngữ, và phân công cho các bộ dịch Markdown, notebook, và hình ảnh. |
+| `TranslationManager` | `co_op_translator.core.project.translation` | Thực hiện công việc xử lý tệp bất đồng bộ cho Markdown, notebook, hình ảnh, phát hiện lỗi thời, và cập nhật metadata dịch. |
+| `ProjectMarkdownTranslationMixin` | `co_op_translator.core.project.translation.project_markdown_translation` | Điều phối việc đọc tệp Markdown, dịch nội dung, viết lại đường dẫn, metadata, tuyên bố miễn trừ, và ghi tệp. |
+| `ProjectNotebookTranslationMixin` | `co_op_translator.core.project.translation.project_notebook_translation` | Điều phối việc đọc tệp notebook, dịch các ô Markdown, viết lại đường dẫn, metadata, tuyên bố miễn trừ, và ghi tệp. |
+| `ProjectImageTranslationMixin` | `co_op_translator.core.project.translation.project_image_translation` | Điều phối việc tìm nguồn hình ảnh, dịch hình ảnh, đường dẫn đầu ra, metadata, và ghi tệp. |
+| `ProjectEvaluator` | `co_op_translator.core.project.project_evaluator` | Tìm các cặp Markdown đã dịch, đánh giá chất lượng dịch, và đọc metadata độ tin cậy cho các luồng sửa chữa khi độ tin cậy thấp. |
+| `ReviewRunner` | `co_op_translator.review.runner` | Điều phối các kiểm tra đánh giá có hành vi xác định trên các tệp nguồn, ngôn ngữ mục tiêu, và các thư mục gốc dịch đã cấu hình. |
+| `ReviewTarget` | `co_op_translator.review.targets` | Mô tả một thư mục nguồn và thư mục đầu ra dịch được đánh giá cho thư mục đó. |
+| `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Phát hiện các thư mục ngôn ngữ bí danh cũ và chuẩn bị kế hoạch di chuyển sang tên thư mục BCP 47 chuẩn. |
+| `Config` | `co_op_translator.config.base_config` | Tải các tệp `.env` và kiểm tra xem các nhà cung cấp LLM bắt buộc và Vision tùy chọn có được cấu hình hay không. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Tự động phát hiện Azure OpenAI, OpenAI, hoặc Anthropic, xác thực các biến môi trường bắt buộc, và chạy kiểm tra kết nối với nhà cung cấp. |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | Phát hiện cấu hình Azure AI Vision và chạy kiểm tra kết nối cho dịch ảnh. |

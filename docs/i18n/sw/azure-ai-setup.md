@@ -15,7 +15,7 @@ Tumia mwongozo huu unapotaka kusanidi Azure OpenAI kwa tafsiri ya maandishi na A
 3. Unda au chagua AI hub kwa mradi.
 4. Fungua muhtasari wa mradi baada ya kuundwa.
 
-## Deploy an Azure OpenAI Model
+## Weka mfano wa Azure OpenAI
 
 1. Katika mradi, fungua **Models + endpoints**.
 2. Select **Deploy model**.
@@ -26,7 +26,7 @@ Tumia mwongozo huu unapotaka kusanidi Azure OpenAI kwa tafsiri ya maandishi na A
 !!! note
     Toleo la API la Azure OpenAI ni tofauti na toleo la modeli linaloonyeshwa katika Azure AI Foundry. Chagua toleo la API linaloungwa mkono kwa uenezaji wako.
 
-## Configure Azure AI Vision
+## Sanidi Azure AI Vision
 
 Tafsiri ya picha inatumia Azure AI Vision kuchukua maandishi kutoka kwa picha za chanzo kabla ya maandishi kutafsiriwa.
 
@@ -39,7 +39,7 @@ Record:
 - Azure AI Service endpoint
 - Azure AI Service API key
 
-## Environment Variables
+## Vigezo vya Mazingira
 
 Add the credentials to your `.env` file or CI secrets.
 
@@ -56,7 +56,7 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Co-op Translator also supports optional fallback credential sets. Duplicate a complete provider set with suffixes such as `_1` or `_2`; all variables in a fallback set must share the same suffix.
+Co-op Translator pia inaunga mkono seti za vitambulisho za mbadala. Nakili seti kamili ya mtoa huduma na viambishi kama `_1` au `_2`; vigezo vyote katika seti ya mbadala lazima viwe na kiambishi kimoja.
 
 ```bash
 AZURE_OPENAI_API_KEY_1="..."
@@ -66,8 +66,8 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME_1="<deployment-1>"
 AZURE_OPENAI_API_VERSION_1="2024-12-01-preview"
 ```
 
-## Next Steps
+## Hatua Zifuatazo
 
-- Return to [Configuration](configuration.md) to set up local or CI environment variables.
+- Rudi kwenye [Usanidi](configuration.md) ili kusanidi vigezo vya mazingira vya eneo au vya CI.
 - Use [CLI Reference](cli.md) for translation commands.
 - Use [GitHub Actions](github-actions.md) to automate translation pull requests.

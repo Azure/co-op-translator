@@ -1,6 +1,6 @@
 # مرجع CLI
 
-Co-op Translator نقاط ورود خط فرمان زیر را نصب می‌کند:
+Co-op Translator این نقاط ورود خط فرمان را نصب می‌کند:
 
 - `translate`
 - `evaluate`
@@ -8,33 +8,45 @@ Co-op Translator نقاط ورود خط فرمان زیر را نصب می‌ک�
 - `co-op-review`
 - `co-op-translator-mcp`
 
-دستورات `translate`، `evaluate`، `migrate-links` و `co-op-review` از طریق `co_op_translator.__main__` ارسال می‌شوند که پیاده‌سازی دستور را بر اساس نام اسکریپت فراخوانی‌شده انتخاب می‌کند. سرور MCP مستقیماً از `co_op_translator.mcp.server` استفاده می‌کند.
+دستورات `translate`, `evaluate`, `migrate-links`, و `co-op-review` از طریق `co_op_translator.__main__` ارسال می‌شوند که پیاده‌سازی دستور را بر اساس نام اسکریپت فراخوانی‌شده انتخاب می‌کند. سرور MCP مستقیماً از `co_op_translator.mcp.server` استفاده می‌کند.
 
-اگر بین CLI، API پایتون و MCP تصمیم می‌گیرید، از [Choose Your Workflow](workflows.md) شروع کنید.
+اگر بین CLI، Python API، و MCP مردد هستید، از [انتخاب جریان کاری خود](workflows.md) شروع کنید.
 
-## جریان اولیه CLI
+## خروجی کنسول
 
-اگر از Co-op Translator از طریق ترمینال استفاده می‌کنید از این‌جا شروع کنید:
+ترمینال‌های تعاملی از قالب‌بندی Rich برای سربرگ دستور، پیشرفت، و خلاصه‌ها استفاده می‌کنند. خروجی CI و غیرتعاملی به‌طور خودکار به متن ساده بازمی‌گردد.
 
-1. یک ارائه‌دهنده LLM را طبق توضیحات در [Configuration](configuration.md) پیکربندی کنید.
-2. نوع محتوایی را که می‌خواهید ترجمه کنید انتخاب کنید.
-3. ابتدا یک فرمان متمرکز را اجرا کنید، مانند ترجمه فقط Markdown.
-4. قبل از اعمال تغییرات بزرگ در مخزن از `--dry-run` استفاده کنید.
-5. پس از ترجمه از `co-op-review` برای بررسی ساختار و تازگی استفاده کنید.
+برای اجبار به خروجی ساده `CO_OP_TRANSLATOR_OUTPUT_STYLE=plain` را تنظیم کنید، یا برای اجبار خروجی Rich `CO_OP_TRANSLATOR_OUTPUT_STYLE=rich` را تنظیم کنید. برای نگه داشتن خلاصه‌ها در حالی که نوارهای پیشرفت زنده را پنهان می‌کنید `CO_OP_TRANSLATOR_NO_PROGRESS=1` را تنظیم کنید.
 
-| Goal | Command to start with |
+هنگامی که سیستم دیگری نیاز به استفاده از `translate --json-events progress.ndjson` دارد از این دستور استفاده کنید
+خروجی قابل‌خواندن توسط ماشین. CLI به رندر خروجی مناسب انسان ادامه می‌دهد، در حالی که
+فایل NDJSON رویدادهای نسخه‌بندی‌شده `co-op.translation.event.v1` را با
+فیلدهای ثابت مانند `type`, `stage_key`, `completed`, `total`, و
+`current_path`.
+
+## روند اولین استفاده از CLI
+
+اگر از Co-op Translator از طریق ترمینال استفاده می‌کنید، از اینجا شروع کنید:
+
+1. یک ارائه‌دهنده LLM را مطابق توضیحات در [پیکربندی](configuration.md) تنظیم کنید.
+2. نوع محتوایی که می‌خواهید ترجمه کنید را انتخاب کنید.
+3. ابتدا یک دستور متمرکز اجرا کنید، مثل ترجمه فقط Markdown.
+4. قبل از تغییرات گسترده در مخزن از `--dry-run` استفاده کنید.
+5. بعد از ترجمه از `co-op-review` برای بررسی ساختار و تازگی استفاده کنید.
+
+| هدف | دستور برای شروع |
 | --- | --- |
-| Translate Markdown documents | `translate -l "ko" -md` |
-| Translate notebooks | `translate -l "ko" -nb` |
-| Translate image text | `translate -l "ko" -img` |
-| Preview work without writing files | `translate -l "ko" -md --dry-run` |
-| Review existing translations | `co-op-review -l "ko"` |
-| Update notebook and Markdown links | `migrate-links -l "ko" --dry-run` |
-| Expose tools to an MCP client | Configure the [MCP Server](mcp.md) instead of running CLI commands directly. |
+| ترجمه اسناد Markdown | `translate -l "ko" -md` |
+| ترجمه نوت‌بوک‌ها | `translate -l "ko" -nb` |
+| ترجمه متن تصاویر | `translate -l "ko" -img` |
+| پیش‌نمایش کار بدون نوشتن فایل‌ها | `translate -l "ko" -md --dry-run` |
+| بازبینی ترجمه‌های موجود | `co-op-review -l "ko"` |
+| به‌روز‌رسانی لینک‌های نوت‌بوک و Markdown | `migrate-links -l "ko" --dry-run` |
+| در دسترس قرار دادن ابزارها برای یک کلاینت MCP | به‌جای اجرای مستقیم دستورات CLI، [سرور MCP](mcp.md) را پیکربندی کنید. |
 
 ## translate
 
-Translate Markdown files, notebooks, and image text into one or more target languages.
+فایل‌های Markdown، نوت‌بوک‌ها، و متن تصاویر را به یک یا چند زبان مقصد ترجمه کنید.
 
 ```bash
 translate -l "ko ja fr"
@@ -42,31 +54,31 @@ translate -l "ko ja fr"
 
 ### مثال‌های رایج
 
-ترجمه فقط Markdown:
+فقط فایل‌های Markdown را ترجمه کنید:
 
 ```bash
 translate -l "de" -md
 ```
 
-ترجمه فقط دفترچه‌ها:
+فقط نوت‌بوک‌ها را ترجمه کنید:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-ترجمه Markdown و تصاویر:
+Markdown و تصاویر را ترجمه کنید:
 
 ```bash
 translate -l "pt-BR" -md -img
 ```
 
-به‌روزرسانی ترجمه‌های موجود با حذف و بازسازی آن‌ها:
+به‌روزرسانی ترجمه‌های موجود با حذف و بازایجاد آن‌ها:
 
 ```bash
 translate -l "ko" -u
 ```
 
-اجرای بدون درخواست‌های تعاملی:
+بدون پرسش‌های تعاملی اجرا کنید:
 
 ```bash
 translate -l "ko ja" -md -y
@@ -78,35 +90,42 @@ translate -l "ko ja" -md -y
 translate -l "ko" -s
 ```
 
+نوشتن رویدادهای پیشرفت ساختاریافته:
+
+```bash
+translate -l "ko ja" -md --json-events progress.ndjson
+```
+
 ### گزینه‌ها
 
-| Option | Required | Description |
+| گزینه | ضروری | توضیحات |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Space-separated language codes, such as `"es fr de"`, or `"all"`. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `-u`, `--update` | No | Delete existing translations for selected languages and recreate them. |
-| `-img`, `--images` | No | Translate only image files. |
-| `-md`, `--markdown` | No | Translate only Markdown files. |
-| `-nb`, `--notebook` | No | Translate only Jupyter notebook files. |
-| `-d`, `--debug` | No | Enable debug logging in the console. |
-| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-x`, `--fix` | No | Retranslate low-confidence Markdown files based on previous evaluation results. |
-| `-c`, `--min-confidence` | No | Confidence threshold for `--fix`. Defaults to `0.7`. |
-| `--add-disclaimer`, `--no-disclaimer` | No | Add or suppress machine translation disclaimers. Defaults to enabled in the CLI. |
-| `-f`, `--fast` | No | Deprecated fast image mode. |
-| `-y`, `--yes` | No | Auto-confirm prompts, useful in CI. |
-| `--repo-url` | No | Repository URL used in the README languages table sparse-checkout advisory. |
-| `--migrate-language-folders` | No | Rename legacy alias folders, such as `cn` or `tw`, to canonical BCP 47 folders. |
-| `--dry-run` | No | Preview language folder migration and translation estimates without writing files. |
+| `-l`, `--language-codes` | بله | کدهای زبان جداشده با فاصله، مانند `"es fr de"`, یا `"all"`. |
+| `-r`, `--root-dir` | خیر | ریشه پروژه. پیش‌فرض دایرکتوری جاری است. |
+| `-u`, `--update` | خیر | ترجمه‌های موجود برای زبان‌های انتخاب‌شده را حذف و مجدداً ایجاد می‌کند. |
+| `-img`, `--images` | خیر | فقط فایل‌های تصویری را ترجمه می‌کند. |
+| `-md`, `--markdown` | خیر | فقط فایل‌های Markdown را ترجمه می‌کند. |
+| `-nb`, `--notebook` | خیر | فقط فایل‌های Jupyter notebook را ترجمه می‌کند. |
+| `-d`, `--debug` | خیر | فعال‌سازی لاگ‌برداری دیباگ در کنسول. |
+| `-s`, `--save-logs` | خیر | لاگ‌های سطح DEBUG را تحت `<root-dir>/logs/` ذخیره می‌کند. |
+| `--json-events` | خیر | رویدادهای پیشرفت ترجمه قابل‌خواندن توسط ماشین را به‌صورت NDJSON می‌نویسد. |
+| `-x`, `--fix` | خیر | فایل‌های Markdown با اطمینان پایین را بر اساس نتایج ارزیابی قبلی دوباره ترجمه می‌کند. |
+| `-c`, `--min-confidence` | خیر | آستانه اطمینان برای `--fix`. پیش‌فرض `0.7`. |
+| `--add-disclaimer`, `--no-disclaimer` | خیر | اضافه‌ یا سرکوب کردن تذکرهای ترجمه ماشینی. به‌طور پیش‌فرض در CLI فعال است. |
+| `-f`, `--fast` | خیر | حالت سریع تصاویر منسوخ‌شده. |
+| `-y`, `--yes` | خیر | تأیید خودکار پرسش‌ها، مفید در CI. |
+| `--repo-url` | خیر | URL مخزن که در توصیه sparse-checkout جدول زبان‌های README استفاده می‌شود. |
+| `--migrate-language-folders` | خیر | تغییر نام پوشه‌های جایگزین قدیمی، مانند `cn` یا `tw`, به پوشه‌های استاندارد BCP 47. |
+| `--dry-run` | خیر | پیش‌نمایش مهاجرت پوشه‌های زبان و برآوردهای ترجمه بدون نوشتن فایل‌ها. |
 
-اگر هیچ فلگ نوعی ارائه نشود، `translate` اسناد Markdown، دفترچه‌ها و تصاویر را پردازش می‌کند. ترجمه تصویر نیاز به پیکربندی Azure AI Vision دارد.
+اگر هیچ فلگ نوعی ارائه نشود، `translate` فایل‌های Markdown، نوت‌بوک‌ها، و تصاویر را پردازش می‌کند. ترجمه تصویر نیاز به پیکربندی Azure AI Vision دارد.
 
 ## evaluate
 
-Evaluate translated Markdown quality for one language.
+کیفیت ترجمه‌های Markdown را برای یک زبان ارزیابی کنید.
 
-!!! warning "تجربی"
-    `evaluate` آزمایشی است. این فرمان می‌تواند از بررسی‌های مبتنی بر قوانین و مبتنی بر LLM استفاده کند، نتایج ارزیابی را در متادیتای ترجمه می‌نویسد و مدل امتیازدهی و رفتار متادیتا ممکن است تغییر کند.
+!!! warning "آزمایشی"
+    `evaluate` آزمایشی است. می‌تواند از بررسی‌های کیفی مبتنی بر قوانین و مبتنی بر LLM استفاده کند، نتایج ارزیابی را در فراداده ترجمه می‌نویسد، و مدل امتیازدهی و رفتار فراداده ممکن است تغییر کند.
 
 ```bash
 evaluate -l "ko"
@@ -114,19 +133,19 @@ evaluate -l "ko"
 
 ### مثال‌های رایج
 
-استفاده از آستانه پایین‌تر برای اعتماد:
+استفاده از آستانه سخت‌گیرانه‌تر برای اطمینان پایین:
 
 ```bash
 evaluate -l "es" -c 0.8
 ```
 
-اجرای چک‌های فقط مبتنی بر قوانین:
+فقط بررسی‌های مبتنی بر قانون را اجرا کنید:
 
 ```bash
 evaluate -l "fr" -f
 ```
 
-اجرای چک‌های فقط مبتنی بر LLM:
+فقط بررسی‌های مبتنی بر LLM را اجرا کنید:
 
 ```bash
 evaluate -l "ja" -D
@@ -134,24 +153,24 @@ evaluate -l "ja" -D
 
 ### گزینه‌ها
 
-| Option | Required | Description |
+| گزینه | ضروری | توضیحات |
 | --- | --- | --- |
-| `-l`, `--language-code` | Yes | Single language code to evaluate. Alias codes are normalized. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `-c`, `--min-confidence` | No | Threshold used when listing low-confidence translations. Defaults to `0.7`. |
-| `-d`, `--debug` | No | Enable debug logging. |
-| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-f`, `--fast` | No | Rule-based evaluation only. |
-| `-D`, `--deep` | No | LLM-based evaluation only. |
+| `-l`, `--language-code` | بله | یک کد زبان برای ارزیابی. کدهای معادل نرمالیزه می‌شوند. |
+| `-r`, `--root-dir` | خیر | ریشه پروژه. پیش‌فرض دایرکتوری جاری است. |
+| `-c`, `--min-confidence` | خیر | آستانه‌ای که هنگام فهرست کردن ترجمه‌های با اطمینان پایین استفاده می‌شود. پیش‌فرض `0.7`. |
+| `-d`, `--debug` | خیر | فعال‌سازی لاگ‌برداری دیباگ. |
+| `-s`, `--save-logs` | خیر | لاگ‌های سطح DEBUG را تحت `<root-dir>/logs/` ذخیره می‌کند. |
+| `-f`, `--fast` | خیر | فقط ارزیابی مبتنی بر قانون. |
+| `-D`, `--deep` | خیر | فقط ارزیابی مبتنی بر LLM. |
 
-به‌صورت پیش‌فرض، `evaluate` از هر دو ارزیابی مبتنی بر قوانین و مبتنی بر LLM استفاده می‌کند. نتایج در متادیتای ترجمه نوشته می‌شوند و در کنسول خلاصه می‌شوند.
+به‌طور پیش‌فرض، `evaluate` از هر دو ارزیابی مبتنی بر قانون و مبتنی بر LLM استفاده می‌کند. نتایج در فراداده ترجمه نوشته شده و در کنسول خلاصه می‌شوند.
 
 ## co-op-review
 
-Run deterministic translation maintenance checks without API credentials.
+بررسی‌های نگهداری ترجمه قطعی را بدون نیاز به اعتبارنامه‌های API اجرا کنید.
 
-!!! note "نسخه بتا"
-    `co-op-review` یک فرمان بازبینی تعیین‌شونده در نسخه بتا است. این فرمان از ارائه‌دهندگان مدل استفاده نمی‌کند و فایل‌ها را نمی‌نویسد، اما چک‌ها و ساختار خروجی مسائل ممکن است تکامل یابند.
+!!! note "بتا"
+    `co-op-review` یک دستور بازبینی بتا و قطعی است. این دستور ارائه‌دهندگان مدل را فراخوانی نمی‌کند و فایل‌ها را نمی‌نویسد، اما بررسی‌ها و طرح خروجی مسائل آن ممکن است تکامل یابد.
 
 ```bash
 co-op-review -l "ko"
@@ -159,7 +178,7 @@ co-op-review -l "ko"
 
 ### مثال‌های رایج
 
-بازبینی ترجمه‌های کره‌ای و ژاپنی از دایرکتوری جاری:
+بازبینی ترجمه‌های کره‌ای و ژاپنی از دایرکتوری فعلی:
 
 ```bash
 co-op-review -l "ko ja"
@@ -171,13 +190,25 @@ co-op-review -l "ko ja"
 co-op-review -l "fr" -r ./my-course
 ```
 
-بازبینی فقط فایل‌های منبع تغییر یافته در برابر یک ref پایه:
+فقط README را پس از ترجمه‌ای که فقط README را دربرمی‌گیرد بازبینی کنید:
+
+```bash
+translate -l "ko" --readme-only -y
+co-op-review -l "ko" --readme-only --format github
+```
+
+`--readme-only` سایر اسناد و READMEهای تو در تو را نادیده می‌گیرد. این گزینه در صورتی که ریشه
+`README.md` در ریشه موجود نباشد، ناموفق می‌شود. در ترکیب با `--changed-from`، تنها README را بازبینی می‌کند
+وقتی آن فایل منبع تغییر کرده باشد. ترجمه فقط-README، README منبع را
+تغییر‌نخورده باقی می‌گذارد، از جمله هر نشانگر بخش مشترک.
+
+فقط فایل‌های منبعی را که نسبت به یک مرجع پایه تغییر کرده‌اند بازبینی کنید:
 
 ```bash
 co-op-review -l "ko" --changed-from origin/main
 ```
 
-چاپ خروجی Markdown با فرمت GitHub برای خلاصه‌های CI:
+خروجی Markdown با فرمت GitHub را برای خلاصه‌های CI چاپ کنید:
 
 ```bash
 co-op-review -l "ko ja" --changed-from origin/main --format github
@@ -185,34 +216,35 @@ co-op-review -l "ko ja" --changed-from origin/main --format github
 
 ### گزینه‌ها
 
-| Option | Required | Description |
+| گزینه | ضروری | توضیحات |
 | --- | --- | --- |
-| `-l`, `--language-code` | No | Language code to review. Can be passed multiple times or as a space-separated value. Defaults to all discovered translation languages. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `--changed-from` | No | Git ref used to limit review to changed source files. |
-| `--format` | No | Output format: `text` or `github`. Defaults to `text`. |
+| `-l`, `--language-code` | خیر | کد زبان برای بازبینی. می‌تواند چند بار پاس‌دهی شود یا به‌صورت یک مقدار جداشده با فاصله باشد. پیش‌فرض تمام زبان‌های ترجمه‌شده کشف‌شده. |
+| `-r`, `--root-dir` | خیر | ریشه پروژه. پیش‌فرض دایرکتوری جاری است. |
+| `--changed-from` | خیر | مرجع Git که برای محدود کردن بازبینی به فایل‌های منبع تغییر‌یافته استفاده می‌شود. |
+| `--readme-only` | خیر | فقط ترجمه `README.md` ریشه را بازبینی کند. |
+| `--format` | خیر | فرمت خروجی: `text` یا `github`. پیش‌فرض `text`. |
 
-`co-op-review` در حال حاضر برای فایل‌های ترجمه‌شده گمشده، متادیتای ترجمه مفقود یا قدیمی، یکپارچگی frontmatter و code fenceهای Markdown، JSON دفترچه ترجمه‌شده نامعتبر و هدف‌های لینک محلی Markdown یا تصویر گمشده بررسی می‌کند. لینک‌های مفقود به‌صورت پیش‌فرض هشدار هستند؛ مشکلات ساختاری و تازگی فرمان را شکست می‌دهند.
+`co-op-review` در حال حاضر بررسی وجود فایل‌های ترجمه‌شده مفقود، فراداده ترجمه مفقود یا قدیمی، انسجام frontmatter و code fence در Markdown، JSON نوت‌بوک ترجمه‌شده نامعتبر، و هدف‌های لینک محلی Markdown یا تصویر مفقود را انجام می‌دهد. لینک‌های مفقود به‌صورت پیش‌فرض هشدار هستند؛ مشکلات ساختاری و تازگی باعث شکست دستور می‌شوند.
 
 ## co-op-translator-mcp
 
-Run the Co-op Translator MCP server for agents, editors, and MCP-compatible clients.
+سرور MCP Co-op Translator را برای عامل‌ها، ویرایشگرها و کلاینت‌های سازگار با MCP اجرا کنید.
 
 ```bash
 co-op-translator-mcp
 ```
 
-The default transport is `stdio`. See the [MCP Server](mcp.md) guide for client configuration, tools, resources, and safety notes.
+انتقال پیش‌فرض `stdio` است. برای پیکربندی کلاینت، ابزارها، منابع و نکات ایمنی به راهنمای [سرور MCP](mcp.md) مراجعه کنید.
 
-### Options
+### گزینه‌ها
 
-| Option | Required | Description |
+| گزینه | ضروری | توضیحات |
 | --- | --- | --- |
-| `--transport` | No | MCP transport: `stdio`, `streamable-http`, or `sse`. Defaults to `stdio`. |
+| `--transport` | خیر | انتقال MCP: `stdio`، `streamable-http`، یا `sse`. پیش‌فرض `stdio`. |
 
 ## migrate-links
 
-Reprocess translated Markdown files and update notebook links so they point to translated notebooks when available.
+فایل‌های Markdown ترجمه‌شده را دوباره پردازش کرده و لینک‌های نوت‌بوک را به‌روز کنید تا هرگاه موجود باشند به نوت‌بوک‌های ترجمه‌شده اشاره کنند.
 
 ```bash
 migrate-links -l "ko ja"
@@ -226,13 +258,13 @@ migrate-links -l "ko ja"
 migrate-links -l "ko" --dry-run
 ```
 
-پردازش همه زبان‌های پشتیبانی‌شده بدون تأیید:
+پردازش تمام زبان‌های پشتیبانی‌شده بدون تأیید:
 
 ```bash
 migrate-links -l "all" -y
 ```
 
-فقط بازنویسی لینک‌ها زمانی که دفترچه‌های ترجمه‌شده موجود باشند:
+فقط زمانی لینک‌ها را بازنویسی کنید که نوت‌بوک‌های ترجمه‌شده وجود داشته باشند:
 
 ```bash
 migrate-links -l "ko" --no-fallback-to-original
@@ -240,20 +272,20 @@ migrate-links -l "ko" --no-fallback-to-original
 
 ### گزینه‌ها
 
-| Option | Required | Description |
+| گزینه | ضروری | توضیحات |
 | --- | --- | --- |
-| `-l`, `--language-codes` | Yes | Space-separated language codes, or `"all"`. |
-| `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
-| `--image-dir` | No | Translated image directory relative to the root. Defaults to `translated_images`. |
-| `--dry-run` | No | Show files that would change without writing updates. |
-| `--fallback-to-original`, `--no-fallback-to-original` | No | Use original notebook links when translated notebooks are missing. Enabled by default. |
-| `-d`, `--debug` | No | Enable debug logging. |
-| `-s`, `--save-logs` | No | Save DEBUG-level logs under `<root-dir>/logs/`. |
-| `-y`, `--yes` | No | Auto-confirm prompts when processing all languages. |
+| `-l`, `--language-codes` | بله | کدهای زبان جداشده با فاصله، یا `"all"`. |
+| `-r`, `--root-dir` | خیر | ریشه پروژه. پیش‌فرض دایرکتوری جاری است. |
+| `--image-dir` | خیر | دایرکتوری تصاویر ترجمه‌شده نسبی به ریشه. پیش‌فرض `translated_images`. |
+| `--dry-run` | خیر | نمایش فایل‌هایی که تغییر خواهند کرد بدون نوشتن به‌روزرسانی‌ها. |
+| `--fallback-to-original`, `--no-fallback-to-original` | خیر | استفاده از لینک‌های نوت‌بوک اصلی وقتی نوت‌بوک‌های ترجمه‌شده موجود نیستند. به‌طور پیش‌فرض فعال است. |
+| `-d`, `--debug` | خیر | فعال‌سازی لاگ‌برداری دیباگ. |
+| `-s`, `--save-logs` | خیر | لاگ‌های سطح DEBUG را تحت `<root-dir>/logs/` ذخیره می‌کند. |
+| `-y`, `--yes` | خیر | تأیید خودکار پرسش‌ها هنگام پردازش تمام زبان‌ها. |
 
 ## محیط
 
-All commands require one configured LLM provider:
+وقتی یک دستور نیاز به اعتبارنامه ارائه‌دهنده دارد، یکی از مجموعه‌های ارائه‌دهنده زیر را پیکربندی کنید. `translate --dry-run` و `co-op-review` به اعتبارنامه ارائه‌دهنده نیاز ندارند:
 
 ```bash
 # آزور اوپن‌ای‌آی
@@ -266,82 +298,86 @@ AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 # یا اوپن‌ای‌آی
 OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# یا آنتروپیک
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Image translation additionally requires Azure AI Vision:
+ترجمه تصویر علاوه بر این نیاز به Azure AI Vision دارد:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-## ساختار خروجی
+## چیدمان خروجی
 
-Text translations are written under:
+ترجمه‌های متنی در زیر نوشته می‌شوند:
 
 ```text
 translations/<language-code>/<original-path>
 ```
 
-Translated image output is written under:
+خروجی تصاویر ترجمه‌شده در زیر نوشته می‌شود:
 
 ```text
 translated_images/<language-code>/<original-path>
 ```
 
-For example, translating `README.md` and `docs/setup.md` into Korean produces:
+برای مثال، ترجمهٔ `README.md` و `docs/setup.md` به زبان کره‌ای خروجی زیر را تولید می‌کند:
 
 ```text
 translations/ko/README.md
 translations/ko/docs/setup.md
 ```
 
-## مثال‌های CLI برای کپی-پیست
+## مثال‌های قابل کپی/چسباندن CLI
 
-Translate Markdown into three languages:
+Markdown را به سه زبان ترجمه کنید:
 
 ```bash
 translate -l "ko ja fr" -md
 ```
 
-Translate notebooks only:
+فقط نوت‌بوک‌ها را ترجمه کنید:
 
 ```bash
 translate -l "zh-CN" -nb
 ```
 
-Translate images only:
+فقط تصاویر را ترجمه کنید:
 
 ```bash
 translate -l "pt-BR" -img
 ```
 
-Preview Markdown translation without writing files:
+پیش‌نمایش ترجمه Markdown بدون نوشتن فایل‌ها:
 
 ```bash
 translate -l "de es" -md --dry-run
 ```
 
-Repair low-confidence Markdown translations:
+اصلاح ترجمه‌های Markdown با اطمینان پایین:
 
 ```bash
 evaluate -l "ko" -c 0.8
 translate -l "ko" --fix -c 0.8 -md
 ```
 
-Run CI-friendly Markdown translation:
+اجرای ترجمه Markdown سازگار با CI:
 
 ```bash
 translate -l "ko ja" -md -y -s
 ```
 
-Review translated output:
+بازبینی خروجی ترجمه‌شده:
 
 ```bash
 co-op-review -l "ko ja"
 ```
 
-Preview link migration:
+پیش‌نمایش مهاجرت لینک‌ها:
 
 ```bash
 migrate-links -l "ko" --dry-run

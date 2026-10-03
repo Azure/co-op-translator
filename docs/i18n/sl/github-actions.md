@@ -2,47 +2,63 @@
 
 Uporabite GitHub Actions, kadar želite, da repozitorij samodejno prevede spremenjeno dokumentacijo in odpre pull request z ustvarjenimi izhodi.
 
-Večina repozitorijev naj uporablja standardno nastavitev `GITHUB_TOKEN`. Nastavitev GitHub App uporabite le, kadar vaša organizacija omejuje privzeta dovoljenja žetona ali zahteva overjanje na osnovi aplikacije.
+Začnite z običajno nastavitvijo `GITHUB_TOKEN`, tudi za repozitorije organizacij, kjer politika to dovoljuje. Oglejte si [Nastavitev GitHub aplikacije](#github-app-setup), če vaša organizacija zahteva identiteto aplikacije ali potrebujete samodejne zagon downstream delovnih tokov.
+
+**Ročne spremembe:** ti delovni tokovi ponovno v celoti prevedejo spremenjene izvorne datoteke in lahko prepišejo besedilo, ki so ga ročno uredili v prevodih. Pred združitvijo preglejte vsak PR. Ohranjanje sprememb na ravni Markdown blokov zahteva prilagojeno integracijo s [ponudnikom stanja prevoda Python API](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
+
+## Vaš prvi PR za prevod README
+
+Začnite z eno korensko datoteko `README.md` in enim ciljnim jezikom. Ta delovni tok prevaja samo Markdown, zato Azure AI Vision ni potreben.
+
+1. Kopirajte [translate-readme.yml](../../assets/workflows/translate-readme.yml) ([ogled predloge na GitHubu](https://github.com/Azure/co-op-translator/blob/main/docs/assets/workflows/translate-readme.yml)) v `.github/workflows/translate-readme.yml` v repozitorij, ki ga želite prevesti, in ga commitajte v privzeto vejo tega repozitorija. Predloga uporablja glavno Action v `Azure/co-op-translator@main`, ki namesti CLI iz istega vira. Za ponovljive izvedbe pripnite pregledan commit.
+2. Odprite **Actions > Translate README > Run workflow**, izberite jezik in pustite označeno **Preview only**. Preglejte oceno tokenov v koraku predogleda. Predogled ne kliče ponudnikov modelov, ne zapisuje prevodov in ne ustvari PR.
+3. Dodajte skrivnosti za en [ponudnik besedila](#prerequisites), in omogočite **Dovoli GitHub Actions ustvarjanje in odobritev pull requestov** v **Nastavitve > Dejanja > Splošno**. Predloga zahteva `contents: write` in `pull-requests: write` za svoje delo; ni treba spreminjati privzetih dovoljenj za vsak delovni tok. Če politika organizacije blokira ta dovoljenja ali to nastavitev, vprašajte skrbnika za odobreno [aplikacijo GitHub](#github-app-setup).
+4. Zaženite delovni tok znova s preklicano označitvijo **Preview only**. Izvede predogled, prevede, zažene `co-op-review --readme-only`, in ustvari ali posodobi prevodni PR šele po uspešni prevodu in pregledu. Povzetek delovnega toka se poveže na PR.
+5. Preglejte besedilo in spremembe datotek v PR, nato združite, ko ste pripravljeni. Delovni tok ne združi samodejno.
+
+PR vsebuje samo `translations/<language>/README.md` in njegovo datoteko z metapodatki jezika. Izvorni README ostane nespremenjen, povezave na druge dokumente pa še vedno kažejo na izvorne dokumente. V telo PR so navedene spremenjene datoteke in rezultati strukturnega pregleda. Če prevod ali pregled ne uspe, preglejte povzetek delovnega toka in dnevnike neuspelih korakov; PR ni ustvarjen. Če ni sprememb, nov PR ni potreben.
+
+**Opomba za organizacije in CI:** GitHub App je izbiren, ni zahteva lastništva organizacije. Z `GITHUB_TOKEN` delovni tokovi za pull requeste za odpiranje, posodabljanje ali ponovno odpiranje PR zahtevajo uporabnika z dostopom za pisanje, da izbere **Approve workflows to run**. Push delovni tokovi niso sproženi s tem tokenom. Za brezpotrben downstream CI glejte [Nastavitev GitHub aplikacije](#github-app-setup) in GitHubova [workflow triggering rules](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow).
 
 ## Predpogoji
 
-Pred ustvarjanjem workflowa konfigurirajte skrivnosti AI storitev, ki jih potrebuje vaše prevajanje.
+Pred ustvarjanjem delovnega toka konfigurirajte skrivnosti AI storitve, ki jih potrebuje vaš prevod.
 
-Prevajanje besedila zahteva enega ponudnika jezikovnih modelov:
+Za prevod besedila je potreben en ponudnik jezikovnega modela:
 
 - Azure OpenAI: `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_MODEL_NAME`, `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME`, `AZURE_OPENAI_API_VERSION`
 - OpenAI: `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL_ID`, plus optional `OPENAI_ORG_ID` and `OPENAI_BASE_URL`
+- Anthropic: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, plus optional `ANTHROPIC_BASE_URL`
 
-Za prevajanje slik je dodatno potrebna Azure AI Vision:
+Za prevod slik dodatno zahteva Azure AI Vision:
 
 - `AZURE_AI_SERVICE_API_KEY`
 - `AZURE_AI_SERVICE_ENDPOINT`
 
-Oglejte si [Konfiguracija](configuration.md) in [Nastavitev Azure AI](azure-ai-setup.md) za podrobnosti o lokalni konfiguraciji.
+Oglejte si [Konfiguracija](configuration.md) in [Nastavitev Azure AI](azure-ai-setup.md) za podrobnosti lokalne konfiguracije.
 
 ## Standardna nastavitev
 
-To nastavitev uporabite za večino javnih in zasebnih repozitorijev.
+Po preizkusu delovnega toka za README uporabite to nastavitev za prevajanje Markdown datotek repozitorija v več jezikov. Izvede pregled Markdowna pred odpiranjem PR in ne zahteva Azure AI Vision.
 
 ### Korak 1: Dodajte skrivnosti repozitorija
 
-V ciljnih repozitoriju odprite **Settings** > **Secrets and variables** > **Actions**, nato dodajte skrivnosti ponudnika, ki jih bo uporabljal vaš workflow.
+V ciljnem repozitoriju odprite **Settings** > **Secrets and variables** > **Actions**, nato dodajte skrivnosti ponudnika, ki jih bo uporabil vaš delovni tok.
 
 ![Izberite skrivnosti Actions](../../assets/github-actions/select-setting-action.png)
 
-### Korak 2: Omogočite dovoljenja za workflow
+### Korak 2: Omogočite dovoljenja delovnega toka
 
 Odprite **Settings** > **Actions** > **General**.
 
 Pod **Workflow permissions**:
 
-1. Izberite **Read and write permissions**.
-2. Omogočite **Allow GitHub Actions to create and approve pull requests**.
-3. Shranite nastavitev.
+1. Omogočite **Dovoli GitHub Actions, da ustvarja in odobri pull requeste**.
+2. Shranite nastavitev.
 
-![Nastavitev dovoljenj workflowa](../../assets/github-actions/permission-setting.png)
+Spodnje delo izrecno zahteva `contents: write` in `pull-requests: write`. Privzetih dovoljenj delovnega toka repozitorija ne spreminjajte. Če politika organizacije blokira ustvarjanje PR, vprašajte skrbnika glede odobrene [GitHub App](#github-app-setup).
 
-### Korak 3: Dodajte workflow
+### Korak 3: Dodajte delovni tok
 
 Ustvarite `.github/workflows/co-op-translator.yml`:
 
@@ -57,6 +73,8 @@ on:
 jobs:
   co-op-translator:
     runs-on: ubuntu-latest
+    env:
+      TARGET_LANGUAGES: "es fr de"
 
     permissions:
       contents: write
@@ -69,9 +87,9 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v7
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install Co-op Translator
         run: |
@@ -81,8 +99,6 @@ jobs:
       - name: Run Co-op Translator
         env:
           PYTHONIOENCODING: utf-8
-          AZURE_AI_SERVICE_API_KEY: ${{ secrets.AZURE_AI_SERVICE_API_KEY }}
-          AZURE_AI_SERVICE_ENDPOINT: ${{ secrets.AZURE_AI_SERVICE_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_MODEL_NAME: ${{ secrets.AZURE_OPENAI_MODEL_NAME }}
@@ -92,8 +108,25 @@ jobs:
           OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
           OPENAI_CHAT_MODEL_ID: ${{ secrets.OPENAI_CHAT_MODEL_ID }}
           OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
+          ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
         run: |
-          translate -l "es fr de" -y
+          translate -l "$TARGET_LANGUAGES" -md -y
+
+      - name: Review Markdown translations
+        run: |
+          python - <<'PY'
+          import os
+          from co_op_translator.api import run_review
+
+          run_review(
+              language_codes=os.environ["TARGET_LANGUAGES"].split(),
+              markdown=True,
+              notebook=False,
+              output_format="github",
+          )
+          PY
 
       - name: Create Pull Request with translations
         uses: peter-evans/create-pull-request@v5
@@ -103,6 +136,8 @@ jobs:
           title: "Update translations via Co-op Translator"
           body: |
             This PR updates translations for recent changes to the main branch.
+            Markdown structure, freshness, and local links were reviewed.
+            Review translation wording before merging.
 
             Generated by Co-op Translator.
           branch: update-translations
@@ -111,68 +146,65 @@ jobs:
           delete-branch: true
           add-paths: |
             translations/
-            translated_images/
 ```
 
-Spremenite `translate -l "es fr de" -y` na ciljne jezike in zastavice vsebine, ki jih zahteva vaš projekt. Za velike repozitorije dodajte filter `paths:` pod `on:`, da workflow teče le, ko se dokumentacija spremeni.
+Spremenite `TARGET_LANGUAGES` v jezike, ki jih potrebuje vaš projekt. Pregled uporablja Python API za preverjanje samo Markdowna, kar ustreza koraku prevajanja. Napaka pri prevodu ali pregledu ustavi delo pred ustvarjanjem PR. Delovni tok PR ne združi samodejno. Za velike repozitorije dodajte filter `paths:` pod `on.push`, da delovni tok teče le, ko se spremeni dokumentacija.
 
-## Nastavitev GitHub App
+### Izbirno: zvezki in slike
 
-To nastavitev uporabite, kadar `GITHUB_TOKEN` ne more ustvarjati commitov ali pull requestov v vaši organizaciji.
+Za zvezke dodajte `-nb` k prevodnemu ukazu in nastavite `notebook=True` v koraku pregleda. Za besedilo na slikah konfigurirajte dve [skrivnosti Azure AI Vision](#prerequisites), prenesite jih v `env` prevodnega koraka, dodajte `-img` k ukazu in dodajte `translated_images/` v koraku PR `add-paths`. Preglejte prevedene slike vizualno; deterministični pregled ne potrjuje besedila na slikah ali jezikovne natančnosti.
 
-### Korak 1: Ustvarite ali namestite GitHub App
+## Nastavitev GitHub aplikacije
 
-Ustvarite GitHub App z dostopom za branje/pisanje do **Contents** in **Pull requests**, ali namestite aplikacijo, ki jo zagotavlja vaša organizacija, če jo že imajo.
+Uporabite odobreno GitHub aplikacijo, kadar vaša organizacija zahteva identiteto aplikacije, ali kadar ustvarjeni PR potrebuje sprožitev downstream CI brez koraka odobritve `GITHUB_TOKEN`. Aplikacija ne zaobide politike organizacije; skrbniki še vedno nadzorujejo njeno namestitev in dovoljenja.
 
-Zabeležite:
+### Korak 1: Ustvarite ali namestite GitHub aplikacijo
+
+Uporabite obstoječo aplikacijo, ki jo zagotavlja organizacija, če je na voljo, ali ustvarite novo z dostopom za branje/pisanje do **Contents** in **Pull requests**. Namestite jo na ciljni repozitorij z morebitno potrebno odobritvijo organizacije.
+
+Record:
 
 - App ID
 - Vsebina zasebnega ključa
 
-Shranjite jih kot skrivnosti repozitorija:
+Shrani jih kot skrivnosti repozitorija:
 
 - `GH_APP_ID`
 - `GH_APP_PRIVATE_KEY`
 
-### Korak 2: Ustvarite žeton aplikacije
+### Korak 2: Generirajte žeton aplikacije
 
-Uporabite isti workflow kot pri standardni nastavitvi, vendar dodajte korak app-token pred korakom za pull request:
+Dodajte ta korak takoj pred obstoječim korakom pull requesta. Za predlogo README uporabite isto pogoj uspeha, tako da predogledi in neuspešni prevodi ne zahtevajo žetona aplikacije:
 
 ```yaml
       - name: Authenticate GitHub App
         id: generate_token
-        uses: tibdex/github-app-token@v1
+        if: ${{ !inputs.preview && steps.translate.outcome == 'success' && steps.review.outcome == 'success' }}
+        uses: actions/create-github-app-token@v2
         with:
-          app_id: ${{ secrets.GH_APP_ID }}
-          private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-
-      - name: Create Pull Request with translations
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ steps.generate_token.outputs.token }}
-          commit-message: "Update translations via Co-op Translator"
-          title: "Update translations via Co-op Translator"
-          branch: update-translations
-          base: main
-          delete-branch: true
-          add-paths: |
-            translations/
-            translated_images/
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 ```
+
+Nato spremenite samo obstoječi `token` vhod koraka pull requesta na `${{ steps.generate_token.outputs.token }}`. Ohranite njegovo pogoj uspeha, vejo, telo PR in `add-paths` nespremenjene. Žeton je privzeto omejen na trenutni repozitorij. Pri prilagajanju standardne nastavitve namesto predloge README izpustite zgornji `if`: ta delovni tok uporablja privzeti pogoj uspeha, zato ustvarjanje žetona in ustvarjanje PR tečeta šele po uspešnem prevodu in pregledu.
+
+Oglejte si uradni [create-github-app-token Action](https://github.com/actions/create-github-app-token/tree/v2) za namestitev in dovoljenja žetona.
 
 ## Omejitve runnerjev
 
-GitHub-hosted runnerji imajo največjo dovoljeno dolžino izvajanja opravila. Veliki repozitoriji ali veliko ciljnih jezikov lahko presežejo to omejitev.
+GitHub-hostani runnerji imajo največno trajanje opravila. Veliki repozitoriji ali veliko ciljnih jezikov lahko presegajo to omejitev.
 
-Za velike prevajalske obremenitve:
+Za velike prevodne obremenitve:
 
-- Prevajajte manj jezikov na zagon.
+- Prevedite manj jezikov na zagon.
 - Uporabite zastavice vsebine, kot so `-md`, `-nb` ali `-img`.
-- Uporabite self-hosted runner, ko velikost repozitorija ali latenca modela naredi hosted runnerje nezanesljive.
+- Uporabite self-hosted runner, kadar velikost repozitorija ali zakasnitev modela naredi hostane runnerje nezanesljive.
 
 ## Pregled v CI
 
-Uporabite `co-op-review`, kadar naj pull request preveri ustvarjene prevode brez klica LLM ali Vision ponudnikov.
+Uporabite `co-op-review`, kadar naj pull request preveri ustvarjene prevode, ne da bi klical LLM ali Vision ponudnike.
 
 ```yaml
       - name: Review translated outputs
@@ -180,4 +212,4 @@ Uporabite `co-op-review`, kadar naj pull request preveri ustvarjene prevode brez
           co-op-review --changed-from "origin/${{ github.base_ref }}" --format github
 ```
 
-`co-op-review` je beta deterministični ukaz za pregled. Njegove kontrole in izhodna shema se lahko razvijajo, vendar je zasnovan kot varen za CI, ker ne zapisuje datotek niti ne kliče ponudnikov modelov.
+`co-op-review` je beta determinističen ukaz za pregled. Njegove preverbe in shema izhodov se lahko razvijajo, vendar je zasnovan kot varen za CI, ker ne zapisuje datotek ali kliče ponudnikov modelov.

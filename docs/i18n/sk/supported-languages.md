@@ -1,8 +1,8 @@
 # Podporované jazyky
 
-Co-op Translator podporuje nasledujúce kódy jazykov pre výstupy prekladu textu, poznámkových blokov a obrázkov.
+Prekladač Co-op podporuje nasledujúce kódy jazykov pre texty, notebooky a výstupy prekladu obrázkov.
 
-Ak chcete pridať nový jazyk, aktualizujte mapovania jazyka a fontu v priečinku `src/co_op_translator/fonts/` a otestujte jazyk pred otvorením pull requestu.
+Ak chcete pridať nový jazyk, aktualizujte mapovania jazykov a písiem v `src/co_op_translator/fonts/` a otestujte jazyk pred otvorením pull requestu.
 
 | Kód jazyka | Názov jazyka | Písmo | Podpora RTL | Známe problémy |
 | --- | --- | --- | --- | --- |
@@ -15,7 +15,7 @@ Ak chcete pridať nový jazyk, aktualizujte mapovania jazyka a fontu v priečink
 | fa | Perzština (fársí) | NotoSansArabic-Medium.ttf | Áno | Nie |
 | ur | Urdčina | NotoSansArabic-Medium.ttf | Áno | Nie |
 | zh-CN | Čínština (zjednodušená) | NotoSansCJK-Medium.ttc | Nie | Nie |
-| zh-MO | Čínština (tradičná, Macao) | NotoSansCJK-Medium.ttc | Nie | Nie |
+| zh-MO | Čínština (tradičná, Macau) | NotoSansCJK-Medium.ttc | Nie | Nie |
 | zh-HK | Čínština (tradičná, Hongkong) | NotoSansCJK-Medium.ttc | Nie | Nie |
 | zh-TW | Čínština (tradičná, Taiwan) | NotoSansCJK-Medium.ttc | Nie | Nie |
 | ja | Japončina | NotoSansCJK-Medium.ttc | Nie | Nie |
@@ -37,12 +37,12 @@ Ak chcete pridať nový jazyk, aktualizujte mapovania jazyka a fontu v priečink
 | da | Dánčina | NotoSans-Medium.ttf | Nie | Nie |
 | no | Nórčina | NotoSans-Medium.ttf | Nie | Nie |
 | fi | Fínčina | NotoSans-Medium.ttf | Nie | Nie |
-| nl | Nízozemčina | NotoSans-Medium.ttf | Nie | Nie |
+| nl | Holandčina | NotoSans-Medium.ttf | Nie | Nie |
 | he | Hebrejčina | NotoSansHebrew-Medium.ttf | Áno | Nie |
 | vi | Vietnamčina | NotoSans-Medium.ttf | Nie | Nie |
-| id | Indonézština | NotoSans-Medium.ttf | Nie | Nie |
+| id | Indonézčina | NotoSans-Medium.ttf | Nie | Nie |
 | ms | Malajčina | NotoSans-Medium.ttf | Nie | Nie |
-| tl | Tagalog (Filipínčina) | NotoSans-Medium.ttf | Nie | Nie |
+| tl | Tagalog (filipínčina) | NotoSans-Medium.ttf | Nie | Nie |
 | sw | Svahilčina | NotoSans-Medium.ttf | Nie | Nie |
 | hu | Maďarčina | NotoSans-Medium.ttf | Nie | Nie |
 | cs | Čeština | NotoSans-Medium.ttf | Nie | Nie |
@@ -53,7 +53,7 @@ Ak chcete pridať nový jazyk, aktualizujte mapovania jazyka a fontu v priečink
 | hr | Chorvátčina | NotoSans-Medium.ttf | Nie | Nie |
 | sl | Slovinčina | NotoSans-Medium.ttf | Nie | Nie |
 | uk | Ukrajinčina | NotoSans-Medium.ttf | Nie | Nie |
-| my | Burmčina (Myanmar) | NotoSansMyanmar-Medium.ttf | Nie | Nie |
+| my | Barmsčina (Myanmar) | NotoSansMyanmar-Medium.ttf | Nie | Nie |
 | ta | Tamilčina | NotoSansTamil-Medium.ttf | Nie | Nie |
 | et | Estónčina | NotoSans-Medium.ttf | Nie | Nie |
 | pcm | Nigérijský pidžin | NotoSans-Medium.ttf | Nie | Nie |
@@ -61,12 +61,13 @@ Ak chcete pridať nový jazyk, aktualizujte mapovania jazyka a fontu v priečink
 | ml | Malajálamčina | NotoSans-Medium.ttf | Nie | Nie |
 | kn | Kannadčina | NotoSans-Medium.ttf | Nie | Nie |
 | km | Khmerčina | NotoSansKhmer-Medium.ttf | Nie | Nie |
+| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | Nie | Nie |
 
 ## Pridať jazyk
 
 Ak chcete pridať podporu pre nový jazyk:
 
 1. Pridajte kód jazyka a zobrazovaný názov do jazykových utilít.
-2. Pridajte alebo namapujte písmo v `src/co_op_translator/fonts/font_language_mappings.yml`.
+2. Pridajte alebo priraďte písmo v `src/co_op_translator/fonts/font_language_mappings.yml`.
 3. Otestujte výstup prekladu Markdownu a obrázkov.
-4. Otvorte pull request s mapovaním a poznámkami o overení.
+4. Otvorte pull request s mapovaním a poznámkami o validácii.

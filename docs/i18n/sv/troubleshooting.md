@@ -1,13 +1,13 @@
 # Felsökning
 
-Använd den här sidan när en översättningskörning lyckas oväntat, misslyckas under konfiguration eller producerar utdata som behöver granskas.
+Använd den här sidan när en översättningskörning lyckas oväntat, misslyckas under konfiguration eller ger resultat som behöver granskas.
 
 ## Börja här
 
 1. Kör först ett fokuserat kommando, till exempel `translate -l "ko" -md`.
 2. Lägg till `-d` för felsökningsloggar i konsolen.
 3. Lägg till `-s` för att spara felsökningsloggar under `<root-dir>/logs/`.
-4. Kör `co-op-review` efter översättning för att kontrollera färskhet, struktur och lokala länkar.
+4. Kör `co-op-review` efter översättningen för att kontrollera aktualitet, struktur och lokala länkar.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -16,7 +16,7 @@ co-op-review -l "ko"
 
 ## Konfigurationsfel
 
-### Ingen leverantör av språkmodell
+### Ingen språkmodellleverantör
 
 Fel:
 
@@ -26,7 +26,7 @@ No language model configuration found.
 
 Åtgärd:
 
-- Konfigurera Azure OpenAI eller OpenAI.
+- Konfigurera Azure OpenAI, OpenAI eller Anthropic.
 - Verifiera att variablerna finns i miljön där kommandot körs.
 - För lokal användning, lägg dem i `.env` i projektets rot.
 
@@ -44,26 +44,26 @@ Image translation requested but Azure AI Service is not configured.
 
 - Lägg till `AZURE_AI_SERVICE_API_KEY`.
 - Lägg till `AZURE_AI_SERVICE_ENDPOINT`.
-- Eller kör ett textendast-kommando såsom `translate -l "ko" -md`.
+- Eller kör ett textbaserat kommando, till exempel `translate -l "ko" -md`.
 
 ### Ogiltig nyckel eller slutpunkt
 
-Symptom kan inkludera `401`, dolda behörighetsfel eller åtkomstfel för slutpunkten.
+Symptom kan inkludera `401`, maskerade behörighetsfel eller åtkomstfel för slutpunkten.
 
 Åtgärd:
 
 - Bekräfta att nyckeln tillhör samma Azure-resurs som slutpunkten.
 - Bekräfta att resursen stöder Vision när du använder `-img`.
-- Bekräfta att Azure OpenAI-distributionsnamn och API-version matchar din distribution.
+- Bekräfta att Azure OpenAI-distributionens namn och API-version stämmer överens med din distribution.
 - Kör med felsökningsloggar: `translate -l "ko" -md -d -s`.
 
 ## Inga filer översattes
 
 Vanliga orsaker:
 
-- De valda flaggorna matchar inte dina filer.
+- De valda flaggorna stämmer inte överens med dina filer.
 - Befintliga översatta filer finns redan.
-- Källfiler är under uteslutna kataloger.
+- Källfiler finns i exkluderade kataloger.
 - Kommandot körs från fel projektrot.
 
 Kontroller:
@@ -74,24 +74,24 @@ translate -l "ko" -nb --dry-run
 translate -l "ko" -img --dry-run
 ```
 
-Använd `--root-dir` när kommandot körs utanför projektets rot.
+Använd `--root-dir` när kommandot körs utanför projektroten.
 
 ## Oväntat länkbeteende
 
-Omlänkning beror på valda innehållstyper:
+Omskrivning av länkar beror på valda innehållstyper:
 
-- `-nb` inkluderat: anteckningsboks-länkar kan peka på översatta anteckningsböcker.
-- `-nb` exkluderat: anteckningsboks-länkar kan förbli pekande på källanteckningsböcker.
+- `-nb` inkluderat: länkar till notebooks kan peka på översatta notebooks.
+- `-nb` exkluderat: länkar till notebooks kan fortsätta peka på källnotebooks.
 - `-img` inkluderat: bildlänkar kan peka på översatta bilder.
-- `-img` exkluderat: bildlänkar kan förbli pekande på källbilder.
+- `-img` exkluderat: bildlänkar kan fortsätta peka på källbilder.
 
-Kör en fullständig innehållsöversättning när alla interna länkar bör föredra översatta utdata:
+Kör en fullständig innehållsöversättning när alla interna länkar ska föredra översatta resultat:
 
 ```bash
 translate -l "ko" -md -nb -img
 ```
 
-Kör länkgranskning efter översättning:
+Kör länkgranskning efter översättningen:
 
 ```bash
 co-op-review -l "ko"
@@ -102,23 +102,23 @@ co-op-review -l "ko"
 Om översatt Markdown renderas felaktigt:
 
 - Kontrollera att frontmatter börjar och slutar med `---`.
-- Kontrollera att antalet kodavgränsare matchar mellan käll- och översatta filer.
+- Kontrollera att antalet kodavgränsare stämmer överens mellan käll- och översatta filer.
 - Kör `co-op-review` för att fånga vanliga strukturproblem.
-- Översätt om den specifika filen om utdata var korrupt.
+- Översätt om den specifika filen om utdata blev korrupt.
 
 ```bash
 co-op-review -l "ko" --format github
 ```
 
-## GitHub Action kördes men ingen pull-begäran skapades
+## GitHub Action kördes men ingen pullbegäran skapades
 
-Om `peter-evans/create-pull-request` rapporterar att grenen inte är före basen, hittade arbetsflödet inga filer att committa.
+Om `peter-evans/create-pull-request` rapporterar att grenen inte ligger före basen, hittade arbetsflödet inga filer att committa.
 
-Sannolika orsaker:
+Troliga orsaker:
 
-- Översättningskörningen producerade inga förändringar.
-- `.gitignore` utesluter `translations/`, `translated_images/` eller översatta anteckningsböcker.
-- `add-paths` matchar inte de genererade utgångskatalogerna.
+- Översättningskörningen genererade inga ändringar.
+- `.gitignore` exkluderar `translations/`, `translated_images/` eller översatta notebooks.
+- `add-paths` matchar inte de genererade utmatningskatalogerna.
 - Översättningssteget avslutades tidigt.
 
 Åtgärder:
@@ -134,7 +134,7 @@ Sannolika orsaker:
        translated_images/
    ```
 
-4. Lägg till debugflaggor temporärt i translate-kommandot:
+4. Lägg till tillfälligt felsökningsflaggor i translate-kommandot:
 
    ```bash
    translate -l "ko" -md -d -s
@@ -150,9 +150,9 @@ Sannolika orsaker:
 
 ## Översättningskvalitet
 
-Maskinöversättningar kan behöva manuell granskning. Använd `evaluate` endast när du vill ha experimentell kvalitetsbedömning och reparationsarbetsflöden för lågt förtroende.
+Maskinöversättningar kan behöva manuell granskning. Använd `evaluate` endast när du vill ha experimentell kvalitetsbedömning och arbetsflöden för reparation av resultat med låg tillförlitlighet.
 
 !!! warning "Experimentell"
-    `evaluate` kan använda regelbaserade och LLM-baserade kontroller, och dess poängsättningsmodell och metadata-beteende kan ändras. Håll det utanför obligatoriska CI-gates om inte ditt arbetsflöde är förberett för förändringar.
+    `evaluate` kan använda regelbaserade och LLM-baserade kontroller, och dess poängsättningsmodell och metadata-beteende kan förändras. Håll det utanför obligatoriska CI-gates om inte ditt arbetsflöde är förberett på förändringar.
 
 För deterministiska CI-kontroller, använd `co-op-review` istället.

@@ -1,13 +1,13 @@
 # Solución de problemas
 
-Use esta página cuando una ejecución de traducción tenga éxito inesperadamente, falle durante la configuración, o produzca resultados que necesiten revisión.
+Use esta página cuando una ejecución de traducción tenga éxito inesperadamente, falle durante la configuración o produzca resultados que necesiten revisión.
 
-## Comenzar aquí
+## Comience aquí
 
-1. Ejecute primero un comando focalizado, como `translate -l "ko" -md`.
-2. Agregue `-d` para registros de depuración en la consola.
-3. Agregue `-s` para guardar los registros de depuración en `<root-dir>/logs/`.
-4. Ejecute `co-op-review` después de la traducción para comprobar la actualidad, la estructura y los enlaces locales.
+1. Ejecute primero un comando enfocado, por ejemplo `translate -l "ko" -md`.
+2. Añada `-d` para registros de depuración en la consola.
+3. Añada `-s` para guardar los registros de depuración en `<root-dir>/logs/`.
+4. Ejecute `co-op-review` después de la traducción para verificar la actualidad, la estructura y los enlaces locales.
 
 ```bash
 translate -l "ko" -md -d -s
@@ -26,11 +26,11 @@ No language model configuration found.
 
 Solución:
 
-- Configure Azure OpenAI u OpenAI.
+- Configure Azure OpenAI, OpenAI o Anthropic.
 - Verifique que las variables estén en el entorno donde se ejecuta el comando.
 - Para uso local, colóquelas en `.env` en la raíz del proyecto.
 
-Vea [Configuración](configuration.md).
+Consulte [Configuración](configuration.md).
 
 ### Traducción de imágenes sin Azure AI Vision
 
@@ -46,27 +46,27 @@ Solución:
 - Agregue `AZURE_AI_SERVICE_ENDPOINT`.
 - O ejecute un comando solo de texto como `translate -l "ko" -md`.
 
-### Clave o endpoint inválidos
+### Clave o endpoint no válidos
 
 Los síntomas pueden incluir `401`, errores de permisos redactados o errores de acceso al endpoint.
 
 Solución:
 
 - Confirme que la clave pertenezca al mismo recurso de Azure que el endpoint.
-- Confirme que el recurso sea compatible con Vision al usar `-img`.
-- Confirme que el nombre de despliegue de Azure OpenAI y la versión de la API coincidan con su despliegue.
+- Confirme que el recurso admita Vision cuando utilice `-img`.
+- Confirme que el nombre del despliegue de Azure OpenAI y la versión de la API coincidan con los de su despliegue.
 - Ejecute con registros de depuración: `translate -l "ko" -md -d -s`.
 
 ## No se tradujeron archivos
 
 Causas comunes:
 
-- Las banderas seleccionadas no coinciden con sus archivos.
+- Las opciones seleccionadas no coinciden con sus archivos.
 - Ya existen archivos traducidos.
 - Los archivos fuente están en directorios excluidos.
-- El comando se está ejecutando desde la raíz del proyecto equivocada.
+- El comando se está ejecutando desde la raíz del proyecto incorrecta.
 
-Comprobaciones:
+Verificaciones:
 
 ```bash
 translate -l "ko" -md --dry-run
@@ -83,7 +83,7 @@ La reescritura de enlaces depende de los tipos de contenido seleccionados:
 - `-nb` incluido: los enlaces de notebooks pueden apuntar a notebooks traducidos.
 - `-nb` excluido: los enlaces de notebooks pueden seguir apuntando a los notebooks de origen.
 - `-img` incluido: los enlaces de imágenes pueden apuntar a imágenes traducidas.
-- `-img` excluido: los enlaces de imágenes pueden seguir apuntando a las imágenes fuente.
+- `-img` excluido: los enlaces de imágenes pueden seguir apuntando a las imágenes de origen.
 
 Ejecute una traducción completa del contenido cuando todos los enlaces internos deban preferir los resultados traducidos:
 
@@ -101,10 +101,10 @@ co-op-review -l "ko"
 
 Si el Markdown traducido se renderiza incorrectamente:
 
-- Compruebe que el frontmatter comience y termine con `---`.
+- Compruebe que el frontmatter comienza y termina con `---`.
 - Compruebe que el número de delimitadores de código coincida entre los archivos fuente y los traducidos.
 - Ejecute `co-op-review` para detectar problemas comunes de estructura.
-- Vuelva a traducir el archivo específico si la salida fue corrompida.
+- Vuelva a traducir el archivo específico si la salida se corrompió.
 
 ```bash
 co-op-review -l "ko" --format github
@@ -123,9 +123,9 @@ Causas probables:
 
 Soluciones:
 
-1. Confirme que los archivos generados existan en `translations/` o `translated_images/`.
-2. Confirme que `.gitignore` no ignore los resultados generados.
-3. Use `add-paths` correspondiente:
+1. Confirme que los archivos generados existen en `translations/` o `translated_images/`.
+2. Confirme que `.gitignore` no ignore las salidas generadas.
+3. Use `add-paths` coincidente:
 
    ```yaml
    with:
@@ -134,7 +134,7 @@ Soluciones:
        translated_images/
    ```
 
-4. Agregue temporalmente banderas de depuración al comando translate:
+4. Añada temporalmente las banderas de depuración al comando translate:
 
    ```bash
    translate -l "ko" -md -d -s
@@ -150,9 +150,9 @@ Soluciones:
 
 ## Calidad de la traducción
 
-Las traducciones automáticas pueden necesitar revisión humana. Use `evaluate` solo cuando quiera puntuaciones de calidad experimentales y flujos de trabajo de reparación para traducciones de baja confianza.
+Las traducciones automáticas pueden necesitar revisión humana. Use `evaluate` solo cuando desee puntuación de calidad experimental y flujos de trabajo de reparación de baja confianza.
 
 !!! warning "Experimental"
-    `evaluate` puede usar comprobaciones basadas en reglas y basadas en LLM, y su modelo de puntuación y el comportamiento de metadatos pueden cambiar. Manténgalo fuera de los controles CI obligatorios a menos que su flujo de trabajo esté preparado para los cambios.
+    `evaluate` puede usar comprobaciones basadas en reglas y en LLM, y su modelo de puntuación y el comportamiento de los metadatos pueden cambiar. Manténgalo fuera de las puertas de CI obligatorias a menos que su flujo de trabajo esté preparado para cambios.
 
-Para comprobaciones de CI deterministas, use `co-op-review` en su lugar.
+Para comprobaciones deterministas en CI, use `co-op-review` en su lugar.

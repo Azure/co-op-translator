@@ -1,58 +1,67 @@
 # MCP సర్వర్
 
-Co-op Translator ఏజెంట్లు, ఎడిటర్లు, మరియు MCP-అనుకూల క్లయింట్ల కోసం Model Context Protocol సర్వర్‌ను అందిస్తుంది.
+Co-op Translator ఏజెంట్‌లు, ఎడిటర్లు, మరియు MCP-అనుకూల క్లయింట్ల కోసం ఒక Model Context Protocol సర్వర్‌ను కలిగి ఉంటుంది.
 
-ప్రామాణిక లోకల్ సెటప్ కోసం, వినియోగదారులు విడిగా సర్వర్‌ను చేతితో నడపరు. వారు తమ MCP క్లయింట్‌ను కాన్ఫిగర్ చేస్తారు, మరియు అవసరమైతే క్లయింట్ `co-op-translator-mcp` ను `stdio` ద్వారా ఆటోమాటిక్‌గా ప్రారంభిస్తుంది.
+ఒక సాధారణ లోకల్ సెటప్‌లో, వినియోగదారులు వేర్వేరు సర్వర్‌ను చేతితో నడిపించవలసిన అవసరం ఉండదు. వారు వారి MCP క్లయింట్‌ని కాన్ఫిగర్ చేస్తారు, మరియు క్లయింట్ Co-op Translator టూల్స్ అవసరమైన సమయంలో `stdio` ద్వారా ఆటోమేటిగ్గా `co-op-translator-mcp` ప్రారంభిస్తుంది.
 
-మీరు CLI, Python API, మరియు MCP మధ్య ఎంచుకుంటున్నట్లయితే, [మీ వర్క్‌ఫ్లోను ఎంచుకోండి](workflows.md) తో ప్రారంభించండి.
+CLI, Python API, మరియు MCP మధ్య నిర్ణయం తీసుకుంటుంటే, [మీ వర్క్‌ఫ్లోను ఎంచుకోండి](workflows.md) తో మొదలు పెట్టండి.
 
-Use MCP when an agent or editor should call Co-op Translator directly:
+ఏజెంట్ లేదా ఎడిటర్ Co-op Translator‌ను నేరుగా పిలవాల్సినప్పుడు MCP వాడండి:
 
 | వినియోగదారు లక్ష్యం | MCP టూల్స్ |
 | --- | --- |
-| ఒక Markdown డాక్యుమెంట్, నోట్‌బుక్ లేదా చిత్రం అనువదించండి | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
+| ఒక Markdown డాక్యుమెంట్, నోట్‌బుక్, లేదా చిత్రం ఒకటిని అనువదించండి | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content` |
 | హోస్ట్ ఏజెంట్ మోడల్‌తో Markdown లేదా నోట్‌బుక్ కంటెంట్‌ను అనువదించండి | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| అవుట్‌పుట్ పాత్‌ను ఎంచుకున్న తర్వాత అనువదించిన Markdown లేదా నోట్‌బుక్ లింక్‌లను తిరిగి రాయండి | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| CLI లాంటి పూర్తి రిపోజిటరీని అనువదించండి | `run_translation`, `translate_project` |
-| LLM క్రెడెన్షియల్స్ లేకుండా అనువదించిన అవుట్‌పుట్‌ను సమీక్షించండి | `run_review` |
-| సామర్థ్యాలు మరియు పరిసర స్థితిని పరిశీలించండి | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
+| అవుట్‌పుట్ మార్గం ఎంచుకున్న తర్వాత అనువాదించిన Markdown లేదా నోట్‌బుక్ లింకులను రిరైట్ చేయండి | `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| CLI లాగా ఒక సంపూర్ణ రిపాజిటరీని అనువదించండి | `run_translation`, `translate_project` |
+| LLM క్రెడెన్షియల్స్ లేకుండా అనువదించిన ఔట్‌పుట్‌ను సమీక్షించండి | `run_review` |
+| సామర్థ్యాలు మరియు వాతావరణ స్థితిని పరిశీలించండి | `get_api_overview`, `list_supported_languages`, `get_configuration_status` |
 
-MCP సర్వర్ [Python API](api.md)లో డాక్యుమెంట్ చేయబడిన అదే పబ్లిక్ Python APIని ర్యాప్ చేస్తుంది. ప్రొవైడర్-బ్యాక్ చేయబడిన టూల్స్ CLI మరియు Python APIతోనే కాన్ఫిగర్ చేసిన ప్రొవైడర్లు ఉపయోగిస్తాయి. ఏజెంట్-అసిస్టెడ్ టూల్స్ MCP హోస్ట్ ఏజెంట్ అనువదించడానికి chunks ను సిద్ధం చేస్తాయి, తరువాత Co-op Translator ను ఉపయోగించి తుది Markdown లేదా నోట్‌బుక్‌ను పునర్నిర్మిస్తాయి.
+MCP సర్వర్ అదే పబ్లిక్ Python API ని ర్యాప్ చేస్తుంది, ఇది [Python API](api.md)లో డాక్యుమెంటెడ్. ప్రొవైడర్-బ్యాక్డ్ టూల్స్ CLI మరియు Python API వలెనే కాన్ఫిగర్ చేయబడిన ప్రొవైడర్స్‌ను ఉపయోగిస్తాయి. ఏజెంట్-అసిస్టెడ్ టూల్స్ MCP హోస్ట్ ఏజెంట్ కోసం ఛంక్స్‌ను సిద్ధం చేసి, తరువాత Co-op Translator ను ఉపయోగించి తుది Markdown లేదా నోట్‌బుక్‌ను పునర్నిర్మించగలవని జోడిస్తాయి.
 
-## Step 1: Install and Configure Co-op Translator
+## దశ 1: Co-op Translatorని ఇన్‌స్టాల్ చేసి కాన్ఫిగర్ చేయండి
 
-Install Co-op Translator in the Python environment your MCP client will use:
+మీ MCP క్లయింట్ ఉపయోగించే Python పరిసరంలో Co-op Translatorని ఇన్‌స్టాల్ చేయండి:
 
 ```bash
 pip install co-op-translator
 ```
 
-For local development from this repository, install the package in editable mode:
+ఈ రిపాజిటరీ నుండి లోకల్ డెవలప్‌మెంట్ కోసం, ప్యాకేజీని editable మోడ్‌లో ఇన్‌స్టాల్ చేయండి:
 
 ```bash
 pip install -e .
 ```
 
-Choose the translation mode your MCP client will use:
+మీ MCP క్లయింట్ ఉపయోగించే అనువాద మోడ్‌ను ఎంచుకోండి:
 
-| మోడ్ | దానికి ఉపయోగించండి | అధికారపత్రాలు |
+| మోడ్ | ఇది ఉపయోగించండి | క్రెడెన్షియల్స్ |
 | --- | --- | --- |
-| ప్రొవైడర్ ఆధారిత | Co-op Translator `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, లేదా `run_translation` ను కాల్ చేస్తుంది. | Markdown మరియు నోట్‌బుక్ అనువాదానికి Azure OpenAI లేదా OpenAI అవసరం. ఇమేజ్ అనువాదానికి Azure AI Vision కూడా అవసరం. |
-| ఏజెంట్-అసిస్టెడ్ | MCP హోస్ట్ ఏజెంట్ `start_markdown_agent_translation` లేదా `start_notebook_agent_translation` ద్వారా తిరిగిచ్చిన chunks ను అనువదిస్తుంది. | Markdown లేదా నోಟ್‌బుక్ chunks కోసం Co-op Translator LLM ప్రొవైడర్ క్రెడెన్షియల్స్ అవసరం కాదు. ఇమేజ్ అనువాదం ఇంకా ఏజెంట్-అసిస్టెడ్ మోడ్ ద్వారా కవరుచేయబడలేదు. |
+| ప్రొవైడర్-బ్యాక్డ్ | Co-op Translator `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, లేదా `run_translation` పిలుస్తుంది. | అనువాదానికి Azure OpenAI, OpenAI, లేదా Anthropic అవసరం. చిత్రం అనువాదానికి Azure AI Vision కూడా అవసరం. |
+| ఏజెంట్-అసిస్టెడ్ | MCP హోస్ట్ ఏజెంట్ `start_markdown_agent_translation` లేదా `start_notebook_agent_translation` ద్వారా తిరిగి ఇచ్చే ఛంక్స్‌ను అనువదిస్తుంది. | Markdown లేదా నోట్‌బుక్ ఛంక్స్ కోసం Co-op Translator LLM ప్రొవైడర్ క్రెడెన్షియల్స్ అవసరం లేదు. చిత్రం అనువాదం ఇప్పటివరకు ఏజెంట్-అసిస్టెడ్ మోడ్ ద్వారా కవర్ కాదు. |
 
-If you are starting with Markdown or notebook translation inside an agent such as Codex or Claude Code, start with agent-assisted mode. Use provider-backed mode when you want Co-op Translator itself to call your configured providers, when you are translating images, or when you are running repository-level translation like the CLI.
+మీరు Codex లేదా Claude Code వంటి ఏజెంట్‌లో Markdown లేదా నోట్‌బుక్ అనువాదంతో ప్రారంభిస్తుంటే, ఏజెంట్-అసిస్టెడ్ మోడ్‌తో మొదలు పెడండి. ప్రొవైడర్-బ్యాక్డ్ మోడ్‌ను ఉపయోగించండి ఎప్పుడు మీరు Co-op Translator స్వయంగా మీ కాన్ఫిగర్ చేసిన ప్రొవైడర్స్‌ను పిలవాలని కోరుకుంటే, చిత్రాలను అనువదిస్తున్నప్పుడు, లేదా CLI లాంటి రిపాజిటరీ-స్థాయి అనువాదం నడుపుతున్నప్పుడు.
 
-Configure provider credentials only for provider-backed workflows:
+ప్రొవైడర్-బ్యాక్డ్ వర్క్‌ఫ్లోల కోసం ఒక ప్రొవైడర్‌ను కాన్ఫిగర్ చేయండి:
 
 ```bash
+# ఆజ్యూర్ ఓపెన్‌ఏఐ
 AZURE_OPENAI_API_KEY="..."
 AZURE_OPENAI_ENDPOINT="https://<resource>.openai.azure.com/"
 AZURE_OPENAI_MODEL_NAME="gpt-4o"
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="<deployment>"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+
+# లేదా ఓపెన్‌ఏఐ
+OPENAI_API_KEY="..."
+OPENAI_CHAT_MODEL_ID="gpt-4o"
+
+# లేదా ఆంథ్రోపిక్
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
 ```
 
-Provider-backed image translation additionally needs:
+ప్రొవైడర్-బ్యాక్డ్ చిత్రం అనువాదం అదనంగా అవసరం:
 
 ```bash
 AZURE_AI_SERVICE_API_KEY="..."
@@ -60,13 +69,13 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
 !!! note
-    ఏజెంట్-అసిస్టెడ్ మోడ్ ప్రస్తుతం Markdown మరియు నోట్‌బుక్ Markdown సెల్స్‌ను కవర్ చేస్తుంది. ఇమేజ్ అనువాదం ఇంకా ప్రొవైడర్-ఆధారిత ఇమేజ్ పైప్లైన్‌ను ఉపయోగిస్తుంది మరియు OCR మరియు లేఅవుట్-అవగాహన రెండరింగ్ కోసం Azure AI Vision అవసరం.
+    ఏజెంట్-అసిస్టెడ్ మోడ్ ప్రస్తుతం Markdown మరియు నోట్‌బుక్ Markdown సెల్స్‌ను మాత్రమే కవర్ చేస్తుంది. చిత్రం అనువాదం ఇంకా ప్రొవైడర్-బ్యాక్డ్ ఇమేజ్ పైప్లైన్‌ను ఉపయోగిస్తుంది మరియు OCR మరియు లేఅవుట్-అవగాహన రేందరింగ్ కోసం Azure AI Vision అవసరమే.
 
-## Step 2: Configure Your MCP Client
+## దశ 2: మీ MCP క్లయింట్‌ను కాన్ఫిగర్ చేయండి
 
-For the normal local `stdio` setup, add Co-op Translator to your MCP client configuration. The client will start and stop the process automatically.
+సాధారణ లోకల్ `stdio` సెటప్ కోసం, Co-op Translatorని మీ MCP క్లయింట్ కాన్ఫిగరేషన్‌లో జోడించండి. క్లయింట్ ప్రాసెస్‌ను ఆటోమేటిగ్గా ప్రారంభించి ఆపుతుంది.
 
-Installed package configuration:
+ఇన్స్టాల్ చేసిన ప్యాకేజీ కాన్ఫిగరేషన్:
 
 ```json
 {
@@ -79,7 +88,7 @@ Installed package configuration:
 }
 ```
 
-Source checkout configuration on Windows:
+Windowsలో సోర్స్ చెకౌట్ కాన్ఫిగరేషన్:
 
 ```json
 {
@@ -93,7 +102,7 @@ Source checkout configuration on Windows:
 }
 ```
 
-Source checkout configuration on macOS or Linux:
+macOS లేదా Linuxలో సోర్స్ చెకౌట్ కాన్ఫిగరేషన్:
 
 ```json
 {
@@ -107,11 +116,11 @@ Source checkout configuration on macOS or Linux:
 }
 ```
 
-After changing MCP client configuration, restart or reload the client so it can discover the new server.
+MCP క్లయింట్ కాన్ఫిగరేషన్ మార్చిన తర్వాత, క్లయింట్ కొత్త సర్వర్‌ను కనుగొనేటట్లుగా రీస్టార్ట్ లేదా రిలోడ్ చేయండి.
 
-## Step 3: Verify the Server in the Client
+## దశ 3: క్లయింట్‌లో సర్వర్‌ను ధృవీకరించండి
 
-Ask the MCP client to list available tools, or call one of the read-only helpers first:
+అందుబాటులో ఉన్న టూల్స్‌ను జాబితా చేయడానికి MCP క్లయింట్‌ను అడగండి, లేదా ముందుగా రీడ్ఓన్లీ హెల్పర్స్‌లో ఒకటిని పిలవండి:
 
 ```json
 {
@@ -120,45 +129,45 @@ Ask the MCP client to list available tools, or call one of the read-only helpers
 }
 ```
 
-Useful first checks:
+ప్రారంభిక ఉపయోగకరమైన తనిఖీలు:
 
-| టూల్ | పరీక్షించవలసినది |
+| టూల్ | ఏమి తనిఖీ చేయాలి |
 | --- | --- |
-| `get_api_overview` | సర్వర్ చేరుకోవచ్చని నిర్ధారిస్తుంది మరియు లభ్యమైన వర్క్‌ఫ్లోలను చూపిస్తుంది. |
-| `list_supported_languages` | ప్యాకేజ్డ్ చేసిన భాషా డేటా లోడ్ చేయగలదని నిర్ధారిస్తుంది. |
-| `get_configuration_status` | రహస్య విలువలను బయట పెట్టకుండా LLM మరియు Vision ప్రొవైడర్ అందుబాటును నిర్ధారిస్తుంది. |
+| `get_api_overview` | సర్వర్ చేరుకోవచ్చునని నిర్ధారిస్తుంది మరియు అందుబాటులో ఉన్న వర్క్‌ఫ్లోలను చూపిస్తుంది. |
+| `list_supported_languages` | ప్యాకేజ్డ్ భాషా డేటా లోడ్ చేయబడగలదని నిర్ధారిస్తుంది. |
+| `get_configuration_status` | రహస్య విలువలను బయటపెట్టకుండా LLM మరియు Vision ప్రొవైడర్‌ల అందుబాటును నిర్ధారిస్తుంది. |
 
-## Step 4: Choose a Workflow
+## దశ 4: ఒక వర్క్‌ఫ్లోని ఎంచుకోండి
 
-### Translate Individual Files or Documents
+### వ్యక్తిగత ఫైళ్లు లేదా డాక్యుమెంట్లను అనువదించండి
 
-Use provider-backed content tools when the MCP client already has document content or an image path and Co-op Translator should call the configured translation providers.
+MCP క్లయింట్‌కు ఇప్పటికే డాక్యుమెంట్ కంటెంట్ లేదా ఇమేజ్ పాత్ ఉన్నప్పుడు మరియు Co-op Translator కాన్ఫిగర్ చేసిన అనువాద ప్రొవైడర్లను పిలవాలనుకుంటే ప్రొవైడర్-బ్యాక్డ్ కంటెంట్ టూల్స్‌ను ఉపయోగించండి.
 
-For Markdown:
+Markdown కోసం:
 
-1. `document`, `language_code`, మరియు ఐచ్చికంగా `source_path` తో `translate_markdown_content` ను కాల్ చేయండి.
-2. అనువదించిన ఫలితాన్ని Co-op Translator అవుట్‌పుట్ లేఅవుట్‌లో రాయాల్సినట్లయితే, `rewrite_markdown_paths` ను కాల్ చేయండి.
-3. క్లయింట్ తుది `content` ను రాయగలిగేలా లేదా రిటర్న్ చేయగలిగేలా చేయండి.
+1. `document`, `language_code` మరియు ఐచ్చికంగా `source_path` తో `translate_markdown_content` పిలవండి.
+2. అనువదించిన ఫలితం Co-op Translator అవుట్‌పుట్ లేఅవుట్‌లో రాయబడనున్నట్లయితే, `rewrite_markdown_paths` పిలవండి.
+3. క్లయింట్ తుది `content` ను రాయాలి లేదా తిరిగి ఇవ్వాలి.
 
-For notebooks:
+నోట్‌బుక్‌ల కోసం:
 
-1. నోట్‌బుక్ JSON మరియు `language_code` తో `translate_notebook_content` ను కాల్ చేయండి.
-2. అనువదించిన నోట్‌బుక్ లింక్‌లు లక్ష్య పాత్‌కు సర్దుబాటు చేయాల్సిన అవసరం ఉంటే `rewrite_notebook_paths` ను కాల్ చేయండి.
-3. తుది నోట్‌బుక్ JSON ను రాయండి లేదా రిటర్న్ చేయండి.
+1. నోట్‌బుక్ JSON మరియు `language_code` తో `translate_notebook_content` పిలవండి.
+2. అనువదించిన నోట్‌బుక్ లింకులను లక్ష్య మార్గానికి సర్దుబాటు చేయాలి అంటే `rewrite_notebook_paths` పిలవండి.
+3. తుది నోట్‌బుక్ JSON ను రాయండి లేదా తిరిగి ఇవ్వండి.
 
-For images:
+చిత్రాల కోసం:
 
-1. `image_path`, `language_code`, మరియు ఐచ్చికంగా `root_dir` లేదా `fast_mode` తో `translate_image_content` ను కాల్ చేయండి.
+1. `image_path`, `language_code`, మరియు ఐచ్చికంగా `root_dir` లేదా `fast_mode` తో `translate_image_content` పిలవండి.
 2. తిరిగి వచ్చిన `data_base64` మరియు `mime_type` ను చదవండి.
-3. `output_path` ఇవ్వబడితే, అనువదించిన చిత్రం కూడా ఆ పాత్‌కు సేవ్ చేయబడుతుంది.
+3. `output_path` అందించబడితే, అనువదించిన చిత్రం కూడా ఆ మార్గంలో సేవ్ చేయబడుతుంది.
 
-The content tools do not perform project discovery, metadata updates, disclaimers, or automatic path rewriting. If you want the host agent to translate Markdown or notebook chunks without Co-op Translator LLM provider credentials, use the agent-assisted workflow below.
+కంటెంట్ టూల్స్ ప్రాజెక్ట్ డిస్కవరీ, మెటాడేటా అప్డేట్లు, డిస్క్లైమర్లు లేదా ఆటోమేటిక్ పాత్ రిరైటింగ్ చేయవు. మీరు Co-op Translator LLM ప్రొవైడర్ క్రెడెన్షియల్స్ లేకుండా హోస్ట్ ఏజెంట్ ద్వారా Markdown లేదా నోట్‌బుక్ ఛంక్స్ అనువదించించాలని ఉంటే, క్రింద ఉన్న ఏజెంట్-అసిస్టెడ్ వర్క్‌ఫ్లోను ఉపయోగించండి.
 
-### Translate with the Host Agent Model
+### హోస్ట్ ఏజెంట్ మోడల్‌తో అనువదించండి
 
-Use agent-assisted tools when you want the MCP host agent, such as a coding assistant, to produce the translated text instead of configuring Azure OpenAI or OpenAI for Co-op Translator.
+Co-op Translator కోసం LLM ప్రొవైడర్‌ను కాన్ఫిగర్ చేయకుండానే MCP హోస్ట్ ఏజెంట్ (ఉదాహరణకు కోడింగ్ అసిస్టెంట్) అనువదించిన టెక్స్ట్‌ను ఉత్పత్తి చేయాల్సినప్పుడు agent-assisted టూల్స్‌ను ఉపయోగించండి.
 
-In a chat-based MCP client, you normally do not need to write tool JSON yourself. Ask the agent to use the agent-assisted workflow:
+చాట్-ఆధారిత MCP క్లయింట్‌లో, సాధారణంగా మీరు టూల్ JSON ని స్వయంగా రాయవలసిన అవసరం లేదు. ఏజెంట్‌ని agent-assisted వర్క్‌ఫలో ఉపయోగించాలని అడగండి:
 
 ```text
 Translate this Markdown file to Korean with Co-op Translator MCP.
@@ -166,7 +175,7 @@ Use agent-assisted mode: call start_markdown_agent_translation, translate the re
 Keep Markdown formatting, code blocks, and links intact.
 ```
 
-For notebooks, use the same pattern:
+నోట్‌బుక్స్ కోసం, అదే విధానాన్ని ఉపయోగించండి:
 
 ```text
 Translate this notebook to Korean with Co-op Translator MCP.
@@ -174,29 +183,29 @@ Use start_notebook_agent_translation, translate the returned Markdown-cell chunk
 Preserve code cells, outputs, and notebook metadata.
 ```
 
-If your MCP client supports server prompts, use `agent_assisted_markdown_translation_prompt` to have the client load the same workflow instructions.
+మీ MCP క్లయింట్ సర్వర్ ప్రాంప్ట్స్‌ని మద్దతిస్తే, క్లయింట్ అదే వర్క్‌ఫ్లో సూచనలను లోడ్ చేయడానికి `agent_assisted_markdown_translation_prompt` ఉపయోగించండి.
 
-For Markdown:
+Markdown కోసం:
 
-1. `document`, `language_code`, మరియు ఐచ్చికంగా `source_path` తో `start_markdown_agent_translation` ను కాల్ చేయండి.
-2. chunk `prompt` పాటిస్తూ హోస్ట్ ఏజెంట్‌లో ప్రతి తిరిగి ఇచ్చిన chunk ను అనువదించండి.
-3. మౌలిక `job` మరియు `chunk_id` మరియు `translated_text` ఉపయోగించి అనువదించిన chunks తో `finish_markdown_agent_translation` ను కాల్ చేయండి.
-4. కంటెంట్ అనువదించిన టార్గెట్ పాత్‌లో రాయబడాల్సినట్లయితే, `rewrite_markdown_paths` ను కాల్ చేయండి.
+1. `document`, `language_code` మరియు ఐచ్చికంగా `source_path` తో `start_markdown_agent_translation` పిలవండి.
+2. ప్రతి తిరిగి వచ్చిన ఛంక్‌కు ఉన్న `prompt` ని అనుసరించి వాటిని హోస్ట్ ఏజెంట్‌లో అనువదించండి.
+3. ఒరిజినల్ `job` మరియు అనువదించిన ఛంక్స్‌ను `chunk_id` మరియు `translated_text` ఉపయోగించి `finish_markdown_agent_translation` పిలవండి.
+4. కంటెంట్ అనువదించిన లక్ష్య మార్గంలో రాయబడాల్సినట్లయితే, `rewrite_markdown_paths` పిలవండి.
 
-For notebooks:
+నోట్‌బుక్స్ కోసం:
 
-1. నోట్‌బుక్ JSON మరియు `language_code` తో `start_notebook_agent_translation` ను కాల్ చేయండి.
-2. హోస్ట్ ఏజెంట్‌లో ప్రతి తిరిగిచ్చిన chunk ను అనువదించండి.
-3. మౌలిక `job` మరియు అనువదించిన chunks తో `finish_notebook_agent_translation` ను కాల్ చేయండి.
-4. అనువదించిన నోట్‌బుక్ లింక్‌లకు లక్ష్య-పాత్ సర్దుబాటు అవసరమైతే `rewrite_notebook_paths` ను కాల్ చేయండి.
+1. నోట్‌బుక్ JSON మరియు `language_code` తో `start_notebook_agent_translation` పిలవండి.
+2. తిరిగి వచ్చిన ప్రతి ఛంక్‌ని హోస్ట్ ఏజెంట్‌లో అనువదించండి.
+3. ఒరిజినల్ `job` మరియు అనువదించిన ఛంక్స్‌తో `finish_notebook_agent_translation` పిలవండి.
+4. అనువదించిన నోట్‌బుక్ లింకులు లక్ష్య మార్గానికి సర్దుబాటు అవసరం ఉంటే `rewrite_notebook_paths` పిలవండి.
 
-Agent-assisted tools do not call Azure OpenAI or OpenAI from Co-op Translator. The host agent is responsible for translating the returned chunks. Co-op Translator handles Markdown chunking, placeholder preservation, frontmatter reconstruction, notebook cell replacement, and post-translation normalization.
+Agent-assisted టూల్స్ Co-op Translator నుండి కాన్ఫిగర్ చేసిన LLM ప్రొవైడర్‌ను పిలవవు. తిరిగి ఇచ్చిన ఛంక్స్‌ను అనువదించడం హోస్ట్ ఏజెంట్ బాధ్యత. Co-op Translator Markdown ఛంకింగ్, ప్లేస్‌హోల్డర్ సంరక్షణ, frontmatter పునర్నిర్మాణం, నోట్‌బుక్ సెల్ స్థానం మార్చడం, మరియు అనువాద అనంతరం సాధారణీకరణను నిర్వహిస్తుంది.
 
-### Translate an Entire Repository
+### ఒక సంపూర్ణ రిపాజిటరీని అనువదించండి
 
-Use `run_translation` when the user wants Co-op Translator to behave like the `translate` CLI.
+వినియోగదారు Co-op Translator ను `translate` CLI లాగా ప్రవర్తింపచేయాలనుకుంటే `run_translation` ను ఉపయోగించండి.
 
-Repository translation defaults to `dry_run=true` so an agent can inspect scope before file changes:
+రిపాజిటరీ అనువాదం డిఫాల్ట్‌గా `dry_run=true` అవుతుంది, తద్వారా ఏజెంట్ ఫైల్ మార్పులు చేయక ముందు స్కోప్‌ను పరిశీలించగలదు:
 
 ```json
 {
@@ -207,7 +216,13 @@ Repository translation defaults to `dry_run=true` so an agent can inspect scope 
 }
 ```
 
-To allow writes, the caller must set both `dry_run=false` and `confirm_write=true`:
+`run_translation` ఫలితం వెర్షన్ చేయబడ్డ `events` అర్రేను కలిగి ఉంటుంది
+`co-op.translation.event.v1` ప్రోగ్రెస్ ఈవెంట్స్. MCP క్లయింట్లు క్రింది ఫీల్డ్‌లను ఉపయోగించాలి
+`type`, `stage_key`, `completed`, `total`, మరియు `current_path` వంటి ఫీల్డ్‌లు,
+consoleలో క్యాప్చర్ చేసిన టెక్స్ట్‌ను పార్స్ చేయడం బదులు. `json_events_path` ఇవ్వడం ద్వారా ఆ ఈవెంట్స్‌ను
+NDJSON ఫైల్‌లో కూడా రాయవచ్చు.
+
+రాయడాలంటే, కాలర్ రెండింటిని సెట్ చేయాలి: `dry_run=false` మరియు `confirm_write=true`:
 
 ```json
 {
@@ -219,14 +234,14 @@ To allow writes, the caller must set both `dry_run=false` and `confirm_write=tru
 }
 ```
 
-`translate_project` is exposed as a compatibility alias for `run_translation`.
+`translate_project` ను `run_translation` కి కంపాటిబిలిటీ అలియాస్‌గా అందజేస్తుంది.
 
-### Review Translated Output
+### అనువదించిన ఔట్‌పుట్‌ను సమీక్షించండి
 
-Use `run_review` for deterministic checks that do not require LLM or Vision credentials:
+LLM లేదా Vision క్రెడెన్షియల్స్ అవసరం లేని నిర్ధారిత తనిఖీలు కోసం `run_review` ను ఉపయోగించండి:
 
 !!! note "Beta"
-    MCP బీటా `run_review` APIని ఎక్స్‌పోజ్ చేస్తుంది. ఇది రీడ్-ఒన్లీ రివ్యూ వర్క్‌ఫ్లోలకు సురక్షితంగా ఉంటుంది, కానీ రివ్యూ పరీక్షలు మరియు ఇష్యూ స్కీమాలు అభివృద్ధి చెందవచ్చు.
+    MCP బేటా `run_review` APIని ఎక్స్‌పోజ్ చేస్తుంది. ఇది రీడ్ఓన్లీ రివ్యూ వర్క్‌ఫ్లోలకు సురక్షితంగా ఉంటుంది, కానీ రివ్యూ చెక్స్ మరియు ఇష్యూ స్కీమాలు మారవచ్చు.
 
 ```json
 {
@@ -237,72 +252,72 @@ Use `run_review` for deterministic checks that do not require LLM or Vision cred
 }
 ```
 
-The result includes captured text output and a structured review summary when available.
+ఫలితం క్యాప్చర్ చేసిన టెక్స్ట్ ఔట్‌పుట్ మరియు అందుబాటులో ఉన్నప్పుడు ఒక నిర్మిత రివ్యూ సంగ్రహాన్ని కలిగి ఉంటుంది.
 
-## Manual Server Runs
+## మాన్యువల్ సర్వర్ రన్స్
 
-Manual runs are mainly for debugging or for transports that behave like long-running servers.
+మాన్యువల్ రన్స్ ప్రధానంగా డిబగ్ కోసం లేదా దీర్ఘకాలం నడిచే సర్వర్ల్లా వ్యవహరించే ట్రాన్స్‌పోర్ట్స్ కోసం ఉంటాయి.
 
-Debug the default stdio server:
+డిఫాల్ట్ stdio సర్వర్‌ను డిబగ్ చేయండి:
 
 ```bash
 co-op-translator-mcp
 ```
 
-Run from a source checkout:
+సోర్స్ చెకౌట్ నుండి నడపండి:
 
 ```bash
 python -m co_op_translator.mcp.server
 ```
 
-Run a long-lived HTTP or SSE server:
+దీర్ఘకాలిక HTTP లేదా SSE సర్వర్ నడిపించండి:
 
 ```bash
 co-op-translator-mcp --transport streamable-http
 co-op-translator-mcp --transport sse
 ```
 
-For local editor and agent integrations, prefer the client-managed `stdio` configuration in Step 2.
+లోకల్ ఎడిటర్ మరియు ఏజెంట్ ఇన­teగ్రేషన్స్ కోసం, దశ 2లోని క్లయింట్-మేనేజ్డ్ `stdio` కాన్ఫిగరేషన్‌ను ఇష్టపరచండి.
 
-## Tools
+## టూల్స్
 
-| టూల్ | ప్రయోజనం | ఫైళ్ళను రాస్తుందా |
+| టూల్ | ఉద్దేశ్యం | ఫైళ్ళను రాస్తుందా |
 | --- | --- | --- |
-| `translate_markdown_content` | Markdown స్ట్రింగ్‌ను అనువదిస్తుంది. | లేదు |
-| `translate_notebook_content` | నోట్‌బుక్ JSONలోని Markdown సెల్స్‌ను అనువదిస్తుంది. | లేదు |
-| `translate_image_content` | ఒక చిత్రంలోని టెక్స్ట్‌ను అనువదించి base64 ఇమేజ్ డేటాను తిరిగి ఇస్తుంది. | ఐచ్చికం, కేవలం `output_path` ఇవ్వబడినప్పుడు మాత్రమే |
-| `start_markdown_agent_translation` | Co-op Translator LLM క్రెడెన్షియల్స్ లేకుండా హోస్ట్ ఏజెంట్‌కు అనువదించేందుకు Markdown chunks ను సిద్ధం చేస్తుంది. | లేదు |
-| `finish_markdown_agent_translation` | హోస్ట్-ఏజెంట్ అనువదించిన chunks నుండి Markdown ను పునర్నిర్మిస్తుంది. | లేదు |
-| `start_notebook_agent_translation` | హోస్ట్ ఏజెంట్ అనువదించేందుకు నోట్‌బుక్ Markdown-సెల్ chunks ను సిద్ధం చేస్తుంది. | లేదు |
-| `finish_notebook_agent_translation` | హోస్ట్-ఏజెంట్ అనువదించిన chunks నుండి నోట్‌బుక్ JSON ను పునర్నిర్మిస్తుంది. | లేదు |
-| `rewrite_markdown_paths` | అనువదించిన టార్గెట్ కోసం Markdown బాడీ మరియు frontmatter పాత్‌లను రిరైటు చేస్తుంది. | లేదు |
-| `rewrite_notebook_paths` | నోట్‌బుక్ Markdown సెల్స్‌లోని పాత్‌లను రిరైటు చేస్తుంది. | లేదు |
-| `run_translation` | CLI లాంటి ప్రాజెక్ట్-స్థాయి అనువాదాన్ని నడిపిస్తుంది. | అవును, `dry_run=false` మరియు `confirm_write=true` ఉన్నప్పుడు |
-| `translate_project` | `run_translation` కోసం కంపాటిబిలిటీ అలియాస్. | అవును, `dry_run=false` మరియు `confirm_write=true` ఉన్నప్పుడు |
-| `run_review` | నిర్ణీత రివ్యూ పరీక్షలను నడిపిస్తుంది. | లేదు |
-| `get_configuration_status` | రహస్యాలను బయట పెట్టకుండా కాన్ఫిగర్ చేయబడిన LLM మరియు Vision ప్రొవైడర్లను నివేదిస్తుంది. | లేదు |
-| `list_supported_languages` | సమర్థించబడిన లక్ష్య భాష కోడ్‌ల జాబితా చేస్తుంది. | లేదు |
-| `get_api_overview` | లభ్యమయ్యే MCP వర్క్‌ఫ్లోలు మరియు టూల్‌లను వివరించు. | లేదు |
+| `translate_markdown_content` | ఒక Markdown స్ట్రింగ్‌ను అనువదించు. | కాదు |
+| `translate_notebook_content` | నోట్‌బుక్ JSONలోని Markdown సెల్స్‌ను అనువదించు. | కాదు |
+| `translate_image_content` | ఒక చిత్రంలో ఉన్న టెక్స్ట్‌ను అనువదించి base64 ఇమేజ్ డేటాను తిరిగి ఇస్తుంది. | ఐచ్చికం, ఫలితంగా `output_path` ఇచ్చినపుడు మాత్రమే |
+| `start_markdown_agent_translation` | Co-op Translator LLM క్రెడెన్షియల్స్ లేకుండానే హోస్ట్ ఏజెంట్ అనువదించగలిగేలా Markdown ఛంక్స్‌ను సిద్ధం చేయండి. | కాదు |
+| `finish_markdown_agent_translation` | హోస్ట్-ఏజెంట్ అనువదించిన ఛంక్స్ నుండి Markdown ను పునర్నిర్మించు. | కాదు |
+| `start_notebook_agent_translation` | హోస్ట్ ఏజెంట్ అనువదించగలిగేలా నోట్‌బుక్ Markdown-సెల్ ఛంక్స్‌ను సిద్ధం చేయండి. | కాదు |
+| `finish_notebook_agent_translation` | హోస్ట్-ఏజెంట్ అనువదించిన ఛంక్స్ నుండి నోట్‌బుక్ JSONను పునర్నిర్మించండి. | కాదు |
+| `rewrite_markdown_paths` | అనువదించిన లక్ష్యానికి అనుగుణంగా Markdown బాడీ మరియు frontmatter మార్గాలను రిరైటు చేయండి. | కాదు |
+| `rewrite_notebook_paths` | నోట్‌బుక్ Markdown సెల్స్ లోని మార్గాలను రిరైటు చేయండి. | కాదు |
+| `run_translation` | CLI లాగా ప్రాజెక్ట్-స్థాయి అనువాదాన్ని నడపండి. | అవును, `dry_run=false` మరియు `confirm_write=true` అయినప్పుడు |
+| `translate_project` | `run_translation` కు కంపాటిబిలిటీ అలియాస్. | అవును, `dry_run=false` మరియు `confirm_write=true` అయినప్పుడు |
+| `run_review` | నిర్ధారిత రివ్యూ తనిఖీలను నడపండి. | కాదు |
+| `get_configuration_status` | రహస్యాలు బయటపెట్టకుండా కాన్ఫిగర్ చేసిన LLM మరియు Vision ప్రొవైడర్లను నివేదించండి. | కాదు |
+| `list_supported_languages` | మద్దతు పొందిన లక్ష్య భాషా కోడ్‌లను జాబితా చేయండి. | కాదు |
+| `get_api_overview` | అందుబాటులో ఉన్న MCP వర్క్‌ఫ్లోలు మరియు టూల్స్‌ను వివరిచండి. | కాదు |
 
-## Resources
+## వనరులు
 
-| Resource URI | Purpose |
+| వనరు URI | ఉద్దేశ్యం |
 | --- | --- |
-| `co-op://api` | వర్క్‌ఫ్లోలు మరియు టూల్‌ల యొక్క JSON అవలోకనం. |
-| `co-op://supported-languages` | సమర్థించబడిన భాష కోడ్‌ల యొక్క JSON జాబితా. |
-| `co-op://configuration` | రహస్యాలను బయట పెట్టకుండానే ప్రొవైడర్ అందుబాటు సారాంశం (JSON). |
+| `co-op://api` | వర్క్‌ఫ్లోలు మరియు టూల్స్ యొక్క JSON అవలోకనం. |
+| `co-op://supported-languages` | మద్దతు పొందిన భాషా కోడ్‌ల JSON జాబితా. |
+| `co-op://configuration` | రహస్యాల raza లేకుండా ప్రొవైడర్ అందుబాటు సంగ్రహం JSON. |
 
-## Prompts
+## ప్రాంప్ట్స్
 
-| ప్రాంప్ట్ | ప్రయోజనం |
+| ప్రాంప్ట్ | ఉద్దేశ్యం |
 | --- | --- |
-| `translate_markdown_document_prompt` | కంటెంట్ అనువాదం మరియు ఐచ్చిక పాత్ రిరైటింగ్ ద్వారా MCP క్లయింట్‌ను మార్గనిర్దేశించండి. |
-| `agent_assisted_markdown_translation_prompt` | Co-op Translator LLM ప్రొవైడర్ క్రెడెన్షియల్స్ లేకుండా హోస్ట్-ఏజెంట్ Markdown అనువాదానికి MCP క్లయింట్‌ను మార్గనిర్దేశించండి. |
-| `translate_repository_prompt` | Dry-run-ముందుగా రిపోజిటరీ అనువాదం ద్వారా MCP క్లయింట్‌ను మార్గనిర్దేశించండి. |
+| `translate_markdown_document_prompt` | కంటెంట్ అనువాదం మరియు ఐచ్చిక పాత్ రిరైటింగ్ ద్వారా MCP క్లయింట్‌ను మార్గనిర్దేశం చేయండి. |
+| `agent_assisted_markdown_translation_prompt` | Co-op Translator LLM ప్రొవైడర్ క్రెడెన్షియల్స్ లేకుండానే హోస్ట్-ఏజెంట్ Markdown అనువాదం ద్వారా MCP క్లయింట్‌ను మార్గనిర్దేశం చేయండి. |
+| `translate_repository_prompt` | మొదట dry-run చేయడంతో రిపాజిటరీ అనువాదం ద్వారా MCP క్లయింట్‌ను మార్గనిర్దేశం చేయండి. |
 
-## Copy-Paste Examples
+## కాపీ-పేస్ట్ ఉదాహరణలు
 
-Translate Markdown content:
+Markdown కంటెంట్ అనువదించండి:
 
 ```json
 {
@@ -315,13 +330,13 @@ Translate Markdown content:
 }
 ```
 
-Rewrite translated Markdown links:
+అనువదించిన Markdown లింకులను రిరైటు చేయండి:
 
 ```json
 {
   "tool": "rewrite_markdown_paths",
   "arguments": {
-    "content": "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+    "content": "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
     "source_path": "docs/guide.md",
     "target_path": "translations/ko/docs/guide.md",
     "policy": {
@@ -335,7 +350,7 @@ Rewrite translated Markdown links:
 }
 ```
 
-Translate Markdown with the host agent model:
+హోస్ట్ ఏజెంట్ మోడల్‌తో Markdown అనువదించండి:
 
 ```json
 {
@@ -348,7 +363,7 @@ Translate Markdown with the host agent model:
 }
 ```
 
-After the host agent translates each returned chunk, finish the job with the complete `job` object returned by `start_markdown_agent_translation`:
+హోస్ట్ ఏజెంట్ ప్రతి తిరిగి ఇచ్చిన ఛంక్‌ని అనువదించిన తర్వాత, `start_markdown_agent_translation` ద్వారా తిరిగి వచ్చిన పూర్తి `job` ఆబ్జెక్టుతో జాబ్‌ని పూర్తి చేయండి:
 
 ```text
 tool: finish_markdown_agent_translation
@@ -359,7 +374,7 @@ arguments:
       translated_text: "# 안녕하세요\n\n시작하려면 `pip install`을 사용하세요."
 ```
 
-Preview repository translation:
+రిపాజిటరీ అనువాదాన్ని ప్రీవ్యూ చేయండి:
 
 ```json
 {
@@ -373,21 +388,21 @@ Preview repository translation:
 }
 ```
 
-## Troubleshooting
+## సమస్యలు పరిష్కరణ
 
-| Problem | What to try |
+| సమస్య | ప్రయత్నించాల్సిందేమిటి |
 | --- | --- |
-| MCP క్లయింట్ `co-op-translator-mcp` ను కనుగొనలేకపోతుంది. | అబ్సొల్యూట్ Python ఎగ్జిక్యూటబుల్ పాత్ మరియు `["-m", "co_op_translator.mcp.server"]` సోర్స్ చెకౌట్ కాన్ఫిగరేషన్ ఉపయోగించండి. |
-| సర్వర్ లిస్ట్ లో ఉంది కానీ అనువాదం విఫలమవుతోంది. | `get_configuration_status` ను కాల్ చేసి ఒక LLM ప్రొవైడర్ అందుబాటులో ఉందని నిర్ధారించండి. |
-| Azure OpenAI/OpenAI కీలు లేకుండా Markdown లేదా నోట్‌బుక్ అనువాదం కావాలి. | హోస్ట్ ఏజెంట్ chunks ను అనువదించేందుకు `start_markdown_agent_translation` / `finish_markdown_agent_translation` లేదా నోట్‌బుక్ సమానమైన ఫంక్షన్లు ఉపయోగించండి. |
-| ఇమేజ్ అనువాదం విఫలమవుతోంది. | Azure AI Vision కోసం వాతావరణ వేరియబుల్స్ సెట్ అయ్యాయా అని నిర్ధారించండి మరియు `get_configuration_status` ను కాల్ చేయండి. |
-| రిపోజిటరీ అనువాదం ఫైళ్లను రచించడంలేదు. | స్పష్టమైన వినియోగదారు ఆమోదం వచ్చిన తరువాత మాత్రమే `dry_run=false` మరియు `confirm_write=true` ను సెట్ చేయండి. |
-| క్లయింట్ కాన్ఫిగ్‌లో చేసిన మార్పులు కనిపించడంలేదు. | MCP క్లయింట్‌ను రీస్టార్ట్ లేదా రीलోడ్ చేయండి. |
+| MCP క్లయింట్ `co-op-translator-mcp` ను కనుగొనలేకపోతోంది. | అబ్సల్యూట్ Python ఎగ్జిక్యూటబుల్ పాత్ మరియు `["-m", "co_op_translator.mcp.server"]` సోర్స్ చెకౌట్ కాన్ఫిగరేషన్ ఉపయోగించండి. |
+| సర్వర్ జాబితాలో ఉంది కాని అనువాదం విఫలమవుతుంది. | `get_configuration_status` పిలవండి మరియు LLM ప్రొవైడర్ అందుబాటులో ఉందో నిర్ధారించండి. |
+| మీరు ప్రొవైడర్ క్రెడెన్షియల్స్ లేకుండా Markdown లేదా నోట్‌బుక్ అనువాదం కోరుకుంటున్నారు. | హోస్ట్ ఏజెంట్ ఛంక్స్‌ను అనువదింపచేయడానికి `start_markdown_agent_translation` / `finish_markdown_agent_translation` లేదా నోట్‌బుక్ సమానాలను ఉపయోగించండి. |
+| చిత్ర అనువాదం విఫలమవుతోంది. | Azure AI Vision వేరియబుల్స్ సెట్ చేయబడ్డాయా అని నిర్ధారించండి మరియు `get_configuration_status` పిలవండి. |
+| రిపాజిటరీ అనువాదం ఫైళ్లను రాయడం లేదు. | స్పష్టమైన వినియోగదారు అంగీకారం తర్వాత మాత్రమే `dry_run=false` మరియు `confirm_write=true` సెట్ చేయండి. |
+| క్లయింట్ కాన్ఫిగ్లో మార్పులు కనిపించడం లేదు. | MCP క్లయింట్‌ను రీస్టార్ట్ లేదా రిలోడ్ చేయండి. |
 
-## Safety Notes
+## సురక్షత సూచనలు
 
-- MCP టూల్ కాల్స్ హోస్ట్ అప్లికేషన్ ద్వారా మోడల్-నియంత్రించబడతాయి, కాబట్టి రిపోజిటరీ అనువాదం డిఫాల్ట్‌గా dry-run ఉంటుంది.
-- పూర్తి రిపోజిటరీ అనువాదం అనేక ఫైళ్లను సృష్టించవచ్చు, నవీకరించవచ్చు లేదా తొలగించవచ్చు. `confirm_write=true` సెట్చేసేముందు స్పష్టమైన వినియోగదారు ఆమోదం కోరండి.
-- కాన్ఫిగరేషన్ స్థితి టూల్ ఎప్పుడూ API కీలు, endpoints, లేదా ఇతర రహస్య విలువలను తిరిగి ఇవ్వదు.
-- ఇమేజ్ అనువాదం base64 ఇమేజ్ డేటాను తిరిగి ఇస్తుంది. పెద్ద ఇమేజ్‌లు పెద్ద టూల్ రిస్పాన్సులను ఉత్పత్తి చేయవచ్చు.
-- ఏజెంట్-అసిస్టెడ్ టూల్స్ మూల chunks మరియు ప్రాంప్ట్‌లను MCP హోస్ట్‌కు తిరిగి అందిస్తాయి. వాటిని ఆ హోస్ట్ ఏజెంట్ మోడల్‌కు పంపటానికి వినియోగదారు సౌకర్యంగా ఉన్న కంటెంట్‌తో మాత్రమే ఉపయోగించండి.
+- MCP టూల్ పిలుపులు హోస్ట్ అప్లికేషన్ ద్వారా మోడల్ నియంత్రణలో ఉంటాయి, కాబట్టి రిపాజిటరీ అనువాదం డిఫాల్ట్‌గా dry-run ఉంటుంది.
+- పూర్తి రిపాజిటరీ అనువాదం అనేక ఫైళ్ళను సృష్టించగలదు, నవీకరించగలదు లేదా తొలగించగలదు. `confirm_write=true` సెటింగ్ చేయడానికి ముందుగా స్పష్టమైన వినియోగదారు అనుమతిని తీసుకోండి.
+- configuration status టూల్ ఎప్పుడూ API కీలు, ఎండ్పాయింట్లు లేదా ఇతర రహస్య విలువలను తిరిగి ఇవ్వదు.
+- చిత్రం అనువాదం base64 ఇమేజ్ డాటాను తిరిగి ఇస్తుంది. పెద్ద చిత్రాలు పెద్ద టూల్ రిస్పాన్సులను ఉత్పత్తి చేయవచ్చు.
+- ఏజెంట్-అసిస్టెడ్ టూల్స్ మూల ఛంక్‌లు మరియు ప్రాంప్ట్స్‌ను MCP హోస్ట్‌కు ఇవ్వగలవు. వాటిని వినియోగదారు ఆ హోస్ట్ ఏజెంట్ మోడల్‌కు పంపటానికి అనుకూలమైన కంటెంట్‌తోనే ఉపయోగించండి.

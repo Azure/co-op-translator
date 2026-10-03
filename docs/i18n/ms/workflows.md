@@ -4,43 +4,47 @@ Co-op Translator boleh digunakan dalam tiga cara: CLI, API Python, dan pelayan M
 
 Gunakan halaman ini apabila anda memutuskan di mana untuk bermula.
 
+**Jika anda menyunting terjemahan secara manual:** aliran kerja CLI dan Actions lalai menterjemah semula fail sumber yang diubah sepenuhnya, jadi ayat anda dalam fail tersebut boleh ditimpakan. Semak diff sebelum menerima kemas kini. Untuk pemeliharaan blok-level Markdown bagi suntingan yang diterima, gunakan pilihan [Python API translation state provider](api.md#preserve-accepted-human-edits-with-a-translation-state-provider).
+
 ## Keputusan Pantas
 
 | Jika anda mahu... | Gunakan | Mula di sini |
 | --- | --- | --- |
-| Terjemah atau semak semula repositori dari terminal | CLI | [Rujukan CLI](cli.md) |
-| Tambah terjemahan ke skrip Python, perkhidmatan, notebook, atau tugasan CI | Python API | [API Python](api.md) |
-| Biarkan agen, penyunting, atau klien serasi MCP menterjemah kandungan untuk anda | Pelayan MCP | [Pelayan MCP](mcp.md) |
+| Terjemah atau semak repositori dari terminal | CLI | [Rujukan CLI](cli.md) |
+| Tambah terjemahan ke skrip Python, perkhidmatan, notebook, atau tugas CI | Python API | [Rujukan API Python](api.md) |
+| Biarkan agen, penyunting, atau klien yang serasi MCP menterjemah kandungan untuk anda | MCP Server | [Pelayan MCP](mcp.md) |
 | Terjemah satu dokumen Markdown, notebook, atau imej yang aplikasi anda sudah muatkan | API Python atau Pelayan MCP | [API Python](api.md) atau [Pelayan MCP](mcp.md) |
-| Terjemah seluruh repositori dengan folder output standard dan metadata | CLI atau `run_translation` | [Rujukan CLI](cli.md) atau [API Python](api.md) |
+| Terjemah seluruh repositori dengan folder output standard dan metadata | CLI atau `run_translation` | [Rujukan CLI](cli.md) atau [Rujukan API Python](api.md) |
 
 ## Gunakan CLI apabila
 
-Pilih CLI apabila seseorang atau tugasan CI mengendalikan terjemahan repositori dari shell.
+Pilih CLI apabila seorang pengguna atau tugas CI menggerakkan terjemahan repositori dari shell.
 
-CLI adalah laluan paling langsung apabila anda mahu Co-op Translator menemui fail projek, mencipta output terjemahan, mengekalkan susun atur projek, mengemas kini metadata, dan menjalankan arahan semakan.
+CLI adalah laluan paling langsung apabila anda mahu Co-op Translator menemui fail projek, menghasilkan output terjemahan, mengekalkan susunan projek, mengemaskini metadata, dan menjalankan arahan semakan.
 
 ```bash
 translate -l "ko" -md --dry-run
-translate -l "ko" -md -nb -img
-co-op-review -l "ko" -md -nb
+translate -l "ko" -md -nb
+co-op-review -l "ko"
 migrate-links -l "ko" --dry-run
 ```
+
+Contoh ini menterjemah Markdown dan notebook. Tambah `-img` hanya selepas mengkonfigurasi [Azure AI Vision](configuration.md#azure-ai-vision). Untuk larian pertama hanya Markdown, ikuti [Terjemahan pertama anda](first-translation.md).
 
 Sesuai untuk:
 
 - Anda sedang menterjemah repositori dari terminal anda.
-- Anda mahukan arahan yang boleh diulang untuk aliran kerja CI atau pelancaran.
+- Anda mahukan perintah yang boleh diulang untuk aliran kerja CI atau pelepasan.
 - Anda mahukan penemuan projek terbina dalam, laluan output, metadata, pembersihan, dan semakan.
-- Anda mengutamakan antara muka arahan berbanding menulis kod Python.
+- Anda lebih suka antara muka perintah berbanding menulis kod Python.
 
 ## Gunakan API Python apabila
 
-Pilih API Python apabila kod anda sendiri harus mengawal aliran kerja.
+Pilih API Python apabila kod anda sendiri perlu mengawal aliran kerja.
 
-API berguna untuk aplikasi, skrip automasi, notebook, perkhidmatan, dan saluran paip khusus. Ia membolehkan anda memanggil API terjemahan kandungan aras rendah untuk fail individu, atau menjalankan orkestrasi peringkat repositori yang sama yang digunakan oleh CLI.
+API berguna untuk aplikasi, skrip automasi, notebook, perkhidmatan, dan saluran paip tersuai. Ia membolehkan anda memanggil API terjemahan kandungan aras rendah untuk fail individu, atau menjalankan orkestrasi peringkat repositori yang sama seperti yang digunakan oleh CLI.
 
-Terjemah satu dokumen Markdown dan tentukan tempat menyimpannya:
+Terjemah satu dokumen Markdown dan tentukan di mana untuk menyimpannya:
 
 ```python
 import asyncio
@@ -75,54 +79,47 @@ asyncio.run(main())
 Jalankan terjemahan repositori dari Python:
 
 ```python
-import asyncio
-
 from co_op_translator.api import run_translation
 
-
-async def main() -> None:
-    await run_translation(
-        language_codes=["ko"],
-        translate_markdown=True,
-        translate_notebooks=True,
-        translate_images=False,
-        dry_run=True,
-    )
-
-
-asyncio.run(main())
+run_translation(
+    language_codes="ko",
+    markdown=True,
+    notebook=True,
+    images=False,
+    dry_run=True,
+)
 ```
 
 Sesuai untuk:
 
 - Aplikasi anda sudah membaca fail, buffer, notebook, atau bait imej.
-- Anda memerlukan pengesahan tersuai, penyimpanan, logging, cubaan semula, atau aliran kelulusan.
+- Anda memerlukan pengesahan tersuai, storan, logging, cubaan semula, atau aliran kelulusan.
 - Anda mahu menterjemah satu dokumen, notebook, atau imej tanpa memproses keseluruhan repositori.
-- Anda mahu terjemahan repositori, tetapi dari automasi Python dan bukannya arahan shell.
+- Anda mahu terjemahan repositori, tetapi melalui automasi Python dan bukannya arahan shell.
 
 ## Gunakan Pelayan MCP apabila
 
-Pilih pelayan MCP apabila agen, penyunting, atau klien serasi MCP perlu memanggil alat Co-op Translator.
+Pilih pelayan MCP apabila agen, penyunting, atau klien yang serasi MCP harus memanggil alat Co-op Translator.
 
-Dalam susunan tempatan biasa, pengguna tidak mengekalkan pelayan berjalan secara manual. Klien MCP memulakan `co-op-translator-mcp` melalui `stdio` apabila ia memerlukan alat tersebut.
+Dalam pemasangan tempatan biasa, pengguna tidak mengekalkan server berjalan secara manual. Klien MCP memulakan `co-op-translator-mcp` melalui `stdio` apabila ia memerlukan alat tersebut.
 
 Contoh permintaan pengguna yang boleh ditangani oleh agen:
 
-- "Terjemah fail Markdown ini ke Bahasa Korea dan pastikan pautan betul."
-- "Terjemah fail Markdown ini ke Bahasa Korea dengan aliran kerja MCP dibantu agen, menggunakan model anda sendiri untuk bahagian yang diterjemahkan."
-- "Terjemah notebook ini ke Bahasa Korea, kekalkan sel kod, dan gunakan Co-op Translator MCP untuk menyusun semula notebook tersebut."
-- "Terjemah teks dalam imej ini ke Bahasa Jepun dan simpan hasilnya."
-- "Jalankan uji kering (dry-run) terjemahan repositori ke Bahasa Sepanyol dan beritahu saya apa yang akan berubah."
-- "Semak sama ada output terjemahan Bahasa Korea adalah terkini."
+- "Terjemahkan fail Markdown ini ke bahasa Korea dan pastikan pautan betul."
+- "Terjemahkan fail Markdown ini ke bahasa Korea dengan aliran kerja MCP dibantu agen, menggunakan model anda sendiri untuk cebisan terjemahan."
+- "Terjemahkan notebook ini ke bahasa Korea, pelihara sel kod, dan gunakan Co-op Translator MCP untuk menyusun semula notebook."
+- "Terjemahkan teks dalam imej ini ke bahasa Jepun dan simpan hasilnya."
+- "Jalankan simulasi terjemahan repositori ke bahasa Sepanyol dan beritahu saya apa yang akan berubah."
+- "Semak sama ada output terjemahan bahasa Korea adalah terkini."
 
 Untuk Markdown dan notebook, MCP boleh berfungsi dalam dua mod:
 
 | Mod | Gunakan apabila | Alat utama |
 | --- | --- | --- |
-| Dibantu agen | Ejen hos MCP harus menterjemah bahagian dengan modelnya sendiri, tanpa kelayakan pembekal LLM Co-op Translator. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Disokong pembekal | Co-op Translator harus memanggil Azure OpenAI atau OpenAI secara langsung. | `translate_markdown_content`, `translate_notebook_content` |
+| Dibantu agen | Agen hos MCP harus menterjemah cebisan dengan modelnya sendiri, tanpa kelayakan pembekal LLM Co-op Translator. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Disokong pembekal | Co-op Translator harus memanggil Azure OpenAI, OpenAI, atau Anthropic secara langsung. | `translate_markdown_content`, `translate_notebook_content` |
 
-Bentuk panggilan alat Markdown disokong pembekal MCP:
+Bentuk panggilan alat Markdown yang disokong pembekal MCP:
 
 ```json
 {
@@ -137,7 +134,7 @@ Bentuk panggilan alat Markdown disokong pembekal MCP:
 }
 ```
 
-Bentuk panggilan alat imej MCP:
+MCP image tool call shape:
 
 ```json
 {
@@ -150,7 +147,7 @@ Bentuk panggilan alat imej MCP:
 }
 ```
 
-Terjemahan repositori adalah uji kering secara lalai melalui MCP:
+Terjemahan repositori dijalankan sebagai simulasi secara lalai melalui MCP:
 
 ```json
 {
@@ -167,14 +164,14 @@ Terjemahan repositori adalah uji kering secara lalai melalui MCP:
 
 Sesuai untuk:
 
-- Anda mahu aliran kerja terjemahan berbahasa semula jadi dalam agen atau penyunting.
-- Anda mahu terjemahan Markdown atau notebook di mana model agen hos menterjemah bahagian yang telah disediakan.
-- Anda mahu agen menterjemah kandungan terpilih dan bukannya keseluruhan repositori.
-- Anda mahukan langkah kelulusan sebelum penulisan meliputi seluruh repositori.
+- Anda mahukan aliran kerja terjemahan berbahasa semula jadi dalam agen atau penyunting.
+- Anda mahukan terjemahan Markdown atau notebook di mana model agen hos menterjemah cebisan yang disediakan.
+- Anda mahu agen menterjemah kandungan yang dipilih dan bukannya seluruh repositori.
+- Anda mahu langkah kelulusan sebelum penulisan seluruh repositori.
 - Anda mahu satu antara muka yang mendedahkan alat untuk Markdown, notebook, imej, semakan, dan penulisan semula laluan.
 
-## Bagaimana Mereka Bersesuaian
+## Bagaimana Mereka Saling Melengkapi
 
-CLI adalah pilihan lalai terbaik untuk manusia yang menterjemah repositori. API Python terbaik apabila kod anda memiliki aliran kerja. Pelayan MCP terbaik apabila agen atau penyunting memiliki aliran kerja.
+CLI adalah pilihan lalai terbaik untuk manusia yang menterjemah repositori. API Python adalah terbaik apabila kod anda mengurus aliran kerja. Pelayan MCP adalah terbaik apabila agen atau penyunting mengurus aliran kerja.
 
-Ketiga-tiga laluan menggunakan API awam Co-op Translator yang sama, jadi anda boleh mula dengan CLI, mengautomasikan dengan Python kemudian, dan mendedahkan keupayaan yang sama kepada klien MCP apabila anda memerlukan aliran kerja dipacu agen.
+Ketiga-tiga laluan menggunakan API awam Co-op Translator yang sama, jadi anda boleh mula dengan CLI, mengautomasikan dengan Python kemudian, dan mendedahkan kebolehan yang sama kepada klien MCP apabila anda memerlukan aliran kerja dipacu agen.

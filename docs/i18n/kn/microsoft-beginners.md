@@ -4,7 +4,7 @@
 
 ಬಹುತೇಕ Co-op Translator ಬಳಕೆದಾರರಿಗೆ ಈ ಪುಟ ಅಗತ್ಯವಿಲ್ಲ.
 
-## Auto-Sync the Other Courses Section
+## ಇತರ ಕೋರ್ಸುಗಳ ವಿಭಾಗವನ್ನು ಸ್ವಯಂ-ಸಮಕಾಲೀಕರಿಸಿ
 
 ನಿಮ್ಮ READMEದಲ್ಲಿರುವ "Other Courses" ವಿಭಾಗದ ಸುತ್ತ ಈ ಮಾರುಕಟ್ಟೆಗಳನ್ನು ಸೇರಿಸಿ:
 

@@ -2,7 +2,7 @@
 
 यह पृष्ठ उन Microsoft "For Beginners" रिपॉज़िटरीज़ के रखरखावकर्ताओं के लिए है जो साझा "Other Courses" README सेक्शन का उपयोग करते हैं।
 
-Most Co-op Translator users do not need this page.
+अधिकांश Co-op Translator उपयोगकर्ताओं को इस पृष्ठ की आवश्यकता नहीं है.
 
 ## Other Courses सेक्शन को ऑटो-सिंक करें
 

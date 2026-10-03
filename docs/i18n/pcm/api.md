@@ -4,9 +4,9 @@ Di stable public Python API dey exported from `co_op_translator.api`. Most integ
 
 | Scenario | Use this when | Main APIs |
 | --- | --- | --- |
-| Translate individual files or documents | If your app dey read source content, dey call Co-op Translator for translation, and fit decide where to save di result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
-| Prepare content for host-agent translation | If your MCP host or application model go translate chunks, while Co-op Translator dey handle chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
-| Translate an entire repository | If you want make di Python API behave like di CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
+| Translate individual files or documents | Wen your app dey read source content, dey call Co-op Translator do translation, and e dey decide where to save di result. | `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, `rewrite_markdown_paths`, `rewrite_notebook_paths` |
+| Prepare content for host-agent translation | Wen your MCP host or application model go translate chunks, while Co-op Translator dey handle chunking and reconstruction. | `start_markdown_agent_translation`, `finish_markdown_agent_translation`, `start_notebook_agent_translation`, `finish_notebook_agent_translation` |
+| Translate an entire repository | Wen you want make di Python API behave like di CLI and handle discovery, output paths, metadata, cleanup, and writes. | `run_translation` |
 
 Most lower-level modules under `core`, `config`, `review`, and `utils` na implementation details wey dem dey use for these API entry points.
 
@@ -16,10 +16,10 @@ MCP clients dey use di same public API through di [MCP Server](mcp.md). Use dis 
 
 Start here if you dey call Co-op Translator from Python code:
 
-1. Configure an LLM provider like e dey describe for [Configuration](configuration.md), unless na only preparing Markdown or notebook chunks you dey do for host-agent translation.
-2. Decide if your application go handle file I/O.
+1. Configure an LLM provider as dem talk for [Configuration](configuration.md), unless na only preparing Markdown or notebook chunks for host-agent translation you dey do.
+2. Decide whether your application dey handle file I/O.
 3. Use content APIs when your app dey read and write individual files.
-4. Use `run_translation` when you want Co-op Translator to process repository like di CLI.
+4. Use `run_translation` when Co-op Translator suppose process a repository like di CLI.
 5. Use `run_review` after translation if you need deterministic checks for automation.
 
 | Goal | API to start with |
@@ -34,14 +34,14 @@ Start here if you dey call Co-op Translator from Python code:
 
 ## Scenario 1: Translate Individual Files or Documents
 
-Use dis workflow when you don already get file, editor buffer, notebook payload, MCP request, or custom pipeline input. Your code go handle file I/O:
+Use dis workflow when you don already get file, editor buffer, notebook payload, MCP request, or custom pipeline input. Your code dey own file I/O:
 
 1. Read di source content.
 2. Call one content translation API.
-3. If need, call path rewriting API if di translated content go dey write inside project translation folder.
+3. If you want, call one path rewriting API if di translated content go near inside project translation folder.
 4. Save or return di result from your application.
 
-Di content translation APIs no dey run project discovery, dem no dey write metadata, dem no dey append disclaimers, and dem no dey rewrite links automatically.
+Di content translation APIs no dey run project discovery, no dey write metadata, no dey append disclaimers, and dem no dey rewrite links automatically.
 
 ### Markdown File
 
@@ -129,7 +129,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`translate_notebook_content` dey translate Markdown cells and e go preserve non-Markdown cells. Path rewriting dey apply only to Markdown cells.
+`translate_notebook_content` dey translate Markdown cells and e dey preserve non-Markdown cells. Path rewriting dey apply only to Markdown cells.
 
 ### Image File
 
@@ -154,13 +154,13 @@ target_path.parent.mkdir(parents=True, exist_ok=True)
 translated_image.save(target_path)
 ```
 
-`translate_image_content` go read di source image and return a rendered `PIL.Image.Image`. E no dey write translated image metadata.
+`translate_image_content` dey read di source image and e return one rendered `PIL.Image.Image`. E no dey write translated image metadata.
 
 ## Scenario 2: Translate an Entire Repository
 
-Use dis workflow when you want make di Python API behave like di `translate` CLI. `run_translation` go discover supported files, translate selected content types, rewrite paths, write output files, update metadata, and do translation maintenance tasks like cleanup.
+Use dis workflow when you want make di Python API behave like di `translate` CLI. `run_translation` dey discover supported files, translate selected content types, rewrite paths, write output files, update metadata, and perform translation maintenance tasks like cleanup.
 
-`run_translation` na di preferred project orchestration entry point. `translate_project` na exported compatibility alias wey get same behavior.
+`run_translation` na di preferred project orchestration entry point. `translate_project` dey exported as compatibility alias wey get di same behavior.
 
 Translate Markdown files for di current repository into Korean and Japanese:
 
@@ -198,6 +198,30 @@ run_translation(
 )
 ```
 
+Record structured progress events for an integration:
+
+```python
+from co_op_translator.api import TranslationEvent, run_translation
+
+
+def on_event(event: TranslationEvent) -> None:
+    payload = event.to_dict()
+    # Put di payload for your job-event table or stream am go your UI.
+
+
+run_translation(
+    language_codes="ko ja",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    progress_callback=on_event,
+)
+```
+
+Events dey use di versioned schema `co-op.translation.event.v1`. Integrations suppose
+depend on stable fields like `type` and `stage_key`, no depend on human-facing
+console text or `stage_label`.
+
 Translate multiple content roots in one call:
 
 ```python
@@ -225,7 +249,7 @@ run_translation(
 )
 ```
 
-Use a per-language placeholder when each language suppose get nested subdirectory:
+Use a per-language placeholder when each language suppose get a nested subdirectory:
 
 ```python
 from co_op_translator.api import run_translation
@@ -241,12 +265,101 @@ run_translation(
 
 If none of `markdown`, `notebook`, or `images` dey set, di API go translate all supported types: Markdown, notebooks, and images.
 
+### Preserve accepted human edits with a translation state provider
+
+By default, Co-op Translator dey keep dia existing file-level behavior: when one
+Markdown source don stale, di whole translated file go get regenerated. Hosted
+integrations fit optionally pass one `TranslationStateProvider` to preserve human
+edits inside source blocks wey never change.
+
+Di provider dey supply di last accepted source/target pair and e dey record each new
+candidate. Acceptance still na di integration responsibility—for example,
+after one translation pull request don merge:
+
+```python
+from pathlib import Path
+
+from co_op_translator.api import (
+    TranslationBaseline,
+    TranslationUpdate,
+    run_translation,
+)
+
+
+class DatabaseTranslationState:
+    def load_baseline(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+    ) -> TranslationBaseline | None:
+        row = load_accepted_translation(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+        )
+        if row is None:
+            return None
+        return TranslationBaseline(
+            source_text=row.source_text,
+            target_text=row.target_text,
+            revision=row.accepted_revision,
+        )
+
+    def record_candidate(
+        self,
+        *,
+        source_path: Path,
+        translation_path: Path,
+        language_code: str,
+        source_text: str,
+        target_text: str,
+        update: TranslationUpdate,
+    ) -> None:
+        save_translation_candidate(
+            source_path=source_path,
+            translation_path=translation_path,
+            language_code=language_code,
+            source_text=source_text,
+            target_text=target_text,
+            mode=update.mode,
+            fallback_reason=update.fallback_reason,
+        )
+
+
+run_translation(
+    language_codes="ko",
+    root_dir="./course",
+    markdown=True,
+    translation_state_provider=DatabaseTranslationState(),
+)
+```
+
+For Markdown files wey get valid accepted baseline, Co-op Translator dey align
+top-level Markdown blocks. Source blocks wey never change go reuse di current translated
+blocks, including edits wey people do; source blocks wey change or wey dem add go get send
+for translation; deleted source blocks go remove. If alignment dey ambiguous,
+di target structure don change, block translation invalid, or no baseline dey,
+Co-op Translator go safely fallback to di existing full-file
+translation path.
+
+Dis API dey store document translation state, no be cross-document phrase or
+segment translation memory. E right now dey apply to Markdown project
+translation. Notebook and image behavior remain unchanged. Passing `update=True`
+still dey request full regeneration.
+
+If one or more files no fit translate, `run_translation` go raise one
+`RuntimeError` after di project workflow finish instead of to report one
+successful run wey get missing output. Integrations suppose treat dis as failed
+job and retain di previous accepted translation state.
+
 ## Review Translated Output
 
 `run_review` dey run deterministic translation checks without LLM or Vision credentials.
 
 !!! note "Beta"
-    `run_review` na beta deterministic review API. E no dey call model providers or write files, but checks and issue schemas fit still change.
+    `run_review` na beta deterministic review API. E no dey call model providers or write files, but checks and issue schemas fit change over time.
 
 ```python
 from co_op_translator.api import run_review
@@ -259,7 +372,18 @@ run_review(
 )
 ```
 
-Review only files wey don change against a base ref and print GitHub-flavored output:
+After one README-only translation, use di same scope for review:
+
+```python
+run_review(language_codes="ko", root_dir="./my-course", readme_only=True)
+```
+
+`readme_only=True` go review only `README.md` wey dey under each configured source root,
+including custom `groups` and output directories. Other documents and nested
+READMEs dem dey excluded. If source README missing e go raise `ValueError`; failed
+translation checks go raise `RuntimeError`.
+
+Review only files wey change compare to a base ref and print GitHub-flavored output:
 
 ```python
 from co_op_translator.api import run_review
@@ -276,7 +400,7 @@ run_review(
 
 ## Copy-Paste API Examples
 
-Translate Markdown content without file writes:
+Translate Markdown content without writing files:
 
 ```python
 import asyncio
@@ -305,7 +429,7 @@ from co_op_translator.api import rewrite_markdown_paths, translate_markdown_cont
 
 async def main() -> None:
     translated = await translate_markdown_content(
-        "[Setup](../setup.md)\n\n![Hero](../../images/hero.png)",
+        "[Setup](../setup.md)\n\n![Hero](images/hero.png)",
         "ko",
         {"source_path": "docs/guide.md"},
     )
@@ -378,6 +502,9 @@ from co_op_translator.api import (
     ImageTranslationOptions,
     MarkdownTranslationOptions,
     NotebookTranslationOptions,
+    TranslationBaseline,
+    TranslationStateProvider,
+    TranslationUpdate,
     finish_markdown_agent_translation,
     finish_notebook_agent_translation,
     run_review,
@@ -417,6 +544,12 @@ from co_op_translator.api import (
 
 ::: co_op_translator.api.ImageTranslationOptions
 
+::: co_op_translator.api.TranslationBaseline
+
+::: co_op_translator.api.TranslationStateProvider
+
+::: co_op_translator.api.TranslationUpdate
+
 ::: co_op_translator.api.run_translation
 
 ::: co_op_translator.api.translate_project
@@ -425,13 +558,13 @@ from co_op_translator.api import (
 
 ## Content Translation APIs
 
-Content translation APIs dem suppose make sense for integrations wey don already get content for memory, like editor extension, MCP tool, notebook processor, or custom pipeline.
+Content translation APIs dem suppose for integrations wey don already get content for memory, like editor extension, MCP tool, notebook processor, or custom pipeline.
 
 | Function | Input | Output | File I/O | Notes |
 | --- | --- | --- | --- | --- |
-| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. E dey translate only Markdown content. E no dey rewrite links, write metadata, or append disclaimers. |
-| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. E dey translate Markdown cells and e dey preserve non-Markdown cells. E no dey rewrite links, write metadata, or append disclaimers. |
-| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. E go extract and translate image text, then return rendered image. E no go save translated image metadata. |
+| `translate_markdown_content` | Markdown `str` | Markdown `str` | No | Async. Dey translate Markdown content only. E no dey rewrite links, write metadata, or append disclaimers. |
+| `translate_notebook_content` | Notebook JSON `str` or `dict` | Notebook JSON `str` | No | Async. Dey translate Markdown cells and e preserve non-Markdown cells. E no dey rewrite links, write metadata, or append disclaimers. |
+| `translate_image_content` | Image path | `PIL.Image.Image` | Reads source image only | Synchronous. Dey extract and translate image text, then return rendered image. E no dey save translated image metadata. |
 
 `translate_markdown_content` and `translate_notebook_content` fit accept optional `source_path` through their options. Di path dey pass as context to di translator; callers still dey responsible for any project-specific path rewriting after translation.
 
@@ -457,35 +590,35 @@ translated = await translate_markdown_content(
 
 ## Agent-Assisted Translation APIs
 
-Agent-assisted APIs no dey call Azure OpenAI or OpenAI from Co-op Translator. Dem dey prepare Markdown or notebook chunks for host agent to translate, then dem go reconstruct final content from translated chunks.
+Agent-assisted APIs no dey call di configured LLM provider from Co-op Translator. Dem dey prepare Markdown or notebook chunks make host agent translate, then dem go reconstruct di final content from translated chunks.
 
 | Function | Purpose |
 | --- | --- |
-| `start_markdown_agent_translation` | Return self-contained Markdown job with chunks, prompts, and reconstruction state. |
-| `finish_markdown_agent_translation` | Reconstruct Markdown from job and host-agent translated chunks. |
-| `start_notebook_agent_translation` | Return notebook job with Markdown-cell chunks for host-agent translation. |
-| `finish_notebook_agent_translation` | Reconstruct notebook JSON while e dey preserve code cells, outputs, and metadata. |
+| `start_markdown_agent_translation` | Return one self-contained Markdown job wey get chunks, prompts, and reconstruction state. |
+| `finish_markdown_agent_translation` | Reconstruct Markdown from one job and host-agent translated chunks. |
+| `start_notebook_agent_translation` | Return one notebook job wey get Markdown-cell chunks for host-agent translation. |
+| `finish_notebook_agent_translation` | Reconstruct notebook JSON and preserve code cells, outputs, and metadata. |
 
-Dis workflow mainly dey intended for MCP hosts. If you need production repository translation with Co-op Translator wey go manage provider calls, use `translate_markdown_content`, `translate_notebook_content`, or `run_translation`.
+Dis workflow dey mainly for MCP hosts. If you need production repository translation with Co-op Translator wey go manage provider calls, use `translate_markdown_content`, `translate_notebook_content`, or `run_translation`.
 
 ## Path Rewriting APIs
 
-Path rewriting APIs no dey perform any translation. Dem go update links and frontmatter paths after callers don sabi di source path, translated target path, and project layout.
+Path rewriting APIs no dey perform translation. Dem dey update links and frontmatter paths after callers don know di source path, translated target path, and project layout.
 
 | Function | Scope | Notes |
 | --- | --- | --- |
-| `rewrite_markdown_paths` | Markdown body and frontmatter | E dey rewrite Markdown links and supported frontmatter path fields for translated target. |
-| `rewrite_notebook_paths` | Markdown cells in notebook JSON | E go apply Markdown path rewriting to each Markdown cell and leave non-Markdown cells unchanged. |
+| `rewrite_markdown_paths` | Markdown body and frontmatter | Rewrites Markdown links and supported frontmatter path fields for a translated target. |
+| `rewrite_notebook_paths` | Markdown cells in notebook JSON | Apply Markdown path rewriting to each Markdown cell and leave non-Markdown cells unchanged. |
 
-Di `policy` argument fit be dictionary wey get these fields:
+Di `policy` argument fit be one dictionary wey get these fields:
 
 | Field | Required | Purpose |
 | --- | --- | --- |
 | `language_code` | Yes | Target language code, like `"ko"` or `"pt-BR"`. |
-| `root_dir` | No | Source project root. Default na `"."`. |
-| `translations_dir` | No | Text translation output directory. Default na `translations` under `root_dir`. |
-| `translated_images_dir` | No | Translated image output directory. Default na `translated_images` under `root_dir`. |
-| `translation_types` | No | Enabled translation types. Default na Markdown, notebooks, and images. |
+| `root_dir` | No | Source project root. Defaults to `"."`. |
+| `translations_dir` | No | Text translation output directory. Defaults to `translations` under `root_dir`. |
+| `translated_images_dir` | No | Translated image output directory. Defaults to `translated_images` under `root_dir`. |
+| `translation_types` | No | Enabled translation types. Defaults to Markdown, notebooks, and images. |
 | `lang_subdir` | No | Optional subdirectory under each language folder. |
 
 ## Project Translation Parameters
@@ -493,54 +626,56 @@ Di `policy` argument fit be dictionary wey get these fields:
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
 | `language_codes` | `str` | Required | Space-separated target language codes, like `"ko ja fr"`, or `"all"`. Alias codes dey normalize to canonical BCP 47 values. |
-| `root_dir` | `str` | `"."` | Project root for single translation target. Dem ignore am when `root_dirs` or `groups` dey supplied. |
+| `root_dir` | `str` | `"."` | Project root for a single translation target. Ignored when `root_dirs` or `groups` dey supplied. |
 | `update` | `bool` | `False` | Delete and recreate existing translations for di selected languages. |
-| `images` | `bool` | `False` | Include image translation. E need Azure AI Vision configuration. |
+| `images` | `bool` | `False` | Include image translation. Requires Azure AI Vision configuration. |
 | `markdown` | `bool` | `False` | Include Markdown translation. |
 | `notebook` | `bool` | `False` | Include Jupyter notebook translation. |
-| `debug` | `bool` | `False` | Turn on debug logging. |
+| `debug` | `bool` | `False` | Enable debug logging. |
 | `save_logs` | `bool` | `False` | Save DEBUG-level log files under di root `logs/` directory. |
-| `yes` | `bool` | `True` | Auto-confirm prompts for programmatic and CI usage. |
-| `add_disclaimer` | `bool` | `False` | Add machine translation disclaimers to translated Markdown and notebooks. |
+| `yes` | `bool` | `True` | Dey auto-confirm prompts for programmatic and CI usage. |
+| `add_disclaimer` | `bool` | `False` | Put machine translation disclaimer dem for translated Markdown and notebooks. |
 | `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths dey resolve against each root. |
 | `image_dir` | `str \| None` | `None` | Custom translated image output directory. Relative paths dey resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots wey share same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. E get precedence pass `root_dirs`. |
-| `repo_url` | `str \| None` | `None` | Repository URL wey dem go use when dem dey render README language table guidance. |
-| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms wey you wan preserve during translation. Duplicates and blank terms go normalize. |
-| `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots wey share the same output settings. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. E dey take precedence over `root_dirs`. |
+| `repo_url` | `str \| None` | `None` | Repository URL wey dem go use when rendering README language table guidance. |
+| `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms wey dem go preserve during translation. Duplicates and blank terms go dey normalized. |
+| `dry_run` | `bool` | `False` | Estimate how much translation go be and preview migration behaviour without writing files. |
+| `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Optional accepted-baseline and candidate persistence adapter for incremental Markdown updates. If you omit am, e go preserve existing full-file behavior. |
 
 ## Review Parameters
 
-`run_review` intentionally dey mirror di `run_translation` signature where possible so automation fit switch between translation and review workflows with small changes.
+`run_review` intentionally mirrors the `run_translation` signature where possible so automation fit switch between translation and review workflows with minimal branching.
 
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
-| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders to review. Space-separated strings and iterables dey accepted. `"all"` go review every discovered translation language. |
-| `root_dir` | `str` | `"."` | Project root for single review target. Dem ignore am when `root_dirs` or `groups` dey supplied. |
+| `language_codes` | `str \| Iterable[str]` | `"all"` | Target language folders wey you wan review. Space-separated strings and iterables dey accepted. `"all"` go review every discovered translation language. |
+| `root_dir` | `str` | `"."` | Project root for a single review target. E no dey considered when `root_dirs` or `groups` dey supplied. |
 | `markdown` | `bool` | `False` | Include Markdown and MDX source files. |
 | `notebook` | `bool` | `False` | Include Jupyter notebook source files. |
-| `images` | `bool` | `False` | Reserved so e go match translation options. Link references to images dey checked from Markdown. |
-| `translations_dir` | `str \| None` | `None` | Custom directory wey translations go land. Relative paths dey resolve against each root. |
-| `root_dirs` | `Iterable[str] \| None` | `None` | Plenty roots wey dey share di same output settings. |
-| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. E get precedence pass `root_dirs`. |
-| `changed_from` | `str \| None` | `None` | Git ref wey dem dey use to limit review to changed source files. |
+| `images` | `bool` | `False` | Reserved for parity with translation options. Link references to images dey checked from Markdown. |
+| `translations_dir` | `str \| None` | `None` | Custom text translation output directory. Relative paths dey resolve against each root. |
+| `root_dirs` | `Iterable[str] \| None` | `None` | Multiple roots wey share the same output settings. |
+| `groups` | `Iterable[tuple[str, str \| None]] \| None` | `None` | Explicit `(root_dir, translations_dir)` pairs. E dey take precedence over `root_dirs`. |
+| `changed_from` | `str \| None` | `None` | Git ref wey dem go use to limit review to just changed source files. |
+| `readme_only` | `bool` | `False` | Review only `README.md` under each source root. If source README dey miss e go raise `ValueError`. |
 | `output_format` | `str` | `"text"` | Review output format. Supported values na `"text"` and `"github"`. |
-| `fail_on_warnings` | `bool` | `False` | Treat warnings like failures join errors. |
+| `fail_on_warnings` | `bool` | `False` | Make warnings count as failures in addition to errors. |
 | `debug` | `bool` | `False` | Turn on debug logging. |
-| `save_logs` | `bool` | `False` | Save DEBUG-level log files for di root `logs/` directory. |
+| `save_logs` | `bool` | `False` | Save DEBUG-level log files under the root `logs/` directory. |
 
-If none of `markdown`, `notebook`, or `images` are set, the API go review Markdown, notebooks, and image link references where e fit. Review no dey call any LLM provider and e no need API keys.
+If none of `markdown`, `notebook`, or `images` are set, the API go review Markdown, notebooks, and image link references where applicable. Review no dey call any LLM provider and no need API keys.
 
-## Wetin Configuration Need
+## Configuration Requirements
 
 Provider-backed translation APIs need provider configuration before dem fit translate:
 
-- Markdown and notebook translation need an LLM provider. Configure either Azure OpenAI or OpenAI.
-- Image translation need Azure AI Vision in addition to the LLM provider.
-- `run_translation` dey run small connectivity checks before project translation begin.
-- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs no dey call Co-op Translator LLM providers. Di host application or MCP agent na dem go translate di prepared chunks.
-- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` dem deterministic and no need provider credentials.
+- Markdown and notebook translation require an LLM provider. Configure Azure OpenAI, OpenAI, or Anthropic.
+- Image translation requires Azure AI Vision in addition to the LLM provider.
+- `run_translation` runs lightweight connectivity checks before project translation begins.
+- Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs no dey call Co-op Translator LLM providers. The host application or MCP agent go translate the prepared chunks.
+- `rewrite_markdown_paths`, `rewrite_notebook_paths`, and `run_review` dem be deterministic and no require provider credentials.
 
 Required Azure OpenAI variables:
 
@@ -559,6 +694,15 @@ OPENAI_API_KEY="..."
 OPENAI_CHAT_MODEL_ID="gpt-4o"
 ```
 
+Required Anthropic variables:
+
+```bash
+ANTHROPIC_API_KEY="..."
+ANTHROPIC_MODEL="claude-..."
+```
+
+`ANTHROPIC_BASE_URL` and `ANTHROPIC_MAX_TOKENS` dey optional. Microsoft Agent Framework na the default model client for all providers starting with Co-op Translator 0.22.0. Semantic Kernel fit still dey selected temporarily with `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, but if you do, e go emit a deprecation warning; see [configuration](configuration.md#model-client-backend) for the staged removal plan.
+
 Required Azure AI Vision variables for image translation:
 
 ```bash
@@ -566,23 +710,23 @@ AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
-`run_review` na deterministic and e no need Azure OpenAI, OpenAI, or Azure AI Vision configuration.
+`run_review` na deterministic and e no require LLM or Azure AI Vision configuration.
 
-## Notes About How E Dey Work
+## Behavior Notes
 
-- Content translation APIs dey keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content need make project-relative links adjust to di target location.
-- Project orchestration APIs dey add project behavior around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
-- `run_translation` go print progress and estimate summaries through Click, to match the CLI user experience.
-- `dry_run=True` go compute estimates using virtual README updates, but e no go write di README or translation files.
-- `groups` dem dey processed one after another. One aggregate estimate go print before work begin.
-- When image translation dey selected and Vision configuration missing, e go raise an error before translation start.
-- Existing alias-based language folders dey detected and fit be migrated to canonical BCP 47 folder names as part of the run.
+- Content translation APIs dey keep translation separate from project path rewriting. Call `rewrite_markdown_paths` or `rewrite_notebook_paths` explicitly when translated content need project-relative links adjusted for a target location.
+- Project orchestration APIs add project behaviour around content translation, including file discovery, writes, path rewriting, metadata, cleanup, and optional disclaimers.
+- `run_translation` go print progress and estimate summaries through the same Rich-backed reporter wey the CLI use. Non-interactive output go fall back to plain text.
+- `dry_run=True` go compute estimates using virtual README updates, but e no go write the README or translation files.
+- `groups` dem go process sequentially. One aggregate estimate go print before work begin.
+- When image translation dey selected, missing Vision configuration go raise error before translation start.
+- Existing alias-based language folders dem dey detected and fit get migrated to canonical language folder names as part of the run.
 - `run_review` go fail on missing translated files, missing or stale translation metadata, malformed Markdown frontmatter/code fences, and invalid translated notebook JSON.
-- `run_review` dey report missing local Markdown and image link targets as warnings by default.
+- `run_review` go report missing local Markdown and image link targets as warnings by default.
 
-## How Di Internal Call Dey Flow
+## Internal Call Path
 
-The API dey delegate to the same core implementation wey the CLI dey use:
+The API dey delegate to the same core implementation used by the CLI:
 
 Translation:
 
@@ -592,17 +736,17 @@ Translation:
 4. `co_op_translator.config.Config`, `LLMConfig`, and `VisionConfig`.
 5. `co_op_translator.core.project.ProjectTranslator`.
 6. `co_op_translator.core.project.TranslationManager`.
-7. Project translation mixins wey focus on Markdown, notebooks, and images.
-8. Markdown, notebook, text, and image translators wey dey under `co_op_translator.core`.
+7. Focused project translation mixins for Markdown, notebooks, and images.
+8. Markdown, notebook, text, and image translators under `co_op_translator.core`.
 
 Review:
 
 1. `co_op_translator.api.review.run_review`
 2. `co_op_translator.review.targets.build_review_targets`
 3. `co_op_translator.review.runner.ReviewRunner`
-4. Deterministic checks wey dey under `co_op_translator.review.checks`
+4. Deterministic checks under `co_op_translator.review.checks`
 
-The following classes dey useful for maintainers, but dem no export dem as the package-level stable API.
+The following classes dey useful for maintainers, but dem no exported as the package-level stable API.
 
 | Class | Module | Responsibility |
 | --- | --- | --- |
@@ -615,6 +759,6 @@ The following classes dey useful for maintainers, but dem no export dem as the p
 | `ReviewRunner` | `co_op_translator.review.runner` | E dey coordinate deterministic review checks across source files, target languages, and configured translation roots. |
 | `ReviewTarget` | `co_op_translator.review.targets` | E dey describe a source root and the translation output directory wey dem review for that root. |
 | `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | E dey detect legacy alias language folders and e dey prepare canonical BCP 47 folder migration plans. |
-| `Config` | `co_op_translator.config.base_config` | E dey load `.env` files and e dey check whether required LLM and optional Vision providers dey configured. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | E dey auto-detect Azure OpenAI or OpenAI, e dey validate required environment variables, and e dey run provider connectivity checks. |
-| `VisionConfig` | `co_op_translator.config.vision_config.config` | E dey detect Azure AI Vision configuration and e dey run connectivity checks for image translation. |
+| `Config` | `co_op_translator.config.base_config` | E dey load `.env` files and check whether required LLM and optional Vision providers dem configured. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | E dey auto-detect Azure OpenAI, OpenAI, or Anthropic, validate required environment variables, and run provider connectivity checks. |
+| `VisionConfig` | `co_op_translator.config.vision_config.config` | E dey detect Azure AI Vision configuration and run connectivity checks for image translation. |

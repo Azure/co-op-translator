@@ -25,6 +25,7 @@ from co_op_translator.core.project.translation import TranslationManager
 from co_op_translator.core.project.translation.memory import TranslationStateProvider
 from co_op_translator.utils.common.file_utils import read_input_file
 from co_op_translator.utils.common.token_estimation import count_tokens
+from co_op_translator.utils.common.task_utils import validate_concurrency
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,7 @@ class ProjectTranslator:
         lang_subdir=None,
         initialize_translators: bool = True,
         translation_state_provider: TranslationStateProvider | None = None,
+        concurrency: int = 1,
     ):
         """Initialize project translation environment.
 
@@ -58,7 +60,9 @@ class ProjectTranslator:
             translation_types: List of file types to translate (e.g., ["markdown", "images", "notebook"])
             initialize_translators: Whether to initialize external provider-backed
                 translators. Disable this for local discovery and token estimation.
+            concurrency: Maximum simultaneous text file/language translations.
         """
+        validate_concurrency(concurrency)
         # Normalize to canonical BCP 47 (accept alias input like tw/cn/br)
         self.language_codes = normalize_language_codes(language_codes.split())
         self.root_dir = Path(root_dir).resolve()
@@ -146,6 +150,7 @@ class ProjectTranslator:
             add_disclaimer=add_disclaimer,
             lang_subdir=self.lang_subdir,
             translation_state_provider=translation_state_provider,
+            concurrency=concurrency,
         )
 
     def _initialize_translators(self) -> None:
@@ -435,13 +440,14 @@ class ProjectTranslator:
         # Store file information for progress bar
         file_names = [str(f[0].name) for f in files_to_retranslate]
 
-        # Process translations sequentially with progress bar
+        # Process translations with the configured text concurrency
         if tasks:
             # Use the translation manager's method for processing API requests with file names
-            results = await self.translation_manager.process_api_requests_sequential(
+            results = await self.translation_manager.process_text_requests(
                 tasks,
                 f"Retranslating low confidence files (<{min_confidence})",
                 file_names,
+                file_info=[(path, language_code) for path, _ in files_to_retranslate],
             )
 
             # Count successful translations from results

@@ -198,6 +198,25 @@ run_translation(
 )
 ```
 
+Translate text files concurrently within each translation stage:
+
+```python
+run_translation(
+    language_codes="ko ja fr",
+    root_dir="./my-course",
+    markdown=True,
+    notebook=True,
+    concurrency=4,
+)
+```
+
+`concurrency` must be a positive integer and defaults to `1`. It bounds active
+file/language jobs, including outdated translations and README-only languages.
+Images retain their existing concurrency, and roots and groups still run
+sequentially. Select a limit that fits your provider's quotas; this is not a
+requests-per-minute rate limiter. Results remain associated with their input
+file/language pair when jobs finish out of order.
+
 Record structured progress events for an integration:
 
 ```python
@@ -642,6 +661,7 @@ The `policy` argument may be a dictionary with these fields:
 | `repo_url` | `str \| None` | `None` | Repository URL used when rendering README language table guidance. |
 | `glossaries` | `Iterable[str] \| None` | `None` | Glossary terms to preserve during translation. Duplicates and blank terms are normalized. |
 | `dry_run` | `bool` | `False` | Estimate translation volume and preview migration behavior without writing files. |
+| `concurrency` | `int` | `1` | Maximum simultaneous text file/language translations within each stage. Must be a positive integer; does not change image concurrency. |
 | `translation_state_provider` | `TranslationStateProvider \| None` | `None` | Optional accepted-baseline and candidate persistence adapter for incremental Markdown updates. Omitting it preserves existing full-file behavior. |
 
 ## Review Parameters

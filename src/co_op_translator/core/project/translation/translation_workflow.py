@@ -413,24 +413,17 @@ class TranslationWorkflowMixin:
         if files_to_translate:
             logger.info(f"Starting translation for {len(files_to_translate)} files...")
 
-            # Create a progress bar for translations
-            with reporter.task(
-                "Retranslating files",
-                total=len(files_to_translate),
-                unit="file",
-            ) as translation_progress_bar:
-                for md_file_path, language_code in files_to_translate:
-                    logger.info(f"Translating {md_file_path} to {language_code}...")
-
-                    # Translate the file
-                    await self.translate_markdown(
-                        file_path=md_file_path,
-                        language_code=language_code,
-                        incremental=False,
+            await self.process_text_requests(
+                [
+                    lambda path=path, language=language: self.translate_markdown(
+                        file_path=path, language_code=language, incremental=False
                     )
-
-                    # Update the progress bar for translation process
-                    translation_progress_bar.update(1)
+                    for path, language in files_to_translate
+                ],
+                "Retranslating files",
+                file_info=files_to_translate,
+                unit="file",
+            )
 
             logger.info(f"Total files translated: {len(files_to_translate)}")
         else:

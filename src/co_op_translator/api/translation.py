@@ -281,6 +281,7 @@ def _run_translation_impl(
     readme_only: bool = False,
     dry_run: bool = False,
     translation_state_provider=None,
+    concurrency: int = 1,
 ) -> None:
     """Implementation for the programmatic translation entrypoint.
 
@@ -523,6 +524,7 @@ def _run_translation_impl(
                 image_dir=image_dir,
                 add_disclaimer=add_disclaimer,
                 lang_subdir=lang_subdir,
+                concurrency=concurrency,
             )
             translator.translate(update=update)
             logger.info(f"README translation completed for languages: {language_codes}")
@@ -534,6 +536,7 @@ def _run_translation_impl(
             "translations_dir": translations_dir,
             "image_dir": image_dir,
             "lang_subdir": lang_subdir,
+            "concurrency": concurrency,
         }
         if translation_state_provider is not None:
             translator_kwargs["translation_state_provider"] = translation_state_provider
@@ -860,6 +863,7 @@ def run_translation(
     progress_callback: TranslationEventCallback | None = None,
     json_events_path: str | Path | None = None,
     translation_state_provider: TranslationStateProvider | None = None,
+    concurrency: int = 1,
 ) -> None:
     """Programmatic translation entrypoint mirroring the translate CLI options.
 
@@ -871,7 +875,12 @@ def run_translation(
     ``translation_state_provider`` lets hosted integrations supply accepted
     source/target baselines and receive generated candidates. When omitted,
     Markdown translation keeps the existing full-file behavior.
+    ``concurrency`` limits simultaneous text file/language translations within
+    each stage and defaults to sequential execution. Images are unaffected.
     """
+    from co_op_translator.utils.common.task_utils import validate_concurrency
+
+    validate_concurrency(concurrency)
 
     with translation_event_context(
         callback=progress_callback,
@@ -898,6 +907,7 @@ def run_translation(
                 readme_only=readme_only,
                 dry_run=dry_run,
                 translation_state_provider=translation_state_provider,
+                concurrency=concurrency,
             )
         except Exception as exc:
             emit_translation_event("run_failed", message=str(exc), level="error")

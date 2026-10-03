@@ -46,6 +46,13 @@ ReadmeTranslator = None
     help="Root directory of the project (default is current directory).",
 )
 @click.option(
+    "--concurrency",
+    type=click.IntRange(min=1),
+    default=1,
+    show_default=True,
+    help="Maximum simultaneous text file/language translations (Markdown, notebooks, and README-only).",
+)
+@click.option(
     "--update",
     "-u",
     is_flag=True,
@@ -152,6 +159,7 @@ def translate_command(
     repo_url,
     migrate_language_folders,
     dry_run,
+    concurrency,
 ):
     """
     CLI for translating project files.
@@ -435,6 +443,7 @@ def translate_command(
                 root_dir,
                 add_disclaimer=add_disclaimer,
                 initialize_translator=not dry_run,
+                concurrency=concurrency,
             )
         else:
             translator = project_translator_class(
@@ -443,6 +452,7 @@ def translate_command(
                 translation_types=translation_types,
                 add_disclaimer=add_disclaimer,
                 initialize_translators=not dry_run,
+                concurrency=concurrency,
             )
 
         # Estimate tokens before running translation and print a concise summary

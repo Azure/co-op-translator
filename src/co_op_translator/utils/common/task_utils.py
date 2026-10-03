@@ -1,9 +1,54 @@
 import asyncio
 import logging
+from collections.abc import Awaitable, Callable, Sequence
+from typing import TypeVar, cast
 
 from co_op_translator.utils.common.progress import get_progress_reporter
 
 logger = logging.getLogger(__name__)
+T = TypeVar("T")
+
+
+def validate_concurrency(concurrency: int) -> None:
+    """Reject invalid limits before starting work or initializing providers."""
+    if (
+        isinstance(concurrency, bool)
+        or not isinstance(concurrency, int)
+        or concurrency < 1
+    ):
+        raise ValueError("concurrency must be a positive integer")
+
+
+async def run_tasks_concurrently(
+    tasks: Sequence[Callable[[], Awaitable[T]]], concurrency: int = 1
+) -> list[T]:
+    """Run async factories with bounded workers and return results in input order.
+
+    Factories defer coroutine creation until a worker is available. On failure or
+    cancellation, cancel and drain all workers before propagating the exception.
+    """
+    validate_concurrency(concurrency)
+    if concurrency == 1:
+        return [await task() for task in tasks]
+
+    results: list[T | None] = [None] * len(tasks)
+    pending = iter(enumerate(tasks))
+
+    async def run_worker() -> None:
+        for index, task in pending:
+            results[index] = await task()
+
+    workers = [
+        asyncio.create_task(run_worker()) for _ in range(min(concurrency, len(tasks)))
+    ]
+    try:
+        await asyncio.gather(*workers)
+    except BaseException:
+        for worker_task in workers:
+            worker_task.cancel()
+        await asyncio.gather(*workers, return_exceptions=True)
+        raise
+    return cast(list[T], results)
 
 
 async def worker(task_queue: asyncio.Queue, progress_bar=None):

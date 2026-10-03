@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from functools import partial
 from pathlib import Path
 from typing import List
 
@@ -66,46 +67,31 @@ class TranslationMaintenanceMixin:
             if original_file.suffix.lower() in SUPPORTED_MARKDOWN_EXTENSIONS
         ]
 
-        reporter = get_progress_reporter()
         modified_count = 0
 
-        # Notebooks
-        if notebook_items:
-            with reporter.task(
+        for items, translate, label, stage_key in (
+            (
+                notebook_items,
+                self.translate_notebook,
                 "Retranslating outdated notebooks",
-                total=len(notebook_items),
-                unit="file",
-                stage_key="retranslating_outdated_notebooks",
-            ) as progress_bar:
-                for original_file, language_code in notebook_items:
-                    progress_bar.file_started(original_file, language_code)
-                    result = await self.translate_notebook(original_file, language_code)
-                    progress_bar.update(1)
-                    progress_bar.set_postfix_str(f"Current: {original_file.name}")
-                    if result:
-                        modified_count += 1
-                        progress_bar.file_completed(original_file, language_code)
-                    else:
-                        progress_bar.file_failed(original_file, language_code)
-
-        # Markdown files
-        if markdown_items:
-            with reporter.task(
+                "retranslating_outdated_notebooks",
+            ),
+            (
+                markdown_items,
+                self.translate_markdown,
                 "Retranslating outdated markdown files",
-                total=len(markdown_items),
+                "retranslating_outdated_markdowns",
+            ),
+        ):
+            results = await self.process_text_requests(
+                [partial(translate, path, language) for path, language in items],
+                label,
+                file_names=[path.name for path, _ in items],
+                file_info=items,
+                stage_key=stage_key,
                 unit="file",
-                stage_key="retranslating_outdated_markdowns",
-            ) as progress_bar:
-                for original_file, language_code in markdown_items:
-                    progress_bar.file_started(original_file, language_code)
-                    result = await self.translate_markdown(original_file, language_code)
-                    progress_bar.update(1)
-                    progress_bar.set_postfix_str(f"Current: {original_file.name}")
-                    if result:
-                        modified_count += 1
-                        progress_bar.file_completed(original_file, language_code)
-                    else:
-                        progress_bar.file_failed(original_file, language_code)
+            )
+            modified_count += sum(bool(result) for result in results)
 
         return modified_count
 

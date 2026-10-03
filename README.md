@@ -90,6 +90,8 @@ co-op-review -l "ko"
 
 For a first run, start with [Choose your workflow](./docs/workflows.md). It compares local translation, Python automation, GitHub Actions, containers, and agent or editor integration.
 
+For larger text batches, use `translate -l "ko ja" -md --concurrency 4` to process up to four file/language translations at once. The default is one. See [text concurrency](./docs/cli.md#text-concurrency) for scope and usage.
+
 Want a translation pull request first? Follow [Your first README translation PR](./docs/github-actions.md#your-first-readme-translation-pr): choose one language, preview the work, then generate and review a README translation before merging. No image service setup is needed.
 
 ## How it works

@@ -96,12 +96,32 @@ Write structured progress events:
 translate -l "ko ja" -md --json-events progress.ndjson
 ```
 
+### Text concurrency
+
+Use `--concurrency` to process multiple text file/language pairs at once:
+
+```bash
+translate -l "ko ja fr" -md -nb --concurrency 4
+```
+
+The default is `1`, preserving sequential execution. The value must be a positive
+integer. The limit applies within each text stage to new and outdated Markdown
+and notebook translations, formatting retries, `--fix`, and README-only languages.
+Chunks and notebook cells within a file retain their existing processing order.
+Image translation concurrency is unchanged.
+
+Choose a value that fits your provider's request and token quotas; reduce it if
+the provider throttles requests. This setting limits active file/language jobs,
+not requests per minute. `--dry-run` remains a local estimate and starts no
+translation workers.
+
 ### Options
 
 | Option | Required | Description |
 | --- | --- | --- |
 | `-l`, `--language-codes` | Yes | Space-separated language codes, such as `"es fr de"`, or `"all"`. |
 | `-r`, `--root-dir` | No | Project root. Defaults to the current directory. |
+| `--concurrency` | No | Maximum simultaneous text file/language translations. Positive integer; defaults to `1`. |
 | `-u`, `--update` | No | Delete existing translations for selected languages and recreate them. |
 | `-img`, `--images` | No | Translate only image files. |
 | `-md`, `--markdown` | No | Translate only Markdown files. |

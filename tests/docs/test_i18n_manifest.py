@@ -8,6 +8,9 @@ import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 
+if importlib.util.find_spec("mkdocs") is None:
+    raise unittest.SkipTest("Documentation tests require requirements-docs.txt")
+
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.plugins import PluginCollection
 from mkdocs.structure.files import File, Files, InclusionLevel

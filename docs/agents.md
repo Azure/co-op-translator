@@ -99,6 +99,10 @@ available; it does not guarantee selection on every translation request.
 
 An agent subscription does not supply provider credentials for repository
 batches. Agent-assisted content does not create repository sync metadata.
+Agent-assisted translation still consumes the host agent's model usage.
+Repository batches use the configured provider's billing and quota. Review and
+dry runs make no translation model calls, although asking an agent to run them
+still uses that agent's allowance.
 Image text translation uses the provider pipeline and also needs Azure AI
 Vision. See the [API](api.md) and [MCP examples](mcp.md) for the exact contracts.
 

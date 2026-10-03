@@ -25,7 +25,9 @@ Human review still matters: the captured update uses `[사용 가이드](guide.m
 
 ## 1. Prepare a small folder
 
-Use Python 3.11–3.14 and the [virtual environment setup](configuration.md#local-runtime-setup). Install the version used for this example:
+Use Python 3.11–3.14 and the [virtual environment setup](configuration.md#local-runtime-setup). The pin below reproduces the recorded 0.21.0 example; it is not the recommended version for a new project. For a new setup, follow the configuration guide. [Agent workflows](agents.md) require 0.22.0 or later.
+
+To reproduce this example, install its recorded version:
 
 ```bash
 python -m pip install co-op-translator==0.21.0

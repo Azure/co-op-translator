@@ -41,6 +41,17 @@ the client and model version, enabled skills, request, selected skill, tool call
 and outcome. Explicit `$co-op-translator` invocation only tests explicit use.
 Reading a manifest or checking a description does not measure automatic selection.
 
+Before a model-driven trial, use the client's command interface to read a small
+fixture and check the Python environment under the same sandbox policy. This
+preflight needs no model call. If local execution is blocked, fix the test
+environment before spending more model usage on execution trials. Record skill
+selection separately from reading its instructions and completing its workflow.
+A selected skill with a blocked command is not a successful dry run.
+
+Record the actual runtime skill catalog, including built-in skills, and any
+account-connected tools. An isolated configuration directory alone does not
+prove that no other tools are available.
+
 | Case | Request | Expected behavior |
 | --- | --- | --- |
 | Multiple languages | Translate this repository's Markdown lessons into Korean and Japanese. | Select the skill, inspect scope and provider setup, preview before running. |

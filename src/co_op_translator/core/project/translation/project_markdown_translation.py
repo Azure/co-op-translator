@@ -425,7 +425,7 @@ class ProjectMarkdownTranslationMixin:
                 task_info.append((str(md_file_path), language_code))
 
         if tasks:
-            results = await self.process_api_requests_sequential(
+            results = await self.process_text_requests(
                 tasks,
                 "Translating markdown files",
                 file_info=task_info,

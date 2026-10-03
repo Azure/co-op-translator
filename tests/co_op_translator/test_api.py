@@ -41,6 +41,7 @@ async def test_run_translation_calls_project_translator(tmp_path):
         translations_dir=None,
         image_dir=None,
         lang_subdir=None,
+        concurrency=1,
     )
     project_translator_instance.translate_project.assert_called_once_with(
         update=False,
@@ -73,6 +74,7 @@ async def test_run_translation_forwards_translation_state_provider(tmp_path):
         translations_dir=None,
         image_dir=None,
         lang_subdir=None,
+        concurrency=1,
         translation_state_provider=provider,
     )
 
@@ -105,6 +107,7 @@ async def test_run_translation_with_disclaimer_flag(tmp_path):
         translations_dir=None,
         image_dir=None,
         lang_subdir=None,
+        concurrency=1,
     )
 
 
@@ -473,6 +476,7 @@ async def test_run_translation_readme_only_uses_readme_translator(
         image_dir=None,
         add_disclaimer=False,
         lang_subdir=None,
+        concurrency=1,
     )
     run_instance.translate.assert_called_once_with(update=False)
 

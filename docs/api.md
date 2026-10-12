@@ -752,7 +752,7 @@ linguistic correctness or style quality.
 
 Provider-backed translation APIs require provider configuration before translating:
 
-- Markdown and notebook translation require an LLM provider. Configure Azure OpenAI, OpenAI, or Anthropic.
+- Markdown and notebook translation require an LLM provider. Configure Azure OpenAI, OpenAI, Anthropic, or LiteLLM.
 - Image translation requires Azure AI Vision in addition to the LLM provider.
 - `run_translation` runs lightweight connectivity checks before project translation begins.
 - Agent-assisted `start_*_agent_translation` and `finish_*_agent_translation` APIs do not call Co-op Translator LLM providers. The host application or MCP agent translates the prepared chunks.
@@ -782,7 +782,17 @@ ANTHROPIC_API_KEY="..."
 ANTHROPIC_MODEL="claude-..."
 ```
 
-`ANTHROPIC_BASE_URL` and `ANTHROPIC_MAX_TOKENS` are optional. Microsoft Agent Framework is the default model client for all providers starting with Co-op Translator 0.22.0. Semantic Kernel can still be selected temporarily with `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, but doing so emits a deprecation warning; see [configuration](configuration.md#model-client-backend) for the staged removal plan.
+`ANTHROPIC_BASE_URL` and `ANTHROPIC_MAX_TOKENS` are optional.
+
+Required LiteLLM variables (install with `pip install "co-op-translator[litellm]"`):
+
+```bash
+LITELLM_MODEL="gemini/gemini-2.5-flash"
+```
+
+`LITELLM_API_KEY`, `LITELLM_API_BASE`, and `LITELLM_MAX_TOKENS` are optional; see [configuration](configuration.md#litellm). LiteLLM calls providers through its own SDK, so `CO_OP_TRANSLATOR_MODEL_CLIENT` does not apply to it.
+
+Microsoft Agent Framework is the default model client for Azure OpenAI, OpenAI, and Anthropic starting with Co-op Translator 0.22.0. Semantic Kernel can still be selected temporarily for Azure OpenAI and OpenAI with `CO_OP_TRANSLATOR_MODEL_CLIENT="semantic-kernel"`, but doing so emits a deprecation warning; see [configuration](configuration.md#model-client-backend) for the staged removal plan.
 
 Required Azure AI Vision variables for image translation:
 
@@ -841,5 +851,5 @@ The following classes are useful for maintainers, but are not exported as the pa
 | `ReviewTarget` | `co_op_translator.review.targets` | Describes a source root and the translation output directory reviewed for that root. |
 | `LanguageFolderMigrator` | `co_op_translator.core.project.language_migrator` | Detects legacy alias language folders and prepares canonical BCP 47 folder migration plans. |
 | `Config` | `co_op_translator.config.base_config` | Loads `.env` files and checks whether required LLM and optional Vision providers are configured. |
-| `LLMConfig` | `co_op_translator.config.llm_config.config` | Auto-detects Azure OpenAI, OpenAI, or Anthropic, validates required environment variables, and runs provider connectivity checks. |
+| `LLMConfig` | `co_op_translator.config.llm_config.config` | Auto-detects Azure OpenAI, OpenAI, Anthropic, or LiteLLM, validates required environment variables, and runs provider connectivity checks. |
 | `VisionConfig` | `co_op_translator.config.vision_config.config` | Detects Azure AI Vision configuration and runs connectivity checks for image translation. |

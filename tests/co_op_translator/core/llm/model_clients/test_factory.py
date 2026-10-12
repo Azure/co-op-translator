@@ -6,6 +6,7 @@ from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.core.llm.model_clients import (
     MODEL_CLIENT_ENV_VAR,
     AgentFrameworkModelClient,
+    LiteLLMModelClient,
     ModelClientBackend,
     SemanticKernelDeprecationWarning,
     SemanticKernelModelClient,
@@ -49,7 +50,14 @@ def test_factory_creates_semantic_kernel_adapters(provider, monkeypatch):
     assert isinstance(client, SemanticKernelModelClient)
 
 
-@pytest.mark.parametrize("provider", list(LLMProvider))
+# LiteLLM uses its own SDK client; every other provider, including ones added
+# later, must default to the Agent Framework backend.
+AGENT_FRAMEWORK_PROVIDERS = [
+    provider for provider in LLMProvider if provider is not LLMProvider.LITELLM
+]
+
+
+@pytest.mark.parametrize("provider", AGENT_FRAMEWORK_PROVIDERS)
 def test_factory_defaults_to_agent_framework_adapters(provider, monkeypatch):
     monkeypatch.delenv(MODEL_CLIENT_ENV_VAR, raising=False)
     config_values = _patch_provider_config(provider)
@@ -165,3 +173,46 @@ def test_agent_framework_anthropic_client_sets_output_token_limit():
 
     assert isinstance(client, AgentFrameworkModelClient)
     assert client._max_output_tokens == 4321
+
+
+def _patch_litellm_config(**overrides):
+    values = {
+        "get_model": lambda: "gemini/gemini-2.5-flash",
+        "get_api_key": lambda: None,
+        "get_api_base": lambda: None,
+        "get_max_tokens": lambda: None,
+        **overrides,
+    }
+    return patch.multiple(
+        "co_op_translator.core.llm.model_clients.factory.LiteLLMConfig",
+        **values,
+    )
+
+
+def test_factory_creates_litellm_client_from_configuration(monkeypatch):
+    monkeypatch.delenv(MODEL_CLIENT_ENV_VAR, raising=False)
+    with _patch_litellm_config(
+        get_api_key=lambda: "test-key",
+        get_api_base=lambda: "http://localhost:11434",
+        get_max_tokens=lambda: 4096,
+    ):
+        client = create_translation_model_client(LLMProvider.LITELLM)
+
+    assert isinstance(client, LiteLLMModelClient)
+    assert client._model == "gemini/gemini-2.5-flash"
+    assert client._api_key == "test-key"
+    assert client._api_base == "http://localhost:11434"
+    assert client._max_output_tokens == 4096
+
+
+@pytest.mark.parametrize("backend", list(ModelClientBackend))
+def test_litellm_ignores_model_client_backend_setting(backend, recwarn):
+    with _patch_litellm_config():
+        client = create_translation_model_client(LLMProvider.LITELLM, backend=backend)
+
+    assert isinstance(client, LiteLLMModelClient)
+    assert not [
+        warning
+        for warning in recwarn
+        if issubclass(warning.category, SemanticKernelDeprecationWarning)
+    ]

@@ -149,3 +149,16 @@ def test_estimate_tokens_splits_outdated_by_content_type(tmp_path: Path):
         expected_outdated_markdown + expected_outdated_notebook + 10
     )
     assert est["total"] == est["outdated"]
+
+
+def test_litellm_model_route_prefix_is_dropped_for_tokenizer(monkeypatch):
+    import os
+
+    from co_op_translator.utils.common import token_estimation
+
+    for name in list(os.environ):
+        if name.startswith(("AZURE_OPENAI_", "OPENAI_", "ANTHROPIC_", "LITELLM_")):
+            monkeypatch.delenv(name)
+    monkeypatch.setenv("LITELLM_MODEL", "openai/gpt-4.1-mini")
+
+    assert token_estimation._resolve_model_name() == "gpt-4.1-mini"

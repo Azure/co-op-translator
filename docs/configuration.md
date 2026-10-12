@@ -48,6 +48,7 @@ The tool auto-detects providers in this order:
 1. Azure OpenAI
 2. OpenAI
 3. Anthropic
+4. LiteLLM
 
 Translation requires provider credentials, except for previews such as `translate -l "ko" -md --dry-run`. `migrate-links`, `co-op-review`, and `run_review` are deterministic maintenance operations and do not require provider credentials.
 
@@ -105,6 +106,27 @@ Leave `ANTHROPIC_BASE_URL` unset for the Anthropic API. Set it only when using a
 
 `ANTHROPIC_MAX_TOKENS` defaults to `8192`, which leaves room for token-dense scripts such as Meitei Mayek. Lower it if your model or Anthropic-compatible endpoint caps output below that.
 
+## LiteLLM
+
+Use [LiteLLM](https://docs.litellm.ai/docs/providers) to translate with any model it supports, such as Gemini, Vertex AI, AWS Bedrock, Mistral, Groq, or a local Ollama model, through the LiteLLM Python SDK. Install the optional extra first:
+
+```bash
+pip install "co-op-translator[litellm]"
+```
+
+Set `LITELLM_MODEL` to a LiteLLM model string. The prefix selects the provider:
+
+```bash
+LITELLM_MODEL="gemini/gemini-2.5-flash"
+GEMINI_API_KEY="..."
+```
+
+Some routes also need that provider's SDK. For example, Vertex AI models (`vertex_ai/...`) authenticate with Google Cloud credentials and need `pip install "litellm[google]"`.
+
+`LITELLM_MODEL` is required. Leave `LITELLM_API_KEY` unset to let LiteLLM read the routed provider's own variables (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, AWS credentials for Bedrock, and so on), or set it to pass one key explicitly. Set `LITELLM_API_BASE` only for endpoints such as Ollama (`http://localhost:11434`) or a self-hosted server. `LITELLM_MAX_TOKENS` optionally caps output tokens per request.
+
+LiteLLM is used when no Azure OpenAI, OpenAI, or Anthropic configuration is complete, so an existing setup keeps its provider. It calls models through the LiteLLM SDK, so `CO_OP_TRANSLATOR_MODEL_CLIENT` does not apply. Parameters a routed provider does not accept are dropped instead of failing the request.
+
 ## Azure AI Vision
 
 Image translation requires Azure AI Vision so the tool can extract text from images before the configured language model translates it. Anthropic can translate the extracted text just like Azure OpenAI or OpenAI.
@@ -136,7 +158,7 @@ AZURE_OPENAI_API_VERSION_2="2024-12-01-preview"
 
 Each set must be complete. The health check selects a working set before translation proceeds.
 
-OpenAI and Anthropic support the same suffix convention. Keep every variable in a credential set on the same suffix, including optional values such as `OPENAI_BASE_URL_1` or `ANTHROPIC_BASE_URL_1`.
+OpenAI, Anthropic, and LiteLLM support the same suffix convention. Keep every variable in a credential set on the same suffix, including optional values such as `OPENAI_BASE_URL_1`, `ANTHROPIC_BASE_URL_1`, or `LITELLM_API_BASE_1`.
 
 ## Command requirements
 

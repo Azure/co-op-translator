@@ -37,7 +37,7 @@ Choose the translation mode your MCP client will use:
 
 | Mode | Use this for | Credentials |
 | --- | --- | --- |
-| Provider-backed | Co-op Translator calls `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, or `run_translation`. | Translation requires Azure OpenAI, OpenAI, or Anthropic. Image translation also requires Azure AI Vision. |
+| Provider-backed | Co-op Translator calls `translate_markdown_content`, `translate_notebook_content`, `translate_image_content`, or `run_translation`. | Translation requires Azure OpenAI, OpenAI, Anthropic, or LiteLLM. Image translation also requires Azure AI Vision. |
 | Agent-assisted | The MCP host agent translates chunks returned by `start_markdown_agent_translation` or `start_notebook_agent_translation`. | No Co-op Translator LLM provider credentials are required for Markdown or notebook chunks. Image translation is not covered by agent-assisted mode yet. |
 
 If you are starting with Markdown or notebook translation inside an agent such as Codex or Claude Code, start with agent-assisted mode. Use provider-backed mode when you want Co-op Translator itself to call your configured providers, when you are translating images, or when you are running repository-level translation like the CLI.
@@ -59,6 +59,9 @@ OPENAI_CHAT_MODEL_ID="gpt-4o"
 # Or Anthropic
 ANTHROPIC_API_KEY="..."
 ANTHROPIC_MODEL="claude-..."
+
+# Or LiteLLM (pip install "co-op-translator[litellm]")
+LITELLM_MODEL="gemini/gemini-2.5-flash"
 ```
 
 Provider-backed image translation additionally needs:

@@ -8,6 +8,7 @@ from az_ai_healthcheck import check_azure_openai
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.config.llm_config.anthropic import AnthropicConfig
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
+from co_op_translator.config.llm_config.litellm import LiteLLMConfig
 from co_op_translator.config.llm_config.openai import OpenAIConfig
 from co_op_translator.utils.common.env_set_utils import (
     any_env_var_present,
@@ -32,6 +33,7 @@ class LLMConfig:
         LLMProvider.AZURE_OPENAI: AzureOpenAIConfig,
         LLMProvider.OPENAI: OpenAIConfig,
         LLMProvider.ANTHROPIC: AnthropicConfig,
+        LLMProvider.LITELLM: LiteLLMConfig,
     }
 
     @classmethod
@@ -50,6 +52,8 @@ class LLMConfig:
         Validate environment variables for a given provider.
         - For OpenAI, the API key and model ID are required.
         - For Anthropic, the API key and Claude model are required.
+        - For LiteLLM, only the model is required; provider keys may come from
+          the routed provider's own environment variables.
         - For Azure, all listed env_vars must be non-empty.
 
         Additionally, distinguish between:
@@ -91,6 +95,20 @@ class LLMConfig:
                 raise ValueError(
                     "Incomplete Anthropic configuration. Ensure 'ANTHROPIC_API_KEY' "
                     "and 'ANTHROPIC_MODEL' are set."
+                )
+
+        elif provider == LLMProvider.LITELLM:
+            bases = [
+                "LITELLM_MODEL",
+                "LITELLM_API_KEY",
+                "LITELLM_API_BASE",
+            ]
+            if not any_env_var_present(bases):
+                raise ValueError("NO_CONFIG_LITELLM")
+
+            if not env_vars.get("LITELLM_MODEL"):
+                raise ValueError(
+                    "Incomplete LiteLLM configuration. The 'LITELLM_MODEL' must be set."
                 )
 
         elif provider == LLMProvider.AZURE_OPENAI:
@@ -140,6 +158,15 @@ class LLMConfig:
             cls.validate_env_vars(env_vars, provider)
             return LLMServiceConfig(required=False, env_vars=env_vars)
 
+        elif provider == LLMProvider.LITELLM:
+            env_vars = {
+                "LITELLM_MODEL": LiteLLMConfig.get_model(),
+                "LITELLM_API_KEY": LiteLLMConfig.get_api_key(),
+                "LITELLM_API_BASE": LiteLLMConfig.get_api_base(),
+            }
+            cls.validate_env_vars(env_vars, provider)
+            return LLMServiceConfig(required=False, env_vars=env_vars)
+
         else:
             raise ValueError(
                 f"Unknown LLM provider: {provider}. Expected one of: {[e.name for e in LLMProvider]}"
@@ -153,7 +180,8 @@ class LLMConfig:
            - Otherwise, raise that error (it must be an Incomplete config).
         2) Attempt OpenAI similarly.
         3) Attempt Anthropic similarly.
-        4) If no provider is configured, raise "No LLM service is properly configured."
+        4) Attempt LiteLLM similarly.
+        5) If no provider is configured, raise "No LLM service is properly configured."
         """
         azure_error = None
         try:
@@ -185,8 +213,23 @@ class LLMConfig:
             else:
                 anthropic_error = e
 
+        litellm_error = None
+        try:
+            cls.get_service_config(LLMProvider.LITELLM)
+            return LLMProvider.LITELLM
+        except ValueError as e:
+            if "NO_CONFIG_LITELLM" in str(e):
+                litellm_error = None
+            else:
+                litellm_error = e
+
         # If every provider error is None, no provider is configured at all.
-        if not azure_error and not openai_error and not anthropic_error:
+        if (
+            not azure_error
+            and not openai_error
+            and not anthropic_error
+            and not litellm_error
+        ):
             raise ValueError("No LLM service is properly configured")
 
         # Otherwise, raise the first "incomplete" error if it exists
@@ -196,6 +239,8 @@ class LLMConfig:
             raise openai_error
         if anthropic_error:
             raise anthropic_error
+        if litellm_error:
+            raise litellm_error
 
         # Fallback if something unexpected happened
         raise ValueError("No LLM service is properly configured")
@@ -330,6 +375,51 @@ class LLMConfig:
 
             raise ValueError(
                 anthropic_last_message or "Anthropic connectivity check failed"
+            )
+        elif provider == LLMProvider.LITELLM:
+            try:
+                import litellm
+            except ImportError as exc:
+                raise ValueError(
+                    "LiteLLM is configured but the 'litellm' package is not "
+                    'installed. Install it with: pip install "co-op-translator[litellm]"'
+                ) from exc
+
+            env_sets = LiteLLMConfig.get_env_sets()
+            if not env_sets:
+                raise ValueError(
+                    "LiteLLM configuration missing required values. Ensure "
+                    "LITELLM_MODEL is set."
+                )
+
+            litellm_last_message: Optional[str] = None
+            for env_set in env_sets:
+                model = env_set.values.get("LITELLM_MODEL")
+                if not model:
+                    continue
+                credentials = {
+                    "api_key": env_set.values.get("LITELLM_API_KEY") or None,
+                    "api_base": env_set.values.get("LITELLM_API_BASE") or None,
+                }
+
+                try:
+                    litellm.completion(
+                        model=model,
+                        messages=[{"role": "user", "content": "Reply OK"}],
+                        max_tokens=16,
+                        drop_params=True,
+                        timeout=10.0,
+                        **{k: v for k, v in credentials.items() if v},
+                    )
+                except Exception as e:
+                    litellm_last_message = str(e)
+                    continue
+
+                set_preferred_env_set(LiteLLMConfig._GROUP, env_set.index)
+                return True
+
+            raise ValueError(
+                litellm_last_message or "LiteLLM connectivity check failed"
             )
         else:
             # Should not happen because get_available_provider() would have raised earlier otherwise

@@ -175,3 +175,123 @@ def test_anthropic_max_tokens_defaults_and_env_override(anthropic_env_vars):
         ):
             with pytest.raises(ValueError, match="ANTHROPIC_MAX_TOKENS"):
                 AnthropicConfig.get_max_tokens()
+
+
+@pytest.fixture
+def litellm_env_vars():
+    return {"LITELLM_MODEL": "gemini/gemini-2.5-flash"}
+
+
+def test_config_with_litellm_only(litellm_env_vars):
+    with patch.dict(os.environ, litellm_env_vars, clear=True):
+        assert Config.check_configuration() is None
+        assert LLMConfig.get_available_provider() == LLMProvider.LITELLM
+
+
+def test_litellm_is_detected_beside_routed_provider_keys(litellm_env_vars):
+    # LiteLLM reads ANTHROPIC_API_KEY itself, so a Claude key without
+    # ANTHROPIC_MODEL must not block a configured LiteLLM provider.
+    with patch.dict(
+        os.environ,
+        {**litellm_env_vars, "ANTHROPIC_API_KEY": "fake_key"},
+        clear=True,
+    ):
+        assert LLMConfig.get_available_provider() == LLMProvider.LITELLM
+
+
+def test_complete_existing_providers_keep_precedence_over_litellm(
+    openai_env_vars, litellm_env_vars
+):
+    with patch.dict(os.environ, {**openai_env_vars, **litellm_env_vars}, clear=True):
+        assert LLMConfig.get_available_provider() == LLMProvider.OPENAI
+
+
+def test_config_with_partial_litellm():
+    with patch.dict(os.environ, {"LITELLM_API_KEY": "fake_key"}, clear=True):
+        with pytest.raises(ValueError, match="LITELLM_MODEL"):
+            Config.check_configuration()
+
+
+def test_litellm_max_tokens_is_optional_and_validated(litellm_env_vars):
+    from co_op_translator.config.llm_config.litellm import LiteLLMConfig
+
+    with patch.dict(os.environ, litellm_env_vars, clear=True):
+        assert LiteLLMConfig.get_max_tokens() is None
+
+    with patch.dict(
+        os.environ, {**litellm_env_vars, "LITELLM_MAX_TOKENS": "4096"}, clear=True
+    ):
+        assert LiteLLMConfig.get_max_tokens() == 4096
+
+    for invalid in ("0", "-1", "many"):
+        with patch.dict(
+            os.environ,
+            {**litellm_env_vars, "LITELLM_MAX_TOKENS": invalid},
+            clear=True,
+        ):
+            with pytest.raises(ValueError, match="LITELLM_MAX_TOKENS"):
+                LiteLLMConfig.get_max_tokens()
+
+
+def _fake_litellm_module(monkeypatch, completion):
+    import sys
+    from types import ModuleType
+
+    module = ModuleType("litellm")
+    module.completion = completion
+    monkeypatch.setitem(sys.modules, "litellm", module)
+    return module
+
+
+def test_litellm_connectivity_uses_configured_model(monkeypatch, litellm_env_vars):
+    from unittest.mock import MagicMock
+
+    completion = MagicMock()
+    _fake_litellm_module(monkeypatch, completion)
+    with patch.dict(
+        os.environ,
+        {**litellm_env_vars, "LITELLM_API_BASE": "http://localhost:11434"},
+        clear=True,
+    ):
+        assert LLMConfig.validate_connectivity() is True
+
+    completion.assert_called_once_with(
+        model="gemini/gemini-2.5-flash",
+        messages=[{"role": "user", "content": "Reply OK"}],
+        max_tokens=16,
+        drop_params=True,
+        timeout=10.0,
+        api_base="http://localhost:11434",
+    )
+
+
+def test_litellm_connectivity_is_time_bounded(monkeypatch, litellm_env_vars):
+    from unittest.mock import MagicMock
+
+    completion = MagicMock(side_effect=TimeoutError("Request timed out"))
+    _fake_litellm_module(monkeypatch, completion)
+    with patch.dict(os.environ, litellm_env_vars, clear=True):
+        with pytest.raises(ValueError, match="timed out"):
+            LLMConfig.validate_connectivity()
+
+    assert completion.call_args.kwargs["timeout"] == 10.0
+
+
+def test_litellm_connectivity_reports_provider_error(monkeypatch, litellm_env_vars):
+    from unittest.mock import MagicMock
+
+    _fake_litellm_module(
+        monkeypatch, MagicMock(side_effect=RuntimeError("AuthenticationError: bad key"))
+    )
+    with patch.dict(os.environ, litellm_env_vars, clear=True):
+        with pytest.raises(ValueError, match="AuthenticationError"):
+            LLMConfig.validate_connectivity()
+
+
+def test_litellm_connectivity_explains_missing_extra(monkeypatch, litellm_env_vars):
+    import sys
+
+    monkeypatch.setitem(sys.modules, "litellm", None)
+    with patch.dict(os.environ, litellm_env_vars, clear=True):
+        with pytest.raises(ValueError, match=r"co-op-translator\[litellm\]"):
+            LLMConfig.validate_connectivity()

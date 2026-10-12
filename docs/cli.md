@@ -424,6 +424,9 @@ OPENAI_CHAT_MODEL_ID="gpt-4o"
 # Or Anthropic
 ANTHROPIC_API_KEY="..."
 ANTHROPIC_MODEL="claude-..."
+
+# Or LiteLLM (pip install "co-op-translator[litellm]")
+LITELLM_MODEL="gemini/gemini-2.5-flash"
 ```
 
 Image translation additionally requires Azure AI Vision:

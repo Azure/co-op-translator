@@ -7,6 +7,7 @@ import tiktoken
 from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
 from co_op_translator.config.llm_config.config import LLMConfig
+from co_op_translator.config.llm_config.litellm import LiteLLMConfig
 from co_op_translator.config.llm_config.openai import OpenAIConfig
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.utils.common.file_utils import (
@@ -27,6 +28,11 @@ def _resolve_model_name() -> str | None:
             return AzureOpenAIConfig.get_model_name() or None
         if provider == LLMProvider.OPENAI:
             return OpenAIConfig.get_chat_model_id()
+        if provider == LLMProvider.LITELLM:
+            # Drop the LiteLLM route prefix (e.g. "openai/gpt-4.1-mini") so
+            # tiktoken can recognize OpenAI model names.
+            model = LiteLLMConfig.get_model()
+            return model.rsplit("/", 1)[-1] if model else None
     except Exception:
         return None
     return None

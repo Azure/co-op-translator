@@ -433,6 +433,8 @@ AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
+README images can optionally use an experimental generative image-edit model while all other images stay on the Azure AI Vision pipeline. Generated text can be malformed, duplicated, or omitted, so visually review every output. The feature is disabled by default; enable Azure OpenAI with `README_IMAGE_TRANSLATION_ENABLED=true` and `AZURE_OPENAI_IMAGE_DEPLOYMENT_NAME`, or explicitly select `openai` or `foundry`. See [Configuration](configuration.md#experimental-readme-image-generation).
+
 ## Output layout
 
 Text translations are written under:

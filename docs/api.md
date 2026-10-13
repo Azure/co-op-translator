@@ -791,6 +791,8 @@ AZURE_AI_SERVICE_API_KEY="..."
 AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 ```
 
+Root README images can opt into experimental image-model regeneration independently. Generated text may be malformed, duplicated, or omitted and must be visually reviewed. Set `README_IMAGE_TRANSLATION_ENABLED=true` plus `AZURE_OPENAI_IMAGE_DEPLOYMENT_NAME` to use Azure OpenAI, or set `README_IMAGE_TRANSLATION_PROVIDER` to `openai` or `foundry`. Project-wide image runs still require Azure AI Vision for every non-README image and as the README fallback. See [configuration](configuration.md#experimental-readme-image-generation).
+
 `run_review` is deterministic and does not require LLM or Azure AI Vision configuration.
 
 ## Behavior Notes

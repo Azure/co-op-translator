@@ -6,6 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import yaml
 from co_op_translator.config.llm_config.config import LLMConfig
+from co_op_translator.config.readme_image_config import ReadmeImageConfig
 from co_op_translator.config.vision_config.config import VisionConfig
 from co_op_translator.utils.common.lang_utils import normalize_language_code
 
@@ -44,6 +45,9 @@ class Config:
 
         # Vision configuration is optional
         VisionConfig.check_configuration()
+
+        # README image generation is optional and explicitly enabled.
+        ReadmeImageConfig.validate_if_enabled()
 
     @staticmethod
     def get_language_codes() -> list[str]:

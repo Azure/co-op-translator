@@ -31,6 +31,7 @@ from co_op_translator.core.project.translation.translation_workflow import (
 )
 from co_op_translator.core.project.translation.memory import TranslationStateProvider
 from co_op_translator.utils.common.task_utils import validate_concurrency
+from co_op_translator.utils.markdown.readme_images import discover_readme_images
 
 
 class TranslationManager(
@@ -64,6 +65,7 @@ class TranslationManager(
         concurrency: int = 1,
         include_patterns: tuple[str, ...] = (),
         exclude_patterns: tuple[str, ...] = (),
+        readme_image_translator=None,
     ):
         """Initialize translation manager with required components and settings.
 
@@ -80,6 +82,7 @@ class TranslationManager(
             markdown_translator: Translator instance for markdown files
             image_translator: Translator instance for image files
             notebook_translator: Translator instance for notebook files
+            readme_image_translator: Optional generative translator for root README images
             translation_types: List of file types to translate (e.g., ["markdown", "images", "notebook"])
             concurrency: Maximum simultaneous text file/language translations.
         """
@@ -96,6 +99,10 @@ class TranslationManager(
         self.supported_notebook_extensions = supported_notebook_extensions
         self.markdown_translator = markdown_translator
         self.image_translator = image_translator
+        self.readme_image_translator = readme_image_translator
+        self.readme_image_paths = discover_readme_images(
+            Path(root_dir) / "README.md", Path(root_dir)
+        )
         self.notebook_translator = notebook_translator
 
         # Default translation types if not specified

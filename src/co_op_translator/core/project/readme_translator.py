@@ -10,19 +10,26 @@ from pathlib import Path
 from typing import Iterable
 from urllib.parse import urlparse
 
+from PIL import Image
+
+from co_op_translator.config.readme_image_config import ReadmeImageConfig
 from co_op_translator.config.constants import (
     SUPPORTED_MARKDOWN_EXTENSIONS,
     SUPPORTED_NOTEBOOK_EXTENSIONS,
 )
 from co_op_translator.core.llm.markdown_translator import MarkdownTranslator
+from co_op_translator.core.image_generation import create_readme_image_translator
 from co_op_translator.utils.common.file_utils import (
+    generate_translated_filename,
     handle_empty_document,
     read_input_file,
 )
 from co_op_translator.utils.common.lang_utils import normalize_language_codes
 from co_op_translator.utils.common.metadata_utils import (
     calculate_file_hash,
+    is_image_up_to_date,
     read_text_metadata_for_source,
+    save_image_metadata,
     save_text_metadata_for_source,
 )
 from co_op_translator.utils.common.token_estimation import count_tokens
@@ -35,6 +42,8 @@ from co_op_translator.utils.markdown.path_rewriter import (
     rewrite_markdown_paths,
 )
 from co_op_translator.utils.markdown.processing import compare_line_breaks
+from co_op_translator.utils.markdown.readme_images import discover_readme_images
+from co_op_translator.utils.vision.image_utils import save_optimized_image
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +71,7 @@ class ReadmeTranslator:
         add_disclaimer: bool = True,
         lang_subdir: str | Path | None = None,
         markdown_translator=None,
+        readme_image_translator=None,
         initialize_translator: bool = True,
         concurrency: int = 1,
         context: str | None = None,
@@ -86,10 +96,14 @@ class ReadmeTranslator:
         self.add_disclaimer = add_disclaimer
         self.lang_subdir = Path(lang_subdir) if lang_subdir else None
         self.context = context
+        self.source_path = (self.root_dir / "README.md").resolve()
         self.markdown_translator = markdown_translator
         if self.markdown_translator is None and initialize_translator:
             self.markdown_translator = self._create_markdown_translator()
-        self.source_path = (self.root_dir / "README.md").resolve()
+        self.readme_image_translator = readme_image_translator
+        if self.readme_image_translator is None and initialize_translator:
+            self._initialize_readme_image_translator()
+        self.readme_image_paths = self._discover_readme_images()
 
     def _resolve_under_root(
         self,
@@ -108,6 +122,16 @@ class ReadmeTranslator:
         if self.markdown_translator is None:
             self.markdown_translator = self._create_markdown_translator()
 
+    def _initialize_readme_image_translator(self) -> None:
+        if self.readme_image_translator is None and ReadmeImageConfig.is_enabled():
+            self.readme_image_translator = create_readme_image_translator()
+            self.readme_image_paths = self._discover_readme_images()
+
+    def _discover_readme_images(self) -> set[Path]:
+        if self.readme_image_translator is None:
+            return set()
+        return discover_readme_images(self.source_path, self.root_dir)
+
     def _create_markdown_translator(self):
         if self.context is None:
             return MarkdownTranslator.create()
@@ -122,6 +146,31 @@ class ReadmeTranslator:
     def get_translated_path(self, language_code: str) -> Path:
         return self._get_language_root(language_code) / "README.md"
 
+    def _get_translated_image_path(self, image_path: Path, language_code: str) -> Path:
+        filename = generate_translated_filename(
+            image_path, language_code, self.root_dir
+        )
+        return self.image_dir / language_code / filename
+
+    def _readme_pipeline_fingerprint(self) -> str:
+        if self.readme_image_translator is None:
+            return "disabled"
+        return getattr(
+            self.readme_image_translator,
+            "metadata_fingerprint",
+            self.readme_image_translator.__class__.__name__,
+        )
+
+    def _readme_text_metadata(self) -> dict[str, str]:
+        return {
+            "readme_image_translation_pipeline": (self._readme_pipeline_fingerprint())
+        }
+
+    def _readme_image_metadata(self) -> dict[str, str]:
+        return {
+            "readme_image_translation_pipeline": (self._readme_pipeline_fingerprint())
+        }
+
     def _is_current(self, language_code: str, source_hash: str | None = None) -> bool:
         translated_path = self.get_translated_path(language_code)
         if not translated_path.exists():
@@ -131,8 +180,24 @@ class ReadmeTranslator:
             self._get_language_root(language_code),
             "README.md",
         )
-        return metadata.get("original_hash") == (
+        if metadata.get("original_hash") != (
             source_hash or calculate_file_hash(self.source_path)
+        ):
+            return False
+
+        stored_pipeline = metadata.get("readme_image_translation_pipeline")
+        if self.readme_image_translator is None:
+            return stored_pipeline in (None, "disabled")
+        if stored_pipeline != self._readme_pipeline_fingerprint():
+            return False
+        return all(
+            is_image_up_to_date(
+                image_path,
+                self._get_translated_image_path(image_path, language_code),
+                self.image_dir,
+                expected_metadata=self._readme_image_metadata(),
+            )
+            for image_path in self.readme_image_paths
         )
 
     def get_pending_language_codes(
@@ -220,7 +285,11 @@ class ReadmeTranslator:
                 root_dir=self.root_dir,
                 translations_dir=self.translations_dir,
                 translated_images_dir=self.image_dir,
-                translation_types=["markdown", "notebook"],
+                translation_types=[
+                    "markdown",
+                    "notebook",
+                    *(["images"] if self.readme_image_translator else []),
+                ],
                 lang_subdir=self.lang_subdir,
             ),
         )
@@ -276,6 +345,69 @@ class ReadmeTranslator:
             *SUPPORTED_NOTEBOOK_EXTENSIONS,
         )
 
+    async def _translate_readme_images(
+        self, language_code: str, *, update: bool = False
+    ) -> None:
+        if self.readme_image_translator is None:
+            return
+
+        expected_metadata = self._readme_image_metadata()
+        for image_path in self.readme_image_paths:
+            translated_path = self._get_translated_image_path(image_path, language_code)
+            if not update and is_image_up_to_date(
+                image_path,
+                translated_path,
+                self.image_dir,
+                expected_metadata=expected_metadata,
+            ):
+                continue
+
+            translated_path.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                translate_async = getattr(
+                    self.readme_image_translator,
+                    "translate_image_async",
+                    None,
+                )
+                if translate_async is not None:
+                    translated_image = await translate_async(
+                        image_path,
+                        language_code,
+                        fast_mode=False,
+                    )
+                else:
+                    translated_image = await asyncio.to_thread(
+                        self.readme_image_translator.translate_image,
+                        image_path,
+                        language_code,
+                        fast_mode=False,
+                    )
+                save_optimized_image(translated_image, translated_path)
+                save_image_metadata(
+                    translated_path,
+                    image_path,
+                    language_code,
+                    self.root_dir,
+                    image_dir=self.image_dir,
+                    extra_fields=expected_metadata,
+                )
+            except Exception:
+                logger.error(
+                    "README image generation failed for %s; preserving the "
+                    "source image in the translated output.",
+                    image_path,
+                    exc_info=True,
+                )
+                with Image.open(image_path) as original_image:
+                    save_optimized_image(original_image.copy(), translated_path)
+                save_image_metadata(
+                    translated_path,
+                    image_path,
+                    language_code,
+                    self.root_dir,
+                    image_dir=self.image_dir,
+                )
+
     async def translate_readme(
         self,
         language_code: str,
@@ -285,6 +417,7 @@ class ReadmeTranslator:
         if not self.source_path.exists():
             raise FileNotFoundError(f"README.md not found under {self.root_dir}")
 
+        self._initialize_readme_image_translator()
         language_code = normalize_language_codes([language_code])[0]
         translated_path = self.get_translated_path(language_code)
 
@@ -308,6 +441,7 @@ class ReadmeTranslator:
                 self.source_path,
                 language_code,
                 root_dir=self.root_dir,
+                extra_fields=self._readme_text_metadata(),
             )
             return ReadmeTranslationResult(
                 language_code=language_code,
@@ -351,6 +485,7 @@ class ReadmeTranslator:
                     "Markdown translation retry produced incomplete content for README.md"
                 )
 
+        await self._translate_readme_images(language_code, update=update)
         translated_content = await self._append_disclaimer(
             translated_content,
             language_code,
@@ -361,6 +496,7 @@ class ReadmeTranslator:
             self.source_path,
             language_code,
             root_dir=self.root_dir,
+            extra_fields=self._readme_text_metadata(),
         )
         return ReadmeTranslationResult(
             language_code=language_code,
@@ -373,6 +509,8 @@ class ReadmeTranslator:
         *,
         update: bool = False,
     ) -> list[ReadmeTranslationResult]:
+        self._initialize_readme_image_translator()
+        self.readme_image_paths = self._discover_readme_images()
         return await run_tasks_concurrently(
             [
                 partial(self.translate_readme, language_code, update=update)

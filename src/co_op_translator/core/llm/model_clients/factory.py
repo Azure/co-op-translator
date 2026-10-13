@@ -6,6 +6,7 @@ import warnings
 
 from co_op_translator.config.llm_config.azure_openai import AzureOpenAIConfig
 from co_op_translator.config.llm_config.anthropic import AnthropicConfig
+from co_op_translator.config.llm_config.litellm import LiteLLMConfig
 from co_op_translator.config.llm_config.openai import OpenAIConfig
 from co_op_translator.config.llm_config.provider import LLMProvider
 from co_op_translator.core.llm.model_clients.protocol import TranslationModelClient
@@ -42,6 +43,11 @@ def create_translation_model_client(
     *,
     backend: ModelClientBackend | None = None,
 ) -> TranslationModelClient:
+    # LiteLLM calls providers through its own SDK, so the Semantic Kernel /
+    # Agent Framework backend setting does not apply to it.
+    if provider == LLMProvider.LITELLM:
+        return _create_litellm_client()
+
     selected_backend = backend or get_model_client_backend()
     if selected_backend == ModelClientBackend.SEMANTIC_KERNEL:
         warnings.warn(
@@ -141,3 +147,14 @@ def _create_agent_framework_client(
         raise ValueError(f"Unsupported LLM provider: {provider}")
 
     return AgentFrameworkModelClient(client)
+
+
+def _create_litellm_client() -> TranslationModelClient:
+    from co_op_translator.core.llm.model_clients.litellm import LiteLLMModelClient
+
+    return LiteLLMModelClient(
+        model=LiteLLMConfig.get_model(),
+        api_key=LiteLLMConfig.get_api_key(),
+        api_base=LiteLLMConfig.get_api_base(),
+        max_output_tokens=LiteLLMConfig.get_max_tokens(),
+    )

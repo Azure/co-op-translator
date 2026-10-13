@@ -8,6 +8,7 @@ from co_op_translator.core.llm.model_clients.factory import (
     create_translation_model_client,
     get_model_client_backend,
 )
+from co_op_translator.core.llm.model_clients.litellm import LiteLLMModelClient
 from co_op_translator.core.llm.model_clients.protocol import (
     ModelResponse,
     StructuredTranslationModelClient,
@@ -19,6 +20,7 @@ from co_op_translator.core.llm.model_clients.semantic_kernel import (
 
 __all__ = [
     "AgentFrameworkModelClient",
+    "LiteLLMModelClient",
     "MODEL_CLIENT_ENV_VAR",
     "ModelClientBackend",
     "ModelResponse",

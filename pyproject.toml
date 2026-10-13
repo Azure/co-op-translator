@@ -58,6 +58,11 @@ rich = ">=15,<16"
 semantic-kernel = "^1.44.1"
 tiktoken = "^0.14.0"
 az-ai-healthcheck = { version = "^0.1.7", extras = ["vision"] }
+# Optional LiteLLM provider: pip install "co-op-translator[litellm]"
+litellm = { version = ">=1.94.0,<1.105.0", optional = true }
+
+[tool.poetry.extras]
+litellm = ["litellm"]
 
 [tool.poetry.group.dev.dependencies]
 agent-framework-ollama = { version = "1.0.0b260813", allow-prereleases = true }

@@ -89,3 +89,37 @@ def test_update_untranslated_file_links_skips_current_document_links(temp_dir, l
 
     assert result == test_markdown
     assert "../" not in result
+
+
+def test_update_untranslated_file_links_root_relative(temp_dir):
+    """A root-relative link resolves against the project root, not the filesystem root."""
+    (temp_dir / "etc" / "pdf").mkdir(parents=True)
+    (temp_dir / "etc" / "pdf" / "readme.pdf").touch()
+    md_file_path = temp_dir / "lessons" / "setup" / "setup.md"
+    md_file_path.parent.mkdir(parents=True)
+    md_file_path.touch()
+    translations_dir = temp_dir / "translations"
+
+    result = update_untranslated_file_links(
+        "A pdf is [here](/etc/pdf/readme.pdf).",
+        md_file_path,
+        "es",
+        translations_dir,
+        temp_dir,
+    )
+
+    assert "[here](../../../../etc/pdf/readme.pdf)" in result
+
+
+def test_update_untranslated_file_links_protocol_relative_url(temp_dir):
+    """A protocol-relative URL is external, even though its path starts with /."""
+    md_file_path = temp_dir / "lessons" / "setup.md"
+    md_file_path.parent.mkdir(parents=True)
+    md_file_path.touch()
+    markdown = "Get the [manual](//cdn.example.com/manual.pdf)."
+
+    result = update_untranslated_file_links(
+        markdown, md_file_path, "es", temp_dir / "translations", temp_dir
+    )
+
+    assert result == markdown

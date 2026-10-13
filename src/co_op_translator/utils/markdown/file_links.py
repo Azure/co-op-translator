@@ -67,6 +67,7 @@ def update_untranslated_file_links(
 
         if (
             parsed_url.scheme in ("mailto", "http", "https")
+            or parsed_url.netloc
             or "@" in link
             or link.endswith((".com", ".org", ".net"))
         ):
@@ -98,7 +99,13 @@ def update_untranslated_file_links(
                     / md_file_path.relative_to(root_dir).parent
                 )
             )
-            original_linked_file_path = (md_file_path.parent / path).resolve()
+            # Root-relative links ("/etc/file.pdf") point into the project, as
+            # image and notebook links already handle; joining them to the
+            # file's folder would resolve them against the filesystem root.
+            if path.startswith("/"):
+                original_linked_file_path = (root_dir / path.lstrip("/")).resolve()
+            else:
+                original_linked_file_path = (md_file_path.parent / path).resolve()
 
             updated_link = os.path.relpath(
                 original_linked_file_path, translated_md_dir

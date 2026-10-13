@@ -295,10 +295,26 @@ def _link_destination_spans(document: str) -> list[_DestinationSpan]:
 def markdown_image_destination_spans(document: str) -> list[tuple[int, int]]:
     """Return exact source spans for Markdown and HTML image destinations."""
 
+    parsed_document = mask_markdown_code(document)
+    reference_image_destinations: set[str] = set()
+    for token in _DEFINITION_PARSER.parse(parsed_document):
+        for child in token.children or []:
+            if child.type == "image":
+                destination = child.attrGet("src")
+                if destination:
+                    reference_image_destinations.add(
+                        _DEFINITION_PARSER.normalizeLink(destination)
+                    )
+
     return [
         (span.start, span.end)
         for span in _link_destination_spans(document)
         if span.kind == "image"
+        or (
+            span.kind == "reference"
+            and _DEFINITION_PARSER.normalizeLink(document[span.start : span.end])
+            in reference_image_destinations
+        )
     ]
 
 

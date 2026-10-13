@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from PIL import Image
 
 from co_op_translator.core.project import ReadmeTranslator
 
@@ -19,6 +20,17 @@ class FakeMarkdownTranslator:
     async def generate_disclaimer(self, language_code):
         self.disclaimer_calls.append(language_code)
         return f"Disclaimer for {language_code}"
+
+
+class FakeReadmeImageTranslator:
+    metadata_fingerprint = "fake-image:model:v1"
+
+    def __init__(self):
+        self.calls = []
+
+    def translate_image(self, image_path, language_code, fast_mode=False):
+        self.calls.append((Path(image_path), language_code, fast_mode))
+        return Image.new("RGB", (12, 6), "blue")
 
 
 def _write_readme_project(root: Path) -> None:
@@ -203,3 +215,38 @@ async def test_readme_translator_requires_root_readme(tmp_path):
 
     with pytest.raises(FileNotFoundError, match="README.md not found"):
         await translator.translate_async()
+
+
+@pytest.mark.asyncio
+async def test_readme_translator_generates_and_links_readme_images(tmp_path):
+    _write_readme_project(tmp_path)
+    source_image = tmp_path / "images" / "hero.png"
+    Image.new("RGB", (12, 6), "white").save(source_image)
+    image_translator = FakeReadmeImageTranslator()
+    translator = ReadmeTranslator(
+        "ko",
+        root_dir=tmp_path,
+        add_disclaimer=False,
+        markdown_translator=FakeMarkdownTranslator(),
+        readme_image_translator=image_translator,
+    )
+
+    first = await translator.translate_async()
+    second = await translator.translate_async()
+
+    translated_path = translator._get_translated_image_path(source_image, "ko")
+    translated_readme = translator.get_translated_path("ko").read_text(encoding="utf-8")
+    image_metadata = json.loads(
+        (translated_path.parent / ".co-op-translator.json").read_text(encoding="utf-8")
+    )
+
+    assert first[0].skipped is False
+    assert second[0].skipped is True
+    assert translated_path.exists()
+    assert image_translator.calls == [(source_image.resolve(), "ko", False)]
+    assert translated_path.name in translated_readme
+    assert any(
+        entry.get("readme_image_translation_pipeline")
+        == image_translator.metadata_fingerprint
+        for entry in image_metadata.values()
+    )

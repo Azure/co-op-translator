@@ -1,6 +1,6 @@
 # Configuration
 
-Co-op Translator requires one language model provider. Image translation additionally requires Azure AI Vision.
+Co-op Translator requires one language model provider. Project-wide image translation additionally requires Azure AI Vision; root README images can optionally use a configured image-edit model.
 
 Configuration is read from environment variables. For local projects, place them in a `.env` file at the project root.
 
@@ -116,6 +116,44 @@ AZURE_AI_SERVICE_ENDPOINT="https://<resource>.cognitiveservices.azure.com/"
 
 If image translation is selected with `-img`, `images=True`, or no content-type filter, the tool validates Vision configuration before translation starts.
 
+## Experimental README image generation
+
+By default, every image selected with `-img` continues to use the Azure AI Vision text-extraction and overlay pipeline. You can opt in to regenerating only local raster images referenced by the root `README.md` with an image-edit model. All other project images continue to use Azure AI Vision.
+
+> [!WARNING]
+> This feature is experimental. Current image models can misspell, duplicate, omit, or distort visible text, particularly in dense diagrams and images with small labels. Do not publish generated README images without visual review. Keep the feature disabled when deterministic text preservation matters; Azure AI Vision remains the default pipeline.
+
+Azure OpenAI is the default README image provider once the feature is enabled:
+
+```bash
+README_IMAGE_TRANSLATION_ENABLED="true"
+AZURE_OPENAI_IMAGE_DEPLOYMENT_NAME="<gpt-image-deployment>"
+```
+
+The image client reuses `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, and `AZURE_OPENAI_API_VERSION`. Set `AZURE_OPENAI_IMAGE_API_KEY`, `AZURE_OPENAI_IMAGE_ENDPOINT`, or `AZURE_OPENAI_IMAGE_API_VERSION` only when the image deployment uses different Azure resources. `AZURE_OPENAI_IMAGE_QUALITY` is optional. README edits default to high input fidelity; set `AZURE_OPENAI_IMAGE_INPUT_FIDELITY=low` to reduce input-token cost when exact layout preservation is less important.
+
+To use the OpenAI Images API instead:
+
+```bash
+README_IMAGE_TRANSLATION_PROVIDER="openai"
+OPENAI_IMAGE_MODEL_ID="gpt-image-1.5"
+```
+
+The image client reuses `OPENAI_API_KEY`, `OPENAI_ORG_ID`, and `OPENAI_BASE_URL`. Image-specific `OPENAI_IMAGE_API_KEY`, `OPENAI_IMAGE_ORG_ID`, and `OPENAI_IMAGE_BASE_URL` values override them. `OPENAI_IMAGE_INPUT_FIDELITY` defaults to `high` for README layout preservation.
+
+Microsoft Foundry MAI Images is also available as an explicit provider:
+
+```bash
+README_IMAGE_TRANSLATION_PROVIDER="foundry"
+FOUNDRY_IMAGE_API_KEY="..."
+FOUNDRY_IMAGE_ENDPOINT="https://<resource>.services.ai.azure.com"
+FOUNDRY_IMAGE_DEPLOYMENT_NAME="<mai-image-deployment>"
+```
+
+MAI image editing is a preview service. Evaluate every model against representative README images before adopting it in CI, and prefer the default Azure AI Vision pipeline until a model meets your text-rendering quality threshold. For any provider, `README_IMAGE_TRANSLATION_PROMPT` can append project-specific terminology or brand instructions.
+
+README-only translation uses this feature whenever it is enabled. Project-wide translation applies it when images are selected. Generated outputs use the existing `translated_images/<language-code>/` paths and metadata. If generation fails during project-wide translation, the tool falls back to Azure AI Vision; README-only translation preserves the source image so the translated Markdown link remains valid.
+
 ## Multiple credential sets
 
 The configuration layer supports multiple credential sets by suffixing variables with the same index:
@@ -142,7 +180,7 @@ OpenAI and Anthropic support the same suffix convention. Keep every variable in 
 
 | Command or API | LLM required | Vision required | Notes |
 | --- | --- | --- | --- |
-| `translate -md` | Yes | No | Translates Markdown only. |
+| `translate -md` | Yes | No | Translates Markdown only. README-only mode can also use an enabled README image provider. |
 | `translate -nb` | Yes | No | Translates notebooks only. |
 | `translate -img` | Yes | Yes | Translates images only. |
 | `translate` with no type flags | Yes | Yes | Default mode includes Markdown, notebooks, and images. |

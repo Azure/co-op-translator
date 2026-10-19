@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, patch
 import re
+from pathlib import Path
 
 from co_op_translator.core.llm.markdown_translator import (
     MarkdownTranslator,
@@ -764,7 +765,7 @@ async def test_translate_markdown_splits_incomplete_chunk_after_retry(
 
 
 @pytest.mark.asyncio
-async def test_translate_markdown_line_splits_when_markdown_splitter_stalls(
+async def test_translate_markdown_splits_at_first_missing_line(
     real_markdown_translator,
     monkeypatch,
 ):
@@ -802,7 +803,49 @@ async def test_translate_markdown_line_splits_when_markdown_splitter_stalls(
 
     assert result == document
     assert prompt_calls == 4
-    assert split_max_tokens == [2600, 1300, 650, 325]
+    assert split_max_tokens == [2600]
+
+
+def test_incomplete_anchor_error_identifies_terminal_suffix(
+    real_markdown_translator,
+):
+    chunk = "first\nsecond\nthird\n"
+    anchors = real_markdown_translator._add_chunk_anchors(chunk, "2")
+    translated = anchors.text.replace("@@LINE_0003@@ third\n", "")
+
+    with pytest.raises(TranslationIncompleteError) as exc_info:
+        real_markdown_translator._strip_chunk_anchors(
+            translated,
+            anchors,
+            Path("CHANGELOG.md"),
+            "2",
+            source_line_start=50,
+        )
+
+    error = exc_info.value
+    assert error.expected_line_count == 3
+    assert error.actual_line_count == 2
+    assert error.first_missing_line == 3
+    assert error.first_missing_source_line == 52
+    assert error.terminal_suffix_omission is True
+    assert "first missing chunk line is 3" in str(error)
+    assert "source line 52" in str(error)
+    assert real_markdown_translator._incomplete_error_metadata(error) == {
+        "reason": "terminal_suffix_omission",
+        "expected_line_count": 3,
+        "actual_line_count": 2,
+        "first_missing_chunk_line": 3,
+        "first_missing_source_line": 52,
+    }
+
+
+def test_first_missing_line_split_is_lossless(real_markdown_translator):
+    chunk = "first\nsecond\nthird\nfourth\n"
+
+    subchunks = real_markdown_translator._split_chunk_at_line(chunk, 3)
+
+    assert subchunks == ["first\nsecond\n", "third\nfourth\n"]
+    assert "".join(subchunks) == chunk
 
 
 def test_line_fallback_preserves_content_and_prefers_paragraph_boundary(

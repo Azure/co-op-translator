@@ -48,6 +48,23 @@ class ChunkAnchors:
 class TranslationIncompleteError(RuntimeError):
     """Raised when a provider response does not complete the requested chunk."""
 
+    def __init__(
+        self,
+        message: str,
+        *,
+        expected_line_count: int | None = None,
+        actual_line_count: int | None = None,
+        first_missing_line: int | None = None,
+        first_missing_source_line: int | None = None,
+        terminal_suffix_omission: bool = False,
+    ) -> None:
+        super().__init__(message)
+        self.expected_line_count = expected_line_count
+        self.actual_line_count = actual_line_count
+        self.first_missing_line = first_missing_line
+        self.first_missing_source_line = first_missing_source_line
+        self.terminal_suffix_omission = terminal_suffix_omission
+
 
 class TranslationContentFilterError(RuntimeError):
     """Raised when a provider stops a translation because of content filtering."""
@@ -252,6 +269,7 @@ class MarkdownTranslator(ABC):
     ) -> list[str]:
         results = []
         total = len(chunks)
+        source_line_start = 1
         for index, chunk in enumerate(chunks, start=1):
             results.append(
                 await self._translate_chunk_with_recovery(
@@ -264,8 +282,10 @@ class MarkdownTranslator(ABC):
                     index=index,
                     total=total,
                     split_depth=0,
+                    source_line_start=source_line_start,
                 )
             )
+            source_line_start += self._count_line_breaks(chunk)
         return results
 
     async def _translate_chunk_with_recovery(
@@ -279,6 +299,7 @@ class MarkdownTranslator(ABC):
         index: int,
         total: int,
         split_depth: int,
+        source_line_start: int,
     ) -> str:
         last_error: TranslationIncompleteError | None = None
 
@@ -293,6 +314,7 @@ class MarkdownTranslator(ABC):
                     chunk_label,
                     index,
                     total,
+                    source_line_start,
                 )
             except TranslationContentFilterError:
                 logger.error(
@@ -311,20 +333,38 @@ class MarkdownTranslator(ABC):
                         language=language_code,
                         block=chunk_label,
                         attempt=attempt + 2,
+                        metadata=self._incomplete_error_metadata(e),
                     )
                     logger.warning(
-                        "Incomplete translation for chunk %s of file '%s'; retrying same chunk.",
+                        "Incomplete translation for chunk %s of file '%s'; "
+                        "retrying same chunk: %s",
                         chunk_label,
                         md_file_path.name,
+                        e,
                     )
                     continue
                 break
 
-        subchunks = self._split_failed_chunk(chunk, split_depth)
+        subchunks = self._split_failed_chunk(chunk, split_depth, last_error)
         if len(subchunks) <= 1:
             raise TranslationIncompleteError(
                 f"Markdown translation remained incomplete for chunk {chunk_label} "
-                f"of '{md_file_path.name}', and the chunk could not be split further."
+                f"of '{md_file_path.name}', and the chunk could not be split further.",
+                expected_line_count=(
+                    last_error.expected_line_count if last_error else None
+                ),
+                actual_line_count=(
+                    last_error.actual_line_count if last_error else None
+                ),
+                first_missing_line=(
+                    last_error.first_missing_line if last_error else None
+                ),
+                first_missing_source_line=(
+                    last_error.first_missing_source_line if last_error else None
+                ),
+                terminal_suffix_omission=(
+                    last_error.terminal_suffix_omission if last_error else False
+                ),
             ) from last_error
 
         logger.warning(
@@ -339,9 +379,11 @@ class MarkdownTranslator(ABC):
             language=language_code,
             block=chunk_label,
             attempt=self.CHUNK_RETRY_ATTEMPTS + 2,
+            metadata=self._incomplete_error_metadata(last_error),
         )
 
         sub_results = []
+        subchunk_source_line_start = source_line_start
         for sub_index, subchunk in enumerate(subchunks, start=1):
             sub_results.append(
                 await self._translate_chunk_with_recovery(
@@ -354,8 +396,10 @@ class MarkdownTranslator(ABC):
                     index=sub_index,
                     total=len(subchunks),
                     split_depth=split_depth + 1,
+                    source_line_start=subchunk_source_line_start,
                 )
             )
+            subchunk_source_line_start += self._count_line_breaks(subchunk)
 
         return "".join(sub_results)
 
@@ -369,6 +413,7 @@ class MarkdownTranslator(ABC):
         chunk_label: str,
         index: int,
         total: int,
+        source_line_start: int,
     ) -> str:
         anchored_chunk = self._add_chunk_anchors(chunk, chunk_label)
         prompt = generate_prompt_template(
@@ -384,7 +429,11 @@ class MarkdownTranslator(ABC):
                 timeout=self.TRANSLATION_TIMEOUT_SECONDS,
             )
             return self._strip_chunk_anchors(
-                translated, anchored_chunk, md_file_path, chunk_label
+                translated,
+                anchored_chunk,
+                md_file_path,
+                chunk_label,
+                source_line_start,
             )
         except asyncio.TimeoutError as exc:
             logger.warning(
@@ -445,6 +494,7 @@ class MarkdownTranslator(ABC):
         anchors: ChunkAnchors,
         md_file_path: Path,
         chunk_label: str,
+        source_line_start: int = 1,
     ) -> str:
         """Validate completion/line anchors and remove them from a translation."""
         start_pos = translated.find(anchors.start_marker)
@@ -459,9 +509,35 @@ class MarkdownTranslator(ABC):
         marker_matches = list(self.LINE_MARKER_RE.finditer(body))
         actual_markers = [match.group(0) for match in marker_matches]
         if actual_markers != anchors.line_markers:
+            is_prefix = actual_markers == anchors.line_markers[: len(actual_markers)]
+            terminal_suffix_omission = is_prefix and len(actual_markers) < len(
+                anchors.line_markers
+            )
+            first_missing_line = (
+                len(actual_markers) + 1 if terminal_suffix_omission else None
+            )
+            first_missing_source_line = (
+                source_line_start + first_missing_line - 1
+                if first_missing_line is not None
+                else None
+            )
+            detail = (
+                f"preserved {len(actual_markers)} of "
+                f"{len(anchors.line_markers)} line anchors"
+            )
+            if first_missing_line is not None:
+                detail += (
+                    f"; first missing chunk line is {first_missing_line} "
+                    f"(source line {first_missing_source_line})"
+                )
             raise TranslationIncompleteError(
                 f"Markdown translation for chunk {chunk_label} of '{md_file_path.name}' "
-                "did not preserve required line anchor markers in order."
+                f"did not preserve required line anchor markers in order ({detail}).",
+                expected_line_count=len(anchors.line_markers),
+                actual_line_count=len(actual_markers),
+                first_missing_line=first_missing_line,
+                first_missing_source_line=first_missing_source_line,
+                terminal_suffix_omission=terminal_suffix_omission,
             )
 
         rebuilt_lines: list[str] = []
@@ -508,7 +584,19 @@ class MarkdownTranslator(ABC):
             cleaned = cleaned[:-1]
         return cleaned
 
-    def _split_failed_chunk(self, chunk: str, split_depth: int) -> list[str]:
+    def _split_failed_chunk(
+        self,
+        chunk: str,
+        split_depth: int,
+        error: TranslationIncompleteError | None = None,
+    ) -> list[str]:
+        if error and error.terminal_suffix_omission:
+            targeted_subchunks = self._split_chunk_at_line(
+                chunk, error.first_missing_line
+            )
+            if len(targeted_subchunks) > 1:
+                return targeted_subchunks
+
         for max_tokens in self.RECOVERY_CHUNK_MAX_TOKENS[split_depth:]:
             subchunks = [
                 subchunk
@@ -525,6 +613,51 @@ class MarkdownTranslator(ABC):
         # smaller request still carries the exact source lines and can be joined
         # without changing the document.
         return self._split_chunk_by_lines(chunk)
+
+    @staticmethod
+    def _split_chunk_at_line(chunk: str, line_number: int | None) -> list[str]:
+        """Split immediately before a model-omitted source line."""
+        if line_number is None or line_number <= 1:
+            return []
+
+        lines = chunk.splitlines(keepends=True)
+        split_at = line_number - 1
+        if split_at >= len(lines):
+            return []
+
+        subchunks = ["".join(lines[:split_at]), "".join(lines[split_at:])]
+        if not all(subchunks) or "".join(subchunks) != chunk:
+            return []
+        return subchunks
+
+    @staticmethod
+    def _incomplete_error_metadata(
+        error: TranslationIncompleteError | None,
+    ) -> dict[str, int | str | bool]:
+        if error is None:
+            return {"reason": "incomplete_translation"}
+
+        metadata: dict[str, int | str | bool] = {
+            "reason": (
+                "terminal_suffix_omission"
+                if error.terminal_suffix_omission
+                else "incomplete_translation"
+            )
+        }
+        if error.expected_line_count is not None:
+            metadata["expected_line_count"] = error.expected_line_count
+        if error.actual_line_count is not None:
+            metadata["actual_line_count"] = error.actual_line_count
+        if error.first_missing_line is not None:
+            metadata["first_missing_chunk_line"] = error.first_missing_line
+        if error.first_missing_source_line is not None:
+            metadata["first_missing_source_line"] = error.first_missing_source_line
+        return metadata
+
+    @staticmethod
+    def _count_line_breaks(chunk: str) -> int:
+        """Count source line advances without double-counting CRLF."""
+        return chunk.count("\n") + chunk.count("\r") - chunk.count("\r\n")
 
     @staticmethod
     def _split_chunk_by_lines(chunk: str) -> list[str]:

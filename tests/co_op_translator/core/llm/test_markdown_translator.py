@@ -764,6 +764,59 @@ async def test_translate_markdown_splits_incomplete_chunk_after_retry(
 
 
 @pytest.mark.asyncio
+async def test_translate_markdown_line_splits_when_markdown_splitter_stalls(
+    real_markdown_translator,
+    monkeypatch,
+):
+    """An indivisible Markdown block should still recover from a truncated response."""
+
+    document = "".join(f"- Source line {index}\n" for index in range(1, 9))
+    split_max_tokens = []
+    prompt_calls = 0
+
+    def fake_process_markdown(content, max_tokens=2600, encoding="o200k_base"):
+        split_max_tokens.append(max_tokens)
+        return [content]
+
+    monkeypatch.setattr(
+        "co_op_translator.core.llm.markdown_translator.process_markdown",
+        fake_process_markdown,
+    )
+
+    async def fake_prompt(prompt, index, total):
+        nonlocal prompt_calls
+        prompt_calls += 1
+        _, body = prompt.split(SPLIT_DELIMITER, 1)
+        markers = list(re.finditer(r"@@LINE_\d{4}@@", body))
+        if len(markers) > 4:
+            end_marker = re.search(r"@@COOP_CHUNK_END:[^@]+@@", body)
+            assert end_marker is not None
+            return body[: markers[4].start()] + body[end_marker.start() :]
+        return body
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+        result = await real_markdown_translator.translate_markdown(document, "ta")
+
+    assert result == document
+    assert prompt_calls == 4
+    assert split_max_tokens == [2600, 1300, 650, 325]
+
+
+def test_line_fallback_preserves_content_and_prefers_paragraph_boundary(
+    real_markdown_translator,
+):
+    chunk = "first\nsecond\n\nthird\nfourth\nfifth\n"
+
+    subchunks = real_markdown_translator._split_chunk_by_lines(chunk)
+
+    assert subchunks == ["first\nsecond\n\n", "third\nfourth\nfifth\n"]
+    assert "".join(subchunks) == chunk
+
+
+@pytest.mark.asyncio
 async def test_translate_markdown_does_not_split_content_filter_errors(
     real_markdown_translator,
     monkeypatch,

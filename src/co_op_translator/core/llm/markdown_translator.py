@@ -61,7 +61,7 @@ class MarkdownTranslator(ABC):
 
     TRANSLATION_TIMEOUT_SECONDS = 1000  # Translation timeout in seconds
     DEFAULT_CHUNK_MAX_TOKENS = 2600
-    RECOVERY_CHUNK_MAX_TOKENS = (1300, 650)
+    RECOVERY_CHUNK_MAX_TOKENS = (1300, 650, 325)
     CHUNK_RETRY_ATTEMPTS = 1
     LINE_MARKER_RE = re.compile(r"@@LINE_(\d{4})@@")
     _disclaimer_templates_cache: dict[str, str] | None = None
@@ -509,12 +509,47 @@ class MarkdownTranslator(ABC):
         return cleaned
 
     def _split_failed_chunk(self, chunk: str, split_depth: int) -> list[str]:
-        if split_depth >= len(self.RECOVERY_CHUNK_MAX_TOKENS):
+        for max_tokens in self.RECOVERY_CHUNK_MAX_TOKENS[split_depth:]:
+            subchunks = [
+                subchunk
+                for subchunk in process_markdown(chunk, max_tokens=max_tokens)
+                if subchunk
+            ]
+            if len(subchunks) > 1:
+                return subchunks
+
+        # Markdown-aware splitting can intentionally keep a large list, table, or
+        # paragraph together even when it exceeds the requested token limit. If a
+        # provider silently omits part of that block, retrying the same indivisible
+        # chunk cannot recover. Fall back to a lossless line-boundary split so every
+        # smaller request still carries the exact source lines and can be joined
+        # without changing the document.
+        return self._split_chunk_by_lines(chunk)
+
+    @staticmethod
+    def _split_chunk_by_lines(chunk: str) -> list[str]:
+        """Bisect a failed chunk without changing or dropping source text."""
+        lines = chunk.splitlines(keepends=True)
+        if len(lines) <= 1:
             return []
 
-        max_tokens = self.RECOVERY_CHUNK_MAX_TOKENS[split_depth]
-        subchunks = process_markdown(chunk, max_tokens=max_tokens)
-        return [subchunk for subchunk in subchunks if subchunk]
+        midpoint = len(lines) // 2
+        paragraph_boundaries = [
+            index for index in range(1, len(lines)) if not lines[index - 1].strip()
+        ]
+        split_at = (
+            min(
+                paragraph_boundaries,
+                key=lambda index: (abs(index - midpoint), index),
+            )
+            if paragraph_boundaries
+            else midpoint
+        )
+
+        subchunks = ["".join(lines[:split_at]), "".join(lines[split_at:])]
+        if not all(subchunks) or "".join(subchunks) != chunk:
+            return []
+        return subchunks
 
     def _raise_for_finish_reason(
         self,

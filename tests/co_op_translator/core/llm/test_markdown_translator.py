@@ -802,8 +802,116 @@ async def test_translate_markdown_splits_at_first_missing_line(
         result = await real_markdown_translator.translate_markdown(document, "ta")
 
     assert result == document
-    assert prompt_calls == 4
+    assert prompt_calls == 3
     assert split_max_tokens == [2600]
+
+
+@pytest.mark.asyncio
+async def test_translate_markdown_recovers_missing_protected_placeholder(
+    real_markdown_translator,
+    monkeypatch,
+):
+    document = "".join(
+        [
+            "- First line\n",
+            "- Second line\n",
+            "- Third line\n",
+            "- Fourth line\n",
+            "- Fifth line\n",
+            "- Use `protected-value` here\n",
+            "- Seventh line\n",
+            "- Eighth line\n",
+        ]
+    )
+    prompt_calls = 0
+
+    def fake_process_markdown(content, max_tokens=2600, encoding="o200k_base"):
+        return [content]
+
+    monkeypatch.setattr(
+        "co_op_translator.core.llm.markdown_translator.process_markdown",
+        fake_process_markdown,
+    )
+
+    async def fake_prompt(prompt, index, total):
+        nonlocal prompt_calls
+        prompt_calls += 1
+        _, body = prompt.split(SPLIT_DELIMITER, 1)
+        if body.count("@@LINE_") > 4 and "@@INLINE_CODE_0@@" in body:
+            return body.replace("@@INLINE_CODE_0@@", "")
+        return body
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = fake_prompt
+        result = await real_markdown_translator.translate_markdown(document, "ta")
+
+    assert result == document
+    assert prompt_calls == 4
+
+
+def test_protected_placeholder_error_identifies_source_line(
+    real_markdown_translator,
+):
+    source = "first\nuse @@INLINE_CODE_44@@ here\nthird\n"
+    translated = "first\nuse here\nthird\n"
+
+    with pytest.raises(TranslationIncompleteError) as exc_info:
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("CHANGELOG.md"),
+            "1",
+            source_line_start=55,
+        )
+
+    error = exc_info.value
+    assert error.protected_placeholder_mismatch is True
+    assert error.expected_placeholder_count == 1
+    assert error.actual_placeholder_count == 0
+    assert error.first_mismatched_placeholder == "@@INLINE_CODE_44@@"
+    assert error.first_missing_line == 2
+    assert error.first_missing_source_line == 56
+    assert real_markdown_translator._incomplete_error_metadata(error) == {
+        "reason": "protected_placeholder_mismatch",
+        "first_missing_chunk_line": 2,
+        "first_missing_source_line": 56,
+        "expected_placeholder_count": 1,
+        "actual_placeholder_count": 0,
+        "first_mismatched_placeholder": "@@INLINE_CODE_44@@",
+    }
+
+
+def test_reordered_placeholder_error_identifies_source_line(
+    real_markdown_translator,
+):
+    source = (
+        "first @@INLINE_CODE_1@@\n"
+        "second @@INLINE_CODE_2@@\n"
+        "third @@INLINE_CODE_3@@\n"
+    )
+    translated = (
+        "first @@INLINE_CODE_1@@\n"
+        "second @@INLINE_CODE_3@@\n"
+        "third @@INLINE_CODE_2@@\n"
+    )
+
+    with pytest.raises(TranslationIncompleteError) as exc_info:
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("CHANGELOG.md"),
+            "1",
+            source_line_start=100,
+        )
+
+    error = exc_info.value
+    assert error.expected_placeholder_count == 3
+    assert error.actual_placeholder_count == 3
+    assert error.first_mismatched_placeholder == "@@INLINE_CODE_2@@"
+    assert error.first_missing_line == 2
+    assert error.first_missing_source_line == 101
 
 
 def test_incomplete_anchor_error_identifies_terminal_suffix(

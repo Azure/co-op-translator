@@ -6,7 +6,7 @@
 # https://github.com/actions/labeler
 
 name: Label pull request
-on: [pull_request_target]
+on: [pull_request]
 
 jobs:
   add_label:

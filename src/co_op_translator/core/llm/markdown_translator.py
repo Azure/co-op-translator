@@ -48,6 +48,33 @@ class ChunkAnchors:
 class TranslationIncompleteError(RuntimeError):
     """Raised when a provider response does not complete the requested chunk."""
 
+    def __init__(
+        self,
+        message: str,
+        *,
+        expected_line_count: int | None = None,
+        actual_line_count: int | None = None,
+        first_missing_line: int | None = None,
+        first_missing_source_line: int | None = None,
+        terminal_suffix_omission: bool = False,
+        protected_placeholder_mismatch: bool = False,
+        expected_placeholder_count: int | None = None,
+        actual_placeholder_count: int | None = None,
+        first_mismatched_placeholder: str | None = None,
+        translated_prefix: str | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.expected_line_count = expected_line_count
+        self.actual_line_count = actual_line_count
+        self.first_missing_line = first_missing_line
+        self.first_missing_source_line = first_missing_source_line
+        self.terminal_suffix_omission = terminal_suffix_omission
+        self.protected_placeholder_mismatch = protected_placeholder_mismatch
+        self.expected_placeholder_count = expected_placeholder_count
+        self.actual_placeholder_count = actual_placeholder_count
+        self.first_mismatched_placeholder = first_mismatched_placeholder
+        self.translated_prefix = translated_prefix
+
 
 class TranslationContentFilterError(RuntimeError):
     """Raised when a provider stops a translation because of content filtering."""
@@ -61,9 +88,12 @@ class MarkdownTranslator(ABC):
 
     TRANSLATION_TIMEOUT_SECONDS = 1000  # Translation timeout in seconds
     DEFAULT_CHUNK_MAX_TOKENS = 2600
-    RECOVERY_CHUNK_MAX_TOKENS = (1300, 650)
+    RECOVERY_CHUNK_MAX_TOKENS = (1300, 650, 325)
     CHUNK_RETRY_ATTEMPTS = 1
     LINE_MARKER_RE = re.compile(r"@@LINE_(\d{4})@@")
+    PROTECTED_PLACEHOLDER_RE = re.compile(
+        r"@@(?:CODE_BLOCK|INLINE_CODE|LINK_DESTINATION)_\d+@@"
+    )
     _disclaimer_templates_cache: dict[str, str] | None = None
 
     def __init__(
@@ -252,6 +282,7 @@ class MarkdownTranslator(ABC):
     ) -> list[str]:
         results = []
         total = len(chunks)
+        source_line_start = 1
         for index, chunk in enumerate(chunks, start=1):
             results.append(
                 await self._translate_chunk_with_recovery(
@@ -264,8 +295,10 @@ class MarkdownTranslator(ABC):
                     index=index,
                     total=total,
                     split_depth=0,
+                    source_line_start=source_line_start,
                 )
             )
+            source_line_start += self._count_line_breaks(chunk)
         return results
 
     async def _translate_chunk_with_recovery(
@@ -279,6 +312,7 @@ class MarkdownTranslator(ABC):
         index: int,
         total: int,
         split_depth: int,
+        source_line_start: int,
     ) -> str:
         last_error: TranslationIncompleteError | None = None
 
@@ -293,6 +327,7 @@ class MarkdownTranslator(ABC):
                     chunk_label,
                     index,
                     total,
+                    source_line_start,
                 )
             except TranslationContentFilterError:
                 logger.error(
@@ -303,7 +338,12 @@ class MarkdownTranslator(ABC):
                 )
                 raise
             except TranslationIncompleteError as e:
-                last_error = e
+                if self._verified_prefix_line_count(
+                    e
+                ) > self._verified_prefix_line_count(last_error):
+                    last_error = e
+                elif last_error is None:
+                    last_error = e
                 if attempt < self.CHUNK_RETRY_ATTEMPTS:
                     emit_translation_event(
                         "block_retry",
@@ -311,20 +351,95 @@ class MarkdownTranslator(ABC):
                         language=language_code,
                         block=chunk_label,
                         attempt=attempt + 2,
+                        metadata=self._incomplete_error_metadata(e),
                     )
                     logger.warning(
-                        "Incomplete translation for chunk %s of file '%s'; retrying same chunk.",
+                        "Incomplete translation for chunk %s of file '%s'; "
+                        "retrying same chunk: %s",
                         chunk_label,
                         md_file_path.name,
+                        e,
                     )
                     continue
                 break
 
-        subchunks = self._split_failed_chunk(chunk, split_depth)
+        if (
+            last_error
+            and last_error.terminal_suffix_omission
+            and last_error.translated_prefix is not None
+            and last_error.first_missing_line is not None
+        ):
+            source_lines = chunk.splitlines(keepends=True)
+            suffix_start = last_error.first_missing_line - 1
+            source_prefix = "".join(source_lines[:suffix_start])
+            source_suffix = "".join(source_lines[suffix_start:])
+            if source_prefix and source_suffix:
+                logger.warning(
+                    "Incomplete translation for chunk %s of file '%s'; "
+                    "preserving %s translated lines and retrying only the missing suffix.",
+                    chunk_label,
+                    md_file_path.name,
+                    suffix_start,
+                )
+                emit_translation_event(
+                    "block_retry",
+                    file=str(md_file_path),
+                    language=language_code,
+                    block=chunk_label,
+                    attempt=self.CHUNK_RETRY_ATTEMPTS + 2,
+                    metadata=self._incomplete_error_metadata(last_error),
+                )
+                translated_suffix = await self._translate_chunk_with_recovery(
+                    source_suffix,
+                    language_code,
+                    language_name,
+                    is_rtl,
+                    md_file_path,
+                    chunk_label=f"{chunk_label}.suffix",
+                    index=index,
+                    total=total,
+                    split_depth=split_depth,
+                    source_line_start=(
+                        source_line_start + self._count_line_breaks(source_prefix)
+                    ),
+                )
+                return last_error.translated_prefix + translated_suffix
+
+        subchunks = self._split_failed_chunk(chunk, split_depth, last_error)
         if len(subchunks) <= 1:
             raise TranslationIncompleteError(
                 f"Markdown translation remained incomplete for chunk {chunk_label} "
-                f"of '{md_file_path.name}', and the chunk could not be split further."
+                f"of '{md_file_path.name}', and the chunk could not be split further.",
+                expected_line_count=(
+                    last_error.expected_line_count if last_error else None
+                ),
+                actual_line_count=(
+                    last_error.actual_line_count if last_error else None
+                ),
+                first_missing_line=(
+                    last_error.first_missing_line if last_error else None
+                ),
+                first_missing_source_line=(
+                    last_error.first_missing_source_line if last_error else None
+                ),
+                terminal_suffix_omission=(
+                    last_error.terminal_suffix_omission if last_error else False
+                ),
+                protected_placeholder_mismatch=(
+                    last_error.protected_placeholder_mismatch if last_error else False
+                ),
+                expected_placeholder_count=(
+                    last_error.expected_placeholder_count if last_error else None
+                ),
+                actual_placeholder_count=(
+                    last_error.actual_placeholder_count if last_error else None
+                ),
+                first_mismatched_placeholder=(
+                    last_error.first_mismatched_placeholder if last_error else None
+                ),
+                translated_prefix=(
+                    last_error.translated_prefix if last_error else None
+                ),
             ) from last_error
 
         logger.warning(
@@ -339,9 +454,11 @@ class MarkdownTranslator(ABC):
             language=language_code,
             block=chunk_label,
             attempt=self.CHUNK_RETRY_ATTEMPTS + 2,
+            metadata=self._incomplete_error_metadata(last_error),
         )
 
         sub_results = []
+        subchunk_source_line_start = source_line_start
         for sub_index, subchunk in enumerate(subchunks, start=1):
             sub_results.append(
                 await self._translate_chunk_with_recovery(
@@ -354,8 +471,10 @@ class MarkdownTranslator(ABC):
                     index=sub_index,
                     total=len(subchunks),
                     split_depth=split_depth + 1,
+                    source_line_start=subchunk_source_line_start,
                 )
             )
+            subchunk_source_line_start += self._count_line_breaks(subchunk)
 
         return "".join(sub_results)
 
@@ -369,6 +488,7 @@ class MarkdownTranslator(ABC):
         chunk_label: str,
         index: int,
         total: int,
+        source_line_start: int,
     ) -> str:
         anchored_chunk = self._add_chunk_anchors(chunk, chunk_label)
         prompt = generate_prompt_template(
@@ -383,9 +503,39 @@ class MarkdownTranslator(ABC):
                 self._run_prompt(prompt, index, total),
                 timeout=self.TRANSLATION_TIMEOUT_SECONDS,
             )
-            return self._strip_chunk_anchors(
-                translated, anchored_chunk, md_file_path, chunk_label
+            try:
+                translated_chunk = self._strip_chunk_anchors(
+                    translated,
+                    anchored_chunk,
+                    md_file_path,
+                    chunk_label,
+                    source_line_start,
+                )
+            except TranslationIncompleteError as exc:
+                if (
+                    exc.terminal_suffix_omission
+                    and exc.translated_prefix is not None
+                    and exc.actual_line_count
+                ):
+                    source_prefix = "".join(
+                        chunk.splitlines(keepends=True)[: exc.actual_line_count]
+                    )
+                    self._validate_protected_placeholders(
+                        source_prefix,
+                        exc.translated_prefix,
+                        md_file_path,
+                        chunk_label,
+                        source_line_start,
+                    )
+                raise
+            self._validate_protected_placeholders(
+                chunk,
+                translated_chunk,
+                md_file_path,
+                chunk_label,
+                source_line_start,
             )
+            return translated_chunk
         except asyncio.TimeoutError as exc:
             logger.warning(
                 f"Translation timeout for chunk {chunk_label} of file '{md_file_path.name}': "
@@ -445,6 +595,7 @@ class MarkdownTranslator(ABC):
         anchors: ChunkAnchors,
         md_file_path: Path,
         chunk_label: str,
+        source_line_start: int = 1,
     ) -> str:
         """Validate completion/line anchors and remove them from a translation."""
         start_pos = translated.find(anchors.start_marker)
@@ -459,11 +610,51 @@ class MarkdownTranslator(ABC):
         marker_matches = list(self.LINE_MARKER_RE.finditer(body))
         actual_markers = [match.group(0) for match in marker_matches]
         if actual_markers != anchors.line_markers:
+            is_prefix = actual_markers == anchors.line_markers[: len(actual_markers)]
+            terminal_suffix_omission = is_prefix and len(actual_markers) < len(
+                anchors.line_markers
+            )
+            first_missing_line = (
+                len(actual_markers) + 1 if terminal_suffix_omission else None
+            )
+            first_missing_source_line = (
+                source_line_start + first_missing_line - 1
+                if first_missing_line is not None
+                else None
+            )
+            detail = (
+                f"preserved {len(actual_markers)} of "
+                f"{len(anchors.line_markers)} line anchors"
+            )
+            if first_missing_line is not None:
+                detail += (
+                    f"; first missing chunk line is {first_missing_line} "
+                    f"(source line {first_missing_source_line})"
+                )
+            translated_prefix = (
+                self._rebuild_anchored_lines(body, marker_matches, anchors)
+                if terminal_suffix_omission and marker_matches
+                else None
+            )
             raise TranslationIncompleteError(
                 f"Markdown translation for chunk {chunk_label} of '{md_file_path.name}' "
-                "did not preserve required line anchor markers in order."
+                f"did not preserve required line anchor markers in order ({detail}).",
+                expected_line_count=len(anchors.line_markers),
+                actual_line_count=len(actual_markers),
+                first_missing_line=first_missing_line,
+                first_missing_source_line=first_missing_source_line,
+                terminal_suffix_omission=terminal_suffix_omission,
+                translated_prefix=translated_prefix,
             )
 
+        return self._rebuild_anchored_lines(body, marker_matches, anchors)
+
+    def _rebuild_anchored_lines(
+        self,
+        body: str,
+        marker_matches: list[re.Match],
+        anchors: ChunkAnchors,
+    ) -> str:
         rebuilt_lines: list[str] = []
         for line_index, match in enumerate(marker_matches):
             segment_start = match.end()
@@ -481,6 +672,59 @@ class MarkdownTranslator(ABC):
             rebuilt_lines.append(cleaned_line + anchors.line_endings[line_index])
 
         return "".join(rebuilt_lines)
+
+    def _validate_protected_placeholders(
+        self,
+        source_chunk: str,
+        translated_chunk: str,
+        md_file_path: Path,
+        chunk_label: str,
+        source_line_start: int,
+    ) -> None:
+        """Reject silent loss, duplication, or reordering of protected content."""
+        expected = self.PROTECTED_PLACEHOLDER_RE.findall(source_chunk)
+        actual = self.PROTECTED_PLACEHOLDER_RE.findall(translated_chunk)
+        if actual == expected:
+            return
+
+        mismatch_index = next(
+            (
+                index
+                for index, (expected_marker, actual_marker) in enumerate(
+                    zip(expected, actual)
+                )
+                if expected_marker != actual_marker
+            ),
+            min(len(expected), len(actual)),
+        )
+        first_mismatched_placeholder = (
+            expected[mismatch_index] if mismatch_index < len(expected) else None
+        )
+        first_missing_line = None
+        first_missing_source_line = None
+        if first_mismatched_placeholder is not None:
+            marker_offset = source_chunk.find(first_mismatched_placeholder)
+            first_missing_line = (
+                self._count_line_breaks(source_chunk[:marker_offset]) + 1
+            )
+            first_missing_source_line = source_line_start + first_missing_line - 1
+
+        detail = f"preserved {len(actual)} of {len(expected)} protected placeholders"
+        if first_mismatched_placeholder is not None:
+            detail += f"; first mismatch is {first_mismatched_placeholder}"
+        if first_missing_source_line is not None:
+            detail += f" on source line {first_missing_source_line}"
+
+        raise TranslationIncompleteError(
+            f"Markdown translation for chunk {chunk_label} of '{md_file_path.name}' "
+            f"did not preserve protected placeholders in order ({detail}).",
+            first_missing_line=first_missing_line,
+            first_missing_source_line=first_missing_source_line,
+            protected_placeholder_mismatch=True,
+            expected_placeholder_count=len(expected),
+            actual_placeholder_count=len(actual),
+            first_mismatched_placeholder=first_mismatched_placeholder,
+        )
 
     @staticmethod
     def _safe_chunk_label(chunk_label: str) -> str:
@@ -508,13 +752,129 @@ class MarkdownTranslator(ABC):
             cleaned = cleaned[:-1]
         return cleaned
 
-    def _split_failed_chunk(self, chunk: str, split_depth: int) -> list[str]:
-        if split_depth >= len(self.RECOVERY_CHUNK_MAX_TOKENS):
+    def _split_failed_chunk(
+        self,
+        chunk: str,
+        split_depth: int,
+        error: TranslationIncompleteError | None = None,
+    ) -> list[str]:
+        if error and error.first_missing_line is not None:
+            targeted_subchunks = self._split_chunk_at_line(
+                chunk, error.first_missing_line
+            )
+            if len(targeted_subchunks) > 1:
+                return targeted_subchunks
+
+        for max_tokens in self.RECOVERY_CHUNK_MAX_TOKENS[split_depth:]:
+            subchunks = [
+                subchunk
+                for subchunk in process_markdown(chunk, max_tokens=max_tokens)
+                if subchunk
+            ]
+            if len(subchunks) > 1:
+                return subchunks
+
+        # Markdown-aware splitting can intentionally keep a large list, table, or
+        # paragraph together even when it exceeds the requested token limit. If a
+        # provider silently omits part of that block, retrying the same indivisible
+        # chunk cannot recover. Fall back to a lossless line-boundary split so every
+        # smaller request still carries the exact source lines and can be joined
+        # without changing the document.
+        return self._split_chunk_by_lines(chunk)
+
+    @staticmethod
+    def _split_chunk_at_line(chunk: str, line_number: int | None) -> list[str]:
+        """Split immediately before a model-omitted source line."""
+        if line_number is None or line_number <= 1:
             return []
 
-        max_tokens = self.RECOVERY_CHUNK_MAX_TOKENS[split_depth]
-        subchunks = process_markdown(chunk, max_tokens=max_tokens)
-        return [subchunk for subchunk in subchunks if subchunk]
+        lines = chunk.splitlines(keepends=True)
+        split_at = line_number - 1
+        if split_at >= len(lines):
+            return []
+
+        subchunks = ["".join(lines[:split_at]), "".join(lines[split_at:])]
+        if not all(subchunks) or "".join(subchunks) != chunk:
+            return []
+        return subchunks
+
+    @staticmethod
+    def _incomplete_error_metadata(
+        error: TranslationIncompleteError | None,
+    ) -> dict[str, int | str | bool]:
+        if error is None:
+            return {"reason": "incomplete_translation"}
+
+        metadata: dict[str, int | str | bool] = {
+            "reason": (
+                "protected_placeholder_mismatch"
+                if error.protected_placeholder_mismatch
+                else (
+                    "terminal_suffix_omission"
+                    if error.terminal_suffix_omission
+                    else "incomplete_translation"
+                )
+            )
+        }
+        if error.expected_line_count is not None:
+            metadata["expected_line_count"] = error.expected_line_count
+        if error.actual_line_count is not None:
+            metadata["actual_line_count"] = error.actual_line_count
+        if error.first_missing_line is not None:
+            metadata["first_missing_chunk_line"] = error.first_missing_line
+        if error.first_missing_source_line is not None:
+            metadata["first_missing_source_line"] = error.first_missing_source_line
+        if error.expected_placeholder_count is not None:
+            metadata["expected_placeholder_count"] = error.expected_placeholder_count
+        if error.actual_placeholder_count is not None:
+            metadata["actual_placeholder_count"] = error.actual_placeholder_count
+        if error.first_mismatched_placeholder is not None:
+            metadata["first_mismatched_placeholder"] = (
+                error.first_mismatched_placeholder
+            )
+        return metadata
+
+    @staticmethod
+    def _verified_prefix_line_count(
+        error: TranslationIncompleteError | None,
+    ) -> int:
+        if (
+            error is None
+            or not error.terminal_suffix_omission
+            or error.translated_prefix is None
+        ):
+            return -1
+        return error.actual_line_count or 0
+
+    @staticmethod
+    def _count_line_breaks(chunk: str) -> int:
+        """Count source line advances without double-counting CRLF."""
+        return chunk.count("\n") + chunk.count("\r") - chunk.count("\r\n")
+
+    @staticmethod
+    def _split_chunk_by_lines(chunk: str) -> list[str]:
+        """Bisect a failed chunk without changing or dropping source text."""
+        lines = chunk.splitlines(keepends=True)
+        if len(lines) <= 1:
+            return []
+
+        midpoint = len(lines) // 2
+        paragraph_boundaries = [
+            index for index in range(1, len(lines)) if not lines[index - 1].strip()
+        ]
+        split_at = (
+            min(
+                paragraph_boundaries,
+                key=lambda index: (abs(index - midpoint), index),
+            )
+            if paragraph_boundaries
+            else midpoint
+        )
+
+        subchunks = ["".join(lines[:split_at]), "".join(lines[split_at:])]
+        if not all(subchunks) or "".join(subchunks) != chunk:
+            return []
+        return subchunks
 
     def _raise_for_finish_reason(
         self,

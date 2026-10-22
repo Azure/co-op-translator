@@ -48,7 +48,7 @@ numpy = [
 # Microsoft Agent Framework's OpenAI provider currently requires OpenAI 2.x.
 openai = ">=2.25,<3"
 opencv-python = ">=5.0,<6"
-pillow = "^12.3.0"
+pillow = ">=12.3,<14.0"
 # Semantic Kernel 1.44 supports Pydantic releases below 2.14.
 pydantic = ">=2.13,<2.14"
 python-bidi = "^0.6.11"

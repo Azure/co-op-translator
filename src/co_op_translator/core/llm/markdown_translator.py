@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import asyncio
+from collections import Counter
 from dataclasses import dataclass
 import logging
 import re
@@ -93,6 +94,11 @@ class MarkdownTranslator(ABC):
     LINE_MARKER_RE = re.compile(r"@@LINE_(\d{4})@@")
     PROTECTED_PLACEHOLDER_RE = re.compile(
         r"@@(?:CODE_BLOCK|INLINE_CODE|LINK_DESTINATION)_\d+@@"
+    )
+    INLINE_CODE_PLACEHOLDER_RE = re.compile(r"@@INLINE_CODE_\d+@@")
+    INLINE_CODE_REORDERING_BARRIER_RE = re.compile(r"[\[\]|<>*_(){}~$]")
+    PROTECTED_SCOPE_TOKEN_RE = re.compile(
+        r"@@(?:CODE_BLOCK|INLINE_CODE|LINK_DESTINATION)_\d+@@|[\[\]|<>*_(){}~$]"
     )
     _disclaimer_templates_cache: dict[str, str] | None = None
 
@@ -673,20 +679,16 @@ class MarkdownTranslator(ABC):
 
         return "".join(rebuilt_lines)
 
-    def _validate_protected_placeholders(
-        self,
-        source_chunk: str,
-        translated_chunk: str,
-        md_file_path: Path,
-        chunk_label: str,
-        source_line_start: int,
-    ) -> None:
-        """Reject silent loss, duplication, or reordering of protected content."""
-        expected = self.PROTECTED_PLACEHOLDER_RE.findall(source_chunk)
-        actual = self.PROTECTED_PLACEHOLDER_RE.findall(translated_chunk)
-        if actual == expected:
-            return
+    @classmethod
+    def _structural_placeholders(cls, text: str) -> list[str]:
+        return [
+            placeholder
+            for placeholder in cls.PROTECTED_PLACEHOLDER_RE.findall(text)
+            if not cls.INLINE_CODE_PLACEHOLDER_RE.fullmatch(placeholder)
+        ]
 
+    @staticmethod
+    def _first_sequence_mismatch(expected: list[str], actual: list[str]) -> str | None:
         mismatch_index = next(
             (
                 index
@@ -697,16 +699,157 @@ class MarkdownTranslator(ABC):
             ),
             min(len(expected), len(actual)),
         )
-        first_mismatched_placeholder = (
-            expected[mismatch_index] if mismatch_index < len(expected) else None
+        if mismatch_index < len(expected):
+            return expected[mismatch_index]
+        if mismatch_index < len(actual):
+            return actual[mismatch_index]
+        return None
+
+    @classmethod
+    def _inline_code_placeholders_match(
+        cls, source_line: str, translated_line: str
+    ) -> bool:
+        expected = cls.INLINE_CODE_PLACEHOLDER_RE.findall(source_line)
+        actual = cls.INLINE_CODE_PLACEHOLDER_RE.findall(translated_line)
+        source_structural = cls._structural_placeholders(source_line)
+        actual_structural = cls._structural_placeholders(translated_line)
+        if (
+            not expected
+            and not actual
+            and not source_structural
+            and not actual_structural
+        ):
+            return True
+
+        source_context = cls.PROTECTED_PLACEHOLDER_RE.sub("", source_line)
+        translated_context = cls.PROTECTED_PLACEHOLDER_RE.sub("", translated_line)
+        has_structural_placeholder = bool(source_structural or actual_structural)
+        if (
+            has_structural_placeholder
+            or cls.INLINE_CODE_REORDERING_BARRIER_RE.search(source_context)
+            or cls.INLINE_CODE_REORDERING_BARRIER_RE.search(translated_context)
+        ):
+            return cls._protected_scope_skeleton(
+                source_line
+            ) == cls._protected_scope_skeleton(translated_line)
+        return Counter(expected) == Counter(actual)
+
+    @classmethod
+    def _protected_scope_skeleton(cls, line: str) -> list[str]:
+        skeleton: list[str] = []
+        previous_end = 0
+        for match in cls.PROTECTED_SCOPE_TOKEN_RE.finditer(line):
+            if line[previous_end : match.start()].strip():
+                skeleton.append("TEXT")
+            skeleton.append(match.group(0))
+            previous_end = match.end()
+        if line[previous_end:].strip():
+            skeleton.append("TEXT")
+        return skeleton
+
+    @classmethod
+    def _line_preserves_protected_placeholders(
+        cls, source_line: str, translated_line: str
+    ) -> bool:
+        return cls._structural_placeholders(
+            source_line
+        ) == cls._structural_placeholders(
+            translated_line
+        ) and cls._inline_code_placeholders_match(
+            source_line, translated_line
         )
-        first_missing_line = None
-        first_missing_source_line = None
-        if first_mismatched_placeholder is not None:
-            marker_offset = source_chunk.find(first_mismatched_placeholder)
-            first_missing_line = (
-                self._count_line_breaks(source_chunk[:marker_offset]) + 1
+
+    @classmethod
+    def _first_unsafe_placeholder(
+        cls, source_line: str, translated_line: str
+    ) -> str | None:
+        expected_structural = cls._structural_placeholders(source_line)
+        actual_structural = cls._structural_placeholders(translated_line)
+        if expected_structural != actual_structural:
+            return cls._first_sequence_mismatch(expected_structural, actual_structural)
+
+        expected_inline = cls.INLINE_CODE_PLACEHOLDER_RE.findall(source_line)
+        actual_inline = cls.INLINE_CODE_PLACEHOLDER_RE.findall(translated_line)
+        expected_counts = Counter(expected_inline)
+        actual_counts = Counter(actual_inline)
+        if expected_counts != actual_counts:
+            return next(
+                (
+                    placeholder
+                    for placeholder in expected_inline
+                    if expected_counts[placeholder] > actual_counts[placeholder]
+                ),
+                next(
+                    (
+                        placeholder
+                        for placeholder in actual_inline
+                        if actual_counts[placeholder] > expected_counts[placeholder]
+                    ),
+                    None,
+                ),
             )
+        return (
+            cls._first_sequence_mismatch(expected_inline, actual_inline)
+            or next(iter(expected_inline), None)
+            or next(iter(expected_structural), None)
+            or next(iter(actual_structural), None)
+        )
+
+    def _validate_protected_placeholders(
+        self,
+        source_chunk: str,
+        translated_chunk: str,
+        md_file_path: Path,
+        chunk_label: str,
+        source_line_start: int,
+    ) -> None:
+        """Reject unsafe loss, duplication, movement, or structural reordering."""
+        expected = self.PROTECTED_PLACEHOLDER_RE.findall(source_chunk)
+        actual = self.PROTECTED_PLACEHOLDER_RE.findall(translated_chunk)
+        if not expected and not actual:
+            return
+
+        source_lines = source_chunk.splitlines()
+        translated_lines = translated_chunk.splitlines()
+        line_count_matches = len(source_lines) == len(translated_lines)
+        if line_count_matches and all(
+            self._line_preserves_protected_placeholders(source_line, translated_line)
+            for source_line, translated_line in zip(source_lines, translated_lines)
+        ):
+            return
+
+        first_unsafe_line = next(
+            (
+                index + 1
+                for index, (source_line, translated_line) in enumerate(
+                    zip(source_lines, translated_lines)
+                )
+                if not self._line_preserves_protected_placeholders(
+                    source_line, translated_line
+                )
+            ),
+            None,
+        )
+        if first_unsafe_line is None and not line_count_matches:
+            first_unsafe_line = min(len(source_lines), len(translated_lines)) + 1
+
+        first_missing_line = first_unsafe_line
+        unsafe_line_index = (first_unsafe_line or 1) - 1
+        unsafe_source_line = (
+            source_lines[unsafe_line_index]
+            if unsafe_line_index < len(source_lines)
+            else ""
+        )
+        unsafe_translated_line = (
+            translated_lines[unsafe_line_index]
+            if unsafe_line_index < len(translated_lines)
+            else ""
+        )
+        first_mismatched_placeholder = self._first_unsafe_placeholder(
+            unsafe_source_line, unsafe_translated_line
+        )
+        first_missing_source_line = None
+        if first_missing_line is not None:
             first_missing_source_line = source_line_start + first_missing_line - 1
 
         detail = f"preserved {len(actual)} of {len(expected)} protected placeholders"
@@ -717,7 +860,7 @@ class MarkdownTranslator(ABC):
 
         raise TranslationIncompleteError(
             f"Markdown translation for chunk {chunk_label} of '{md_file_path.name}' "
-            f"did not preserve protected placeholders in order ({detail}).",
+            f"did not safely preserve protected placeholders ({detail}).",
             first_missing_line=first_missing_line,
             first_missing_source_line=first_missing_source_line,
             protected_placeholder_mismatch=True,

@@ -9,6 +9,7 @@ from co_op_translator.core.llm.markdown_translator import (
     TranslationIncompleteError,
 )
 from co_op_translator.utils.common.lang_utils import get_supported_language_codes
+from co_op_translator.utils.markdown import replace_code_blocks, restore_code_blocks
 from co_op_translator.utils.markdown.constants import SPLIT_DELIMITER
 
 # A sample markdown with a code block and a link for testing.
@@ -881,6 +882,280 @@ def test_protected_placeholder_error_identifies_source_line(
         "actual_placeholder_count": 0,
         "first_mismatched_placeholder": "@@INLINE_CODE_44@@",
     }
+
+
+def test_inline_code_reordering_restores_natural_chinese_order(
+    real_markdown_translator,
+):
+    document = (
+        "Use `base64.b64decode(...)` instead of downloading a `url` with "
+        "`requests`.\n"
+    )
+    protected, placeholder_map = replace_code_blocks(document)
+    translated = protected.replace(
+        "Use @@INLINE_CODE_0@@ instead of downloading a "
+        "@@INLINE_CODE_1@@ with @@INLINE_CODE_2@@.",
+        "使用 @@INLINE_CODE_0@@，而不是通过 @@INLINE_CODE_2@@ 下载 "
+        "@@INLINE_CODE_1@@。",
+    )
+
+    real_markdown_translator._validate_protected_placeholders(
+        protected,
+        translated,
+        Path("CHANGELOG.md"),
+        "1",
+        source_line_start=43,
+    )
+
+    assert restore_code_blocks(translated, placeholder_map) == (
+        "使用 `base64.b64decode(...)`，而不是通过 `requests` 下载 `url`。\n"
+    )
+
+
+def test_inline_code_reordering_within_line_preserves_exact_token_multiset(
+    real_markdown_translator,
+):
+    source = (
+        "use @@INLINE_CODE_24@@ instead of @@INLINE_CODE_25@@ with "
+        "@@INLINE_CODE_26@@\n"
+    )
+    translated = (
+        "use @@INLINE_CODE_24@@ with @@INLINE_CODE_26@@ instead of "
+        "@@INLINE_CODE_25@@\n"
+    )
+
+    real_markdown_translator._validate_protected_placeholders(
+        source,
+        translated,
+        Path("CHANGELOG.md"),
+        "1",
+        source_line_start=43,
+    )
+
+
+def test_inline_code_reordering_rejects_same_count_with_duplicate_token(
+    real_markdown_translator,
+):
+    source = "@@INLINE_CODE_24@@ @@INLINE_CODE_25@@ @@INLINE_CODE_26@@\n"
+    translated = "@@INLINE_CODE_24@@ @@INLINE_CODE_24@@ @@INLINE_CODE_26@@\n"
+
+    with pytest.raises(TranslationIncompleteError) as exc_info:
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("CHANGELOG.md"),
+            "1",
+            source_line_start=43,
+        )
+
+    error = exc_info.value
+    assert error.expected_placeholder_count == 3
+    assert error.actual_placeholder_count == 3
+    assert error.first_mismatched_placeholder == "@@INLINE_CODE_25@@"
+
+
+@pytest.mark.parametrize(
+    ("source", "translated"),
+    [
+        (
+            "| @@INLINE_CODE_1@@ | @@INLINE_CODE_2@@ |\n",
+            "| @@INLINE_CODE_2@@ | @@INLINE_CODE_1@@ |\n",
+        ),
+        (
+            "[@@INLINE_CODE_1@@](@@LINK_DESTINATION_1@@) and "
+            "[@@INLINE_CODE_2@@](@@LINK_DESTINATION_2@@)\n",
+            "[@@INLINE_CODE_2@@](@@LINK_DESTINATION_1@@) and "
+            "[@@INLINE_CODE_1@@](@@LINK_DESTINATION_2@@)\n",
+        ),
+        (
+            "**@@INLINE_CODE_1@@** and @@INLINE_CODE_2@@\n",
+            "**@@INLINE_CODE_2@@** and @@INLINE_CODE_1@@\n",
+        ),
+        (
+            "_@@INLINE_CODE_1@@_ and @@INLINE_CODE_2@@\n",
+            "_@@INLINE_CODE_2@@_ and @@INLINE_CODE_1@@\n",
+        ),
+        (
+            "(@@INLINE_CODE_1@@) and @@INLINE_CODE_2@@\n",
+            "(@@INLINE_CODE_2@@) and @@INLINE_CODE_1@@\n",
+        ),
+        (
+            "$@@INLINE_CODE_1@@ + @@INLINE_CODE_2@@$\n",
+            "$@@INLINE_CODE_2@@ + @@INLINE_CODE_1@@$\n",
+        ),
+        (
+            "**@@INLINE_CODE_1@@** and @@INLINE_CODE_2@@\n",
+            "@@INLINE_CODE_1@@ and **@@INLINE_CODE_2@@**\n",
+        ),
+    ],
+)
+def test_inline_code_reordering_rejects_markdown_boundary_crossing(
+    real_markdown_translator,
+    source,
+    translated,
+):
+    with pytest.raises(TranslationIncompleteError):
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("content.md"),
+            "1",
+            source_line_start=1,
+        )
+
+
+def test_inline_code_reordering_rejects_cross_line_move_with_same_global_order(
+    real_markdown_translator,
+):
+    source = "first @@INLINE_CODE_1@@\nsecond @@INLINE_CODE_2@@\n"
+    translated = "first\nsecond @@INLINE_CODE_1@@ @@INLINE_CODE_2@@\n"
+
+    with pytest.raises(TranslationIncompleteError) as exc_info:
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("content.md"),
+            "1",
+            source_line_start=1,
+        )
+
+    error = exc_info.value
+    assert error.first_mismatched_placeholder == "@@INLINE_CODE_1@@"
+    assert error.first_missing_line == 1
+    assert error.first_missing_source_line == 1
+
+
+@pytest.mark.parametrize(
+    ("source", "translated"),
+    [
+        (
+            "@@CODE_BLOCK_0@@Use @@INLINE_CODE_0@@.\n",
+            "Use @@INLINE_CODE_0@@.@@CODE_BLOCK_0@@\n",
+        ),
+        (
+            "[@@INLINE_CODE_0@@](@@LINK_DESTINATION_0@@)\n",
+            "[label](@@LINK_DESTINATION_0@@) @@INLINE_CODE_0@@\n",
+        ),
+        (
+            "@@CODE_BLOCK_0@@Use this.\n",
+            "Use this.@@CODE_BLOCK_0@@\n",
+        ),
+    ],
+)
+def test_inline_code_reordering_rejects_structural_boundary_crossing(
+    real_markdown_translator,
+    source,
+    translated,
+):
+    with pytest.raises(TranslationIncompleteError):
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("content.md"),
+            "1",
+            source_line_start=1,
+        )
+
+
+def test_placeholder_validation_ignores_unrelated_lines_without_placeholders(
+    real_markdown_translator,
+):
+    source = "**Translate me**\nUse @@INLINE_CODE_0@@ here.\n"
+    translated = "Translate me\nUse @@INLINE_CODE_0@@ here.\n"
+
+    real_markdown_translator._validate_protected_placeholders(
+        source,
+        translated,
+        Path("content.md"),
+        "1",
+        source_line_start=1,
+    )
+
+
+def test_structural_boundary_failure_reports_the_protected_token(
+    real_markdown_translator,
+):
+    source = "[label](@@LINK_DESTINATION_0@@)\n"
+    translated = "label @@LINK_DESTINATION_0@@\n"
+
+    with pytest.raises(TranslationIncompleteError) as exc_info:
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("content.md"),
+            "1",
+            source_line_start=5,
+        )
+
+    error = exc_info.value
+    assert error.first_mismatched_placeholder == "@@LINK_DESTINATION_0@@"
+    assert error.first_missing_line == 1
+    assert error.first_missing_source_line == 5
+
+
+def test_structural_placeholder_reordering_rejects_cross_line_move(
+    real_markdown_translator,
+):
+    source = "first @@LINK_DESTINATION_1@@\n" "second @@CODE_BLOCK_1@@\n"
+    translated = "first\n" "second @@LINK_DESTINATION_1@@ @@CODE_BLOCK_1@@\n"
+
+    with pytest.raises(TranslationIncompleteError) as exc_info:
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("content.md"),
+            "1",
+            source_line_start=10,
+        )
+
+    error = exc_info.value
+    assert error.first_mismatched_placeholder == "@@LINK_DESTINATION_1@@"
+    assert error.first_missing_line == 1
+    assert error.first_missing_source_line == 10
+
+
+def test_permitted_inline_reordering_does_not_mask_later_failure_metadata(
+    real_markdown_translator,
+):
+    source = (
+        "first @@INLINE_CODE_1@@ then @@INLINE_CODE_2@@\n" "second @@INLINE_CODE_3@@\n"
+    )
+    translated = "first @@INLINE_CODE_2@@ then @@INLINE_CODE_1@@\n" "second\n"
+
+    with pytest.raises(TranslationIncompleteError) as exc_info:
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("content.md"),
+            "1",
+            source_line_start=20,
+        )
+
+    error = exc_info.value
+    assert error.first_mismatched_placeholder == "@@INLINE_CODE_3@@"
+    assert error.first_missing_line == 2
+    assert error.first_missing_source_line == 21
+
+
+def test_structural_placeholder_reordering_remains_invalid(
+    real_markdown_translator,
+):
+    source = "@@CODE_BLOCK_1@@ links to @@LINK_DESTINATION_1@@\n"
+    translated = "@@LINK_DESTINATION_1@@ links to @@CODE_BLOCK_1@@\n"
+
+    with pytest.raises(TranslationIncompleteError) as exc_info:
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("content.md"),
+            "1",
+            source_line_start=1,
+        )
+
+    error = exc_info.value
+    assert error.expected_placeholder_count == 2
+    assert error.actual_placeholder_count == 2
+    assert error.first_mismatched_placeholder == "@@CODE_BLOCK_1@@"
 
 
 def test_reordered_placeholder_error_identifies_source_line(

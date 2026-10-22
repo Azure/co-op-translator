@@ -179,7 +179,12 @@ class TranslationStatusMixin:
 
                 # Check if the translation is outdated using metadata
                 if not is_image_up_to_date(
-                    image_file_path, translated_image_path, self.image_dir
+                    image_file_path,
+                    translated_image_path,
+                    self.image_dir,
+                    expected_metadata=self._get_image_pipeline_metadata(
+                        image_file_path
+                    ),
                 ):
                     outdated_images.append(
                         (image_file_path, translated_image_path, language_code)

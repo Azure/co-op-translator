@@ -426,6 +426,7 @@ def save_image_metadata(
     language_code: str,
     root_dir: Path | None = None,
     image_dir: Path | None = None,
+    extra_fields: dict | None = None,
 ) -> None:
     """
     Save translation metadata to the language-specific metadata file.
@@ -439,8 +440,11 @@ def save_image_metadata(
         language_code: Target language code
         root_dir: Root directory for relative path calculation
         image_dir: Base directory for translated images (not used, kept for compatibility)
+        extra_fields: Optional provider or pipeline metadata to persist
     """
     metadata = create_image_metadata(original_file, language_code, root_dir)
+    if extra_fields:
+        metadata.update(extra_fields)
 
     # Get the language directory (parent of the image file)
     # Structure: translated_images/<lang>/<filename>
@@ -545,7 +549,10 @@ def cleanup_orphan_image_metadata(lang_dir: Path) -> int:
 
 
 def is_image_up_to_date(
-    original_path: Path, translated_path: Path, image_dir: Path | None = None
+    original_path: Path,
+    translated_path: Path,
+    image_dir: Path | None = None,
+    expected_metadata: dict | None = None,
 ) -> bool:
     """
     Determine if a translated image is up to date with its original.
@@ -557,6 +564,7 @@ def is_image_up_to_date(
         original_path: Path to the original image
         translated_path: Path to the translated image
         image_dir: Deprecated, not used (kept for backwards compatibility)
+        expected_metadata: Optional metadata fields that must also match
 
     Returns:
         True if translated image is up to date, False otherwise
@@ -572,7 +580,12 @@ def is_image_up_to_date(
             return False
 
         current_hash = calculate_file_hash(original_path)
-        return stored_hash == current_hash
+        if stored_hash != current_hash:
+            return False
+        return all(
+            stored_metadata.get(key) == value
+            for key, value in (expected_metadata or {}).items()
+        )
     except Exception as e:
         logger.debug(f"Error checking image up-to-date status: {e}")
         return False

@@ -6,7 +6,7 @@ Co-op Translator detects changed source content, updates stale translations, and
 
 **Using an AI agent?** Install the [Co-op Translator skill](./docs/agents.md) to translate repository documentation, sync changed files, and review the results. Use it when multiple languages, linked documents, or recurring updates need a repeatable workflow.
 
-Translate Markdown and notebooks with **Azure OpenAI, OpenAI, or Anthropic**. Azure is optional for text translation; translating text inside images additionally requires Azure AI Vision.
+Translate Markdown and notebooks with **Azure OpenAI, OpenAI, or Anthropic**. Azure is optional for text translation; project-wide image translation uses Azure AI Vision, with optional image-model regeneration for root README images.
 
 ![Python 3.11–3.14](https://img.shields.io/badge/python-3.11--3.14-blue)
 [![Python package](https://img.shields.io/pypi/v/co-op-translator?color=4BA3FF)](https://pypi.org/project/co-op-translator/)
@@ -99,6 +99,8 @@ For documentation sites with a custom translation folder, use
 For larger text batches, use `translate -l "ko ja" -md --concurrency 4` to process up to four file/language translations at once. The default is one. See [text concurrency](./docs/cli.md#text-concurrency) for scope and usage.
 
 Want a translation pull request first? Follow [Your first README translation PR](./docs/github-actions.md#your-first-readme-translation-pr): choose one language, preview the work, then generate and review a README translation before merging. No image service setup is needed.
+
+For image-heavy READMEs, an experimental opt-in can regenerate only the root README's local images with Azure OpenAI, OpenAI, or Microsoft Foundry MAI. Generated text—especially small or dense text—can be malformed, duplicated, or omitted, so every output requires visual review. Azure AI Vision remains the default and continues to handle all other project images. See [Experimental README image generation](./docs/configuration.md#experimental-readme-image-generation).
 
 ## How it works
 

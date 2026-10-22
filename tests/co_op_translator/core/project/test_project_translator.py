@@ -80,6 +80,46 @@ def test_markdown_only_initialization_skips_image_text_translator(tmp_path):
     assert translator.text_translator is None
 
 
+def test_image_mode_attaches_enabled_readme_image_translator(tmp_path):
+    translator = ProjectTranslator(
+        "ko",
+        root_dir=tmp_path,
+        translation_types=["images"],
+        initialize_translators=False,
+    )
+    readme_image_instance = MagicMock()
+
+    with (
+        patch(
+            "co_op_translator.core.project.project_translator.ReadmeImageConfig.is_enabled",
+            return_value=True,
+        ),
+        patch(
+            "co_op_translator.core.project.project_translator.create_readme_image_translator",
+            return_value=readme_image_instance,
+        ) as create_readme_image,
+        patch(
+            "co_op_translator.core.project.project_translator.text_translator.TextTranslator.create",
+            return_value=MagicMock(),
+        ),
+        patch(
+            "co_op_translator.core.project.project_translator.image_translator.ImageTranslator.create",
+            return_value=MagicMock(),
+        ),
+        patch(
+            "co_op_translator.core.project.project_translator.markdown_translator.MarkdownTranslator.create",
+            return_value=MagicMock(),
+        ),
+    ):
+        translator._initialize_translators()
+
+    assert translator.readme_image_translator is readme_image_instance
+    assert (
+        translator.translation_manager.readme_image_translator is readme_image_instance
+    )
+    create_readme_image.assert_called_once_with()
+
+
 @pytest.fixture
 def temp_project_dir(tmp_path):
     """Create a temporary project directory structure."""

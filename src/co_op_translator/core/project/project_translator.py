@@ -14,6 +14,8 @@ from co_op_translator.config.constants import (
     SUPPORTED_IMAGE_EXTENSIONS,
     SUPPORTED_NOTEBOOK_EXTENSIONS,
 )
+from co_op_translator.config.readme_image_config import ReadmeImageConfig
+from co_op_translator.core.image_generation import create_readme_image_translator
 from co_op_translator.utils.common.lang_utils import (
     normalize_language_codes,
     get_supported_language_codes,
@@ -127,6 +129,7 @@ class ProjectTranslator:
 
         self.text_translator = None
         self.image_translator = None
+        self.readme_image_translator = None
         self.markdown_translator = None
         self.notebook_translator = None
         if initialize_translators:
@@ -159,16 +162,19 @@ class ProjectTranslator:
             concurrency=concurrency,
             include_patterns=self.path_config.include_patterns,
             exclude_patterns=self.path_config.exclude_patterns,
+            readme_image_translator=self.readme_image_translator,
         )
 
     def _initialize_translators(self) -> None:
         """Initialize provider-backed translators and attach them to the manager."""
         expected_images = "images" in self.translation_types
+        expected_readme_images = expected_images and ReadmeImageConfig.is_enabled()
         expected_notebooks = "notebook" in self.translation_types
         if (
             (not expected_images or self.text_translator is not None)
             and self.markdown_translator is not None
             and (not expected_images or self.image_translator is not None)
+            and (not expected_readme_images or self.readme_image_translator is not None)
             and (not expected_notebooks or self.notebook_translator is not None)
         ):
             return
@@ -179,6 +185,7 @@ class ProjectTranslator:
             text_translator.TextTranslator.create() if expected_images else None
         )
         new_image_translator = None
+        new_readme_image_translator = None
 
         if expected_images:
             try:
@@ -197,6 +204,9 @@ class ProjectTranslator:
             logger.debug(
                 f"Image translation disabled for project '{self.root_dir.name}': Only {', '.join(self.translation_types)} files will be processed."
             )
+
+        if expected_readme_images:
+            new_readme_image_translator = create_readme_image_translator()
 
         new_markdown_translator = markdown_translator.MarkdownTranslator.create(
             self.root_dir,
@@ -218,11 +228,15 @@ class ProjectTranslator:
 
         self.text_translator = new_text_translator
         self.image_translator = new_image_translator
+        self.readme_image_translator = new_readme_image_translator
         self.markdown_translator = new_markdown_translator
         self.notebook_translator = new_notebook_translator
         if hasattr(self, "translation_manager"):
             self.translation_manager.markdown_translator = self.markdown_translator
             self.translation_manager.image_translator = self.image_translator
+            self.translation_manager.readme_image_translator = (
+                self.readme_image_translator
+            )
             self.translation_manager.notebook_translator = self.notebook_translator
 
     def translate_project(

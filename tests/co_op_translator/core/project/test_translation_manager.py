@@ -46,6 +46,20 @@ class FakeNoTextImageTranslator(FakeImageTranslator):
             return original_image.copy()
 
 
+class FakeReadmeImageTranslator(FakeImageTranslator):
+    metadata_fingerprint = "fake-readme-image:model:v1"
+
+    def translate_image(self, image_path, language_code, fast_mode=False):
+        self.calls.append((Path(image_path), language_code, fast_mode))
+        return Image.new("RGB", (10, 10), "purple")
+
+
+class FailingReadmeImageTranslator(FakeReadmeImageTranslator):
+    def translate_image(self, image_path, language_code, fast_mode=False):
+        self.calls.append((Path(image_path), language_code, fast_mode))
+        raise RuntimeError("generation failed")
+
+
 class FakeTruncatingMarkdownTranslator:
     async def translate_markdown(
         self, document, language_code, source_path=None, **kwargs
@@ -228,6 +242,49 @@ async def test_translate_image_saves_original_when_no_text_detected(
     assert translated_path.exists()
     assert translation_manager.image_translator.calls == [
         (image_file.resolve(), "ko", False)
+    ]
+
+
+@pytest.mark.asyncio
+async def test_readme_image_uses_model_while_other_images_use_vision(
+    translation_manager, temp_project_dir
+):
+    readme_image = temp_project_dir / "images" / "readme.png"
+    other_image = temp_project_dir / "images" / "other.png"
+    Image.new("RGB", (10, 10), "white").save(readme_image)
+    Image.new("RGB", (10, 10), "white").save(other_image)
+    (temp_project_dir / "README.md").write_text(
+        "![Cover](images/readme.png)", encoding="utf-8"
+    )
+    generation_translator = FakeReadmeImageTranslator()
+    translation_manager.readme_image_translator = generation_translator
+    translation_manager.readme_image_paths = {readme_image.resolve()}
+
+    await translation_manager.translate_image(readme_image, "ko")
+    await translation_manager.translate_image(other_image, "ko")
+
+    assert generation_translator.calls == [(readme_image.resolve(), "ko", False)]
+    assert translation_manager.image_translator.calls == [
+        (other_image.resolve(), "ko", False)
+    ]
+
+
+@pytest.mark.asyncio
+async def test_readme_image_generation_falls_back_to_vision(
+    translation_manager, temp_project_dir
+):
+    readme_image = temp_project_dir / "images" / "readme.png"
+    Image.new("RGB", (10, 10), "white").save(readme_image)
+    failing_translator = FailingReadmeImageTranslator()
+    translation_manager.readme_image_translator = failing_translator
+    translation_manager.readme_image_paths = {readme_image.resolve()}
+
+    result = await translation_manager.translate_image(readme_image, "ko")
+
+    assert Path(result).exists()
+    assert failing_translator.calls == [(readme_image.resolve(), "ko", False)]
+    assert translation_manager.image_translator.calls == [
+        (readme_image.resolve(), "ko", False)
     ]
 
 

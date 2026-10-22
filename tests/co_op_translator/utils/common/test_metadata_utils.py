@@ -545,6 +545,32 @@ def test_is_image_up_to_date(tmp_path):
     assert is_image_up_to_date(original_path, translated_path)
 
 
+def test_image_metadata_can_require_pipeline_fingerprint(tmp_path):
+    original_path = tmp_path / "original.png"
+    translated_path = tmp_path / "translated_images" / "ko" / "translated.webp"
+    original_path.write_bytes(b"source")
+    translated_path.parent.mkdir(parents=True)
+    translated_path.write_bytes(b"translated")
+    save_image_metadata(
+        translated_path,
+        original_path,
+        "ko",
+        tmp_path,
+        extra_fields={"readme_image_translation_pipeline": "azure-model:v1"},
+    )
+
+    assert is_image_up_to_date(
+        original_path,
+        translated_path,
+        expected_metadata={"readme_image_translation_pipeline": "azure-model:v1"},
+    )
+    assert not is_image_up_to_date(
+        original_path,
+        translated_path,
+        expected_metadata={"readme_image_translation_pipeline": "foundry-model:v2"},
+    )
+
+
 def test_is_image_up_to_date_outdated(tmp_path):
     """Test detecting outdated image translation."""
     # Setup

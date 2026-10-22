@@ -16,12 +16,16 @@ from co_op_translator.utils.common.metadata_utils import (
     is_image_up_to_date,
     save_image_metadata,
 )
+from co_op_translator.utils.markdown.readme_images import discover_readme_images
 from co_op_translator.utils.vision.image_utils import save_optimized_image
 
 logger = logging.getLogger(__name__)
 
 
 class ProjectImageTranslationMixin:
+    README_PIPELINE_METADATA_KEY = "readme_image_translation_pipeline"
+    VISION_PIPELINE_FINGERPRINT = "azure-ai-vision"
+
     def _get_translated_image_path(self, image_path: Path, language_code: str) -> Path:
         translated_filename = generate_translated_filename(
             image_path, language_code, self.root_dir
@@ -32,8 +36,8 @@ class ProjectImageTranslationMixin:
         self, image_path: Path, translated_path: Path, language_code: str
     ) -> str:
         translated_path.parent.mkdir(parents=True, exist_ok=True)
-        original_image = Image.open(image_path)
-        save_optimized_image(original_image, translated_path)
+        with Image.open(image_path) as original_image:
+            save_optimized_image(original_image.copy(), translated_path)
         save_image_metadata(
             translated_path,
             image_path,
@@ -42,6 +46,45 @@ class ProjectImageTranslationMixin:
             image_dir=Path(self.image_dir),
         )
         return str(translated_path)
+
+    def _is_readme_image(self, image_path: Path) -> bool:
+        return image_path.resolve() in getattr(self, "readme_image_paths", set())
+
+    def _get_image_translator(self, image_path: Path):
+        if self._is_readme_image(image_path):
+            readme_translator = getattr(self, "readme_image_translator", None)
+            if readme_translator is not None:
+                return readme_translator
+        return self.image_translator
+
+    def _get_image_pipeline_metadata(
+        self, image_path: Path, translator=None
+    ) -> dict[str, str]:
+        if not self._is_readme_image(image_path):
+            return {}
+        translator = translator or self._get_image_translator(image_path)
+        if translator is getattr(self, "readme_image_translator", None):
+            fingerprint = getattr(translator, "metadata_fingerprint", None)
+            if fingerprint:
+                return {self.README_PIPELINE_METADATA_KEY: fingerprint}
+        return {self.README_PIPELINE_METADATA_KEY: self.VISION_PIPELINE_FINGERPRINT}
+
+    async def _run_image_translator(
+        self, translator, image_path: Path, language_code: str, fast_mode: bool
+    ):
+        translate_async = getattr(translator, "translate_image_async", None)
+        if translate_async is not None:
+            return await translate_async(
+                image_path,
+                language_code,
+                fast_mode=fast_mode,
+            )
+        return await asyncio.to_thread(
+            translator.translate_image,
+            image_path,
+            language_code,
+            fast_mode=fast_mode,
+        )
 
     async def translate_image(
         self, image_path: Path, language_code: str, fast_mode: bool = False
@@ -52,7 +95,8 @@ class ProjectImageTranslationMixin:
         translated_image_path = self._get_translated_image_path(
             image_path, language_code
         )
-        if not self.image_translator:
+        selected_translator = self._get_image_translator(image_path)
+        if not selected_translator:
             logger.info(
                 f"Image translation skipped for {image_path} due to missing Azure AI Service configuration"
             )
@@ -71,30 +115,50 @@ class ProjectImageTranslationMixin:
 
         try:
             if translated_image_path.exists() and is_image_up_to_date(
-                image_path, translated_image_path, self.image_dir
+                image_path,
+                translated_image_path,
+                self.image_dir,
+                expected_metadata=self._get_image_pipeline_metadata(
+                    image_path, selected_translator
+                ),
             ):
                 logger.info(
                     f"Skipping image translation; up-to-date output exists: {translated_image_path}"
                 )
                 return str(translated_image_path)
 
-            translate_async = getattr(
-                self.image_translator,
-                "translate_image_async",
-                None,
+            metadata = self._get_image_pipeline_metadata(
+                image_path, selected_translator
             )
-            if translate_async is not None:
-                translated_image = await translate_async(
+            try:
+                translated_image = await self._run_image_translator(
+                    selected_translator,
                     image_path,
                     language_code,
-                    fast_mode=fast_mode,
+                    fast_mode,
                 )
-            else:
-                translated_image = await asyncio.to_thread(
-                    self.image_translator.translate_image,
+            except Exception:
+                readme_translator = getattr(self, "readme_image_translator", None)
+                if (
+                    selected_translator is not readme_translator
+                    or self.image_translator is None
+                ):
+                    raise
+                logger.warning(
+                    "README image generation failed for %s; falling back to "
+                    "Azure AI Vision.",
+                    image_path,
+                    exc_info=True,
+                )
+                selected_translator = self.image_translator
+                metadata = self._get_image_pipeline_metadata(
+                    image_path, selected_translator
+                )
+                translated_image = await self._run_image_translator(
+                    selected_translator,
                     image_path,
                     language_code,
-                    fast_mode=fast_mode,
+                    fast_mode,
                 )
             translated_image_path.parent.mkdir(parents=True, exist_ok=True)
             save_optimized_image(translated_image, translated_image_path)
@@ -104,6 +168,7 @@ class ProjectImageTranslationMixin:
                 language_code,
                 self.root_dir,
                 image_dir=Path(self.image_dir),
+                extra_fields=metadata,
             )
 
             logger.info(
@@ -132,6 +197,10 @@ class ProjectImageTranslationMixin:
         errors = []
 
         logger.info("Starting image translation tasks...")
+
+        self.readme_image_paths = discover_readme_images(
+            Path(self.root_dir) / "README.md", Path(self.root_dir)
+        )
 
         if update:
             for language_code in self.language_codes:
@@ -163,7 +232,12 @@ class ProjectImageTranslationMixin:
 
                 if translated_image_path.exists() and not update:
                     if is_image_up_to_date(
-                        image_file_path, translated_image_path, self.image_dir
+                        image_file_path,
+                        translated_image_path,
+                        self.image_dir,
+                        expected_metadata=self._get_image_pipeline_metadata(
+                            image_file_path
+                        ),
                     ):
                         logger.info(
                             f"Skipping up-to-date image: {translated_image_path}"

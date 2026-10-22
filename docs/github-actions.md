@@ -35,6 +35,8 @@ Image translation additionally requires Azure AI Vision:
 - `AZURE_AI_SERVICE_API_KEY`
 - `AZURE_AI_SERVICE_ENDPOINT`
 
+Optionally, regenerate only root README images with Azure OpenAI by adding `README_IMAGE_TRANSLATION_ENABLED=true` as a workflow environment variable and `AZURE_OPENAI_IMAGE_DEPLOYMENT_NAME` as a repository secret. This feature is experimental: generated text can be malformed, duplicated, or omitted, so require visual review before merge. The existing Azure OpenAI key, endpoint, and API version are reused. Also add `translated_images/` to the pull request step's `add-paths`. OpenAI and Foundry MAI alternatives are documented under [Experimental README image generation](configuration.md#experimental-readme-image-generation).
+
 See [Configuration](configuration.md) and [Azure AI Setup](azure-ai-setup.md) for local configuration details.
 
 ## Standard Setup
@@ -152,7 +154,7 @@ Change `TARGET_LANGUAGES` to the languages your project needs. The review uses t
 
 ### Optional: notebooks and images
 
-For notebooks, add `-nb` to the translation command and set `notebook=True` in the review step. For image text, configure the two [Azure AI Vision secrets](#prerequisites), pass them in the translation step's `env`, add `-img` to the command, and add `translated_images/` to the PR step's `add-paths`. Review translated images visually; the deterministic review does not certify image text or linguistic accuracy.
+For notebooks, add `-nb` to the translation command and set `notebook=True` in the review step. For image text, configure the two [Azure AI Vision secrets](#prerequisites), pass them in the translation step's `env`, add `-img` to the command, and add `translated_images/` to the PR step's `add-paths`. You may also enable the README image model described above; README images then use that provider while all other images remain on Azure AI Vision. Review translated images visually; the deterministic review does not certify image text or linguistic accuracy.
 
 ## GitHub App Setup
 

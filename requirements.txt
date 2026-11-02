@@ -71,7 +71,7 @@ opentelemetry-semantic-conventions==0.65b0 ; python_version >= "3.11" and python
 packaging==26.3 ; python_version >= "3.11" and python_version < "3.15"
 parse==1.22.1 ; python_version >= "3.11" and python_version < "3.15"
 pathable==0.4.4 ; python_version >= "3.11" and python_version < "3.15"
-pillow==12.3.0 ; python_version >= "3.11" and python_version < "3.15"
+pillow==13.0.0 ; python_version >= "3.11" and python_version < "3.15"
 prance==26.7.19.0 ; python_version >= "3.11" and python_version < "3.15"
 propcache==0.5.2 ; python_version >= "3.11" and python_version < "3.15"
 pybars4==0.9.13 ; python_version >= "3.11" and python_version < "3.15"

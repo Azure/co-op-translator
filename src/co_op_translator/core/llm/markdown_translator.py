@@ -736,9 +736,38 @@ class MarkdownTranslator(ABC):
 
     @classmethod
     def _protected_scope_skeleton(cls, line: str) -> list[str]:
+        matches = list(cls.PROTECTED_SCOPE_TOKEN_RE.finditer(line))
+        if not cls._structural_placeholders(line):
+            skeleton: list[str] = []
+            scope_placeholders: list[str] = []
+            scope_has_text = False
+            previous_end = 0
+            for match in matches:
+                if line[previous_end : match.start()].strip():
+                    scope_has_text = True
+
+                token = match.group(0)
+                if cls.INLINE_CODE_PLACEHOLDER_RE.fullmatch(token):
+                    scope_placeholders.append(token)
+                else:
+                    if scope_has_text:
+                        skeleton.append("TEXT")
+                    skeleton.extend(scope_placeholders)
+                    skeleton.append(token)
+                    scope_placeholders = []
+                    scope_has_text = False
+                previous_end = match.end()
+
+            if line[previous_end:].strip():
+                scope_has_text = True
+            if scope_has_text:
+                skeleton.append("TEXT")
+            skeleton.extend(scope_placeholders)
+            return skeleton
+
         skeleton: list[str] = []
         previous_end = 0
-        for match in cls.PROTECTED_SCOPE_TOKEN_RE.finditer(line):
+        for match in matches:
             if line[previous_end : match.start()].strip():
                 skeleton.append("TEXT")
             skeleton.append(match.group(0))

@@ -933,6 +933,46 @@ def test_inline_code_reordering_within_line_preserves_exact_token_multiset(
     )
 
 
+def test_inline_code_can_move_with_translated_text_inside_table_cell(
+    real_markdown_translator,
+):
+    source = (
+        "| @@INLINE_CODE_19@@ | Declares @@INLINE_CODE_20@@, maps env vars, "
+        "defines the @@INLINE_CODE_21@@ protocol |\n"
+    )
+    translated = (
+        "| @@INLINE_CODE_19@@ | Dichiara @@INLINE_CODE_20@@, mappa le variabili "
+        "d'ambiente, definisce il protocollo @@INLINE_CODE_21@@ |\n"
+    )
+
+    real_markdown_translator._validate_protected_placeholders(
+        source,
+        translated,
+        Path("02-scaffold-multi-agent.md"),
+        "1",
+        source_line_start=90,
+    )
+
+
+def test_inline_code_reordering_rejects_missing_table_cell_prose(
+    real_markdown_translator,
+):
+    source = (
+        "| @@INLINE_CODE_19@@ | Declares @@INLINE_CODE_20@@ and defines the "
+        "@@INLINE_CODE_21@@ protocol |\n"
+    )
+    translated = "| @@INLINE_CODE_19@@ | @@INLINE_CODE_20@@ @@INLINE_CODE_21@@ |\n"
+
+    with pytest.raises(TranslationIncompleteError):
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("02-scaffold-multi-agent.md"),
+            "1",
+            source_line_start=90,
+        )
+
+
 def test_inline_code_reordering_rejects_same_count_with_duplicate_token(
     real_markdown_translator,
 ):
@@ -952,6 +992,28 @@ def test_inline_code_reordering_rejects_same_count_with_duplicate_token(
     assert error.expected_placeholder_count == 3
     assert error.actual_placeholder_count == 3
     assert error.first_mismatched_placeholder == "@@INLINE_CODE_25@@"
+
+
+def test_structural_placeholder_validation_rejects_duplicated_link_destination(
+    real_markdown_translator,
+):
+    source = "[Support](@@LINK_DESTINATION_20@@)\n"
+    translated = "[Support](@@LINK_DESTINATION_20@@) @@LINK_DESTINATION_20@@\n"
+
+    with pytest.raises(TranslationIncompleteError) as exc_info:
+        real_markdown_translator._validate_protected_placeholders(
+            source,
+            translated,
+            Path("SUPPORT.md"),
+            "1",
+            source_line_start=6,
+        )
+
+    error = exc_info.value
+    assert error.protected_placeholder_mismatch is True
+    assert error.expected_placeholder_count == 1
+    assert error.actual_placeholder_count == 2
+    assert error.first_mismatched_placeholder == "@@LINK_DESTINATION_20@@"
 
 
 @pytest.mark.parametrize(

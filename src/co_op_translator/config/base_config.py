@@ -65,6 +65,8 @@ class Config:
                 for key, meta in font_mappings.items():
                     if not isinstance(meta, dict):
                         continue
+                    if meta.get("translation_status", "supported") != "supported":
+                        continue
                     key_str = str(key)
                     canon = normalize_language_code(key_str)
                     # Optional developer warning when a non-canonical key is present

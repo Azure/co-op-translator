@@ -1,9 +1,14 @@
+import pytest
+
 from co_op_translator.utils.common.lang_utils import (
     normalize_language_code,
     normalize_language_codes,
     ALIAS_TO_BCP47,
+    get_configured_language_codes,
     get_supported_language_codes,
+    get_temporarily_unsupported_languages,
     is_supported_language,
+    validate_translation_language_code,
 )
 
 
@@ -43,5 +48,19 @@ def test_supported_languages_read_packaged_font_mappings():
 
     assert "en" in supported_languages
     assert "zh-TW" in supported_languages
+    assert "mni" not in supported_languages
+    assert "mni" in get_configured_language_codes()
+    assert "mni" in get_temporarily_unsupported_languages()
     assert is_supported_language("tw") is True
+    assert is_supported_language("mni") is False
     assert is_supported_language("xx") is False
+
+
+def test_temporarily_unsupported_language_has_clear_error():
+    with pytest.raises(ValueError, match="temporarily unsupported"):
+        validate_translation_language_code("mni")
+
+
+def test_unknown_language_has_clear_error():
+    with pytest.raises(ValueError, match="Unsupported language code"):
+        validate_translation_language_code("xx")

@@ -172,4 +172,8 @@ km:
 mni:
   name: "Manipuri (Meitei Mayek)"
   font: "NotoSansMeeteiMayek-Medium.ttf"
-  
+  translation_status: "temporarily_unsupported"
+  translation_status_reason: >-
+    Current model deployments do not reliably produce valid Meitei Mayek
+    output. Support will be re-evaluated after future model updates.
+

@@ -63,7 +63,9 @@ def test_write_output_file(temp_dir):
 
 
 def test_readme_templates_load_from_package_resources():
-    assert file_utils.LANG_TABLE_START in load_languages_table_template()
+    languages_template = load_languages_table_template()
+    assert file_utils.LANG_TABLE_START in languages_template
+    assert "mni/README.md" not in languages_template
     assert file_utils.OTHER_COURSES_START in load_other_courses_template()
 
 

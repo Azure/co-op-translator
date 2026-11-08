@@ -125,6 +125,20 @@ def test_custom_output_dry_run_does_not_create_directories(cli, tmp_path, mode):
     cli.LLMConfig.validate_connectivity.assert_not_called()
 
 
+def test_temporarily_unsupported_language_fails_before_provider_checks(cli, tmp_path):
+    (tmp_path / "README.md").write_text("# Hello\n", encoding="utf-8")
+
+    result = CliRunner().invoke(
+        cli.translate_command,
+        ["-r", str(tmp_path), "-l", "mni", "-md", "-y"],
+    )
+
+    assert result.exit_code == 3
+    assert "temporarily unsupported" in result.output
+    cli.Config.check_configuration.assert_not_called()
+    cli.LLMConfig.validate_connectivity.assert_not_called()
+
+
 @pytest.mark.parametrize("preview", [True, False])
 def test_alias_migration_and_metadata_use_custom_output(
     cli, provider, tmp_path, preview

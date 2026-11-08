@@ -93,3 +93,13 @@ def test_build_translation_request_rejects_empty_all_mapping(monkeypatch, tmp_pa
             language_codes="all",
             root_dir=str(tmp_path),
         )
+
+
+def test_build_translation_request_rejects_temporarily_unsupported_language(
+    tmp_path,
+):
+    with pytest.raises(ValueError, match="temporarily unsupported"):
+        request.build_translation_request(
+            language_codes="mni",
+            root_dir=str(tmp_path),
+        )

@@ -6,7 +6,10 @@ from pathlib import Path
 from typing import Iterable
 
 from co_op_translator.config.base_config import Config
-from co_op_translator.utils.common.lang_utils import normalize_language_codes
+from co_op_translator.utils.common.lang_utils import (
+    normalize_language_codes,
+    validate_translation_language_codes,
+)
 
 DEFAULT_TRANSLATION_TYPES = ("markdown", "notebook", "images")
 
@@ -74,7 +77,9 @@ def normalize_requested_language_codes(
     else:
         raw_codes = [str(code).strip() for code in language_codes]
 
-    normalized = tuple(normalize_language_codes(raw_codes))
+    normalized = tuple(
+        validate_translation_language_codes(normalize_language_codes(raw_codes))
+    )
     if not normalized:
         raise ValueError("No valid language codes provided")
 

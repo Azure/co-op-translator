@@ -61,7 +61,12 @@ If you want to add a new language, update the language and font mappings under `
 | ml | Malayalam | NotoSans-Medium.ttf | No | No |
 | kn | Kannada | NotoSans-Medium.ttf | No | No |
 | km | Khmer | NotoSansKhmer-Medium.ttf | No | No |
-| mni | Manipuri (Meitei Mayek) | NotoSansMeeteiMayek-Medium.ttf | No | No |
+
+## Temporarily Unsupported Languages
+
+| Language Code | Language Name | Status | Reason |
+| --- | --- | --- | --- |
+| mni | Manipuri (Meitei Mayek) | Temporarily unsupported | Current model deployments do not reliably produce valid Meitei Mayek output. It is excluded from `all` translations and explicit requests fail before any model call. Support will be re-evaluated after future model updates and restored once translation quality checks pass. |
 
 ## Add a Language
 

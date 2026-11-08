@@ -25,6 +25,7 @@ from co_op_translator.core.project.translation.memory import TranslationStatePro
 from co_op_translator.core.project.translation.request import (
     TranslationMode,
     build_translation_request,
+    normalize_requested_language_codes,
     resolve_translation_types,
 )
 from co_op_translator.core.vision.image_translator import ImageTranslator
@@ -50,6 +51,7 @@ from co_op_translator.utils.common.progress import get_progress_reporter
 from co_op_translator.utils.common.token_estimation import estimate_translation_tokens
 from co_op_translator.utils.common.word_estimation import estimate_translation_words
 from co_op_translator.utils.common.context import resolve_translation_context
+from co_op_translator.utils.common.lang_utils import validate_translation_language_code
 from co_op_translator.utils.common.exit_codes import PartialTranslationError
 from co_op_translator.utils.common.files.project_paths import ProjectPathConfig
 from co_op_translator.utils.common.planning import (
@@ -131,6 +133,7 @@ async def translate_markdown_content(
 ) -> str:
     """Translate markdown content without project path rewriting or file I/O."""
 
+    language_code = validate_translation_language_code(language_code)
     resolved_options = _coerce_markdown_translation_options(options)
     context = resolve_translation_context(
         resolved_options.context,
@@ -155,6 +158,7 @@ async def translate_notebook_content(
 ) -> str:
     """Translate notebook markdown cells without project path rewriting or file I/O."""
 
+    language_code = validate_translation_language_code(language_code)
     resolved_options = _coerce_notebook_translation_options(options)
     context = resolve_translation_context(
         resolved_options.context,
@@ -179,6 +183,7 @@ def start_markdown_agent_translation(
 ) -> dict[str, object]:
     """Prepare provider-free Markdown chunks for host-agent translation."""
 
+    language_code = validate_translation_language_code(language_code)
     return start_markdown_agent_translation_job(
         document,
         language_code,
@@ -202,6 +207,7 @@ def start_notebook_agent_translation(
 ) -> dict[str, object]:
     """Prepare provider-free notebook Markdown chunks for host-agent translation."""
 
+    language_code = validate_translation_language_code(language_code)
     return start_notebook_agent_translation_job(
         notebook,
         language_code,
@@ -225,6 +231,7 @@ def translate_image_content(
 ) -> Image.Image:
     """Translate image text and return a rendered image without saving metadata."""
 
+    language_code = validate_translation_language_code(language_code)
     resolved_options = _coerce_image_translation_options(options)
     translator = ImageTranslator.create(
         root_dir=resolved_options.root_dir,
@@ -368,6 +375,8 @@ def _run_translation_impl(
                 readme_only=readme_only,
             )
         )
+
+        normalize_requested_language_codes(language_codes)
 
         if not dry_run:
             Config.check_configuration()

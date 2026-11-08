@@ -16,7 +16,7 @@ from co_op_translator.config.constants import (
 )
 from co_op_translator.utils.common.lang_utils import (
     normalize_language_codes,
-    get_supported_language_codes,
+    get_configured_language_codes,
     ALIAS_TO_BCP47,
 )
 
@@ -113,7 +113,7 @@ class ProjectTranslator:
             present_subdirs = [p for p in self.root_dir.iterdir() if p.is_dir()]
         except Exception:
             present_subdirs = []
-        supported = set(get_supported_language_codes())
+        supported = set(get_configured_language_codes())
         aliases = set(ALIAS_TO_BCP47.keys())
         for sub in present_subdirs:
             name = sub.name

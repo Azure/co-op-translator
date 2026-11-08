@@ -152,6 +152,7 @@ def test_get_language_codes_reads_packaged_font_mappings():
 
     assert "en" in language_codes
     assert "zh-TW" in language_codes
+    assert "mni" not in language_codes
     assert len(language_codes) == len(set(language_codes))
 
 

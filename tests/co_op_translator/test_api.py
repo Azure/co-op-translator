@@ -10,6 +10,12 @@ from co_op_translator.utils.common.exit_codes import PartialTranslationError
 
 
 @pytest.mark.asyncio
+async def test_translate_markdown_content_rejects_temporarily_unsupported_language():
+    with pytest.raises(ValueError, match="temporarily unsupported"):
+        await api.translate_markdown_content("# Hello", "mni")
+
+
+@pytest.mark.asyncio
 async def test_run_translation_calls_project_translator(tmp_path):
     root_dir = tmp_path
 

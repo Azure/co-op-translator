@@ -271,6 +271,7 @@ def translate_command(
     from co_op_translator.core.project.translation.request import (
         TranslationMode,
         build_translation_request,
+        normalize_requested_language_codes,
         resolve_translation_types,
     )
 
@@ -297,6 +298,11 @@ def translate_command(
                 readme_only=readme_only,
             )
         )
+
+        try:
+            normalize_requested_language_codes(language_codes)
+        except ValueError as exc:
+            raise CliExitError(str(exc), EXIT_CONFIGURATION) from exc
 
         # Validate root directory and README before checking provider credentials
         try:

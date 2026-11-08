@@ -83,9 +83,11 @@ def normalize_language_codes(codes: Iterable[str]) -> List[str]:
 
 
 def get_supported_language_codes() -> List[str]:
-    """Return canonical supported codes (keys) from font_language_mappings.yml.
+    """Return canonical language codes currently enabled for translation.
 
-    Note: This list reflects our packaging and is used when "all" is selected.
+    Languages marked with a non-``supported`` translation status remain in the
+    font mappings for existing output compatibility, but are excluded from this
+    list and from ``all`` translation runs.
     """
     try:
         mappings_resource = resources.files("co_op_translator.fonts").joinpath(
@@ -94,13 +96,79 @@ def get_supported_language_codes() -> List[str]:
         with mappings_resource.open("r", encoding="utf-8") as file:
             font_mappings = yaml.safe_load(file) or {}
             return [
-                lang_code
+                normalize_language_code(str(lang_code))
+                for lang_code, meta in font_mappings.items()
+                if isinstance(meta, dict)
+                and meta.get("translation_status", "supported") == "supported"
+            ]
+    except Exception as e:
+        logger.warning(f"Failed to load font mappings: {e}")
+        return []
+
+
+def get_configured_language_codes() -> List[str]:
+    """Return all configured language codes, including disabled languages."""
+    try:
+        mappings_resource = resources.files("co_op_translator.fonts").joinpath(
+            "font_language_mappings.yml"
+        )
+        with mappings_resource.open("r", encoding="utf-8") as file:
+            font_mappings = yaml.safe_load(file) or {}
+            return [
+                normalize_language_code(str(lang_code))
                 for lang_code, meta in font_mappings.items()
                 if isinstance(meta, dict)
             ]
     except Exception as e:
         logger.warning(f"Failed to load font mappings: {e}")
         return []
+
+
+def get_temporarily_unsupported_languages() -> dict[str, str]:
+    """Return temporarily disabled language codes and user-facing reasons."""
+    try:
+        mappings_resource = resources.files("co_op_translator.fonts").joinpath(
+            "font_language_mappings.yml"
+        )
+        with mappings_resource.open("r", encoding="utf-8") as file:
+            font_mappings = yaml.safe_load(file) or {}
+            return {
+                normalize_language_code(str(lang_code)): str(
+                    meta.get(
+                        "translation_status_reason",
+                        "Translation support is temporarily unavailable.",
+                    )
+                )
+                for lang_code, meta in font_mappings.items()
+                if isinstance(meta, dict)
+                and meta.get("translation_status") == "temporarily_unsupported"
+            }
+    except Exception as e:
+        logger.warning(f"Failed to load font mappings: {e}")
+        return {}
+
+
+def validate_translation_language_codes(codes: Iterable[str]) -> List[str]:
+    """Return canonical codes or raise a clear availability error."""
+    temporarily_unsupported = get_temporarily_unsupported_languages()
+    supported = set(get_supported_language_codes())
+    validated: List[str] = []
+    for code in codes:
+        canon = normalize_language_code(code)
+        if canon in temporarily_unsupported:
+            raise ValueError(
+                f"Language '{canon}' is temporarily unsupported. "
+                f"{temporarily_unsupported[canon]}"
+            )
+        if canon not in supported:
+            raise ValueError(f"Unsupported language code '{code}'.")
+        validated.append(canon)
+    return validated
+
+
+def validate_translation_language_code(code: str) -> str:
+    """Return one canonical code or raise a clear availability error."""
+    return validate_translation_language_codes([code])[0]
 
 
 def is_supported_language(code: str) -> bool:

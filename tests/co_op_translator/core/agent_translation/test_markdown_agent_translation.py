@@ -169,3 +169,51 @@ def test_notebook_agent_translation_translates_only_markdown_cells():
     assert translated["cells"][1]["source"] == ["print('Hello')\n"]
     assert translated["metadata"] == notebook["metadata"]
     assert result["translated_cell_count"] == 1
+
+
+MNI_MEITEI_TEXT = (
+    "Co-op Translator ꯅꯥ Markdown ꯐꯥꯏꯜ ꯑꯃꯁꯨꯡ ꯐꯣꯇꯣꯁꯤꯡ ꯑꯁꯤ ꯂꯣꯜꯇꯥꯡ ꯀꯌꯥ ꯗ "
+    "ꯑꯣꯇꯣꯃꯦꯇꯤꯛ ꯑꯣꯏꯅ ꯄꯥꯟꯗꯝ ꯄꯤꯔꯤ꯫ ꯃꯁꯤꯅ ꯐꯣꯔꯃꯦꯇꯤꯡ ꯑꯃꯁꯨꯡ ꯂꯤꯡꯛꯁ ꯐꯛꯅꯔꯛꯅ ꯊꯝꯃꯤ꯫"
+)
+MNI_ENGLISH_TEXT = (
+    "Co-op Translator automates the translation of Markdown files and images "
+    "into many languages while preserving formatting and links."
+)
+
+
+def _mni_job():
+    document = (
+        "# Overview\n\n"
+        "Co-op Translator automates the translation of Markdown files and images "
+        "into many languages while preserving formatting and links.\n"
+    )
+    return start_markdown_agent_translation(document, "mni", source_path="README.md")
+
+
+def test_markdown_agent_finish_rejects_wrong_script_for_mni():
+    job = _mni_job()
+    body_ids = [c["id"] for c in job["chunks"] if c["kind"] == "body"]
+    translations = {
+        chunk_id: f"# ꯑꯣꯚꯔꯚꯤꯎ\n\n{MNI_ENGLISH_TEXT}\n" for chunk_id in body_ids
+    }
+
+    with pytest.raises(ValueError) as exc_info:
+        finish_markdown_agent_translation(job, translations)
+
+    message = str(exc_info.value)
+    assert "not written in the expected script" in message
+    assert body_ids[0] in message
+
+
+def test_markdown_agent_finish_accepts_meitei_mayek_for_mni():
+    job = _mni_job()
+    body_ids = [c["id"] for c in job["chunks"] if c["kind"] == "body"]
+    translations = {
+        chunk_id: f"# ꯑꯣꯚꯔꯚꯤꯎ\n\n{MNI_MEITEI_TEXT}\n" for chunk_id in body_ids
+    }
+
+    result = finish_markdown_agent_translation(job, translations)
+
+    assert result["language_code"] == "mni"
+    assert MNI_MEITEI_TEXT in result["content"]
+    assert result["warnings"] == []

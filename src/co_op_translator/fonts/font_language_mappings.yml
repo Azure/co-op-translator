@@ -172,6 +172,13 @@ km:
 mni:
   name: "Manipuri (Meitei Mayek)"
   font: "NotoSansMeeteiMayek-Medium.ttf"
+  script_quality:
+    # Meetei Mayek and Meetei Mayek Extensions blocks.
+    required_blocks: ["ABC0-ABFF", "AAE0-AAFF"]
+    # Bengali-script Manipuri is not acceptable output.
+    forbidden_blocks: ["0980-09FF"]
+    min_required_share: 0.6
+    max_forbidden_share: 0.02
   translation_status: "temporarily_unsupported"
   translation_status_reason: >-
     Current model deployments do not reliably produce valid Meitei Mayek

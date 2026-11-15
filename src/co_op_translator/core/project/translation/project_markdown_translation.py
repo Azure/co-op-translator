@@ -8,6 +8,7 @@ from co_op_translator.config.constants import SUPPORTED_MARKDOWN_EXTENSIONS
 from co_op_translator.core.llm.markdown_translator import (
     TranslationContentFilterError,
     TranslationIncompleteError,
+    TranslationScriptQualityError,
 )
 from co_op_translator.core.project.translation.incremental_markdown import (
     build_incremental_markdown,
@@ -94,7 +95,12 @@ class ProjectMarkdownTranslationMixin:
 
     def _should_record_markdown_failure(self, error: Exception) -> bool:
         if isinstance(
-            error, (TranslationIncompleteError, TranslationContentFilterError)
+            error,
+            (
+                TranslationIncompleteError,
+                TranslationContentFilterError,
+                TranslationScriptQualityError,
+            ),
         ):
             return True
 

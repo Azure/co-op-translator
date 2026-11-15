@@ -5,7 +5,9 @@ import sys
 
 import pytest
 from unittest.mock import patch, MagicMock
-from PIL import Image
+import khatt
+from PIL import Image, ImageDraw, ImageFont
+from co_op_translator.config.font_config import FontConfig
 from co_op_translator.utils.vision.image_utils import (
     _create_image_comparison,
     display_image,
@@ -14,6 +16,7 @@ from co_op_translator.utils.vision.image_utils import (
     draw_text_on_image,
     create_filled_polygon_mask,
     get_image_mode,
+    get_text_bbox,
 )
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
@@ -197,3 +200,39 @@ import co_op_translator.utils.vision.image_utils
     )
 
     assert result.returncode == 0, result.stderr
+
+
+ARABIC_TEXT = "مرحبا بالعالم"
+
+
+def test_arabic_text_is_measured_by_khatt():
+    font_path = FontConfig().get_font_path("ar")
+    font = ImageFont.truetype(font_path, 40)
+
+    assert get_text_bbox(ARABIC_TEXT, font) == khatt.text_bbox(
+        ARABIC_TEXT,
+        font=font_path,
+        size_px=40,
+        fallback_fonts=[FontConfig().get_font_path("en")],
+    )
+
+
+def test_latin_text_is_measured_by_pillow():
+    font = ImageFont.truetype(FontConfig().get_font_path("en"), 40)
+    draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
+
+    assert get_text_bbox("Test Text", font) == draw.textbbox(
+        (0, 0), "Test Text", font=font
+    )
+
+
+def test_arabic_text_does_not_depend_on_pillow_raqm():
+    font_path = FontConfig().get_font_path("ar")
+    basic = ImageFont.truetype(font_path, 40, layout_engine=ImageFont.Layout.BASIC)
+    default = ImageFont.truetype(font_path, 40)
+
+    with_basic = draw_text_on_image(ARABIC_TEXT, basic, (0, 0, 0))
+    with_default = draw_text_on_image(ARABIC_TEXT, default, (0, 0, 0))
+
+    assert with_basic.getbbox() is not None
+    assert with_basic.tobytes() == with_default.tobytes()

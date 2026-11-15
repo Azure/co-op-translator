@@ -9,11 +9,6 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-
-import arabic_reshaper
-from bidi.algorithm import get_display
-
-
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.vision_config.provider import VisionProvider
 from co_op_translator.utils.vision.image_utils import (
@@ -21,6 +16,7 @@ from co_op_translator.utils.vision.image_utils import (
     get_text_color,
     create_filled_polygon_mask,
     draw_text_on_image,
+    get_text_bbox,
     warp_image_to_bounding_box,
     get_image_mode,
     group_bounding_boxes,
@@ -139,28 +135,9 @@ class ImageTranslator(ABC):
         logger.info(f"Starting annotation ({style} mode) for image: {image_path} ")
         rtl = self.font_config.is_rtl(target_language_code)
 
-        # Apply RTL language-specific text processing for Arabic, Hebrew, etc.
-        processed_text_list = []
-        try:
-            # Import these libraries only when needed
-            if target_language_code in ["ar", "fa", "ur", "he"]:
-                for text in translated_text_list:
-                    # Reshape Arabic text
-                    reshaped_text = arabic_reshaper.reshape(text)
-                    # Handle bidirectional text
-                    bidi_text = get_display(reshaped_text)
-                    processed_text_list.append(bidi_text)
-
-                logger.info(
-                    f"Applied Arabic reshaping and bidirectional processing for {target_language_code}"
-                )
-            else:
-                processed_text_list = translated_text_list
-        except ImportError:
-            logger.warning(
-                "Arabic reshaper or python-bidi not installed. Using original text."
-            )
-            processed_text_list = translated_text_list
+        # Right-to-left text stays in logical order: draw_text_on_image and
+        # get_text_bbox shape it, with or without Pillow's Raqm.
+        processed_text_list = list(translated_text_list)
 
         logger.debug(f"Translated text: {processed_text_list}")
 
@@ -258,12 +235,7 @@ class ImageTranslator(ABC):
 
                     initial_font = base_font
                     # Measure text dimensions
-                    dummy_draw = ImageDraw.Draw(image)
-                    bbox = dummy_draw.textbbox(
-                        (0, 0),
-                        translated_text,
-                        font=initial_font,
-                    )
+                    bbox = get_text_bbox(translated_text, initial_font)
                     text_width = bbox[2] - bbox[0]
                     text_height = bbox[3] - bbox[1]
 
@@ -286,11 +258,7 @@ class ImageTranslator(ABC):
                             font = ImageFont.load_default()
 
                     # Recalculate text dimensions with new font
-                    bbox = dummy_draw.textbbox(
-                        (0, 0),
-                        translated_text,
-                        font=font,
-                    )
+                    bbox = get_text_bbox(translated_text, font)
                     text_width = bbox[2] - bbox[0]
                     text_height = bbox[3] - bbox[1]
 
@@ -388,9 +356,7 @@ class ImageTranslator(ABC):
                         font = ImageFont.load_default()
 
                     # Measure text width and adjust font size if text is too wide
-                    dummy_img = Image.new("RGBA", (1, 1))
-                    dummy_draw = ImageDraw.Draw(dummy_img)
-                    bbox = dummy_draw.textbbox((0, 0), translated_text, font=font)
+                    bbox = get_text_bbox(translated_text, font)
                     text_width = bbox[2] - bbox[0]
                     target_width = maxWidth * SUPERSAMPLE * 0.95  # 95% of box width
 

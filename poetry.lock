@@ -361,21 +361,6 @@ typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
 trio = ["trio (>=0.32.0)"]
 
 [[package]]
-name = "arabic-reshaper"
-version = "3.0.1"
-description = "Reconstruct Arabic sentences to be used in applications that do not support Arabic"
-optional = false
-python-versions = ">=3.10"
-groups = ["main"]
-files = [
-    {file = "arabic_reshaper-3.0.1-py3-none-any.whl", hash = "sha256:41c5adc2420f85758eada7e880251c4b6a2adbd83377bd27e5d4eba71f648bc7"},
-    {file = "arabic_reshaper-3.0.1.tar.gz", hash = "sha256:a0d9b2a9fa29b5f2c1d705f407adf6ca4242405b9cac0e5cc09e6c4f3f8fb68c"},
-]
-
-[package.extras]
-with-fonttools = ["fonttools (>=4.0)"]
-
-[[package]]
 name = "ast-serialize"
 version = "0.8.0"
 description = "Python bindings for mypy AST serialization"
@@ -1862,6 +1847,26 @@ files = [
 
 [package.dependencies]
 referencing = ">=0.31.0"
+
+[[package]]
+name = "khatt"
+version = "0.10.0"
+description = "Correct Arabic text for Python: on images, in video subtitles and as terminal art, with no system libraries"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "khatt-0.10.0-py3-none-any.whl", hash = "sha256:2bcfd24d69263fb304714ed7d28ef195d92c764a78c8391e34396534e297e8c4"},
+    {file = "khatt-0.10.0.tar.gz", hash = "sha256:e6ee139bed4c6c6cb18e6e80351c03b02630f4a9b8672244d8593ff0b6ea0f91"},
+]
+
+[package.dependencies]
+pillow = ">=10.1.0"
+python-bidi = ">=0.6.11"
+uharfbuzz = ">=0.55.0"
+
+[package.extras]
+video = ["moviepy (>=2.2.1)"]
 
 [[package]]
 name = "lazy-object-proxy"
@@ -4813,6 +4818,36 @@ files = [
 typing-extensions = ">=4.15.0"
 
 [[package]]
+name = "uharfbuzz"
+version = "0.57.0"
+description = "Streamlined Cython bindings for the harfbuzz shaping engine"
+optional = false
+python-versions = ">=3.11"
+groups = ["main"]
+files = [
+    {file = "uharfbuzz-0.57.0-cp311-abi3-macosx_10_9_universal2.whl", hash = "sha256:e3901acbed68995516ba272bb3ff3777adb07d832b328941da7915dd6cd145fd"},
+    {file = "uharfbuzz-0.57.0-cp311-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:347dbbda4db6f76aa0b330e34c72ecfc576211afc9f946a1c89121afac472970"},
+    {file = "uharfbuzz-0.57.0-cp311-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:72b5251e81fbde5e398ecd5d618c521be8cfde42f281d569e47ab9c9a5e669fe"},
+    {file = "uharfbuzz-0.57.0-cp311-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:ca65ec33b74bccf509dcf8974618faf9376eeecea3cb3e74a087f02d8cf9207a"},
+    {file = "uharfbuzz-0.57.0-cp311-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:9408a4398fc2d13f9039e8dff9d7107c4797bf890af157e0e3a9181c2ecd7e84"},
+    {file = "uharfbuzz-0.57.0-cp311-abi3-pyemscripten_2025_0_wasm32.whl", hash = "sha256:d536eaf8161af2fd48c9842397e9cbd6aa7c4a12e6f5c820aa40f49cb4445302"},
+    {file = "uharfbuzz-0.57.0-cp311-abi3-pyemscripten_2026_0_wasm32.whl", hash = "sha256:430b78efc0cff3365461ff79e0d0a944cda17253171d5a4f8cf4615ebde08541"},
+    {file = "uharfbuzz-0.57.0-cp311-abi3-win32.whl", hash = "sha256:0346f79243dea09d4a24a9645d3f84f5c7d59d4d6f7b4ebce984468744de4543"},
+    {file = "uharfbuzz-0.57.0-cp311-abi3-win_amd64.whl", hash = "sha256:0448bc4ab92a9c65a8526fa743452c2313314d1d9675d308cf989da99ace8e04"},
+    {file = "uharfbuzz-0.57.0-pp311-pypy311_pp80-macosx_10_15_x86_64.whl", hash = "sha256:b0a5fbd70e1f36c608a52dafce242cf18b471a62a2e3d21e4fafd82e0e7770c9"},
+    {file = "uharfbuzz-0.57.0-pp311-pypy311_pp80-macosx_11_0_arm64.whl", hash = "sha256:722ad87e8c1d497f221e4ca15a2d6c7131c796fc4b8d337735f3ea7322d5bd47"},
+    {file = "uharfbuzz-0.57.0-pp311-pypy311_pp80-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:90c3a1c47fcd12f3956766c885b4e5a0e5cfbf1344b2d1aaf6ee6f897bcc87eb"},
+    {file = "uharfbuzz-0.57.0-pp311-pypy311_pp80-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:df03ec62e172d10d65a50a0504905e579309f6fce3417f9678852dd4cbd52563"},
+    {file = "uharfbuzz-0.57.0-pp311-pypy311_pp80-win_amd64.whl", hash = "sha256:3dcdd1a5425d024f0d1422974da72eb184ece4577a0ea97e3130253ae98fab7f"},
+    {file = "uharfbuzz-0.57.0-pp312-pypy312_pp80-macosx_10_15_x86_64.whl", hash = "sha256:7467349983fd8a8efb44ac9cfcff646e889c16f0bb021d9be2d67e36cceeeace"},
+    {file = "uharfbuzz-0.57.0-pp312-pypy312_pp80-macosx_11_0_arm64.whl", hash = "sha256:52ad5e55b9d3a1cfccfa2f1b93de92149134d51dbeecb9434ec1fe0de5280171"},
+    {file = "uharfbuzz-0.57.0-pp312-pypy312_pp80-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:292a7af09e9a4691f0f7b46a88359531b60e25aadfd8fd27c0fc033f236960ae"},
+    {file = "uharfbuzz-0.57.0-pp312-pypy312_pp80-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:ee112dc87b4e78a8c2d8e475d214d29788aacce0daa0192806d4778b671dc658"},
+    {file = "uharfbuzz-0.57.0-pp312-pypy312_pp80-win_amd64.whl", hash = "sha256:293f38debeb78498e80626f04158563e3cddc7aa49e223d55d7615b285a5ad17"},
+    {file = "uharfbuzz-0.57.0.tar.gz", hash = "sha256:55136df18a9dd09fec36d1ceb77965f3108de6d86c338b3825feedb0730d84b7"},
+]
+
+[[package]]
 name = "urllib3"
 version = "2.7.0"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -5069,4 +5104,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.15"
-content-hash = "5d810336c171726da5c2ff31df49d90aa3d478a176624a9c6974a891d288e4cb"
+content-hash = "63a345995dce1a0171557adc1c7998473c84a5d00b27f210d7adccae7f4b65ab"

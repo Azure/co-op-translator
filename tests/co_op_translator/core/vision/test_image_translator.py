@@ -4,6 +4,7 @@ from pathlib import Path
 from PIL import Image
 from co_op_translator.core.vision.image_translator import ImageTranslator
 from co_op_translator.core.llm.text_translator import TextTranslator
+from co_op_translator.config.font_config import FontConfig
 
 TEST_IMAGE_PATH = Path("test_image.png").resolve()
 ROOT_DIR = Path(".").resolve()
@@ -270,3 +271,28 @@ def test_extract_text_with_low_confidence(image_translator):
     assert len(result) == 1
     assert result[0]["confidence"] < 0.5
     assert result[0]["text"] == "Low confidence text"
+
+
+@pytest.mark.parametrize("fast_mode", [True, False])
+def test_render_translated_image_keeps_arabic_in_logical_order(tmp_path, fast_mode):
+    class RenderOnlyImageTranslator(ImageTranslator):
+        def __init__(self):
+            self.font_config = FontConfig()
+
+        def get_image_analysis_client(self):
+            return MagicMock()
+
+    image_path = tmp_path / "source.png"
+    Image.new("RGB", (400, 120), "white").save(image_path)
+    boxes = [{"bounding_box": [20, 30, 300, 30, 300, 80, 20, 80], "text": "Hello"}]
+    translated = "مرحبا بالعالم"
+
+    with patch(
+        "co_op_translator.core.vision.image_translator.draw_text_on_image",
+        return_value=Image.new("RGBA", (40, 20), (0, 0, 0, 0)),
+    ) as draw_text:
+        RenderOnlyImageTranslator().render_translated_image(
+            str(image_path), boxes, [translated], "ar", fast_mode=fast_mode
+        )
+
+    assert draw_text.call_args.args[0] == translated

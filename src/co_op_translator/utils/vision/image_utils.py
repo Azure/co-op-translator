@@ -6,7 +6,9 @@ Functions include saving and loading bounding boxes, drawing text on images, and
 import os
 import logging
 import json
+import re
 import cv2
+import khatt
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageStat
 from co_op_translator.config.font_config import FontConfig
@@ -17,6 +19,10 @@ from co_op_translator.config.constants import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Letters of the right-to-left scripts (Arabic, Persian, Urdu, Hebrew). They join and
+# run right to left, which Pillow only does when it has Raqm, so khatt draws them.
+_RTL_LETTERS = re.compile("[\u0590-\u08ff\ufb1d-\ufdff\ufe70-\ufefc]")
 
 _COMPARISON_TITLE_HEIGHT = 32
 _COMPARISON_PADDING = 8
@@ -351,6 +357,55 @@ def warp_image_to_bounding_box(text_img_array, bounding_box, image_width, image_
     return warped
 
 
+def _shaping_options(text, font):
+    """khatt options for text in font, or None when Pillow should draw it.
+
+    Text with right-to-left letters is drawn by khatt, the same with or without Raqm.
+    ASCII letters it has no glyphs for come from the 'en' mapped font, like the
+    dual-font rendering below.
+    """
+    font_file = getattr(font, "path", None)
+    if not (text and _RTL_LETTERS.search(text) and isinstance(font_file, str)):
+        return None
+    try:
+        fallback = [FontConfig().get_font_path("en")]
+    except Exception:
+        fallback = []
+    return {"font": font_file, "size_px": font.size, "fallback_fonts": fallback}
+
+
+def get_text_bbox(text, font):
+    """
+    Measure text drawn at (0, 0), like ImageDraw.textbbox.
+
+    Args:
+        text (str): The text to measure.
+        font (PIL.ImageFont.ImageFont): The font it is drawn with.
+
+    Returns:
+        tuple: (left, top, right, bottom) in pixels.
+    """
+    options = _shaping_options(text, font)
+    if options:
+        return khatt.text_bbox(text, **options)
+    return ImageDraw.Draw(Image.new("RGBA", (1, 1))).textbbox((0, 0), text, font=font)
+
+
+def _draw_shaped_text(text, options, font, text_color):
+    """Draw right-to-left text with khatt, laid out like draw_text_on_image."""
+    pad = 2
+    ascent, descent = font.getmetrics()
+    left, top, right, bottom = khatt.text_bbox(text, anchor="ls", **options)
+    ascent, descent = max(ascent, -top), max(descent, bottom)
+    width = max(1, right - left + pad * 2)
+    height = max(1, pad + ascent + descent + pad)
+    text_image = Image.new("RGBA", (width, height), (255, 255, 255, 0))
+    khatt.draw_text(
+        text_image, (pad, pad + ascent), text, anchor="ls", fill=text_color, **options
+    )
+    return text_image
+
+
 def draw_text_on_image(text, font, text_color, font_path=None):
     """
     Draw text into a transparent RGBA image using Pillow.
@@ -368,6 +423,10 @@ def draw_text_on_image(text, font, text_color, font_path=None):
     Returns:
         PIL.Image.Image: An RGBA image containing the rendered text.
     """
+
+    options = _shaping_options(text, font)
+    if options:
+        return _draw_shaped_text(text, options, font, text_color)
 
     font_size = getattr(font, "size", 40)
 

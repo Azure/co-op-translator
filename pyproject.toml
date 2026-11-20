@@ -36,6 +36,8 @@ anthropic = "^0.116.0"
 azure-ai-vision-imageanalysis = "^1.0.0"
 azure-core = "^1.41.0"
 click = "^8.5.0"
+# Keep the DNS dependency used by aioice on a security-patched version.
+dnspython = "^2.9.2"
 khatt = ">=0.10.0"
 markdown-it-py = "^4.2.0"
 # Semantic Kernel 1.x requires the MCP 1.x API.

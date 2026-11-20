@@ -38,7 +38,9 @@ def _inline_code_spans(segment: str, absolute_start: int) -> list[MarkdownSpan]:
 
         closing = position + marker_length
         while closing < len(segment):
-            if segment[closing] != "`" or not _is_unescaped(segment, closing):
+            # CommonMark treats backslashes as literal characters inside a code
+            # span, so they cannot escape a matching closing backtick string.
+            if segment[closing] != "`":
                 closing += 1
                 continue
 

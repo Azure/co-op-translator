@@ -461,7 +461,13 @@ class MarkdownTranslator(ABC):
                         source_line_start + self._count_line_breaks(source_prefix)
                     ),
                 )
-                return last_error.translated_prefix + translated_suffix
+                recovered = last_error.translated_prefix + translated_suffix
+                # Each piece may be too short to be judged on its own, so the
+                # joined chunk must pass the same check as a single response.
+                self._validate_script_quality(
+                    recovered, language_code, md_file_path, chunk_label
+                )
+                return recovered
 
         subchunks = self._split_failed_chunk(chunk, split_depth, last_error)
         if len(subchunks) <= 1:
@@ -534,7 +540,13 @@ class MarkdownTranslator(ABC):
             )
             subchunk_source_line_start += self._count_line_breaks(subchunk)
 
-        return "".join(sub_results)
+        recovered = "".join(sub_results)
+        # Sub-chunks below the policy's letter floor pass individually, so the
+        # reassembled chunk must pass the same check as a single response.
+        self._validate_script_quality(
+            recovered, language_code, md_file_path, chunk_label
+        )
+        return recovered
 
     async def _translate_chunk_once(
         self,

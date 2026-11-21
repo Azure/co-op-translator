@@ -1568,6 +1568,93 @@ async def test_script_quality_allows_suffix_recovery_for_valid_prefix(
     assert "automates the translation" not in result
 
 
+# Each of these is below the 20-letter floor on its own; joined they make a
+# 20-letter chunk that is only 50% Meitei Mayek.
+SHORT_ENGLISH_LINE = "Hello world"
+SHORT_MEITEI_LINE = "ꯃꯅꯤꯄꯨꯔꯤ ꯂꯣꯟ"
+
+
+def _anchor_count(body: str) -> int:
+    return len(re.findall(r"@@LINE_\d{4}@@", body))
+
+
+@pytest.mark.asyncio
+async def test_script_quality_checks_joined_result_after_suffix_recovery(
+    real_markdown_translator, tmp_path
+):
+    """Short English prefix + short Meitei suffix is rejected once joined (regression)."""
+    chunk = "First source line.\nSecond source line.\n"
+
+    async def short_english_prefix(prompt, index, total):
+        body = _translate_marked_prompt_body(
+            prompt,
+            {
+                "First source line.": SHORT_ENGLISH_LINE,
+                "Second source line.": SHORT_MEITEI_LINE,
+            },
+        )
+        if "@@LINE_0002@@" in body:
+            return _drop_anchor_line(body, "@@LINE_0002@@")
+        return body
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = short_english_prefix
+        with pytest.raises(TranslationScriptQualityError) as exc_info:
+            await _translate_single_chunk(
+                real_markdown_translator,
+                chunk,
+                "mni",
+                "Manipuri (Meitei Mayek)",
+                tmp_path,
+            )
+
+    # Full chunk, same-chunk retry, then the suffix alone; the join is rejected.
+    assert mock_run_prompt.call_count == MarkdownTranslator.CHUNK_RETRY_ATTEMPTS + 2
+    assert exc_info.value.result.letters == 20
+    assert exc_info.value.result.required_share == 0.5
+
+
+@pytest.mark.asyncio
+async def test_script_quality_checks_joined_result_after_split_recovery(
+    real_markdown_translator, tmp_path
+):
+    """Sub-chunks that pass individually are rejected once reassembled (regression)."""
+    chunk = "First source line.\nSecond source line.\nThird source line.\n"
+
+    async def omit_middle_line_then_short_pieces(prompt, index, total):
+        body = _translate_marked_prompt_body(
+            prompt,
+            {
+                "First source line.": SHORT_ENGLISH_LINE,
+                "Second source line.": "Third",
+                "Third source line.": SHORT_MEITEI_LINE,
+            },
+        )
+        if _anchor_count(body) == 3:
+            # Non-terminal omission forces the split path.
+            return _drop_anchor_line(body, "@@LINE_0002@@")
+        return body
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = omit_middle_line_then_short_pieces
+        with pytest.raises(TranslationScriptQualityError) as exc_info:
+            await _translate_single_chunk(
+                real_markdown_translator,
+                chunk,
+                "mni",
+                "Manipuri (Meitei Mayek)",
+                tmp_path,
+            )
+
+    assert mock_run_prompt.call_count > MarkdownTranslator.CHUNK_RETRY_ATTEMPTS + 1
+    assert exc_info.value.result.letters == 25
+    assert exc_info.value.result.required_share == 0.4
+
+
 @pytest.mark.asyncio
 async def test_script_quality_is_skipped_for_languages_without_policy(
     real_markdown_translator, tmp_path

@@ -26,6 +26,10 @@ from co_op_translator.utils.markdown.frontmatter import (
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.config.llm_config.config import LLMConfig
 from co_op_translator.utils.common.lang_utils import normalize_language_code
+from co_op_translator.utils.common.script_quality import (
+    ScriptQualityResult,
+    check_script_quality,
+)
 from co_op_translator.utils.common.events import emit_translation_event
 from co_op_translator.utils.common.metadata_utils import (
     calculate_file_hash,
@@ -79,6 +83,25 @@ class TranslationIncompleteError(RuntimeError):
 
 class TranslationContentFilterError(RuntimeError):
     """Raised when a provider stops a translation because of content filtering."""
+
+
+class TranslationScriptQualityError(RuntimeError):
+    """Raised when translated text is not written in the target language's script.
+
+    This catches a provider returning the English source, a Latin
+    transliteration, or a different script for a language that declares a
+    ``script_quality`` policy in ``font_language_mappings.yml``.
+    """
+
+    def __init__(self, message: str, *, result: ScriptQualityResult) -> None:
+        super().__init__(message)
+        self.result = result
+
+    def metadata(self) -> dict[str, int | str | float]:
+        data: dict[str, int | str | float] = {"reason": "script_quality"}
+        for key, value in self.result.metadata().items():
+            data["script_reason" if key == "reason" else key] = value
+        return data
 
 
 class MarkdownTranslator(ABC):
@@ -343,6 +366,35 @@ class MarkdownTranslator(ABC):
                     exc_info=True,
                 )
                 raise
+            except TranslationScriptQualityError as e:
+                # Splitting the chunk cannot fix a model that writes the wrong
+                # script, so retry the same chunk and then fail the file.
+                if attempt < self.CHUNK_RETRY_ATTEMPTS:
+                    emit_translation_event(
+                        "block_retry",
+                        file=str(md_file_path),
+                        language=language_code,
+                        block=chunk_label,
+                        attempt=attempt + 2,
+                        metadata=e.metadata(),
+                    )
+                    logger.warning(
+                        "Script quality check failed for chunk %s of file '%s'; "
+                        "retrying same chunk: %s",
+                        chunk_label,
+                        md_file_path.name,
+                        e,
+                    )
+                    continue
+                logger.error(
+                    "Script quality check failed for chunk %s of file '%s' "
+                    "after %s attempts: %s",
+                    chunk_label,
+                    md_file_path.name,
+                    attempt + 1,
+                    e,
+                )
+                raise
             except TranslationIncompleteError as e:
                 if self._verified_prefix_line_count(
                     e
@@ -409,7 +461,13 @@ class MarkdownTranslator(ABC):
                         source_line_start + self._count_line_breaks(source_prefix)
                     ),
                 )
-                return last_error.translated_prefix + translated_suffix
+                recovered = last_error.translated_prefix + translated_suffix
+                # Each piece may be too short to be judged on its own, so the
+                # joined chunk must pass the same check as a single response.
+                self._validate_script_quality(
+                    recovered, language_code, md_file_path, chunk_label
+                )
+                return recovered
 
         subchunks = self._split_failed_chunk(chunk, split_depth, last_error)
         if len(subchunks) <= 1:
@@ -482,7 +540,13 @@ class MarkdownTranslator(ABC):
             )
             subchunk_source_line_start += self._count_line_breaks(subchunk)
 
-        return "".join(sub_results)
+        recovered = "".join(sub_results)
+        # Sub-chunks below the policy's letter floor pass individually, so the
+        # reassembled chunk must pass the same check as a single response.
+        self._validate_script_quality(
+            recovered, language_code, md_file_path, chunk_label
+        )
+        return recovered
 
     async def _translate_chunk_once(
         self,
@@ -533,6 +597,11 @@ class MarkdownTranslator(ABC):
                         chunk_label,
                         source_line_start,
                     )
+                    # The prefix is reused verbatim by suffix recovery, so it
+                    # must pass the same script check as a complete chunk.
+                    self._validate_script_quality(
+                        exc.translated_prefix, language_code, md_file_path, chunk_label
+                    )
                 raise
             self._validate_protected_placeholders(
                 chunk,
@@ -540,6 +609,9 @@ class MarkdownTranslator(ABC):
                 md_file_path,
                 chunk_label,
                 source_line_start,
+            )
+            self._validate_script_quality(
+                translated_chunk, language_code, md_file_path, chunk_label
             )
             return translated_chunk
         except asyncio.TimeoutError as exc:
@@ -551,7 +623,11 @@ class MarkdownTranslator(ABC):
             raise TranslationIncompleteError(
                 f"Markdown translation timed out for chunk {chunk_label} of '{md_file_path.name}'"
             ) from exc
-        except (TranslationIncompleteError, TranslationContentFilterError):
+        except (
+            TranslationIncompleteError,
+            TranslationContentFilterError,
+            TranslationScriptQualityError,
+        ):
             raise
         except Exception as e:
             logger.error(
@@ -822,6 +898,24 @@ class MarkdownTranslator(ABC):
             or next(iter(expected_inline), None)
             or next(iter(expected_structural), None)
             or next(iter(actual_structural), None)
+        )
+
+    def _validate_script_quality(
+        self,
+        translated_chunk: str,
+        language_code: str,
+        md_file_path: Path,
+        chunk_label: str,
+    ) -> None:
+        """Reject output that is not written in the target language's script."""
+        result = check_script_quality(translated_chunk, language_code)
+        if result is None or result.ok:
+            return
+        raise TranslationScriptQualityError(
+            f"Translation for chunk {chunk_label} of '{md_file_path.name}' is not "
+            f"written in the expected script for '{language_code}': "
+            f"{result.describe()}.",
+            result=result,
         )
 
     def _validate_protected_placeholders(

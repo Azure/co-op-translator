@@ -9,6 +9,7 @@ from typing import Any, Mapping, Sequence
 
 from co_op_translator.config.font_config import FontConfig
 from co_op_translator.utils.common.lang_utils import normalize_language_code
+from co_op_translator.utils.common.script_quality import check_script_quality
 from co_op_translator.utils.markdown import (
     generate_prompt_template,
     normalize_cjk_emphasis_markers,
@@ -224,6 +225,9 @@ def finish_markdown_agent_translation(
     body_results: list[str] = []
     frontmatter_result = ""
 
+    language_code = str(job["language_code"])
+    script_failures: list[str] = []
+
     for chunk in chunks:
         chunk_id = str(chunk["id"])
         kind = str(chunk.get("kind"))
@@ -231,10 +235,19 @@ def finish_markdown_agent_translation(
         if kind == "frontmatter":
             frontmatter_result = translated
         elif kind == "body":
+            quality = check_script_quality(translated, language_code)
+            if quality is not None and not quality.ok:
+                script_failures.append(f"{chunk_id} ({quality.describe()})")
             body_results.append(translated)
 
+    if script_failures:
+        raise ValueError(
+            f"Translated chunks for '{language_code}' are not written in the "
+            f"expected script: {', '.join(script_failures)}. Re-translate these "
+            "chunks in the target script before finishing the job."
+        )
+
     translated_content = "\n".join(body_results)
-    language_code = str(job["language_code"])
     state = dict(job.get("state", {}))
 
     translated_content = normalize_cjk_emphasis_markers(

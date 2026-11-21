@@ -585,6 +585,11 @@ class MarkdownTranslator(ABC):
                         chunk_label,
                         source_line_start,
                     )
+                    # The prefix is reused verbatim by suffix recovery, so it
+                    # must pass the same script check as a complete chunk.
+                    self._validate_script_quality(
+                        exc.translated_prefix, language_code, md_file_path, chunk_label
+                    )
                 raise
             self._validate_protected_placeholders(
                 chunk,

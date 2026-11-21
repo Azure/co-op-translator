@@ -1492,6 +1492,82 @@ async def test_script_quality_retry_recovers_when_second_attempt_is_valid(
     assert MNI_TRANSLATED_LINE_2 in result
 
 
+def _drop_anchor_line(body: str, line_marker: str) -> str:
+    """Simulate a model that omits one anchored line from its response."""
+    return "".join(
+        line for line in body.splitlines(keepends=True) if line_marker not in line
+    )
+
+
+@pytest.mark.asyncio
+async def test_script_quality_rejects_english_prefix_before_suffix_recovery(
+    real_markdown_translator, tmp_path
+):
+    """An English prefix with an omitted last line must not be saved (regression).
+
+    Before the fix, only the retranslated suffix was script-checked and the
+    untranslated prefix was concatenated in front of it.
+    """
+    prompts = []
+
+    async def english_prefix_missing_suffix(prompt, index, total):
+        prompts.append(prompt)
+        body = _translate_marked_prompt_body(prompt, {})
+        if "@@LINE_0002@@" in body:
+            return _drop_anchor_line(body, "@@LINE_0002@@")
+        return _translate_marked_prompt_body(prompt, MNI_REPLACEMENTS)
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = english_prefix_missing_suffix
+        with pytest.raises(TranslationScriptQualityError) as exc_info:
+            await _translate_single_chunk(
+                real_markdown_translator,
+                MNI_SOURCE_CHUNK,
+                "mni",
+                "Manipuri (Meitei Mayek)",
+                tmp_path,
+            )
+
+    # Same-chunk retry only; the suffix-only recovery never ran.
+    assert mock_run_prompt.call_count == MarkdownTranslator.CHUNK_RETRY_ATTEMPTS + 1
+    assert all("@@LINE_0002@@" in prompt for prompt in prompts)
+    assert exc_info.value.result.required_share == 0
+    assert "not written in the expected script for 'mni'" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
+async def test_script_quality_allows_suffix_recovery_for_valid_prefix(
+    real_markdown_translator, tmp_path
+):
+    """A Meitei Mayek prefix with an omitted last line still recovers the suffix."""
+
+    async def meitei_prefix_missing_suffix(prompt, index, total):
+        body = _translate_marked_prompt_body(prompt, MNI_REPLACEMENTS)
+        if "@@LINE_0002@@" in body:
+            return _drop_anchor_line(body, "@@LINE_0002@@")
+        return body
+
+    with patch.object(
+        real_markdown_translator, "_run_prompt", new_callable=AsyncMock
+    ) as mock_run_prompt:
+        mock_run_prompt.side_effect = meitei_prefix_missing_suffix
+        result = await _translate_single_chunk(
+            real_markdown_translator,
+            MNI_SOURCE_CHUNK,
+            "mni",
+            "Manipuri (Meitei Mayek)",
+            tmp_path,
+        )
+
+    # Full chunk, same-chunk retry, then the suffix alone.
+    assert mock_run_prompt.call_count == MarkdownTranslator.CHUNK_RETRY_ATTEMPTS + 2
+    assert MNI_TRANSLATED_LINE_1 in result
+    assert MNI_TRANSLATED_LINE_2 in result
+    assert "automates the translation" not in result
+
+
 @pytest.mark.asyncio
 async def test_script_quality_is_skipped_for_languages_without_policy(
     real_markdown_translator, tmp_path

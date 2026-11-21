@@ -38,6 +38,7 @@ from typing import Any, Iterable, Mapping
 import yaml
 
 from co_op_translator.utils.common.lang_utils import normalize_language_code
+from co_op_translator.utils.markdown.spans import mask_markdown_code
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +49,6 @@ DEFAULT_MIN_LETTERS = 20
 REASON_INSUFFICIENT_REQUIRED = "insufficient_required_script"
 REASON_FORBIDDEN_SCRIPT = "forbidden_script"
 
-_FENCED_CODE_RE = re.compile(r"```.*?```|~~~.*?~~~", re.S)
-_INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
 _PLACEHOLDER_RE = re.compile(r"@@[^@\s]+@@")
 _URL_RE = re.compile(r"https?://\S+|www\.\S+")
 _LINK_DESTINATION_RE = re.compile(r"\]\([^)\n]*\)")
@@ -150,9 +149,11 @@ def parse_script_quality_policy(
 
 def strip_non_prose(text: str) -> str:
     """Remove the parts of Markdown that are expected to stay in Latin script."""
+    # Mask fenced, indented and inline code with the shared CommonMark-aware
+    # helper so multi-backtick spans such as ``code with `ticks` `` are not
+    # mistaken for prose.
+    text = mask_markdown_code(text)
     text = _FRONTMATTER_RE.sub(" ", text)
-    text = _FENCED_CODE_RE.sub(" ", text)
-    text = _INLINE_CODE_RE.sub(" ", text)
     text = _PLACEHOLDER_RE.sub(" ", text)
     text = _URL_RE.sub(" ", text)
     text = _LINK_DESTINATION_RE.sub("]", text)

@@ -86,6 +86,45 @@ def test_strip_non_prose_removes_code_links_placeholders_and_tags():
     assert "ꯈꯦꯗꯥꯠ" in stripped
 
 
+MEITEI_PROSE_LINE = "ꯃꯅꯤꯄꯨꯔꯤ ꯂꯣꯟ ꯃꯅꯤꯄꯨꯔꯤ ꯂꯣꯟ ꯃꯅꯤꯄꯨꯔꯤ ꯂꯣꯟ ꯃꯅꯤꯄꯨꯔꯤ ꯂꯣꯟ꯫\n"
+LONG_LATIN_IDENTIFIER = "VeryLongUntranslatedEnglishIdentifierForThisExperiment"
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        pytest.param(
+            f"``{LONG_LATIN_IDENTIFIER} `x` ``\n", id="double-backtick-inline"
+        ),
+        pytest.param(
+            f"```{LONG_LATIN_IDENTIFIER} `x` ```\n", id="triple-backtick-inline"
+        ),
+        pytest.param(f"    {LONG_LATIN_IDENTIFIER}\n", id="indented-code-block"),
+        pytest.param(f"~~~\n{LONG_LATIN_IDENTIFIER}\n~~~\n", id="tilde-fence"),
+        pytest.param(f"```python\n{LONG_LATIN_IDENTIFIER}\n```\n", id="backtick-fence"),
+    ],
+)
+def test_score_is_unchanged_by_code_spans(code):
+    """Code in any CommonMark form must not count as prose (regression)."""
+    # The blank line matters: without it an indented line is a lazy paragraph
+    # continuation in CommonMark, not a code block.
+    text = MEITEI_PROSE_LINE + "\n" + code
+    without_code = evaluate_script_quality(MEITEI_PROSE_LINE, MEITEI_MAYEK)
+    with_code = evaluate_script_quality(text, MEITEI_MAYEK)
+
+    assert without_code.ok and with_code.ok
+    assert with_code.letters == without_code.letters == 40
+    assert with_code.required_share == without_code.required_share == 1.0
+    assert LONG_LATIN_IDENTIFIER not in strip_non_prose(text)
+
+
+def test_unclosed_backtick_is_literal_text_and_still_counted():
+    """CommonMark treats an unmatched backtick as text, so it stays prose."""
+    text = MEITEI_PROSE_LINE + f"`{LONG_LATIN_IDENTIFIER}\n"
+    assert LONG_LATIN_IDENTIFIER in strip_non_prose(text)
+    assert not evaluate_script_quality(text, MEITEI_MAYEK).ok
+
+
 def test_valid_meitei_mayek_passes_even_with_latin_product_names():
     result = evaluate_script_quality(MEITEI_SENTENCE, MEITEI_MAYEK)
     assert result.ok
